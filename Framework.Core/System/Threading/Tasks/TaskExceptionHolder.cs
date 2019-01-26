@@ -17,12 +17,12 @@ using Theraot.Threading;
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// An exception holder manages a list of exceptions for one particular task.
-    /// It offers the ability to aggregate, but more importantly, also offers intrinsic
-    /// support for propagating unhandled exceptions that are never observed. It does
-    /// this by aggregating and throwing if the holder is ever garbage collected without the holder's
-    /// contents ever having been requested (e.g. by a Task.Wait, Task.get_Exception, etc).
-    /// This behavior is prominent in .NET 4 but is suppressed by default beyond that release.
+    ///     An exception holder manages a list of exceptions for one particular task.
+    ///     It offers the ability to aggregate, but more importantly, also offers intrinsic
+    ///     support for propagating unhandled exceptions that are never observed. It does
+    ///     this by aggregating and throwing if the holder is ever garbage collected without the holder's
+    ///     contents ever having been requested (e.g. by a Task.Wait, Task.get_Exception, etc).
+    ///     This behavior is prominent in .NET 4 but is suppressed by default beyond that release.
     /// </summary>
     internal class TaskExceptionHolder
     {
@@ -35,23 +35,23 @@ namespace System.Threading.Tasks
         /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
         private static readonly bool _failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
 
+        /// <summary>The task with which this holder is associated.</summary>
+        private readonly Task _task;
+
         /// <summary>An exception that triggered the task to cancel.</summary>
         private ExceptionDispatchInfo _cancellationException;
 
         /// <summary>
-        /// The lazily-initialized list of faulting exceptions.  Volatile
-        /// so that it may be read to determine whether any exceptions were stored.
+        ///     The lazily-initialized list of faulting exceptions.  Volatile
+        ///     so that it may be read to determine whether any exceptions were stored.
         /// </summary>
         private volatile List<ExceptionDispatchInfo> _faultExceptions;
 
         /// <summary>Whether the holder was "observed" and thus doesn't cause finalization behavior.</summary>
         private volatile bool _isHandled;
 
-        /// <summary>The task with which this holder is associated.</summary>
-        private readonly Task _task;
-
         /// <summary>
-        /// Creates a new holder; it will be registered for finalization.
+        ///     Creates a new holder; it will be registered for finalization.
         /// </summary>
         /// <param name="task">The task this holder belongs to.</param>
         internal TaskExceptionHolder(Task task)
@@ -61,8 +61,11 @@ namespace System.Threading.Tasks
             EnsureAppDomainUnloadCallbackRegistered();
         }
 
+        /// <summary>Gets whether the exception holder is currently storing any exceptions for faults.</summary>
+        internal bool ContainsFaultList => _faultExceptions != null;
+
         /// <summary>
-        /// A finalizer that repropagates unhandled exceptions.
+        ///     A finalizer that repropagates unhandled exceptions.
         /// </summary>
         ~TaskExceptionHolder()
         {
@@ -102,6 +105,7 @@ namespace System.Threading.Tasks
                         break;
                 }
             }
+
             var exceptionToThrow = CreateAggregateException();
             var unobservedTaskExceptionEventArgs = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
             TaskScheduler.PublishUnobservedTaskException(_task, unobservedTaskExceptionEventArgs);
@@ -115,23 +119,20 @@ namespace System.Threading.Tasks
             }
         }
 
-        /// <summary>Gets whether the exception holder is currently storing any exceptions for faults.</summary>
-        internal bool ContainsFaultList => _faultExceptions != null;
-
         /// <summary>
-        /// Add an exception to the holder.  This will ensure the holder is
-        /// in the proper state (handled/unhandled) depending on the list's contents.
+        ///     Add an exception to the holder.  This will ensure the holder is
+        ///     in the proper state (handled/unhandled) depending on the list's contents.
         /// </summary>
         /// <param name="exceptionObject">
-        /// An exception object (either an Exception, an ExceptionDispatchInfo,
-        /// an IEnumerable{Exception}, or an IEnumerable{ExceptionDispatchInfo})
-        /// to add to the list.
+        ///     An exception object (either an Exception, an ExceptionDispatchInfo,
+        ///     an IEnumerable{Exception}, or an IEnumerable{ExceptionDispatchInfo})
+        ///     to add to the list.
         /// </param>
         /// <param name="representsCancellation">
-        /// Whether the exception represents a cancellation request (true) or a fault (false).
+        ///     Whether the exception represents a cancellation request (true) or a fault (false).
         /// </param>
         /// <remarks>
-        /// Must be called under lock.
+        ///     Must be called under lock.
         /// </remarks>
         internal void Add(object exceptionObject, bool representsCancellation)
         {
@@ -155,9 +156,9 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Allocates a new aggregate exception and adds the contents of the list to
-        /// it. By calling this method, the holder assumes exceptions to have been
-        /// "observed", such that the finalization check will be subsequently skipped.
+        ///     Allocates a new aggregate exception and adds the contents of the list to
+        ///     it. By calling this method, the holder assumes exceptions to have been
+        ///     "observed", such that the finalization check will be subsequently skipped.
         /// </summary>
         /// <param name="calledFromFinalizer">Whether this is being called from a finalizer.</param>
         /// <param name="includeThisException">An extra exception to be included (optionally).</param>
@@ -185,29 +186,33 @@ namespace System.Threading.Tasks
             {
                 combinedExceptions[i] = exceptions[i].SourceException;
             }
+
             combinedExceptions[combinedExceptions.Length - 1] = includeThisException;
             return new AggregateException(combinedExceptions);
         }
 
         /// <summary>
-        /// Gets the ExceptionDispatchInfo representing the singular exception
-        /// that was the cause of the task's cancellation.
+        ///     Gets the ExceptionDispatchInfo representing the singular exception
+        ///     that was the cause of the task's cancellation.
         /// </summary>
         /// <returns>
-        /// The ExceptionDispatchInfo for the cancellation exception.  May be null.
+        ///     The ExceptionDispatchInfo for the cancellation exception.  May be null.
         /// </returns>
         internal ExceptionDispatchInfo GetCancellationExceptionDispatchInfo()
         {
             var edi = _cancellationException;
-            Debug.Assert(edi == null || edi.SourceException is OperationCanceledException,
-                "Expected the EDI to be for an OperationCanceledException");
+            Debug.Assert
+            (
+                edi == null || edi.SourceException is OperationCanceledException,
+                "Expected the EDI to be for an OperationCanceledException"
+            );
             return edi;
         }
 
         /// <summary>
-        /// Wraps the exception dispatch infos into a new read-only collection. By calling this method,
-        /// the holder assumes exceptions to have been "observed", such that the finalization
-        /// check will be subsequently skipped.
+        ///     Wraps the exception dispatch infos into a new read-only collection. By calling this method,
+        ///     the holder assumes exceptions to have been "observed", such that the finalization
+        ///     check will be subsequently skipped.
         /// </summary>
         internal ReadOnlyCollection<ExceptionDispatchInfo> GetExceptionDispatchInfos()
         {
@@ -219,8 +224,8 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// A private helper method that ensures the holder is considered
-        /// handled, i.e. it is not registered for finalization.
+        ///     A private helper method that ensures the holder is considered
+        ///     handled, i.e. it is not registered for finalization.
         /// </summary>
         /// <param name="calledFromFinalizer">Whether this is called from the finalizer thread.</param>
         internal void MarkAsHandled(bool calledFromFinalizer)
@@ -234,6 +239,7 @@ namespace System.Threading.Tasks
             {
                 GC.SuppressFinalize(this);
             }
+
             _isHandled = true;
         }
 
@@ -264,7 +270,7 @@ namespace System.Threading.Tasks
         /// <summary>Adds the exception to the fault list.</summary>
         /// <param name="exceptionObject">The exception to store.</param>
         /// <remarks>
-        /// Must be called under lock.
+        ///     Must be called under lock.
         /// </remarks>
         private void AddFaultException(object exceptionObject)
         {
@@ -341,6 +347,7 @@ namespace System.Threading.Tasks
                     MarkAsUnhandled();
                     break;
                 }
+
                 if (i == exceptions.Count - 1)
                 {
                     MarkAsHandled(false);
@@ -358,14 +365,16 @@ namespace System.Threading.Tasks
             // Give users a chance to keep this exception from crashing the process
 
             // First, publish the unobserved exception and allow users to observe it
-            return new AggregateException(
+            return new AggregateException
+            (
                 "A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread.",
-                _faultExceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
+                _faultExceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException)
+            );
         }
 
         /// <summary>
-        /// A private helper method that ensures the holder is considered
-        /// unhandled, i.e. it is registered for finalization.
+        ///     A private helper method that ensures the holder is considered
+        ///     unhandled, i.e. it is registered for finalization.
         /// </summary>
         private void MarkAsUnhandled()
         {
@@ -385,19 +394,25 @@ namespace System.Threading.Tasks
         /// <summary>Sets the cancellation exception.</summary>
         /// <param name="exceptionObject">The cancellation exception.</param>
         /// <remarks>
-        /// Must be called under lock.
+        ///     Must be called under lock.
         /// </remarks>
         private void SetCancellationException(object exceptionObject)
         {
             Contract.Requires(exceptionObject != null, "Expected exceptionObject to be non-null.");
 
-            Debug.Assert(_cancellationException == null,
-                "Expected SetCancellationException to be called only once.");
+            Debug.Assert
+            (
+                _cancellationException == null,
+                "Expected SetCancellationException to be called only once."
+            );
             // Breaking this assumption will overwrite a previously OCE,
             // and implies something may be wrong elsewhere, since there should only ever be one.
 
-            Debug.Assert(_faultExceptions == null,
-                "Expected SetCancellationException to be called before any faults were added.");
+            Debug.Assert
+            (
+                _faultExceptions == null,
+                "Expected SetCancellationException to be called before any faults were added."
+            );
             // Breaking this assumption shouldn't hurt anything here, but it implies something may be wrong elsewhere.
             // If this changes, make sure to only conditionally mark as handled below.
 
@@ -409,8 +424,11 @@ namespace System.Threading.Tasks
             else
             {
                 var edi = exceptionObject as ExceptionDispatchInfo;
-                Debug.Assert(edi?.SourceException is OperationCanceledException,
-                    "Expected an OCE or an EDI that contained an OCE");
+                Debug.Assert
+                (
+                    edi?.SourceException is OperationCanceledException,
+                    "Expected an OCE or an EDI that contained an OCE"
+                );
                 _cancellationException = edi;
             }
 

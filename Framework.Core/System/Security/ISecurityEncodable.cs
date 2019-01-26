@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
 #pragma warning disable CA1041 // Provide ObsoleteAttribute message
 
 // Licensed to the .NET Foundation under one or more agreements.

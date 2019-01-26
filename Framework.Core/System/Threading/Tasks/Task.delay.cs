@@ -1,8 +1,9 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
 using System.Diagnostics.Contracts;
+using Theraot;
 using Theraot.Threading;
 
 namespace System.Threading.Tasks
@@ -14,15 +15,15 @@ namespace System.Threading.Tasks
         public static Task CompletedTask => TaskEx.CompletedTask;
 
         /// <summary>
-        /// Creates a Task that will complete after a time delay.
+        ///     Creates a Task that will complete after a time delay.
         /// </summary>
         /// <param name="delay">The time span to wait before completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.
+        ///     The <paramref name="delay" /> is less than -1 or greater than Int32.MaxValue.
         /// </exception>
         /// <remarks>
-        /// After the specified time delay, the Task is completed in RanToCompletion state.
+        ///     After the specified time delay, the Task is completed in RanToCompletion state.
         /// </remarks>
         public static Task Delay(TimeSpan delay)
         {
@@ -30,21 +31,21 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete after a time delay.
+        ///     Creates a Task that will complete after a time delay.
         /// </summary>
         /// <param name="delay">The time span to wait before completing the returned Task</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.
+        ///     The <paramref name="delay" /> is less than -1 or greater than Int32.MaxValue.
         /// </exception>
         /// <exception cref="T:System.ObjectDisposedException">
-        /// The provided <paramref name="cancellationToken"/> has already been disposed.
+        ///     The provided <paramref name="cancellationToken" /> has already been disposed.
         /// </exception>
         /// <remarks>
-        /// If the cancellation token is signaled before the specified time delay, then the Task is completed in
-        /// Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time
-        /// delay has expired.
+        ///     If the cancellation token is signaled before the specified time delay, then the Task is completed in
+        ///     Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time
+        ///     delay has expired.
         /// </remarks>
         public static Task Delay(TimeSpan delay, CancellationToken cancellationToken)
         {
@@ -58,15 +59,15 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete after a time delay.
+        ///     Creates a Task that will complete after a time delay.
         /// </summary>
         /// <param name="millisecondsDelay">The number of milliseconds to wait before completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="millisecondsDelay"/> is less than -1.
+        ///     The <paramref name="millisecondsDelay" /> is less than -1.
         /// </exception>
         /// <remarks>
-        /// After the specified time delay, the Task is completed in RanToCompletion state.
+        ///     After the specified time delay, the Task is completed in RanToCompletion state.
         /// </remarks>
         public static Task Delay(int millisecondsDelay)
         {
@@ -74,21 +75,21 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete after a time delay.
+        ///     Creates a Task that will complete after a time delay.
         /// </summary>
         /// <param name="millisecondsDelay">The number of milliseconds to wait before completing the returned Task</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="millisecondsDelay"/> is less than -1.
+        ///     The <paramref name="millisecondsDelay" /> is less than -1.
         /// </exception>
         /// <exception cref="T:System.ObjectDisposedException">
-        /// The provided <paramref name="cancellationToken"/> has already been disposed.
+        ///     The provided <paramref name="cancellationToken" /> has already been disposed.
         /// </exception>
         /// <remarks>
-        /// If the cancellation token is signaled before the specified time delay, then the Task is completed in
-        /// Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time
-        /// delay has expired.
+        ///     If the cancellation token is signaled before the specified time delay, then the Task is completed in
+        ///     Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time
+        ///     delay has expired.
         /// </remarks>
         public static Task Delay(int millisecondsDelay, CancellationToken cancellationToken)
         {
@@ -97,6 +98,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay), "The value needs to be either -1 (signifying an infinite timeout), 0 or a positive integer.");
             }
+
             Contract.EndContractBlock();
             // some short-cuts in case quick completion is in order
             if (cancellationToken.IsCancellationRequested)
@@ -104,51 +106,55 @@ namespace System.Threading.Tasks
                 // return a Task created as already-Canceled
                 return TaskEx.FromCanceled(cancellationToken);
             }
+
             if (millisecondsDelay == 0)
             {
                 // return a Task created as already-RanToCompletion
                 return TaskEx.CompletedTask;
             }
+
             var source = new TaskCompletionSource<bool>();
             if (millisecondsDelay > 0)
             {
                 var timeout = RootedTimeout.Launch
-                    (
-                        () =>
+                (
+                    () =>
+                    {
+                        try
                         {
-                            try
-                            {
-                                source.SetResult(true);
-                            }
-                            catch (InvalidOperationException exception)
-                            {
-                                // Already canceled
-                                Theraot.No.Op(exception);
-                            }
-                        },
-                        millisecondsDelay,
-                        cancellationToken
-                    );
+                            source.SetResult(true);
+                        }
+                        catch (InvalidOperationException exception)
+                        {
+                            // Already canceled
+                            No.Op(exception);
+                        }
+                    },
+                    millisecondsDelay,
+                    cancellationToken
+                );
                 source.Task.SetPromiseCheck(() => timeout.CheckRemaining());
             }
+
             if (cancellationToken.CanBeCanceled)
             {
                 cancellationToken.Register
-                    (
-                        () =>
+                (
+                    () =>
+                    {
+                        try
                         {
-                            try
-                            {
-                                source.SetCanceled();
-                            }
-                            catch (InvalidOperationException exception)
-                            {
-                                // Already timed out
-                                Theraot.No.Op(exception);
-                            }
+                            source.SetCanceled();
                         }
-                    );
+                        catch (InvalidOperationException exception)
+                        {
+                            // Already timed out
+                            No.Op(exception);
+                        }
+                    }
+                );
             }
+
             return source.Task;
         }
     }

@@ -63,6 +63,26 @@ namespace System
 
         public T1 Item1 { get; }
 
+        int IComparable.CompareTo(object obj)
+        {
+            return CompareTo(obj, Comparer<object>.Default);
+        }
+
+        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        {
+            return CompareTo(other, comparer);
+        }
+
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            return other is Tuple<T1> tuple && comparer.Equals(Item1, tuple.Item1);
+        }
+
+        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        {
+            return comparer.GetHashCode(Item1);
+        }
+
         public override bool Equals(object obj)
         {
             return ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
@@ -78,37 +98,19 @@ namespace System
             return string.Format(CultureInfo.InvariantCulture, "({0})", Item1);
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
-        {
-            return CompareTo(other, comparer);
-        }
-
-        int IComparable.CompareTo(object obj)
-        {
-            return CompareTo(obj, Comparer<object>.Default);
-        }
-
         private int CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             return comparer.Compare(Item1, tuple.Item1);
-        }
-
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            return other is Tuple<T1> tuple && comparer.Equals(Item1, tuple.Item1);
-        }
-
-        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
-        {
-            return comparer.GetHashCode(Item1);
         }
     }
 
@@ -156,15 +158,18 @@ namespace System
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1, T2> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
             {
                 result = comparer.Compare(Item2, tuple.Item2);
             }
+
             return result;
         }
 
@@ -174,6 +179,7 @@ namespace System
             {
                 return false;
             }
+
             return comparer.Equals(Item1, tuple.Item1)
                    && comparer.Equals(Item2, tuple.Item2);
         }
@@ -233,19 +239,23 @@ namespace System
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1, T2, T3> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
             {
                 result = comparer.Compare(Item2, tuple.Item2);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item3, tuple.Item3);
             }
+
             return result;
         }
 
@@ -255,6 +265,7 @@ namespace System
             {
                 return false;
             }
+
             return comparer.Equals(Item1, tuple.Item1)
                    && comparer.Equals(Item2, tuple.Item2)
                    && comparer.Equals(Item3, tuple.Item3);
@@ -319,23 +330,28 @@ namespace System
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1, T2, T3, T4> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
             {
                 result = comparer.Compare(Item2, tuple.Item2);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item3, tuple.Item3);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item4, tuple.Item4);
             }
+
             return result;
         }
 
@@ -345,6 +361,7 @@ namespace System
             {
                 return false;
             }
+
             return comparer.Equals(Item1, tuple.Item1)
                    && comparer.Equals(Item2, tuple.Item2)
                    && comparer.Equals(Item3, tuple.Item3)
@@ -414,27 +431,33 @@ namespace System
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1, T2, T3, T4, T5> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
             {
                 result = comparer.Compare(Item2, tuple.Item2);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item3, tuple.Item3);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item4, tuple.Item4);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item5, tuple.Item5);
             }
+
             return result;
         }
 
@@ -444,6 +467,7 @@ namespace System
             {
                 return false;
             }
+
             return comparer.Equals(Item1, tuple.Item1)
                    && comparer.Equals(Item2, tuple.Item2)
                    && comparer.Equals(Item3, tuple.Item3)
@@ -518,31 +542,38 @@ namespace System
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
             {
                 result = comparer.Compare(Item2, tuple.Item2);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item3, tuple.Item3);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item4, tuple.Item4);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item5, tuple.Item5);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item6, tuple.Item6);
             }
+
             return result;
         }
 
@@ -552,6 +583,7 @@ namespace System
             {
                 return false;
             }
+
             return comparer.Equals(Item1, tuple.Item1)
                    && comparer.Equals(Item2, tuple.Item2)
                    && comparer.Equals(Item3, tuple.Item3)
@@ -631,35 +663,43 @@ namespace System
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
             {
                 result = comparer.Compare(Item2, tuple.Item2);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item3, tuple.Item3);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item4, tuple.Item4);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item5, tuple.Item5);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item6, tuple.Item6);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item7, tuple.Item7);
             }
+
             return result;
         }
 
@@ -669,6 +709,7 @@ namespace System
             {
                 return false;
             }
+
             return comparer.Equals(Item1, tuple.Item1)
                    && comparer.Equals(Item2, tuple.Item2)
                    && comparer.Equals(Item3, tuple.Item3)
@@ -781,39 +822,48 @@ namespace System
             {
                 return 1;
             }
+
             if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple))
             {
                 throw new ArgumentException(string.Empty, nameof(other));
             }
+
             var result = comparer.Compare(Item1, tuple.Item1);
             if (result == 0)
             {
                 result = comparer.Compare(Item2, tuple.Item2);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item3, tuple.Item3);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item4, tuple.Item4);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item5, tuple.Item5);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item6, tuple.Item6);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item7, tuple.Item7);
             }
+
             if (result == 0)
             {
                 result = comparer.Compare(Item7, tuple.Item7);
             }
+
             return result;
         }
 
@@ -823,6 +873,7 @@ namespace System
             {
                 return false;
             }
+
             return comparer.Equals(Item1, tuple.Item1)
                    && comparer.Equals(Item2, tuple.Item2)
                    && comparer.Equals(Item3, tuple.Item3)

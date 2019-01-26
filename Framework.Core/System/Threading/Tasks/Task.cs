@@ -15,15 +15,16 @@ namespace System.Threading.Tasks
         [ThreadStatic]
         internal static Task InternalCurrent;
 
-        internal TaskScheduler ExecutingTaskScheduler;
-        protected object Action;
-        protected readonly object State;
         private static int _lastId;
         private readonly InternalTaskOptions _internalOptions;
-        private int _isDisposed;
         private readonly Task _parent;
+        protected readonly object State;
+        private int _isDisposed;
         private int _status;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
+        protected object Action;
+
+        internal TaskScheduler ExecutingTaskScheduler;
 
         public Task(Action action)
             : this(action, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
@@ -86,8 +87,8 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// An internal constructor used by the factory methods on task and its descendent(s).
-        /// This variant does not capture the ExecutionContext; it is up to the caller to do that.
+        ///     An internal constructor used by the factory methods on task and its descendent(s).
+        ///     This variant does not capture the ExecutionContext; it is up to the caller to do that.
         /// </summary>
         /// <param name="action">An action to execute.</param>
         /// <param name="state">Optional state to pass to the action.</param>
@@ -103,6 +104,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(action));
             }
+
             if (scheduler == null)
             {
                 throw new ArgumentNullException(nameof(scheduler));
@@ -112,13 +114,14 @@ namespace System.Threading.Tasks
             // This is readonly, and so must be set in the constructor
             // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
             if
-                (
+            (
                 (creationOptions & TaskCreationOptions.AttachedToParent) != 0
                 || (internalOptions & InternalTaskOptions.SelfReplicating) != 0
-                )
+            )
             {
                 _parent = parent;
             }
+
             Id = Interlocked.Increment(ref _lastId) - 1;
             _status = (int)TaskStatus.Created;
             if
@@ -130,32 +133,36 @@ namespace System.Threading.Tasks
             {
                 _parent.AddNewChild();
             }
+
             ExecutingTaskScheduler = scheduler;
             Action = action;
             State = state;
             _waitHandle = new ManualResetEventSlim(false);
             if ((creationOptions
-                    & ~(TaskCreationOptions.AttachedToParent
-                      | TaskCreationOptions.LongRunning
-                      | TaskCreationOptions.DenyChildAttach
-                      | TaskCreationOptions.HideScheduler
-                      | TaskCreationOptions.PreferFairness
-                      | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
+                 & ~(TaskCreationOptions.AttachedToParent
+                     | TaskCreationOptions.LongRunning
+                     | TaskCreationOptions.DenyChildAttach
+                     | TaskCreationOptions.HideScheduler
+                     | TaskCreationOptions.PreferFairness
+                     | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
+
             // Throw exception if the user specifies both LongRunning and SelfReplicating
             if ((creationOptions & TaskCreationOptions.LongRunning) != 0
                 && (internalOptions & InternalTaskOptions.SelfReplicating) != 0)
             {
                 throw new InvalidOperationException("An attempt was made to create a LongRunning SelfReplicating task.");
             }
+
             if ((internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
                 // For continuation tasks or TaskCompletionSource.Tasks, begin life in the
                 // WaitingForActivation state rather than the Created state.
                 _status = (int)TaskStatus.WaitingForActivation;
             }
+
             CreationOptions = creationOptions;
             _internalOptions = internalOptions;
             // if we have a non-null cancellationToken, allocate the contingent properties to save it
@@ -164,11 +171,6 @@ namespace System.Threading.Tasks
             {
                 AssignCancellationToken(cancellationToken, null, null);
             }
-        }
-
-        ~Task()
-        {
-            Dispose(false);
         }
 
         public static int? CurrentId
@@ -181,8 +183,6 @@ namespace System.Threading.Tasks
         }
 
         public static TaskFactory Factory => TaskFactory.DefaultInstance;
-
-        public object AsyncState => State;
         public TaskCreationOptions CreationOptions { get; }
 
         public AggregateException Exception
@@ -217,15 +217,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        public bool IsCompleted
-        {
-            get
-            {
-                var status = Status; // So PromiseCheck runs
-                return status == TaskStatus.RanToCompletion || status == TaskStatus.Faulted || status == TaskStatus.Canceled;
-            }
-        }
-
         public bool IsFaulted
         {
             get
@@ -248,20 +239,6 @@ namespace System.Threading.Tasks
 
         internal ExecutionContext CapturedContext { get; set; }
 
-        WaitHandle IAsyncResult.AsyncWaitHandle
-        {
-            get
-            {
-                if (Volatile.Read(ref _isDisposed) == 1)
-                {
-                    throw new ObjectDisposedException(nameof(Task));
-                }
-                return _waitHandle.Value.WaitHandle;
-            }
-        }
-
-        bool IAsyncResult.CompletedSynchronously => false;
-
         private bool IsContinuationTask => (_internalOptions & InternalTaskOptions.ContinuationTask) != 0;
 
         private bool IsPromiseTask => (_internalOptions & InternalTaskOptions.PromiseTask) != 0;
@@ -275,11 +252,58 @@ namespace System.Threading.Tasks
             }
         }
 
+        public object AsyncState => State;
+
+        public bool IsCompleted
+        {
+            get
+            {
+                var status = Status; // So PromiseCheck runs
+                return status == TaskStatus.RanToCompletion || status == TaskStatus.Faulted || status == TaskStatus.Canceled;
+            }
+        }
+
+        WaitHandle IAsyncResult.AsyncWaitHandle
+        {
+            get
+            {
+                if (Volatile.Read(ref _isDisposed) == 1)
+                {
+                    throw new ObjectDisposedException(nameof(Task));
+                }
+
+                return _waitHandle.Value.WaitHandle;
+            }
+        }
+
+        bool IAsyncResult.CompletedSynchronously => false;
+
         [DebuggerNonUserCode]
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        void IThreadPoolWorkItem.ExecuteWorkItem()
+        {
+            ExecuteEntry(false);
+        }
+
+        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
+        {
+            if (IsCompleted)
+            {
+                return;
+            }
+
+            HandleException(exception);
+            FinishThreadAbortedTask(true, false);
+        }
+
+        ~Task()
+        {
+            Dispose(false);
         }
 
         public void RunSynchronously()
@@ -288,6 +312,7 @@ namespace System.Threading.Tasks
             {
                 throw new ObjectDisposedException(nameof(Task));
             }
+
             PrivateRunSynchronously(ExecutingTaskScheduler);
         }
 
@@ -297,10 +322,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
+
             if (Volatile.Read(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(nameof(Task));
             }
+
             PrivateRunSynchronously(scheduler);
         }
 
@@ -310,18 +337,22 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Start may not be called on a task that has completed.");
             }
+
             if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
                 throw new InvalidOperationException("Start may not be called on a continuation task.");
             }
+
             if ((_internalOptions & InternalTaskOptions.PromiseTask) != 0)
             {
                 throw new InvalidOperationException("Start may not be called on a promise-style task.");
             }
+
             if (Volatile.Read(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(nameof(Task));
             }
+
             if (!InternalStart(ExecutingTaskScheduler, false, true))
             {
                 throw new InvalidOperationException("Start may not be called on a task that was already started.");
@@ -334,22 +365,27 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Start may not be called on a task that has completed.");
             }
+
             if (scheduler == null)
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
+
             if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
                 throw new InvalidOperationException("Start may not be called on a continuation task.");
             }
+
             if ((_internalOptions & InternalTaskOptions.PromiseTask) != 0)
             {
                 throw new InvalidOperationException("Start may not be called on a promise-style task.");
             }
+
             if (Volatile.Read(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(nameof(Task));
             }
+
             if (!InternalStart(scheduler, false, true))
             {
                 throw new InvalidOperationException("Start may not be called on a task that was already started.");
@@ -394,11 +430,13 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(milliseconds));
             }
+
             if (milliseconds == -1)
             {
                 Wait(cancellationToken);
                 return true;
             }
+
             var start = ThreadingHelper.TicksNow();
             do
             {
@@ -441,6 +479,7 @@ namespace System.Threading.Tasks
                         continue;
                 }
             } while (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds);
+
             switch (Status)
             {
                 case TaskStatus.RanToCompletion:
@@ -471,6 +510,7 @@ namespace System.Threading.Tasks
                 // Promise tasks don't execute
                 return false;
             }
+
             if (!SetRunning(preventDoubleExecution))
             {
                 return false;
@@ -491,6 +531,7 @@ namespace System.Threading.Tasks
             {
                 ExecuteWithThreadLocal();
             }
+
             return true;
         }
 
@@ -519,6 +560,7 @@ namespace System.Threading.Tasks
                     cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingToRun;
                 }
             }
+
             if (Volatile.Read(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
             {
                 // We are going to pretend that the cancel call came after the task finished running, but we may still set to cancel on TaskStatus.WaitingForChildrenToComplete
@@ -544,6 +586,7 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
+
             var didInline = false;
             try
             {
@@ -553,6 +596,7 @@ namespace System.Threading.Tasks
                     // WaitAntecedent(CancellationToken);
                     didInline = scheduler.InternalTryExecuteTaskInline(this, IsScheduled);
                 }
+
                 if (!didInline)
                 {
                     scheduler.QueueTask(this);
@@ -582,6 +626,7 @@ namespace System.Threading.Tasks
                     throw taskSchedulerException;
                 }
             }
+
             return true;
         }
 
@@ -597,6 +642,7 @@ namespace System.Threading.Tasks
             {
                 throw new ObjectDisposedException(nameof(Task));
             }
+
             InternalStart(scheduler, inline, true);
         }
 
@@ -606,6 +652,7 @@ namespace System.Threading.Tasks
             {
                 throw new ObjectDisposedException(nameof(Task));
             }
+
             InternalStart(scheduler, inline, throwSchedulerExceptions);
         }
 
@@ -622,6 +669,7 @@ namespace System.Threading.Tasks
                 {
                     throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
                 }
+
                 var waitHandle = _waitHandle.Value;
                 if (waitHandle != null)
                 {
@@ -629,10 +677,12 @@ namespace System.Threading.Tasks
                     {
                         waitHandle.Set();
                     }
+
                     waitHandle.Dispose();
                     _waitHandle.Value = null;
                 }
             }
+
             Volatile.Write(ref _isDisposed, 1);
         }
 
@@ -649,22 +699,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        void IThreadPoolWorkItem.ExecuteWorkItem()
-        {
-            ExecuteEntry(false);
-        }
-
-        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
-        {
-            if (IsCompleted)
-            {
-                return;
-            }
-
-            HandleException(exception);
-            FinishThreadAbortedTask(true, false);
-        }
-
         private void PrivateRunSynchronously(TaskScheduler scheduler)
         {
             // Do not Run Synchronously Continuation Tasks
@@ -672,16 +706,19 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("RunSynchronously may not be called on a continuation task.");
             }
+
             // Do not Run Synchronously Promise Tasks
             if (IsPromiseTask)
             {
                 throw new InvalidOperationException("RunSynchronously may not be called on a task not bound to a delegate, such as the task returned from an asynchronous method.");
             }
+
             // Can't call this method on a task that has already completed
             if (IsCompleted)
             {
                 throw new InvalidOperationException("RunSynchronously may not be called on a task that has already completed.");
             }
+
             // Make sure that Task only gets started once.  Or else throw an exception.
             if (!InternalStart(scheduler, true, true))
             {
@@ -722,6 +759,7 @@ namespace System.Threading.Tasks
                         {
                             ThrowIfExceptional(true);
                         }
+
                         done = true;
                         break;
 
@@ -729,6 +767,7 @@ namespace System.Threading.Tasks
                         // Should not happen
                         break;
                 }
+
                 spinWait.SpinOnce();
             }
 #if DEBUG
@@ -747,6 +786,7 @@ namespace System.Threading.Tasks
             {
                 return;
             }
+
             if (_exceptionsHolder != null)
             {
                 Contract.Assert(_exceptionsHolder.ContainsFaultList, "Expected _exceptionsHolder to have faults recorded.");
@@ -778,11 +818,13 @@ namespace System.Threading.Tasks
                 {
                     return false;
                 }
+
                 var tmp = Interlocked.CompareExchange(ref _status, 3, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
+
                 spinWait.SpinOnce();
             }
         }

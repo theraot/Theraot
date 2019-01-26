@@ -29,19 +29,17 @@ namespace System.Runtime.CompilerServices
         private static readonly IEvent<ContractFailedEventArgs> _contractFailedEvent = new StrongEvent<ContractFailedEventArgs>(true);
 
         /// <summary>
-        /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
-        /// web browser host (Jolt hosting Silverlight in IE) to be notified of contract failures and
-        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
-        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
-        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires
-        /// full trust.
+        ///     Allows a managed application environment such as an interactive interpreter (IronPython) or a
+        ///     web browser host (Jolt hosting Silverlight in IE) to be notified of contract failures and
+        ///     potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
+        ///     event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
+        ///     not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires
+        ///     full trust.
         /// </summary>
         internal static event EventHandler<ContractFailedEventArgs> InternalContractFailed
         {
-            [SecurityCritical]
-            add => _contractFailedEvent.Add(value);
-            [SecurityCritical]
-            remove => _contractFailedEvent.Remove(value);
+            [SecurityCritical] add => _contractFailedEvent.Add(value);
+            [SecurityCritical] remove => _contractFailedEvent.Remove(value);
         }
 
         [DebuggerNonUserCode]
@@ -77,6 +75,7 @@ namespace System.Runtime.CompilerServices
             {
                 return failureMessage + "  " + userMessage;
             }
+
             return failureMessage;
         }
 
@@ -130,6 +129,7 @@ namespace System.Runtime.CompilerServices
             {
                 returnValue = eventArgs?.Handled == true ? null : displayMessage;
             }
+
             resultFailureMessage = returnValue;
         }
 
@@ -149,6 +149,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ContractException(kind, displayMessage, userMessage, conditionText, innerException);
             }
+
             ContractHelperEx.Fail(displayMessage);
         }
     }

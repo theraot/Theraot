@@ -6,7 +6,7 @@ namespace System
     public delegate void Action();
 
     /// <summary>
-    /// Encapsulates a method that has 2 parameters and does not return a value.
+    ///     Encapsulates a method that has 2 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -15,7 +15,7 @@ namespace System
     public delegate void Action<in T1, in T2>(T1 arg1, T2 arg2);
 
     /// <summary>
-    /// Encapsulates a method that has 3 parameters and does not return a value.
+    ///     Encapsulates a method that has 3 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -26,7 +26,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3>(T1 arg1, T2 arg2, T3 arg3);
 
     /// <summary>
-    /// Encapsulates a method that has 4 parameters and does not return a value.
+    ///     Encapsulates a method that has 4 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -46,7 +46,7 @@ namespace System
 namespace System
 {
     /// <summary>
-    /// Encapsulates a method that has 5 parameters and does not return a value.
+    ///     Encapsulates a method that has 5 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -61,7 +61,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
 
     /// <summary>
-    /// Encapsulates a method that has 6 parameters and does not return a value.
+    ///     Encapsulates a method that has 6 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -78,7 +78,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
 
     /// <summary>
-    /// Encapsulates a method that has 7 parameters and does not return a value.
+    ///     Encapsulates a method that has 7 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -97,7 +97,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
 
     /// <summary>
-    /// Encapsulates a method that has 8 parameters and does not return a value.
+    ///     Encapsulates a method that has 8 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -118,7 +118,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8);
 
     /// <summary>
-    /// Encapsulates a method that has 9 parameters and does not return a value.
+    ///     Encapsulates a method that has 9 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -141,7 +141,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, in T9>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9);
 
     /// <summary>
-    /// Encapsulates a method that has 10 parameters and does not return a value.
+    ///     Encapsulates a method that has 10 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -166,7 +166,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, in T9, in T10>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10);
 
     /// <summary>
-    /// Encapsulates a method that has 11 parameters and does not return a value.
+    ///     Encapsulates a method that has 11 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -193,7 +193,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, in T9, in T10, in T11>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11);
 
     /// <summary>
-    /// Encapsulates a method that has 12 parameters and does not return a value.
+    ///     Encapsulates a method that has 12 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -222,7 +222,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, in T9, in T10, in T11, in T12>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12);
 
     /// <summary>
-    /// Encapsulates a method that has 13 parameters and does not return a value.
+    ///     Encapsulates a method that has 13 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -252,8 +252,8 @@ namespace System
     /// <param name="arg13">The thirteenth parameter of the method that this delegate encapsulates.</param>
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, in T9, in T10, in T11, in T12, in T13>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13);
 
-/// <summary>
-    /// Encapsulates a method that has 15 parameters and does not return a value.
+    /// <summary>
+    ///     Encapsulates a method that has 15 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -286,7 +286,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, in T9, in T10, in T11, in T12, in T13, in T14>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14);
 
     /// <summary>
-    /// Encapsulates a method that has 15 parameters and does not return a value.
+    ///     Encapsulates a method that has 15 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>
@@ -321,7 +321,7 @@ namespace System
     public delegate void Action<in T1, in T2, in T3, in T4, in T5, in T6, in T7, in T8, in T9, in T10, in T11, in T12, in T13, in T14, in T15>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15);
 
     /// <summary>
-    /// Encapsulates a method that has 16 parameters and does not return a value.
+    ///     Encapsulates a method that has 16 parameters and does not return a value.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter of the method that this delegate encapsulates.</typeparam>
     /// <typeparam name="T2">The type of the second parameter of the method that this delegate encapsulates.</typeparam>

@@ -8,8 +8,8 @@ namespace System.Runtime.CompilerServices
 {
     /// <inheritdoc />
     /// <summary>
-    /// Indicates the type of the async method builder that should be used by a language compiler to
-    /// build the attributed type when used as the return type of an async method.
+    ///     Indicates the type of the async method builder that should be used by a language compiler to
+    ///     build the attributed type when used as the return type of an async method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Delegate | AttributeTargets.Enum, Inherited = false)]
     public sealed class AsyncMethodBuilderAttribute : Attribute
@@ -22,7 +22,7 @@ namespace System.Runtime.CompilerServices
             BuilderType = builderType;
         }
 
-        /// <summary>Gets the <see cref="Type"/> of the associated builder.</summary>
+        /// <summary>Gets the <see cref="Type" /> of the associated builder.</summary>
         public Type BuilderType { get; }
     }
 }

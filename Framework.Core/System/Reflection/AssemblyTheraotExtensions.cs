@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETSTANDARD15
-
 using System.Linq;
 
 namespace System.Reflection

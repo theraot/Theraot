@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 
@@ -9,6 +9,11 @@ namespace System.Threading.Tasks
     public partial class Task<TResult> : Task
     {
         internal TResult InternalResult;
+
+        static Task()
+        {
+            ContinuationConversion = done => (Task<TResult>)done.Result;
+        }
 
         public Task(Func<TResult> function)
             : base(function, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
@@ -52,11 +57,6 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        static Task()
-        {
-            ContinuationConversion = done => (Task<TResult>)done.Result;
-        }
-
         public TResult Result
         {
             get
@@ -66,10 +66,12 @@ namespace System.Threading.Tasks
                 {
                     throw Exception;
                 }
+
                 if (IsCanceled)
                 {
                     throw new AggregateException(new TaskCanceledException(this));
                 }
+
                 return InternalResult;
             }
         }

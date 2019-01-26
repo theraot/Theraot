@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable RCS1154 // Sort enum members.
 #pragma warning disable RCS1157 // Composite enum value contains undefined flag.
@@ -6,7 +6,7 @@
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Task creation flags which are only used internally.
+    ///     Task creation flags which are only used internally.
     /// </summary>
     [Flags]
     [Serializable]
@@ -24,17 +24,20 @@ namespace System.Threading.Tasks
         SelfReplicating = 0x0800,
 
         /// <summary>
-        /// Store the presence of TaskContinuationOptions.LazyCancellation, since it does not directly
-        /// translate into any TaskCreationOptions.
+        ///     Store the presence of TaskContinuationOptions.LazyCancellation, since it does not directly
+        ///     translate into any TaskCreationOptions.
         /// </summary>
         LazyCancellation = 0x1000,
 
-        /// <summary>Specifies that the task will be queued by the runtime before handing it over to the user.
-        /// This flag will be used to skip the CancellationToken registration step, which is only meant for unstarted tasks.</summary>
+        /// <summary>
+        ///     Specifies that the task will be queued by the runtime before handing it over to the user.
+        ///     This flag will be used to skip the CancellationToken registration step, which is only meant for unstarted tasks.
+        /// </summary>
         QueuedByRuntime = 0x2000,
 
         /// <summary>
-        /// Denotes that Dispose should be a complete nop for a Task.  Used when constructing tasks that are meant to be cached/reused.
+        ///     Denotes that Dispose should be a complete nop for a Task.  Used when constructing tasks that are meant to be
+        ///     cached/reused.
         /// </summary>
         DoNotDispose = 0x4000
     }

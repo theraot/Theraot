@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Represents an exception used to communicate task cancellation.
+    ///     Represents an exception used to communicate task cancellation.
     /// </summary>
     [Serializable]
     public class TaskCanceledException : OperationCanceledExceptionEx
@@ -20,7 +20,7 @@ namespace System.Threading.Tasks
         private readonly Task _canceledTask; // The task which has been canceled.
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> class.
+        ///     Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException" /> class.
         /// </summary>
         public TaskCanceledException()
             : base("A task was canceled")
@@ -29,8 +29,8 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException"/>
-        /// class with a specified error message.
+        ///     Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException" />
+        ///     class with a specified error message.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         public TaskCanceledException(string message)
@@ -40,9 +40,9 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException"/>
-        /// class with a specified error message and a reference to the inner exception that is the cause of
-        /// this exception.
+        ///     Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException" />
+        ///     class with a specified error message and a reference to the inner exception that is the cause of
+        ///     this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
@@ -53,8 +53,8 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> class
-        /// with a reference to the <see cref="T:System.Threading.Tasks.Task"/> that has been canceled.
+        ///     Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException" /> class
+        ///     with a reference to the <see cref="T:System.Threading.Tasks.Task" /> that has been canceled.
         /// </summary>
         /// <param name="task">A task that has been canceled.</param>
         public TaskCanceledException(Task task) :
@@ -70,12 +70,12 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Gets the task associated with this exception.
+        ///     Gets the task associated with this exception.
         /// </summary>
         /// <remarks>
-        /// It is permissible for no Task to be associated with a
-        /// <see cref="T:System.Threading.Tasks.TaskCanceledException"/>, in which case
-        /// this property will return null.
+        ///     It is permissible for no Task to be associated with a
+        ///     <see cref="T:System.Threading.Tasks.TaskCanceledException" />, in which case
+        ///     this property will return null.
         /// </remarks>
         public Task Task => _canceledTask;
     }

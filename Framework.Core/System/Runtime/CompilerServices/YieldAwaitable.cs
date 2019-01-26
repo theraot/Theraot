@@ -16,7 +16,7 @@ namespace System.Runtime.CompilerServices
     /// <remarks>This type is intended for compiler use only.</remarks>
     public struct YieldAwaitable
     {
-        /// <summary>Gets an awaiter for this <see cref="YieldAwaitable"/>.</summary>
+        /// <summary>Gets an awaiter for this <see cref="YieldAwaitable" />.</summary>
         /// <returns>An awaiter for this awaitable.</returns>
         /// <remarks>This method is intended for compiler user rather than use directly in code.</remarks>
         public YieldAwaiter GetAwaiter()
@@ -44,9 +44,12 @@ namespace System.Runtime.CompilerServices
                 // Empty
             }
 
-            /// <summary>Posts the <paramref name="continuation"/> back to the current context.</summary>
+            /// <summary>Posts the <paramref name="continuation" /> back to the current context.</summary>
             /// <param name="continuation">The action to invoke asynchronously.</param>
-            /// <exception cref="ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
+            /// <exception cref="ArgumentNullException">
+            ///     The <paramref name="continuation" /> argument is null (Nothing in Visual
+            ///     Basic).
+            /// </exception>
             [SecuritySafeCritical]
             public void OnCompleted(Action continuation)
             {
@@ -54,6 +57,7 @@ namespace System.Runtime.CompilerServices
                 {
                     throw new ArgumentNullException(nameof(continuation));
                 }
+
                 if (TaskScheduler.Current == TaskScheduler.Default)
                 {
                     ThreadPool.QueueUserWorkItem(_waitCallbackRunAction, continuation);
@@ -64,9 +68,12 @@ namespace System.Runtime.CompilerServices
                 }
             }
 
-            /// <summary>Posts the <paramref name="continuation"/> back to the current context.</summary>
+            /// <summary>Posts the <paramref name="continuation" /> back to the current context.</summary>
             /// <param name="continuation">The action to invoke asynchronously.</param>
-            /// <exception cref="ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
+            /// <exception cref="ArgumentNullException">
+            ///     The <paramref name="continuation" /> argument is null (Nothing in Visual
+            ///     Basic).
+            /// </exception>
             [SecurityCritical]
             public void UnsafeOnCompleted(Action continuation)
             {
@@ -74,6 +81,7 @@ namespace System.Runtime.CompilerServices
                 {
                     throw new ArgumentNullException(nameof(continuation));
                 }
+
                 if (TaskScheduler.Current == TaskScheduler.Default)
                 {
                     ThreadPool.UnsafeQueueUserWorkItem(_waitCallbackRunAction, continuation);

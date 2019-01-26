@@ -42,19 +42,6 @@ namespace System.Threading
             _wrapped = trackAllValues ? (IThreadLocal<T>)new TrackingThreadLocal<T>(valueFactory) : new NoTrackingThreadLocal<T>(valueFactory);
         }
 
-        [DebuggerNonUserCode]
-        ~ThreadLocal()
-        {
-            try
-            {
-                // Empty
-            }
-            finally
-            {
-                Dispose(false);
-            }
-        }
-
         public bool IsValueCreated
         {
             get
@@ -104,6 +91,19 @@ namespace System.Threading
             finally
             {
                 GC.SuppressFinalize(this);
+            }
+        }
+
+        [DebuggerNonUserCode]
+        ~ThreadLocal()
+        {
+            try
+            {
+                // Empty
+            }
+            finally
+            {
+                Dispose(false);
             }
         }
 

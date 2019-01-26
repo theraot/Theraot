@@ -1,20 +1,21 @@
 ﻿#if LESSTHAN_NET40
 
 using System.Diagnostics.Contracts;
+using Theraot;
 
 namespace System.Threading.Tasks
 {
     /// <summary>Provides the standard implementation of a task continuation.</summary>
     internal class StandardTaskContinuation : TaskContinuation
     {
+        /// <summary>The task scheduler with which to run the continuation task.</summary>
+        private readonly TaskScheduler _scheduler;
+
         /// <summary>The options to use with the continuation task.</summary>
         internal readonly TaskContinuationOptions Options;
 
         /// <summary>The unstarted continuation task.</summary>
         internal readonly Task Task;
-
-        /// <summary>The task scheduler with which to run the continuation task.</summary>
-        private readonly TaskScheduler _scheduler;
 
         /// <summary>Initializes a new continuation.</summary>
         /// <param name="task">The task to be activated.</param>
@@ -39,17 +40,16 @@ namespace System.Threading.Tasks
                 Contract.Assert(false);
                 throw new InvalidOperationException();
             }
+
             Contract.Assert(completedTask.IsCompleted, "ContinuationTask.Run(): completedTask not completed");
 
             // Check if the completion status of the task works with the desired
             // activation criteria of the TaskContinuationOptions.
             var options = Options;
             var isRightKind =
-                completedTask.Status == TaskStatus.RanToCompletion ?
-                    (options & TaskContinuationOptions.NotOnRanToCompletion) == 0 :
-                    completedTask.IsCanceled ?
-                        (options & TaskContinuationOptions.NotOnCanceled) == 0 :
-                        (options & TaskContinuationOptions.NotOnFaulted) == 0;
+                completedTask.Status == TaskStatus.RanToCompletion ? (options & TaskContinuationOptions.NotOnRanToCompletion) == 0 :
+                completedTask.IsCanceled ? (options & TaskContinuationOptions.NotOnCanceled) == 0 :
+                (options & TaskContinuationOptions.NotOnFaulted) == 0;
 
             // If the completion status is allowed, run the continuation.
             var continuationTask = Task;
@@ -73,7 +73,7 @@ namespace System.Threading.Tasks
                     {
                         // No further action is necessary -- ScheduleAndStart() already transitioned the
                         // task to faulted.  But we want to make sure that no exception is thrown from here.
-                        Theraot.No.Op(exception);
+                        No.Op(exception);
                     }
                 }
             }

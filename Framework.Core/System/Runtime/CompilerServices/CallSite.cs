@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Threading;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
@@ -39,26 +40,26 @@ namespace System.Runtime.CompilerServices
     //
 
     /// <summary>
-    /// A Dynamic Call Site base class. This type is used as a parameter type to the
-    /// dynamic site targets. The first parameter of the delegate (T) below must be
-    /// of this type.
+    ///     A Dynamic Call Site base class. This type is used as a parameter type to the
+    ///     dynamic site targets. The first parameter of the delegate (T) below must be
+    ///     of this type.
     /// </summary>
     public class CallSite
     {
         /// <summary>
-        /// String used for generated CallSite methods.
+        ///     String used for generated CallSite methods.
         /// </summary>
         internal const string CallSiteTargetMethodName = "CallSite.Target";
 
         /// <summary>
-        /// Used by Matchmaker sites to indicate rule match.
-        /// </summary>
-        internal bool Match;
-
-        /// <summary>
-        /// Cache of CallSite constructors for a given delegate type.
+        ///     Cache of CallSite constructors for a given delegate type.
         /// </summary>
         private static volatile CacheDict<Type, Func<CallSiteBinder, CallSite>> _siteCtors;
+
+        /// <summary>
+        ///     Used by Matchmaker sites to indicate rule match.
+        /// </summary>
+        internal bool Match;
 
         // only CallSite<T> derives from this
         internal CallSite(CallSiteBinder binder)
@@ -67,12 +68,12 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Class responsible for binding dynamic operations on the dynamic site.
+        ///     Class responsible for binding dynamic operations on the dynamic site.
         /// </summary>
         public CallSiteBinder Binder { get; }
 
         /// <summary>
-        /// Creates a CallSite with the given delegate type and binder.
+        ///     Creates a CallSite with the given delegate type and binder.
         /// </summary>
         /// <param name="delegateType">The CallSite delegate type.</param>
         /// <param name="binder">The CallSite binder.</param>
@@ -115,48 +116,48 @@ namespace System.Runtime.CompilerServices
 
     /// <inheritdoc />
     /// <summary>
-    /// Dynamic site type.
+    ///     Dynamic site type.
     /// </summary>
     /// <typeparam name="T">The delegate type.</typeparam>
     public class CallSite<T> : CallSite where T : class
     {
-        /// <summary>
-        /// The Level 0 cache - a delegate specialized based on the site history.
-        /// </summary>
-        public T Target;
+        private const int _maxRules = 10;
 
         /// <summary>
-        /// an instance of matchmaker site to opportunistically reuse when site is polymorphic
+        ///     an instance of matchmaker site to opportunistically reuse when site is polymorphic
         /// </summary>
         internal CallSite CachedMatchmaker;
 
         /// <summary>
-        /// The Level 1 cache - a history of the dynamic site.
+        ///     The Level 1 cache - a history of the dynamic site.
         /// </summary>
         internal T[] Rules;
 
-        private const int _maxRules = 10;
+        /// <summary>
+        ///     The Level 0 cache - a delegate specialized based on the site history.
+        /// </summary>
+        public T Target;
 
         private CallSite()
-                    : base(null)
+            : base(null)
         {
         }
 
         /// <summary>
-        /// The update delegate. Called when the dynamic site experiences cache miss.
+        ///     The update delegate. Called when the dynamic site experiences cache miss.
         /// </summary>
         /// <returns>The update delegate.</returns>
         public T Update => throw new NotSupportedException();
 
         /// <summary>
-        /// Creates an instance of the dynamic call site, initialized with the binder responsible for the
-        /// runtime binding of the dynamic operations at this call site.
+        ///     Creates an instance of the dynamic call site, initialized with the binder responsible for the
+        ///     runtime binding of the dynamic operations at this call site.
         /// </summary>
         /// <param name="binder">The binder responsible for the runtime binding of the dynamic operations at this call site.</param>
         /// <returns>The new instance of dynamic call site.</returns>
         public static CallSite<T> Create(CallSiteBinder binder)
         {
-            Theraot.No.Op(binder);
+            No.Op(binder);
             throw new NotSupportedException();
         }
 
@@ -165,7 +166,7 @@ namespace System.Runtime.CompilerServices
             var rules = Rules;
             if (rules == null)
             {
-                Rules = new[] { newRule };
+                Rules = new[] {newRule};
                 return;
             }
 
@@ -180,6 +181,7 @@ namespace System.Runtime.CompilerServices
                 temp = new T[_maxRules];
                 Array.Copy(rules, 0, temp, 1, _maxRules - 1);
             }
+
             temp[0] = newRule;
             Rules = temp;
         }
@@ -201,7 +203,7 @@ namespace System.Runtime.CompilerServices
             matchmaker = Interlocked.Exchange(ref CachedMatchmaker, null);
             Debug.Assert(matchmaker?.Match != false, "cached site should be set up for matchmaking");
 
-            return matchmaker ?? new CallSite<T> { Match = true };
+            return matchmaker ?? new CallSite<T> {Match = true};
         }
 
         // moves rule +2 up.

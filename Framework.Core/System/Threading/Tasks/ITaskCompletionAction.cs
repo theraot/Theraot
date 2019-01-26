@@ -48,8 +48,10 @@ namespace System.Threading.Tasks
                     {
                         continue;
                     }
+
                     task.RemoveContinuation(this);
                 }
+
                 _tasks = null;
             }
         }
@@ -74,6 +76,7 @@ namespace System.Threading.Tasks
                 {
                     AddTask(task);
                 }
+
                 // Report we finished adding all tasks
                 Volatile.Write(ref _ready, 1);
                 CheckCount();
@@ -90,6 +93,7 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
+
                 // Figure out if all tasks has completed
                 // And remove continuations from those that have not completed
                 var complete = true;
@@ -99,9 +103,11 @@ namespace System.Threading.Tasks
                     {
                         continue;
                     }
+
                     task.RemoveContinuation(this);
                     complete = false;
                 }
+
                 // If they have, call done
                 if (complete)
                 {
@@ -119,6 +125,7 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
+
                 // Find the completing task and set it to null
                 // If we do not find it, it means the continuation executed before the task was added
                 // Do not use IndexOf
@@ -133,6 +140,7 @@ namespace System.Threading.Tasks
                     current = null;
                     break;
                 }
+
                 // Decrement count
                 Interlocked.Decrement(ref _count);
                 CheckCount();
@@ -148,11 +156,13 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
+
                 // Only add tasks that has not completed
                 if (awaitedTask.Status == TaskStatus.RanToCompletion)
                 {
                     return;
                 }
+
                 // Preemptively increment _count
                 // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
@@ -217,10 +227,10 @@ namespace System.Threading.Tasks
         // Used in InternalWhenAll(Task[])
         private sealed class WhenAllPromise : Task<VoidStruct>, ITaskCompletionAction
         {
+            private readonly Task[] _tasks;
             private int _count;
             private int _done;
             private int _ready;
-            private readonly Task[] _tasks;
 
             internal WhenAllPromise(Task[] tasks)
             {
@@ -232,6 +242,7 @@ namespace System.Threading.Tasks
                 {
                     AddTask(task);
                 }
+
                 // Report we finished adding all tasks
                 Volatile.Write(ref _ready, 1);
                 CheckCount();
@@ -239,8 +250,8 @@ namespace System.Threading.Tasks
 
             /// <inheritdoc />
             /// <summary>
-            /// Returns whether we should notify the debugger of a wait completion.  This returns
-            /// true iff at least one constituent task has its bit set.
+            ///     Returns whether we should notify the debugger of a wait completion.  This returns
+            ///     true iff at least one constituent task has its bit set.
             /// </summary>
             internal override bool ShouldNotifyDebuggerOfWaitCompletion => base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks);
 
@@ -259,6 +270,7 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
+
                 // Preemptively increment _count
                 // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
@@ -307,6 +319,7 @@ namespace System.Threading.Tasks
                         Contract.Assert(false, "Constituent task in WhenAll should never be null");
                         throw new InvalidOperationException("Constituent task in WhenAll should never be null");
                     }
+
                     if (task.IsFaulted)
                     {
                         (observedExceptions ?? (observedExceptions = new List<ExceptionDispatchInfo>())).AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
@@ -320,13 +333,14 @@ namespace System.Threading.Tasks
                     // WhenAll task.  We must do this before we complete the task.
                     if (task.IsWaitNotificationEnabled)
                     {
-                        SetNotificationForWaitCompletion(/*enabled:*/ true);
+                        SetNotificationForWaitCompletion( /*enabled:*/ true);
                     }
                     else
                     {
                         _tasks[index] = null; // avoid holding onto tasks unnecessarily
                     }
                 }
+
                 if (observedExceptions != null)
                 {
                     Contract.Assert(observedExceptions.Count > 0, "Expected at least one exception");
@@ -351,10 +365,10 @@ namespace System.Threading.Tasks
         // Used in InternalWhenAll<TResult>(Task<TResult>[])
         private sealed class WhenAllPromise<T> : Task<T[]>, ITaskCompletionAction
         {
+            private readonly Task<T>[] _tasks;
             private int _count;
             private int _done;
             private int _ready;
-            private readonly Task<T>[] _tasks;
 
             internal WhenAllPromise(Task<T>[] tasks)
             {
@@ -366,6 +380,7 @@ namespace System.Threading.Tasks
                 {
                     AddTask(task);
                 }
+
                 // Report we finished adding all tasks
                 Volatile.Write(ref _ready, 1);
                 CheckCount();
@@ -373,8 +388,8 @@ namespace System.Threading.Tasks
 
             /// <inheritdoc />
             /// <summary>
-            /// Returns whether we should notify the debugger of a wait completion.  This returns
-            /// true iff at least one constituent task has its bit set.
+            ///     Returns whether we should notify the debugger of a wait completion.  This returns
+            ///     true iff at least one constituent task has its bit set.
             /// </summary>
             internal override bool ShouldNotifyDebuggerOfWaitCompletion => base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks);
 
@@ -393,6 +408,7 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
+
                 // Preemptively increment _count
                 // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
@@ -442,6 +458,7 @@ namespace System.Threading.Tasks
                         Contract.Assert(false, "Constituent task in WhenAll should never be null");
                         throw new InvalidOperationException("Constituent task in WhenAll should never be null");
                     }
+
                     if (task.IsFaulted)
                     {
                         (observedExceptions ?? (observedExceptions = new List<ExceptionDispatchInfo>())).AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
@@ -458,17 +475,19 @@ namespace System.Threading.Tasks
                         Contract.Assert(task.Status == TaskStatus.RanToCompletion);
                         results[index] = task.Result;
                     }
+
                     // Regardless of completion state, if the task has its debug bit set, transfer it to the
                     // WhenAll task.  We must do this before we complete the task.
                     if (task.IsWaitNotificationEnabled)
                     {
-                        SetNotificationForWaitCompletion(/*enabled:*/ true);
+                        SetNotificationForWaitCompletion( /*enabled:*/ true);
                     }
                     else
                     {
                         _tasks[index] = null; // avoid holding onto tasks unnecessarily
                     }
                 }
+
                 if (observedExceptions != null)
                 {
                     Contract.Assert(observedExceptions.Count > 0, "Expected at least one exception");

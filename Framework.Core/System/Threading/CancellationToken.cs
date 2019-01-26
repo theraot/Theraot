@@ -91,6 +91,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             return Register(callback, false);
         }
 
@@ -100,6 +101,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             return _source?.Register(callback, useSynchronizationContext) ?? new CancellationTokenRegistration();
         }
 
@@ -109,6 +111,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             return Register(() => callback(state), false);
         }
 
@@ -118,6 +121,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             return Register(() => callback(state), useSynchronizationContext);
         }
 

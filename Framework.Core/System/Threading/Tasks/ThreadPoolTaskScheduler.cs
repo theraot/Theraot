@@ -22,7 +22,7 @@ namespace System.Threading.Tasks
 {
     /// <inheritdoc />
     /// <summary>
-    /// An implementation of TaskScheduler that uses the ThreadPool scheduler
+    ///     An implementation of TaskScheduler that uses the ThreadPool scheduler
     /// </summary>
     internal sealed class ThreadPoolTaskScheduler : TaskScheduler
     {
@@ -32,14 +32,15 @@ namespace System.Threading.Tasks
         private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
 
         /// <summary>
-        /// This is the only scheduler that returns false for this property, indicating that the task entry code path is unsafe (CAS free)
-        /// since we know that the underlying scheduler already takes care of atomic transitions from queued to non-queued.
+        ///     This is the only scheduler that returns false for this property, indicating that the task entry code path is unsafe
+        ///     (CAS free)
+        ///     since we know that the underlying scheduler already takes care of atomic transitions from queued to non-queued.
         /// </summary>
         internal override bool RequiresAtomicStartTransition => false;
 
         /// <inheritdoc />
         /// <summary>
-        /// Notifies the scheduler that work is progressing (no-op).
+        ///     Notifies the scheduler that work is progressing (no-op).
         /// </summary>
         internal override void NotifyWorkItemProgress()
         {
@@ -47,7 +48,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Schedules a task to the ThreadPool.
+        ///     Schedules a task to the ThreadPool.
         /// </summary>
         /// <param name="task">The task to schedule.</param>
         [SecurityCritical]
@@ -90,6 +91,7 @@ namespace System.Threading.Tasks
                 // LongRunning task are going to run on a dedicated Thread.
                 return false;
             }
+
             // Propagate the return value of Task.ExecuteEntry()
             bool result;
             try

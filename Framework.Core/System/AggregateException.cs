@@ -33,7 +33,7 @@ namespace System
         public AggregateException(string message, Exception exception)
             : base(message, exception ?? throw new ArgumentNullException(nameof(exception)))
         {
-            InnerExceptions = new ReadOnlyCollection<Exception>(new[] { exception });
+            InnerExceptions = new ReadOnlyCollection<Exception>(new[] {exception});
         }
 
         public AggregateException(params Exception[] innerExceptions)
@@ -68,6 +68,7 @@ namespace System
             {
                 throw new SerializationException("Deserialization Failure");
             }
+
             InnerExceptions = new ReadOnlyCollection<Exception>(value);
         }
 
@@ -105,6 +106,7 @@ namespace System
                     }
                 }
             }
+
             return new AggregateException(inner);
         }
 
@@ -118,10 +120,12 @@ namespace System
                 {
                     return result;
                 }
+
                 if (!(item is AggregateException tmp))
                 {
                     return item;
                 }
+
                 result = tmp;
             }
         }
@@ -134,6 +138,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(info));
             }
+
             base.GetObjectData(info, context);
             var exceptionArray = new Exception[InnerExceptions.Count];
             InnerExceptions.CopyTo(exceptionArray, 0);
@@ -146,6 +151,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             var failed = new List<Exception>();
             foreach (var exception in InnerExceptions)
             {
@@ -161,6 +167,7 @@ namespace System
                     throw new AggregateException(failed);
                 }
             }
+
             if (failed.Count > 0)
             {
                 throw new AggregateException(failed);
@@ -178,6 +185,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(innerExceptions));
             }
+
             return new CreationInfo(customMessage, innerExceptions);
         }
 
@@ -195,11 +203,13 @@ namespace System
                     {
                         throw new ArgumentException("An element of innerExceptions is null.");
                     }
+
                     if (first)
                     {
                         Exception = exception;
                         first = false;
                     }
+
                     exceptions.Add(exception);
                     result.Append(Environment.NewLine);
                     result.Append("[ ");
@@ -207,6 +217,7 @@ namespace System
                     result.Append(" ]");
                     result.Append(Environment.NewLine);
                 }
+
                 String = result.ToString();
                 InnerExceptions = exceptions.AsReadOnly();
             }

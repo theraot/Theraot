@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Security;
 
@@ -18,19 +18,19 @@ namespace System.Threading
         internal static void QueueWorkItem(IThreadPoolWorkItem item)
         {
             ThreadPool.QueueUserWorkItem
-                (
-                    _ =>
+            (
+                _ =>
+                {
+                    try
                     {
-                        try
-                        {
-                            item.ExecuteWorkItem();
-                        }
-                        catch (ThreadAbortException exception)
-                        {
-                            item.MarkAborted(exception);
-                        }
+                        item.ExecuteWorkItem();
                     }
-                );
+                    catch (ThreadAbortException exception)
+                    {
+                        item.MarkAborted(exception);
+                    }
+                }
+            );
         }
     }
 }

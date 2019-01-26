@@ -106,6 +106,7 @@ namespace System.Numerics
                         num++;
                     }
                 }
+
                 return num;
             }
         }
@@ -135,16 +136,19 @@ namespace System.Numerics
             {
                 return 0;
             }
+
             if (regNum._iuLast == 0)
             {
                 return regNum._uSmall % num5;
             }
+
             var num = (ulong)0;
             for (var i = regNum._iuLast; i >= 0; i--)
             {
                 num = NumericHelper.BuildUInt64((uint)num, regNum._bits[i]);
                 num %= num5;
             }
+
             return (uint)num;
         }
 
@@ -157,15 +161,18 @@ namespace System.Numerics
                 {
                     return;
                 }
+
                 SetSizeLazy(2);
                 _bits[0] = _uSmall;
                 _bits[1] = 1;
                 return;
             }
+
             if (u == 0)
             {
                 return;
             }
+
             var num2 = _bits[0] + u;
             if (num2 < u)
             {
@@ -176,6 +183,7 @@ namespace System.Numerics
             {
                 EnsureWritable();
             }
+
             _bits[0] = num2;
         }
 
@@ -186,6 +194,7 @@ namespace System.Numerics
                 Add(reg._uSmall);
                 return;
             }
+
             if (_iuLast == 0)
             {
                 var num = _uSmall;
@@ -198,8 +207,10 @@ namespace System.Numerics
                 {
                     this = new BigIntegerBuilder(ref reg);
                 }
+
                 return;
             }
+
             EnsureWritable(Math.Max(_iuLast, reg._iuLast) + 1, 1);
             var num1 = reg._iuLast + 1;
             if (_iuLast < reg._iuLast)
@@ -208,11 +219,13 @@ namespace System.Numerics
                 Array.Copy(reg._bits, _iuLast + 1, _bits, _iuLast + 1, reg._iuLast - _iuLast);
                 _iuLast = reg._iuLast;
             }
+
             uint num2 = 0;
             for (var i = 0; i < num1; i++)
             {
                 num2 = AddCarry(ref _bits[i], reg._bits[i], num2);
             }
+
             if (num2 != 0)
             {
                 ApplyCarry(num1);
@@ -227,13 +240,16 @@ namespace System.Numerics
                 {
                     return 0;
                 }
+
                 return NumericHelper.CbitLowZero(_uSmall);
             }
+
             var num = 0;
             while (_bits[num] == 0)
             {
                 num++;
             }
+
             var num1 = NumericHelper.CbitLowZero(_bits[num]);
             return num1 + (num * 32);
         }
@@ -245,11 +261,13 @@ namespace System.Numerics
                 DivMod(regDen._uSmall);
                 return;
             }
+
             if (_iuLast == 0)
             {
                 _uSmall = 0;
                 return;
             }
+
             var bigIntegerBuilder = new BigIntegerBuilder();
             ModDivCore(ref this, ref regDen, true, ref bigIntegerBuilder);
             NumericHelper.Swap(ref this, ref bigIntegerBuilder);
@@ -261,12 +279,14 @@ namespace System.Numerics
             {
                 return 0;
             }
+
             if (_iuLast == 0)
             {
                 var num = _uSmall;
                 _uSmall = num / num5;
                 return num % num5;
             }
+
             EnsureWritable();
             var num1 = (ulong)0;
             for (var i = _iuLast; i >= 0; i--)
@@ -275,6 +295,7 @@ namespace System.Numerics
                 _bits[i] = (uint)(num1 / num5);
                 num1 %= num5;
             }
+
             Trim();
             return (uint)num1;
         }
@@ -285,6 +306,7 @@ namespace System.Numerics
             {
                 return;
             }
+
             var numArray = new uint[cu + cuExtra];
             if (_iuLast > 0)
             {
@@ -292,8 +314,10 @@ namespace System.Numerics
                 {
                     _iuLast = cu - 1;
                 }
+
                 Array.Copy(_bits, numArray, _iuLast + 1);
             }
+
             _bits = numArray;
             _fWritable = true;
         }
@@ -304,6 +328,7 @@ namespace System.Numerics
             {
                 return;
             }
+
             var numArray = new uint[_iuLast + 1 + cuExtra];
             Array.Copy(_bits, numArray, _iuLast + 1);
             _bits = numArray;
@@ -323,6 +348,7 @@ namespace System.Numerics
                 exp = 0;
                 return;
             }
+
             var num = _iuLast - 1;
             man = NumericHelper.BuildUInt64(_bits[num + 1], _bits[num]);
             exp = num * 32;
@@ -361,6 +387,7 @@ namespace System.Numerics
                     _bits = new uint[reg._iuLast + 1 + cuExtra];
                     _fWritable = true;
                 }
+
                 _iuLast = reg._iuLast;
                 Array.Copy(reg._bits, _bits, _iuLast + 1);
             }
@@ -378,6 +405,7 @@ namespace System.Numerics
             {
                 ShiftRight(num);
             }
+
             return num;
         }
 
@@ -388,10 +416,12 @@ namespace System.Numerics
                 Set(Mod(ref this, regDen._uSmall));
                 return;
             }
+
             if (_iuLast == 0)
             {
                 return;
             }
+
             var bigIntegerBuilder = new BigIntegerBuilder();
             ModDivCore(ref this, ref regDen, false, ref bigIntegerBuilder);
         }
@@ -404,10 +434,12 @@ namespace System.Numerics
                 NumericHelper.Swap(ref this, ref regQuo);
                 return;
             }
+
             if (_iuLast == 0)
             {
                 return;
             }
+
             ModDivCore(ref this, ref regDen, true, ref regQuo);
         }
 
@@ -418,15 +450,18 @@ namespace System.Numerics
                 Set(0);
                 return;
             }
+
             if (u == 1)
             {
                 return;
             }
+
             if (_iuLast == 0)
             {
                 Set(_uSmall * (ulong)u);
                 return;
             }
+
             EnsureWritable(1);
             uint num = 0;
             for (var i = 0; i <= _iuLast; i++)
@@ -462,6 +497,7 @@ namespace System.Numerics
                     {
                         break;
                     }
+
                     var num3 = _bits[num1];
                     _bits[num1] = 0;
                     uint num4 = 0;
@@ -539,6 +575,7 @@ namespace System.Numerics
                     numArray1 = reg2._bits;
                     num1 = reg2._iuLast + 1;
                 }
+
                 for (var i = 0; i < num; i++)
                 {
                     var num2 = numArray[i];
@@ -556,6 +593,7 @@ namespace System.Numerics
                         num5++;
                         num4++;
                     }
+
                     while (num3 != 0)
                     {
                         var num6 = num4;
@@ -563,6 +601,7 @@ namespace System.Numerics
                         num3 = AddCarry(ref _bits[num6], 0, num3);
                     }
                 }
+
                 Trim();
             }
             else
@@ -602,8 +641,10 @@ namespace System.Numerics
                 {
                     ShiftRight(-cbit);
                 }
+
                 return;
             }
+
             ShiftLeft(cbit / 32, cbit % 32);
         }
 
@@ -613,17 +654,19 @@ namespace System.Numerics
             uint high = 0;
             if (cbitShift > 0)
             {
-                high = High >> (32 - cbitShift & 31);
+                high = High >> ((32 - cbitShift) & 31);
                 if (high != 0)
                 {
                     num++;
                 }
             }
+
             if (num == 0)
             {
                 _uSmall <<= cbitShift & 31;
                 return;
             }
+
             var numArray = _bits;
             var flag = cuShift > 0;
             if (!_fWritable || _bits.Length <= num)
@@ -632,12 +675,14 @@ namespace System.Numerics
                 _fWritable = true;
                 flag = false;
             }
+
             if (_iuLast == 0)
             {
                 if (high != 0)
                 {
                     _bits[cuShift + 1] = high;
                 }
+
                 _bits[cuShift] = _uSmall << (cbitShift & 31);
             }
             else if (cbitShift != 0)
@@ -648,18 +693,21 @@ namespace System.Numerics
                 {
                     _bits[num] = high;
                 }
+
                 while (num1 > 0)
                 {
-                    _bits[num2] = numArray[num1] << (cbitShift & 31) | numArray[num1 - 1] >> (32 - cbitShift & 31);
+                    _bits[num2] = (numArray[num1] << (cbitShift & 31)) | (numArray[num1 - 1] >> ((32 - cbitShift) & 31));
                     num1--;
                     num2--;
                 }
+
                 _bits[cuShift] = numArray[0] << (cbitShift & 31);
             }
             else
             {
                 Array.Copy(numArray, 0, _bits, cuShift, _iuLast + 1);
             }
+
             _iuLast = num;
             if (flag)
             {
@@ -675,8 +723,10 @@ namespace System.Numerics
                 {
                     ShiftLeft(-cbit);
                 }
+
                 return;
             }
+
             ShiftRight(cbit / 32, cbit % 32);
         }
 
@@ -686,16 +736,19 @@ namespace System.Numerics
             {
                 return;
             }
+
             if (cuShift > _iuLast)
             {
                 Set(0);
                 return;
             }
+
             if (_iuLast == 0)
             {
                 _uSmall >>= cbitShift & 31;
                 return;
             }
+
             var numArray = _bits;
             var num = _iuLast + 1;
             _iuLast -= cuShift;
@@ -706,6 +759,7 @@ namespace System.Numerics
                     _bits = new uint[_iuLast + 1];
                     _fWritable = true;
                 }
+
                 if (cbitShift <= 0)
                 {
                     Array.Copy(numArray, cuShift, _bits, 0, _iuLast + 1);
@@ -716,10 +770,11 @@ namespace System.Numerics
                     var num2 = 0;
                     while (num1 < num)
                     {
-                        _bits[num2] = numArray[num1 - 1] >> (cbitShift & 31) | numArray[num1] << (32 - cbitShift & 31);
+                        _bits[num2] = (numArray[num1 - 1] >> (cbitShift & 31)) | (numArray[num1] << ((32 - cbitShift) & 31));
                         num1++;
                         num2++;
                     }
+
                     _bits[_iuLast] = numArray[num - 1] >> (cbitShift & 31);
                     Trim();
                 }
@@ -743,12 +798,15 @@ namespace System.Numerics
                 {
                     _uSmall -= u;
                 }
+
                 return;
             }
+
             if (u == 0)
             {
                 return;
             }
+
             EnsureWritable();
             var num = _bits[0];
             _bits[0] = num - u;
@@ -768,6 +826,7 @@ namespace System.Numerics
                 Sub(ref sign, reg._uSmall);
                 return;
             }
+
             if (_iuLast == 0)
             {
                 var num = _uSmall;
@@ -780,15 +839,18 @@ namespace System.Numerics
                 {
                     this = new BigIntegerBuilder(ref reg);
                 }
+
                 sign = -sign;
                 return;
             }
+
             if (_iuLast < reg._iuLast)
             {
                 SubRev(ref reg);
                 sign = -sign;
                 return;
             }
+
             var num1 = reg._iuLast + 1;
             if (_iuLast == reg._iuLast)
             {
@@ -799,6 +861,7 @@ namespace System.Numerics
                     _uSmall = 0;
                     return;
                 }
+
                 var num2 = _bits[_iuLast];
                 var num3 = reg._bits[_iuLast];
                 if (_iuLast == 0)
@@ -812,8 +875,10 @@ namespace System.Numerics
                         _uSmall = num3 - num2;
                         sign = -sign;
                     }
+
                     return;
                 }
+
                 if (num2 < num3)
                 {
                     reg._iuLast = _iuLast;
@@ -822,18 +887,22 @@ namespace System.Numerics
                     sign = -sign;
                     return;
                 }
+
                 num1 = _iuLast + 1;
             }
+
             EnsureWritable();
             uint num4 = 0;
             for (var i = 0; i < num1; i++)
             {
                 num4 = SubBorrow(ref _bits[i], reg._bits[i], num4);
             }
+
             if (num4 != 0)
             {
                 ApplyBorrow(num1);
             }
+
             Trim();
         }
 
@@ -847,9 +916,10 @@ namespace System.Numerics
                     bits = null;
                     return;
                 }
+
                 if (_bits == null)
                 {
-                    _bits = new[] { _uSmall };
+                    _bits = new[] {_uSmall};
                 }
                 else if (_fWritable)
                 {
@@ -857,9 +927,10 @@ namespace System.Numerics
                 }
                 else if (_bits[0] != _uSmall)
                 {
-                    _bits = new[] { _uSmall };
+                    _bits = new[] {_uSmall};
                 }
             }
+
             sign = signSrc;
             var length = _bits.Length - _iuLast - 1;
             if (length <= 1)
@@ -870,6 +941,7 @@ namespace System.Numerics
                     bits = _bits;
                     return;
                 }
+
                 if (_fWritable)
                 {
                     _bits[_iuLast + 1] = 0;
@@ -878,6 +950,7 @@ namespace System.Numerics
                     return;
                 }
             }
+
             bits = _bits;
             Array.Resize(ref bits, _iuLast + 1);
             if (!_fWritable)
@@ -912,6 +985,7 @@ namespace System.Numerics
                     NumericHelper.Swap(ref reg1, ref reg2);
                     NumericHelper.Swap(ref num1, ref num2);
                 }
+
                 if (num2 == 1)
                 {
                     if (num1 == 1)
@@ -922,12 +996,15 @@ namespace System.Numerics
                     {
                         reg1.Set(NumericHelper.GCD(Mod(ref reg1, reg2._uSmall), reg2._uSmall));
                     }
+
                     return;
                 }
+
                 if (num1 == 2)
                 {
                     break;
                 }
+
                 if (num2 > num1 - 2)
                 {
                     var high2 = reg1.GetHigh2(num1);
@@ -935,19 +1012,22 @@ namespace System.Numerics
                     var num3 = NumericHelper.CbitHighZero(high2 | high21);
                     if (num3 > 0)
                     {
-                        high2 = high2 << (num3 & 63) | reg1._bits[num1 - 3] >> (32 - num3 & 31);
-                        high21 = high21 << (num3 & 63) | reg2._bits[num1 - 3] >> (32 - num3 & 31);
+                        high2 = (high2 << (num3 & 63)) | (reg1._bits[num1 - 3] >> ((32 - num3) & 31));
+                        high21 = (high21 << (num3 & 63)) | (reg2._bits[num1 - 3] >> ((32 - num3) & 31));
                     }
+
                     if (high2 < high21)
                     {
                         NumericHelper.Swap(ref high2, ref high21);
                         NumericHelper.Swap(ref reg1, ref reg2);
                     }
+
                     if (high2 == ulong.MaxValue || high21 == ulong.MaxValue)
                     {
                         high2 >>= 1;
                         high21 >>= 1;
                     }
+
                     if (high2 == high21)
                     {
                         reg1.Sub(ref num, ref reg2);
@@ -967,6 +1047,7 @@ namespace System.Numerics
                                 num9 -= high21;
                                 num8++;
                             }
+
                             if (num9 >= high21)
                             {
                                 var num10 = high2 / high21;
@@ -980,16 +1061,19 @@ namespace System.Numerics
                                     break;
                                 }
                             }
+
                             var num11 = num4 + (num8 * (ulong)num6);
                             var num12 = num5 + (num8 * (ulong)num7);
                             if (num11 > 2147483647 || num12 > 2147483647)
                             {
                                 break;
                             }
+
                             if (num9 < num12 || num9 + num11 > high21 - num6)
                             {
                                 break;
                             }
+
                             num4 = (uint)num11;
                             num5 = (uint)num12;
                             high2 = num9;
@@ -1002,6 +1086,7 @@ namespace System.Numerics
                                     num9 -= high2;
                                     num8++;
                                 }
+
                                 if (num9 >= high2)
                                 {
                                     var num13 = high21 / high2;
@@ -1015,16 +1100,19 @@ namespace System.Numerics
                                         break;
                                     }
                                 }
+
                                 num11 = num7 + (num8 * (ulong)num5);
                                 num12 = num6 + (num8 * (ulong)num4);
                                 if (num11 > 2147483647 || num12 > 2147483647)
                                 {
                                     break;
                                 }
+
                                 if (num9 < num12 || num9 + num11 > high2 - num5)
                                 {
                                     break;
                                 }
+
                                 num7 = (uint)num11;
                                 num6 = (uint)num12;
                                 high21 = num9;
@@ -1038,6 +1126,7 @@ namespace System.Numerics
                                 break;
                             }
                         }
+
                         if (num5 != 0)
                         {
                             reg1.SetSizeKeep(num2, 0);
@@ -1055,6 +1144,7 @@ namespace System.Numerics
                                 reg1._bits[i] = (uint)num18;
                                 reg2._bits[i] = (uint)num19;
                             }
+
                             reg1.Trim();
                             reg2.Trim();
                         }
@@ -1077,6 +1167,7 @@ namespace System.Numerics
                     reg1.Mod(ref reg2);
                 }
             }
+
             reg1.Set(NumericHelper.GCD(reg1.GetHigh2(2), reg2.GetHigh2(2)));
         }
 
@@ -1087,6 +1178,7 @@ namespace System.Numerics
             {
                 return;
             }
+
             var num1 = regDen._iuLast + 1;
             var num2 = regNum._iuLast - regDen._iuLast;
             var num3 = num2;
@@ -1098,6 +1190,7 @@ namespace System.Numerics
                     num3++;
                     break;
                 }
+
                 if (regDen._bits[num4 - num2] == regNum._bits[num4])
                 {
                     num4--;
@@ -1108,30 +1201,35 @@ namespace System.Numerics
                     {
                         num3++;
                     }
+
                     break;
                 }
             }
+
             if (num3 == 0)
             {
                 return;
             }
+
             if (fQuo)
             {
                 regQuo.SetSizeLazy(num3);
             }
+
             var num5 = regDen._bits[num1 - 1];
             var num6 = regDen._bits[num1 - 2];
             var num7 = NumericHelper.CbitHighZero(num5);
             var num8 = 32 - num7;
             if (num7 > 0)
             {
-                num5 = num5 << (num7 & 31) | num6 >> (num8 & 31);
+                num5 = (num5 << (num7 & 31)) | (num6 >> (num8 & 31));
                 num6 <<= num7 & 31;
                 if (num1 > 2)
                 {
                     num6 |= regDen._bits[num1 - 3] >> (num8 & 31);
                 }
             }
+
             regNum.EnsureWritable();
             var num9 = num3;
             while (true)
@@ -1142,19 +1240,21 @@ namespace System.Numerics
                 {
                     break;
                 }
+
                 var num = num9 + num1 > regNum._iuLast ? 0 : regNum._bits[num9 + num1];
                 var num11 = num;
                 var num12 = NumericHelper.BuildUInt64(num11, regNum._bits[num9 + num1 - 1]);
                 var num13 = regNum._bits[num9 + num1 - 2];
                 if (num7 > 0)
                 {
-                    num12 = num12 << (num7 & 63) | num13 >> (num8 & 31);
+                    num12 = (num12 << (num7 & 63)) | (num13 >> (num8 & 31));
                     num13 <<= num7 & 31;
                     if (num9 + num1 >= 3)
                     {
                         num13 |= regNum._bits[num9 + num1 - 3] >> (num8 & 31);
                     }
                 }
+
                 var num14 = num12 / num5;
                 var num15 = (ulong)(uint)(num12 % num5);
                 if (num14 > uint.MaxValue)
@@ -1162,11 +1262,13 @@ namespace System.Numerics
                     num15 += num5 * (num14 - uint.MaxValue);
                     num14 = uint.MaxValue;
                 }
+
                 while (num15 <= uint.MaxValue && num14 * num6 > NumericHelper.BuildUInt64((uint)num15, num13))
                 {
                     num14--;
                     num15 += num5;
                 }
+
                 if (num14 > 0)
                 {
                     var num16 = (ulong)0;
@@ -1179,8 +1281,10 @@ namespace System.Numerics
                         {
                             num16++;
                         }
+
                         regNum._bits[num9 + i] -= num17;
                     }
+
                     if (num11 < num16)
                     {
                         uint num18 = 0;
@@ -1188,8 +1292,10 @@ namespace System.Numerics
                         {
                             num18 = AddCarry(ref regNum._bits[num9 + j], regDen._bits[j], num18);
                         }
+
                         num14--;
                     }
+
                     regNum._iuLast = num9 + num1 - 1;
                 }
 
@@ -1207,6 +1313,7 @@ namespace System.Numerics
                     regQuo._uSmall = (uint)num14;
                 }
             }
+
             regNum._iuLast = num1 - 1;
             regNum.Trim();
         }
@@ -1270,6 +1377,7 @@ namespace System.Numerics
                     {
                         Array.Resize(ref _bits, _iuLast + 2);
                     }
+
                     _iuLast++;
                     _bits[_iuLast] = 1;
                     break;
@@ -1283,6 +1391,7 @@ namespace System.Numerics
             {
                 return NumericHelper.BuildUInt64(_bits[cu - 1], _bits[cu - 2]);
             }
+
             return cu - 2 != _iuLast ? 0 : _bits[cu - 2];
         }
 
@@ -1294,6 +1403,7 @@ namespace System.Numerics
                 _uSmall = 0;
                 return;
             }
+
             if (!_fWritable || _bits.Length < cu)
             {
                 _bits = new uint[cu];
@@ -1303,6 +1413,7 @@ namespace System.Numerics
             {
                 Array.Clear(_bits, 0, cu);
             }
+
             _iuLast = cu - 1;
         }
 
@@ -1314,9 +1425,11 @@ namespace System.Numerics
                 {
                     _uSmall = _bits[0];
                 }
+
                 _iuLast = 0;
                 return;
             }
+
             if (!_fWritable || _bits.Length < cu)
             {
                 var numArray = new uint[cu + cuExtra];
@@ -1328,6 +1441,7 @@ namespace System.Numerics
                 {
                     numArray[0] = _uSmall;
                 }
+
                 _bits = numArray;
                 _fWritable = true;
             }
@@ -1339,6 +1453,7 @@ namespace System.Numerics
                     _bits[0] = _uSmall;
                 }
             }
+
             _iuLast = cu - 1;
         }
 
@@ -1349,11 +1464,13 @@ namespace System.Numerics
                 _iuLast = 0;
                 return;
             }
+
             if (!_fWritable || _bits.Length < cu)
             {
                 _bits = new uint[cu];
                 _fWritable = true;
             }
+
             _iuLast = cu - 1;
         }
 
@@ -1366,15 +1483,18 @@ namespace System.Numerics
                 Array.Copy(reg._bits, _iuLast + 1, _bits, _iuLast + 1, reg._iuLast - _iuLast);
                 _iuLast = reg._iuLast;
             }
+
             uint num1 = 0;
             for (var i = 0; i < num; i++)
             {
                 num1 = SubRevBorrow(ref _bits[i], reg._bits[i], num1);
             }
+
             if (num1 != 0)
             {
                 ApplyBorrow(num);
             }
+
             Trim();
         }
 
@@ -1389,8 +1509,7 @@ namespace System.Numerics
             do
             {
                 _iuLast--;
-            }
-            while (_iuLast > 0 && _bits[_iuLast] == 0);
+            } while (_iuLast > 0 && _bits[_iuLast] == 0);
         }
     }
 }

@@ -14,7 +14,7 @@ using Theraot.Collections.ThreadSafe;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// Builder for read only collections.
+    ///     Builder for read only collections.
     /// </summary>
     /// <typeparam name="T">The type of the collection element.</typeparam>
     public sealed class ReadOnlyCollectionBuilder<T> : IList<T>, IList
@@ -25,7 +25,7 @@ namespace System.Runtime.CompilerServices
         private int _version;
 
         /// <summary>
-        /// Constructs a <see cref="ReadOnlyCollectionBuilder{T}"/>.
+        ///     Constructs a <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         public ReadOnlyCollectionBuilder()
         {
@@ -33,9 +33,9 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Constructs a <see cref="ReadOnlyCollectionBuilder{T}"/> with a given initial capacity.
-        /// The contents are empty but builder will have reserved room for the given
-        /// number of elements before any reallocations are required.
+        ///     Constructs a <see cref="ReadOnlyCollectionBuilder{T}" /> with a given initial capacity.
+        ///     The contents are empty but builder will have reserved room for the given
+        ///     number of elements before any reallocations are required.
         /// </summary>
         /// <param name="capacity">Initial capacity of the builder.</param>
         public ReadOnlyCollectionBuilder(int capacity)
@@ -49,7 +49,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Constructs a <see cref="ReadOnlyCollectionBuilder{T}"/>, copying contents of the given collection.
+        ///     Constructs a <see cref="ReadOnlyCollectionBuilder{T}" />, copying contents of the given collection.
         /// </summary>
         /// <param name="collection">The collection whose elements to copy to the builder.</param>
         public ReadOnlyCollectionBuilder(IEnumerable<T> collection)
@@ -78,7 +78,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Gets and sets the capacity of this <see cref="ReadOnlyCollectionBuilder{T}"/>.
+        ///     Gets and sets the capacity of this <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         public int Capacity
         {
@@ -102,6 +102,7 @@ namespace System.Runtime.CompilerServices
                     {
                         Array.Copy(_items, 0, newItems, 0, Count);
                     }
+
                     _items = newItems;
                 }
                 else
@@ -111,23 +112,107 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        /// <summary>
-        /// Returns number of elements in the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
-        /// </summary>
-        public int Count { get; private set; }
-
         bool IList.IsFixedSize => false;
-
-        bool ICollection<T>.IsReadOnly => false;
         bool IList.IsReadOnly => false;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => this;
 
+        object IList.this[int index]
+        {
+            get => this[index];
+            set
+            {
+                ValidateNullValue(value, nameof(value));
+
+                try
+                {
+                    this[index] = (T)value;
+                }
+                catch (InvalidCastException)
+                {
+                    throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+                }
+            }
+        }
+
+        int IList.Add(object value)
+        {
+            ValidateNullValue(value, nameof(value));
+            try
+            {
+                Add((T)value);
+            }
+            catch (InvalidCastException)
+            {
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+
+            return Count - 1;
+        }
+
+        bool IList.Contains(object value)
+        {
+            return IsCompatibleObject(value) && Contains((T)value);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (array.Rank != 1)
+            {
+                throw new ArgumentException(string.Empty, nameof(array));
+            }
+
+            Array.Copy(_items, 0, array, index, Count);
+        }
+
+        int IList.IndexOf(object value)
+        {
+            if (IsCompatibleObject(value))
+            {
+                return IndexOf((T)value);
+            }
+
+            return -1;
+        }
+
+        void IList.Insert(int index, object value)
+        {
+            ValidateNullValue(value, nameof(value));
+            try
+            {
+                Insert(index, (T)value);
+            }
+            catch (InvalidCastException)
+            {
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+        }
+
+        void IList.Remove(object value)
+        {
+            if (IsCompatibleObject(value))
+            {
+                Remove((T)value);
+            }
+        }
+
+        /// <summary>
+        ///     Returns number of elements in the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        /// </summary>
+        public int Count { get; private set; }
+
+        bool ICollection<T>.IsReadOnly => false;
+
         /// <inheritdoc />
         /// <summary>
-        ///  Gets or sets the element at the specified index.
+        ///     Gets or sets the element at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get or set.</param>
         /// <returns>The element at the specified index.</returns>
@@ -154,41 +239,27 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        object IList.this[int index]
-        {
-            get => this[index];
-            set
-            {
-                ValidateNullValue(value, nameof(value));
-
-                try
-                {
-                    this[index] = (T)value;
-                }
-                catch (InvalidCastException)
-                {
-                    throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-                }
-            }
-        }
-
         /// <inheritdoc />
         /// <summary>
-        /// Adds an item to the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     Adds an item to the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
         /// </summary>
-        /// <param name="item">The object to add to the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.</param>
+        /// <param name="item">
+        ///     The object to add to the
+        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        /// </param>
         public void Add(T item)
         {
             if (Count == _items.Length)
             {
                 EnsureCapacity(Count + 1);
             }
+
             _items[Count++] = item;
             _version++;
         }
 
         /// <summary>
-        /// Removes all items from the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     Removes all items from the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
         /// </summary>
         public void Clear()
         {
@@ -197,15 +268,23 @@ namespace System.Runtime.CompilerServices
                 Array.Clear(_items, 0, Count);
                 Count = 0;
             }
+
             _version++;
         }
 
         /// <inheritdoc />
         /// <summary>
-        /// Determines whether the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> contains a specific value
+        ///     Determines whether the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> contains a
+        ///     specific value
         /// </summary>
-        /// <param name="item">the object to locate in the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.</param>
-        /// <returns>true if item is found in the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />; otherwise, false.</returns>
+        /// <param name="item">
+        ///     the object to locate in the
+        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        /// </param>
+        /// <returns>
+        ///     true if item is found in the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />;
+        ///     otherwise, false.
+        /// </returns>
         public bool Contains(T item)
         {
             if (item == null)
@@ -217,6 +296,7 @@ namespace System.Runtime.CompilerServices
                         return true;
                     }
                 }
+
                 return false;
             }
 
@@ -228,15 +308,20 @@ namespace System.Runtime.CompilerServices
                     return true;
                 }
             }
+
             return false;
         }
 
         /// <inheritdoc />
         /// <summary>
-        /// Copies the elements of the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> to an <see cref="T:System.Array" />,
-        /// starting at particular <see cref="T:System.Array" /> index.
+        ///     Copies the elements of the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> to an
+        ///     <see cref="T:System.Array" />,
+        ///     starting at particular <see cref="T:System.Array" /> index.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.</param>
+        /// <param name="array">
+        ///     The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied
+        ///     from <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        /// </param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex)
         {
@@ -245,14 +330,20 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        ///     Returns an enumerator that iterates through the collection.
         /// </summary>
-        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
-        public IEnumerator<T> GetEnumerator() => new Enumerator(this);
+        /// <returns>
+        ///     A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the
+        ///     collection.
+        /// </returns>
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns the index of the first occurrence of a given value in the builder.
+        ///     Returns the index of the first occurrence of a given value in the builder.
         /// </summary>
         /// <param name="item">An item to search for.</param>
         /// <returns>The index of the first occurrence of an item.</returns>
@@ -263,10 +354,14 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        /// Inserts an item to the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> at the specified index.
+        ///     Inserts an item to the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> at the
+        ///     specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which item should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.</param>
+        /// <param name="item">
+        ///     The object to insert into the
+        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        /// </param>
         public void Insert(int index, T item)
         {
             if (index > Count)
@@ -278,10 +373,12 @@ namespace System.Runtime.CompilerServices
             {
                 EnsureCapacity(Count + 1);
             }
+
             if (index < Count)
             {
                 Array.Copy(_items, index, _items, index + 1, Count - index);
             }
+
             _items[index] = item;
             Count++;
             _version++;
@@ -289,11 +386,18 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     Removes the first occurrence of a specific object from the
+        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
         /// </summary>
-        /// <param name="item">The object to remove from the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.</param>
-        /// <returns>true if item was successfully removed from the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />;
-        /// otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        /// <param name="item">
+        ///     The object to remove from the
+        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        /// </param>
+        /// <returns>
+        ///     true if item was successfully removed from the
+        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />;
+        ///     otherwise, false. This method also returns false if item is not found in the original
+        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
         /// </returns>
         public bool Remove(T item)
         {
@@ -308,7 +412,8 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Removes the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> item at the specified index.
+        ///     Removes the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> item at the specified
+        ///     index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
         public void RemoveAt(int index)
@@ -323,12 +428,18 @@ namespace System.Runtime.CompilerServices
             {
                 Array.Copy(_items, index + 1, _items, index, Count - index);
             }
+
             _items[Count] = default;
             _version++;
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <summary>
-        /// Reverses the order of the elements in the entire <see cref="ReadOnlyCollectionBuilder{T}"/>.
+        ///     Reverses the order of the elements in the entire <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         public void Reverse()
         {
@@ -336,7 +447,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Reverses the order of the elements in the specified range.
+        ///     Reverses the order of the elements in the specified range.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to reverse.</param>
         /// <param name="count">The number of elements in the range to reverse.</param>
@@ -357,9 +468,9 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Copies the elements of the <see cref="ReadOnlyCollectionBuilder{T}"/> to a new array.
+        ///     Copies the elements of the <see cref="ReadOnlyCollectionBuilder{T}" /> to a new array.
         /// </summary>
-        /// <returns>An array containing copies of the elements of the <see cref="ReadOnlyCollectionBuilder{T}"/>.</returns>
+        /// <returns>An array containing copies of the elements of the <see cref="ReadOnlyCollectionBuilder{T}" />.</returns>
         public T[] ToArray()
         {
             var array = new T[Count];
@@ -368,11 +479,13 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Creates a <see cref="ReadOnlyCollection{T}"/> containing all of the elements of the <see cref="ReadOnlyCollectionBuilder{T}"/>,
-        /// avoiding copying the elements to the new array if possible. Resets the <see cref="ReadOnlyCollectionBuilder{T}"/> after the
-        /// <see cref="ReadOnlyCollection{T}"/> has been created.
+        ///     Creates a <see cref="ReadOnlyCollection{T}" /> containing all of the elements of the
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />,
+        ///     avoiding copying the elements to the new array if possible. Resets the <see cref="ReadOnlyCollectionBuilder{T}" />
+        ///     after the
+        ///     <see cref="ReadOnlyCollection{T}" /> has been created.
         /// </summary>
-        /// <returns>A new instance of <see cref="ReadOnlyCollection{T}"/>.</returns>
+        /// <returns>A new instance of <see cref="ReadOnlyCollection{T}" />.</returns>
         public ReadOnlyCollection<T> ToReadOnlyCollection()
         {
             // Can we use the stored array?
@@ -397,40 +510,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        int IList.Add(object value)
-        {
-            ValidateNullValue(value, nameof(value));
-            try
-            {
-                Add((T)value);
-            }
-            catch (InvalidCastException)
-            {
-                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-            return Count - 1;
-        }
-
-        bool IList.Contains(object value)
-        {
-            return IsCompatibleObject(value) && Contains((T)value);
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (array.Rank != 1)
-            {
-                throw new ArgumentException(string.Empty, nameof(array));
-            }
-
-            Array.Copy(_items, 0, array, index, Count);
-        }
-
         private void EnsureCapacity(int min)
         {
             if (_items.Length >= min)
@@ -443,50 +522,20 @@ namespace System.Runtime.CompilerServices
             {
                 newCapacity = _items.Length * 2;
             }
+
             if (newCapacity < min)
             {
                 newCapacity = min;
             }
+
             Capacity = newCapacity;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        int IList.IndexOf(object value)
-        {
-            if (IsCompatibleObject(value))
-            {
-                return IndexOf((T)value);
-            }
-            return -1;
-        }
-
-        void IList.Insert(int index, object value)
-        {
-            ValidateNullValue(value, nameof(value));
-            try
-            {
-                Insert(index, (T)value);
-            }
-            catch (InvalidCastException)
-            {
-                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-        }
-
-        void IList.Remove(object value)
-        {
-            if (IsCompatibleObject(value))
-            {
-                Remove((T)value);
-            }
         }
 
         private class Enumerator : IEnumerator<T>
         {
             private readonly ReadOnlyCollectionBuilder<T> _builder;
-            private int _index;
             private readonly int _version;
+            private int _index;
 
             internal Enumerator(ReadOnlyCollectionBuilder<T> builder)
             {
@@ -506,6 +555,7 @@ namespace System.Runtime.CompilerServices
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
+
                     return Current;
                 }
             }
@@ -538,6 +588,7 @@ namespace System.Runtime.CompilerServices
                 {
                     throw new InvalidOperationException("Collection was modified; enumeration operation may not execute");
                 }
+
                 _index = 0;
                 Current = default;
             }

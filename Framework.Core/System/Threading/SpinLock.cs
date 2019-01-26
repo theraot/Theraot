@@ -31,6 +31,7 @@ namespace System.Threading
                 {
                     throw new InvalidOperationException("Thread ownership tracking is disabled");
                 }
+
                 return IsHeld && _ownerThread == Thread.CurrentThread;
             }
         }
@@ -44,6 +45,7 @@ namespace System.Threading
                 lockTaken = false;
                 throw new ArgumentException(string.Empty);
             }
+
             if (IsThreadOwnerTrackingEnabled)
             {
                 var check = Interlocked.CompareExchange(ref _isHeld, 1, 0);
@@ -64,6 +66,7 @@ namespace System.Threading
                     //Throw on recursion
                     throw new LockRecursionException();
                 }
+
                 if (Interlocked.CompareExchange(ref _isHeld, 1, 0) == 0 && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
                 {
                     lockTaken = true;
@@ -109,6 +112,7 @@ namespace System.Threading
                 lockTaken = false;
                 throw new ArgumentException(string.Empty);
             }
+
             TryEnter(0, ref lockTaken);
         }
 
@@ -130,6 +134,7 @@ namespace System.Threading
                     //Throw on recursion
                     throw new LockRecursionException();
                 }
+
                 lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null;
             }
         }

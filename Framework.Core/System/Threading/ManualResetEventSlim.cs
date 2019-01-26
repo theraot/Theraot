@@ -30,6 +30,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(spinCount));
             }
+
             SpinCount = spinCount;
             _status = initialState ? (int)Status.Set : (int)Status.NotSet;
         }
@@ -67,6 +68,7 @@ namespace System.Threading
                             // Should not happen
                             break;
                     }
+
                     spinWait.SpinOnce();
                 }
             }
@@ -83,6 +85,7 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(nameof(ManualResetEventSlim));
                 }
+
                 // Get the wait handle
                 return GetOrCreateWaitHandle();
             }
@@ -122,6 +125,7 @@ namespace System.Threading
                             // Either way, we are done
                             return;
                         }
+
                         // Must has been disposed, or the wait handle requested
                         break;
 
@@ -165,6 +169,7 @@ namespace System.Threading
                         // Should not happen
                         break;
                 }
+
                 spinWait.SpinOnce();
             }
         }
@@ -191,6 +196,7 @@ namespace System.Threading
                             // Either way, we are done
                             return;
                         }
+
                         // Must has been disposed, or the wait handle requested
                         break;
 
@@ -240,6 +246,7 @@ namespace System.Threading
                         // Should not happen
                         break;
                 }
+
                 spinWait.SpinOnce();
             }
         }
@@ -251,13 +258,15 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
+
             var spinWait = new SpinWait();
             var spinCount = SpinCount;
             if (IsSet)
             {
                 return;
             }
-        retry:
+
+            retry:
             if (IsSet)
             {
                 return;
@@ -269,6 +278,7 @@ namespace System.Threading
                 spinWait.SpinOnce();
                 goto retry;
             }
+
             var handle = GetOrCreateWaitHandle();
             handle.WaitOne();
         }
@@ -280,6 +290,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
+
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
@@ -301,6 +312,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (millisecondsTimeout < -1)
@@ -324,6 +336,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             WaitExtracted(cancellationToken);
@@ -336,6 +349,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
+
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
@@ -358,6 +372,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(ManualResetEventSlim));
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var milliseconds = (long)timeout.TotalMilliseconds;
@@ -416,6 +431,7 @@ namespace System.Threading
                             // Return the handle we created
                             return created;
                         }
+
                         // Must has been disposed, or another thread is creating the handle
                         break;
 
@@ -433,6 +449,7 @@ namespace System.Threading
                             // Return the handle we created
                             return created;
                         }
+
                         // Must has been disposed, or another thread is creating the handle
                         break;
 
@@ -452,6 +469,7 @@ namespace System.Threading
                             // Return it
                             return handle;
                         }
+
                         // Probably Disposed
                         break;
 
@@ -459,6 +477,7 @@ namespace System.Threading
                         // Should not happen
                         break;
                 }
+
                 spinWait.SpinOnce();
             }
         }
@@ -471,12 +490,14 @@ namespace System.Threading
             {
                 return true;
             }
+
             var start = ThreadingHelper.TicksNow();
-        retry_longTimeout:
+            retry_longTimeout:
             if (IsSet)
             {
                 return true;
             }
+
             var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
             if (elapsed >= millisecondsTimeout)
             {
@@ -489,6 +510,7 @@ namespace System.Threading
                 spinWait.SpinOnce();
                 goto retry_longTimeout;
             }
+
             var handle = GetOrCreateWaitHandle();
             var remaining = millisecondsTimeout - (int)elapsed;
             return remaining > 0 && handle.WaitOne(remaining);
@@ -502,12 +524,14 @@ namespace System.Threading
             {
                 return true;
             }
+
             var start = ThreadingHelper.TicksNow();
-        retry_longTimeout:
+            retry_longTimeout:
             if (IsSet)
             {
                 return true;
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
@@ -519,24 +543,26 @@ namespace System.Threading
                     spinWait.SpinOnce();
                     goto retry_longTimeout;
                 }
+
                 var handle = GetOrCreateWaitHandle();
                 var remaining = millisecondsTimeout - (int)elapsed;
                 if (remaining > 0)
                 {
                     var result = WaitHandle.WaitAny
-                        (
-                            new[]
-                            {
-                                    handle,
-                                    cancellationToken.WaitHandle
-                            },
-                            remaining
-                        );
+                    (
+                        new[]
+                        {
+                            handle,
+                            cancellationToken.WaitHandle
+                        },
+                        remaining
+                    );
                     cancellationToken.ThrowIfCancellationRequested();
                     GC.KeepAlive(cancellationToken.WaitHandle);
                     return result != WaitHandle.WaitTimeout;
                 }
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             return false;
@@ -550,11 +576,13 @@ namespace System.Threading
             {
                 return;
             }
-        retry:
+
+            retry:
             if (IsSet)
             {
                 return;
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (spinCount > 0)
@@ -563,15 +591,16 @@ namespace System.Threading
                 spinWait.SpinOnce();
                 goto retry;
             }
+
             var handle = GetOrCreateWaitHandle();
             WaitHandle.WaitAny
-                (
-                    new[]
-                    {
-                        handle,
-                        cancellationToken.WaitHandle
-                    }
-                );
+            (
+                new[]
+                {
+                    handle,
+                    cancellationToken.WaitHandle
+                }
+            );
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
         }

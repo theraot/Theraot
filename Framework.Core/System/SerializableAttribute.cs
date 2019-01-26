@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETSTANDARD13
-
 // Note: Providing this attribute does not mean that serialization will work. However, it means that you could add it without the need of conditional compilation.
 
 namespace System

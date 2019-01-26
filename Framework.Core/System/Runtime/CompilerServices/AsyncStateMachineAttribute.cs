@@ -4,7 +4,7 @@ namespace System.Runtime.CompilerServices
 {
     /// <inheritdoc />
     /// <summary>
-    /// Identities the async state machine type for this method.
+    ///     Identities the async state machine type for this method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     [Serializable]
@@ -12,7 +12,7 @@ namespace System.Runtime.CompilerServices
     {
         /// <inheritdoc />
         /// <summary>
-        /// Initializes the attribute.
+        ///     Initializes the attribute.
         /// </summary>
         /// <param name="stateMachineType">The type that implements the state machine.</param>
         public AsyncStateMachineAttribute(Type stateMachineType)

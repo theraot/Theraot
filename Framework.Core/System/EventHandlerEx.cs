@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 namespace System
 {

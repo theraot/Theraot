@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using System.Runtime.CompilerServices;
 
@@ -7,12 +7,14 @@ namespace System.Threading.Tasks
     public partial class Task
     {
         /// <summary>
-        /// Creates and configures an awaitable object for awaiting the specified task.
+        ///     Creates and configures an awaitable object for awaiting the specified task.
         /// </summary>
-        /// <param name="continueOnCapturedContext">true to automatic marshal back to the original call site's current SynchronizationContext
-        ///             or TaskScheduler; otherwise, false.</param>
+        /// <param name="continueOnCapturedContext">
+        ///     true to automatic marshal back to the original call site's current SynchronizationContext
+        ///     or TaskScheduler; otherwise, false.
+        /// </param>
         /// <returns>
-        /// The instance to be awaited.
+        ///     The instance to be awaited.
         /// </returns>
         public ConfiguredTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)
         {
@@ -20,10 +22,10 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Gets an awaiter used to await this <see cref="T:System.Threading.Tasks.Task"/>.
+        ///     Gets an awaiter used to await this <see cref="T:System.Threading.Tasks.Task" />.
         /// </summary>
         /// <returns>
-        /// An awaiter instance.
+        ///     An awaiter instance.
         /// </returns>
         public TaskAwaiter GetAwaiter()
         {
@@ -34,12 +36,14 @@ namespace System.Threading.Tasks
     public partial class Task<TResult>
     {
         /// <summary>
-        /// Creates and configures an awaitable object for awaiting the specified task.
+        ///     Creates and configures an awaitable object for awaiting the specified task.
         /// </summary>
-        /// <param name="continueOnCapturedContext">true to automatic marshal back to the original call site's current SynchronizationContext
-        ///             or TaskScheduler; otherwise, false.</param>
+        /// <param name="continueOnCapturedContext">
+        ///     true to automatic marshal back to the original call site's current SynchronizationContext
+        ///     or TaskScheduler; otherwise, false.
+        /// </param>
         /// <returns>
-        /// The instance to be awaited.
+        ///     The instance to be awaited.
         /// </returns>
         public new ConfiguredTaskAwaitable<TResult> ConfigureAwait(bool continueOnCapturedContext)
         {
@@ -47,11 +51,11 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Gets an awaiter used to await this <see cref="T:System.Threading.Tasks.Task"/>.
+        ///     Gets an awaiter used to await this <see cref="T:System.Threading.Tasks.Task" />.
         /// </summary>
         /// <typeparam name="TResult">Specifies the type of data returned by the task.</typeparam>
         /// <returns>
-        /// An awaiter instance.
+        ///     An awaiter instance.
         /// </returns>
         public new TaskAwaiter<TResult> GetAwaiter()
         {

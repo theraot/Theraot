@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Permissions;
+using Theraot;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -32,6 +33,19 @@ namespace System.Threading
 
         // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
         private static readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+
+        private readonly ThreadLockState[] _fastStateCache;
+        private readonly int _id;
+        private readonly bool _noRecursion;
+        private readonly ManualResetEventSlim _readerDoneEvent;
+        private readonly ManualResetEventSlim _upgradableEvent;
+        private readonly AtomicBoolean _upgradableTaken;
+
+        /* These events are just here for the sake of having a CPU-efficient sleep
+        * when the wait for acquiring the lock is too long
+        */
+        private readonly ManualResetEventSlim _writerDoneEvent;
+
         /* Some explanations: this field is the central point of the lock and keep track of all the requests
         * that are being made. The 3 lowest bits are used as flag to track "destructive" lock entries
         * (i.e attempting to take the write lock with or without having acquired an upgradeable lock beforehand).
@@ -40,19 +54,7 @@ namespace System.Threading
         * is no overflow safe guard to remain simple).
         */
         private bool _disposed;
-
-        private readonly ThreadLockState[] _fastStateCache;
-        private readonly int _id;
-        private readonly bool _noRecursion;
-        private readonly ManualResetEventSlim _readerDoneEvent;
         private int _rwLock;
-        private readonly ManualResetEventSlim _upgradableEvent;
-        private readonly AtomicBoolean _upgradableTaken;
-
-        /* These events are just here for the sake of having a CPU-efficient sleep
-        * when the wait for acquiring the lock is too long
-        */
-        private readonly ManualResetEventSlim _writerDoneEvent;
 
         public ReaderWriterLockSlim()
             : this(LockRecursionPolicy.NoRecursion)
@@ -151,6 +153,7 @@ namespace System.Threading
                     }
                 }
             }
+
             if (exception != null)
             {
                 throw exception;
@@ -184,6 +187,7 @@ namespace System.Threading
                     }
                 }
             }
+
             if (exception != null)
             {
                 throw exception;
@@ -218,6 +222,7 @@ namespace System.Threading
                     }
                 }
             }
+
             if (exception != null)
             {
                 throw exception;
@@ -271,6 +276,7 @@ namespace System.Threading
                     {
                         taken = _upgradableTaken.TryRelaxedSet();
                     }
+
                     if (taken)
                     {
                         break;
@@ -313,7 +319,7 @@ namespace System.Threading
             }
             catch (Exception ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
                 // An async exception occured, if we had taken the upgradable mode, release it
                 _upgradableTaken.Value &= !taken || success;
             }
@@ -391,6 +397,7 @@ namespace System.Threading
                                 success = true;
                             }
                         }
+
                         if (success)
                         {
                             return true;
@@ -411,6 +418,7 @@ namespace System.Threading
                             {
                                 registered |= Interlocked.CompareExchange(ref _rwLock, state | _rwWait, state) == state;
                             }
+
                             if (registered)
                             {
                                 break;
@@ -473,6 +481,7 @@ namespace System.Threading
             {
                 throw new SynchronizationLockException("The lock is being disposed while still being used");
             }
+
             _upgradableEvent.Dispose();
             _writerDoneEvent.Dispose();
             _readerDoneEvent.Dispose();
@@ -629,6 +638,7 @@ namespace System.Threading
                         Interlocked.Add(ref _rwLock, -_rwRead);
                     }
                 }
+
                 if (success)
                 {
                     return true;

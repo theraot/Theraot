@@ -8,32 +8,33 @@ using System.Diagnostics;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
+using Theraot;
 
 namespace System.Runtime.CompilerServices
 {
-    ///  <summary>
-    ///  Provides a builder for asynchronous methods that return void.
-    ///              This type is intended for compiler use only.
-    ///  </summary>
+    /// <summary>
+    ///     Provides a builder for asynchronous methods that return void.
+    ///     This type is intended for compiler use only.
+    /// </summary>
     public struct AsyncVoidMethodBuilder : IAsyncMethodBuilder
     {
         /// <summary>
-        /// Non-zero if PreventUnobservedTaskExceptions has already been invoked.
+        ///     Non-zero if PreventUnobservedTaskExceptions has already been invoked.
         /// </summary>
         private static int _preventUnobservedTaskExceptionsInvoked;
 
         /// <summary>
-        /// State related to the IAsyncStateMachine.
+        ///     State related to the IAsyncStateMachine.
         /// </summary>
         private AsyncMethodBuilderCore _coreState;
 
         /// <summary>
-        /// The synchronization context associated with this operation.
+        ///     The synchronization context associated with this operation.
         /// </summary>
         private readonly SynchronizationContext _synchronizationContext;
 
         /// <summary>
-        /// Temporary support for disabling crashing if tasks go unobserved.
+        ///     Temporary support for disabling crashing if tasks go unobserved.
         /// </summary>
         static AsyncVoidMethodBuilder()
         {
@@ -41,7 +42,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Initializes the <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder"/>.
+        ///     Initializes the <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder" />.
         /// </summary>
         /// <param name="synchronizationContext">The synchronizationContext associated with this operation. This may be null.</param>
         private AsyncVoidMethodBuilder(SynchronizationContext synchronizationContext)
@@ -53,11 +54,10 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Initializes a new <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder"/>.
+        ///     Initializes a new <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder" />.
         /// </summary>
-        ///
         /// <returns>
-        /// The initialized <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder"/>.
+        ///     The initialized <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder" />.
         /// </returns>
         public static AsyncVoidMethodBuilder Create()
         {
@@ -65,10 +65,12 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
-        ///
+        ///     Schedules the specified state machine to be pushed forward when the specified awaiter completes.
         /// </summary>
-        /// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam><typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="awaiter">The awaiter.</param><param name="stateMachine">The state machine.</param>
+        /// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam>
+        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
+        /// <param name="awaiter">The awaiter.</param>
+        /// <param name="stateMachine">The state machine.</param>
         public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
             where TAwaiter : INotifyCompletion
             where TStateMachine : IAsyncStateMachine
@@ -85,10 +87,12 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
-        ///
+        ///     Schedules the specified state machine to be pushed forward when the specified awaiter completes.
         /// </summary>
-        /// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam><typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="awaiter">The awaiter.</param><param name="stateMachine">The state machine.</param>
+        /// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam>
+        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
+        /// <param name="awaiter">The awaiter.</param>
+        /// <param name="stateMachine">The state machine.</param>
         [SecuritySafeCritical]
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
             where TAwaiter : ICriticalNotifyCompletion
@@ -106,9 +110,14 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Faults the method builder with an exception.
+        ///     Faults the method builder with an exception.
         /// </summary>
-        /// <param name="exception">The exception that is the cause of this fault.</param><exception cref="T:System.ArgumentNullException">The <paramref name="exception"/> argument is null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is not initialized.</exception>
+        /// <param name="exception">The exception that is the cause of this fault.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///     The <paramref name="exception" /> argument is null (Nothing in Visual
+        ///     Basic).
+        /// </exception>
+        /// <exception cref="T:System.InvalidOperationException">The builder is not initialized.</exception>
         public void SetException(Exception exception)
         {
             if (exception == null)
@@ -134,7 +143,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Completes the method builder successfully.
+        ///     Completes the method builder successfully.
         /// </summary>
         public void SetResult()
         {
@@ -147,18 +156,28 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Associates the builder with the state machine it represents.
+        ///     Associates the builder with the state machine it represents.
         /// </summary>
-        /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
+        /// <param name="stateMachine">The heap-allocated state machine object.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///     The <paramref name="stateMachine" /> argument was null (Nothing in
+        ///     Visual Basic).
+        /// </exception>
+        /// <exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             _coreState.SetStateMachine(stateMachine);
         }
 
         /// <summary>
-        /// Initiates the builder's execution with the associated state machine.
+        ///     Initiates the builder's execution with the associated state machine.
         /// </summary>
-        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="stateMachine">The state machine instance, passed by reference.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception>
+        /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
+        /// <param name="stateMachine">The state machine instance, passed by reference.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///     The <paramref name="stateMachine" /> argument was null (Nothing in
+        ///     Visual Basic).
+        /// </exception>
         [DebuggerStepThrough]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
@@ -167,7 +186,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Registers with UnobservedTaskException to suppress exception crashing.
+        ///     Registers with UnobservedTaskException to suppress exception crashing.
         /// </summary>
         internal static void PreventUnobservedTaskExceptions()
         {
@@ -177,16 +196,17 @@ namespace System.Runtime.CompilerServices
                 {
                     return;
                 }
+
                 TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
             }
             catch (Exception ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
         /// <summary>
-        /// Notifies the current synchronization context that the operation completed.
+        ///     Notifies the current synchronization context that the operation completed.
         /// </summary>
         private void NotifySynchronizationContextOfCompletion()
         {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Security;
+using Theraot;
 
 namespace System.Threading.Tasks
 {
@@ -24,7 +25,7 @@ namespace System.Threading.Tasks
         private int _threadAbortedManaged;
 
         /// <summary>
-        /// The property formerly known as IsFaulted.
+        ///     The property formerly known as IsFaulted.
         /// </summary>
         internal bool ExceptionRecorded
         {
@@ -42,16 +43,17 @@ namespace System.Threading.Tasks
         internal bool IsChildReplica => (_internalOptions & InternalTaskOptions.ChildReplica) != 0;
 
         /// <summary>
-        /// Checks whether the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag is set,
-        /// This will only be used by the implicit wait to prevent double throws
+        ///     Checks whether the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag is set,
+        ///     This will only be used by the implicit wait to prevent double throws
         /// </summary>
         internal bool IsExceptionObservedByParent => Volatile.Read(ref _exceptionObservedByParent) == 1;
 
         internal bool IsSelfReplicatingRoot => (_internalOptions & (InternalTaskOptions.SelfReplicating | InternalTaskOptions.ChildReplica)) == InternalTaskOptions.SelfReplicating;
 
         /// <summary>
-        /// This is to be called just before the task does its final state transition.
-        /// It traverses the list of exceptional children, and appends their aggregate exceptions into this one's exception list
+        ///     This is to be called just before the task does its final state transition.
+        ///     It traverses the list of exceptional children, and appends their aggregate exceptions into this one's exception
+        ///     list
         /// </summary>
         internal void AddExceptionsFromChildren()
         {
@@ -100,9 +102,10 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Checks if we registered a CT callback during construction, and deregisters it.
-        /// This should be called when we know the registration isn't useful anymore. Specifically from Finish() if the task has completed
-        /// successfully or with an exception.
+        ///     Checks if we registered a CT callback during construction, and deregisters it.
+        ///     This should be called when we know the registration isn't useful anymore. Specifically from Finish() if the task
+        ///     has completed
+        ///     successfully or with an exception.
         /// </summary>
         internal void DeregisterCancellationCallback()
         {
@@ -120,8 +123,9 @@ namespace System.Threading.Tasks
             }
             catch (ObjectDisposedException exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
+
             _cancellationRegistration = null;
         }
 
@@ -188,14 +192,16 @@ namespace System.Threading.Tasks
             {
                 _parent.ProcessChildCompletion(this);
             }
+
             // Activate continuations (if any).
             FinishContinuations();
         }
 
         /// <summary>
-        /// FinishStageTwo is to be executed as soon as we known there are no more children to complete.
-        /// It can happen i) either on the thread that originally executed this task (if no children were spawned, or they all completed by the time this task's delegate quit)
-        ///              ii) or on the thread that executed the last child.
+        ///     FinishStageTwo is to be executed as soon as we known there are no more children to complete.
+        ///     It can happen i) either on the thread that originally executed this task (if no children were spawned, or they all
+        ///     completed by the time this task's delegate quit)
+        ///     ii) or on the thread that executed the last child.
         /// </summary>
         internal void FinishStageTwo()
         {
@@ -230,15 +236,17 @@ namespace System.Threading.Tasks
             {
                 return;
             }
+
             if (exceptionAdded)
             {
                 exceptionsHolder.MarkAsHandled(false);
             }
+
             Finish(delegateRan);
         }
 
         /// <summary>
-        /// The actual code which invokes the body of the task. This can be overriden in derived types.
+        ///     The actual code which invokes the body of the task. This can be overriden in derived types.
         /// </summary>
         internal virtual void InnerInvoke()
         {
@@ -323,16 +331,16 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// <para>
-        /// Checks whether this is an attached task, and whether we are being called by the parent task.
-        /// And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
-        /// </para>
-        /// <para>
-        /// This is meant to be used internally when throwing an exception, and when WaitAll is gathering
-        /// exceptions for tasks it waited on. If this flag gets set, the implicit wait on children
-        /// will skip exceptions to prevent duplication.
-        /// </para>
-        /// <para>This should only be called when this task has completed with an exception</para>
+        ///     <para>
+        ///         Checks whether this is an attached task, and whether we are being called by the parent task.
+        ///         And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
+        ///     </para>
+        ///     <para>
+        ///         This is meant to be used internally when throwing an exception, and when WaitAll is gathering
+        ///         exceptions for tasks it waited on. If this flag gets set, the implicit wait on children
+        ///         will skip exceptions to prevent duplication.
+        ///     </para>
+        ///     <para>This should only be called when this task has completed with an exception</para>
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
@@ -351,24 +359,26 @@ namespace System.Threading.Tasks
                     Contract.Assert(false, "task should have been non-null");
                     return;
                 }
+
                 task = tuple.Item1;
                 var antecedent = tuple.Item2;
                 var continuation = tuple.Item3;
                 antecedent.RemoveContinuation(continuation);
             }
+
             task.InternalCancel(false);
         }
 
         /// <summary>
-        /// <para>
-        /// Internal function that will be called by a new child task to add itself to
-        /// the children list of the parent (this).
-        /// </para>
-        /// <para>
-        /// Since a child task can only be created from the thread executing the action delegate
-        /// of this task, reentrancy is neither required nor supported. This should not be called from
-        /// anywhere other than the task construction/initialization code paths.
-        /// </para>
+        ///     <para>
+        ///         Internal function that will be called by a new child task to add itself to
+        ///         the children list of the parent (this).
+        ///     </para>
+        ///     <para>
+        ///         Since a child task can only be created from the thread executing the action delegate
+        ///         of this task, reentrancy is neither required nor supported. This should not be called from
+        ///         anywhere other than the task construction/initialization code paths.
+        ///     </para>
         /// </summary>
         private void AddNewChild()
         {
@@ -428,13 +438,14 @@ namespace System.Threading.Tasks
                 {
                     _parent.DisregardChild();
                 }
+
                 throw;
             }
         }
 
         /// <summary>
-        /// Executes the task. This method will only be called once, and handles bookkeeping associated with
-        /// self-replicating tasks, in addition to performing necessary exception marshaling.
+        ///     Executes the task. This method will only be called once, and handles bookkeeping associated with
+        ///     self-replicating tasks, in addition to performing necessary exception marshaling.
         /// </summary>
         private void Execute()
         {
@@ -479,6 +490,7 @@ namespace System.Threading.Tasks
                     {
                         CapturedContext = executionContext.CreateCopy();
                     }
+
                     ExecutionContext.Run(executionContext, ExecutionContextCallback, this);
                 }
 
@@ -503,8 +515,8 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Returns a list of exceptions by aggregating the holder's contents. Or null if
-        /// no exceptions have been thrown.
+        ///     Returns a list of exceptions by aggregating the holder's contents. Or null if
+        ///     no exceptions have been thrown.
         /// </summary>
         /// <param name="includeTaskCanceledExceptions">Whether to include a TCE if canceled.</param>
         /// <returns>An aggregate exception, or null if no exceptions have been caught.</returns>
@@ -546,12 +558,13 @@ namespace System.Threading.Tasks
                 // before they have been completely processed.
                 return _exceptionsHolder.CreateExceptionObject(false, canceledException);
             }
+
             return canceledException != null ? new AggregateException(canceledException) : null;
         }
 
         /// <summary>
-        /// Performs whatever handling is necessary for an unhandled exception. Normally
-        /// this just entails adding the exception to the holder object.
+        ///     Performs whatever handling is necessary for an unhandled exception. Normally
+        ///     this just entails adding the exception to the holder object.
         /// </summary>
         /// <param name="unhandledException">The exception that went unhandled.</param>
         private void HandleException(Exception unhandledException)
@@ -581,10 +594,13 @@ namespace System.Threading.Tasks
     public partial class Task
     {
         /// <summary>
-        /// Adds an exception to the list of exceptions this task has thrown.
+        ///     Adds an exception to the list of exceptions this task has thrown.
         /// </summary>
         /// <param name="exceptionObject">An object representing either an Exception or a collection of Exceptions.</param>
-        /// <param name="representsCancellation">Whether the exceptionObject is an OperationCanceledException representing cancellation.</param>
+        /// <param name="representsCancellation">
+        ///     Whether the exceptionObject is an OperationCanceledException representing
+        ///     cancellation.
+        /// </param>
         internal void AddException(object exceptionObject, bool representsCancellation)
         {
             Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
@@ -614,6 +630,7 @@ namespace System.Threading.Tasks
                     holder.MarkAsHandled(false);
                 }
             }
+
             lock (exceptionsHolder)
             {
                 exceptionsHolder.Add(exceptionObject, representsCancellation);

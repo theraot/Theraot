@@ -2,11 +2,15 @@
 
 using System.Reflection;
 using System.Text;
+using Theraot;
 
 namespace System.Runtime.ExceptionServices
 {
     /// <summary>
-    /// The ExceptionDispatchInfo object stores the stack trace information and Watson information that the exception contains at the point where it is captured. The exception can be thrown at another time and possibly on another thread by calling the ExceptionDispatchInfo.Throw method. The exception is thrown as if it had flowed from the point where it was captured to the point where the Throw method is called.
+    ///     The ExceptionDispatchInfo object stores the stack trace information and Watson information that the exception
+    ///     contains at the point where it is captured. The exception can be thrown at another time and possibly on another
+    ///     thread by calling the ExceptionDispatchInfo.Throw method. The exception is thrown as if it had flowed from the
+    ///     point where it was captured to the point where the Throw method is called.
     /// </summary>
     public sealed class ExceptionDispatchInfo
     {
@@ -28,12 +32,12 @@ namespace System.Runtime.ExceptionServices
         }
 
         /// <summary>
-        /// Gets the exception that is represented by the current instance.
+        ///     Gets the exception that is represented by the current instance.
         /// </summary>
         public Exception SourceException { get; }
 
         /// <summary>
-        /// Creates an ExceptionDispatchInfo object that represents the specified exception at the current point in code.
+        ///     Creates an ExceptionDispatchInfo object that represents the specified exception at the current point in code.
         /// </summary>
         /// <param name="source">The exception whose state is captured, and which is represented by the returned object.</param>
         /// <returns>An object that represents the specified exception at the current point in code. </returns>
@@ -43,11 +47,13 @@ namespace System.Runtime.ExceptionServices
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return new ExceptionDispatchInfo(source);
         }
 
         /// <summary>
-        /// Throws the exception that is represented by the current ExceptionDispatchInfo object, after restoring the state that was saved when the exception was captured.
+        ///     Throws the exception that is represented by the current ExceptionDispatchInfo object, after restoring the state
+        ///     that was saved when the exception was captured.
         /// </summary>
         public void Throw()
         {
@@ -57,7 +63,7 @@ namespace System.Runtime.ExceptionServices
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
                 var newStackTrace = _stackTrace + BuildStackTrace(Environment.StackTrace);
                 SetStackTrace(SourceException, newStackTrace);
                 throw;
@@ -65,7 +71,7 @@ namespace System.Runtime.ExceptionServices
 
             string BuildStackTrace(string trace)
             {
-                var items = trace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                var items = trace.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
                 var newStackTrace = new StringBuilder();
                 var found = false;
                 foreach (var item in items)
@@ -78,10 +84,12 @@ namespace System.Runtime.ExceptionServices
                             // Stacktrace from here on will be added by the CLR
                             break;
                         }
+
                         if (found)
                         {
                             newStackTrace.Append(Environment.NewLine);
                         }
+
                         found = true;
                         newStackTrace.Append(item);
                     }
@@ -90,6 +98,7 @@ namespace System.Runtime.ExceptionServices
                         break;
                     }
                 }
+
                 var result = newStackTrace.ToString();
                 return result;
             }
@@ -105,9 +114,15 @@ namespace System.Runtime.ExceptionServices
             // Code by Miguel de Icaza
 
 #pragma warning disable CC0021 // Use nameof
-            var remoteStackTraceString = typeof(Exception).GetField("_remoteStackTraceString",
-                                             BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(Exception).GetField("remote_stack_trace",
-                                             BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
+            var remoteStackTraceString = typeof(Exception).GetField
+                                         (
+                                             "_remoteStackTraceString",
+                                             BindingFlags.Instance | BindingFlags.NonPublic
+                                         ) ?? typeof(Exception).GetField
+                                         (
+                                             "remote_stack_trace",
+                                             BindingFlags.Instance | BindingFlags.NonPublic
+                                         ); // MS.Net
 #pragma warning restore CC0021 // Use nameof
 
             // ---

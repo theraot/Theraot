@@ -20,7 +20,7 @@ namespace System.Threading.Tasks
 
         /// <inheritdoc />
         /// <summary>
-        /// Evaluates the value selector of the Task which is passed in as an object and stores the result.
+        ///     Evaluates the value selector of the Task which is passed in as an object and stores the result.
         /// </summary>
         internal override void InnerInvoke()
         {

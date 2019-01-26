@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 using Theraot.Reflection;
 
@@ -24,16 +24,19 @@ namespace System.Threading
             {
                 Interlocked.CompareExchange(ref syncLock, new object(), null);
             }
+
             if (Volatile.Read(ref initialized))
             {
                 return target;
             }
+
             lock (syncLock)
             {
                 if (Volatile.Read(ref initialized))
                 {
                     return target;
                 }
+
                 try
                 {
                     target = Activator.CreateInstance<T>();
@@ -42,8 +45,10 @@ namespace System.Threading
                 {
                     throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
                 }
+
                 Volatile.Write(ref initialized, true);
             }
+
             return target;
         }
 
@@ -54,10 +59,12 @@ namespace System.Threading
             {
                 Interlocked.CompareExchange(ref syncLock, new object(), null);
             }
+
             if (Volatile.Read(ref initialized))
             {
                 return target;
             }
+
             lock (syncLock)
             {
                 if (Volatile.Read(ref initialized))
@@ -69,6 +76,7 @@ namespace System.Threading
 #pragma warning restore CC0031 // Check for null before calling a delegate
                 Volatile.Write(ref initialized, true);
             }
+
             return target;
         }
     }

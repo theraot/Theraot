@@ -10,24 +10,30 @@ using System.Diagnostics;
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Provides a set of static (Shared in Visual Basic) methods for working with specific kinds of
-    /// <see cref="Task"/> instances.
+    ///     Provides a set of static (Shared in Visual Basic) methods for working with specific kinds of
+    ///     <see cref="Task" /> instances.
     /// </summary>
     public static class TaskExtensions
     {
         /// <summary>
-        /// Creates a proxy <see cref="Task">Task</see> that represents the
-        /// asynchronous operation of a Task{Task}.
+        ///     Creates a proxy <see cref="Task">Task</see> that represents the
+        ///     asynchronous operation of a Task{Task}.
         /// </summary>
         /// <remarks>
-        /// It is often useful to be able to return a Task from a <see cref="Tasks.Task{TResult}">
-        /// Task{TResult}</see>, where the inner Task represents work done as part of the outer Task{TResult}.  However,
-        /// doing so results in a Task{Task}, which, if not dealt with carefully, could produce unexpected behavior.  Unwrap
-        /// solves this problem by creating a proxy Task that represents the entire asynchronous operation of such a Task{Task}.
+        ///     It is often useful to be able to return a Task from a
+        ///     <see cref="Tasks.Task{TResult}">
+        ///         Task{TResult}
+        ///     </see>
+        ///     , where the inner Task represents work done as part of the outer Task{TResult}.  However,
+        ///     doing so results in a Task{Task}, which, if not dealt with carefully, could produce unexpected behavior.  Unwrap
+        ///     solves this problem by creating a proxy Task that represents the entire asynchronous operation of such a
+        ///     Task{Task}.
         /// </remarks>
         /// <param name="task">The Task{Task} to unwrap.</param>
-        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown if the
-        /// <paramref name="task"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///     The exception that is thrown if the
+        ///     <paramref name="task" /> argument is null.
+        /// </exception>
         /// <returns>A Task that represents the asynchronous operation of the provided Task{Task}.</returns>
         public static Task Unwrap(this Task<Task> task)
         {
@@ -51,18 +57,20 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a proxy <see cref="Tasks.Task{TResult}">Task{TResult}</see> that represents the
-        /// asynchronous operation of a Task{Task{TResult}}.
+        ///     Creates a proxy <see cref="Tasks.Task{TResult}">Task{TResult}</see> that represents the
+        ///     asynchronous operation of a Task{Task{TResult}}.
         /// </summary>
         /// <remarks>
-        /// It is often useful to be able to return a Task{TResult} from a Task{TResult}, where the inner Task{TResult}
-        /// represents work done as part of the outer Task{TResult}.  However, doing so results in a Task{Task{TResult}},
-        /// which, if not dealt with carefully, could produce unexpected behavior.  Unwrap solves this problem by
-        /// creating a proxy Task{TResult} that represents the entire asynchronous operation of such a Task{Task{TResult}}.
+        ///     It is often useful to be able to return a Task{TResult} from a Task{TResult}, where the inner Task{TResult}
+        ///     represents work done as part of the outer Task{TResult}.  However, doing so results in a Task{Task{TResult}},
+        ///     which, if not dealt with carefully, could produce unexpected behavior.  Unwrap solves this problem by
+        ///     creating a proxy Task{TResult} that represents the entire asynchronous operation of such a Task{Task{TResult}}.
         /// </remarks>
         /// <param name="task">The Task{Task{TResult}} to unwrap.</param>
-        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown if the
-        /// <paramref name="task"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///     The exception that is thrown if the
+        ///     <paramref name="task" /> argument is null.
+        /// </exception>
         /// <returns>A Task{TResult} that represents the asynchronous operation of the provided Task{Task{TResult}}.</returns>
         public static Task<TResult> Unwrap<TResult>(this Task<Task<TResult>> task)
         {
@@ -103,19 +111,22 @@ namespace System.Threading.Tasks
                     return ct;
                 }
             }
+
             return new CancellationToken(true);
         }
 
         /// <summary>
-        /// Transfer the results of the <paramref name="outer"/> task's inner task to the <paramref name="completionSource"/>.
+        ///     Transfer the results of the <paramref name="outer" /> task's inner task to the <paramref name="completionSource" />
+        ///     .
         /// </summary>
         /// <param name="completionSource">The completion source to which results should be transferred</param>
         /// <param name="outer">
-        /// The outer task that when completed will yield an inner task whose results we want marshaled to the <paramref name="completionSource"/>.
+        ///     The outer task that when completed will yield an inner task whose results we want marshaled to the
+        ///     <paramref name="completionSource" />.
         /// </param>
         private static void TransferAsynchronously<TResult, TInner>(TaskCompletionSource<TResult> completionSource, Task<TInner> outer) where TInner : Task
         {
-            Action[] callback = { null };
+            Action[] callback = {null};
 
             // Create a continuation delegate.  For performance reasons, we reuse the same delegate/closure across multiple
             // continuations; by using .ConfigureAwait(false).GetAwaiter().UnsafeOnComplete(action), in most cases
@@ -164,6 +175,7 @@ namespace System.Threading.Tasks
                                     // The inner task also completed!  Transfer the results, and we're done.
                                     result = completionSource.TrySetFromTask(inner);
                                 }
+
                                 if (!result)
                                 {
                                     // Run this delegate again once the inner task has completed.
@@ -171,11 +183,13 @@ namespace System.Threading.Tasks
                                     return;
                                 }
                             }
+
                             break;
 
                         default:
                             break;
                     }
+
                     if (!result)
                     {
                         outer.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback);
@@ -212,14 +226,13 @@ namespace System.Threading.Tasks
                     break;
 
                 case TaskStatus.RanToCompletion:
-                    result = task is Task<TResult> resultTask ?
-                        completionSource.TrySetResult(resultTask.Result) :
-                        completionSource.TrySetResult(default);
+                    result = task is Task<TResult> resultTask ? completionSource.TrySetResult(resultTask.Result) : completionSource.TrySetResult(default);
                     break;
 
                 default:
                     break;
             }
+
             return result;
         }
 

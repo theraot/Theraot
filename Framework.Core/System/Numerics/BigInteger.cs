@@ -635,6 +635,7 @@ namespace System.Numerics
                     {
                         this = _bigIntegerMinInt;
                     }
+
                     return;
                 default:
                     break;

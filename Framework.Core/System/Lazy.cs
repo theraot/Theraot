@@ -57,49 +57,50 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(valueFactory));
             }
+
             switch (mode)
             {
                 case LazyThreadSafetyMode.None:
+                {
+                    if (cacheExceptions)
                     {
-                        if (cacheExceptions)
-                        {
-                            var threads = new HashSet<Thread>();
-                            _valueFactory =
-                                () => CachingNoneMode(threads);
-                        }
-                        else
-                        {
-                            var threads = new HashSet<Thread>();
-                            _valueFactory =
-                                () => NoneMode(threads);
-                        }
+                        var threads = new HashSet<Thread>();
+                        _valueFactory =
+                            () => CachingNoneMode(threads);
                     }
+                    else
+                    {
+                        var threads = new HashSet<Thread>();
+                        _valueFactory =
+                            () => NoneMode(threads);
+                    }
+                }
                     break;
 
                 case LazyThreadSafetyMode.PublicationOnly:
-                    {
-                        _valueFactory = PublicationOnlyMode;
-                    }
+                {
+                    _valueFactory = PublicationOnlyMode;
+                }
                     break;
 
                 default: /*LazyThreadSafetyMode.ExecutionAndPublication*/
+                {
+                    if (cacheExceptions)
                     {
-                        if (cacheExceptions)
-                        {
-                            Thread thread = null;
-                            var waitHandle = new ManualResetEvent(false);
-                            _valueFactory =
-                                () => CachingFullMode(valueFactory, waitHandle, ref thread);
-                        }
-                        else
-                        {
-                            Thread thread = null;
-                            var waitHandle = new ManualResetEvent(false);
-                            var preIsValueCreated = 0;
-                            _valueFactory =
-                                () => FullMode(valueFactory, waitHandle, ref thread, ref preIsValueCreated);
-                        }
+                        Thread thread = null;
+                        var waitHandle = new ManualResetEvent(false);
+                        _valueFactory =
+                            () => CachingFullMode(valueFactory, waitHandle, ref thread);
                     }
+                    else
+                    {
+                        Thread thread = null;
+                        var waitHandle = new ManualResetEvent(false);
+                        var preIsValueCreated = 0;
+                        _valueFactory =
+                            () => FullMode(valueFactory, waitHandle, ref thread, ref preIsValueCreated);
+                    }
+                }
                     break;
             }
 
@@ -119,6 +120,7 @@ namespace System
                         {
                             throw new InvalidOperationException();
                         }
+
                         threads.Add(currentThread);
                     }
                     ValueForDebugDisplay = valueFactory();
@@ -156,6 +158,7 @@ namespace System
                         {
                             throw new InvalidOperationException();
                         }
+
                         threads.Add(currentThread);
                     }
                     ValueForDebugDisplay = valueFactory();
@@ -184,6 +187,7 @@ namespace System
                 {
                     _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
                 }
+
                 return ValueForDebugDisplay;
             }
         }
@@ -218,17 +222,19 @@ namespace System
                     thread = null;
                 }
             }
+
             if (thread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
+
             waitHandle.WaitOne();
             return _valueFactory.Invoke();
         }
 
         private T FullMode(Func<T> valueFactory, EventWaitHandle waitHandle, ref Thread thread, ref int preIsValueCreated)
         {
-        back:
+            back:
             if (Interlocked.CompareExchange(ref preIsValueCreated, 1, 0) == 0)
             {
                 try
@@ -251,15 +257,18 @@ namespace System
                     thread = null;
                 }
             }
+
             if (thread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
+
             waitHandle.WaitOne();
             if (Volatile.Read(ref _isValueCreated) == 1)
             {
                 return _valueFactory.Invoke();
             }
+
             goto back;
         }
     }

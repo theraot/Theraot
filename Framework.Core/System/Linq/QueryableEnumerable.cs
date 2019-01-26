@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 // QueryableEnumerable<TElement>.cs
 //
@@ -66,16 +66,31 @@ namespace System.Linq
 
         public IQueryProvider Provider => this;
 
+        public IEnumerable GetEnumerable()
+        {
+            return _enumerable;
+        }
+
+        public IEnumerator<TElement> GetEnumerator()
+        {
+            return Execute<IEnumerable<TElement>>(Expression).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public IQueryable CreateQuery(Expression expression)
         {
             return (IQueryable)Activator.CreateInstance
-                    (
-                        typeof(QueryableEnumerable<>).MakeGenericType
-                        (
-                            expression.Type.GetGenericArguments()[0]
-                        ),
-                        expression
-                    );
+            (
+                typeof(QueryableEnumerable<>).MakeGenericType
+                (
+                    expression.Type.GetGenericArguments()[0]
+                ),
+                expression
+            );
         }
 
         public IQueryable<TElem> CreateQuery<TElem>(Expression expression)
@@ -95,37 +110,24 @@ namespace System.Linq
             return lambda.Compile().Invoke();
         }
 
-        public IEnumerable GetEnumerable()
-        {
-            return _enumerable;
-        }
-
-        public IEnumerator<TElement> GetEnumerator()
-        {
-            return Execute<IEnumerable<TElement>>(Expression).GetEnumerator();
-        }
-
         public override string ToString()
         {
             if (_enumerable != null)
             {
                 return _enumerable.ToString();
             }
+
             if (Expression == null)
             {
                 return base.ToString();
             }
+
             return Expression is ConstantExpression constant && constant.Value == this ? base.ToString() : Expression.ToString();
         }
 
         private static Expression TransformQueryable(Expression expression)
         {
             return new QueryableTransformer().Transform(expression);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

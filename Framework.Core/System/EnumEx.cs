@@ -1,4 +1,10 @@
-﻿namespace System
+﻿#if LESSTHAN_NET40
+
+using Theraot;
+
+#endif
+
+namespace System
 {
 #if LESSTHAN_NET40
     public static class EnumEx
@@ -16,7 +22,7 @@
             }
             catch (Exception ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
                 result = default;
                 return false;
             }
@@ -35,7 +41,7 @@
             }
             catch (Exception ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
                 result = default;
                 return false;
             }

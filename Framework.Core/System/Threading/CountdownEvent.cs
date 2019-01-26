@@ -17,6 +17,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(initialCount));
             }
+
             InitialCount = initialCount;
             _currentCount = initialCount;
             _event = new ManualResetEventSlim();
@@ -41,6 +42,13 @@ namespace System.Threading
 
         public WaitHandle WaitHandle => GetEvent().WaitHandle;
 
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public void AddCount()
         {
             AddCount(1);
@@ -52,13 +60,6 @@ namespace System.Threading
             {
                 throw new InvalidOperationException("Already Zero");
             }
-        }
-
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public void Reset()
@@ -73,6 +74,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
+
             Volatile.Write(ref _currentCount, count);
             InitialCount = count;
             if (count == 0)
@@ -92,16 +94,19 @@ namespace System.Threading
             {
                 throw new InvalidOperationException("Below Zero");
             }
+
             var currentCount = Interlocked.Decrement(ref _currentCount);
             if (currentCount == 0)
             {
                 e.Set();
                 return true;
             }
+
             if (currentCount < 0)
             {
                 throw new InvalidOperationException("Below Zero");
             }
+
             return false;
         }
 
@@ -111,6 +116,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
+
             var e = GetEvent();
             if (!ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out var lastValue))
             {
@@ -138,15 +144,18 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             }
+
             GC.KeepAlive(GetEvent());
             if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out var lastValue))
             {
                 return true;
             }
+
             if (lastValue < 1)
             {
                 return false;
             }
+
             throw new InvalidOperationException("Max");
         }
 
@@ -186,6 +195,7 @@ namespace System.Threading
             {
                 isSet = e.Wait(timeout, cancellationToken);
             }
+
             return isSet;
         }
 
@@ -218,6 +228,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(CountdownEvent));
             }
+
             return e;
         }
     }

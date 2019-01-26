@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
@@ -12,12 +12,12 @@ namespace System.Threading.Tasks
     /// <summary>Base task continuation class used for await continuations.</summary>
     internal class AwaitTaskContinuation : TaskContinuation, IThreadPoolWorkItem
     {
-        /// <summary>The action to invoke.</summary>
-        protected readonly Action Action;
-
         /// <summary>Cached delegate that invokes an Action passed as an object parameter.</summary>
         [SecurityCritical]
         private static ContextCallback _invokeActionCallback;
+
+        /// <summary>The action to invoke.</summary>
+        protected readonly Action Action;
 
         /// <summary>The ExecutionContext with which to run the continuation.</summary>
         private ExecutionContext _capturedContext;
@@ -37,20 +37,20 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Gets whether the current thread is an appropriate location to inline a continuation's execution.
+        ///     Gets whether the current thread is an appropriate location to inline a continuation's execution.
         /// </summary>
         /// <remarks>
-        /// Returns whether SynchronizationContext is null and we're in the default scheduler.
-        /// If the await had a SynchronizationContext/TaskScheduler where it began and the
-        /// default/ConfigureAwait(true) was used, then we won't be on this path.  If, however,
-        /// ConfigureAwait(false) was used, or the SynchronizationContext and TaskScheduler were
-        /// naturally null/Default, then we might end up here.  If we do, we need to make sure
-        /// that we don't execute continuations in a place that isn't set up to handle them, e.g.
-        /// running arbitrary amounts of code on the UI thread.  It would be "correct", but very
-        /// expensive, to always run the continuations asynchronously, incurring lots of context
-        /// switches and allocations and locks and the like.  As such, we employ the heuristic
-        /// that if the current thread has a non-null SynchronizationContext or a non-default
-        /// scheduler, then we better not run arbitrary continuations here.
+        ///     Returns whether SynchronizationContext is null and we're in the default scheduler.
+        ///     If the await had a SynchronizationContext/TaskScheduler where it began and the
+        ///     default/ConfigureAwait(true) was used, then we won't be on this path.  If, however,
+        ///     ConfigureAwait(false) was used, or the SynchronizationContext and TaskScheduler were
+        ///     naturally null/Default, then we might end up here.  If we do, we need to make sure
+        ///     that we don't execute continuations in a place that isn't set up to handle them, e.g.
+        ///     running arbitrary amounts of code on the UI thread.  It would be "correct", but very
+        ///     expensive, to always run the continuations asynchronously, incurring lots of context
+        ///     switches and allocations and locks and the like.  As such, we employ the heuristic
+        ///     that if the current thread has a non-null SynchronizationContext or a non-default
+        ///     scheduler, then we better not run arbitrary continuations here.
         /// </remarks>
         internal static bool IsValidLocationForInlining
         {
@@ -60,26 +60,47 @@ namespace System.Threading.Tasks
                 {
                     return false;
                 }
+
                 var scheduler = TaskScheduler.Current;
                 return scheduler == null || scheduler == TaskScheduler.Default;
             }
         }
 
+        [SecurityCritical]
+        void IThreadPoolWorkItem.ExecuteWorkItem()
+        {
+            // inline the fast path
+            if (_capturedContext == null)
+            {
+                Action.Invoke();
+            }
+            else
+            {
+                ExecuteWorkItemHelper();
+            }
+        }
+
+        [SecurityCritical]
+        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
+        {
+            /* nop */
+        }
+
         /// <summary>Invokes or schedules the action to be executed.</summary>
         /// <param name="action">The action to invoke or queue.</param>
         /// <param name="allowInlining">
-        /// true to allow inlining, or false to force the action to run asynchronously.
+        ///     true to allow inlining, or false to force the action to run asynchronously.
         /// </param>
         /// <param name="currentTask">
-        /// A reference to the t_currentTask thread static value.
-        /// This is passed by-ref rather than accessed in the method in order to avoid
-        /// unnecessary thread-static writes.
+        ///     A reference to the t_currentTask thread static value.
+        ///     This is passed by-ref rather than accessed in the method in order to avoid
+        ///     unnecessary thread-static writes.
         /// </param>
         /// <remarks>
-        /// No ExecutionContext work is performed used.  This method is only used in the
-        /// case where a raw Action continuation delegate was stored into the Task, which
-        /// only happens in Task.SetContinuationForAwait if execution context flow was disabled
-        /// via using TaskAwaiter.UnsafeOnCompleted or a similar path.
+        ///     No ExecutionContext work is performed used.  This method is only used in the
+        ///     case where a raw Action continuation delegate was stored into the Task, which
+        ///     only happens in Task.SetContinuationForAwait if execution context flow was disabled
+        ///     via using TaskAwaiter.UnsafeOnCompleted or a similar path.
         /// </remarks>
         [SecurityCritical]
         internal static void RunOrScheduleAction(Action action, bool allowInlining, ref Task currentTask)
@@ -93,6 +114,7 @@ namespace System.Threading.Tasks
                 UnsafeScheduleAction(action);
                 return;
             }
+
             // Otherwise, run it, making sure that t_currentTask is null'd out appropriately during the execution
             var prevCurrentTask = currentTask;
             try
@@ -152,6 +174,7 @@ namespace System.Threading.Tasks
             {
                 _invokeActionCallback = callback = InvokeAction;
             } // lazily initialize SecurityCritical delegate
+
             return callback;
         }
 
@@ -170,6 +193,7 @@ namespace System.Threading.Tasks
             {
                 return;
             }
+
             var edi = ExceptionDispatchInfo.Capture(exc);
             ThreadPool.QueueUserWorkItem(s => ((ExceptionDispatchInfo)s).Throw(), edi);
         }
@@ -184,9 +208,11 @@ namespace System.Threading.Tasks
             Contract.Requires(action != null);
             Contract.Requires(scheduler != null);
 
-            return new Task(
+            return new Task
+            (
                 action, state, null, default,
-                TaskCreationOptions.None, InternalTaskOptions.QueuedByRuntime, scheduler)
+                TaskCreationOptions.None, InternalTaskOptions.QueuedByRuntime, scheduler
+            )
             {
                 CapturedContext = _capturedContext
             };
@@ -240,6 +266,7 @@ namespace System.Threading.Tasks
                 {
                     currentTask = prevCurrentTask;
                 }
+
                 _capturedContext = null;
             }
         }
@@ -252,21 +279,10 @@ namespace System.Threading.Tasks
             ((Action)state)();
         }
 
-        [SecurityCritical]
-        void IThreadPoolWorkItem.ExecuteWorkItem()
-        {
-            // inline the fast path
-            if (_capturedContext == null)
-            {
-                Action.Invoke();
-            }
-            else
-            {
-                ExecuteWorkItemHelper();
-            }
-        }
-
-        /// <summary>IThreadPoolWorkItem override, which is the entry function for this when the ThreadPool scheduler decides to run it.</summary>
+        /// <summary>
+        ///     IThreadPoolWorkItem override, which is the entry function for this when the ThreadPool scheduler decides to
+        ///     run it.
+        /// </summary>
         [SecurityCritical]
         private void ExecuteWorkItemHelper()
         {
@@ -290,12 +306,6 @@ namespace System.Threading.Tasks
                     _capturedContext = null;
                 }
             }
-        }
-
-        [SecurityCritical]
-        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
-        {
-            /* nop */
         }
     }
 }

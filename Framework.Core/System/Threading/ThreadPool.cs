@@ -1,5 +1,4 @@
 ﻿#if TARGETS_NETSTANDARD
-
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 

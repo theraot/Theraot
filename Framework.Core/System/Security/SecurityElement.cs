@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CA2227 // Collection properties should be read only
 

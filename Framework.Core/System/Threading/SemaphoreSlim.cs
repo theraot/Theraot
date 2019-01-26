@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -10,11 +11,11 @@ namespace System.Threading
     [DebuggerDisplay("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
+        private readonly int? _maxCount;
         private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private ManualResetEventSlim _canEnter;
         private int _count;
         private bool _disposed;
-        private readonly int? _maxCount;
         private int _syncRoot;
 
         public SemaphoreSlim(int initialCount)
@@ -35,10 +36,12 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(initialCount), "initialCount < 0 || initialCount > maxCount");
             }
+
             if (maxCount <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(initialCount), "maxCount <= 0");
             }
+
             _maxCount = maxCount;
             _asyncWaiters = new SafeQueue<TaskCompletionSource<bool>>();
             _count = initialCount;
@@ -75,6 +78,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(releaseCount), "releaseCount is less than 1");
             }
+
             var spinWait = new SpinWait();
             while (true)
             {
@@ -82,6 +86,7 @@ namespace System.Threading
                 {
                     return expected;
                 }
+
                 spinWait.SpinOnce();
             }
         }
@@ -120,6 +125,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var spinWait = new SpinWait();
@@ -127,6 +133,7 @@ namespace System.Threading
             {
                 return true;
             }
+
             if (millisecondsTimeout == -1)
             {
                 while (true)
@@ -137,9 +144,11 @@ namespace System.Threading
                     {
                         return true;
                     }
+
                     spinWait.SpinOnce();
                 }
             }
+
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
             while (_canEnter.Wait(remaining, cancellationToken))
@@ -149,13 +158,16 @@ namespace System.Threading
                 {
                     return true;
                 }
+
                 remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
                 if (remaining <= 0)
                 {
                     break;
                 }
+
                 spinWait.SpinOnce();
             }
+
             // Time out
             return false;
         }
@@ -194,10 +206,12 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
+
             if (cancellationToken.IsCancellationRequested)
             {
                 return TaskEx.FromCanceled<bool>(cancellationToken);
             }
+
             var source = new TaskCompletionSource<bool>();
             if (_canEnter.Wait(0, cancellationToken) && TryOffset(-1, out var dummy))
             {
@@ -216,7 +230,7 @@ namespace System.Threading
                     catch (InvalidCastException exception)
                     {
                         // Already canceled
-                        Theraot.No.Op(exception);
+                        No.Op(exception);
                     }
                 },
                 millisecondsTimeout,
@@ -233,7 +247,7 @@ namespace System.Threading
                     catch (InvalidOperationException exception)
                     {
                         // Already timeout
-                        Theraot.No.Op(exception);
+                        No.Op(exception);
                     }
                 }
             );
@@ -244,7 +258,7 @@ namespace System.Threading
         protected virtual void Dispose(bool disposing)
         {
             // This is a protected method, the parameter should be kept
-            Theraot.No.Op(disposing);
+            No.Op(disposing);
             _disposed = true;
             _canEnter.Dispose();
             _asyncWaiters = null;
@@ -266,6 +280,7 @@ namespace System.Threading
                     // Skip - either canceled or timed out
                     continue;
                 }
+
                 if (TryOffset(-1, out var dummy))
                 {
                     waiter.SetResult(true);
@@ -276,6 +291,7 @@ namespace System.Threading
                     _asyncWaiters.Add(waiter);
                     break;
                 }
+
                 spinWait.SpinOnce();
             }
         }
@@ -302,6 +318,7 @@ namespace System.Threading
                     Volatile.Write(ref _syncRoot, 0);
                 }
             }
+
             if (awake)
             {
                 var asyncWaiters = _asyncWaiters;
@@ -331,6 +348,7 @@ namespace System.Threading
                     canEnter.Set();
                     return true;
                 }
+
                 return false;
             }
         }
@@ -343,11 +361,13 @@ namespace System.Threading
             {
                 throw new SemaphoreFullException();
             }
+
             var result = expected + releaseCount;
             if (result < 0)
             {
                 return false;
             }
+
             var found = Interlocked.CompareExchange(ref _count, result, expected);
             if (found != expected)
             {

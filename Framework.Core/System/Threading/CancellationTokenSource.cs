@@ -41,14 +41,14 @@ namespace System.Threading
 {
     public class CancellationTokenSource : IDisposable
     {
-        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource { _cancelRequested = 1 }; // Leaked
+        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource {_cancelRequested = 1}; // Leaked
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
         private static readonly Action<CancellationTokenSource> _timerCallback = TimerCallback;
+        private readonly ManualResetEvent _handle;
         private Bucket<Action> _callbacks;
         private int _cancelRequested;
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
-        private readonly ManualResetEvent _handle;
         private CancellationTokenRegistration[] _linkedTokens;
         private RootedTimeout _timeout;
 
@@ -65,6 +65,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
+
             if (millisecondsDelay != Timeout.Infinite)
             {
                 _timeout = RootedTimeout.Launch(Callback, millisecondsDelay);
@@ -97,9 +98,16 @@ namespace System.Threading
             }
         }
 
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public static CancellationTokenSource CreateLinkedTokenSource(CancellationToken token1, CancellationToken token2)
         {
-            return CreateLinkedTokenSource(new[] { token1, token2 });
+            return CreateLinkedTokenSource(new[] {token1, token2});
         }
 
         public static CancellationTokenSource CreateLinkedTokenSource(params CancellationToken[] tokens)
@@ -108,14 +116,16 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(tokens));
             }
+
             if (tokens.Length == 0)
             {
                 throw new ArgumentException("Empty tokens array");
             }
+
             var src = new CancellationTokenSource();
             Action action = src.SafeLinkedCancel;
             var registrations = new List<CancellationTokenRegistration>(tokens.Length);
-            registrations.AddRange(from token in tokens where token.CanBeCanceled select token.Register(action));
+            registrations.AddRange(tokens.Where(token => token.CanBeCanceled).Select(token => token.Register(action)));
             src._linkedTokens = registrations.ToArray();
             return src;
         }
@@ -143,6 +153,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
+
             CheckDisposed();
             if (Volatile.Read(ref _cancelRequested) != 0 || millisecondsDelay == Timeout.Infinite || _timeout != null)
             {
@@ -156,14 +167,8 @@ namespace System.Threading
             {
                 newTimer.Cancel();
             }
-            _timeout.Change(millisecondsDelay);
-        }
 
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            _timeout.Change(millisecondsDelay);
         }
 
         internal void CheckDisposed()
@@ -181,6 +186,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(CancellationTokenSource));
             }
+
             return result;
         }
 
@@ -206,6 +212,7 @@ namespace System.Threading
                     var originalCallback = callback;
                     callback = () => capturedSyncContext.Send(_ => originalCallback(), null);
                 }
+
                 callbacks.Insert(id, callback);
                 // Check if the source was just canceled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
@@ -214,6 +221,7 @@ namespace System.Threading
                     callback();
                 }
             }
+
             return tokenReg;
         }
 
@@ -241,6 +249,7 @@ namespace System.Threading
                 UnregisterLinkedTokens();
                 _callbacks = null;
             }
+
             var timer = Interlocked.Exchange(ref _timeout, null);
             timer?.Cancel();
             _handle.Close();
@@ -287,7 +296,10 @@ namespace System.Threading
             }
         }
 
-        private void Callback() => _timerCallback(this);
+        private void Callback()
+        {
+            _timerCallback(this);
+        }
 
         private void CancelExtracted(bool throwOnFirstException, Bucket<Action> callbacks, bool ignoreDisposedException)
         {
@@ -308,6 +320,7 @@ namespace System.Threading
                     throw;
                 }
             }
+
             UnregisterLinkedTokens();
             List<Exception> exceptions = null;
             try
@@ -331,6 +344,7 @@ namespace System.Threading
                     RunCallback(throwOnFirstException, callback, ref exceptions);
                 }
             }
+
             if (exceptions != null)
             {
                 throw new AggregateException(exceptions);
@@ -344,6 +358,7 @@ namespace System.Threading
             {
                 return;
             }
+
             CancelExtracted(false, callbacks, true);
         }
 

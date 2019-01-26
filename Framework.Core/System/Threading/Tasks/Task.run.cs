@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
@@ -20,6 +20,7 @@ namespace System.Threading.Tasks
             {
                 result.Start(result.ExecutingTaskScheduler, false);
             }
+
             return result;
         }
 
@@ -100,6 +101,7 @@ namespace System.Threading.Tasks
             {
                 result.Start(result.ExecutingTaskScheduler, false);
             }
+
             return result;
         }
 
@@ -110,15 +112,19 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(function));
             }
+
             var source = new TaskCompletionSource<TResult>();
             var result = source.Task;
-            ThreadPool.QueueUserWorkItem(_ =>
-            {
-                function().ContinueWith
-                (
-                    task => source.SetResult(task.InternalResult)
-                );
-            });
+            ThreadPool.QueueUserWorkItem
+            (
+                _ =>
+                {
+                    function().ContinueWith
+                    (
+                        task => source.SetResult(task.InternalResult)
+                    );
+                }
+            );
             result.Wait();
             return result;
         }
@@ -129,6 +135,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(function));
             }
+
             var source = new TaskCompletionSource<TResult>();
             var result = source.Task;
             ThreadPool.QueueUserWorkItem(_ => function().ContinueWith(task => source.SetResult(task.InternalResult), cancellationToken));

@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -9,12 +9,12 @@ using System.Linq.Expressions;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// Generates debug information for lambdas in an expression tree.
+    ///     Generates debug information for lambdas in an expression tree.
     /// </summary>
     public abstract class DebugInfoGenerator
     {
         /// <summary>
-        /// Creates PDB symbol generator.
+        ///     Creates PDB symbol generator.
         /// </summary>
         /// <returns>PDB symbol generator.</returns>
         public static DebugInfoGenerator CreatePdbGenerator()
@@ -24,7 +24,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Marks a sequence point.
+        ///     Marks a sequence point.
         /// </summary>
         /// <param name="method">The lambda being generated.</param>
         /// <param name="ilOffset">IL offset where to mark the sequence point.</param>
