@@ -37,15 +37,16 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return 0;
             }
+
             return Parameter.GetHashCode() ^ Index.GetHashCode();
         }
     }
 
     internal sealed class LocalVariable
     {
-        public readonly int Index;
         private const int _inClosureFlag = 2;
         private const int _isBoxedFlag = 1;
+        public readonly int Index;
         private int _flags;
 
         internal LocalVariable(int index, bool closure)
@@ -80,12 +81,12 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class LocalVariables
     {
-        private int _localCount;
         private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new HybridReferenceDictionary<ParameterExpression, VariableScope>();
+        private int _localCount;
         public int LocalCount { get; private set; }
 
         /// <summary>
-        /// Gets the variables which are defined in an outer scope and available within the current scope.
+        ///     Gets the variables which are defined in an outer scope and available within the current scope.
         /// </summary>
         internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; private set; }
 
@@ -143,6 +144,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 ClosureVariables = new Dictionary<ParameterExpression, LocalVariable>();
             }
+
             var result = new LocalVariable(ClosureVariables.Count, true);
             ClosureVariables.Add(variable, result);
             return result;
@@ -174,15 +176,15 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         /// <summary>
-        /// Tracks where a variable is defined and what range of instructions it's used in.
+        ///     Tracks where a variable is defined and what range of instructions it's used in.
         /// </summary>
         private sealed class VariableScope
         {
-            public List<VariableScope> ChildScopes;
             public readonly VariableScope Parent;
             public readonly int Start;
-            public int Stop = int.MaxValue;
             public readonly LocalVariable Variable;
+            public List<VariableScope> ChildScopes;
+            public int Stop = int.MaxValue;
 
             public VariableScope(LocalVariable variable, int start, VariableScope parent)
             {

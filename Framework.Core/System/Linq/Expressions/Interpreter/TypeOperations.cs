@@ -75,7 +75,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var valueType = value.GetType();
 
-                if (!valueType.HasReferenceConversionTo(_t) &&  !valueType.HasIdentityPrimitiveOrNullableConversionTo(_t))
+                if (!valueType.HasReferenceConversionTo(_t) && !valueType.HasIdentityPrimitiveOrNullableConversionTo(_t))
                 {
                     throw new InvalidCastException();
                 }
@@ -91,6 +91,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 ConvertNull(frame);
             }
+
             return 1;
         }
 
@@ -218,12 +219,14 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var from = frame.Pop();
-            Debug.Assert(
+            Debug.Assert
+            (
                 new[]
                 {
                     TypeCode.Empty, TypeCode.Int32, TypeCode.SByte, TypeCode.Int16, TypeCode.Int64, TypeCode.UInt32,
                     TypeCode.Byte, TypeCode.UInt16, TypeCode.UInt64, TypeCode.Char, TypeCode.Boolean
-                }.Contains(Convert.GetTypeCode(from)));
+                }.Contains(Convert.GetTypeCode(from))
+            );
             frame.Push(from == null ? null : Enum.ToObject(_t, from));
             return 1;
         }
@@ -321,6 +324,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(obj.Equals(other));
                 }
+
                 return 1;
             }
         }
@@ -427,6 +431,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 operand = new ExpressionQuoter(_hoistedVariables, frame).Visit(operand);
             }
+
             frame.Push(operand);
             return 1;
         }
@@ -460,11 +465,13 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     _shadowedVars.Push(new HashSet<ParameterExpression>(node.Variables));
                 }
+
                 var b = ExpressionVisitorUtils.VisitBlockExpressions(this, node);
                 if (node.Variables.Count > 0)
                 {
                     _shadowedVars.Pop();
                 }
+
                 return b == null ? node : node.Rewrite(node.Variables, b);
             }
 
@@ -481,11 +488,13 @@ namespace System.Linq.Expressions.Interpreter
 
                     _shadowedVars.Push(parameters);
                 }
+
                 var b = Visit(node.Body);
                 if (node.ParameterCount > 0)
                 {
                     _shadowedVars.Pop();
                 }
+
                 return b == node.Body ? node : node.Rewrite(b, null);
             }
 
@@ -496,6 +505,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     return node;
                 }
+
                 return Expression.Convert(Expression.Field(Expression.Constant(box), "Value"), node.Type);
             }
 
@@ -534,7 +544,8 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 // Otherwise, we need to return an object that merges them.
-                return Expression.Invoke(
+                return Expression.Invoke
+                (
                     Expression.Constant(new Func<IRuntimeVariables, IRuntimeVariables, int[], IRuntimeVariables>(MergeRuntimeVariables)),
                     Expression.RuntimeVariables(ReadOnlyCollectionEx.Create(vars.ToArray())),
                     boxesConst,
@@ -546,18 +557,21 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (node.Variable != null)
                 {
-                    _shadowedVars.Push(new HashSet<ParameterExpression> { node.Variable });
+                    _shadowedVars.Push(new HashSet<ParameterExpression> {node.Variable});
                 }
+
                 var b = Visit(node.Body);
                 var f = Visit(node.Filter);
                 if (node.Variable != null)
                 {
                     _shadowedVars.Pop();
                 }
+
                 if (b == node.Body && f == node.Filter)
                 {
                     return node;
                 }
+
                 return Expression.MakeCatchBlock(node.Test, node.Variable, b, f);
             }
 
@@ -603,7 +617,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "TypeAs " + _type;
+        public override string ToString()
+        {
+            return "TypeAs " + _type;
+        }
     }
 
     internal sealed class TypeEqualsInstruction : Instruction
@@ -646,7 +663,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "TypeIs " + _type;
+        public override string ToString()
+        {
+            return "TypeIs " + _type;
+        }
     }
 }
 

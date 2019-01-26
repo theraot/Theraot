@@ -35,8 +35,10 @@ namespace System.Linq.Expressions.Interpreter
             throw ex;
         }
 
-        private static Exception WrapThrownObject(object thrown) =>
-            thrown == null ? null : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
+        private static Exception WrapThrownObject(object thrown)
+        {
+            return thrown == null ? null : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
+        }
     }
 }
 

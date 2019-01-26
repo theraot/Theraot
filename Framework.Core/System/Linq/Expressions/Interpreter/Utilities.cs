@@ -197,7 +197,7 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     /// <summary>
-    /// A hybrid dictionary which compares based upon object identity.
+    ///     A hybrid dictionary which compares based upon object identity.
     /// </summary>
     internal class HybridReferenceDictionary<TKey, TValue> where TKey : class
     {
@@ -263,6 +263,7 @@ namespace System.Linq.Expressions.Interpreter
                         {
                             _dict[pair.Key] = pair.Value;
                         }
+
                         _keysAndValues = null;
 
                         _dict[key] = value;
@@ -334,6 +335,7 @@ namespace System.Linq.Expressions.Interpreter
                     return true;
                 }
             }
+
             value = default;
             return false;
         }

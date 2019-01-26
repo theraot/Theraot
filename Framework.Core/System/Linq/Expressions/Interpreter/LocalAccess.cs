@@ -28,9 +28,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
-            return cookie == null ?
-                InstructionName + "(" + Index + ")" :
-                InstructionName + "(" + cookie + ": " + Index + ")";
+            return cookie == null ? InstructionName + "(" + Index + ")" : InstructionName + "(" + cookie + ": " + Index + ")";
         }
     }
 
@@ -439,6 +437,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 ret[i] = (IStrongBox)frame.Pop();
             }
+
             frame.Push(RuntimeVariables.Create(ret));
             return 1;
         }

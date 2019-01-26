@@ -51,7 +51,10 @@ namespace System.Linq.Expressions.Interpreter
             return string.Format(CultureInfo.InvariantCulture, "LoadCached({0}: {1})", _index, objects[(int)_index]);
         }
 
-        public override string ToString() => "LoadCached(" + _index + ")";
+        public override string ToString()
+        {
+            return "LoadCached(" + _index + ")";
+        }
     }
 
     internal sealed class LoadObjectInstruction : Instruction
@@ -72,7 +75,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "LoadObject(" + (_value ?? "null") + ")";
+        public override string ToString()
+        {
+            return "LoadObject(" + (_value ?? "null") + ")";
+        }
     }
 
     internal sealed class PopInstruction : Instruction

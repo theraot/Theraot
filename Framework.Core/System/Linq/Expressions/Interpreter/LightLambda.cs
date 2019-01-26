@@ -37,6 +37,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 frame.Data[i] = arguments[i];
             }
+
             var currentFrame = frame.Enter();
             try
             {
@@ -51,6 +52,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 frame.Leave(currentFrame);
             }
+
             return frame.Pop();
         }
 
@@ -61,6 +63,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 frame.Data[i] = arguments[i];
             }
+
             var currentFrame = frame.Enter();
             try
             {
@@ -75,6 +78,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 frame.Leave(currentFrame);
             }
+
             return null;
         }
 
@@ -106,9 +110,9 @@ namespace System.Linq.Expressions.Interpreter
         {
             private readonly Dictionary<int, string> _handlerEnter = new Dictionary<int, string>();
             private readonly Dictionary<int, int> _handlerExit = new Dictionary<int, int>();
-            private string _indent = "  ";
             private readonly Interpreter _interpreter;
             private readonly Dictionary<int, int> _tryStart = new Dictionary<int, int>();
+            private string _indent = "  ";
 
             public DebugViewPrinter(Interpreter interpreter)
             {
@@ -231,6 +235,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         continue;
                     }
+
                     {
                         var handler = enterTryFault.Handler;
 

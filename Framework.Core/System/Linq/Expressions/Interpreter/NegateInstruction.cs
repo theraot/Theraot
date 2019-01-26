@@ -49,6 +49,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(checked((short)-(short)obj));
                 }
+
                 return 1;
             }
         }
@@ -66,6 +67,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(checked(-(int)obj));
                 }
+
                 return 1;
             }
         }
@@ -83,6 +85,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(checked(-(long)obj));
                 }
+
                 return 1;
             }
         }
@@ -128,6 +131,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(-(double)obj);
                 }
+
                 return 1;
             }
         }
@@ -145,6 +149,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(unchecked((short)-(short)obj));
                 }
+
                 return 1;
             }
         }
@@ -162,6 +167,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(unchecked(-(int)obj));
                 }
+
                 return 1;
             }
         }
@@ -179,6 +185,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(unchecked(-(long)obj));
                 }
+
                 return 1;
             }
         }
@@ -196,6 +203,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(-(float)obj);
                 }
+
                 return 1;
             }
         }
