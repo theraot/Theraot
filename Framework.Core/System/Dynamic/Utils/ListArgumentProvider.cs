@@ -46,7 +46,6 @@ namespace System.Dynamic.Utils
     internal abstract class ListProvider<T> : IList<T>
         where T : class
     {
-
         public int Count => ElementCount;
 
         public bool IsReadOnly => true;

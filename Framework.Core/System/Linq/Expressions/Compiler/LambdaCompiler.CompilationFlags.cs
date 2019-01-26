@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 #pragma warning disable RCS1135 // Declare enum member with zero value (when enum has FlagsAttribute).
 #pragma warning disable RCS1154 // Sort enum members.
 #pragma warning disable RCS1157 // Composite enum value contains undefined flag.

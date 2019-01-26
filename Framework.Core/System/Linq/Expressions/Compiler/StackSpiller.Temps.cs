@@ -12,51 +12,60 @@ namespace System.Linq.Expressions.Compiler
     internal partial class StackSpiller
     {
         /// <summary>
-        /// The source of temporary variables introduced during stack spilling.
+        ///     The source of temporary variables introduced during stack spilling.
         /// </summary>
         private readonly TempMaker _tm = new TempMaker();
 
         /// <summary>
-        /// Frees temporaries created since the last marking using <see cref="Mark"/>.
+        ///     Frees temporaries created since the last marking using <see cref="Mark" />.
         /// </summary>
         /// <param name="mark">The watermark value up to which to recycle used temporary variables.</param>
         /// <remarks>
-        /// This is a performance optimization to lower the overall number of temporaries needed.
+        ///     This is a performance optimization to lower the overall number of temporaries needed.
         /// </remarks>
-        private void Free(int mark) => _tm.Free(mark);
+        private void Free(int mark)
+        {
+            _tm.Free(mark);
+        }
 
         /// <summary>
-        /// Creates a temporary variable of the specified <paramref name="type"/>.
+        ///     Creates a temporary variable of the specified <paramref name="type" />.
         /// </summary>
         /// <param name="type">The type for the temporary variable to create.</param>
         /// <returns>
-        /// A temporary variable of the specified <paramref name="type"/>. When the temporary
-        /// variable is no longer used, it should be returned by using the <see cref="Mark"/>
-        /// and <see cref="Free"/> mechanism provided.
+        ///     A temporary variable of the specified <paramref name="type" />. When the temporary
+        ///     variable is no longer used, it should be returned by using the <see cref="Mark" />
+        ///     and <see cref="Free" /> mechanism provided.
         /// </returns>
-        private ParameterExpression MakeTemp(Type type) => _tm.Temp(type);
+        private ParameterExpression MakeTemp(Type type)
+        {
+            return _tm.Temp(type);
+        }
 
         /// <summary>
-        /// Gets a watermark into the stack of used temporary variables. The returned
-        /// watermark value can be passed to <see cref="Free"/> to free all variables
-        /// below the watermark value, allowing them to be reused.
+        ///     Gets a watermark into the stack of used temporary variables. The returned
+        ///     watermark value can be passed to <see cref="Free" /> to free all variables
+        ///     below the watermark value, allowing them to be reused.
         /// </summary>
         /// <returns>
-        /// A watermark value indicating the number of temporary variables currently in use.
+        ///     A watermark value indicating the number of temporary variables currently in use.
         /// </returns>
         /// <remarks>
-        /// This is a performance optimization to lower the overall number of temporaries needed.
+        ///     This is a performance optimization to lower the overall number of temporaries needed.
         /// </remarks>
-        private int Mark() => _tm.Mark();
+        private int Mark()
+        {
+            return _tm.Mark();
+        }
 
         /// <summary>
-        /// Creates and returns a temporary variable to store the result of evaluating
-        /// the specified <paramref name="expression"/>.
+        ///     Creates and returns a temporary variable to store the result of evaluating
+        ///     the specified <paramref name="expression" />.
         /// </summary>
         /// <param name="expression">The expression to store in a temporary variable.</param>
-        /// <param name="save">An expression that assigns the <paramref name="expression"/> to the created temporary variable.</param>
-        /// <param name="byRef">Indicates whether the <paramref name="expression"/> represents a ByRef value.</param>
-        /// <returns>The temporary variable holding the result of evaluating <paramref name="expression"/>.</returns>
+        /// <param name="save">An expression that assigns the <paramref name="expression" /> to the created temporary variable.</param>
+        /// <param name="byRef">Indicates whether the <paramref name="expression" /> represents a ByRef value.</param>
+        /// <returns>The temporary variable holding the result of evaluating <paramref name="expression" />.</returns>
         private ParameterExpression ToTemp(Expression expression, out Expression save, bool byRef)
         {
             var tempType = byRef ? expression.Type.MakeByRefType() : expression.Type;
@@ -66,45 +75,48 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Verifies that all temporary variables get properly returned to the free list
-        /// after stack spilling for a lambda expression has taken place. This is used
-        /// to detect misuse of the <see cref="Mark"/> and <see cref="Free"/> methods.
+        ///     Verifies that all temporary variables get properly returned to the free list
+        ///     after stack spilling for a lambda expression has taken place. This is used
+        ///     to detect misuse of the <see cref="Mark" /> and <see cref="Free" /> methods.
         /// </summary>
         [Conditional("DEBUG")]
-        private void VerifyTemps() => _tm.VerifyTemps();
+        private void VerifyTemps()
+        {
+            _tm.VerifyTemps();
+        }
 
         /// <summary>
-        /// Utility to create and recycle temporary variables.
+        ///     Utility to create and recycle temporary variables.
         /// </summary>
         private sealed class TempMaker
         {
             /// <summary>
-            /// List of free temporary variables. These can be recycled for new temporary variables.
+            ///     List of free temporary variables. These can be recycled for new temporary variables.
             /// </summary>
             private List<ParameterExpression> _freeTemps;
 
             /// <summary>
-            /// Index of the next temporary variable to create.
-            /// This value is used for naming temporary variables using an increasing index.
+            ///     Index of the next temporary variable to create.
+            ///     This value is used for naming temporary variables using an increasing index.
             /// </summary>
             private int _temp;
 
             /// <summary>
-            /// Stack of temporary variables that are currently in use.
+            ///     Stack of temporary variables that are currently in use.
             /// </summary>
             private Stack<ParameterExpression> _usedTemps;
 
             /// <summary>
-            /// List of all temporary variables created by the stack spiller instance.
+            ///     List of all temporary variables created by the stack spiller instance.
             /// </summary>
             internal List<ParameterExpression> Temps { get; } = new List<ParameterExpression>();
 
             /// <summary>
-            /// Frees temporaries created since the last marking using <see cref="Mark"/>.
+            ///     Frees temporaries created since the last marking using <see cref="Mark" />.
             /// </summary>
             /// <param name="mark">The watermark value up to which to recycle used temporary variables.</param>
             /// <remarks>
-            /// This is a performance optimization to lower the overall number of temporaries needed.
+            ///     This is a performance optimization to lower the overall number of temporaries needed.
             /// </remarks>
             internal void Free(int mark)
             {
@@ -125,26 +137,29 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Gets a watermark into the stack of used temporary variables. The returned
-            /// watermark value can be passed to <see cref="Free"/> to free all variables
-            /// below the watermark value, allowing them to be reused.
+            ///     Gets a watermark into the stack of used temporary variables. The returned
+            ///     watermark value can be passed to <see cref="Free" /> to free all variables
+            ///     below the watermark value, allowing them to be reused.
             /// </summary>
             /// <returns>
-            /// A watermark value indicating the number of temporary variables currently in use.
+            ///     A watermark value indicating the number of temporary variables currently in use.
             /// </returns>
             /// <remarks>
-            /// This is a performance optimization to lower the overall number of temporaries needed.
+            ///     This is a performance optimization to lower the overall number of temporaries needed.
             /// </remarks>
-            internal int Mark() => _usedTemps?.Count ?? 0;
+            internal int Mark()
+            {
+                return _usedTemps?.Count ?? 0;
+            }
 
             /// <summary>
-            /// Creates a temporary variable of the specified <paramref name="type"/>.
+            ///     Creates a temporary variable of the specified <paramref name="type" />.
             /// </summary>
             /// <param name="type">The type for the temporary variable to create.</param>
             /// <returns>
-            /// A temporary variable of the specified <paramref name="type"/>. When the temporary
-            /// variable is no longer used, it should be returned by using the <see cref="Mark"/>
-            /// and <see cref="Free"/> mechanism provided.
+            ///     A temporary variable of the specified <paramref name="type" />. When the temporary
+            ///     variable is no longer used, it should be returned by using the <see cref="Mark" />
+            ///     and <see cref="Free" /> mechanism provided.
             /// </returns>
             internal ParameterExpression Temp(Type type)
             {
@@ -174,9 +189,9 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Verifies that all temporary variables get properly returned to the free list
-            /// after stack spilling for a lambda expression has taken place. This is used
-            /// to detect misuse of the <see cref="Mark"/> and <see cref="Free"/> methods.
+            ///     Verifies that all temporary variables get properly returned to the free list
+            ///     after stack spilling for a lambda expression has taken place. This is used
+            ///     to detect misuse of the <see cref="Mark" /> and <see cref="Free" /> methods.
             /// </summary>
             [Conditional("DEBUG")]
             internal void VerifyTemps()
@@ -185,8 +200,8 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Puts the temporary variable on the free list which is used by the
-            /// <see cref="Temp"/> method to reuse temporary variables.
+            ///     Puts the temporary variable on the free list which is used by the
+            ///     <see cref="Temp" /> method to reuse temporary variables.
             /// </summary>
             /// <param name="temp">The temporary variable to mark as no longer in use.</param>
             private void FreeTemp(ParameterExpression temp)
@@ -197,9 +212,9 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Registers the temporary variable in the stack of used temporary variables.
-            /// The <see cref="Mark"/> and <see cref="Free"/> methods use a watermark index
-            /// into this stack to enable recycling temporary variables in bulk.
+            ///     Registers the temporary variable in the stack of used temporary variables.
+            ///     The <see cref="Mark" /> and <see cref="Free" /> methods use a watermark index
+            ///     into this stack to enable recycling temporary variables in bulk.
             /// </summary>
             /// <param name="temp">The temporary variable to mark as used.</param>
             /// <returns>The original temporary variable.</returns>

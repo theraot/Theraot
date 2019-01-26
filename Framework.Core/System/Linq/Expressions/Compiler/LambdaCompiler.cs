@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -31,9 +30,6 @@ namespace System.Linq.Expressions.Compiler
         // True if the method's first argument is of type Closure
         private readonly bool _hasClosureArgument;
 
-        // Currently active LabelTargets and their mapping to IL labels
-        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
-
         // Mapping of labels used for "long" jumps (jumping out and into blocks)
         private readonly Dictionary<LabelTarget, LabelInfo> _labelInfo = new Dictionary<LabelTarget, LabelInfo>();
 
@@ -42,14 +38,17 @@ namespace System.Linq.Expressions.Compiler
 
         private readonly MethodInfo _method;
 
-        // The currently active variable scope
-        private CompilerScope _scope;
-
         // Information on the entire lambda tree currently being compiled
         private readonly AnalyzedTree _tree;
 
         // The TypeBuilder backing this method, if any
         private readonly TypeBuilder _typeBuilder;
+
+        // Currently active LabelTargets and their mapping to IL labels
+        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+
+        // The currently active variable scope
+        private CompilerScope _scope;
 
         /// <summary>
         ///     Creates a lambda compiler that will compile to a dynamic method
@@ -128,8 +127,6 @@ namespace System.Linq.Expressions.Compiler
             _scope = _tree.Scopes[invocation];
             _boundConstants = parent._boundConstants;
         }
-
-        private delegate void WriteBack(LambdaCompiler compiler);
 
         internal bool CanEmitBoundConstants => _method is DynamicMethod;
 
@@ -238,6 +235,8 @@ namespace System.Linq.Expressions.Compiler
             AddReturnLabel(_lambda);
             _boundConstants.EmitCacheConstants(this);
         }
+
+        private delegate void WriteBack(LambdaCompiler compiler);
     }
 }
 

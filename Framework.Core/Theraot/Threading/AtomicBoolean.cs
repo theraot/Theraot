@@ -29,7 +29,6 @@ namespace Theraot.Threading
 {
     public class AtomicBoolean
     {
-
         public static implicit operator AtomicBoolean(bool value)
         {
             return new AtomicBoolean { Value = value };
@@ -39,6 +38,7 @@ namespace Theraot.Threading
         {
             return atomicBoolean.Value;
         }
+
         private const int _set = 1;
         private const int _unset = 0;
         private int _value;

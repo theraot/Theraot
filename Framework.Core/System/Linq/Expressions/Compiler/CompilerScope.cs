@@ -56,7 +56,6 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal sealed partial class CompilerScope
     {
-
         /// <summary>
         ///     Variables defined in this scope, and whether they're hoisted or not
         ///     Populated by VariableBinder
@@ -105,6 +104,7 @@ namespace System.Linq.Expressions.Compiler
         ///     Provides storage for variables that are referenced from nested lambdas
         /// </summary>
         private HoistedLocals _hoistedLocals;
+
         /// <summary>
         ///     Mutable dictionary that maps non-hoisted variables to either local
         ///     slots or argument slots

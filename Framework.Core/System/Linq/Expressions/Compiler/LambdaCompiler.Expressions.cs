@@ -1149,8 +1149,6 @@ namespace System.Linq.Expressions.Compiler
                     EmitExpressionAsVoid(node.Expression);
                     IL.EmitPrimitive(result == AnalyzeTypeIsResult.KnownTrue);
                     return;
-                // We know the type can be assigned, but still need to check
-                // for null at runtime
                 case AnalyzeTypeIsResult.KnownAssignable when type.IsNullable():
                     EmitAddress(node.Expression, type);
                     IL.EmitHasValue(type);

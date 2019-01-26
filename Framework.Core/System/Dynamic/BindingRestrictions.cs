@@ -25,7 +25,6 @@ namespace System.Dynamic
     [DebuggerDisplay("{DebugView}")]
     public abstract class BindingRestrictions
     {
-
         /// <summary>
         ///     Represents an empty set of binding restrictions. This field is read-only.
         /// </summary>

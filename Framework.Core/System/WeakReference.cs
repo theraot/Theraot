@@ -11,9 +11,9 @@ namespace System
     public sealed class WeakReference<T> : ISerializable
         where T : class
     {
-
         [NonSerialized]
         private GCHandle _handle;
+
         private readonly bool _trackResurrection;
 
         public WeakReference(T target)

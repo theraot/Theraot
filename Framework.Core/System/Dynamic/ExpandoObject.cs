@@ -50,6 +50,7 @@ namespace System.Dynamic
 
         private static readonly MethodInfo _expandoTrySetValue =
             typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.ExpandoTrySetValue));
+
         private int _count;
 
         private ExpandoData _data; // the data currently being held by the Expando object

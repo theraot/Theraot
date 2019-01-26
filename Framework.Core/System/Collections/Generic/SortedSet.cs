@@ -12,9 +12,9 @@ namespace System.Collections.Generic
     [Serializable]
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
-
         [NonSerialized]
         private SerializationInfo _serializationInfo;
+
         private readonly AVLTree<T, T> _wrapped;
 
         public SortedSet()

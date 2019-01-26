@@ -16,9 +16,9 @@ namespace System.Collections.Concurrent
     [Serializable]
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
-
         [NonSerialized]
         private ValueCollection<TKey, TValue> _valueCollection;
+
         private readonly SafeDictionary<TKey, TValue> _wrapped;
 
         public ConcurrentDictionary()

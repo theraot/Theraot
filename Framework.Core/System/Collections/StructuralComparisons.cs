@@ -15,7 +15,6 @@ namespace System.Collections
 
         private sealed class InternalComparer : IComparer, IEqualityComparer
         {
-
             private static void CheckRank(object x, object y, Type typeX, Type typeY)
             {
                 var xRankInfo = typeX.GetProperty("Rank");
@@ -44,6 +43,7 @@ namespace System.Collections
                 result = xNull == yNull;
                 return xNull || yNull;
             }
+
             int IComparer.Compare(object x, object y)
             {
                 if (x is IStructuralComparable comparable)
