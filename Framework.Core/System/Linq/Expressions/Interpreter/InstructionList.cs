@@ -50,11 +50,12 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionList.DebugView.InstructionView[]/*!*/ A0 => GetInstructionViews(true);
+            public InstructionList.DebugView.InstructionView[] /*!*/ A0 => GetInstructionViews(true);
 
             public InstructionList.DebugView.InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {
-                return InstructionList.DebugView.GetInstructionViews(
+                return InstructionList.DebugView.GetInstructionViews
+                (
                     _array.Instructions,
                     _array.Objects,
                     index => _array.Labels[index].Index,
@@ -106,7 +107,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static Instruction[] _assignLocalToClosure;
 
-        private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
+        private static readonly RuntimeLabel[] _emptyRuntimeLabels = {new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0)};
         private static Instruction _false;
         private static Instruction[] _ints;
 
@@ -791,7 +792,8 @@ namespace System.Linq.Expressions.Interpreter
                 });
             }
 #endif
-            return new InstructionArray(
+            return new InstructionArray
+            (
                 MaxStackDepth,
                 _maxContinuationDepth,
                 Theraot.Collections.Extensions.AsArrayInternal(_instructions),
@@ -896,7 +898,10 @@ namespace System.Linq.Expressions.Interpreter
             _instructions[branchIndex] = ((OffsetInstruction)_instructions[branchIndex]).Fixup(offset);
         }
 
-        internal Instruction GetInstruction(int index) => _instructions[index];
+        internal Instruction GetInstruction(int index)
+        {
+            return _instructions[index];
+        }
 
         internal void SwitchToBoxed(int index, int instructionIndex)
         {
@@ -942,6 +947,7 @@ namespace System.Linq.Expressions.Interpreter
                     result[label.LabelIndex] = label.ToRuntimeLabel();
                 }
             }
+
             // "return and rethrow" label:
             result[result.Length - 1] = new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0);
             return result;
@@ -997,16 +1003,17 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionView[]/*!*/ A0 => GetInstructionViews(true);
+            public InstructionView[] /*!*/ A0 => GetInstructionViews(true);
 
             public InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {
-                return GetInstructionViews(
-                        _list._instructions,
-                        _list._objects,
-                        index => _list._labels[index].TargetIndex,
-                        includeDebugCookies ? _list._debugCookies : null
-                    );
+                return GetInstructionViews
+                (
+                    _list._instructions,
+                    _list._objects,
+                    index => _list._labels[index].TargetIndex,
+                    includeDebugCookies ? _list._debugCookies : null
+                );
             }
 
             internal static InstructionView[] GetInstructionViews(IList<Instruction> instructions, IList<object> objects,
@@ -1019,11 +1026,11 @@ namespace System.Linq.Expressions.Interpreter
                 using
                 (
                     var cookieEnumerator =
-                    (
-                        debugCookies ??
-                        ArrayReservoir<KeyValuePair<int, object>>.EmptyArray
-                    )
-                    .GetEnumerator()
+                        (
+                            debugCookies ??
+                            ArrayReservoir<KeyValuePair<int, object>>.EmptyArray
+                        )
+                        .GetEnumerator()
                 )
                 {
                     var hasCookie = cookieEnumerator.MoveNext();
@@ -1078,8 +1085,8 @@ namespace System.Linq.Expressions.Interpreter
                 internal string GetName()
                 {
                     return _index +
-                        (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth + ")") +
-                        (_stackDepth == 0 ? "" : " S(" + _stackDepth + ")");
+                           (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth + ")") +
+                           (_stackDepth == 0 ? "" : " S(" + _stackDepth + ")");
                 }
 
                 internal string GetValue()

@@ -19,7 +19,10 @@ namespace System.Linq.Expressions.Interpreter
             Field = field;
         }
 
-        public override string ToString() => InstructionName + "(" + Field + ")";
+        public override string ToString()
+        {
+            return InstructionName + "(" + Field + ")";
+        }
     }
 
     internal sealed class LoadFieldInstruction : FieldInstruction

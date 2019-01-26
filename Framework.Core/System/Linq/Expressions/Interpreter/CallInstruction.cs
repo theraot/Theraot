@@ -100,7 +100,7 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class CallInstruction : Instruction
     {
         /// <summary>
-        /// The number of arguments including "this" for instance methods.
+        ///     The number of arguments including "this" for instance methods.
         /// </summary>
         public abstract int ArgumentCount { get; }
 
@@ -325,21 +325,15 @@ namespace System.Linq.Expressions.Interpreter
             switch (arrayType?.GetArrayRank())
             {
                 case 1:
-                    alternativeMethod = isGetter ?
-                        arrayType.GetMethod("GetValue", new[] { typeof(int) }) :
-                        typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter1));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter1));
                     break;
 
                 case 2:
-                    alternativeMethod = isGetter ?
-                        arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int) }) :
-                        typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter2));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int), typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter2));
                     break;
 
                 case 3:
-                    alternativeMethod = isGetter ?
-                        arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int), typeof(int) }) :
-                        typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter3));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int), typeof(int), typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter3));
                     break;
                 default:
                     break;
@@ -420,7 +414,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "Call(" + Target + ")";
+        public override string ToString()
+        {
+            return "Call(" + Target + ")";
+        }
 
         protected object[] GetArgs(InterpretedFrame frame, int first, int skip)
         {

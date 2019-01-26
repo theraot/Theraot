@@ -35,11 +35,17 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     /// <summary>
-    /// Contains compiler state corresponding to a LabelTarget
-    /// <seealso cref="LabelScopeInfo"/>
+    ///     Contains compiler state corresponding to a LabelTarget
+    ///     <seealso cref="LabelScopeInfo" />
     /// </summary>
     internal sealed class LabelInfo
     {
+        // The tree node representing this label
+        private readonly LabelTarget _node;
+
+        // Blocks that jump to this block
+        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
+
         // True if at least one jump is across blocks
         // If we have any jump across blocks to this label, then the
         // LabelTarget can only be defined in one place
@@ -53,11 +59,6 @@ namespace System.Linq.Expressions.Interpreter
 
         // The BranchLabel label, will be mutated if Node is redefined
         private BranchLabel _label;
-        // The tree node representing this label
-        private readonly LabelTarget _node;
-
-        // Blocks that jump to this block
-        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
 
         internal LabelInfo(LabelTarget node)
         {
@@ -75,11 +76,13 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return first;
             }
+
             var set = new HashSet<T>(cmp);
             for (var t = first; t != null; t = parent(t))
             {
                 set.Add(t);
             }
+
             for (var t = second; t != null; t = parent(t))
             {
                 if (set.Contains(t))
@@ -87,6 +90,7 @@ namespace System.Linq.Expressions.Interpreter
                     return t;
                 }
             }
+
             return null;
         }
 
@@ -122,6 +126,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     throw new InvalidOperationException($"Cannot jump to ambiguous label '{_node.Name}'.");
                 }
+
                 // For local jumps, we need a new IL label
                 // This is okay because:
                 //   1. no across block jumps have been made or will be made
@@ -164,8 +169,9 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (!(_definitions is HashSet<LabelScopeInfo> set))
                 {
-                    _definitions = set = new HashSet<LabelScopeInfo> { (LabelScopeInfo)_definitions };
+                    _definitions = set = new HashSet<LabelScopeInfo> {(LabelScopeInfo)_definitions};
                 }
+
                 set.Add(scope);
             }
         }
@@ -181,6 +187,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return definitions.Contains(scope);
             }
+
             return false;
         }
 
@@ -198,10 +205,12 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return scope;
             }
+
             foreach (var x in (HashSet<LabelScopeInfo>)_definitions)
             {
                 return x;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -215,6 +224,7 @@ namespace System.Linq.Expressions.Interpreter
                     // found it, jump is valid!
                     return;
                 }
+
                 if (j.Kind == LabelScopeKind.Finally || j.Kind == LabelScopeKind.Filter)
                 {
                     break;
@@ -293,7 +303,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         /// <summary>
-        /// Returns true if we can jump into this node
+        ///     Returns true if we can jump into this node
         /// </summary>
         internal bool CanJumpInto
         {

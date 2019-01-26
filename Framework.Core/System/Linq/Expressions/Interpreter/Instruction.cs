@@ -22,9 +22,15 @@ namespace System.Linq.Expressions.Interpreter
 
         public abstract int Run(InterpretedFrame frame);
 
-        public virtual string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects) => ToString();
+        public virtual string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
+        {
+            return ToString();
+        }
 
-        public override string ToString() => InstructionName + "()";
+        public override string ToString()
+        {
+            return InstructionName + "()";
+        }
 
         // throws NRE when o is null
         protected static void NullCheck(object o)

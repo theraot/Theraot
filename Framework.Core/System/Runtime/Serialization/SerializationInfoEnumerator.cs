@@ -19,6 +19,7 @@ namespace System.Runtime.Serialization
             Value = entryValue;
             ObjectType = entryType;
         }
+
         public string Name { get; }
         public Type ObjectType { get; }
 

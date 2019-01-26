@@ -83,6 +83,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 FixupBranch(instructions, branchIndex);
             }
+
             _forwardBranchFixups = null;
         }
 

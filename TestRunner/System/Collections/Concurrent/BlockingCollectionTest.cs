@@ -9,7 +9,6 @@ namespace TestRunner.System.Collections.Concurrent
     [TestFixture]
     public static class BlockingCollectionTest
     {
-
         [Test]
         public static void GetConsumingEnumerableShouldBlockWithCancellationTokenNone()
         {
@@ -30,6 +29,7 @@ namespace TestRunner.System.Collections.Concurrent
         {
             GetConsumingEnumerableTestImpl(null);
         }
+
         [Test]
         public static void TryTakeFromEmptyBlockingCollectionShouldNotThrow()
         {
