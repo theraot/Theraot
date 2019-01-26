@@ -87,7 +87,8 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="P:System.Linq.Expressions.TypeBinaryExpression.Expression" /> represents.
+        ///     Gets the static type of the expression that this
+        ///     <see cref="P:System.Linq.Expressions.TypeBinaryExpression.Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(bool);

@@ -13,21 +13,23 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         /// <summary>
-        /// Creates a <see cref="ParameterExpression"/> node that can be used to identify a parameter or a variable in an expression tree.
+        ///     Creates a <see cref="ParameterExpression" /> node that can be used to identify a parameter or a variable in an
+        ///     expression tree.
         /// </summary>
         /// <param name="type">The type of the parameter or variable.</param>
-        /// <returns>A <see cref="ParameterExpression"/> node with the specified name and type.</returns>
+        /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
         public static ParameterExpression Parameter(Type type)
         {
             return Parameter(type, null);
         }
 
         /// <summary>
-        /// Creates a <see cref="ParameterExpression"/> node that can be used to identify a parameter or a variable in an expression tree.
+        ///     Creates a <see cref="ParameterExpression" /> node that can be used to identify a parameter or a variable in an
+        ///     expression tree.
         /// </summary>
         /// <param name="type">The type of the parameter or variable.</param>
         /// <param name="name">The name of the parameter or variable, used for debugging or pretty printing purpose only.</param>
-        /// <returns>A <see cref="ParameterExpression"/> node with the specified name and type.</returns>
+        /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
         public static ParameterExpression Parameter(Type type, string name)
         {
             Validate(type, true);
@@ -41,21 +43,23 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="ParameterExpression"/> node that can be used to identify a parameter or a variable in an expression tree.
+        ///     Creates a <see cref="ParameterExpression" /> node that can be used to identify a parameter or a variable in an
+        ///     expression tree.
         /// </summary>
         /// <param name="type">The type of the parameter or variable.</param>
-        /// <returns>A <see cref="ParameterExpression"/> node with the specified name and type.</returns>
+        /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
         public static ParameterExpression Variable(Type type)
         {
             return Variable(type, null);
         }
 
         /// <summary>
-        /// Creates a <see cref="ParameterExpression"/> node that can be used to identify a parameter or a variable in an expression tree.
+        ///     Creates a <see cref="ParameterExpression" /> node that can be used to identify a parameter or a variable in an
+        ///     expression tree.
         /// </summary>
         /// <param name="type">The type of the parameter or variable.</param>
         /// <param name="name">The name of the parameter or variable, used for debugging or pretty printing purpose only.</param>
-        /// <returns>A <see cref="ParameterExpression"/> node with the specified name and type.</returns>
+        /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
         public static ParameterExpression Variable(Type type, string name)
         {
             Validate(type, false);
@@ -76,7 +80,7 @@ namespace System.Linq.Expressions
 
     /// <inheritdoc />
     /// <summary>
-    /// Represents a named parameter expression.
+    ///     Represents a named parameter expression.
     /// </summary>
     [DebuggerTypeProxy(typeof(ParameterExpressionProxy))]
     public class ParameterExpression : Expression
@@ -87,25 +91,27 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Indicates that this <see cref="ParameterExpression"/> is to be treated as a ByRef parameter.
+        ///     Indicates that this <see cref="ParameterExpression" /> is to be treated as a ByRef parameter.
         /// </summary>
         public bool IsByRef => GetIsByRef();
 
         /// <summary>
-        /// The Name of the parameter or variable.
+        ///     The Name of the parameter or variable.
         /// </summary>
         public string Name { get; }
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from
+        ///     <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
         /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Parameter;
 
         /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
         /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(object);
@@ -149,6 +155,7 @@ namespace System.Linq.Expressions
                     {
                         return new PrimitiveParameterExpression<object[]>(name);
                     }
+
                     break;
 
                 case TypeCode.SByte: return new PrimitiveParameterExpression<sbyte>(name);
@@ -164,7 +171,10 @@ namespace System.Linq.Expressions
             return new TypedParameterExpression(type, name);
         }
 
-        internal virtual bool GetIsByRef() => false;
+        internal virtual bool GetIsByRef()
+        {
+            return false;
+        }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
@@ -174,9 +184,9 @@ namespace System.Linq.Expressions
 
     /// <inheritdoc />
     /// <summary>
-    /// Specialized subclass to avoid holding onto the byref flag in a
-    /// parameter expression.  This version always holds onto the expression
-    /// type explicitly and therefore derives from TypedParameterExpression.
+    ///     Specialized subclass to avoid holding onto the byref flag in a
+    ///     parameter expression.  This version always holds onto the expression
+    ///     type explicitly and therefore derives from TypedParameterExpression.
     /// </summary>
     internal sealed class ByRefParameterExpression : TypedParameterExpression
     {
@@ -185,13 +195,16 @@ namespace System.Linq.Expressions
         {
         }
 
-        internal override bool GetIsByRef() => true;
+        internal override bool GetIsByRef()
+        {
+            return true;
+        }
     }
 
     /// <inheritdoc />
     /// <summary>
-    /// Generic type to avoid needing explicit storage for primitive data types
-    /// which are commonly used.
+    ///     Generic type to avoid needing explicit storage for primitive data types
+    ///     which are commonly used.
     /// </summary>
     internal sealed class PrimitiveParameterExpression<T> : ParameterExpression
     {
@@ -205,8 +218,8 @@ namespace System.Linq.Expressions
 
     /// <inheritdoc />
     /// <summary>
-    /// Specialized subclass which holds onto the type of the expression for
-    /// uncommon types.
+    ///     Specialized subclass which holds onto the type of the expression for
+    ///     uncommon types.
     /// </summary>
     internal class TypedParameterExpression : ParameterExpression
     {

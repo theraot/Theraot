@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System.Collections.Generic;

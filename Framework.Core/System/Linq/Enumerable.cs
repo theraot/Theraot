@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 // ReSharper disable LoopCanBeConvertedToQuery

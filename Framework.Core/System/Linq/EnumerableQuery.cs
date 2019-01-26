@@ -1,5 +1,4 @@
-#if LESSTHAN_NET40
-
+﻿#if LESSTHAN_NET40
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;

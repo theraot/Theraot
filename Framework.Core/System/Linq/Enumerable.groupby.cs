@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 // ReSharper disable LoopCanBeConvertedToQuery
 
 using System.Collections;
