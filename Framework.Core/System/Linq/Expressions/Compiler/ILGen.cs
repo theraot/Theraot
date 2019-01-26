@@ -34,7 +34,6 @@ namespace System.Linq.Expressions.Compiler
         internal static void Emit(this ILGenerator il, OpCode opcode, MethodBase methodBase)
         {
             Debug.Assert(methodBase is MethodInfo || methodBase is ConstructorInfo);
-
             if (methodBase is ConstructorInfo ctor)
             {
                 il.Emit(opcode, ctor);
@@ -48,7 +47,6 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitArray<T>(this ILGenerator il, T[] items, ILocalCache locals)
         {
             Debug.Assert(items != null);
-
             il.EmitPrimitive(items.Length);
             il.Emit(OpCodes.Newarr, typeof(T));
             for (var i = 0; i < items.Length; i++)
@@ -64,7 +62,6 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(elementType != null);
             Debug.Assert(count >= 0);
-
             il.EmitPrimitive(count);
             il.Emit(OpCodes.Newarr, elementType);
         }
@@ -73,7 +70,6 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(arrayType != null);
             Debug.Assert(arrayType.IsArray);
-
             if (arrayType.IsSafeArray())
             {
                 il.Emit(OpCodes.Newarr, arrayType.GetElementType());
@@ -100,13 +96,10 @@ namespace System.Linq.Expressions.Compiler
             }
 
             Debug.Assert(typeFrom != typeof(void) && typeTo != typeof(void));
-
             var isTypeFromNullable = typeFrom.IsNullable();
             var isTypeToNullable = typeTo.IsNullable();
-
             var nnExprType = typeFrom.GetNonNullable();
             var nnType = typeTo.GetNonNullable();
-
             if
             (
                 typeFrom.IsInterface // interface cast
@@ -124,10 +117,15 @@ namespace System.Linq.Expressions.Compiler
             {
                 il.EmitNullableConversion(typeFrom, typeTo, isChecked, locals);
             }
-            else if (!(typeFrom.IsConvertible() && typeTo.IsConvertible()) // primitive runtime conversion
-                     &&
-                     (nnExprType.IsAssignableFrom(nnType) || // down cast
-                      nnType.IsAssignableFrom(nnExprType))) // up cast
+            else if
+            (
+                !(typeFrom.IsConvertible() && typeTo.IsConvertible()) // primitive runtime conversion
+                &&
+                (
+                    nnExprType.IsAssignableFrom(nnType) // down cast
+                    || nnType.IsAssignableFrom(nnExprType) // up cast
+                )
+            )
             {
                 il.EmitCastToType(typeFrom, typeTo);
             }
@@ -212,21 +210,18 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitFieldAddress(this ILGenerator il, FieldInfo fi)
         {
             Debug.Assert(fi != null);
-
             il.Emit(fi.IsStatic ? OpCodes.Ldsflda : OpCodes.Ldflda, fi);
         }
 
         internal static void EmitFieldGet(this ILGenerator il, FieldInfo fi)
         {
             Debug.Assert(fi != null);
-
             il.Emit(fi.IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld, fi);
         }
 
         internal static void EmitFieldSet(this ILGenerator il, FieldInfo fi)
         {
             Debug.Assert(fi != null);
-
             il.Emit(fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, fi);
         }
 
@@ -255,7 +250,6 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(index >= 0);
             Debug.Assert(index < ushort.MaxValue);
-
             switch (index)
             {
                 case 0:
@@ -293,7 +287,6 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(index >= 0);
             Debug.Assert(index < ushort.MaxValue);
-
             if (index <= byte.MaxValue)
             {
                 il.Emit(OpCodes.Ldarga_S, (byte)index);
@@ -308,7 +301,6 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitLoadElement(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
-
             if (!type.IsValueType)
             {
                 il.Emit(OpCodes.Ldelem_Ref);
@@ -366,7 +358,6 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitLoadValueIndirect(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
-
             switch (type.GetTypeCode())
             {
                 case TypeCode.Byte:
@@ -427,7 +418,6 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(ci != null);
             Debug.Assert(ci.DeclaringType != null);
             Debug.Assert(!ci.DeclaringType.ContainsGenericParameters);
-
             il.Emit(OpCodes.Newobj, ci);
         }
 
@@ -506,7 +496,6 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(index >= 0);
             Debug.Assert(index < ushort.MaxValue);
-
             if (index <= byte.MaxValue)
             {
                 il.Emit(OpCodes.Starg_S, (byte)index);
@@ -571,7 +560,6 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitStoreValueIndirect(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
-
             switch (type.GetTypeCode())
             {
                 case TypeCode.Boolean:
@@ -621,14 +609,12 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitString(this ILGenerator il, string value)
         {
             Debug.Assert(value != null);
-
             il.Emit(OpCodes.Ldstr, value);
         }
 
         internal static void EmitType(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
-
             il.Emit(OpCodes.Ldtoken, type);
             il.Emit(OpCodes.Call, CachedReflectionInfo.TypeGetTypeFromHandle);
         }
@@ -673,8 +659,10 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     return true;
+
                 case Type _:
                     return false;
+
                 case MethodBase mb when ShouldLdtoken(mb):
                     il.Emit(OpCodes.Ldtoken, mb);
                     var dt = mb.DeclaringType;
@@ -694,6 +682,7 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     return true;
+
                 default:
                     return false;
             }
@@ -718,6 +707,7 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Decimal:
                 case TypeCode.String:
                     return true;
+
                 default:
                     return false;
             }
@@ -918,7 +908,6 @@ namespace System.Linq.Expressions.Compiler
         {
             var tc = typeTo.GetTypeCode();
             var tf = typeFrom.GetTypeCode();
-
             if (tc == tf)
             {
                 // Between enums of same underlying type, or between such an enum and the underlying type itself.
@@ -956,40 +945,46 @@ namespace System.Linq.Expressions.Compiler
                     //     conversion lambda to be omitted in these cases, so we have to handle this case in
                     //     here as well, by using the op_Implicit operator implementation on System.Decimal
                     //     because there are no opcodes for System.Decimal.
-
                     Debug.Assert(typeFrom != typeTo);
-
                     MethodInfo method;
-
                     switch (tf)
                     {
                         case TypeCode.Byte:
                             method = CachedReflectionInfo.DecimalOpImplicitByte;
                             break;
+
                         case TypeCode.SByte:
                             method = CachedReflectionInfo.DecimalOpImplicitSByte;
                             break;
+
                         case TypeCode.Int16:
                             method = CachedReflectionInfo.DecimalOpImplicitInt16;
                             break;
+
                         case TypeCode.UInt16:
                             method = CachedReflectionInfo.DecimalOpImplicitUInt16;
                             break;
+
                         case TypeCode.Int32:
                             method = CachedReflectionInfo.DecimalOpImplicitInt32;
                             break;
+
                         case TypeCode.UInt32:
                             method = CachedReflectionInfo.DecimalOpImplicitUInt32;
                             break;
+
                         case TypeCode.Int64:
                             method = CachedReflectionInfo.DecimalOpImplicitInt64;
                             break;
+
                         case TypeCode.UInt64:
                             method = CachedReflectionInfo.DecimalOpImplicitUInt64;
                             break;
+
                         case TypeCode.Char:
                             method = CachedReflectionInfo.DecimalOpImplicitChar;
                             break;
+
                         default:
                             throw ContractUtils.Unreachable;
                     }
@@ -1046,12 +1041,15 @@ namespace System.Linq.Expressions.Compiler
                             }
 
                             break;
+
                         default:
                             break;
                     }
 
                     convCode = isChecked
-                        ? isFromUnsigned ? OpCodes.Conv_Ovf_I2_Un : OpCodes.Conv_Ovf_I2
+                        ? isFromUnsigned
+                            ? OpCodes.Conv_Ovf_I2_Un
+                            : OpCodes.Conv_Ovf_I2
                         : OpCodes.Conv_I2;
                     break;
 
@@ -1077,7 +1075,9 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? isFromUnsigned ? OpCodes.Conv_Ovf_U2_Un : OpCodes.Conv_Ovf_U2
+                        ? isFromUnsigned
+                            ? OpCodes.Conv_Ovf_U2_Un
+                            : OpCodes.Conv_Ovf_U2
                         : OpCodes.Conv_U2;
                     break;
 
@@ -1097,12 +1097,15 @@ namespace System.Linq.Expressions.Compiler
                             }
 
                             break;
+
                         default:
                             break;
                     }
 
                     convCode = isChecked
-                        ? isFromUnsigned ? OpCodes.Conv_Ovf_I4_Un : OpCodes.Conv_Ovf_I4
+                        ? isFromUnsigned
+                            ? OpCodes.Conv_Ovf_I4_Un
+                            : OpCodes.Conv_Ovf_I4
                         : OpCodes.Conv_I4;
                     break;
 
@@ -1123,12 +1126,15 @@ namespace System.Linq.Expressions.Compiler
                             }
 
                             break;
+
                         default:
                             break;
                     }
 
                     convCode = isChecked
-                        ? isFromUnsigned ? OpCodes.Conv_Ovf_U4_Un : OpCodes.Conv_Ovf_U4
+                        ? isFromUnsigned
+                            ? OpCodes.Conv_Ovf_U4_Un
+                            : OpCodes.Conv_Ovf_U4
                         : OpCodes.Conv_U4;
                     break;
 
@@ -1139,7 +1145,9 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? isFromUnsigned ? OpCodes.Conv_Ovf_I8_Un : OpCodes.Conv_Ovf_I8
+                        ? isFromUnsigned
+                            ? OpCodes.Conv_Ovf_I8_Un
+                            : OpCodes.Conv_Ovf_I8
                         : isFromUnsigned
                             ? OpCodes.Conv_U8
                             : OpCodes.Conv_I8;
@@ -1152,7 +1160,9 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     convCode = isChecked
-                        ? isFromUnsigned || tf.IsFloatingPoint() ? OpCodes.Conv_Ovf_U8_Un : OpCodes.Conv_Ovf_U8
+                        ? isFromUnsigned || tf.IsFloatingPoint()
+                            ? OpCodes.Conv_Ovf_U8_Un
+                            : OpCodes.Conv_Ovf_U8
                         : isFromUnsigned || tf.IsFloatingPoint()
                             ? OpCodes.Conv_U8
                             : OpCodes.Conv_I8;
