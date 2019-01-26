@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 using System;
 using Theraot.Threading;
@@ -54,10 +54,12 @@ namespace Theraot.Collections.ThreadSafe
                     ReentryGuard.Leave(reentryGuard.Id);
                 }
             }
+
             if (entry is IDisposable disposable)
             {
                 disposable.Dispose();
             }
+
             return false;
         }
 

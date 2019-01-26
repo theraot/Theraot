@@ -37,16 +37,19 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return;
             }
+
             var pools = _pools;
             if (pools == null)
             {
                 return;
             }
+
             var capacity = donation.Length;
             if (capacity == 0 || capacity < _minCapacity || capacity > _maxCapacity)
             {
                 return;
             }
+
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
             var pool = pools[index];
@@ -59,10 +62,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return EmptyArray;
             }
+
             if (capacity < _minCapacity)
             {
                 capacity = _minCapacity;
             }
+
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             if (capacity > _maxCapacity)
             {
@@ -75,6 +80,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return result;
             }
+
             return new T[capacity];
         }
 
@@ -85,15 +91,16 @@ namespace Theraot.Collections.ThreadSafe
             {
                 var currentIndex = index;
                 _pools[index] = new Pool<T[]>
-                    (
-                        _poolSize,
-                        item =>
-                        {
-                            var currentCapacity = _minCapacity << currentIndex;
-                            Array.Clear(item, 0, currentCapacity);
-                        }
-                    );
+                (
+                    _poolSize,
+                    item =>
+                    {
+                        var currentCapacity = _minCapacity << currentIndex;
+                        Array.Clear(item, 0, currentCapacity);
+                    }
+                );
             }
+
             return pools;
         }
     }

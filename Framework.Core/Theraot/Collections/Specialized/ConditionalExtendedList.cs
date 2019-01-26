@@ -25,16 +25,6 @@ namespace Theraot.Collections.Specialized
             _enumerateAppend = enumerateAppend ?? (append == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }
 
-        public int Count => _target.Count + _append.Count;
-
-        bool ICollection<T>.IsReadOnly => true;
-
-        T IList<T>.this[int index]
-        {
-            get => this[index];
-            set => throw new NotSupportedException();
-        }
-
         public T this[int index]
         {
             get
@@ -46,14 +36,27 @@ namespace Theraot.Collections.Specialized
                     {
                         return _target[index];
                     }
+
                     index -= count;
                 }
+
                 if (_enumerateAppend())
                 {
                     return _append[index];
                 }
+
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
+        }
+
+        public int Count => _target.Count + _append.Count;
+
+        bool ICollection<T>.IsReadOnly => true;
+
+        T IList<T>.this[int index]
+        {
+            get => this[index];
+            set => throw new NotSupportedException();
         }
 
         void ICollection<T>.Add(T item)
@@ -142,6 +145,7 @@ namespace Theraot.Collections.Specialized
                 {
                     return targetIndex;
                 }
+
                 offset = _target.Count;
             }
 
@@ -155,6 +159,7 @@ namespace Theraot.Collections.Specialized
             {
                 return appendIndex + offset;
             }
+
             return -1;
         }
 

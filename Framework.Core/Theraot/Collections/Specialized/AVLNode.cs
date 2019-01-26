@@ -76,6 +76,7 @@ namespace Theraot.Collections.Specialized
                 {
                     break;
                 }
+
                 if (compare < 0)
                 {
                     stack.Push(node);
@@ -86,6 +87,7 @@ namespace Theraot.Collections.Specialized
                     node = node._right;
                 }
             }
+
             while (true)
             {
                 if (node != null)
@@ -96,10 +98,12 @@ namespace Theraot.Collections.Specialized
                         yield return item;
                     }
                 }
+
                 if (stack.Count == 0)
                 {
                     break;
                 }
+
                 node = stack.Pop();
             }
         }
@@ -119,6 +123,7 @@ namespace Theraot.Collections.Specialized
                     stack.Push(node);
                     node = node.Left;
                 }
+
                 if (stack.Count > 0)
                 {
                     node = stack.Pop();
@@ -148,8 +153,10 @@ namespace Theraot.Collections.Specialized
                 {
                     break;
                 }
+
                 node = compare < 0 ? node._left : node._right;
             }
+
             return node;
         }
 
@@ -163,12 +170,15 @@ namespace Theraot.Collections.Specialized
                 {
                     result = node;
                 }
+
                 if (compare == 0)
                 {
                     break;
                 }
+
                 node = compare < 0 ? node._left : node._right;
             }
+
             return result;
         }
 
@@ -182,12 +192,15 @@ namespace Theraot.Collections.Specialized
                 {
                     result = node;
                 }
+
                 if (compare == 0)
                 {
                     break;
                 }
+
                 node = compare < 0 ? node._left : node._right;
             }
+
             return result;
         }
 
@@ -211,12 +224,14 @@ namespace Theraot.Collections.Specialized
             {
                 return false;
             }
+
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
                 var result = RemoveExtracted(ref node);
                 return result;
             }
+
             try
             {
                 return compare < 0 ? Remove(ref node._left, key, comparer) : Remove(ref node._right, key, comparer);
@@ -256,8 +271,10 @@ namespace Theraot.Collections.Specialized
                 {
                     return;
                 }
+
                 compare = -node._balance;
             }
+
             if (compare < 0)
             {
                 AddExtracted(ref node._left, key, comparer, created);
@@ -266,6 +283,7 @@ namespace Theraot.Collections.Specialized
             {
                 AddExtracted(ref node._right, key, comparer, created);
             }
+
             MakeBalanced(ref node);
         }
 
@@ -285,18 +303,22 @@ namespace Theraot.Collections.Specialized
                 {
                     created = new AVLNode<TKey, TValue>(key, value);
                 }
+
                 var found = Interlocked.CompareExchange(ref node, created, null);
                 if (found == null)
                 {
                     return true;
                 }
+
                 node = found;
             }
+
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
                 return false;
             }
+
             try
             {
                 return compare < 0 ? AddNonDuplicateExtracted(ref node._left, key, value, comparer, created) : AddNonDuplicateExtracted(ref node._right, key, value, comparer, created);
@@ -418,6 +440,7 @@ namespace Theraot.Collections.Specialized
             {
                 return false;
             }
+
             if (node._right == null)
             {
                 node = node._left;
@@ -437,6 +460,7 @@ namespace Theraot.Collections.Specialized
                         trunk = successor;
                         successor = trunk._left;
                     }
+
                     if (trunk == successor)
                     {
                         node._right = successor._right;
@@ -445,6 +469,7 @@ namespace Theraot.Collections.Specialized
                     {
                         trunk._left = successor._right;
                     }
+
                     var tmpLeft = node._left;
                     var tmpRight = node._right;
                     var tmpBalance = node._balance;
@@ -456,10 +481,12 @@ namespace Theraot.Collections.Specialized
                     };
                 }
             }
+
             if (node != null)
             {
                 MakeBalanced(ref node);
             }
+
             return true;
         }
 
@@ -469,6 +496,7 @@ namespace Theraot.Collections.Specialized
             {
                 return null;
             }
+
             var compare = comparer.Compare(key, node.Key);
             AVLNode<TKey, TValue> tmp;
             if (compare == 0)
@@ -477,6 +505,7 @@ namespace Theraot.Collections.Specialized
                 RemoveExtracted(ref node);
                 return tmp;
             }
+
             if (compare < 0)
             {
                 tmp = RemoveNearestLeftExtracted(ref node._left, ref result, key, comparer);
@@ -485,6 +514,7 @@ namespace Theraot.Collections.Specialized
                     tmp = result;
                     RemoveExtracted(ref result);
                 }
+
                 MakeBalanced(ref node);
             }
             else
@@ -498,6 +528,7 @@ namespace Theraot.Collections.Specialized
                 tmp = node;
                 RemoveExtracted(ref node);
             }
+
             return tmp;
         }
 
@@ -507,6 +538,7 @@ namespace Theraot.Collections.Specialized
             {
                 return null;
             }
+
             var compare = comparer.Compare(key, node.Key);
             AVLNode<TKey, TValue> tmp;
             if (compare == 0)
@@ -515,6 +547,7 @@ namespace Theraot.Collections.Specialized
                 RemoveExtracted(ref node);
                 return tmp;
             }
+
             if (compare < 0)
             {
                 tmp = RemoveNearestRightExtracted(ref node._left, ref node, key, comparer);
@@ -534,8 +567,10 @@ namespace Theraot.Collections.Specialized
                     tmp = result;
                     RemoveExtracted(ref result);
                 }
+
                 MakeBalanced(ref node);
             }
+
             return tmp;
         }
 

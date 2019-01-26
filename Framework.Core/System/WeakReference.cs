@@ -11,10 +11,10 @@ namespace System
     public sealed class WeakReference<T> : ISerializable
         where T : class
     {
+        private readonly bool _trackResurrection;
+
         [NonSerialized]
         private GCHandle _handle;
-
-        private readonly bool _trackResurrection;
 
         public WeakReference(T target)
             : this(target, false)

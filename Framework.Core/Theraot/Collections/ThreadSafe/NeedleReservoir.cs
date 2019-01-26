@@ -55,6 +55,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 result = _needleFactory(value);
             }
+
             return result;
         }
     }

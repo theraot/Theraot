@@ -8,7 +8,7 @@ namespace Theraot.Collections.ThreadSafe
 {
     /// <inheritdoc />
     /// <summary>
-    /// Represent a thread-safe lock-free hash based collection.
+    ///     Represent a thread-safe lock-free hash based collection.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     public sealed class SafeCollection<T> : ICollection<T>
@@ -18,7 +18,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeCollection`1" /> class.
+        ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeCollection`1" /> class.
         /// </summary>
         public SafeCollection()
             : this(EqualityComparer<T>.Default)
@@ -27,7 +27,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeCollection{T}" /> class.
+        ///     Initializes a new instance of the <see cref="SafeCollection{T}" /> class.
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
         public SafeCollection(IEqualityComparer<T> comparer)
@@ -50,46 +50,34 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        /// Removes all the elements.
+        ///     Removes all the elements.
         /// </summary>
         public void Clear()
         {
             _wrapped = new Bucket<T>();
         }
 
-        /// <summary>
-        /// Removes all the elements.
-        /// </summary>
-        /// <returns>Returns the removed pairs.</returns>
-        public IEnumerable<T> ClearEnumerable()
-        {
-            var replacement = new Bucket<T>();
-            Interlocked.Exchange(ref _wrapped, replacement);
-            return replacement;
-        }
-
         /// <inheritdoc />
         /// <summary>
-        /// Determines whether the specified value is contained.
+        ///     Determines whether the specified value is contained.
         /// </summary>
         /// <param name="item">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified value is contained; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified value is contained; otherwise, <c>false</c>.
         /// </returns>
         public bool Contains(T item)
         {
             return _wrapped.Where(Check).Any();
-            bool Check(T input) => Comparer.Equals(input, item);
-        }
 
-        public bool Contains(Predicate<T> itemCheck)
-        {
-            return _wrapped.Where(itemCheck).Any();
+            bool Check(T input)
+            {
+                return Comparer.Equals(input, item);
+            }
         }
 
         /// <inheritdoc />
         /// <summary>
-        /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
+        ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
@@ -104,10 +92,11 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the collection.
+        ///     An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the
+        ///     collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -116,27 +105,52 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        /// Removes the specified value.
+        ///     Removes the specified value.
         /// </summary>
         /// <param name="item">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
         /// </returns>
         public bool Remove(T item)
         {
             return _wrapped.RemoveWhereEnumerable(Check).Any();
-            bool Check(T input) => Comparer.Equals(input, item);
+
+            bool Check(T input)
+            {
+                return Comparer.Equals(input, item);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
-        /// Removes the values where the predicate is satisfied.
+        ///     Removes all the elements.
+        /// </summary>
+        /// <returns>Returns the removed pairs.</returns>
+        public IEnumerable<T> ClearEnumerable()
+        {
+            var replacement = new Bucket<T>();
+            Interlocked.Exchange(ref _wrapped, replacement);
+            return replacement;
+        }
+
+        public bool Contains(Predicate<T> itemCheck)
+        {
+            return _wrapped.Where(itemCheck).Any();
+        }
+
+        /// <summary>
+        ///     Removes the values where the predicate is satisfied.
         /// </summary>
         /// <param name="check">The predicate.</param>
         /// <returns>
-        /// The number or removed values.
+        ///     The number or removed values.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the values that satisfies the predicate will be removed.
+        ///     It is not guaranteed that all the values that satisfies the predicate will be removed.
         /// </remarks>
         public int RemoveWhere(Predicate<T> check)
         {
@@ -144,14 +158,14 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Removes the values where the predicate is satisfied.
+        ///     Removes the values where the predicate is satisfied.
         /// </summary>
         /// <param name="check">The predicate.</param>
         /// <returns>
-        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the removed values.
+        ///     An <see cref="IEnumerable{TValue}" /> that allows to iterate over the removed values.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the values that satisfies the predicate will be removed.
+        ///     It is not guaranteed that all the values that satisfies the predicate will be removed.
         /// </remarks>
         public IEnumerable<T> RemoveWhereEnumerable(Predicate<T> check)
         {
@@ -159,23 +173,18 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Returns the values where the predicate is satisfied.
+        ///     Returns the values where the predicate is satisfied.
         /// </summary>
         /// <param name="check">The predicate.</param>
         /// <returns>
-        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values.
+        ///     An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the values that satisfies the predicate will be returned.
+        ///     It is not guaranteed that all the values that satisfies the predicate will be returned.
         /// </remarks>
         public IEnumerable<T> Where(Predicate<T> check)
         {
             return _wrapped.Where(check);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

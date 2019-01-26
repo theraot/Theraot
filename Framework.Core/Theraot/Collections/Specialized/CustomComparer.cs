@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Collections.Generic;
@@ -17,6 +17,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(comparison));
             }
+
             _comparison = comparison.Invoke;
         }
 

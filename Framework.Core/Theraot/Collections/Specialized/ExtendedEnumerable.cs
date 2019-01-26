@@ -20,6 +20,7 @@ namespace Theraot.Collections.Specialized
             {
                 yield return item;
             }
+
             foreach (var item in Append)
             {
                 yield return item;
