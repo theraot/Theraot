@@ -20,6 +20,7 @@ namespace TestRunner
             {
                 return;
             }
+
             while (true)
             {
                 switch (exception)
@@ -36,12 +37,14 @@ namespace TestRunner
 
                 break;
             }
+
             if (exception is AssertionFailedException)
             {
                 Console.WriteLine(exception.Message);
                 Console.WriteLine(StringEx.Implode("\r\n", exception.StackTrace.Split('\r', '\n').Skip(1)));
                 return;
             }
+
             var report = new StringBuilder();
             report.Append("Exception");
             report.Append("\r\n\r\n");
@@ -65,6 +68,7 @@ namespace TestRunner
                 );
                 report.Append("\r\n\r\n");
             }
+
             Console.WriteLine(report);
         }
 
@@ -97,6 +101,7 @@ namespace TestRunner
                         stopwatch.Stop();
                         capturedException = exception;
                     }
+
                     if (capturedException == null)
                     {
                         Console.Write($"-> ok {capturedResult} ({stopwatch.Elapsed})");
@@ -107,8 +112,10 @@ namespace TestRunner
                         ExceptionReport(capturedException);
                     }
                 }
+
                 Console.WriteLine();
             }
+
             Exit();
         }
 
@@ -133,12 +140,12 @@ namespace TestRunner
 
         private sealed class Test : IDisposable
         {
-            private Delegate _delegate;
-            private object _instance;
             private readonly bool _isolatedThread;
             private readonly ParameterInfo[] _parameterInfos;
             private readonly Type[] _preferredGenerators;
             private readonly int _repeat;
+            private Delegate _delegate;
+            private object _instance;
 
             public Test(TestMethod testMethod)
             {
@@ -148,6 +155,7 @@ namespace TestRunner
                 {
                     throw new ArgumentException();
                 }
+
                 _instance = method.IsStatic ? null : Activator.CreateInstance(type);
                 _delegate = DelegateBuilder.BuildDelegate(method, _instance);
                 _parameterInfos = method.GetParameters();
@@ -166,6 +174,7 @@ namespace TestRunner
                 {
                     disposable.Dispose();
                 }
+
                 Interlocked.Exchange(ref _delegate, null);
             }
 
@@ -178,9 +187,10 @@ namespace TestRunner
                 {
                     var parameterInfo = parameterInfos[index];
                     var preferredGenerator = parameterInfo.GetAttributes<UseGeneratorAttribute>(false).FirstOrDefault();
-                    var generators = preferredGenerator == null ? preferredGenerators : new[] { preferredGenerator.GeneratorType };
+                    var generators = preferredGenerator == null ? preferredGenerators : new[] {preferredGenerator.GeneratorType};
                     parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, generators);
                 }
+
                 return parameters;
             }
 
@@ -190,11 +200,13 @@ namespace TestRunner
                 {
                     throw new ArgumentNullException(nameof(parameters));
                 }
+
                 var @delegate = Volatile.Read(ref _delegate);
                 if (@delegate == null)
                 {
                     throw new ObjectDisposedException(nameof(Test));
                 }
+
                 object capturedResult = null;
                 if (_isolatedThread)
                 {
@@ -252,6 +264,7 @@ namespace TestRunner
                 {
                     return;
                 }
+
                 TestFixtureAttribute = testFixtureAttributes[0];
                 Categories = type.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
             }
@@ -271,6 +284,7 @@ namespace TestRunner
                 {
                     return;
                 }
+
                 TestAttribute = testAttributes[0];
                 Categories = method.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
                 PreferredGenerators = method.GetAttributes<UseGeneratorAttribute>(false).Select(attribute => attribute.GeneratorType).ToArray();

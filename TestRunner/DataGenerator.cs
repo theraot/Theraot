@@ -20,21 +20,25 @@ namespace TestRunner
             {
                 return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
             }
+
             Delegate @delegate = null;
-                foreach (var preferredType in preferredTypes)
+            foreach (var preferredType in preferredTypes)
+            {
+                if (!dictionary.TryGetValue(preferredType, out var found))
                 {
-                    if (!dictionary.TryGetValue(preferredType, out var found))
-                    {
-                        continue;
-                    }
-                    @delegate = found;
-                    break;
+                    continue;
                 }
-                if (@delegate == null)
-                {
-                    @delegate = dictionary.First().Value;
-                }
-                return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
+
+                @delegate = found;
+                break;
+            }
+
+            if (@delegate == null)
+            {
+                @delegate = dictionary.First().Value;
+            }
+
+            return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
         }
 
         private static Dictionary<Type, SortedDictionary<Type, Delegate>> FindAllGenerators()
@@ -45,15 +49,16 @@ namespace TestRunner
                 .Where(IsGeneratorMethod)
                 .Select(GetGenerators);
             var typeComparer = new CustomComparer<Type>
-                (
-                    (left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal)
-                );
+            (
+                (left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal)
+            );
             foreach (var (returnType, generatorType, @delegate) in generators)
             {
                 if (@delegate == null)
                 {
                     continue;
                 }
+
                 if (result.TryGetValue(returnType, out var dictionary))
                 {
                     dictionary.TryAdd(generatorType, @delegate);
@@ -67,6 +72,7 @@ namespace TestRunner
                     result.Add(returnType, dictionary);
                 }
             }
+
             return result;
         }
 
@@ -84,6 +90,7 @@ namespace TestRunner
                 {
                     throw new InvalidOperationException();
                 }
+
                 if (!_instances.TryGetValue(declaringType, out var instance))
                 {
                     try
@@ -94,10 +101,13 @@ namespace TestRunner
                     {
                         Console.WriteLine(exception);
                     }
+
                     _instances[declaringType] = instance;
                 }
+
                 @delegate = instance == null ? null : DelegateBuilder.BuildDelegate(methodInfo, instance);
             }
+
             return (methodInfo.GetReturnType(), methodInfo.DeclaringType, @delegate);
         }
 
@@ -153,12 +163,15 @@ namespace TestRunner
             {
                 stringBuilder.Append(_chars[_random.Next(0, _chars.Length)]);
             }
+
             return stringBuilder.ToString();
         }
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    public sealed class DataGeneratorAttribute : Attribute { }
+    public sealed class DataGeneratorAttribute : Attribute
+    {
+    }
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
     public sealed class UseGeneratorAttribute : Attribute
