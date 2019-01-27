@@ -1,5 +1,4 @@
-﻿// Needed for Workaround
-
+﻿#if FAT
 using System;
 using System.IO;
 
@@ -58,3 +57,4 @@ namespace Theraot.Core
         }
     }
 }
+#endif
