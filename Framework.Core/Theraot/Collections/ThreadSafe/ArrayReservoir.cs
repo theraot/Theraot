@@ -1,28 +1,64 @@
 ﻿// Needed for NET40
 
-#pragma warning disable CA1819 // Properties should not return arrays
-#pragma warning disable CA1825 // Avoid zero-length array allocations.
-#pragma warning disable RECS0108 // Warns about static fields in generic types
-
 using System;
 using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    public static class ArrayReservoir<T>
+    internal static class ArrayReservoir
     {
         // sizes:
         // 0  1   2   3   4    5    6    7
         // 8, 16, 32, 64, 128, 256, 512, 1024
 
-        private const int _capacityCount = 1 + _maxCapacityLog2 - _minCapacityLog2;
-        private const int _maxCapacity = 1 << _maxCapacityLog2;
-        private const int _maxCapacityLog2 = 10;
-        private const int _minCapacity = 1 << _minCapacityLog2;
-        private const int _minCapacityLog2 = 3;
-        private const int _poolSize = 16;
-        private static readonly Pool<T[]>[] _pools = CreatePools();
+        internal const int CapacityCount = 1 + MaxCapacityLog2 - MinCapacityLog2;
+        internal const int MaxCapacity = 1 << MaxCapacityLog2;
+        internal const int MaxCapacityLog2 = 10;
+        internal const int MinCapacity = 1 << MinCapacityLog2;
+        internal const int MinCapacityLog2 = 3;
+        internal const int PoolSize = 16;
 
+        private static readonly CacheDict<Type, Pool<Array>[]> _pools = new CacheDict<Type, Pool<Array>[]>(256);
+
+        public static Pool<Array> GetPool<T>(int index)
+        {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var pools = _pools;
+            if (pools == null)
+            {
+                return null;
+            }
+
+            if (!pools.TryGetValue(typeof(T), out var poolArray))
+            {
+                poolArray = pools[typeof(T)] = new Pool<Array>[CapacityCount];
+                PopulatePools(poolArray);
+            }
+
+            var pool = poolArray?[index];
+            return pool;
+        }
+
+        private static void PopulatePools(Pool<Array>[] poolArray)
+        {
+            for (var index = 0; index < CapacityCount; index++)
+            {
+                var currentIndex = index;
+                poolArray[currentIndex] = new Pool<Array>
+                (
+                    PoolSize,
+                    item =>
+                    {
+                        var currentCapacity = MinCapacity << currentIndex;
+                        Array.Clear(item, 0, currentCapacity);
+                    }
+                );
+            }
+        }
+    }
+
+    internal static class ArrayReservoir<T>
+    {
         internal static void DonateArray(T[] donation)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
@@ -31,21 +67,15 @@ namespace Theraot.Collections.ThreadSafe
                 return;
             }
 
-            var pools = _pools;
-            if (pools == null)
-            {
-                return;
-            }
-
             var capacity = donation.Length;
-            if (capacity == 0 || capacity < _minCapacity || capacity > _maxCapacity)
+            if (capacity == 0 || capacity < ArrayReservoir.MinCapacity || capacity > ArrayReservoir.MaxCapacity)
             {
                 return;
             }
 
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
-            var pool = pools[index];
+            var index = NumericHelper.Log2(capacity) - ArrayReservoir.MinCapacityLog2;
+            var pool = ArrayReservoir.GetPool<T>(index);
             pool?.Donate(donation);
         }
 
@@ -56,44 +86,30 @@ namespace Theraot.Collections.ThreadSafe
                 return ArrayEx.Empty<T>();
             }
 
-            if (capacity < _minCapacity)
+            if (capacity < ArrayReservoir.MinCapacity)
             {
-                capacity = _minCapacity;
+                capacity = ArrayReservoir.MinCapacity;
             }
 
             capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            if (capacity > _maxCapacity)
+            if (capacity > ArrayReservoir.MaxCapacity)
             {
                 return new T[capacity];
             }
 
-            var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
-            var currentPool = _pools?[index];
-            if (currentPool != null && currentPool.TryGet(out var result))
+            var index = NumericHelper.Log2(capacity) - ArrayReservoir.MinCapacityLog2;
+            var pool = ArrayReservoir.GetPool<T>(index);
+            if (pool == null)
             {
-                return result;
+                return new T[capacity];
             }
+
+            if (pool.TryGet(out var result))
+            {
+                return (T[])result;
+            }
+
             return new T[capacity];
-        }
-
-        private static Pool<T[]>[] CreatePools()
-        {
-            var pools = new Pool<T[]>[_capacityCount];
-            for (var index = 0; index < _capacityCount; index++)
-            {
-                var currentIndex = index;
-                pools[index] = new Pool<T[]>
-                (
-                    _poolSize,
-                    item =>
-                    {
-                        var currentCapacity = _minCapacity << currentIndex;
-                        Array.Clear(item, 0, currentCapacity);
-                    }
-                );
-            }
-
-            return pools;
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -17,14 +18,13 @@ namespace Theraot.Threading
         [ThreadStatic]
         private static HashSet<UniqueId> _guard;
 
-        private readonly SafeQueue<Action> _workQueue;
+        private SafeQueue<Action> _workQueue;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ReentryGuard" /> class.
         /// </summary>
         public ReentryGuard()
         {
-            _workQueue = new SafeQueue<Action>();
             Id = RuntimeUniqueIdProvider.GetNextId();
         }
 
@@ -34,6 +34,8 @@ namespace Theraot.Threading
         ///     Gets a value indicating whether or not the current thread did enter.
         /// </summary>
         public bool IsTaken => _guard?.Contains(Id) == true;
+
+        private SafeQueue<Action> WorkQueue => TypeHelper.LazyCreate(ref _workQueue, () => new SafeQueue<Action>());
 
         public IDisposable TryEnter(out bool didEnter)
         {
@@ -117,8 +119,9 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public IPromise<T> Execute<T>(Func<T> operation)
         {
-            var result = AddExecution(operation, _workQueue);
-            ExecutePending(_workQueue, Id);
+            var workQueue = WorkQueue;
+            var result = AddExecution(operation, WorkQueue);
+            ExecutePending(workQueue, Id);
             return result;
         }
 
@@ -129,8 +132,9 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public IPromise Execute(Action operation)
         {
-            var result = AddExecution(operation, _workQueue);
-            ExecutePending(_workQueue, Id);
+            var workQueue = WorkQueue;
+            var result = AddExecution(operation, workQueue);
+            ExecutePending(workQueue, Id);
             return result;
         }
 
