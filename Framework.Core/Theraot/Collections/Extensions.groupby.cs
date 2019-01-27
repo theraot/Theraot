@@ -19,10 +19,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, comparer, keySelector, FuncHelper.GetIdentityFunc<TSource>());
         }
 
@@ -37,14 +39,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             if (resultSelector == null)
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             return GroupBuilder<TKey, TSource, TElement>.CreateGroups(source, comparer, keySelector, resultSelector);
         }
 
@@ -59,19 +64,24 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             if (elementSelector == null)
             {
                 throw new ArgumentNullException(nameof(elementSelector));
             }
+
             if (resultSelector == null)
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             return CreateGroupByIterator();
+
             IEnumerable<TResult> CreateGroupByIterator()
             {
                 var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
@@ -94,14 +104,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             if (resultSelector == null)
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             return CreateGroupByIterator();
 
             IEnumerable<TResult> CreateGroupByIterator()

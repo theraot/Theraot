@@ -165,10 +165,10 @@ namespace Theraot.Collections
                 case ReadOnlyCollectionEx<T> arrayReadOnlyCollection:
                     return arrayReadOnlyCollection;
                 default:
-                    {
-                        var array = AsArrayInternal(enumerable);
-                        return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
-                    }
+                {
+                    var array = AsArrayInternal(enumerable);
+                    return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
+                }
             }
         }
 
@@ -292,14 +292,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (count == 0)
             {
                 return true;
             }
+
             if (source is ICollection<TSource> sourceAsCollection)
             {
                 return sourceAsCollection.Count >= count;
             }
+
             var result = 0;
             using (var item = source.GetEnumerator())
             {
@@ -309,12 +312,14 @@ namespace Theraot.Collections
                     {
                         result++;
                     }
+
                     if (result == count)
                     {
                         return true;
                     }
                 }
             }
+
             return false;
         }
 
@@ -324,6 +329,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return predicateCount == null ? SkipExtracted(source, skipCount) : SkipExtracted(source, predicateCount, skipCount);
         }
 
@@ -333,6 +339,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return StepItemsExtracted();
 
             IEnumerable<T> StepItemsExtracted()
@@ -359,6 +366,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return predicateCount == null ? TakeExtracted(source, takeCount) : TakeExtracted(source, predicateCount, takeCount);
         }
 
@@ -368,16 +376,19 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (count < 0)
             {
                 throw new ArgumentNullException(nameof(count));
             }
+
             if (source is ICollection<T> collection && count >= collection.Count)
             {
                 var array = new T[collection.Count];
                 collection.CopyTo(array, 0);
                 return array;
             }
+
             var result = new List<T>(count);
             foreach (var item in source)
             {
@@ -385,8 +396,10 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 result.Add(item);
             }
+
             return result.ToArray();
         }
 
@@ -434,6 +447,7 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 yield return item;
                 count++;
             }
@@ -448,6 +462,7 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 yield return item;
                 if (predicateCount(item))
                 {

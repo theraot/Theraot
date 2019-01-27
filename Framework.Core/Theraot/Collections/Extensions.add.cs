@@ -13,21 +13,23 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
             }
+
             var count = 0;
             foreach (var item in items)
             {
                 collection.Add(item);
                 count++;
             }
+
             return count;
         }
 
 #if FAT
-
         public static IEnumerable<T> AddRangeEnumerable<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
             if (collection == null)

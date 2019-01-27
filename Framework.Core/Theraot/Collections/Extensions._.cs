@@ -10,7 +10,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 #if FAT
-
 using System.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
@@ -28,6 +27,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
             var res = new T[array.Length + 1];
@@ -42,6 +42,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(list));
             }
+
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
             var res = new T[list.Count + 1];
@@ -56,6 +57,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
             var res = new T[array.Length + 1];
@@ -70,6 +72,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(list));
             }
+
             var res = new T[list.Count + 1];
             list.CopyTo(res, 0);
             res[list.Count] = item;
@@ -83,6 +86,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (count > array.Length)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
@@ -96,10 +100,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (arrayIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
+
             if (count > array.Length - arrayIndex)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
@@ -113,6 +119,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (count > array.Length)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
@@ -126,10 +133,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (arrayIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
+
             if (count > array.Length - arrayIndex)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
@@ -143,14 +152,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (arrayIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
+
             if (countLimit < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
             }
+
             if (countLimit > array.Length - arrayIndex)
             {
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
@@ -163,6 +175,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             foreach (var _ in source)
             {
                 // Empty
@@ -175,10 +188,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
             }
+
             IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
             return items.Any(item => localCollection.Contains(item, comparer));
@@ -190,10 +205,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
             }
+
             if (filter == null)
             {
                 throw new ArgumentNullException(nameof(filter));
@@ -208,10 +225,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
             }
+
             return ConvertProgressiveExtracted();
 
             IEnumerable<TOutput> ConvertProgressiveExtracted()
@@ -242,10 +261,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (array == null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             try
             {
                 var index = arrayIndex;
@@ -286,10 +307,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (array == null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             var index = 0;
             foreach (var item in source)
             {
@@ -304,10 +327,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (array == null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             foreach (var item in source)
             {
                 array.SetValue(item, index++);
@@ -320,6 +345,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (comparer == null)
             {
                 comparer = EqualityComparer<T>.Default;
@@ -340,10 +366,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             var count = 0;
             foreach (var item in other)
             {
@@ -352,6 +380,7 @@ namespace Theraot.Collections
                     count++;
                 }
             }
+
             return count;
         }
 
@@ -361,10 +390,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return ExceptWithEnumerableExtracted();
 
             IEnumerable<T> ExceptWithEnumerableExtracted()
@@ -385,6 +416,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return FlattenExtracted();
 
             IEnumerable<T> FlattenExtracted()
@@ -405,6 +437,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var currentIndex = 0;
             var comparer = EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
@@ -415,8 +448,10 @@ namespace Theraot.Collections
                     {
                         return currentIndex;
                     }
+
                     currentIndex++;
                 }
+
                 return -1;
             }
         }
@@ -427,6 +462,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var currentIndex = 0;
             comparer = comparer ?? EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
@@ -437,8 +473,10 @@ namespace Theraot.Collections
                     {
                         return currentIndex;
                     }
+
                     currentIndex++;
                 }
+
                 return -1;
             }
         }
@@ -449,10 +487,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             var otherAsCollection = AsICollection(other);
             return source.RemoveWhere(input => !otherAsCollection.Contains(input));
         }
@@ -463,10 +503,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             comparer = comparer ?? EqualityComparer<T>.Default;
             var otherAsCollection = AsICollection(other);
             return source.RemoveWhere(input => !otherAsCollection.Contains(input, comparer));
@@ -478,10 +520,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return IsSubsetOf(source, other, true);
         }
 
@@ -491,10 +535,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return IsSupersetOf(source, other, true);
         }
 
@@ -504,10 +550,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return IsSubsetOf(source, other, false);
         }
 
@@ -517,10 +565,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             return IsSupersetOf(source, other, false);
         }
 
@@ -530,11 +580,13 @@ namespace Theraot.Collections
             {
                 return true;
             }
+
             var count = first.Count;
             if (count != second.Count)
             {
                 return false;
             }
+
             var cmp = EqualityComparer<T>.Default;
             for (var i = 0; i != count; ++i)
             {
@@ -543,6 +595,7 @@ namespace Theraot.Collections
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -552,12 +605,14 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(list));
             }
+
             var item = list[oldIndex];
             list.RemoveAt(oldIndex);
             if (newIndex > oldIndex)
             {
                 newIndex--;
             }
+
             list.Insert(newIndex, item);
         }
 
@@ -572,6 +627,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (comparer == null)
             {
                 comparer = EqualityComparer<T>.Default;
@@ -592,11 +648,13 @@ namespace Theraot.Collections
             {
                 return true;
             }
+
             var count = first.Count;
             if (count != second.Count)
             {
                 return false;
             }
+
             var cmp = EqualityComparer<T>.Default;
             for (var i = 0; i != count; ++i)
             {
@@ -605,6 +663,7 @@ namespace Theraot.Collections
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -614,6 +673,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (comparer == null)
             {
                 comparer = EqualityComparer<T>.Default;
@@ -628,6 +688,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
             var result = new T[array.Length - 1];
@@ -641,6 +702,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
             var result = new T[array.Length - 1];
@@ -654,6 +716,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             return RemoveWhere(source, items => items.Where(predicate));
         }
 
@@ -663,15 +726,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
             }
+
             return ExceptWith
-                   (
-                       source,
-                       new List<T>(converter.Invoke(source))
-                   );
+            (
+                source,
+                new List<T>(converter.Invoke(source))
+            );
         }
 
         public static IEnumerable<T> RemoveWhereEnumerable<T>(this ICollection<T> source, Func<T, bool> predicate)
@@ -680,6 +745,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             return RemoveWhereEnumerable(source, items => items.Where(predicate));
         }
 
@@ -689,15 +755,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
             }
+
             return ExceptWithEnumerable
-                   (
-                       source,
-                       new List<T>(converter.Invoke(source))
-                   );
+            (
+                source,
+                new List<T>(converter.Invoke(source))
+            );
         }
 
         public static bool SetEquals<T>(this ICollection<T> source, IEnumerable<T> other)
@@ -706,10 +774,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (other == null)
             {
                 throw new ArgumentNullException(nameof(other));
             }
+
             var thatAsCollection = AsICollection(other);
             return thatAsCollection.All(source.Contains) && source.All(input => thatAsCollection.Contains(input));
         }
@@ -720,19 +790,23 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(list));
             }
+
             if (indexA < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexA), "Non-negative number is required.");
             }
+
             if (indexB < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexB), "Non-negative number is required.");
             }
+
             var listCount = list.Count;
             if (indexA >= listCount || indexB >= listCount)
             {
                 throw new ArgumentException("The list does not contain the number of elements.", nameof(list));
             }
+
             if (indexA != indexB)
             {
                 SwapExtracted(list, indexA, indexB);
@@ -750,6 +824,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(stack));
             }
+
             try
             {
                 item = stack.Pop();
@@ -781,10 +856,12 @@ namespace Theraot.Collections
                     matchCount++;
                 }
             }
+
             if (proper)
             {
                 return matchCount == @this.Count && elementCount > @this.Count;
             }
+
             return matchCount == @this.Count;
         }
 
@@ -801,10 +878,12 @@ namespace Theraot.Collections
                     return false;
                 }
             }
+
             if (proper)
             {
                 return elementCount < @this.Count;
             }
+
             return true;
         }
 
@@ -825,6 +904,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
@@ -840,15 +920,18 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
             }
+
             var result = new TList();
             foreach (var item in source)
             {
                 result.Add(converter(item));
             }
+
             return result;
         }
 
@@ -858,6 +941,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var result = 0;
             var equalityComparer = EqualityComparer<T>.Default;
             foreach (var value in source)
@@ -871,6 +955,7 @@ namespace Theraot.Collections
                     break;
                 }
             }
+
             return result;
         }
 
@@ -880,10 +965,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (predicate == null)
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             var result = 0;
             foreach (var item in source)
             {
@@ -896,6 +983,7 @@ namespace Theraot.Collections
                     break;
                 }
             }
+
             return result;
         }
 
@@ -916,6 +1004,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (predicate == null)
             {
                 throw new ArgumentNullException(nameof(predicate));
@@ -928,7 +1017,6 @@ namespace Theraot.Collections
     public static partial class Extensions
     {
 #if NET35
-
         public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items)
         {
             if (source == null)
@@ -969,6 +1057,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             try
             {
                 item = source.Dequeue();
@@ -987,6 +1076,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             try
             {
                 item = source.Peek();
@@ -1005,6 +1095,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             try
             {
                 item = source.Peek();
@@ -1023,6 +1114,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             try
             {
                 item = source.Pop();
@@ -1038,7 +1130,6 @@ namespace Theraot.Collections
     }
 
 #if FAT
-
     public static partial class Extensions
     {
         public static void Add<T>(this Stack<T> stack, T item)
