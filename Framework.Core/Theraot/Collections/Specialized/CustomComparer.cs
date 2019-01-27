@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerNonUserCode]
-    public class CustomComparer<T> : IComparer<T>
+    public class CustomComparer<T> : Comparer<T>
     {
         private readonly Func<T, T, int> _comparison;
 
@@ -21,7 +21,7 @@ namespace Theraot.Collections.Specialized
             _comparison = comparison.Invoke;
         }
 
-        public int Compare(T x, T y)
+        public override int Compare(T x, T y)
         {
             return _comparison.Invoke(x, y);
         }
