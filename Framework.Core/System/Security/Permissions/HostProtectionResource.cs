@@ -22,7 +22,7 @@ namespace System.Security.Permissions
         SelfAffectingThreading = 32,
         SharedState = 2,
         Synchronization = 1,
-        UI = 128,
+        UI = 128
     }
 }
 

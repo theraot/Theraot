@@ -23,7 +23,7 @@ namespace System.Security.Permissions
         RemotingConfiguration = 2048,
         Infrastructure = 4096,
         BindingRedirects = 8192,
-        AllFlags = 16383,
+        AllFlags = 16383
     }
 }
 

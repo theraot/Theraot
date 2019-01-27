@@ -837,17 +837,7 @@ namespace Theraot.Reflection
                     continue;
                 }
 
-                var ok = true;
-                for (var index = 0; index < typeArguments.Length; index++)
-                {
-                    if (parameters[index].GetType() == typeArguments[index])
-                    {
-                        continue;
-                    }
-
-                    ok = false;
-                    break;
-                }
+                var ok = !typeArguments.Where((t, index) => parameters[index].GetType() != t).Any();
 
                 if (!ok)
                 {
@@ -914,17 +904,7 @@ namespace Theraot.Reflection
                     continue;
                 }
 
-                var ok = true;
-                for (var index = 0; index < typeArguments.Length; index++)
-                {
-                    if (parameters[index].GetType() == typeArguments[index])
-                    {
-                        continue;
-                    }
-
-                    ok = false;
-                    break;
-                }
+                var ok = !typeArguments.Where((t, index) => parameters[index].GetType() != t).Any();
 
                 if (!ok)
                 {
@@ -1019,17 +999,7 @@ namespace Theraot.Reflection
                     continue;
                 }
 
-                var ok = true;
-                for (var index = 0; index < typeArguments.Length; index++)
-                {
-                    if (parameters[index].GetType() == typeArguments[index])
-                    {
-                        continue;
-                    }
-
-                    ok = false;
-                    break;
-                }
+                var ok = !typeArguments.Where((t, index) => parameters[index].GetType() != t).Any();
 
                 if (!ok)
                 {
@@ -1080,12 +1050,8 @@ namespace Theraot.Reflection
         {
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
             var attributes = type.GetAttributes<StructLayoutAttribute>(false);
-            foreach (var attribute in attributes)
-            {
-                return attribute;
-            }
+            return attributes.FirstOrDefault();
 
-            return null;
 #else
             return type.StructLayoutAttribute;
 #endif

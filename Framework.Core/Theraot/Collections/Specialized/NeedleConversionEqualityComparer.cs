@@ -1,6 +1,7 @@
 ﻿// Needed for NET35 (ConditionalWeakTable)
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
+// ReSharper disable ConvertIfStatementToSwitchStatement
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,12 +25,10 @@ namespace Theraot.Collections.Specialized
             {
                 return default;
             }
-
             if (needle is ICacheNeedle<T> cacheNeedle && cacheNeedle.TryGetValue(out var value))
             {
                 return value;
             }
-
             return needle.Value;
         }
     }

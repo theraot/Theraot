@@ -13,7 +13,7 @@ namespace System.Security.Permissions
         InheritanceDemand = 7,
         RequestMinimum = 8,
         RequestOptional = 9,
-        RequestRefuse = 10,
+        RequestRefuse = 10
     }
 }
 
