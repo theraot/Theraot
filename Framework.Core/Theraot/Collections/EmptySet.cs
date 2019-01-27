@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class EmptySet<T> : ProgressiveSet<T>
     {
         private EmptySet()
