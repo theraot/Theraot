@@ -44,7 +44,7 @@ namespace Theraot.Core
             (
                 folder,
                 GetFolders,
-                current => Extensions.AsUnaryIEnumerable(current).Concat(GetFiles(current, pattern))
+                current => current.AsUnaryIEnumerable().Concat(GetFiles(current, pattern))
             );
             return GetFiles(folder, pattern).Concat(enumerable.Flatten());
         }

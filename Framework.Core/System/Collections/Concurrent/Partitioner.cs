@@ -173,7 +173,7 @@ namespace System.Collections.Concurrent
         public StaticOrderablePartitioner(IEnumerable<T> source)
             : base(true, false, true)
         {
-            _source = Extensions.AsIList(source);
+            _source = source.AsIList();
         }
 
         public override IEnumerable<T> GetDynamicPartitions()
@@ -218,7 +218,7 @@ namespace System.Collections.Concurrent
                 _ => Interlocked.Increment(ref index) % partitionCount,
                 obj => obj
             );
-            return Extensions.WrapAsIList(groups.ConvertProgressive(g => g.GetEnumerator()));
+            return groups.ConvertProgressive(g => g.GetEnumerator()).WrapAsIList();
         }
     }
 }

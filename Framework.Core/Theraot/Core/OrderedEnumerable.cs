@@ -76,7 +76,7 @@ namespace Theraot.Core
 
         private IEnumerable<TElement> Sort(IEnumerable<TElement> source)
         {
-            var array = Extensions.AsArrayInternal(source);
+            var array = source.AsArrayInternal();
             var keys = new KeyValuePair<TKey, int>[array.Length];
             for (var index = 0; index < array.Length; index++)
             {

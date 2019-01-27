@@ -1486,7 +1486,7 @@ namespace Theraot.Core
                 return false;
             }
 
-            var container = Extensions.AsICollection(targets);
+            var container = targets.AsICollection();
             var result = false;
             while (true)
             {

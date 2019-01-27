@@ -18,8 +18,8 @@ namespace Theraot.Collections.Specialized
 
         public ConditionalExtendedList(IEnumerable<T> target, IEnumerable<T> append, Func<bool> enumerateTarget, Func<bool> enumerateAppend)
         {
-            _target = target == null ? ArrayEx.Empty<T>() : Extensions.WrapAsIList(target);
-            _append = append == null ? ArrayEx.Empty<T>() : Extensions.WrapAsIList(append);
+            _target = target == null ? ArrayEx.Empty<T>() : target.WrapAsIList();
+            _append = append == null ? ArrayEx.Empty<T>() : append.WrapAsIList();
             _enumerateTarget = enumerateTarget ?? (target == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
             _enumerateAppend = enumerateAppend ?? (append == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }

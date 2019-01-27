@@ -69,8 +69,8 @@ namespace TestRunner
 
         public static void CollectionEquals<T>(IEnumerable<T> expected, IEnumerable<T> found, string message = null)
         {
-            var expectedCollection = Extensions.AsICollection(expected);
-            var foundCollection = Extensions.AsICollection(found);
+            var expectedCollection = expected.AsICollection();
+            var foundCollection = found.AsICollection();
             if (!Equals(expectedCollection.Count, foundCollection.Count))
             {
                 throw new AssertionFailedException($"Expected Count: {expectedCollection.Count} - Found: {foundCollection.Count}{(message == null ? string.Empty : $" - Message: {message}")}");
