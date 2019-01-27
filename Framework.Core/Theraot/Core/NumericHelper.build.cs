@@ -13,11 +13,13 @@ namespace Theraot.Core
             {
                 return 0.0;
             }
+
             if (mantissa < 0)
             {
                 mantissa = -mantissa;
                 sign = -sign;
             }
+
             var tmpMantissa = (ulong)mantissa;
             return GetDoubleFromParts(sign, exponent, tmpMantissa);
         }
@@ -30,13 +32,13 @@ namespace Theraot.Core
 
         public static long BuildInt64(int hi, int lo)
         {
-            return unchecked((long)((ulong)(uint)hi << 32 | (uint)lo));
+            return unchecked((long)(((ulong)(uint)hi << 32) | (uint)lo));
         }
 
         [CLSCompliant(false)]
         public static long BuildInt64(uint hi, uint lo)
         {
-            return unchecked((long)((ulong)hi << 32 | lo));
+            return unchecked((long)(((ulong)hi << 32) | lo));
         }
 
         public static float BuildSingle(int sign, int mantissa, int exponent)
@@ -53,7 +55,7 @@ namespace Theraot.Core
         [CLSCompliant(false)]
         public static ulong BuildUInt64(uint hi, uint lo)
         {
-            return (ulong)hi << 32 | lo;
+            return ((ulong)hi << 32) | lo;
         }
 
         [CLSCompliant(false)]
@@ -165,6 +167,7 @@ namespace Theraot.Core
                         // bit to the front of the mantissa
                         mantissa |= 1 << 23;
                     }
+
                     // Bias the exponent. It's actually biased by 127, but we're
                     // treating the mantissa as m.0 rather than 0.m, so we need
                     // to subtract another 23 from it.
@@ -202,21 +205,25 @@ namespace Theraot.Core
                 cbit += 16;
                 u <<= 16;
             }
+
             if ((u & 0xFF000000) == 0)
             {
                 cbit += 8;
                 u <<= 8;
             }
+
             if ((u & 0xF0000000) == 0)
             {
                 cbit += 4;
                 u <<= 4;
             }
+
             if ((u & 0xC0000000) == 0)
             {
                 cbit += 2;
                 u <<= 2;
             }
+
             if ((u & 0x80000000) == 0)
             {
                 cbit++;
@@ -231,6 +238,7 @@ namespace Theraot.Core
             {
                 return 32 + CbitHighZero((uint)uu);
             }
+
             return CbitHighZero((uint)(uu >> 32));
         }
 
@@ -240,31 +248,37 @@ namespace Theraot.Core
             {
                 return 32;
             }
+
             var cbit = 0;
             if ((u & 0x0000FFFF) == 0)
             {
                 cbit += 16;
                 u >>= 16;
             }
+
             if ((u & 0x000000FF) == 0)
             {
                 cbit += 8;
                 u >>= 8;
             }
+
             if ((u & 0x0000000F) == 0)
             {
                 cbit += 4;
                 u >>= 4;
             }
+
             if ((u & 0x00000003) == 0)
             {
                 cbit += 2;
                 u >>= 2;
             }
+
             if ((u & 0x00000001) == 0)
             {
                 cbit++;
             }
+
             return cbit;
         }
 

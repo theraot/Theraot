@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 
 namespace Theraot.Core

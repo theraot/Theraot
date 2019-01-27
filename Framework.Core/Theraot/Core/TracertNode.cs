@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System.Net;
 using System.Net.NetworkInformation;
 

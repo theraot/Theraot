@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Reflection
@@ -49,6 +50,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(item));
             }
+
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
         }
 
@@ -75,6 +77,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(item));
             }
+
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
         }
 
@@ -99,11 +102,13 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(parameterInfo));
             }
+
             var parameterType = parameterInfo.ParameterType;
             if (parameterType.IsByRef)
             {
                 parameterType = parameterType.GetElementType();
             }
+
             return parameterType;
         }
 
@@ -114,6 +119,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetNonRefTypeInternal();
         }
 
@@ -132,6 +138,7 @@ namespace Theraot.Reflection
             {
                 return typeof(Nullable<>).MakeGenericType(type);
             }
+
             return type;
         }
 
@@ -142,6 +149,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(methodInfo));
             }
+
             return methodInfo.IsConstructor ? methodInfo.DeclaringType : ((MethodInfo)methodInfo).ReturnType;
         }
 
@@ -151,10 +159,12 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
+
             return type.GetStaticMethodInternal(name);
         }
 
@@ -164,6 +174,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetStaticMethodsInternal();
         }
 
@@ -187,6 +198,7 @@ namespace Theraot.Reflection
             {
                 return attributes.Length > 0;
             }
+
             return false;
         }
 
@@ -199,6 +211,7 @@ namespace Theraot.Reflection
             {
                 return attributes.Length > 0;
             }
+
             return false;
         }
 
@@ -211,6 +224,7 @@ namespace Theraot.Reflection
             {
                 return attributes.Length > 0;
             }
+
             return false;
         }
 
@@ -223,6 +237,7 @@ namespace Theraot.Reflection
             {
                 return attributes.Length > 0;
             }
+
             return false;
         }
 
@@ -235,6 +250,7 @@ namespace Theraot.Reflection
             {
                 return attributes.Length > 0;
             }
+
             return false;
         }
 
@@ -244,10 +260,12 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (target == null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
+
             return source.HasIdentityPrimitiveOrNullableConversionToInternal(target);
         }
 
@@ -258,15 +276,18 @@ namespace Theraot.Reflection
             {
                 return true;
             }
+
             // Nullable conversions
             if (source.IsNullable() && target == source.GetNonNullable())
             {
                 return true;
             }
+
             if (IsNullable(target) && source == target.GetNonNullable())
             {
                 return true;
             }
+
             // Primitive runtime conversions
             // All conversions amongst enum, bool, char, integer and float types
             // (and their corresponding nullable types) are legal except for
@@ -274,7 +295,7 @@ namespace Theraot.Reflection
             // bool-backed enums.
             return IsConvertible(source) && IsConvertible(target)
                                          && (target.GetNonNullable() != typeof(bool)
-                                         || (source.GetTypeInfo().IsEnum && source.GetUnderlyingSystemType() == typeof(bool)));
+                                             || (source.GetTypeInfo().IsEnum && source.GetUnderlyingSystemType() == typeof(bool)));
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -282,13 +303,13 @@ namespace Theraot.Reflection
         {
             type = GetNonNullable(type);
             return type == typeof(short)
-                || type == typeof(int)
-                || type == typeof(long)
-                || type == typeof(double)
-                || type == typeof(float)
-                || type == typeof(ushort)
-                || type == typeof(uint)
-                || type == typeof(ulong);
+                   || type == typeof(int)
+                   || type == typeof(long)
+                   || type == typeof(double)
+                   || type == typeof(float)
+                   || type == typeof(ushort)
+                   || type == typeof(uint)
+                   || type == typeof(ulong);
         }
 
         public static bool IsBinaryPortable(this Type type)
@@ -297,6 +318,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return IsBinaryPortableExtracted(type);
         }
 
@@ -306,6 +328,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return IsBlittableExtracted(type);
         }
 
@@ -321,6 +344,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(parameterInfo));
             }
+
             return parameterInfo.IsByRefParameterInternal();
         }
 
@@ -340,6 +364,7 @@ namespace Theraot.Reflection
             {
                 return true;
             }
+
             return type == typeof(bool)
                    || type == typeof(byte)
                    || type == typeof(sbyte)
@@ -362,6 +387,7 @@ namespace Theraot.Reflection
             {
                 return false;
             }
+
             return type.GetGenericTypeDefinition() == genericTypeDefinition;
         }
 
@@ -383,14 +409,14 @@ namespace Theraot.Reflection
         {
             type = GetNonNullable(type);
             return type == typeof(bool)
-                || type == typeof(sbyte)
-                || type == typeof(byte)
-                || type == typeof(short)
-                || type == typeof(int)
-                || type == typeof(long)
-                || type == typeof(ushort)
-                || type == typeof(uint)
-                || type == typeof(ulong);
+                   || type == typeof(sbyte)
+                   || type == typeof(byte)
+                   || type == typeof(short)
+                   || type == typeof(int)
+                   || type == typeof(long)
+                   || type == typeof(ushort)
+                   || type == typeof(uint)
+                   || type == typeof(ulong);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -404,16 +430,16 @@ namespace Theraot.Reflection
         {
             type = GetNonNullable(type);
             return type == typeof(char)
-                    || type == typeof(sbyte)
-                    || type == typeof(byte)
-                    || type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(double)
-                    || type == typeof(float)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong);
+                   || type == typeof(sbyte)
+                   || type == typeof(byte)
+                   || type == typeof(short)
+                   || type == typeof(int)
+                   || type == typeof(long)
+                   || type == typeof(double)
+                   || type == typeof(float)
+                   || type == typeof(ushort)
+                   || type == typeof(uint)
+                   || type == typeof(ulong);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -426,13 +452,13 @@ namespace Theraot.Reflection
         public static bool IsPrimitiveInteger(this Type type)
         {
             return type == typeof(sbyte)
-                    || type == typeof(byte)
-                    || type == typeof(short)
-                    || type == typeof(int)
-                    || type == typeof(long)
-                    || type == typeof(ushort)
-                    || type == typeof(uint)
-                    || type == typeof(ulong);
+                   || type == typeof(byte)
+                   || type == typeof(short)
+                   || type == typeof(int)
+                   || type == typeof(long)
+                   || type == typeof(ushort)
+                   || type == typeof(uint)
+                   || type == typeof(ulong);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -455,10 +481,12 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             if (baseType == null)
             {
                 throw new ArgumentNullException(nameof(baseType));
             }
+
             return type.IsSameOrSubclassOfInternal(baseType);
         }
 
@@ -468,10 +496,12 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             if (baseType == null)
             {
                 throw new ArgumentNullException(nameof(baseType));
             }
+
             return type.IsSubclassOfInternal(baseType);
         }
 
@@ -488,6 +518,7 @@ namespace Theraot.Reflection
                     return true;
                 }
             }
+
             return false;
 #else
             return type.IsSubclassOf(baseType);
@@ -500,6 +531,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return IsValueTypeRecursiveExtracted(type);
         }
 
@@ -545,6 +577,7 @@ namespace Theraot.Reflection
             {
                 return true;
             }
+
             return (parameterInfo.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out;
         }
 
@@ -552,7 +585,7 @@ namespace Theraot.Reflection
         {
             type = GetNonNullable(type);
             return type == typeof(float)
-                || type == typeof(double);
+                   || type == typeof(double);
         }
 
         internal static bool IsSameOrSubclassOfInternal(this Type type, Type baseType)
@@ -565,10 +598,10 @@ namespace Theraot.Reflection
             // Including byte and char
             type = GetNonNullable(type);
             return type == typeof(byte)
-                || type == typeof(char)
-                || type == typeof(ushort)
-                || type == typeof(uint)
-                || type == typeof(ulong);
+                   || type == typeof(char)
+                   || type == typeof(ushort)
+                   || type == typeof(uint)
+                   || type == typeof(ulong);
         }
 
         internal static bool IsUnsignedInteger(this Type type)
@@ -576,8 +609,8 @@ namespace Theraot.Reflection
             // Not including byte or char, by design - use IsUnsigned instead
             type = GetNonNullable(type);
             return type == typeof(ushort)
-                || type == typeof(uint)
-                || type == typeof(ulong);
+                   || type == typeof(uint)
+                   || type == typeof(ulong);
         }
 
         private static bool GetBinaryPortableResult(Type type)
@@ -586,9 +619,9 @@ namespace Theraot.Reflection
             if (info.IsPrimitive)
             {
                 return type != typeof(IntPtr)
-                    && type != typeof(UIntPtr)
-                    && type != typeof(char)
-                    && type != typeof(bool);
+                       && type != typeof(UIntPtr)
+                       && type != typeof(char)
+                       && type != typeof(bool);
             }
 
             if (!info.IsValueType)
@@ -600,6 +633,7 @@ namespace Theraot.Reflection
             {
                 return false;
             }
+
             return !info.IsAutoLayout && type.GetStructLayoutAttribute().Pack > 0;
         }
 
@@ -609,7 +643,7 @@ namespace Theraot.Reflection
             if (info.IsPrimitive)
             {
                 return type != typeof(char)
-                    && type != typeof(bool);
+                       && type != typeof(bool);
             }
 
             return info.IsValueType && type.GetTypeInfo().GetFields().All(field => IsBlittableExtracted(field.FieldType));
@@ -633,10 +667,12 @@ namespace Theraot.Reflection
             {
                 return false;
             }
+
             if (_binaryPortableCache.TryGetValue(type, out var result))
             {
                 return result;
             }
+
             result = GetBinaryPortableResult(type);
             _binaryPortableCache[type] = result;
             return result;
@@ -649,10 +685,12 @@ namespace Theraot.Reflection
             {
                 return false;
             }
+
             if (_blittableCache.TryGetValue(type, out var result))
             {
                 return result;
             }
+
             result = GetBlittableResult(type);
             _blittableCache[type] = result;
             return result;
@@ -665,10 +703,12 @@ namespace Theraot.Reflection
             {
                 return false;
             }
+
             if (_valueTypeRecursiveCache.TryGetValue(type, out var result))
             {
                 return result;
             }
+
             result = GetValueTypeRecursiveResult(type);
             _valueTypeRecursiveCache[type] = result;
             return result;
@@ -676,7 +716,6 @@ namespace Theraot.Reflection
     }
 
 #if LESSTHAN_NET40
-
     public static partial class TypeExtensions
     {
         public static TypeCode GetTypeCode(this Type type)
@@ -720,7 +759,6 @@ namespace Theraot.Reflection
 #endif
 
 #if GREATERTHAN_NET40 || GREATERTHAN_NETCOREAPP11
-
     public static partial class TypeExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -792,11 +830,13 @@ namespace Theraot.Reflection
                 {
                     continue;
                 }
+
                 var parameters = constructorInfo.GetParameters();
                 if (parameters.Length != typeArguments.Length)
                 {
                     continue;
                 }
+
                 var ok = true;
                 for (var index = 0; index < typeArguments.Length; index++)
                 {
@@ -808,12 +848,15 @@ namespace Theraot.Reflection
                     ok = false;
                     break;
                 }
+
                 if (!ok)
                 {
                     continue;
                 }
+
                 return constructorInfo;
             }
+
             return null;
         }
 
@@ -829,6 +872,7 @@ namespace Theraot.Reflection
                     result.Add(constructorInfo);
                 }
             }
+
             return result.ToArray();
         }
 
@@ -844,6 +888,7 @@ namespace Theraot.Reflection
                     result.Add(fieldInfo);
                 }
             }
+
             return result.ToArray();
         }
 
@@ -862,11 +907,13 @@ namespace Theraot.Reflection
                 {
                     continue;
                 }
+
                 var parameters = methodInfo.GetParameters();
                 if (parameters.Length != typeArguments.Length)
                 {
                     continue;
                 }
+
                 var ok = true;
                 for (var index = 0; index < typeArguments.Length; index++)
                 {
@@ -878,12 +925,15 @@ namespace Theraot.Reflection
                     ok = false;
                     break;
                 }
+
                 if (!ok)
                 {
                     continue;
                 }
+
                 return methodInfo;
             }
+
             return null;
         }
 
@@ -903,12 +953,15 @@ namespace Theraot.Reflection
                 {
                     continue;
                 }
+
                 if (found != null)
                 {
                     throw new AmbiguousMatchException();
                 }
+
                 found = methodInfo;
             }
+
             return found;
         }
 
@@ -924,6 +977,7 @@ namespace Theraot.Reflection
                     result.Add(methodInfo);
                 }
             }
+
             return result.ToArray();
         }
 
@@ -939,6 +993,7 @@ namespace Theraot.Reflection
                     result.Add(propertyInfo);
                 }
             }
+
             return result.ToArray();
         }
 
@@ -957,11 +1012,13 @@ namespace Theraot.Reflection
                 {
                     continue;
                 }
+
                 var parameters = propertyInfo.GetIndexParameters();
                 if (parameters.Length != typeArguments.Length)
                 {
                     continue;
                 }
+
                 var ok = true;
                 for (var index = 0; index < typeArguments.Length; index++)
                 {
@@ -973,12 +1030,15 @@ namespace Theraot.Reflection
                     ok = false;
                     break;
                 }
+
                 if (!ok)
                 {
                     continue;
                 }
+
                 return propertyInfo;
             }
+
             return null;
         }
 
@@ -998,12 +1058,15 @@ namespace Theraot.Reflection
                 {
                     continue;
                 }
+
                 if (found != null)
                 {
                     throw new AmbiguousMatchException();
                 }
+
                 found = propertyInfo;
             }
+
             return found;
         }
     }
@@ -1013,14 +1076,15 @@ namespace Theraot.Reflection
     public static partial class TypeExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static System.Runtime.InteropServices.StructLayoutAttribute GetStructLayoutAttribute(this Type type)
+        public static StructLayoutAttribute GetStructLayoutAttribute(this Type type)
         {
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
-            var attributes = type.GetAttributes<System.Runtime.InteropServices.StructLayoutAttribute>(false);
+            var attributes = type.GetAttributes<StructLayoutAttribute>(false);
             foreach (var attribute in attributes)
             {
                 return attribute;
             }
+
             return null;
 #else
             return type.StructLayoutAttribute;

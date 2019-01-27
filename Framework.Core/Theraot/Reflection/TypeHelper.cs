@@ -15,16 +15,19 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(delegateType));
             }
+
             var delegateTypeInfo = delegateType.GetTypeInfo();
             if (delegateTypeInfo.BaseType != typeof(MulticastDelegate))
             {
                 throw new ArgumentException("Not a delegate.");
             }
+
             var methodInfo = delegateType.GetTypeInfo().GetMethod("Invoke");
             if (methodInfo == null)
             {
                 throw new ArgumentException("Not a delegate.");
             }
+
             return methodInfo;
         }
 

@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 namespace Theraot.Core
 {
     public interface ICloner<T>

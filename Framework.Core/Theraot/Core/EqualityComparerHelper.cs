@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
 
 #if FAT
-
 using System.Reflection;
 using System.Threading;
 using Theraot.Collections;
@@ -27,7 +26,6 @@ namespace Theraot.Core
 }
 
 #if FAT
-
 namespace Theraot.Core
 {
     public static class EqualityComparerHelper<T>

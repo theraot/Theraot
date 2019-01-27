@@ -1,10 +1,11 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerStepThrough]
+    [DebuggerStepThrough]
     public static partial class NumericHelper
     {
         [CLSCompliant(false)]
@@ -20,10 +21,12 @@ namespace Theraot.Core
             {
                 left = -left;
             }
+
             if (right < 0)
             {
                 right = -right;
             }
+
             return (int)GCD((uint)left, (uint)right);
         }
 
@@ -35,13 +38,15 @@ namespace Theraot.Core
             {
                 Swap(ref left, ref right);
             }
+
             while (true)
             {
                 if (right == 0)
                 {
                     return left;
                 }
-                for (var cv = CvMax; ;)
+
+                for (var cv = CvMax;;)
                 {
                     left -= right;
                     if (left < right)
@@ -57,6 +62,7 @@ namespace Theraot.Core
                     left %= right;
                     break;
                 }
+
                 Swap(ref left, ref right);
             }
         }
@@ -67,10 +73,12 @@ namespace Theraot.Core
             {
                 left = -left;
             }
+
             if (right < 0)
             {
                 right = -right;
             }
+
             return (long)GCD((ulong)left, (ulong)right);
         }
 
@@ -82,13 +90,15 @@ namespace Theraot.Core
             {
                 Swap(ref uu1, ref uu2);
             }
+
             while (uu1 > uint.MaxValue)
             {
                 if (uu2 == 0)
                 {
                     return uu1;
                 }
-                for (var cv = CvMax; ;)
+
+                for (var cv = CvMax;;)
                 {
                     uu1 -= uu2;
                     if (uu1 < uu2)
@@ -104,29 +114,33 @@ namespace Theraot.Core
                     uu1 %= uu2;
                     break;
                 }
+
                 Swap(ref uu1, ref uu2);
             }
+
             return GCD((uint)uu1, (uint)uu2);
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int Log2(int number)
         {
             if (number < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
             }
+
             return Log2(unchecked((uint)number));
         }
 
         [CLSCompliant(false)]
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int Log2(uint number)
         {
             if (number == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of zero is not defined.");
             }
+
             number |= number >> 1;
             number |= number >> 2;
             number |= number >> 4;
@@ -135,24 +149,26 @@ namespace Theraot.Core
             return PopulationCount(number >> 1);
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int Log2(long number)
         {
             if (number < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
             }
+
             return Log2(unchecked((ulong)number));
         }
 
         [CLSCompliant(false)]
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int Log2(ulong number)
         {
             if (number == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of zero is not defined.");
             }
+
             number |= number >> 1;
             number |= number >> 2;
             number |= number >> 4;
@@ -162,18 +178,20 @@ namespace Theraot.Core
             return PopulationCount(number >> 1);
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int NextPowerOf2(int number)
         {
             if (number < 0)
             {
                 return 1;
             }
+
             uint unsignedNumber;
             unchecked
             {
                 unsignedNumber = (uint)number;
             }
+
             return (int)NextPowerOf2(unsignedNumber);
         }
 
@@ -188,7 +206,7 @@ namespace Theraot.Core
             return number + 1;
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public static int Sqrt(int number)
         {
             // Newton's  method  approximation  for  positive  integers
@@ -201,6 +219,7 @@ namespace Theraot.Core
                 {
                     return x;
                 }
+
                 x = xNext;
             }
         }

@@ -7,12 +7,6 @@ using System.Threading.Tasks;
 using Theraot;
 using Theraot.Collections.ThreadSafe;
 
-#if NET40
-
-using Theraot.Core;
-
-#endif
-
 namespace TestRunner.System.Threading
 {
     [TestFixture]

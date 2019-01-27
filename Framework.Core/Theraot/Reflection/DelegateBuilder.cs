@@ -15,18 +15,22 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(methodInfo));
             }
+
             if (methodInfo.IsStatic != (target == null))
             {
                 if (target == null)
                 {
                     throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
                 }
+
                 throw new ArgumentException("target is not null and the method is static", nameof(target));
             }
+
             if (delegateType == null)
             {
                 throw new ArgumentNullException(nameof(delegateType));
             }
+
             return methodInfo.CreateDelegate(delegateType, target);
         }
 
@@ -36,20 +40,24 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(methodInfo));
             }
+
             if (methodInfo.IsStatic != (target == null))
             {
                 if (target == null)
                 {
                     throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
                 }
+
                 throw new ArgumentException("target is not null and the method is static", nameof(target));
             }
+
             var returnType = methodInfo.GetReturnType();
             var parameters = methodInfo.GetParameters();
             if (parameters.Any(parameterInfo => parameterInfo.IsByRefParameterInternal()))
             {
                 throw new ArgumentException("By ref parameters are not supported", nameof(methodInfo));
             }
+
             var parameterTypes = new List<Type>(parameters.Select(parameterInfo => parameterInfo.ParameterType));
             Type delegateType;
             if (returnType == typeof(void))
@@ -63,6 +71,7 @@ namespace Theraot.Reflection
                 var parameterTypeArray = parameterTypes.ToArray();
                 delegateType = GetFuncType(parameterTypeArray);
             }
+
             return methodInfo.CreateDelegate(delegateType, target);
         }
 
