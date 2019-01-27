@@ -370,7 +370,7 @@ namespace MonoTests.System.Collections.ObjectModel
         }
 
         [Test]
-        public void ReentrantReuseObject()
+        public void ReentrantReuseObject() // Fail
         {
             var helper = new ObservableCollectionTestHelper();
 
