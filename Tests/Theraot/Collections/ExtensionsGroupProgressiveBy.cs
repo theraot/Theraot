@@ -127,8 +127,8 @@ namespace Tests.Theraot.Collections
             var src = new IterateAndCount(10);
             var a = src.GroupProgressiveBy(i => i > 5, null);
             var b = src.GroupProgressiveBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var c = src.GroupProgressiveBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var d = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var c = src.GroupProgressiveBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
+            var d = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
             Assert.AreEqual(src.Total, 0);
             a.Consume();
             b.Consume();
@@ -244,7 +244,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadC()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var r = src.GroupProgressiveBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "12345");
@@ -255,7 +255,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadD()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var r = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "23456");
@@ -266,7 +266,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadDEx()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var r = src.GroupProgressiveBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "12345");
