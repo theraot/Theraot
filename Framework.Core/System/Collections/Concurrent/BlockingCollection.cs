@@ -446,7 +446,7 @@ namespace System.Collections.Concurrent
 
         public IEnumerable<T> GetConsumingEnumerable()
         {
-            while (TryTake(out var item, -1, CancellationToken.None))
+            while (TryTake(out var item, Timeout.Infinite, CancellationToken.None))
             {
                 yield return item;
             }
@@ -454,12 +454,9 @@ namespace System.Collections.Concurrent
 
         public IEnumerable<T> GetConsumingEnumerable(CancellationToken cancellationToken)
         {
-            while (!IsCompleted)
+            while (TryTake(out var item, Timeout.Infinite, cancellationToken))
             {
-                if (TryTake(out var item, Timeout.Infinite, cancellationToken))
-                {
-                    yield return item;
-                }
+                yield return item;
             }
         }
 
@@ -548,7 +545,7 @@ namespace System.Collections.Concurrent
             public readonly int Capacity;
             private readonly SemaphoreSlim _addSemaphore;
             private int _addWaiters;
-            private int _canAdd;
+            private int _cannotAdd;
             private readonly IProducerConsumerCollection<T> _collection;
             private readonly SemaphoreSlim _takeSemaphore;
 
@@ -562,8 +559,8 @@ namespace System.Collections.Concurrent
 
             public bool CanAdd
             {
-                get => Volatile.Read(ref _canAdd) == 0;
-                set => Volatile.Write(ref _canAdd, value ? 1 : 0);
+                get => Volatile.Read(ref _cannotAdd) == 0;
+                set => Volatile.Write(ref _cannotAdd, value ? 0 : 1);
             }
 
             public int Count => _collection.Count;
@@ -625,12 +622,16 @@ namespace System.Collections.Concurrent
             public bool TryTake(out T item)
             {
                 item = default;
-                return _collection.Count != 0 && TryTake(out item, -1, CancellationToken.None);
+                return _collection.Count != 0 && TryTake(out item, Timeout.Infinite, CancellationToken.None);
             }
 
             public bool TryTake(out T item, int millisecondsTimeout, CancellationToken cancellationToken)
             {
                 item = default;
+                if (!CanAdd && _collection.Count == 0)
+                {
+                    return false;
+                }
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!_takeSemaphore.Wait(millisecondsTimeout, cancellationToken))
                 {
