@@ -137,41 +137,38 @@ namespace System.Numerics
                     var decimalSeparator = info.NumberDecimalSeparator;
                     var groups = false;
                     var type = 0;
-                    if (fmt == '\0')
+                    switch (fmt)
                     {
-                        // parse custom
-                    }
-                    else
-                    {
-                        if (fmt == 'c' || fmt == 'C')
-                        {
+                        case '\0':
+                            // parse custom
+                            break;
+                        case 'c':
+                        case 'C':
                             decimalSeparator = info.CurrencyDecimalSeparator;
                             precision = digits != -1 ? digits : info.CurrencyDecimalDigits;
                             groupingSeparator = info.CurrencyGroupSeparator;
                             groupingSizes = info.CurrencyGroupSizes;
                             groups = true;
                             type = 1;
-                        }
-                        else if (fmt == 'f' || fmt == 'F')
-                        {
+                            break;
+                        case 'f':
+                        case 'F':
                             precision = digits != -1 ? digits : info.NumberDecimalDigits;
-                        }
-                        else if (fmt == 'n' || fmt == 'N')
-                        {
+                            break;
+                        case 'n':
+                        case 'N':
                             precision = digits != -1 ? digits : info.NumberDecimalDigits;
                             groups = true;
-                        }
-                        else if (fmt == 'p' || fmt == 'P')
-                        {
+                            break;
+                        case 'p':
+                        case 'P':
                             decimalSeparator = info.PercentDecimalSeparator;
                             precision = digits != -1 ? digits : info.PercentDecimalDigits;
                             groups = true;
                             type = 2;
-                        }
-                        else
-                        {
+                            break;
+                        default:
                             throw new NotSupportedException();
-                        }
                     }
 
                     var result = new StringBuilder(builder.Length + 20);
