@@ -15,7 +15,7 @@ using System.Globalization;
 namespace Theraot.Core
 {
     [DebuggerNonUserCode]
-    public static partial class StringHelper
+    public static partial class StringEx
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, string value)
@@ -351,7 +351,7 @@ namespace Theraot.Core
         }
     }
 
-    public static partial class StringHelper
+    public static partial class StringEx
     {
 #if LESSTHAN_NET45 || GREATERTHAN_NETCOREAPP11
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

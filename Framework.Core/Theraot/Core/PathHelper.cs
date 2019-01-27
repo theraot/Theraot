@@ -60,7 +60,7 @@ namespace Theraot.Core
                 }
             }
 
-            return StringEx.Concat(combine);
+            return System.StringEx.Concat(combine);
 #else
             return Path.Combine(paths);
 #endif
