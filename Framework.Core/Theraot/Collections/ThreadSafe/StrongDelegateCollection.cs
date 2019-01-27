@@ -13,12 +13,12 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly Action<object[]> _invoke;
         private readonly Action<Action<Exception>, object[]> _invokeWithException;
-        private readonly SafeCollection<Delegate> _wrapped;
+        private readonly ThreadSafeCollection<Delegate> _wrapped;
 
         public StrongDelegateCollection(bool freeReentry)
         {
             IEqualityComparer<Delegate> comparer = EqualityComparer<Delegate>.Default;
-            _wrapped = new SafeCollection<Delegate>(comparer);
+            _wrapped = new ThreadSafeCollection<Delegate>(comparer);
             if (freeReentry)
             {
                 _invoke = InvokeExtracted;

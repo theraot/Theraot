@@ -10,7 +10,7 @@ namespace Theraot.Collections.ThreadSafe
     ///     Represent a thread-safe lock-free hash based dictionary.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public class SafeSet<T> : ISet<T>
+    public class ThreadSafeSet<T> : ISet<T>
     {
         private const int _defaultProbing = 1;
         private Bucket<T> _bucket;
@@ -20,7 +20,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
         /// </summary>
-        public SafeSet()
+        public ThreadSafeSet()
             : this(EqualityComparer<T>.Default, _defaultProbing)
         {
             // Empty
@@ -31,7 +31,7 @@ namespace Theraot.Collections.ThreadSafe
         ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public SafeSet(int initialProbing)
+        public ThreadSafeSet(int initialProbing)
             : this(EqualityComparer<T>.Default, initialProbing)
         {
             // Empty
@@ -42,18 +42,18 @@ namespace Theraot.Collections.ThreadSafe
         ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
-        public SafeSet(IEqualityComparer<T> comparer)
+        public ThreadSafeSet(IEqualityComparer<T> comparer)
             : this(comparer, _defaultProbing)
         {
             // Empty
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SafeSet{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public SafeSet(IEqualityComparer<T> comparer, int initialProbing)
+        public ThreadSafeSet(IEqualityComparer<T> comparer, int initialProbing)
         {
             Comparer = comparer ?? EqualityComparer<T>.Default;
             _bucket = new Bucket<T>();

@@ -13,11 +13,11 @@ namespace System.Collections.Concurrent
     [DebuggerDisplay("Count = {Count}")]
     public class ConcurrentBag<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
-        private SafeQueue<T> _wrapped;
+        private ThreadSafeQueue<T> _wrapped;
 
         public ConcurrentBag()
         {
-            _wrapped = new SafeQueue<T>();
+            _wrapped = new ThreadSafeQueue<T>();
         }
 
         public ConcurrentBag(IEnumerable<T> collection)
@@ -27,7 +27,7 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(collection));
             }
 
-            _wrapped = new SafeQueue<T>(collection);
+            _wrapped = new ThreadSafeQueue<T>(collection);
         }
 
         public int Count => _wrapped.Count;
@@ -45,7 +45,7 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
-            _wrapped = new SafeQueue<T>();
+            _wrapped = new ThreadSafeQueue<T>();
         }
 
         public void CopyTo(T[] array, int index)

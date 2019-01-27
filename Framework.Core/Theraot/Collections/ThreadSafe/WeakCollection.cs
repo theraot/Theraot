@@ -19,7 +19,7 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : WeakNeedle<T>, new()
     {
         private readonly IEqualityComparer<T> _comparer;
-        private readonly SafeCollection<TNeedle> _wrapped;
+        private readonly ThreadSafeCollection<TNeedle> _wrapped;
         private WeakNeedle<EventHandler> _eventHandler;
 
         public WeakCollection()
@@ -43,7 +43,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
             _comparer = comparer ?? EqualityComparer<T>.Default;
-            _wrapped = new SafeCollection<TNeedle>();
+            _wrapped = new ThreadSafeCollection<TNeedle>();
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();

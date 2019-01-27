@@ -168,7 +168,7 @@ namespace Theraot.Collections
                 exhaustedCallback = ActionHelper.GetNoopAction();
             }
 
-            var buffer = new SafeQueue<T>();
+            var buffer = new ThreadSafeQueue<T>();
             var semaphore = new SemaphoreSlim(0);
             var source = new CancellationTokenSource();
             var subscription = observable.Subscribe

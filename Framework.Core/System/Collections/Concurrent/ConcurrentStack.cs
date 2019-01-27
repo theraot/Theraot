@@ -14,16 +14,16 @@ namespace System.Collections.Concurrent
     [DebuggerDisplay("Count = {Count}")]
     public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
-        private SafeStack<T> _wrapped;
+        private ThreadSafeStack<T> _wrapped;
 
         public ConcurrentStack()
         {
-            _wrapped = new SafeStack<T>();
+            _wrapped = new ThreadSafeStack<T>();
         }
 
         public ConcurrentStack(IEnumerable<T> collection)
         {
-            _wrapped = new SafeStack<T>(collection);
+            _wrapped = new ThreadSafeStack<T>(collection);
         }
 
         public int Count => _wrapped.Count;
@@ -36,7 +36,7 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
-            Volatile.Write(ref _wrapped, new SafeStack<T>());
+            Volatile.Write(ref _wrapped, new ThreadSafeStack<T>());
         }
 
         public void CopyTo(T[] array, int index)

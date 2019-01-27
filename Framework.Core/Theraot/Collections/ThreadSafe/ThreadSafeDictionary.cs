@@ -24,7 +24,7 @@ namespace Theraot.Collections.ThreadSafe
     ///     desired interface.
     /// </remarks>
     [Serializable]
-    public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public sealed partial class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private const int _defaultProbing = 1;
 
@@ -40,11 +40,11 @@ namespace Theraot.Collections.ThreadSafe
         private ValueCollection<TKey, TValue> _valueCollection;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey,TValue}" /> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
+        public ThreadSafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
         {
             Comparer = comparer ?? EqualityComparer<TKey>.Default;
             _valueComparer = EqualityComparer<TValue>.Default;
@@ -56,7 +56,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
         /// </summary>
-        public SafeDictionary()
+        public ThreadSafeDictionary()
             : this(EqualityComparer<TKey>.Default, _defaultProbing)
         {
             // Empty
@@ -67,7 +67,7 @@ namespace Theraot.Collections.ThreadSafe
         ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public SafeDictionary(int initialProbing)
+        public ThreadSafeDictionary(int initialProbing)
             : this(EqualityComparer<TKey>.Default, initialProbing)
         {
             // Empty
@@ -78,7 +78,7 @@ namespace Theraot.Collections.ThreadSafe
         ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
-        public SafeDictionary(IEqualityComparer<TKey> comparer)
+        public ThreadSafeDictionary(IEqualityComparer<TKey> comparer)
             : this(comparer, _defaultProbing)
         {
             // Empty
@@ -1295,7 +1295,7 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 
-    public sealed partial class SafeDictionary<TKey, TValue>
+    public sealed partial class ThreadSafeDictionary<TKey, TValue>
     {
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {

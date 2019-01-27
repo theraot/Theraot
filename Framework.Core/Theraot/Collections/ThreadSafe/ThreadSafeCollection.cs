@@ -11,7 +11,7 @@ namespace Theraot.Collections.ThreadSafe
     ///     Represent a thread-safe lock-free hash based collection.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public sealed class SafeCollection<T> : ICollection<T>
+    public sealed class ThreadSafeCollection<T> : ICollection<T>
     {
         private int _maxIndex;
         private Bucket<T> _wrapped;
@@ -20,17 +20,17 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeCollection`1" /> class.
         /// </summary>
-        public SafeCollection()
+        public ThreadSafeCollection()
             : this(EqualityComparer<T>.Default)
         {
             // Empty
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SafeCollection{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeCollection{T}" /> class.
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
-        public SafeCollection(IEqualityComparer<T> comparer)
+        public ThreadSafeCollection(IEqualityComparer<T> comparer)
         {
             _maxIndex = -1;
             Comparer = comparer ?? EqualityComparer<T>.Default;

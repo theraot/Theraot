@@ -9,33 +9,33 @@ using System.Threading;
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
-    ///     Represent a fixed size thread-safe lock-free (read may loop) queue.
+    ///     Represent a fixed size thread-safe lock-free (loops) stack.
     /// </summary>
-    /// <typeparam name="T">The type of items stored in the queue.</typeparam>
+    /// <typeparam name="T">The type of items stored in the stack.</typeparam>
     [Serializable]
-    public sealed class SafeQueue<T> : IProducerConsumerCollection<T>
+    public sealed class ThreadSafeStack<T> : IProducerConsumerCollection<T>
     {
         private int _count;
-        private Node<FixedSizeQueue<T>> _root;
-        private Node<FixedSizeQueue<T>> _tail;
+        private Node<T> _root;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeStack{T}" /> class.
         /// </summary>
-        public SafeQueue()
+        public ThreadSafeStack()
         {
-            _root = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
-            _tail = _root;
+            _root = null;
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeStack{T}" /> class.
         /// </summary>
-        public SafeQueue(IEnumerable<T> source)
+        public ThreadSafeStack(IEnumerable<T> source)
         {
-            _root = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(source));
-            _count = _root.Value.Count;
-            _tail = _root;
+            foreach (var item in source)
+            {
+                _root = Node<T>.GetNode(_root, item);
+                _count++;
+            }
         }
 
         /// <inheritdoc />
@@ -51,7 +51,7 @@ namespace Theraot.Collections.ThreadSafe
         public void CopyTo(T[] array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
+            Extensions.CopyTo(this, array, index);
         }
 
         /// <inheritdoc />
@@ -63,16 +63,12 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            var root = _root;
-            do
+            var current = Volatile.Read(ref _root);
+            while (current != null)
             {
-                foreach (var item in root.Value)
-                {
-                    yield return item;
-                }
-
-                root = root.Link;
-            } while (root != null);
+                yield return current.Value;
+                current = current.Link;
+            }
         }
 
         public T[] ToArray()
@@ -81,7 +77,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        ///     Attempts to retrieve and remove the next item.
+        ///     Attempts to retrieve and remove the next item from the back.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>
@@ -93,21 +89,19 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 var root = Volatile.Read(ref _root);
-                if (root.Value.TryTake(out item))
+                if (root == null)
                 {
-                    Interlocked.Decrement(ref _count);
-                    return true;
-                }
-
-                if (root.Link == null)
-                {
+                    item = default;
                     return false;
                 }
 
                 var found = Interlocked.CompareExchange(ref _root, root.Link, root);
                 if (found == root)
                 {
-                    Node<FixedSizeQueue<T>>.Donate(root);
+                    item = root.Value;
+                    Node<T>.Donate(root);
+                    Interlocked.Decrement(ref _count);
+                    return true;
                 }
 
                 spinWait.SpinOnce();
@@ -132,34 +126,50 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        ///     Attempts to Adds the specified item.
+        ///     Attempts to Adds the specified item at the front.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <returns>
+        ///     <c>true</c> if the item was added; otherwise, <c>false</c>.
+        /// </returns>
         public void Add(T item)
         {
+            var root = Volatile.Read(ref _root);
+            var node = Node<T>.GetNode(root, item);
             var spinWait = new SpinWait();
             while (true)
             {
-                var tail = Volatile.Read(ref _tail);
-                if (tail.Value.TryAdd(item))
+                var found = Interlocked.CompareExchange(ref _root, node, root);
+                if (found == root)
                 {
                     Interlocked.Increment(ref _count);
                     return;
                 }
 
-                var node = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
-                var found = Interlocked.CompareExchange(ref tail.Link, node, null);
-                if (found == null)
-                {
-                    Volatile.Write(ref _tail, node);
-                }
-
+                root = Volatile.Read(ref _root);
+                node.Link = root;
                 spinWait.SpinOnce();
             }
         }
 
         /// <summary>
-        ///     Attempts to retrieve the next item to be taken without removing it.
+        ///     Returns the next item to be taken from the back without removing it.
+        /// </summary>
+        /// <returns>The next item to be taken from the back.</returns>
+        /// <exception cref="InvalidOperationException">No more items to be taken.</exception>
+        public T Peek()
+        {
+            var root = Volatile.Read(ref _root);
+            if (root == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            return root.Value;
+        }
+
+        /// <summary>
+        ///     Attempts to retrieve the next item to be taken from the back without removing it.
         /// </summary>
         /// <param name="item">The item retrieved.</param>
         /// <returns>
@@ -167,28 +177,15 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryPeek(out T item)
         {
-            var spinWait = new SpinWait();
-            while (true)
+            var root = Volatile.Read(ref _root);
+            if (root == null)
             {
-                var root = Volatile.Read(ref _root);
-                if (root.Value.TryPeek(out item))
-                {
-                    return true;
-                }
-
-                if (root.Link == null)
-                {
-                    return false;
-                }
-
-                var found = Interlocked.CompareExchange(ref _root, root.Link, root);
-                if (found == root)
-                {
-                    Node<FixedSizeQueue<T>>.Donate(root);
-                }
-
-                spinWait.SpinOnce();
+                item = default;
+                return false;
             }
+
+            item = root.Value;
+            return true;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace System.Collections.Concurrent
         [NonSerialized]
         private ValueCollection<TKey, TValue> _valueCollection;
 
-        private readonly SafeDictionary<TKey, TValue> _wrapped;
+        private readonly ThreadSafeDictionary<TKey, TValue> _wrapped;
 
         public ConcurrentDictionary()
             : this(4, 31, EqualityComparer<TKey>.Default)
@@ -69,7 +69,7 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(capacity), "capacity < 0");
             }
 
-            _wrapped = new SafeDictionary<TKey, TValue>(comparer ?? throw new ArgumentNullException(nameof(comparer)));
+            _wrapped = new ThreadSafeDictionary<TKey, TValue>(comparer ?? throw new ArgumentNullException(nameof(comparer)));
         }
 
         public int Count => _wrapped.Count;

@@ -16,13 +16,13 @@ namespace Theraot.Threading
         private const int _maxProbingHint = 4;
 
         private int _disposing;
-        private SafeDictionary<Thread, INeedle<T>> _slots;
+        private ThreadSafeDictionary<Thread, INeedle<T>> _slots;
         private Func<T> _valueFactory;
 
         public TrackingThreadLocal(Func<T> valueFactory)
         {
             _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
-            _slots = new SafeDictionary<Thread, INeedle<T>>(_maxProbingHint);
+            _slots = new ThreadSafeDictionary<Thread, INeedle<T>>(_maxProbingHint);
         }
 
         public bool TryGetValue(out T value)

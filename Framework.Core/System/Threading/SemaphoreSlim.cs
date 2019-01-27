@@ -12,7 +12,7 @@ namespace System.Threading
     public class SemaphoreSlim : IDisposable
     {
         private readonly int? _maxCount;
-        private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
+        private ThreadSafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private ManualResetEventSlim _canEnter;
         private int _count;
         private bool _disposed;
@@ -43,7 +43,7 @@ namespace System.Threading
             }
 
             _maxCount = maxCount;
-            _asyncWaiters = new SafeQueue<TaskCompletionSource<bool>>();
+            _asyncWaiters = new ThreadSafeQueue<TaskCompletionSource<bool>>();
             _count = initialCount;
             _canEnter = new ManualResetEventSlim(_count > 0);
         }
@@ -270,7 +270,7 @@ namespace System.Threading
             _asyncWaiters.Add(source);
         }
 
-        private void Awake(SafeQueue<TaskCompletionSource<bool>> asyncWaiters)
+        private void Awake(ThreadSafeQueue<TaskCompletionSource<bool>> asyncWaiters)
         {
             var spinWait = new SpinWait();
             while (asyncWaiters.TryTake(out var waiter))

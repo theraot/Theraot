@@ -34,7 +34,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             Comparer = comparer ?? EqualityComparer<TKey>.Default;
             var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(Comparer);
-            Wrapped = new SafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer);
+            Wrapped = new ThreadSafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer);
             _keyCollection = new KeyCollection<TKey, TValue>(this);
             _valueCollection = new ValueCollection<TKey, TValue>(this);
             _reservoir = new NeedleReservoir<TKey, WeakNeedle<TKey>>(key => new WeakNeedle<TKey>(key));
@@ -44,7 +44,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             Comparer = comparer ?? EqualityComparer<TKey>.Default;
             var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(Comparer);
-            Wrapped = new SafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer, initialProbing);
+            Wrapped = new ThreadSafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer, initialProbing);
             _keyCollection = new KeyCollection<TKey, TValue>(this);
             _valueCollection = new ValueCollection<TKey, TValue>(this);
             _reservoir = new NeedleReservoir<TKey, WeakNeedle<TKey>>(key => new WeakNeedle<TKey>(key));
@@ -77,7 +77,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEqualityComparer<TKey> Comparer { get; }
 
-        protected SafeDictionary<WeakNeedle<TKey>, TValue> Wrapped { get; }
+        protected ThreadSafeDictionary<WeakNeedle<TKey>, TValue> Wrapped { get; }
 
         public int Count => Wrapped.Count;
 

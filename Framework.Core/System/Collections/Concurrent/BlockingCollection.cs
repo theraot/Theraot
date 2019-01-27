@@ -20,7 +20,7 @@ namespace System.Collections.Concurrent
 
         public BlockingCollection()
         {
-            _data = new PrivateData(new SafeQueue<T>(), int.MaxValue);
+            _data = new PrivateData(new ThreadSafeQueue<T>(), int.MaxValue);
         }
 
         public BlockingCollection(int boundedCapacity)

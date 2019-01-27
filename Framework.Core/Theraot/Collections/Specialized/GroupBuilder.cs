@@ -10,16 +10,16 @@ namespace Theraot.Collections.Specialized
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly Func<TSource, TKey> _keySelector;
-        private readonly SafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
-        private readonly SafeQueue<Grouping<TKey, TElement>> _results;
+        private readonly ThreadSafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
+        private readonly ThreadSafeQueue<Grouping<TKey, TElement>> _results;
         private readonly Func<TSource, TElement> _resultSelector;
         private IEnumerator<TSource> _enumerator;
 
         private GroupBuilder(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {
             _enumerator = source.GetEnumerator();
-            _results = new SafeQueue<Grouping<TKey, TElement>>();
-            _proxies = new SafeDictionary<TKey, ProxyObservable<TElement>>(comparer);
+            _results = new ThreadSafeQueue<Grouping<TKey, TElement>>();
+            _proxies = new ThreadSafeDictionary<TKey, ProxyObservable<TElement>>(comparer);
             _keySelector = keySelector;
             _resultSelector = resultSelector;
             _cancellationTokenSource = new CancellationTokenSource();
@@ -80,7 +80,7 @@ namespace Theraot.Collections.Specialized
                     Advance,
                     _cancellationTokenSource.Token
                 );
-                var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
+                var items = ProgressiveCollection<TElement>.Create<ThreadSafeCollection<TElement>>
                 (
                     progressor,
                     EqualityComparer<TElement>.Default

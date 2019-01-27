@@ -8,7 +8,7 @@ namespace System.Threading
         private static readonly Pool<ThreadPoolThread> _pool = new Pool<ThreadPoolThread>(1024, null);
         private static int _threadCount;
 
-        private static readonly SafeQueue<Action> _work = new SafeQueue<Action>();
+        private static readonly ThreadSafeQueue<Action> _work = new ThreadSafeQueue<Action>();
 
         public static bool QueueUserWorkItem(WaitCallback callBack)
         {

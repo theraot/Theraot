@@ -18,7 +18,7 @@ namespace Theraot.Threading
         [ThreadStatic]
         private static HashSet<UniqueId> _guard;
 
-        private SafeQueue<Action> _workQueue;
+        private ThreadSafeQueue<Action> _workQueue;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ReentryGuard" /> class.
@@ -35,7 +35,7 @@ namespace Theraot.Threading
         /// </summary>
         public bool IsTaken => _guard?.Contains(Id) == true;
 
-        private SafeQueue<Action> WorkQueue => TypeHelper.LazyCreate(ref _workQueue, () => new SafeQueue<Action>());
+        private ThreadSafeQueue<Action> WorkQueue => TypeHelper.LazyCreate(ref _workQueue, () => new ThreadSafeQueue<Action>());
 
         public IDisposable TryEnter(out bool didEnter)
         {
@@ -43,7 +43,7 @@ namespace Theraot.Threading
             return didEnter ? DisposableAkin.Create(() => Leave(Id)) : NoOpDisposable.Instance;
         }
 
-        private static IPromise AddExecution(Action action, SafeQueue<Action> queue)
+        private static IPromise AddExecution(Action action, ThreadSafeQueue<Action> queue)
         {
             var promised = new Promise(false);
             var result = new ReadOnlyPromise(promised, false);
@@ -65,7 +65,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IPromise<T> AddExecution<T>(Func<T> action, SafeQueue<Action> queue)
+        private static IPromise<T> AddExecution<T>(Func<T> action, ThreadSafeQueue<Action> queue)
         {
             var promised = new PromiseNeedle<T>(false);
             var result = new ReadOnlyPromiseNeedle<T>(promised, false);
@@ -86,7 +86,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static void ExecutePending(SafeQueue<Action> queue, UniqueId id)
+        private static void ExecutePending(ThreadSafeQueue<Action> queue, UniqueId id)
         {
             var didEnter = false;
             try
