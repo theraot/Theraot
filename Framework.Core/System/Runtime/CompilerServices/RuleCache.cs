@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -6,16 +6,18 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
 using Theraot.Collections;
 
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// This API supports the .NET Framework infrastructure and is not intended to be used directly from your code.
-    /// Represents a cache of runtime binding rules.
+    ///     This API supports the .NET Framework infrastructure and is not intended to be used directly from your code.
+    ///     Represents a cache of runtime binding rules.
     /// </summary>
     /// <typeparam name="T">The delegate type.</typeparam>
-    [EditorBrowsable(EditorBrowsableState.Never), DebuggerStepThrough]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [DebuggerStepThrough]
     public class RuleCache<T>
         where T : class
     {
@@ -24,7 +26,7 @@ namespace System.Runtime.CompilerServices
 
         private const int _maxRules = 128;
         private readonly object _cacheLock = new object();
-        private T[] _rules = Theraot.Collections.ThreadSafe.ArrayReservoir<T>.EmptyArray;
+        private T[] _rules = ArrayEx.Empty<T>();
 
         internal RuleCache()
         {
@@ -36,14 +38,14 @@ namespace System.Runtime.CompilerServices
             // need a lock to make sure we are not losing rules.
             lock (_cacheLock)
             {
-                var rules = Threading.Volatile.Read(ref _rules);
-                Threading.Volatile.Write(ref _rules, AddOrInsert(rules, newRule));
+                var rules = Volatile.Read(ref _rules);
+                Volatile.Write(ref _rules, AddOrInsert(rules, newRule));
             }
         }
 
         internal T[] GetRules()
         {
-            return Threading.Volatile.Read(ref _rules);
+            return Volatile.Read(ref _rules);
         }
 
         // move the rule +2 up.
@@ -56,7 +58,7 @@ namespace System.Runtime.CompilerServices
             lock (_cacheLock)
             {
                 const int MaxSearch = 8;
-                var rules = Threading.Volatile.Read(ref _rules);
+                var rules = Volatile.Read(ref _rules);
                 var count = rules.Length - i;
                 if (count > MaxSearch)
                 {
@@ -67,16 +69,20 @@ namespace System.Runtime.CompilerServices
                 var max = Math.Min(rules.Length, i + count);
                 for (var index = i; index < max; index++)
                 {
-                    if (rules[index] == rule)
+                    if (rules[index] != rule)
                     {
-                        oldIndex = index;
-                        break;
+                        continue;
                     }
+
+                    oldIndex = index;
+                    break;
                 }
+
                 if (oldIndex < 2)
                 {
                     return;
                 }
+
                 var oldRule = rules[oldIndex];
                 rules[oldIndex] = rules[oldIndex - 1];
                 rules[oldIndex - 1] = rules[oldIndex - 2];
@@ -89,7 +95,7 @@ namespace System.Runtime.CompilerServices
             // need a lock to make sure we are replacing the right rule
             lock (_cacheLock)
             {
-                var rules = Threading.Volatile.Read(ref _rules);
+                var rules = Volatile.Read(ref _rules);
                 var i = Array.IndexOf(rules, oldRule);
                 if (i >= 0)
                 {
@@ -98,7 +104,7 @@ namespace System.Runtime.CompilerServices
                 }
 
                 // could not find it.
-                Threading.Volatile.Write(ref _rules, AddOrInsert(rules, newRule));
+                Volatile.Write(ref _rules, AddOrInsert(rules, newRule));
             }
         }
 

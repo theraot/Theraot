@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
-
 namespace System.Security
 {
     public interface IStackWalk

@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections.Generic
 {
@@ -22,7 +21,8 @@ namespace System.Collections.Generic
         ///     Initializes the <see cref="ArrayBuilder{T}" /> with a specified capacity.
         /// </summary>
         /// <param name="capacity">The capacity of the array to allocate.</param>
-        public ArrayBuilder(int capacity) : this()
+        public ArrayBuilder(int capacity)
+            : this()
         {
             Debug.Assert(capacity >= 0);
             if (capacity > 0)
@@ -100,7 +100,7 @@ namespace System.Collections.Generic
         {
             if (Count == 0)
             {
-                return ArrayReservoir<T>.EmptyArray;
+                return ArrayEx.Empty<T>();
             }
 
             Debug.Assert(Buffer != null); // Nonzero _count should imply this

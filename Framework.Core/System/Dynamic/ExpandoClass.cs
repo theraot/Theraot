@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Dynamic
 {
@@ -16,10 +15,10 @@ namespace System.Dynamic
     /// </summary>
     internal class ExpandoClass
     {
-        private const int _emptyHashCode = 6551;
         internal static readonly ExpandoClass Empty = new ExpandoClass();
-        private readonly int _hashCode; // pre-calculated hash code of all the keys the class contains
         internal readonly string[] Keys; // list of names associated with each element in the data array, sorted
+        private const int _emptyHashCode = 6551;
+        private readonly int _hashCode; // pre-calculated hash code of all the keys the class contains
         private Dictionary<int, List<WeakReference>> _transitions; // cached transitions
 
         // hash code of the empty ExpandoClass.
@@ -33,7 +32,7 @@ namespace System.Dynamic
         internal ExpandoClass()
         {
             _hashCode = _emptyHashCode;
-            Keys = ArrayReservoir<string>.EmptyArray;
+            Keys = ArrayEx.Empty<string>();
         }
 
         /// <summary>
@@ -86,12 +85,7 @@ namespace System.Dynamic
 
         internal int GetValueIndex(string name, bool caseInsensitive, ExpandoObject obj)
         {
-            if (caseInsensitive)
-            {
-                return GetValueIndexCaseInsensitive(name, obj);
-            }
-
-            return GetValueIndexCaseSensitive(name, obj.LockObject);
+            return caseInsensitive ? GetValueIndexCaseInsensitive(name, obj) : GetValueIndexCaseSensitive(name, obj.LockObject);
         }
 
         internal int GetValueIndexCaseSensitive(string name, object lockObject)
@@ -154,22 +148,28 @@ namespace System.Dynamic
                 for (var i = keys.Length - 1; i >= 0; i--)
                 {
                     //if the matching member is deleted, continue searching
-                    if (string.Equals
+                    if
+                    (
+                        !string.Equals
                         (
                             keys[i],
                             name,
                             StringComparison.OrdinalIgnoreCase
-                        ) && !obj.IsDeletedMember(i))
+                        )
+                        || obj.IsDeletedMember(i)
+                    )
                     {
-                        if (caseInsensitiveMatch == ExpandoObject.NoMatch)
-                        {
-                            caseInsensitiveMatch = i;
-                        }
-                        else
-                        {
-                            //Ambiguous match, stop searching
-                            return ExpandoObject.AmbiguousMatchFound;
-                        }
+                        continue;
+                    }
+
+                    if (caseInsensitiveMatch == ExpandoObject.NoMatch)
+                    {
+                        caseInsensitiveMatch = i;
+                    }
+                    else
+                    {
+                        //Ambiguous match, stop searching
+                        return ExpandoObject.AmbiguousMatchFound;
                     }
                 }
             }

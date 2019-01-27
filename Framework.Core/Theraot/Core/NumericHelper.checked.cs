@@ -1,7 +1,6 @@
 ﻿// Needed for NET40
 
 #if FAT
-
 namespace Theraot.Core
 {
     public static partial class NumericHelper

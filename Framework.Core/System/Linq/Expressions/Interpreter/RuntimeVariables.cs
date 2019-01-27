@@ -25,7 +25,10 @@ namespace System.Linq.Expressions.Interpreter
             set => _boxes[index].Value = value;
         }
 
-        internal static IRuntimeVariables Create(IStrongBox[] boxes) => new RuntimeVariables(boxes);
+        internal static IRuntimeVariables Create(IStrongBox[] boxes)
+        {
+            return new RuntimeVariables(boxes);
+        }
     }
 }
 

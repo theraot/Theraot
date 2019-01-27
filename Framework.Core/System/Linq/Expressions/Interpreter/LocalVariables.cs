@@ -37,15 +37,16 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return 0;
             }
+
             return Parameter.GetHashCode() ^ Index.GetHashCode();
         }
     }
 
     internal sealed class LocalVariable
     {
-        public readonly int Index;
         private const int _inClosureFlag = 2;
         private const int _isBoxedFlag = 1;
+        public readonly int Index;
         private int _flags;
 
         internal LocalVariable(int index, bool closure)
@@ -80,18 +81,18 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class LocalVariables
     {
-        private int _localCount;
         private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new HybridReferenceDictionary<ParameterExpression, VariableScope>();
+        private int _localCount;
         public int LocalCount { get; private set; }
 
         /// <summary>
-        /// Gets the variables which are defined in an outer scope and available within the current scope.
+        ///     Gets the variables which are defined in an outer scope and available within the current scope.
         /// </summary>
         internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; private set; }
 
         public LocalDefinition DefineLocal(ParameterExpression variable, int start)
         {
-            var result = new LocalVariable(_localCount++, closure: false);
+            var result = new LocalVariable(_localCount++, false);
             LocalCount = Math.Max(_localCount, LocalCount);
 
             VariableScope newScope;
@@ -102,7 +103,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                newScope = new VariableScope(result, start, parent: null);
+                newScope = new VariableScope(result, start, null);
             }
 
             _variables[variable] = newScope;
@@ -112,12 +113,13 @@ namespace System.Linq.Expressions.Interpreter
         public bool TryGetLocalOrClosure(ParameterExpression var, out LocalVariable local)
         {
             local = null;
-            if (_variables.TryGetValue(var, out var scope))
+            if (!_variables.TryGetValue(var, out var scope))
             {
-                local = scope.Variable;
-                return true;
+                return ClosureVariables?.TryGetValue(var, out local) == true;
             }
-            return ClosureVariables?.TryGetValue(var, out local) == true;
+
+            local = scope.Variable;
+            return true;
         }
 
         public void UndefineLocal(LocalDefinition definition, int end)
@@ -142,6 +144,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 ClosureVariables = new Dictionary<ParameterExpression, LocalVariable>();
             }
+
             var result = new LocalVariable(ClosureVariables.Count, true);
             ClosureVariables.Add(variable, result);
             return result;
@@ -173,15 +176,15 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         /// <summary>
-        /// Tracks where a variable is defined and what range of instructions it's used in.
+        ///     Tracks where a variable is defined and what range of instructions it's used in.
         /// </summary>
         private sealed class VariableScope
         {
-            public List<VariableScope> ChildScopes;
             public readonly VariableScope Parent;
             public readonly int Start;
-            public int Stop = int.MaxValue;
             public readonly LocalVariable Variable;
+            public List<VariableScope> ChildScopes;
+            public int Stop = int.MaxValue;
 
             public VariableScope(LocalVariable variable, int start, VariableScope parent)
             {

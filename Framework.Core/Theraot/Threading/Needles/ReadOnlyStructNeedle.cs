@@ -1,4 +1,9 @@
-// Needed for NET35 (ThreadLocal)
+﻿// Needed for NET35 (ThreadLocal)
+
+#pragma warning disable CS0659 // Type overrides Object.Equals but does not override GetHashCode.
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System;
 using System.Collections.Generic;
@@ -38,23 +43,25 @@ namespace Theraot.Threading.Needles
         public static bool operator !=(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
             var leftValue = left.Value;
-            if (left.IsAlive)
+            if (!left.IsAlive)
             {
-                var rightValue = right.Value;
-                return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+                return right.IsAlive;
             }
-            return right.IsAlive;
+
+            var rightValue = right.Value;
+            return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
         }
 
         public static bool operator ==(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
             var leftValue = left.Value;
-            if (left.IsAlive)
+            if (!left.IsAlive)
             {
-                var rightValue = right.Value;
-                return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+                return !right.IsAlive;
             }
-            return !right.IsAlive;
+
+            var rightValue = right.Value;
+            return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
         }
 
         public override bool Equals(object obj)
@@ -65,39 +72,34 @@ namespace Theraot.Threading.Needles
                 {
                     return !IsAlive;
                 }
+
                 obj = right.Value;
             }
-            if (obj is T rightValue)
+
+            if (!(obj is T rightValue))
             {
-                var value = Value;
-                return IsAlive && EqualityComparer<T>.Default.Equals(value, rightValue);
+                return false;
             }
-            return false;
+
+            var value = Value;
+            return IsAlive && EqualityComparer<T>.Default.Equals(value, rightValue);
         }
 
         public bool Equals(ReadOnlyStructNeedle<T> other)
         {
             var leftValue = Value;
-            if (IsAlive)
+            if (!IsAlive)
             {
-                var rightValue = other.Value;
-                return other.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+                return !other.IsAlive;
             }
-            return !other.IsAlive;
-        }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
+            var rightValue = other.Value;
+            return other.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
         }
 
         public override string ToString()
         {
-            if (IsAlive)
-            {
-                return Value.ToString();
-            }
-            return "<Dead Needle>";
+            return IsAlive ? Value.ToString() : "<Dead Needle>";
         }
     }
 }

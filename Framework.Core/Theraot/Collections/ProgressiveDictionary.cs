@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,25 +17,25 @@ namespace Theraot.Collections
         public ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> enumerable)
             : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIEnumerable(enumerable), new Dictionary<TKey, TValue>(), null, null)
         {
-            //Empty
+            // Empty
         }
 
         public ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> enumerable, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
             : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIEnumerable(enumerable), new Dictionary<TKey, TValue>(keyComparer), keyComparer, valueComparer)
         {
-            //Empty
+            // Empty
         }
 
         public ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> observable)
             : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable), new Dictionary<TKey, TValue>(), null, null)
         {
-            //Empty
+            // Empty
         }
 
         public ProgressiveDictionary(IObservable<KeyValuePair<TKey, TValue>> observable, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
             : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIObservable(observable), new Dictionary<TKey, TValue>(keyComparer), keyComparer, valueComparer)
         {
-            //Empty
+            // Empty
         }
 
         protected ProgressiveDictionary(Progressor<KeyValuePair<TKey, TValue>> progressor, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)

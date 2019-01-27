@@ -4,8 +4,9 @@
 
 namespace System.Linq.Expressions.Interpreter
 {
+    /// <inheritdoc />
     /// <summary>
-    /// The re-throw instruction will throw this exception
+    ///     The re-throw instruction will throw this exception
     /// </summary>
     internal sealed class RethrowException : Exception
     {

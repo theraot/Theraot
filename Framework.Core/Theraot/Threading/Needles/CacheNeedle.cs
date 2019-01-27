@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 using System.Threading;
 
@@ -147,7 +146,7 @@ namespace Theraot.Threading.Needles
                 {
                     if (disposeManagedResources)
                     {
-                        //Empty
+                        // Empty
                     }
                 }
                 finally

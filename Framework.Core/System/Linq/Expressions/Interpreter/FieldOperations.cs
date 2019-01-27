@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -19,7 +19,10 @@ namespace System.Linq.Expressions.Interpreter
             Field = field;
         }
 
-        public override string ToString() => InstructionName + "(" + Field + ")";
+        public override string ToString()
+        {
+            return InstructionName + "(" + Field + ")";
+        }
     }
 
     internal sealed class LoadFieldInstruction : FieldInstruction
@@ -27,6 +30,7 @@ namespace System.Linq.Expressions.Interpreter
         public LoadFieldInstruction(FieldInfo field)
             : base(field)
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -56,7 +60,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            frame.Push(Field.GetValue(obj: null));
+            frame.Push(Field.GetValue(null));
             return 1;
         }
     }

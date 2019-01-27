@@ -42,7 +42,7 @@ namespace System.Threading
         public CancellationToken(bool canceled)
             : this(canceled ? CancellationTokenSource.CanceledSource : null)
         {
-            //Empty
+            // Empty
         }
 
         internal CancellationToken(CancellationTokenSource source)
@@ -91,6 +91,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             return Register(callback, false);
         }
 
@@ -100,11 +101,8 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
-            if (_source == null)
-            {
-                return new CancellationTokenRegistration();
-            }
-            return _source.Register(callback, useSynchronizationContext);
+
+            return _source?.Register(callback, useSynchronizationContext) ?? new CancellationTokenRegistration();
         }
 
         public CancellationTokenRegistration Register(Action<object> callback, object state)
@@ -113,6 +111,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             return Register(() => callback(state), false);
         }
 
@@ -122,6 +121,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             return Register(() => callback(state), useSynchronizationContext);
         }
 

@@ -33,15 +33,17 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (_assembly == null)
                 {
-                    Interlocked.CompareExchange(ref _assembly, new AssemblyGen(), comparand: null);
+                    Interlocked.CompareExchange(ref _assembly, new AssemblyGen(), null);
                 }
+
                 return _assembly;
             }
         }
 
         internal static TypeBuilder DefineDelegateType(string name)
         {
-            return Assembly.DefineType(
+            return Assembly.DefineType
+            (
                 name,
                 typeof(MulticastDelegate),
                 TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AnsiClass | TypeAttributes.AutoClass

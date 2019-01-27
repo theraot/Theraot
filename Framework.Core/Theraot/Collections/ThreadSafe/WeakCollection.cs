@@ -19,7 +19,7 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : WeakNeedle<T>, new()
     {
         private readonly IEqualityComparer<T> _comparer;
-        private readonly SafeCollection<TNeedle> _wrapped;
+        private readonly ThreadSafeCollection<TNeedle> _wrapped;
         private WeakNeedle<EventHandler> _eventHandler;
 
         public WeakCollection()
@@ -43,7 +43,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
             _comparer = comparer ?? EqualityComparer<T>.Default;
-            _wrapped = new SafeCollection<TNeedle>();
+            _wrapped = new ThreadSafeCollection<TNeedle>();
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -209,28 +209,12 @@ namespace Theraot.Collections.ThreadSafe
 
         private static Predicate<TNeedle> Check(Predicate<T> itemCheck)
         {
-            return input =>
-            {
-                if (input.TryGetValue(out var value))
-                {
-                    return itemCheck(value);
-                }
-
-                return false;
-            };
+            return input => input.TryGetValue(out var value) && itemCheck(value);
         }
 
         private Predicate<TNeedle> Check(T item)
         {
-            return input =>
-            {
-                if (input.TryGetValue(out var value))
-                {
-                    return _comparer.Equals(item, value);
-                }
-
-                return false;
-            };
+            return input => input.TryGetValue(out var value) && _comparer.Equals(item, value);
         }
 
         private void GarbageCollected(object sender, EventArgs e)
@@ -271,7 +255,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool UnRegisterForAutoRemoveDeadItemsExtracted()
         {
-            if (_eventHandler.Retrieve(out var eventHandler))
+            if (NeedleHelper.TryGetValue(_eventHandler, out var eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
                 _eventHandler.Value = null;

@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 using System;
 using System.Collections;
@@ -30,7 +30,7 @@ namespace Theraot.Collections
         }
 
         public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T> comparer)
-           : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(comparer), null)
+            : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(comparer), null)
         {
             // Empty
         }

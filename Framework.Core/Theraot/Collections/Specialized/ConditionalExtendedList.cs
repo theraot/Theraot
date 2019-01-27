@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
@@ -19,20 +18,10 @@ namespace Theraot.Collections.Specialized
 
         public ConditionalExtendedList(IEnumerable<T> target, IEnumerable<T> append, Func<bool> enumerateTarget, Func<bool> enumerateAppend)
         {
-            _target = target == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(target);
-            _append = append == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(append);
+            _target = target == null ? ArrayEx.Empty<T>() : target.WrapAsIList();
+            _append = append == null ? ArrayEx.Empty<T>() : append.WrapAsIList();
             _enumerateTarget = enumerateTarget ?? (target == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
             _enumerateAppend = enumerateAppend ?? (append == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
-        }
-
-        public int Count => _target.Count + _append.Count;
-
-        bool ICollection<T>.IsReadOnly => true;
-
-        T IList<T>.this[int index]
-        {
-            get => this[index];
-            set => throw new NotSupportedException();
         }
 
         public T this[int index]
@@ -46,14 +35,27 @@ namespace Theraot.Collections.Specialized
                     {
                         return _target[index];
                     }
+
                     index -= count;
                 }
+
                 if (_enumerateAppend())
                 {
                     return _append[index];
                 }
+
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
+        }
+
+        public int Count => _target.Count + _append.Count;
+
+        bool ICollection<T>.IsReadOnly => true;
+
+        T IList<T>.this[int index]
+        {
+            get => this[index];
+            set => throw new NotSupportedException();
         }
 
         void ICollection<T>.Add(T item)
@@ -93,12 +95,14 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                if (enumerateAppend)
+                if (!enumerateAppend)
                 {
-                    var appendCount = _append.Count;
-                    Extensions.CanCopyTo(appendCount, array, arrayIndex);
-                    _append.CopyTo(array);
+                    return;
                 }
+
+                var appendCount = _append.Count;
+                Extensions.CanCopyTo(appendCount, array, arrayIndex);
+                _append.CopyTo(array);
             }
         }
 
@@ -116,7 +120,12 @@ namespace Theraot.Collections.Specialized
                     yield return item;
                 }
             }
-            if (_enumerateAppend())
+
+            if (!_enumerateAppend())
+            {
+                yield break;
+            }
+
             {
                 foreach (var item in _append)
                 {
@@ -135,16 +144,21 @@ namespace Theraot.Collections.Specialized
                 {
                     return targetIndex;
                 }
+
                 offset = _target.Count;
             }
-            if (_enumerateAppend())
+
+            if (!_enumerateAppend())
             {
-                var appendIndex = _append.IndexOf(item);
-                if (appendIndex != -1)
-                {
-                    return appendIndex + offset;
-                }
+                return -1;
             }
+
+            var appendIndex = _append.IndexOf(item);
+            if (appendIndex != -1)
+            {
+                return appendIndex + offset;
+            }
+
             return -1;
         }
 

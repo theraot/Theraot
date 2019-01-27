@@ -17,6 +17,7 @@ namespace Theraot.Collections.Specialized
             {
                 _data.Add(key, stack = new Stack<TValue>());
             }
+
             stack.Push(item);
         }
 
@@ -26,6 +27,7 @@ namespace Theraot.Collections.Specialized
             {
                 return stack.TryTake(out item);
             }
+
             item = default;
             return false;
         }

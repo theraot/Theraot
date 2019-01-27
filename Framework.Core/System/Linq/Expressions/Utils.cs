@@ -37,7 +37,10 @@ namespace System.Linq.Expressions
         private static readonly ConstantExpression _m1 = Expression.Constant(BoxedIntM1);
         private static readonly ConstantExpression _true = Expression.Constant(BoxedTrue);
 
-        public static ConstantExpression Constant(bool value) => value ? _true : _false;
+        public static ConstantExpression Constant(bool value)
+        {
+            return value ? _true : _false;
+        }
 
         public static ConstantExpression Constant(int value)
         {

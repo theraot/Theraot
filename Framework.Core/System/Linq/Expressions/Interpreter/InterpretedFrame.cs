@@ -73,6 +73,7 @@ namespace System.Linq.Expressions.Interpreter
                     trace.Add(frame.Name);
                     frame = frame.Parent;
                 } while (frame != null);
+
                 return trace.ToArray();
             }
         }
@@ -114,8 +115,11 @@ namespace System.Linq.Expressions.Interpreter
         {
             // TODO: we know this at compile time (except for compiled loop):
             var target = Interpreter.Labels[labelIndex];
-            Debug.Assert(!gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
-                "When it's time to jump to the exception handler, all previous finally blocks should already be processed");
+            Debug.Assert
+            (
+                !gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
+                "When it's time to jump to the exception handler, all previous finally blocks should already be processed"
+            );
 
             if (_continuationIndex == target.ContinuationStackDepth)
             {
@@ -124,6 +128,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     Data[StackIndex - 1] = value;
                 }
+
                 return target.Index - InstructionIndex;
             }
 
@@ -196,7 +201,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         /// <summary>
-        /// Get called from the LeaveFinallyInstruction
+        ///     Get called from the LeaveFinallyInstruction
         /// </summary>
         public int YieldToPendingContinuation()
         {

@@ -23,6 +23,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private EqualInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;
@@ -91,6 +92,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((bool)left == (bool)right);
                 }
+
                 return 1;
             }
         }
@@ -109,6 +111,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((bool)left == (bool)right);
                 }
+
                 return 1;
             }
         }
@@ -131,6 +134,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((byte)left == (byte)right);
                 }
+
                 return 1;
             }
         }
@@ -149,6 +153,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((byte)left == (byte)right);
                 }
+
                 return 1;
             }
         }
@@ -171,6 +176,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((char)left == (char)right);
                 }
+
                 return 1;
             }
         }
@@ -189,6 +195,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((char)left == (char)right);
                 }
+
                 return 1;
             }
         }
@@ -211,6 +218,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((double)left == (double)right);
                 }
+
                 return 1;
             }
         }
@@ -229,6 +237,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((double)left == (double)right);
                 }
+
                 return 1;
             }
         }
@@ -251,6 +260,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((short)left == (short)right);
                 }
+
                 return 1;
             }
         }
@@ -269,6 +279,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((short)left == (short)right);
                 }
+
                 return 1;
             }
         }
@@ -291,6 +302,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((int)left == (int)right);
                 }
+
                 return 1;
             }
         }
@@ -309,6 +321,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((int)left == (int)right);
                 }
+
                 return 1;
             }
         }
@@ -331,6 +344,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((long)left == (long)right);
                 }
+
                 return 1;
             }
         }
@@ -349,6 +363,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((long)left == (long)right);
                 }
+
                 return 1;
             }
         }
@@ -380,6 +395,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((sbyte)left == (sbyte)right);
                 }
+
                 return 1;
             }
         }
@@ -398,6 +414,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((sbyte)left == (sbyte)right);
                 }
+
                 return 1;
             }
         }
@@ -420,6 +437,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((float)left == (float)right);
                 }
+
                 return 1;
             }
         }
@@ -438,6 +456,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((float)left == (float)right);
                 }
+
                 return 1;
             }
         }
@@ -460,6 +479,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((ushort)left == (ushort)right);
                 }
+
                 return 1;
             }
         }
@@ -478,6 +498,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((ushort)left == (ushort)right);
                 }
+
                 return 1;
             }
         }
@@ -500,6 +521,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((uint)left == (uint)right);
                 }
+
                 return 1;
             }
         }
@@ -518,6 +540,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((uint)left == (uint)right);
                 }
+
                 return 1;
             }
         }
@@ -540,6 +563,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((ulong)left == (ulong)right);
                 }
+
                 return 1;
             }
         }
@@ -558,6 +582,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((ulong)left == (ulong)right);
                 }
+
                 return 1;
             }
         }

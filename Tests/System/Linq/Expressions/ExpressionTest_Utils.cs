@@ -208,7 +208,9 @@ namespace MonoTests.System.Linq.Expressions
 
         public delegate int Delegate(int i);
 
+#pragma warning disable 67
         public event Delegate OnTest;
+#pragma warning restore 67
 
         public void DoNothing()
         {

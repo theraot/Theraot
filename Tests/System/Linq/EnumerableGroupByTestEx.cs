@@ -18,8 +18,8 @@ namespace MonoTests.System.Linq
             var src = new IterateAndCount(10);
             var a = src.GroupBy(i => i > 5, null);
             var b = src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var c = src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var d = src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var c = src.GroupBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
+            var d = src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
             Assert.AreEqual(src.Total, 0);
             a.Consume();
             b.Consume();
@@ -136,7 +136,7 @@ namespace MonoTests.System.Linq
         public void GroupByOverloadC()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var r = src.GroupBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "12345");
@@ -147,7 +147,7 @@ namespace MonoTests.System.Linq
         public void GroupByOverloadD()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var r = src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "23456");
@@ -158,7 +158,7 @@ namespace MonoTests.System.Linq
         public void GroupByOverloadDEx()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var r = src.GroupBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "12345");

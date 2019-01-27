@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -19,7 +20,7 @@ namespace System.Collections.Concurrent
 
         public BlockingCollection()
         {
-            _data = new PrivateData(new SafeQueue<T>(), int.MaxValue);
+            _data = new PrivateData(new ThreadSafeQueue<T>(), int.MaxValue);
         }
 
         public BlockingCollection(int boundedCapacity)
@@ -451,7 +452,7 @@ namespace System.Collections.Concurrent
 
         public void CompleteAdding()
         {
-            Data.CanAdd = false;
+            Data.CompleteAdding();
         }
 
         public void CopyTo(T[] array, int index)
@@ -461,7 +462,7 @@ namespace System.Collections.Concurrent
 
         public IEnumerable<T> GetConsumingEnumerable()
         {
-            while (TryTake(out var item, -1, CancellationToken.None))
+            while (TryTake(out var item, Timeout.Infinite, CancellationToken.None))
             {
                 yield return item;
             }
@@ -469,12 +470,9 @@ namespace System.Collections.Concurrent
 
         public IEnumerable<T> GetConsumingEnumerable(CancellationToken cancellationToken)
         {
-            while (!IsCompleted)
+            while (TryTake(out var item, Timeout.Infinite, cancellationToken))
             {
-                if (TryTake(out var item, Timeout.Infinite, cancellationToken))
-                {
-                    yield return item;
-                }
+                yield return item;
             }
         }
 
@@ -545,12 +543,13 @@ namespace System.Collections.Concurrent
 
         private sealed class PrivateData : IDisposable, IReadOnlyCollection<T>
         {
+            public readonly int Capacity;
+            private readonly CancellationTokenSource _addCancellation;
             private readonly SemaphoreSlim _addSemaphore;
+            private int _addWaiters;
+            private int _cannotAdd;
             private readonly IProducerConsumerCollection<T> _collection;
             private readonly SemaphoreSlim _takeSemaphore;
-            public readonly int Capacity;
-            private int _addWaiters;
-            private int _canAdd;
 
             public PrivateData(IProducerConsumerCollection<T> collection, int capacity)
             {
@@ -558,15 +557,25 @@ namespace System.Collections.Concurrent
                 Capacity = capacity;
                 _addSemaphore = new SemaphoreSlim(capacity, capacity);
                 _takeSemaphore = new SemaphoreSlim(0, capacity);
+                _addCancellation = new CancellationTokenSource();
             }
 
-            public bool CanAdd
-            {
-                get => Volatile.Read(ref _canAdd) == 0;
-                set => Volatile.Write(ref _canAdd, value ? 1 : 0);
-            }
+            public bool CanAdd => Volatile.Read(ref _cannotAdd) == 0;
+
+            public int Count => _collection.Count;
 
             public WaitHandle WaitHandle => _addSemaphore.AvailableWaitHandle;
+
+            public void CompleteAdding()
+            {
+                Volatile.Write(ref _cannotAdd, 1);
+                _addCancellation.Cancel();
+            }
+
+            public void CopyTo(Array array, int index)
+            {
+                _collection.CopyTo(array, index);
+            }
 
             public void Dispose()
             {
@@ -574,21 +583,9 @@ namespace System.Collections.Concurrent
                 _takeSemaphore?.Dispose();
             }
 
-            public int Count => _collection.Count;
-
             public IEnumerator<T> GetEnumerator()
             {
                 return _collection.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public void CopyTo(Array array, int index)
-            {
-                _collection.CopyTo(array, index);
             }
 
             public T[] ToArray()
@@ -607,9 +604,22 @@ namespace System.Collections.Concurrent
                 Interlocked.Increment(ref _addWaiters);
                 try
                 {
-                    if (!_addSemaphore.Wait(millisecondsTimeout, cancellationToken))
+                    var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token);
+                    try
                     {
-                        return false;
+                        if (!_addSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                        {
+                            return false;
+                        }
+                    }
+                    catch (OperationCanceledException exception)
+                    {
+                        No.Op(exception);
+                    }
+
+                    if (_addCancellation.IsCancellationRequested)
+                    {
+                        throw new InvalidOperationException("The BlockingCollection<T> has been marked as complete with regards to additions.");
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
@@ -630,31 +640,52 @@ namespace System.Collections.Concurrent
             public bool TryTake(out T item)
             {
                 item = default;
-                if (_collection.Count == 0)
-                {
-                    return false;
-                }
-
-                return TryTake(out item, -1, CancellationToken.None);
+                return _collection.Count != 0 && TryTake(out item, Timeout.Infinite, CancellationToken.None);
             }
 
             public bool TryTake(out T item, int millisecondsTimeout, CancellationToken cancellationToken)
             {
                 item = default;
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!_takeSemaphore.Wait(millisecondsTimeout, cancellationToken))
+                if (!CanAdd && _collection.Count == 0)
                 {
                     return false;
+                }
+
+                var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token);
+                try
+                {
+                    if (!_takeSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                    {
+                        return false;
+                    }
+                }
+                catch (OperationCanceledException exception)
+                {
+                    No.Op(exception);
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!_collection.TryTake(out item))
                 {
+                    if (_addCancellation.IsCancellationRequested)
+                    {
+                        return false;
+                    }
+
                     throw new InvalidOperationException("The underlying collection was modified outside this BlockingCollection<T> instance.");
                 }
 
-                _addSemaphore.Release();
+                if (!_addCancellation.IsCancellationRequested)
+                {
+                    _addSemaphore.Release();
+                }
+
                 return true;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
     }

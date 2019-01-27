@@ -2,8 +2,10 @@
 
 #pragma warning disable CC0091 // Use static method
 
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 
@@ -61,26 +63,20 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(info));
             }
 
+            No.Op(context);
             _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
         }
 
         public IEqualityComparer<T> Comparer => _wrapped.Comparer;
 
-        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            _wrapped.Deconstruct(out var dictionary);
-            info.AddValue(nameof(dictionary), dictionary);
-        }
-
         public int Count => _wrapped.Count;
 
         public bool IsReadOnly => false;
+
+        public static IEqualityComparer<HashSet<T>> CreateSetComparer()
+        {
+            return HashSetEqualityComparer.Instance;
+        }
 
         public bool Add(T item)
         {
@@ -123,152 +119,6 @@ namespace System.Collections.Generic
             }
 
             _wrapped.Keys.CopyTo(array, arrayIndex);
-        }
-
-        public void ExceptWith(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            foreach (var item in other)
-            {
-                _wrapped.Remove(item);
-            }
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return new Enumerator(this);
-        }
-
-        public void IntersectWith(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            this.IntersectWith(other, _wrapped.Comparer);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<T> other)
-        {
-            return IsSubsetOf(ToHashSet(other), true);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<T> other)
-        {
-            return IsSupersetOf(ToHashSet(other), true);
-        }
-
-        public bool IsSubsetOf(IEnumerable<T> other)
-        {
-            return IsSubsetOf(ToHashSet(other), false);
-        }
-
-        public bool IsSupersetOf(IEnumerable<T> other)
-        {
-            return IsSupersetOf(ToHashSet(other), false);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            foreach (var item in other)
-            {
-                if (_wrapped.ContainsKey(item))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public bool Remove(T item)
-        {
-            // item can be null
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return _wrapped.Remove(item);
-        }
-
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            var containsCount = 0;
-            foreach (var item in ToHashSet(other))
-            {
-                if (!_wrapped.ContainsKey(item))
-                {
-                    return false;
-                }
-
-                containsCount++;
-            }
-
-            return containsCount == _wrapped.Count;
-        }
-
-        public void SymmetricExceptWith(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            var tmpSet = new HashSet<T>(other);
-            foreach (var item in tmpSet)
-            {
-                if (_wrapped.ContainsKey(item))
-                {
-                    _wrapped.Remove(item);
-                }
-                else
-                {
-                    _wrapped[item] = null;
-                }
-            }
-        }
-
-        public void UnionWith(IEnumerable<T> other)
-        {
-            if (other == null)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
-            foreach (var item in other)
-            {
-                if (!_wrapped.ContainsKey(item))
-                {
-                    _wrapped[item] = null;
-                }
-            }
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public static IEqualityComparer<HashSet<T>> CreateSetComparer()
-        {
-            return HashSetEqualityComparer.Instance;
         }
 
         public void CopyTo(T[] array)
@@ -322,15 +172,160 @@ namespace System.Collections.Generic
             }
         }
 
+        public void ExceptWith(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            foreach (var item in other)
+            {
+                _wrapped.Remove(item);
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
+            _wrapped.Deconstruct(out var dictionary);
+            info.AddValue(nameof(dictionary), dictionary);
+        }
+
+        public void IntersectWith(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            this.IntersectWith(other, _wrapped.Comparer);
+        }
+
+        public bool IsProperSubsetOf(IEnumerable<T> other)
+        {
+            return IsSubsetOf(ToHashSet(other), true);
+        }
+
+        public bool IsProperSupersetOf(IEnumerable<T> other)
+        {
+            return IsSupersetOf(ToHashSet(other), true);
+        }
+
+        public bool IsSubsetOf(IEnumerable<T> other)
+        {
+            return IsSubsetOf(ToHashSet(other), false);
+        }
+
+        public bool IsSupersetOf(IEnumerable<T> other)
+        {
+            return IsSupersetOf(ToHashSet(other), false);
+        }
+
+        public bool Overlaps(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            return other.Any(item => _wrapped.ContainsKey(item));
+        }
+
+        public bool Remove(T item)
+        {
+            // item can be null
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return _wrapped.Remove(item);
+        }
+
         public int RemoveWhere(Predicate<T> match)
         {
-            return Extensions.RemoveWhere(this, match);
+            return this.RemoveWhere(new Func<T, bool>(match));
+        }
+
+        public bool SetEquals(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            var containsCount = 0;
+            foreach (var item in ToHashSet(other))
+            {
+                if (!_wrapped.ContainsKey(item))
+                {
+                    return false;
+                }
+
+                containsCount++;
+            }
+
+            return containsCount == _wrapped.Count;
+        }
+
+        public void SymmetricExceptWith(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            var tmpSet = new HashSet<T>(other);
+            foreach (var item in tmpSet)
+            {
+                if (_wrapped.ContainsKey(item))
+                {
+                    _wrapped.Remove(item);
+                }
+                else
+                {
+                    _wrapped[item] = null;
+                }
+            }
         }
 
         public void TrimExcess()
         {
             // Should not be static
             // Empty
+        }
+
+        public void UnionWith(IEnumerable<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            foreach (var item in other)
+            {
+                if (!_wrapped.ContainsKey(item))
+                {
+                    _wrapped[item] = null;
+                }
+            }
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private bool IsSubsetOf(IEnumerable<T> other, bool proper)
@@ -384,7 +379,7 @@ namespace System.Collections.Generic
             return true;
         }
 
-        private HashSet<T> ToHashSet(IEnumerable<T> other)
+        private IEnumerable<T> ToHashSet(IEnumerable<T> other)
         {
             var comparer = Comparer;
             if (other is HashSet<T> test && comparer.Equals(test.Comparer))
@@ -431,25 +426,27 @@ namespace System.Collections.Generic
             public bool MoveNext()
             {
                 var enumerator = _enumerator;
-                if (enumerator != null)
+                if (enumerator == null)
                 {
-                    _valid = _enumerator.MoveNext();
-                    Current = _enumerator.Current.Key;
-                    return _valid;
+                    return false;
                 }
 
-                return false;
+                _valid = _enumerator.MoveNext();
+                Current = _enumerator.Current.Key;
+                return _valid;
             }
 
             void IEnumerator.Reset()
             {
                 _valid = false;
                 var enumerator = _enumerator;
-                if (enumerator != null)
+                if (enumerator == null)
                 {
-                    Current = _enumerator.Current.Key;
-                    _enumerator.Reset();
+                    return;
                 }
+
+                Current = _enumerator.Current.Key;
+                _enumerator.Reset();
             }
         }
 

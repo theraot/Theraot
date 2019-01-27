@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

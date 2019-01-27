@@ -8,15 +8,12 @@ namespace TestRunner.System.Threading
         [Test]
         public static void ThreadPoolUserWorkItemRuns()
         {
-            var waitHandle = new ManualResetEventSlim(false);
-            ThreadPool.QueueUserWorkItem
-            (
-                _ =>
-                {
-                    waitHandle.Set();
-                }
-            );
-            waitHandle.Wait();
+            var waitHandle = new ManualResetEventSlim[1];
+            using (waitHandle[0] = new ManualResetEventSlim(false))
+            {
+                ThreadPool.QueueUserWorkItem(_ => waitHandle[0].Set());
+                waitHandle[0].Wait();
+            }
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
@@ -35,28 +34,29 @@ namespace Theraot.Core
             {
                 // Empty
             }
-            return fileEntries ?? ArrayReservoir<string>.EmptyArray;
+
+            return fileEntries ?? ArrayEx.Empty<string>();
         }
 
         public static IEnumerable<string> GetFilesAndFoldersRecursive(string folder, string pattern)
         {
             var enumerable = GraphHelper.ExploreBreadthFirstTree
-                (
-                    folder,
-                    GetFolders,
-                    current => Extensions.AsUnaryIEnumerable(current).Concat(GetFiles(current, pattern))
-                );
+            (
+                folder,
+                GetFolders,
+                current => current.AsUnaryIEnumerable().Concat(GetFiles(current, pattern))
+            );
             return GetFiles(folder, pattern).Concat(enumerable.Flatten());
         }
 
         public static IEnumerable<string> GetFilesRecursive(string folder, string pattern)
         {
             var enumerable = GraphHelper.ExploreBreadthFirstTree
-                (
-                    folder,
-                    GetFolders,
-                    current => GetFiles(current, pattern)
-                );
+            (
+                folder,
+                GetFolders,
+                current => GetFiles(current, pattern)
+            );
             return GetFiles(folder, pattern).Concat(enumerable.Flatten());
         }
 
@@ -68,18 +68,20 @@ namespace Theraot.Core
 #if LESSTHAN_NET40
                 var directories = Directory.GetDirectories(folder);
 #else
-            var directories = Directory.EnumerateDirectories(folder);
+                var directories = Directory.EnumerateDirectories(folder);
 #endif
                 return
-                    directories.Where(
+                    directories.Where
+                    (
                         subFolder =>
                             (File.GetAttributes(subFolder) & FileAttributes.ReparsePoint)
-                             != FileAttributes.ReparsePoint);
+                            != FileAttributes.ReparsePoint
+                    );
             }
             catch
             {
                 // Catch them all
-                return ArrayReservoir<string>.EmptyArray;
+                return ArrayEx.Empty<string>();
             }
         }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
@@ -8,8 +8,8 @@ namespace Theraot.Core
 {
     public class ReverseStringBuilder : IEnumerable<char>
     {
-        private char[] _buffer;
         private readonly int _capacity;
+        private char[] _buffer;
         private int _start;
 
         public ReverseStringBuilder(int capacity)
@@ -18,23 +18,10 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity));
             }
+
             _buffer = ArrayReservoir<char>.GetArray(capacity);
             _capacity = capacity;
             _start = capacity;
-        }
-
-        ~ReverseStringBuilder()
-        {
-            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (!GCMonitor.FinalizingForUnload)
-            {
-                var buffer = _buffer;
-                if (buffer != null)
-                {
-                    ArrayReservoir<char>.DonateArray(buffer);
-                    _buffer = null;
-                }
-            }
         }
 
         public int Length => _capacity - _start;
@@ -45,6 +32,29 @@ namespace Theraot.Core
             {
                 yield return _buffer[position];
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        ~ReverseStringBuilder()
+        {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            if (GCMonitor.FinalizingForUnload)
+            {
+                return;
+            }
+
+            var buffer = _buffer;
+            if (buffer == null)
+            {
+                return;
+            }
+
+            ArrayReservoir<char>.DonateArray(buffer);
+            _buffer = null;
         }
 
         public void Prepend(char character)
@@ -71,6 +81,7 @@ namespace Theraot.Core
             {
                 length = maxLength;
             }
+
             return new string(_buffer, _capacity - length, length);
         }
 
@@ -80,17 +91,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(backIndex));
             }
+
             var length = _capacity - _start;
             if (length > maxLength)
             {
                 length = maxLength;
             }
-            return new string(_buffer, _capacity - backIndex, length);
-        }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            return new string(_buffer, _capacity - backIndex, length);
         }
     }
 }

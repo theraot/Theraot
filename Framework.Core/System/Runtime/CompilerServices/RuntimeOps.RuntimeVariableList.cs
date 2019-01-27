@@ -11,29 +11,32 @@ using System.Linq.Expressions.Compiler;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// This API supports the .NET Framework infrastructure and is not intended to be used directly from your code.
-    /// Contains helper methods called from dynamically generated methods.
+    ///     This API supports the .NET Framework infrastructure and is not intended to be used directly from your code.
+    ///     Contains helper methods called from dynamically generated methods.
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never), DebuggerStepThrough]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [DebuggerStepThrough]
     public static partial class RuntimeOps
     {
         /// <summary>
-        /// Creates an interface that can be used to modify closed over variables at runtime.
+        ///     Creates an interface that can be used to modify closed over variables at runtime.
         /// </summary>
         /// <param name="data">The closure array.</param>
         /// <param name="indexes">An array of indexes into the closure array where variables are found.</param>
         /// <returns>An interface to access variables.</returns>
-        [Obsolete("do not use this method", true), EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("do not use this method", true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static IRuntimeVariables CreateRuntimeVariables(object[] data, long[] indexes)
         {
             return new RuntimeVariableList(data, indexes);
         }
 
         /// <summary>
-        /// Creates an interface that can be used to modify closed over variables at runtime.
+        ///     Creates an interface that can be used to modify closed over variables at runtime.
         /// </summary>
         /// <returns>An interface to access variables.</returns>
-        [Obsolete("do not use this method", true), EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("do not use this method", true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static IRuntimeVariables CreateRuntimeVariables()
         {
             return new EmptyRuntimeVariables();
@@ -52,9 +55,10 @@ namespace System.Runtime.CompilerServices
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Provides a list of variables, supporting read/write of the values
-        /// Exposed via RuntimeVariablesExpression
+        ///     Provides a list of variables, supporting read/write of the values
+        ///     Exposed via RuntimeVariablesExpression
         /// </summary>
         private sealed class RuntimeVariableList : IRuntimeVariables
         {

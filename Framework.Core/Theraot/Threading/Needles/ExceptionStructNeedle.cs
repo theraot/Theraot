@@ -1,4 +1,6 @@
-// Needed for NET40
+﻿// Needed for NET40
+
+#pragma warning disable 659, 660, 661
 
 using System;
 using System.Diagnostics;
@@ -44,6 +46,7 @@ namespace Theraot.Threading.Needles
             {
                 return rightException != null;
             }
+
             return !leftException.Equals(rightException);
         }
 
@@ -55,6 +58,7 @@ namespace Theraot.Threading.Needles
             {
                 return rightException == null;
             }
+
             return leftException.Equals(rightException);
         }
 
@@ -64,6 +68,7 @@ namespace Theraot.Threading.Needles
             {
                 return this == needle;
             }
+
             return obj is Exception && obj.Equals(Exception);
         }
 
@@ -72,18 +77,9 @@ namespace Theraot.Threading.Needles
             return this == other;
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
         public override string ToString()
         {
-            if (IsAlive)
-            {
-                return $"<Exception: {Exception}>";
-            }
-            return "<Dead Needle>";
+            return IsAlive ? $"<Exception: {Exception}>" : "<Dead Needle>";
         }
     }
 }

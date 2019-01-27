@@ -1,9 +1,10 @@
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class DisposableAkin :
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
         System.Runtime.ConstrainedExecution.CriticalFinalizerObject,
@@ -52,26 +53,29 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException(nameof(condition));
             }
-            if (Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) == Thread.CurrentThread)
+
+            if (Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) != Thread.CurrentThread)
             {
-                if (condition.Invoke())
-                {
-                    try
-                    {
-                        _release.Invoke();
-                        return true;
-                    }
-                    finally
-                    {
-                        _release = null;
-                    }
-                }
                 return false;
             }
-            return false;
+
+            if (!condition.Invoke())
+            {
+                return false;
+            }
+
+            try
+            {
+                _release.Invoke();
+                return true;
+            }
+            finally
+            {
+                _release = null;
+            }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -86,20 +90,18 @@ namespace Theraot.Threading
 
         private void Dispose(bool disposeManagedResources)
         {
-            if
-            (
-                !disposeManagedResources
-                || Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) == Thread.CurrentThread
-            )
+            if (disposeManagedResources && Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) != Thread.CurrentThread)
             {
-                try
-                {
-                    _release.Invoke();
-                }
-                finally
-                {
-                    _release = null;
-                }
+                return;
+            }
+
+            try
+            {
+                _release.Invoke();
+            }
+            finally
+            {
+                _release = null;
             }
         }
     }

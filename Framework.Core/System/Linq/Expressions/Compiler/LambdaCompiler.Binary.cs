@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -8,7 +7,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection.Emit;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -44,6 +42,7 @@ namespace System.Linq.Expressions.Compiler
                     EmitNullEquality(b.NodeType, b.Right, b.IsLiftedToNull);
                     return;
                 }
+
                 if (ConstantCheck.IsNull(b.Right) && !ConstantCheck.IsNull(b.Left) && b.Left.Type.IsNullable())
                 {
                     EmitNullEquality(b.NodeType, b.Left, b.IsLiftedToNull);
@@ -69,8 +68,8 @@ namespace System.Linq.Expressions.Compiler
         {
             if (b.IsLifted)
             {
-                var p1 = Expression.Variable(b.Left.Type.GetNonNullable(), name: null);
-                var p2 = Expression.Variable(b.Right.Type.GetNonNullable(), name: null);
+                var p1 = Expression.Variable(b.Left.Type.GetNonNullable(), null);
+                var p2 = Expression.Variable(b.Right.Type.GetNonNullable(), null);
                 var mc = Expression.Call(null, b.Method, p1, p2);
                 Type resultType;
                 if (b.IsLiftedToNull)
@@ -80,19 +79,22 @@ namespace System.Linq.Expressions.Compiler
                 else
                 {
                     Debug.Assert(mc.Type == typeof(bool));
-                    Debug.Assert(b.NodeType == ExpressionType.Equal
+                    Debug.Assert
+                    (
+                        b.NodeType == ExpressionType.Equal
                         || b.NodeType == ExpressionType.NotEqual
                         || b.NodeType == ExpressionType.LessThan
                         || b.NodeType == ExpressionType.LessThanOrEqual
                         || b.NodeType == ExpressionType.GreaterThan
-                        || b.NodeType == ExpressionType.GreaterThanOrEqual);
+                        || b.NodeType == ExpressionType.GreaterThanOrEqual
+                    );
 
                     resultType = typeof(bool);
                 }
 
                 Debug.Assert(p1.Type.IsReferenceAssignableFromInternal(b.Left.Type.GetNonNullable()));
                 Debug.Assert(p2.Type.IsReferenceAssignableFromInternal(b.Right.Type.GetNonNullable()));
-                EmitLift(b.NodeType, resultType, mc, new[] { p1, p2 }, new[] { b.Left, b.Right });
+                EmitLift(b.NodeType, resultType, mc, new[] {p1, p2}, new[] {b.Left, b.Right});
             }
             else
             {
@@ -210,10 +212,10 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locLeft);
             FreeLocal(locRight);
 
-            EmitBinaryOperator(op, leftType.GetNonNullable(), rightType.GetNonNullable(), resultType.GetNonNullable(), liftedToNull: false);
+            EmitBinaryOperator(op, leftType.GetNonNullable(), rightType.GetNonNullable(), resultType.GetNonNullable(), false);
 
             // construct result type
-            var ci = resultType.GetConstructor(new[] { resultType.GetNonNullable() });
+            var ci = resultType.GetConstructor(new[] {resultType.GetNonNullable()});
             // ReSharper disable once AssignNullToNotNullAttribute
             IL.Emit(OpCodes.Newobj, ci);
             IL.Emit(OpCodes.Stloc, locResult);
@@ -246,6 +248,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         EmitLiftedBinaryArithmetic(op, leftType, rightType, resultType);
                     }
+
                     break;
 
                 case ExpressionType.Or:
@@ -257,6 +260,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         EmitLiftedBinaryArithmetic(op, leftType, rightType, resultType);
                     }
+
                     break;
 
                 case ExpressionType.ExclusiveOr:
@@ -290,6 +294,7 @@ namespace System.Linq.Expressions.Compiler
                         Debug.Assert(resultType == typeof(bool));
                         EmitLiftedRelational(op, leftType);
                     }
+
                     break;
                 default:
                     break;
@@ -387,11 +392,13 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locRight);
             IL.Emit(op == ExpressionType.Equal ? OpCodes.Ceq : OpCodes.And);
             IL.Emit(OpCodes.And);
-            if (invert)
+            if (!invert)
             {
-                IL.Emit(OpCodes.Ldc_I4_0);
-                IL.Emit(OpCodes.Ceq);
+                return;
             }
+
+            IL.Emit(OpCodes.Ldc_I4_0);
+            IL.Emit(OpCodes.Ceq);
         }
 
         private void EmitLiftedToNullRelational(ExpressionType op, Type type)
@@ -422,7 +429,7 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locRight);
             var unnullable = type.GetNonNullable();
             EmitUnliftedBinaryOp(op, unnullable, unnullable);
-            IL.Emit(OpCodes.Newobj, NullableBooleanCtor);
+            IL.Emit(OpCodes.Newobj, CachedReflectionInfo.NullableBooleanCtor);
             IL.MarkLabel(end);
         }
 
@@ -441,11 +448,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitAddress(e, e.Type);
                 IL.EmitHasValue(e.Type);
-                if (op == ExpressionType.Equal)
+                if (op != ExpressionType.Equal)
                 {
-                    IL.Emit(OpCodes.Ldc_I4_0);
-                    IL.Emit(OpCodes.Ceq);
+                    return;
                 }
+
+                IL.Emit(OpCodes.Ldc_I4_0);
+                IL.Emit(OpCodes.Ceq);
             }
         }
 
@@ -503,6 +512,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         IL.Emit(leftType.IsFloatingPoint() ? OpCodes.Sub : OpCodes.Sub_Ovf);
                     }
+
                     break;
 
                 case ExpressionType.Multiply:

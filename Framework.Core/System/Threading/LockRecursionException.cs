@@ -9,25 +9,25 @@ namespace System.Threading
     {
         public LockRecursionException()
         {
-            //Empty
+            // Empty
         }
 
         public LockRecursionException(string message)
             : base(message)
         {
-            //Empty
+            // Empty
         }
 
         public LockRecursionException(string message, Exception inner)
             : base(message, inner)
         {
-            //Empty
+            // Empty
         }
 
         protected LockRecursionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            //Empty
+            // Empty
         }
     }
 }

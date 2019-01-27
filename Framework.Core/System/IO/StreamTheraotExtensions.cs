@@ -68,59 +68,61 @@ namespace System.IO
         class StreamTheraotExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static async Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public static Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await Task.Factory.FromAsync
+            return Task.Factory.FromAsync
             (
                 BeginRead,
                 stream.EndRead,
                 Tuple.Create(stream, buffer, offset, count)
-            ).ConfigureAwait(false);
+            );
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static async Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count)
+        public static Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count)
         {
-            return await Task.Factory.FromAsync
+            return Task.Factory.FromAsync
             (
                 BeginRead,
                 stream.EndRead,
                 Tuple.Create(stream, buffer, offset, count)
-            ).ConfigureAwait(false);
+            );
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static async Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        public static Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await Task.Factory.FromAsync
+            return Task.Factory.FromAsync
             (
                 BeginWrite,
                 stream.EndWrite,
                 Tuple.Create(stream, buffer, offset, count)
-            ).ConfigureAwait(false);
+            );
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static async Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count)
+        public static Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count)
         {
-            await Task.Factory.FromAsync
+            return Task.Factory.FromAsync
             (
                 BeginWrite,
                 stream.EndWrite,
                 Tuple.Create(stream, buffer, offset, count)
-            ).ConfigureAwait(false);
+            );
         }
 
         private static IAsyncResult BeginRead(AsyncCallback callback, object state)
         {
+            // ReSharper disable once UseDeconstruction
             var tuple = (Tuple<Stream, byte[], int, int>)state;
             return tuple.Item1.BeginRead(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }
 
         private static IAsyncResult BeginWrite(AsyncCallback callback, object state)
         {
+            // ReSharper disable once UseDeconstruction
             var tuple = (Tuple<Stream, byte[], int, int>)state;
             return tuple.Item1.BeginWrite(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }

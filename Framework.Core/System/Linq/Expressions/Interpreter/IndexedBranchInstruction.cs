@@ -9,8 +9,8 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class IndexedBranchInstruction : Instruction
     {
-        internal readonly int LabelIndex;
         protected const int CacheSize = 32;
+        internal readonly int LabelIndex;
 
         protected IndexedBranchInstruction(int labelIndex)
         {

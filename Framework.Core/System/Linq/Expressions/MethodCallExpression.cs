@@ -10,14 +10,12 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
     public partial class Expression
     {
-
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents applying an array index operator to a multi-dimensional array.</summary>
         /// <returns>A <see cref="BinaryExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.ArrayIndex"/> and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         /// <param name="array">An array of <see cref="Expression"/> instances - indexes for the array index operation.</param>
@@ -66,6 +64,7 @@ namespace System.Linq.Expressions
             var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
             return Call(array, mi, indexList);
         }
+
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static method that takes one argument.</summary>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="MethodCallExpression.Method"/> property equal to.</param>
@@ -310,6 +309,7 @@ namespace System.Linq.Expressions
             {
                 return new InstanceMethodCallExpression3(method, instance, arg0, arg1, arg2);
             }
+
             return new MethodCallExpression3(method, arg0, arg1, arg2);
         }
 
@@ -331,7 +331,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(methodName, nameof(methodName));
             if (arguments == null)
             {
-                arguments = ArrayReservoir<Expression>.EmptyArray;
+                arguments = ArrayEx.Empty<Expression>();
             }
 
             const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
@@ -357,7 +357,7 @@ namespace System.Linq.Expressions
 
             if (arguments == null)
             {
-                arguments = ArrayReservoir<Expression>.EmptyArray;
+                arguments = ArrayEx.Empty<Expression>();
             }
 
             const BindingFlags Flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
@@ -375,7 +375,7 @@ namespace System.Linq.Expressions
         /// <paramref name="instance"/>.Type is not assignable to the declaring type of the method represented by <paramref name="method"/>.-or-The number of elements in <paramref name="arguments"/> does not equal the number of parameters for the method represented by <paramref name="method"/>.-or-One or more of the elements of <paramref name="arguments"/> is not assignable to the corresponding parameter for the method represented by <paramref name="method"/>.</exception>
         public static MethodCallExpression Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
         {
-            var argumentList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
+            var argumentList = arguments.AsArrayInternal();
 
             var argCount = argumentList.Length;
 
@@ -392,6 +392,7 @@ namespace System.Linq.Expressions
 
                 case 3:
                     return Call(instance, method, argumentList[0], argumentList[1], argumentList[2]);
+
                 default:
                     break;
             }
@@ -405,6 +406,7 @@ namespace System.Linq.Expressions
 
                     case 5:
                         return Call(method, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
+
                     default:
                         break;
                 }
@@ -486,6 +488,7 @@ namespace System.Linq.Expressions
                     return m.MakeGenericMethod(typeArgs);
                 }
             }
+
             return null;
         }
 
@@ -496,23 +499,27 @@ namespace System.Linq.Expressions
 
             foreach (var mi in type.GetMethods(flags))
             {
-                if (mi.Name.Equals(methodName, StringComparison.OrdinalIgnoreCase))
+                if (!mi.Name.Equals(methodName, StringComparison.OrdinalIgnoreCase))
                 {
-                    var moo = ApplyTypeArgs(mi, typeArgs);
-                    if (moo != null && IsCompatible(moo, args))
-                    {
-                        // favor public over non-public methods
-                        if (method == null || (!method.IsPublic && moo.IsPublic))
-                        {
-                            method = moo;
-                            count = 1;
-                        }
-                        // only count it as additional method if they both public or both non-public
-                        else if (method.IsPublic == moo.IsPublic)
-                        {
-                            count++;
-                        }
-                    }
+                    continue;
+                }
+
+                var moo = ApplyTypeArgs(mi, typeArgs);
+                if (moo == null || !IsCompatible(moo, args))
+                {
+                    continue;
+                }
+
+                // favor public over non-public methods
+                if (method == null || (!method.IsPublic && moo.IsPublic))
+                {
+                    method = moo;
+                    count = 1;
+                }
+                // only count it as additional method if they both public or both non-public
+                else if (method.IsPublic == moo.IsPublic)
+                {
+                    count++;
                 }
             }
 
@@ -557,11 +564,13 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
+
                 if (pType?.IsReferenceAssignableFromInternal(argType) == false && !(pType.IsSameOrSubclassOfInternal(typeof(LambdaExpression)) && pType.IsInstanceOfType(arg)))
                 {
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -650,10 +659,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo Method { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="Expression"/>. (Inherited from <see cref="Expression"/>.)
+        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Call;
 
         /// <summary>
@@ -662,10 +672,11 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Object => GetInstance();
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents. (Inherited from <see cref="Expression"/>.)
+        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type => Method.ReturnType;
 
         /// <summary>
@@ -688,34 +699,34 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MethodCallExpression Update(Expression @object, IEnumerable<Expression> arguments)
         {
-            if (@object == Object)
+            if (@object != Object)
             {
-                // Ensure arguments is safe to enumerate twice.
-                // (If this means a second call to ToReadOnlyCollection it will return quickly).
-                ICollection<Expression> args;
-                if (arguments == null)
-                {
-                    args = null;
-                }
-                else
-                {
-                    args = arguments as ICollection<Expression>;
-                    if (args == null)
-                    {
-                        arguments = args = arguments.ToReadOnlyCollection();
-                    }
-                }
+                return Call(@object, Method, arguments);
+            }
 
-                if (SameArguments(args))
+            // Ensure arguments is safe to enumerate twice.
+            // (If this means a second call to ToReadOnlyCollection it will return quickly).
+            ICollection<Expression> args;
+            if (arguments == null)
+            {
+                args = null;
+            }
+            else
+            {
+                args = arguments as ICollection<Expression>;
+                if (args == null)
                 {
-                    return this;
+                    arguments = args = arguments.ToReadOnlyCollection();
                 }
             }
 
-            return Call(@object, Method, arguments);
+            return SameArguments(args) ? this : Call(@object, Method, arguments);
         }
 
-        internal virtual Expression GetInstance() => null;
+        internal virtual Expression GetInstance()
+        {
+            return null;
+        }
 
         internal virtual ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -750,7 +761,10 @@ namespace System.Linq.Expressions
             _instance = instance;
         }
 
-        internal override Expression GetInstance() => _instance;
+        internal override Expression GetInstance()
+        {
+            return _instance;
+        }
     }
 
     internal sealed class InstanceMethodCallExpression0 : InstanceMethodCallExpression, IArgumentProvider
@@ -758,6 +772,7 @@ namespace System.Linq.Expressions
         public InstanceMethodCallExpression0(MethodInfo method, Expression instance)
             : base(method, instance)
         {
+            // Empty
         }
 
         public override int ArgumentCount => 0;
@@ -780,13 +795,15 @@ namespace System.Linq.Expressions
             return Call(instance, Method);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                    arguments == null || arguments.Count == 0;
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return arguments == null || arguments.Count == 0;
+        }
     }
 
     internal sealed class InstanceMethodCallExpression1 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0;                // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
 
         public InstanceMethodCallExpression1(MethodInfo method, Expression instance, Expression arg0)
             : base(method, instance)
@@ -815,31 +832,28 @@ namespace System.Linq.Expressions
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == 1);
 
-            if (args != null)
-            {
-                return Call(instance, Method, args[0]);
-            }
-            return Call(instance, Method, ExpressionUtils.ReturnObject<Expression>(_arg0));
+            return Call(instance, Method, args != null ? args[0] : ExpressionUtils.ReturnObject<Expression>(_arg0));
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 1)
+            if (arguments?.Count != 1)
             {
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    return en.Current == ExpressionUtils.ReturnObject<Expression>(_arg0);
-                }
+                return false;
             }
 
-            return false;
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                return en.Current == ExpressionUtils.ReturnObject<Expression>(_arg0);
+            }
         }
     }
 
     internal sealed class InstanceMethodCallExpression2 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0;                // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1;
         // storage for the 2nd argument
 
@@ -872,40 +886,39 @@ namespace System.Linq.Expressions
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == 2);
 
-            if (args != null)
-            {
-                return Call(instance, Method, args[0], args[1]);
-            }
-            return Call(instance, Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
+            return args != null ? Call(instance, Method, args[0], args[1]) : Call(instance, Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 2)
+            if (arguments?.Count != 2)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        return en.Current == _arg1;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg1;
+            }
         }
     }
 
     internal sealed class InstanceMethodCallExpression3 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0;                       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2;
         // storage for the 2nd - 3rd argument
 
@@ -940,38 +953,38 @@ namespace System.Linq.Expressions
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == 3);
 
-            if (args != null)
-            {
-                return Call(instance, Method, args[0], args[1], args[2]);
-            }
-            return Call(instance, Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
+            return args != null ? Call(instance, Method, args[0], args[1], args[2]) : Call(instance, Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 3)
+            if (arguments?.Count != 3)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            return en.Current == _arg2;
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg2;
+            }
         }
     }
 
@@ -989,7 +1002,10 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount => _arguments.Length;
 
-        public override Expression GetArgument(int index) => _arguments[index];
+        public override Expression GetArgument(int index)
+        {
+            return _arguments[index];
+        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -1001,11 +1017,13 @@ namespace System.Linq.Expressions
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
-            return Call(instance, Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArrayInternal(args));
+            return Call(instance, Method, args == null ? _arguments : args.AsArrayInternal());
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                            ExpressionUtils.SameElements(arguments, _arguments);
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return ExpressionUtils.SameElements(arguments, _arguments);
+        }
     }
 
     internal sealed class MethodCallExpression0 : MethodCallExpression, IArgumentProvider
@@ -1013,6 +1031,7 @@ namespace System.Linq.Expressions
         public MethodCallExpression0(MethodInfo method)
             : base(method)
         {
+            // Empty
         }
 
         public override int ArgumentCount => 0;
@@ -1035,13 +1054,15 @@ namespace System.Linq.Expressions
             return Call(Method);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                    arguments == null || arguments.Count == 0;
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return arguments == null || arguments.Count == 0;
+        }
     }
 
     internal sealed class MethodCallExpression1 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;       // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
 
         public MethodCallExpression1(MethodInfo method, Expression arg0)
             : base(method)
@@ -1070,32 +1091,28 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 1);
 
-            if (args != null)
-            {
-                return Call(Method, args[0]);
-            }
-
-            return Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0));
+            return Call(Method, args != null ? args[0] : ExpressionUtils.ReturnObject<Expression>(_arg0));
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 1)
+            if (arguments?.Count != 1)
             {
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    return en.Current == ExpressionUtils.ReturnObject<Expression>(_arg0);
-                }
+                return false;
             }
 
-            return false;
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                return en.Current == ExpressionUtils.ReturnObject<Expression>(_arg0);
+            }
         }
     }
 
     internal sealed class MethodCallExpression2 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1;
         // storage for the 2nd arg
 
@@ -1128,40 +1145,39 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 2);
 
-            if (args != null)
-            {
-                return Call(Method, args[0], args[1]);
-            }
-            return Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
+            return args != null ? Call(Method, args[0], args[1]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 2)
+            if (arguments?.Count != 2)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        return en.Current == _arg1;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg1;
+            }
         }
     }
 
     internal sealed class MethodCallExpression3 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;           // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2;
         // storage for the 2nd - 3rd args.
 
@@ -1196,44 +1212,45 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 3);
 
-            if (args != null)
-            {
-                return Call(Method, args[0], args[1], args[2]);
-            }
-            return Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
+            return args != null ? Call(Method, args[0], args[1], args[2]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 3)
+            if (arguments?.Count != 3)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            return en.Current == _arg2;
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg2;
+            }
         }
     }
 
     internal sealed class MethodCallExpression4 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;               // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2, _arg3;
         // storage for the 2nd - 4th args.
 
@@ -1270,48 +1287,51 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 4);
 
-            if (args != null)
-            {
-                return Call(Method, args[0], args[1], args[2], args[3]);
-            }
-            return Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
+            return args != null ? Call(Method, args[0], args[1], args[2], args[3]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 4)
+            if (arguments?.Count != 4)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            if (en.Current == _arg2)
-                            {
-                                en.MoveNext();
-                                return en.Current == _arg3;
-                            }
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg2)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg3;
+            }
         }
     }
 
     internal sealed class MethodCallExpression5 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0;           // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
+
         private readonly Expression _arg1, _arg2, _arg3, _arg4;
         // storage for the 2nd - 5th args.
 
@@ -1350,47 +1370,50 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 5);
 
-            if (args != null)
-            {
-                return Call(Method, args[0], args[1], args[2], args[3], args[4]);
-            }
-
-            return Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
+            return args != null ? Call(Method, args[0], args[1], args[2], args[3], args[4]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
         }
 
         internal override bool SameArguments(ICollection<Expression> arguments)
         {
-            if (arguments?.Count == 5)
+            if (arguments?.Count != 5)
             {
-                if (_arg0 is Expression[] alreadyArray)
-                {
-                    return ExpressionUtils.SameElements(arguments, alreadyArray);
-                }
-
-                using (var en = arguments.GetEnumerator())
-                {
-                    en.MoveNext();
-                    if (en.Current == _arg0)
-                    {
-                        en.MoveNext();
-                        if (en.Current == _arg1)
-                        {
-                            en.MoveNext();
-                            if (en.Current == _arg2)
-                            {
-                                en.MoveNext();
-                                if (en.Current == _arg3)
-                                {
-                                    en.MoveNext();
-                                    return en.Current == _arg4;
-                                }
-                            }
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (_arg0 is Expression[] alreadyArray)
+            {
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
+            }
+
+            using (var en = arguments.GetEnumerator())
+            {
+                en.MoveNext();
+                if (en.Current != _arg0)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg1)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg2)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                if (en.Current != _arg3)
+                {
+                    return false;
+                }
+
+                en.MoveNext();
+                return en.Current == _arg4;
+            }
         }
     }
 
@@ -1408,7 +1431,10 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount => _arguments.Length;
 
-        public override Expression GetArgument(int index) => _arguments[index];
+        public override Expression GetArgument(int index)
+        {
+            return _arguments[index];
+        }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
         {
@@ -1420,11 +1446,13 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
-            return Call(Method, args == null ? _arguments : Theraot.Collections.Extensions.AsArrayInternal(args));
+            return Call(Method, args == null ? _arguments : args.AsArrayInternal());
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments) =>
-                    ExpressionUtils.SameElements(arguments, _arguments);
+        internal override bool SameArguments(ICollection<Expression> arguments)
+        {
+            return ExpressionUtils.SameElements(arguments, _arguments);
+        }
     }
 }
 

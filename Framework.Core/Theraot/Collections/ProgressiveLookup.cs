@@ -1,12 +1,13 @@
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
@@ -76,7 +77,8 @@ namespace Theraot.Collections
                 {
                     return grouping;
                 }
-                return ArrayReservoir<T>.EmptyArray;
+
+                return ArrayEx.Empty<T>();
             }
         }
 
@@ -106,7 +108,6 @@ namespace Theraot.Collections
         }
 
 #if FAT
-
         internal static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(Progressor<IGrouping<TKey, T>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
             where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
         {
@@ -116,11 +117,8 @@ namespace Theraot.Collections
 
         public bool Contains(TKey key)
         {
-            if (_cache.ContainsKey(key))
-            {
-                return true;
-            }
-            return ProgressorWhere(Check).Any();
+            return _cache.ContainsKey(key) || ProgressorWhere(Check).Any();
+
             bool Check(IGrouping<TKey, T> item)
             {
                 return Comparer.Equals(key, item.Key);
@@ -143,7 +141,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             Progressor.While(() => _cache.Count < countLimit).Consume();
-            Extensions.CopyTo(_cache, array, arrayIndex, countLimit);
+            _cache.CopyTo(array, arrayIndex, countLimit);
         }
 
         public void CopyTo(IGrouping<TKey, T>[] array, int arrayIndex)
@@ -162,7 +160,7 @@ namespace Theraot.Collections
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             Progressor.While(() => _cache.Count < countLimit).Consume();
-            Extensions.CopyTo(_cache.Values, array, arrayIndex, countLimit);
+            _cache.Values.CopyTo(array, arrayIndex, countLimit);
         }
 
         public IEnumerator<IGrouping<TKey, T>> GetEnumerator()
@@ -171,6 +169,7 @@ namespace Theraot.Collections
             {
                 yield return item.Value;
             }
+
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
@@ -181,7 +180,7 @@ namespace Theraot.Collections
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -192,12 +191,15 @@ namespace Theraot.Collections
             {
                 return true;
             }
+
             foreach (var found in ProgressorWhere(Check))
             {
                 value = found;
                 return true;
             }
+
             return false;
+
             bool Check(IGrouping<TKey, T> item)
             {
                 return Comparer.Equals(key, item.Key);
@@ -214,14 +216,17 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+
+                knownCount = _cache.Count;
             }
         }
 
@@ -230,18 +235,21 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
+
+                knownCount = _cache.Count;
             }
         }
 

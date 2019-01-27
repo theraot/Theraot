@@ -29,13 +29,8 @@ namespace System.Linq.Expressions.Compiler
         {
             lock (_delegateCache)
             {
-                var curTypeInfo = _delegateCache;
-
                 // arguments & return type
-                foreach (var type in types)
-                {
-                    curTypeInfo = NextTypeInfo(type, curTypeInfo);
-                }
+                var curTypeInfo = types.Aggregate(_delegateCache, (current, type) => NextTypeInfo(type, current));
 
                 // see if we have the delegate already
                 // clone because MakeCustomDelegate can hold onto the array.
@@ -49,25 +44,8 @@ namespace System.Linq.Expressions.Compiler
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>
-            bool needCustom;
 
-            if (types.Length > _maximumArity)
-            {
-                needCustom = true;
-            }
-            else
-            {
-                needCustom = false;
-
-                foreach (var type in types)
-                {
-                    if (type.IsByRef || /*type.IsByRefLike ||*/ type.IsPointer)
-                    {
-                        needCustom = true;
-                        break;
-                    }
-                }
-            }
+            var needCustom = types.Length > _maximumArity || types.Any(type => type.IsByRef || /*type.IsByRefLike ||*/ type.IsPointer);
 
             if (needCustom)
             {

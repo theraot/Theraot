@@ -10,6 +10,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type;
         }
     }

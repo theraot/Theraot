@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 
 namespace Theraot.Threading.Needles
@@ -14,13 +13,13 @@ namespace Theraot.Threading.Needles
         public LazyDisposableNeedle(Func<T> valueFactory)
             : base(valueFactory)
         {
-            //Empty
+            // Empty
         }
 
         public LazyDisposableNeedle(T target)
             : base(target)
         {
-            //Empty
+            // Empty
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

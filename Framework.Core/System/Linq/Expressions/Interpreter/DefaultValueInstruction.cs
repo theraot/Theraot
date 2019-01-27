@@ -29,7 +29,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "DefaultValue " + _type;
+        public override string ToString()
+        {
+            return "DefaultValue " + _type;
+        }
     }
 }
 

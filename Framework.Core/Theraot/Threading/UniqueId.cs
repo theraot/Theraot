@@ -32,6 +32,7 @@ namespace Theraot.Threading
             {
                 return Equals(id);
             }
+
             return false;
         }
 

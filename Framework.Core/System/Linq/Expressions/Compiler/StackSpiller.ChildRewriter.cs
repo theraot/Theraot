@@ -15,79 +15,79 @@ namespace System.Linq.Expressions.Compiler
     internal partial class StackSpiller
     {
         /// <summary>
-        /// <para>
-        /// Rewrites child expressions, spilling them into temps if needed. The
-        /// stack starts in the initial state, and after the first subexpression
-        /// is added it is changed to non-empty.
-        /// </para>
-        /// <para>
-        /// When all children have been added, the caller should rewrite the
-        /// node if Rewrite is true. Then, it should call Finish with either
-        /// the original expression or the rewritten expression. Finish will call
-        /// Expression.Block if necessary and return a new Result.
-        /// </para>
+        ///     <para>
+        ///         Rewrites child expressions, spilling them into temps if needed. The
+        ///         stack starts in the initial state, and after the first subexpression
+        ///         is added it is changed to non-empty.
+        ///     </para>
+        ///     <para>
+        ///         When all children have been added, the caller should rewrite the
+        ///         node if Rewrite is true. Then, it should call Finish with either
+        ///         the original expression or the rewritten expression. Finish will call
+        ///         Expression.Block if necessary and return a new Result.
+        ///     </para>
         /// </summary>
         private sealed class ChildRewriter
         {
-
             /// <summary>
-            /// Indicates whether a child expression represents a ByRef value and
-            /// requires use of a <see cref="ByRefAssignBinaryExpression" /> node
-            /// to perform spilling.
-            /// </summary>
-            private bool[] _byRefs;
-
-            /// <summary>
-            /// The comma of expressions that will evaluate the parent expression
-            /// using temporary variables introduced by stack spilling. This field
-            /// is populated in <see cref="EnsureDone"/> which gets called upon
-            /// the first access to an indexer or the <see cref="Rewrite"/> method
-            /// on the child rewriter instance. A comma only gets built if the
-            /// rewrite action in <see cref="Action"/> is set to SpillStack.
-            /// </summary>
-            /// <example>
-            /// When stack spilling the following expression:
-            /// <c>
-            ///   bar.Foo(try { 42 } finally { ; })
-            /// </c>
-            /// the resulting comma will contain three expressions:
-            /// <c>
-            ///   $temp$0 = bar
-            ///   $temp$1 = try { 42 } finally { ; }
-            ///   $temp$0.Foo($temp$1)
-            /// </c>
-            /// These get wrapped in a Block in the <see cref="Rewrite"/> method.
-            /// </example>
-            private List<Expression> _comma;
-
-            private bool _done;
-            /// <summary>
-            /// The child expressions being rewritten.
+            ///     The child expressions being rewritten.
             /// </summary>
             private readonly Expression[] _expressions;
 
             /// <summary>
-            /// The index of the next expression to rewrite in <see cref="_expressions"/>.
+            ///     The parent stack spiller, used to perform rewrites of expressions
+            ///     and to allocate temporary variables.
+            /// </summary>
+            private readonly StackSpiller _self;
+
+            /// <summary>
+            ///     Indicates whether a child expression represents a ByRef value and
+            ///     requires use of a <see cref="ByRefAssignBinaryExpression" /> node
+            ///     to perform spilling.
+            /// </summary>
+            private bool[] _byRefs;
+
+            /// <summary>
+            ///     The comma of expressions that will evaluate the parent expression
+            ///     using temporary variables introduced by stack spilling. This field
+            ///     is populated in <see cref="EnsureDone" /> which gets called upon
+            ///     the first access to an indexer or the <see cref="Rewrite" /> method
+            ///     on the child rewriter instance. A comma only gets built if the
+            ///     rewrite action in <see cref="Action" /> is set to SpillStack.
+            /// </summary>
+            /// <example>
+            ///     When stack spilling the following expression:
+            ///     <c>
+            ///         bar.Foo(try { 42 } finally { ; })
+            ///     </c>
+            ///     the resulting comma will contain three expressions:
+            ///     <c>
+            ///         $temp$0 = bar
+            ///         $temp$1 = try { 42 } finally { ; }
+            ///         $temp$0.Foo($temp$1)
+            ///     </c>
+            ///     These get wrapped in a Block in the <see cref="Rewrite" /> method.
+            /// </example>
+            private List<Expression> _comma;
+
+            private bool _done;
+
+            /// <summary>
+            ///     The index of the next expression to rewrite in <see cref="_expressions" />.
             /// </summary>
             private int _expressionsCount;
 
             /// <summary>
-            /// The index of the last expression that requires a SpillStack action.
+            ///     The index of the last expression that requires a SpillStack action.
             /// </summary>
             private int _lastSpillIndex;
-
-            /// <summary>
-            /// The parent stack spiller, used to perform rewrites of expressions
-            /// and to allocate temporary variables.
-            /// </summary>
-            private readonly StackSpiller _self;
 
             private Stack _stack;
 
             /// <summary>
-            /// Creates a new child rewriter instance using the specified initial
-            /// evaluation <paramref name="stack"/> state and the number of child
-            /// expressions specified in <paramref name="count"/>.
+            ///     Creates a new child rewriter instance using the specified initial
+            ///     evaluation <paramref name="stack" /> state and the number of child
+            ///     expressions specified in <paramref name="count" />.
             /// </summary>
             /// <param name="self">The parent stack spiller.</param>
             /// <param name="stack">The initial evaluation stack state.</param>
@@ -102,23 +102,23 @@ namespace System.Linq.Expressions.Compiler
             internal RewriteAction Action { get; private set; }
 
             /// <summary>
-            /// Gets a Boolean value indicating whether the parent expression should be
-            /// rewritten by using <see cref="Finish"/>.
+            ///     Gets a Boolean value indicating whether the parent expression should be
+            ///     rewritten by using <see cref="Finish" />.
             /// </summary>
             internal bool Rewrite => Action != RewriteAction.None;
 
             /// <summary>
-            /// Gets the rewritten child expression at the specified <paramref name="index"/>,
-            /// used to rewrite the parent expression. In case stack spilling has taken place,
-            /// the returned expression will be a temporary variable.
+            ///     Gets the rewritten child expression at the specified <paramref name="index" />,
+            ///     used to rewrite the parent expression. In case stack spilling has taken place,
+            ///     the returned expression will be a temporary variable.
             /// </summary>
             /// <param name="index">
-            /// The index of the child expression to retrieve. Negative values indicate -1-based
-            /// offsets from the end of the child expressions array. Positive values indicate
-            /// 0-based offsets from the start of the child expressions array.
+            ///     The index of the child expression to retrieve. Negative values indicate -1-based
+            ///     offsets from the end of the child expressions array. Positive values indicate
+            ///     0-based offsets from the start of the child expressions array.
             /// </param>
             /// <returns>
-            /// The rewritten child expression at the specified <paramref name="index"/>.
+            ///     The rewritten child expression at the specified <paramref name="index" />.
             /// </returns>
             internal Expression this[int index]
             {
@@ -136,23 +136,23 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Gets the rewritten child expressions between the specified <paramref name="first"/>
-            /// and <paramref name="last"/> (inclusive) indexes, used to rewrite the parent
-            /// expression. In case stack spilling has taken place, the returned expressions will
-            /// contain temporary variables.
+            ///     Gets the rewritten child expressions between the specified <paramref name="first" />
+            ///     and <paramref name="last" /> (inclusive) indexes, used to rewrite the parent
+            ///     expression. In case stack spilling has taken place, the returned expressions will
+            ///     contain temporary variables.
             /// </summary>
             /// <param name="first">
-            /// The index of the first child expression to retrieve. This value should always be
-            /// positive.
+            ///     The index of the first child expression to retrieve. This value should always be
+            ///     positive.
             /// </param>
             /// <param name="last">
-            /// The (inclusive) index of the last child expression to retrieve. Negative values
-            /// indicate -1-based offsets from the end of the child expressions array. Positive values
-            /// indicate 0-based offsets from the start of the child expressions array.
+            ///     The (inclusive) index of the last child expression to retrieve. Negative values
+            ///     indicate -1-based offsets from the end of the child expressions array. Positive values
+            ///     indicate 0-based offsets from the start of the child expressions array.
             /// </param>
             /// <returns>
-            /// The rewritten child expressions between the specified <paramref name="first"/>
-            /// and <paramref name="last"/> (inclusive) indexes.
+            ///     The rewritten child expressions between the specified <paramref name="first" />
+            ///     and <paramref name="last" /> (inclusive) indexes.
             /// </returns>
             internal Expression[] this[int first, int last]
             {
@@ -183,9 +183,9 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Adds a child <paramref name="expression"/> to the rewriter, causing
-            /// it to be rewritten using the parent stack spiller, and the evaluation
-            /// stack state and rewrite action to be updated accordingly.
+            ///     Adds a child <paramref name="expression" /> to the rewriter, causing
+            ///     it to be rewritten using the parent stack spiller, and the evaluation
+            ///     stack state and rewrite action to be updated accordingly.
             /// </summary>
             /// <param name="expression">The child expression to add.</param>
             internal void Add(Expression expression)
@@ -212,9 +212,9 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Adds child <paramref name="expressions"/> to the rewriter, causing
-            /// them to be rewritten using the parent stack spiller, and the evaluation
-            /// stack state and rewrite action to be updated accordingly.
+            ///     Adds child <paramref name="expressions" /> to the rewriter, causing
+            ///     them to be rewritten using the parent stack spiller, and the evaluation
+            ///     stack state and rewrite action to be updated accordingly.
             /// </summary>
             /// <param name="expressions">The child expressions to add.</param>
             internal void Add(ReadOnlyCollection<Expression> expressions)
@@ -226,13 +226,13 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Adds child <paramref name="expressions"/> provided through an argument
-            /// provider to the rewriter, causing them to be rewritten using the parent
-            /// stack spiller, and the evaluation stack state and rewrite action to be
-            /// updated accordingly.
+            ///     Adds child <paramref name="expressions" /> provided through an argument
+            ///     provider to the rewriter, causing them to be rewritten using the parent
+            ///     stack spiller, and the evaluation stack state and rewrite action to be
+            ///     updated accordingly.
             /// </summary>
             /// <param name="expressions">
-            /// The argument provider containing the child expression to add.
+            ///     The argument provider containing the child expression to add.
             /// </param>
             internal void AddArguments(IArgumentProvider expressions)
             {
@@ -243,45 +243,47 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Rewrites the parent <paramref name="expression"/> where any stack spilled
-            /// child expressions have been substituted for temporary variables, and returns
-            /// the rewrite result to the caller.
+            ///     Rewrites the parent <paramref name="expression" /> where any stack spilled
+            ///     child expressions have been substituted for temporary variables, and returns
+            ///     the rewrite result to the caller.
             /// </summary>
             /// <param name="expression">
-            /// The parent expression after substituting stack spilled child expressions
-            /// for temporary variables using the indexers on the child rewriter.
+            ///     The parent expression after substituting stack spilled child expressions
+            ///     for temporary variables using the indexers on the child rewriter.
             /// </param>
             /// <returns>
-            /// The result of rewriting the parent <paramref name="expression"/>, which
-            /// includes the rewritten expression and the rewrite action. If stack spilling
-            /// has taken place, the resulting expression is a block expression containing
-            /// the expressions kept in <see cref="_comma"/>.
+            ///     The result of rewriting the parent <paramref name="expression" />, which
+            ///     includes the rewritten expression and the rewrite action. If stack spilling
+            ///     has taken place, the resulting expression is a block expression containing
+            ///     the expressions kept in <see cref="_comma" />.
             /// </returns>
             internal Result Finish(Expression expression)
             {
                 EnsureDone();
 
-                if (Action == RewriteAction.SpillStack)
+                if (Action != RewriteAction.SpillStack)
                 {
-                    Debug.Assert(_comma.Capacity == _comma.Count + 1);
-                    _comma.Add(expression);
-                    expression = MakeBlock(_comma.ToArray());
+                    return new Result(Action, expression);
                 }
+
+                Debug.Assert(_comma.Capacity == _comma.Count + 1);
+                _comma.Add(expression);
+                expression = MakeBlock(_comma.ToArray());
 
                 return new Result(Action, expression);
             }
 
             /// <summary>
-            /// Marks child expressions representing arguments bound to parameters of
-            /// the specified <paramref name="method"/> as ByRef values if needed.
+            ///     Marks child expressions representing arguments bound to parameters of
+            ///     the specified <paramref name="method" /> as ByRef values if needed.
             /// </summary>
             /// <param name="method">
-            /// The method containing the parameters bound to the arguments held by
-            /// child expressions tracked by this rewriter.
+            ///     The method containing the parameters bound to the arguments held by
+            ///     child expressions tracked by this rewriter.
             /// </param>
             /// <param name="startIndex">
-            /// The index of the child expression representing the first argument. This
-            /// value is typically 0 for static methods and 1 for instance methods.
+            ///     The index of the child expression representing the first argument. This
+            ///     value is typically 0 for static methods and 1 for instance methods.
             /// </param>
             internal void MarkRefArgs(MethodBase method, int startIndex)
             {
@@ -305,15 +307,15 @@ namespace System.Linq.Expressions.Compiler
             }
 
             /// <summary>
-            /// Checks whether the given <paramref name="expression"/> representing a
-            /// child expression should be saved in a temporary variable upon spilling
-            /// the stack. If the expression has no have side-effects, the introduction
-            /// of a temporary variable can be avoided, reducing the number of locals.
+            ///     Checks whether the given <paramref name="expression" /> representing a
+            ///     child expression should be saved in a temporary variable upon spilling
+            ///     the stack. If the expression has no have side-effects, the introduction
+            ///     of a temporary variable can be avoided, reducing the number of locals.
             /// </summary>
             /// <param name="expression">The expression to check for side-effects.</param>
             /// <returns>
-            /// <c>true</c> if the expression should be saved to a temporary variable;
-            /// otherwise, <c>false</c>.
+            ///     <c>true</c> if the expression should be saved to a temporary variable;
+            ///     otherwise, <c>false</c>.
             /// </returns>
             private static bool ShouldSaveToTemp(Expression expression)
             {
@@ -366,6 +368,7 @@ namespace System.Linq.Expressions.Compiler
                                 return false;
                             }
                         }
+
                         break;
 
                     default:
@@ -386,36 +389,43 @@ namespace System.Linq.Expressions.Compiler
             private void EnsureDone()
             {
                 // Done adding child expressions, build the comma if necessary.
-                if (!_done)
+                if (_done)
                 {
-                    _done = true;
-
-                    if (Action == RewriteAction.SpillStack)
-                    {
-                        var clone = _expressions;
-                        var count = _lastSpillIndex + 1;
-                        var comma = new List<Expression>(count + 1);
-                        for (var i = 0; i < count; i++)
-                        {
-                            var current = clone[i];
-                            if (ShouldSaveToTemp(current))
-                            {
-                                clone[i] = _self.ToTemp(current, out var temp, _byRefs?[i] ?? false);
-                                comma.Add(temp);
-                            }
-                        }
-                        comma.Capacity = comma.Count + 1;
-                        _comma = comma;
-                    }
+                    return;
                 }
+
+                _done = true;
+
+                if (Action != RewriteAction.SpillStack)
+                {
+                    return;
+                }
+
+                var clone = _expressions;
+                var count = _lastSpillIndex + 1;
+                var comma = new List<Expression>(count + 1);
+                for (var i = 0; i < count; i++)
+                {
+                    var current = clone[i];
+                    if (!ShouldSaveToTemp(current))
+                    {
+                        continue;
+                    }
+
+                    clone[i] = _self.ToTemp(current, out var temp, _byRefs?[i] ?? false);
+                    comma.Add(temp);
+                }
+
+                comma.Capacity = comma.Count + 1;
+                _comma = comma;
             }
 
             /// <summary>
-            /// Marks the child expression in at the specified <paramref name="index"/>
-            /// as having a ByRef value.
+            ///     Marks the child expression in at the specified <paramref name="index" />
+            ///     as having a ByRef value.
             /// </summary>
             /// <param name="index">
-            /// The index of the child expression holding a ByRef value.
+            ///     The index of the child expression holding a ByRef value.
             /// </param>
             private void MarkRef(int index)
             {

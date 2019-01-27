@@ -11,8 +11,8 @@ using System.Dynamic.Utils;
 namespace System.Linq.Expressions.Compiler
 {
     /// <summary>
-    /// A special subtype of BlockExpression that indicates to the compiler
-    /// that this block is a spilled expression and should not allow jumps in.
+    ///     A special subtype of BlockExpression that indicates to the compiler
+    ///     that this block is a spilled expression and should not allow jumps in.
     /// </summary>
     internal sealed class SpilledExpressionBlock : BlockN
     {

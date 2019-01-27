@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <summary>Provides an awaiter for a <see cref="ValueTask{TResult}"/>.</summary>
+    /// <summary>Provides an awaiter for a <see cref="T:System.Threading.Tasks.ValueTask`1" />.</summary>
     public struct ValueTaskAwaiter<TResult> : ICriticalNotifyCompletion
     {
         /// <summary>The value being awaited.</summary>
@@ -18,27 +18,28 @@ namespace System.Runtime.CompilerServices
 
         /// <summary>Initializes the awaiter.</summary>
         /// <param name="value">The value to be awaited.</param>
-        internal ValueTaskAwaiter(ValueTask<TResult> value) { _value = value; }
+        internal ValueTaskAwaiter(ValueTask<TResult> value)
+        {
+            _value = value;
+        }
 
-        /// <summary>Gets whether the <see cref="ValueTask{TResult}"/> has completed.</summary>
+        /// <summary>Gets whether the <see cref="ValueTask{TResult}" /> has completed.</summary>
         public bool IsCompleted => _value.IsCompleted;
 
         /// <summary>Gets the result of the ValueTask.</summary>
         public TResult GetResult()
         {
-            return _value._task == null ?
-                _value._result :
-                _value._task.GetAwaiter().GetResult();
+            return _value._task == null ? _value._result : _value._task.GetAwaiter().GetResult();
         }
 
         public void OnCompleted(Action continuation)
         {
-            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().OnCompleted(continuation);
+            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(true).GetAwaiter().OnCompleted(continuation);
         }
 
         public void UnsafeOnCompleted(Action continuation)
         {
-            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(continueOnCapturedContext: true).GetAwaiter().UnsafeOnCompleted(continuation);
+            (_value._task ?? TaskEx.FromResult(_value._result)).ConfigureAwait(true).GetAwaiter().UnsafeOnCompleted(continuation);
         }
     }
 }

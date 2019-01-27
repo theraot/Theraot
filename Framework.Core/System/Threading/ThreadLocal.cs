@@ -17,19 +17,19 @@ namespace System.Threading
         public ThreadLocal()
             : this(FuncHelper.GetDefaultFunc<T>(), false)
         {
-            //Empty
+            // Empty
         }
 
         public ThreadLocal(bool trackAllValues)
             : this(FuncHelper.GetDefaultFunc<T>(), trackAllValues)
         {
-            //Empty
+            // Empty
         }
 
         public ThreadLocal(Func<T> valueFactory)
             : this(valueFactory, false)
         {
-            //Empty
+            // Empty
         }
 
         public ThreadLocal(Func<T> valueFactory, bool trackAllValues)
@@ -99,7 +99,7 @@ namespace System.Threading
         {
             try
             {
-                //Empty
+                // Empty
             }
             finally
             {
@@ -115,14 +115,18 @@ namespace System.Threading
         [DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
-            if (disposeManagedResources)
+            if (!disposeManagedResources)
             {
-                if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
-                {
-                    _wrapped.Dispose();
-                    _wrapped = null;
-                }
+                return;
             }
+
+            if (Interlocked.CompareExchange(ref _disposing, 1, 0) != 0)
+            {
+                return;
+            }
+
+            _wrapped.Dispose();
+            _wrapped = null;
         }
     }
 }

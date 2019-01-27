@@ -58,7 +58,7 @@ namespace System.Linq.Expressions.Interpreter
             _t = t;
         }
 
-        public new static CastInstruction Create(Type t)
+        public static new CastInstruction Create(Type t)
         {
             if (t.IsValueType && !t.IsNullable())
             {
@@ -75,7 +75,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var valueType = value.GetType();
 
-                if (!valueType.HasReferenceConversionTo(_t) &&  !valueType.HasIdentityPrimitiveOrNullableConversionTo(_t))
+                if (!valueType.HasReferenceConversionTo(_t) && !valueType.HasIdentityPrimitiveOrNullableConversionTo(_t))
                 {
                     throw new InvalidCastException();
                 }
@@ -91,6 +91,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 ConvertNull(frame);
             }
+
             return 1;
         }
 
@@ -218,12 +219,14 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var from = frame.Pop();
-            Debug.Assert(
+            Debug.Assert
+            (
                 new[]
                 {
                     TypeCode.Empty, TypeCode.Int32, TypeCode.SByte, TypeCode.Int16, TypeCode.Int64, TypeCode.UInt32,
                     TypeCode.Byte, TypeCode.UInt16, TypeCode.UInt64, TypeCode.Char, TypeCode.Boolean
-                }.Contains(Convert.GetTypeCode(from)));
+                }.Contains(Convert.GetTypeCode(from))
+            );
             frame.Push(from == null ? null : Enum.ToObject(_t, from));
             return 1;
         }
@@ -271,6 +274,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private NullableMethodCallInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -321,6 +325,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push(obj.Equals(other));
                 }
+
                 return 1;
             }
         }
@@ -361,11 +366,13 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                if (frame.Peek() == null)
+                if (frame.Peek() != null)
                 {
-                    frame.Pop();
-                    frame.Push(Activator.CreateInstance(_defaultValueType));
+                    return 1;
                 }
+
+                frame.Pop();
+                frame.Push(Activator.CreateInstance(_defaultValueType));
                 return 1;
             }
         }
@@ -425,6 +432,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 operand = new ExpressionQuoter(_hoistedVariables, frame).Visit(operand);
             }
+
             frame.Push(operand);
             return 1;
         }
@@ -458,16 +466,14 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     _shadowedVars.Push(new HashSet<ParameterExpression>(node.Variables));
                 }
+
                 var b = ExpressionVisitorUtils.VisitBlockExpressions(this, node);
                 if (node.Variables.Count > 0)
                 {
                     _shadowedVars.Pop();
                 }
-                if (b == null)
-                {
-                    return node;
-                }
-                return node.Rewrite(node.Variables, b);
+
+                return b == null ? node : node.Rewrite(node.Variables, b);
             }
 
             protected internal override Expression VisitLambda<T>(Expression<T> node)
@@ -483,16 +489,14 @@ namespace System.Linq.Expressions.Interpreter
 
                     _shadowedVars.Push(parameters);
                 }
+
                 var b = Visit(node.Body);
                 if (node.ParameterCount > 0)
                 {
                     _shadowedVars.Pop();
                 }
-                if (b == node.Body)
-                {
-                    return node;
-                }
-                return node.Rewrite(b, parameters: null);
+
+                return b == node.Body ? node : node.Rewrite(b, null);
             }
 
             protected internal override Expression VisitParameter(ParameterExpression node)
@@ -502,6 +506,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     return node;
                 }
+
                 return Expression.Convert(Expression.Field(Expression.Constant(box), "Value"), node.Type);
             }
 
@@ -540,7 +545,8 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 // Otherwise, we need to return an object that merges them.
-                return Expression.Invoke(
+                return Expression.Invoke
+                (
                     Expression.Constant(new Func<IRuntimeVariables, IRuntimeVariables, int[], IRuntimeVariables>(MergeRuntimeVariables)),
                     Expression.RuntimeVariables(ReadOnlyCollectionEx.Create(vars.ToArray())),
                     boxesConst,
@@ -552,18 +558,21 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (node.Variable != null)
                 {
-                    _shadowedVars.Push(new HashSet<ParameterExpression> { node.Variable });
+                    _shadowedVars.Push(new HashSet<ParameterExpression> {node.Variable});
                 }
+
                 var b = Visit(node.Body);
                 var f = Visit(node.Filter);
                 if (node.Variable != null)
                 {
                     _shadowedVars.Pop();
                 }
+
                 if (b == node.Body && f == node.Filter)
                 {
                     return node;
                 }
+
                 return Expression.MakeCatchBlock(node.Test, node.Variable, b, f);
             }
 
@@ -574,17 +583,17 @@ namespace System.Linq.Expressions.Interpreter
 
             private IStrongBox GetBox(ParameterExpression variable)
             {
-                if (_variables.TryGetValue(variable, out var var))
+                if (!_variables.TryGetValue(variable, out var var))
                 {
-                    if (var.InClosure)
-                    {
-                        return _frame.Closure[var.Index];
-                    }
-
-                    return (IStrongBox)_frame.Data[var.Index];
+                    return null;
                 }
 
-                return null;
+                if (var.InClosure)
+                {
+                    return _frame.Closure[var.Index];
+                }
+
+                return (IStrongBox)_frame.Data[var.Index];
             }
         }
     }
@@ -609,7 +618,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "TypeAs " + _type;
+        public override string ToString()
+        {
+            return "TypeAs " + _type;
+        }
     }
 
     internal sealed class TypeEqualsInstruction : Instruction
@@ -618,6 +630,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private TypeEqualsInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;
@@ -652,7 +665,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "TypeIs " + _type;
+        public override string ToString()
+        {
+            return "TypeIs " + _type;
+        }
     }
 }
 

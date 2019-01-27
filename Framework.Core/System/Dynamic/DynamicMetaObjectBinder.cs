@@ -16,13 +16,16 @@ using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
 
 namespace System.Dynamic
 {
+    /// <inheritdoc />
     /// <summary>
-    ///     The dynamic call site binder that participates in the <see cref="DynamicMetaObject" /> binding protocol.
+    ///     The dynamic call site binder that participates in the <see cref="T:System.Dynamic.DynamicMetaObject" /> binding
+    ///     protocol.
     /// </summary>
     /// <remarks>
-    ///     The <see cref="CallSiteBinder" /> performs the binding of the dynamic operation using the runtime values
-    ///     as input. On the other hand, the <see cref="DynamicMetaObjectBinder" /> participates in the
-    ///     <see cref="DynamicMetaObject" />
+    ///     The <see cref="T:System.Runtime.CompilerServices.CallSiteBinder" /> performs the binding of the dynamic operation
+    ///     using the runtime values
+    ///     as input. On the other hand, the <see cref="T:System.Dynamic.DynamicMetaObjectBinder" /> participates in the
+    ///     <see cref="T:System.Dynamic.DynamicMetaObject" />
     ///     binding protocol.
     /// </remarks>
     public abstract class DynamicMetaObjectBinder : CallSiteBinder
@@ -37,12 +40,14 @@ namespace System.Dynamic
         /// </summary>
         internal virtual bool IsStandardBinder => false;
 
+        /// <inheritdoc />
         /// <summary>
         ///     Performs the runtime binding of the dynamic operation on a set of arguments.
         /// </summary>
         /// <param name="args">An array of arguments to the dynamic operation.</param>
         /// <param name="parameters">
-        ///     The array of <see cref="ParameterExpression" /> instances that represent the parameters of the
+        ///     The array of <see cref="T:System.Linq.Expressions.ParameterExpression" /> instances that represent the parameters
+        ///     of the
         ///     call site in the binding process.
         /// </param>
         /// <param name="returnLabel">A LabelTarget used to return the result of the dynamic binding.</param>
@@ -50,7 +55,7 @@ namespace System.Dynamic
         ///     An Expression that performs tests on the dynamic operation arguments, and
         ///     performs the dynamic operation if the tests are valid. If the tests fail on
         ///     subsequent occurrences of the dynamic operation, Bind will be called again
-        ///     to produce a new <see cref="Expression" /> for the new argument types.
+        ///     to produce a new <see cref="T:System.Linq.Expressions.Expression" /> for the new argument types.
         /// </returns>
         public sealed override Expression Bind(object[] args, ReadOnlyCollection<ParameterExpression> parameters, LabelTarget returnLabel)
         {

@@ -10,6 +10,7 @@ using System.Dynamic.Utils;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -57,7 +58,7 @@ namespace System.Linq.Expressions
             Space,
             NewLine,
 
-            Break = 0x8000      // newline if column > MaxColumn
+            Break = 0x8000 // newline if column > MaxColumn
         }
 
         private int Base => _stack.Count > 0 ? _stack.Peek() : 0;
@@ -92,44 +93,122 @@ namespace System.Linq.Expressions
                 var beforeOp = Flow.Space;
                 switch (node.NodeType)
                 {
-                    case ExpressionType.Assign: op = "="; break;
-                    case ExpressionType.Equal: op = "=="; break;
-                    case ExpressionType.NotEqual: op = "!="; break;
-                    case ExpressionType.AndAlso: op = "&&"; beforeOp = Flow.Break | Flow.Space; break;
-                    case ExpressionType.OrElse: op = "||"; beforeOp = Flow.Break | Flow.Space; break;
-                    case ExpressionType.GreaterThan: op = ">"; break;
-                    case ExpressionType.LessThan: op = "<"; break;
-                    case ExpressionType.GreaterThanOrEqual: op = ">="; break;
-                    case ExpressionType.LessThanOrEqual: op = "<="; break;
-                    case ExpressionType.Add: op = "+"; break;
-                    case ExpressionType.AddAssign: op = "+="; break;
-                    case ExpressionType.AddAssignChecked: op = "#+="; break;
-                    case ExpressionType.AddChecked: op = "#+"; break;
-                    case ExpressionType.Subtract: op = "-"; break;
-                    case ExpressionType.SubtractAssign: op = "-="; break;
-                    case ExpressionType.SubtractAssignChecked: op = "#-="; break;
-                    case ExpressionType.SubtractChecked: op = "#-"; break;
-                    case ExpressionType.Divide: op = "/"; break;
-                    case ExpressionType.DivideAssign: op = "/="; break;
-                    case ExpressionType.Modulo: op = "%"; break;
-                    case ExpressionType.ModuloAssign: op = "%="; break;
-                    case ExpressionType.Multiply: op = "*"; break;
-                    case ExpressionType.MultiplyAssign: op = "*="; break;
-                    case ExpressionType.MultiplyAssignChecked: op = "#*="; break;
-                    case ExpressionType.MultiplyChecked: op = "#*"; break;
-                    case ExpressionType.LeftShift: op = "<<"; break;
-                    case ExpressionType.LeftShiftAssign: op = "<<="; break;
-                    case ExpressionType.RightShift: op = ">>"; break;
-                    case ExpressionType.RightShiftAssign: op = ">>="; break;
-                    case ExpressionType.And: op = "&"; break;
-                    case ExpressionType.AndAssign: op = "&="; break;
-                    case ExpressionType.Or: op = "|"; break;
-                    case ExpressionType.OrAssign: op = "|="; break;
-                    case ExpressionType.ExclusiveOr: op = "^"; break;
-                    case ExpressionType.ExclusiveOrAssign: op = "^="; break;
-                    case ExpressionType.Power: op = "**"; break;
-                    case ExpressionType.PowerAssign: op = "**="; break;
-                    case ExpressionType.Coalesce: op = "??"; break;
+                    case ExpressionType.Assign:
+                        op = "=";
+                        break;
+                    case ExpressionType.Equal:
+                        op = "==";
+                        break;
+                    case ExpressionType.NotEqual:
+                        op = "!=";
+                        break;
+                    case ExpressionType.AndAlso:
+                        op = "&&";
+                        beforeOp = Flow.Break | Flow.Space;
+                        break;
+                    case ExpressionType.OrElse:
+                        op = "||";
+                        beforeOp = Flow.Break | Flow.Space;
+                        break;
+                    case ExpressionType.GreaterThan:
+                        op = ">";
+                        break;
+                    case ExpressionType.LessThan:
+                        op = "<";
+                        break;
+                    case ExpressionType.GreaterThanOrEqual:
+                        op = ">=";
+                        break;
+                    case ExpressionType.LessThanOrEqual:
+                        op = "<=";
+                        break;
+                    case ExpressionType.Add:
+                        op = "+";
+                        break;
+                    case ExpressionType.AddAssign:
+                        op = "+=";
+                        break;
+                    case ExpressionType.AddAssignChecked:
+                        op = "#+=";
+                        break;
+                    case ExpressionType.AddChecked:
+                        op = "#+";
+                        break;
+                    case ExpressionType.Subtract:
+                        op = "-";
+                        break;
+                    case ExpressionType.SubtractAssign:
+                        op = "-=";
+                        break;
+                    case ExpressionType.SubtractAssignChecked:
+                        op = "#-=";
+                        break;
+                    case ExpressionType.SubtractChecked:
+                        op = "#-";
+                        break;
+                    case ExpressionType.Divide:
+                        op = "/";
+                        break;
+                    case ExpressionType.DivideAssign:
+                        op = "/=";
+                        break;
+                    case ExpressionType.Modulo:
+                        op = "%";
+                        break;
+                    case ExpressionType.ModuloAssign:
+                        op = "%=";
+                        break;
+                    case ExpressionType.Multiply:
+                        op = "*";
+                        break;
+                    case ExpressionType.MultiplyAssign:
+                        op = "*=";
+                        break;
+                    case ExpressionType.MultiplyAssignChecked:
+                        op = "#*=";
+                        break;
+                    case ExpressionType.MultiplyChecked:
+                        op = "#*";
+                        break;
+                    case ExpressionType.LeftShift:
+                        op = "<<";
+                        break;
+                    case ExpressionType.LeftShiftAssign:
+                        op = "<<=";
+                        break;
+                    case ExpressionType.RightShift:
+                        op = ">>";
+                        break;
+                    case ExpressionType.RightShiftAssign:
+                        op = ">>=";
+                        break;
+                    case ExpressionType.And:
+                        op = "&";
+                        break;
+                    case ExpressionType.AndAssign:
+                        op = "&=";
+                        break;
+                    case ExpressionType.Or:
+                        op = "|";
+                        break;
+                    case ExpressionType.OrAssign:
+                        op = "|=";
+                        break;
+                    case ExpressionType.ExclusiveOr:
+                        op = "^";
+                        break;
+                    case ExpressionType.ExclusiveOrAssign:
+                        op = "^=";
+                        break;
+                    case ExpressionType.Power:
+                        op = "**";
+                        break;
+                    case ExpressionType.PowerAssign:
+                        op = "**=";
+                        break;
+                    case ExpressionType.Coalesce:
+                        op = "??";
+                        break;
 
                     default:
                         throw new InvalidOperationException();
@@ -152,12 +231,14 @@ namespace System.Linq.Expressions
                 {
                     Out("(", Flow.None);
                 }
+
                 Visit(node.Right);
                 if (parenthesizeRight)
                 {
                     Out(Flow.None, ")", Flow.Break);
                 }
             }
+
             return node;
         }
 
@@ -172,10 +253,10 @@ namespace System.Linq.Expressions
                 Out(string.Format(CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString()));
             }
 
-            VisitDeclarations(Theraot.Collections.Extensions.AsArrayInternal(node.Variables));
+            VisitDeclarations(node.Variables.AsArrayInternal());
             Out(" ");
             // Use ; to separate expressions in the block
-            VisitExpressions('{', ';', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
+            VisitExpressions('{', ';', node.Expressions.AsArrayInternal());
 
             return node;
         }
@@ -196,6 +277,7 @@ namespace System.Linq.Expressions
                 Dedent();
                 Out(Flow.NewLine, ") {", Flow.NewLine);
             }
+
             Indent();
             Visit(node.IfTrue);
             Dedent();
@@ -211,58 +293,80 @@ namespace System.Linq.Expressions
         {
             var value = node.Value;
 
-            if (value == null)
+            switch (value)
             {
-                Out("null");
-            }
-            else if (value is string && node.Type == typeof(string))
-            {
-                Out(string.Format(
-                    CultureInfo.CurrentCulture,
-                    "\"{0}\"",
-                    value));
-            }
-            else if (value is char && node.Type == typeof(char))
-            {
-                Out(string.Format(
-                    CultureInfo.CurrentCulture,
-                    "'{0}'",
-                    value));
-            }
-            else if ((value is int && node.Type == typeof(int)) || (value is bool && node.Type == typeof(bool)))
-            {
-                Out(value.ToString());
-            }
-            else
-            {
-                var suffix = GetConstantValueSuffix(node.Type);
-                if (suffix != null)
-                {
+                case null:
+                    Out("null");
+                    break;
+                case string _ when node.Type == typeof(string):
+                    Out
+                    (
+                        string.Format
+                        (
+                            CultureInfo.CurrentCulture,
+                            "\"{0}\"",
+                            value
+                        )
+                    );
+                    break;
+                case char _ when node.Type == typeof(char):
+                    Out
+                    (
+                        string.Format
+                        (
+                            CultureInfo.CurrentCulture,
+                            "'{0}'",
+                            value
+                        )
+                    );
+                    break;
+                case int _ when node.Type == typeof(int):
+                case bool _ when node.Type == typeof(bool):
                     Out(value.ToString());
-                    Out(suffix);
-                }
-                else
-                {
-                    Out(string.Format(
-                        CultureInfo.CurrentCulture,
-                        ".Constant<{0}>({1})",
-                        node.Type.ToString(),
-                        value));
-                }
+                    break;
+                default:
+                    {
+                        var suffix = GetConstantValueSuffix(node.Type);
+                        if (suffix != null)
+                        {
+                            Out(value.ToString());
+                            Out(suffix);
+                        }
+                        else
+                        {
+                            Out
+                            (
+                                string.Format
+                                (
+                                    CultureInfo.CurrentCulture,
+                                    ".Constant<{0}>({1})",
+                                    node.Type.ToString(),
+                                    value
+                                )
+                            );
+                        }
+
+                        break;
+                    }
             }
+
             return node;
         }
 
         protected internal override Expression VisitDebugInfo(DebugInfoExpression node)
         {
-            Out(string.Format(
-                CultureInfo.CurrentCulture,
-                ".DebugInfo({0}: {1}, {2} - {3}, {4})",
-                node.Document.FileName,
-                node.StartLine,
-                node.StartColumn,
-                node.EndLine,
-                node.EndColumn)
+            Out
+            (
+                string.Format
+                (
+                    CultureInfo.CurrentCulture,
+                    ".DebugInfo({0}: {1}, {2} - {3}, {4})",
+                    node.Document.FileName,
+                    node.StartLine,
+                    node.StartColumn,
+                    node.EndLine,
+                    node.EndColumn
+                )
             );
             return node;
         }
@@ -277,14 +381,16 @@ namespace System.Linq.Expressions
         {
             Out(string.Format(CultureInfo.CurrentCulture, ".Extension<{0}>", node.GetType().ToString()));
 
-            if (node.CanReduce)
+            if (!node.CanReduce)
             {
-                Out(Flow.Space, "{", Flow.NewLine);
-                Indent();
-                Visit(node.Reduce());
-                Dedent();
-                Out(Flow.NewLine, "}");
+                return node;
             }
+
+            Out(Flow.Space, "{", Flow.NewLine);
+            Indent();
+            Visit(node.Reduce());
+            Dedent();
+            Out(Flow.NewLine, "}");
 
             return node;
         }
@@ -310,7 +416,7 @@ namespace System.Linq.Expressions
                 ParenthesizedVisit(node, node.Object);
             }
 
-            VisitExpressions('[', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('[', node.Arguments.AsArrayInternal());
             return node;
         }
 
@@ -318,7 +424,7 @@ namespace System.Linq.Expressions
         {
             Out(".Invoke ");
             ParenthesizedVisit(node, node.Expression);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('(', node.Arguments.AsArrayInternal());
             return node;
         }
 
@@ -335,8 +441,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitLambda<T>(Expression<T> node)
         {
-            Out(
-                string.Format(CultureInfo.CurrentCulture,
+            Out
+            (
+                string.Format
+                (
+                    CultureInfo.CurrentCulture,
                     ".Lambda {0}<{1}>",
                     GetLambdaName(node),
                     node.Type.ToString()
@@ -360,7 +469,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitListInit(ListInitExpression node)
         {
             Visit(node.NewExpression);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Initializers), e => VisitElementInit(e));
+            VisitExpressions('{', ',', node.Initializers.AsArrayInternal(), e => VisitElementInit(e));
             return node;
         }
 
@@ -371,16 +480,19 @@ namespace System.Linq.Expressions
             {
                 DumpLabel(node.ContinueLabel);
             }
+
             Out(" {", Flow.NewLine);
             Indent();
             Visit(node.Body);
             Dedent();
             Out(Flow.NewLine, "}");
-            if (node.BreakLabel != null)
+            if (node.BreakLabel == null)
             {
-                Out("", Flow.NewLine);
-                DumpLabel(node.BreakLabel);
+                return node;
             }
+
+            Out("", Flow.NewLine);
+            DumpLabel(node.BreakLabel);
             return node;
         }
 
@@ -393,7 +505,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitMemberInit(MemberInitExpression node)
         {
             Visit(node.NewExpression);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Bindings), e => VisitMemberBinding(e));
+            VisitExpressions('{', ',', node.Bindings.AsArrayInternal(), e => VisitMemberBinding(e));
             return node;
         }
 
@@ -412,16 +524,17 @@ namespace System.Linq.Expressions
             {
                 Out("<UnknownType>");
             }
+
             Out(".");
             Out(node.Method.Name);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('(', node.Arguments.AsArrayInternal());
             return node;
         }
 
         protected internal override Expression VisitNew(NewExpression node)
         {
             Out(".New " + node.Type);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('(', node.Arguments.AsArrayInternal());
             return node;
         }
 
@@ -431,14 +544,15 @@ namespace System.Linq.Expressions
             {
                 // .NewArray MyType[expr1, expr2]
                 Out(".NewArray " + node.Type.GetElementType());
-                VisitExpressions('[', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
+                VisitExpressions('[', node.Expressions.AsArrayInternal());
             }
             else
             {
                 // .NewArray MyType {expr1, expr2}
                 Out(".NewArray " + node.Type, Flow.Space);
-                VisitExpressions('{', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
+                VisitExpressions('{', node.Expressions.AsArrayInternal());
             }
+
             return node;
         }
 
@@ -458,13 +572,14 @@ namespace System.Linq.Expressions
             {
                 Out(GetDisplayName(node.Name));
             }
+
             return node;
         }
 
         protected internal override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
         {
             Out(".RuntimeVariables");
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Variables));
+            VisitExpressions('(', node.Variables.AsArrayInternal());
             return node;
         }
 
@@ -478,11 +593,14 @@ namespace System.Linq.Expressions
             if (node.DefaultBody != null)
             {
                 Out(".Default:", Flow.NewLine);
-                Indent(); Indent();
+                Indent();
+                Indent();
                 Visit(node.DefaultBody);
-                Dedent(); Dedent();
+                Dedent();
+                Dedent();
                 NewLine();
             }
+
             Out("}");
             return node;
         }
@@ -528,6 +646,7 @@ namespace System.Linq.Expressions
                 default:
                     break;
             }
+
             Out(node.TypeOperand.ToString());
             return node;
         }
@@ -583,6 +702,7 @@ namespace System.Linq.Expressions
                     {
                         Out(".Throw", Flow.Space);
                     }
+
                     break;
 
                 case ExpressionType.IsFalse:
@@ -639,6 +759,7 @@ namespace System.Linq.Expressions
                 default:
                     break;
             }
+
             return node;
         }
 
@@ -650,11 +771,13 @@ namespace System.Linq.Expressions
                 Out(Flow.Space, "");
                 VisitParameter(node.Variable);
             }
+
             if (node.Filter != null)
             {
                 Out(") .If (", Flow.Break);
                 Visit(node.Filter);
             }
+
             Out(") {", Flow.NewLine);
             Indent();
             Visit(node.Body);
@@ -670,8 +793,9 @@ namespace System.Linq.Expressions
             }
             else
             {
-                VisitExpressions('{', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+                VisitExpressions('{', node.Arguments.AsArrayInternal());
             }
+
             return node;
         }
 
@@ -687,7 +811,7 @@ namespace System.Linq.Expressions
         {
             Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Initializers), e => VisitElementInit(e));
+            VisitExpressions('{', ',', node.Initializers.AsArrayInternal(), e => VisitElementInit(e));
             return node;
         }
 
@@ -695,7 +819,7 @@ namespace System.Linq.Expressions
         {
             Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Bindings), e => VisitMemberBinding(e));
+            VisitExpressions('{', ',', node.Bindings.AsArrayInternal(), e => VisitMemberBinding(e));
             return node;
         }
 
@@ -707,9 +831,12 @@ namespace System.Linq.Expressions
                 Visit(test);
                 Out("):", Flow.NewLine);
             }
-            Indent(); Indent();
+
+            Indent();
+            Indent();
             Visit(node.Body);
-            Dedent(); Dedent();
+            Dedent();
+            Dedent();
             NewLine();
             return node;
         }
@@ -723,47 +850,24 @@ namespace System.Linq.Expressions
                     return true;
                 }
             }
+
             return false;
         }
 
         private static string GetConstantValueSuffix(Type type)
         {
-            if (type == typeof(uint))
-            {
-                return "U";
-            }
-            if (type == typeof(long))
-            {
-                return "L";
-            }
-            if (type == typeof(ulong))
-            {
-                return "UL";
-            }
-            if (type == typeof(double))
-            {
-                return "D";
-            }
-            if (type == typeof(float))
-            {
-                return "F";
-            }
-            if (type == typeof(decimal))
-            {
-                return "M";
-            }
-            return null;
+            return type == typeof(uint) ? "U"
+                : type == typeof(long) ? "L"
+                : type == typeof(ulong) ? "UL"
+                : type == typeof(double) ? "D"
+                : type == typeof(float) ? "F"
+                : type == typeof(decimal) ? "M"
+                : null;
         }
 
         private static string GetDisplayName(string name)
         {
-            if (ContainsWhiteSpace(name))
-            {
-                // if name has whitespace in it, quote it
-                return QuoteName(name);
-            }
-
-            return name;
+            return ContainsWhiteSpace(name) ? QuoteName(name) : name;
         }
 
         private static int GetId<T>(T e, ref Dictionary<T, int> ids)
@@ -774,12 +878,14 @@ namespace System.Linq.Expressions
                 return 1;
             }
 
-            if (!ids.TryGetValue(e, out var id))
+            if (ids.TryGetValue(e, out var id))
             {
-                // e is met the first time
-                id = ids.Count + 1;
-                ids.Add(e, id);
+                return id;
             }
+
+            // e is met the first time
+            id = ids.Count + 1;
+            ids.Add(e, id);
             return id;
         }
 
@@ -893,7 +999,6 @@ namespace System.Linq.Expressions
                 //   member access, calls, indexing, new.
                 case ExpressionType.PostIncrementAssign:
                 case ExpressionType.PostDecrementAssign:
-                default:
                     return 14;
 
                 // These aren't expressions, so never need parentheses:
@@ -901,6 +1006,9 @@ namespace System.Linq.Expressions
                 case ExpressionType.Constant:
                 case ExpressionType.Parameter:
                     return 15;
+
+                default:
+                    return 14;
             }
         }
 
@@ -1002,17 +1110,20 @@ namespace System.Linq.Expressions
 
         private Flow CheckBreak(Flow flow)
         {
-            if ((flow & Flow.Break) != 0)
+            if ((flow & Flow.Break) == 0)
             {
-                if (_column > _maxColumn + Depth)
-                {
-                    flow = Flow.NewLine;
-                }
-                else
-                {
-                    flow &= ~Flow.Break;
-                }
+                return flow;
             }
+
+            if (_column > _maxColumn + Depth)
+            {
+                flow = Flow.NewLine;
+            }
+            else
+            {
+                flow &= ~Flow.Break;
+            }
+
             return flow;
         }
 
@@ -1064,6 +1175,7 @@ namespace System.Linq.Expressions
             {
                 return "#Lambda" + GetLambdaId(lambda);
             }
+
             return GetDisplayName(lambda.Name);
         }
 
@@ -1111,6 +1223,7 @@ namespace System.Linq.Expressions
                 default:
                     break;
             }
+
             Write(s);
             _flow = after;
         }
@@ -1146,16 +1259,20 @@ namespace System.Linq.Expressions
 
         private void VisitDeclarations(ParameterExpression[] expressions)
         {
-            VisitExpressions('(', ',', expressions, variable =>
-            {
-                Out(variable.Type.ToString());
-                if (variable.IsByRef)
+            VisitExpressions
+            (
+                '(', ',', expressions, variable =>
                 {
-                    Out("&");
+                    Out(variable.Type.ToString());
+                    if (variable.IsByRef)
+                    {
+                        Out("&");
+                    }
+
+                    Out(" ");
+                    VisitParameter(variable);
                 }
-                Out(" ");
-                VisitParameter(variable);
-            });
+            );
         }
 
         private void VisitExpressions<T>(char open, T[] expressions) where T : Expression
@@ -1184,6 +1301,7 @@ namespace System.Linq.Expressions
                         {
                             NewLine();
                         }
+
                         isFirst = false;
                     }
                     else
@@ -1194,15 +1312,22 @@ namespace System.Linq.Expressions
                     visit(e);
 #pragma warning restore CC0031 // Check for null before calling a delegate
                 }
+
                 Dedent();
             }
 
             char close;
             switch (open)
             {
-                case '(': close = ')'; break;
-                case '{': close = '}'; break;
-                case '[': close = ']'; break;
+                case '(':
+                    close = ')';
+                    break;
+                case '{':
+                    close = '}';
+                    break;
+                case '[':
+                    close = ']';
+                    break;
                 default: throw ContractUtils.Unreachable;
             }
 
@@ -1210,6 +1335,7 @@ namespace System.Linq.Expressions
             {
                 NewLine();
             }
+
             Out($"{close}", Flow.Break);
         }
 
@@ -1221,15 +1347,18 @@ namespace System.Linq.Expressions
 
         private void WriteLambda(LambdaExpression lambda)
         {
-            Out(
-                string.Format(
+            Out
+            (
+                string.Format
+                (
                     CultureInfo.CurrentCulture,
                     ".Lambda {0}<{1}>",
                     GetLambdaName(lambda),
-                    lambda.Type.ToString())
+                    lambda.Type.ToString()
+                )
             );
 
-            VisitDeclarations(Theraot.Collections.Extensions.AsArrayInternal(lambda.Parameters));
+            VisitDeclarations(lambda.Parameters.AsArrayInternal());
 
             Out(Flow.Space, "{", Flow.NewLine);
             Indent();

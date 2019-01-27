@@ -6,6 +6,7 @@
 
 namespace System.Diagnostics.Contracts
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Types marked with this attribute specify that a separate type contains the contracts for this type.
     /// </summary>

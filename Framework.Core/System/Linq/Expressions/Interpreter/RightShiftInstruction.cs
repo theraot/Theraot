@@ -53,6 +53,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((byte)((byte)value >> (int)shift));
                 }
+
                 return 1;
             }
         }
@@ -71,6 +72,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((short)((short)value >> (int)shift));
                 }
+
                 return 1;
             }
         }
@@ -89,6 +91,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((int)value >> (int)shift);
                 }
+
                 return 1;
             }
         }
@@ -107,6 +110,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((long)value >> (int)shift);
                 }
+
                 return 1;
             }
         }
@@ -125,6 +129,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((sbyte)((sbyte)value >> (int)shift));
                 }
+
                 return 1;
             }
         }
@@ -143,6 +148,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((ushort)((ushort)value >> (int)shift));
                 }
+
                 return 1;
             }
         }
@@ -161,6 +167,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((uint)value >> (int)shift);
                 }
+
                 return 1;
             }
         }
@@ -179,6 +186,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     frame.Push((ulong)value >> (int)shift);
                 }
+
                 return 1;
             }
         }

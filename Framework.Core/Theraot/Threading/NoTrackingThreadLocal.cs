@@ -1,7 +1,6 @@
 ﻿// Needed for NET35 (ThreadLocal)
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -62,25 +61,26 @@ namespace Theraot.Threading
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
                 var bundle = Thread.GetData(_slot);
-                if (!(bundle is INeedle<T> needle))
+                if (bundle is INeedle<T> needle)
                 {
-                    try
-                    {
-                        Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
-                        var result = _valueFactory.Invoke();
-                        Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
-                        return result;
-                    }
-                    catch (Exception exception)
-                    {
-                        if (exception != ThreadLocalHelper.RecursionGuardException)
-                        {
-                            Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
-                        }
-                        throw;
-                    }
+                    return needle.Value;
                 }
-                return needle.Value;
+
+                try
+                {
+                    Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
+                    var result = _valueFactory.Invoke();
+                    Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
+                    return result;
+                }
+                catch (Exception exception)
+                {
+                    if (exception != ThreadLocalHelper.RecursionGuardException)
+                    {
+                        Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
+                    }
+                    throw;
+                }
             }
             set
             {
@@ -101,11 +101,13 @@ namespace Theraot.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _disposing, 1, 0) != 0)
             {
-                _slot = null;
-                _valueFactory = null;
+                return;
             }
+
+            _slot = null;
+            _valueFactory = null;
         }
 
         public void EraseValue()

@@ -1,11 +1,10 @@
-﻿// Needed for Workaround
+﻿#if LESSTHAN_NET40
 
 using System.Runtime.CompilerServices;
-using System.Text;
 
-namespace Theraot.Core
+namespace System.Text
 {
-    public static class StringBuilderExtensions
+    public static class StringBuilderTheraotExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void Clear(this StringBuilder stringBuilder)
@@ -14,3 +13,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

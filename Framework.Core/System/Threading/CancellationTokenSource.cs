@@ -33,6 +33,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -40,14 +41,14 @@ namespace System.Threading
 {
     public class CancellationTokenSource : IDisposable
     {
-        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource { _cancelRequested = 1 }; // Leaked
+        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource {_cancelRequested = 1}; // Leaked
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
         private static readonly Action<CancellationTokenSource> _timerCallback = TimerCallback;
+        private readonly ManualResetEvent _handle;
         private Bucket<Action> _callbacks;
         private int _cancelRequested;
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
-        private readonly ManualResetEvent _handle;
         private CancellationTokenRegistration[] _linkedTokens;
         private RootedTimeout _timeout;
 
@@ -64,6 +65,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
+
             if (millisecondsDelay != Timeout.Infinite)
             {
                 _timeout = RootedTimeout.Launch(Callback, millisecondsDelay);
@@ -73,7 +75,7 @@ namespace System.Threading
         public CancellationTokenSource(TimeSpan delay)
             : this(CheckTimeout(delay))
         {
-            //Empty
+            // Empty
         }
 
         public bool IsCancellationRequested => _cancelRequested == 1;
@@ -96,9 +98,16 @@ namespace System.Threading
             }
         }
 
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public static CancellationTokenSource CreateLinkedTokenSource(CancellationToken token1, CancellationToken token2)
         {
-            return CreateLinkedTokenSource(new[] { token1, token2 });
+            return CreateLinkedTokenSource(new[] {token1, token2});
         }
 
         public static CancellationTokenSource CreateLinkedTokenSource(params CancellationToken[] tokens)
@@ -107,20 +116,16 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(tokens));
             }
+
             if (tokens.Length == 0)
             {
                 throw new ArgumentException("Empty tokens array");
             }
+
             var src = new CancellationTokenSource();
             Action action = src.SafeLinkedCancel;
             var registrations = new List<CancellationTokenRegistration>(tokens.Length);
-            foreach (var token in tokens)
-            {
-                if (token.CanBeCanceled)
-                {
-                    registrations.Add(token.Register(action));
-                }
-            }
+            registrations.AddRange(tokens.Where(token => token.CanBeCanceled).Select(token => token.Register(action)));
             src._linkedTokens = registrations.ToArray();
             return src;
         }
@@ -148,25 +153,22 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
-            CheckDisposed();
-            if (Volatile.Read(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite && _timeout == null)
-            {
-                // Have to be careful not to create secondary background timer
-                var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
-                var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
-                if (oldTimer != null)
-                {
-                    newTimer.Cancel();
-                }
-                _timeout.Change(millisecondsDelay);
-            }
-        }
 
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            CheckDisposed();
+            if (Volatile.Read(ref _cancelRequested) != 0 || millisecondsDelay == Timeout.Infinite || _timeout != null)
+            {
+                return;
+            }
+
+            // Have to be careful not to create secondary background timer
+            var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
+            var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
+            if (oldTimer != null)
+            {
+                newTimer.Cancel();
+            }
+
+            _timeout.Change(millisecondsDelay);
         }
 
         internal void CheckDisposed()
@@ -184,6 +186,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(CancellationTokenSource));
             }
+
             return result;
         }
 
@@ -209,6 +212,7 @@ namespace System.Threading
                     var originalCallback = callback;
                     callback = () => capturedSyncContext.Send(_ => originalCallback(), null);
                 }
+
                 callbacks.Insert(id, callback);
                 // Check if the source was just canceled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
@@ -217,36 +221,38 @@ namespace System.Threading
                     callback();
                 }
             }
+
             return tokenReg;
         }
 
         internal bool RemoveCallback(int reg)
         {
             // Ignore call if the source has been disposed
-            if (Volatile.Read(ref _disposeRequested) == 0)
+            if (Volatile.Read(ref _disposeRequested) != 0)
             {
-                var callbacks = _callbacks;
-                if (callbacks != null)
-                {
-                    return callbacks.RemoveAt(reg, out var dummy);
-                }
+                return true;
             }
-            return true;
+
+            var callbacks = _callbacks;
+            return callbacks == null || callbacks.RemoveAt(reg, out var dummy);
         }
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && Interlocked.CompareExchange(ref _disposeRequested, 1, 0) == 0)
+            if (!disposing || Interlocked.CompareExchange(ref _disposeRequested, 1, 0) != 0)
             {
-                if (Volatile.Read(ref _cancelRequested) == 0)
-                {
-                    UnregisterLinkedTokens();
-                    _callbacks = null;
-                }
-                var timer = Interlocked.Exchange(ref _timeout, null);
-                timer?.Cancel();
-                _handle.Close();
+                return;
             }
+
+            if (Volatile.Read(ref _cancelRequested) == 0)
+            {
+                UnregisterLinkedTokens();
+                _callbacks = null;
+            }
+
+            var timer = Interlocked.Exchange(ref _timeout, null);
+            timer?.Cancel();
+            _handle.Close();
         }
 
         private static int CheckTimeout(TimeSpan delay)
@@ -290,51 +296,58 @@ namespace System.Threading
             }
         }
 
-        private void Callback() => _timerCallback(this);
+        private void Callback()
+        {
+            _timerCallback(this);
+        }
 
         private void CancelExtracted(bool throwOnFirstException, Bucket<Action> callbacks, bool ignoreDisposedException)
         {
-            if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) != 0)
             {
-                try
+                return;
+            }
+
+            try
+            {
+                // The CancellationTokenSource may have been disposed just before this call
+                _handle.Set();
+            }
+            catch (ObjectDisposedException)
+            {
+                if (!ignoreDisposedException)
                 {
-                    // The CancellationTokenSource may have been disposed just before this call
-                    _handle.Set();
+                    throw;
                 }
-                catch (ObjectDisposedException)
+            }
+
+            UnregisterLinkedTokens();
+            List<Exception> exceptions = null;
+            try
+            {
+                var id = _currentId;
+                do
                 {
-                    if (!ignoreDisposedException)
-                    {
-                        throw;
-                    }
-                }
-                UnregisterLinkedTokens();
-                List<Exception> exceptions = null;
-                try
-                {
-                    var id = _currentId;
-                    do
-                    {
-                        if (callbacks.RemoveAt(id, out var callback) && callback != null)
-                        {
-                            RunCallback(throwOnFirstException, callback, ref exceptions);
-                        }
-                    } while (id++ != int.MaxValue);
-                }
-                finally
-                {
-                    // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
-                    foreach (
-                        var callback in
-                            callbacks.RemoveWhereEnumerable(_ => true))
+                    if (callbacks.RemoveAt(id, out var callback) && callback != null)
                     {
                         RunCallback(throwOnFirstException, callback, ref exceptions);
                     }
-                }
-                if (exceptions != null)
+                } while (id++ != int.MaxValue);
+            }
+            finally
+            {
+                // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
+                foreach (
+                    var callback in
+                    callbacks.RemoveWhereEnumerable(_ => true))
                 {
-                    throw new AggregateException(exceptions);
+                    RunCallback(throwOnFirstException, callback, ref exceptions);
                 }
+            }
+
+            if (exceptions != null)
+            {
+                throw new AggregateException(exceptions);
             }
         }
 
@@ -345,18 +358,21 @@ namespace System.Threading
             {
                 return;
             }
+
             CancelExtracted(false, callbacks, true);
         }
 
         private void UnregisterLinkedTokens()
         {
             var registrations = Interlocked.Exchange(ref _linkedTokens, null);
-            if (registrations != null)
+            if (registrations == null)
             {
-                foreach (var linked in registrations)
-                {
-                    linked.Dispose();
-                }
+                return;
+            }
+
+            foreach (var linked in registrations)
+            {
+                linked.Dispose();
             }
         }
     }

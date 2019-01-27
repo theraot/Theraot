@@ -1,5 +1,4 @@
 ﻿#if FAT
-
 namespace Theraot.Core
 {
     public static partial class PrimeHelper

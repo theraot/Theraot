@@ -9,15 +9,15 @@ using Theraot.Core;
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
-    /// Provides a dictionary-like object used for caches which holds onto a maximum
-    /// number of elements specified at construction time.
+    ///     Provides a dictionary-like object used for caches which holds onto a maximum
+    ///     number of elements specified at construction time.
     /// </summary>
     public sealed class CacheDict<TKey, TValue>
     {
         private readonly Entry[] _entries;
 
         /// <summary>
-        /// Creates a dictionary-like object used for caches.
+        ///     Creates a dictionary-like object used for caches.
         /// </summary>
         /// <param name="capacity">The maximum number of elements to store will be this number aligned to next ^2.</param>
         public CacheDict(int capacity)
@@ -27,7 +27,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets or sets the value associated with the given key.
+        ///     Gets or sets the value associated with the given key.
         /// </summary>
         public TValue this[TKey key]
         {
@@ -37,6 +37,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return value;
                 }
+
                 throw new KeyNotFoundException();
             }
             set => Add(key, value);
@@ -63,6 +64,7 @@ namespace Theraot.Collections.ThreadSafe
                 value = entry.Value;
                 return true;
             }
+
             value = default;
             return false;
         }

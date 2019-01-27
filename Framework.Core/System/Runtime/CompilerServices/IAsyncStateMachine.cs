@@ -1,19 +1,19 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    ///   Represents state machines generated for asynchronous methods. This type is intended for compiler use only.
+    ///     Represents state machines generated for asynchronous methods. This type is intended for compiler use only.
     /// </summary>
     public interface IAsyncStateMachine
     {
         /// <summary>
-        ///   Moves the state machine to its next state.
+        ///     Moves the state machine to its next state.
         /// </summary>
         void MoveNext();
 
         /// <summary>
-        ///   Configures the state machine with a heap-allocated replica.
+        ///     Configures the state machine with a heap-allocated replica.
         /// </summary>
         /// <param name="stateMachine"> The heap-allocated replica. </param>
         void SetStateMachine(IAsyncStateMachine stateMachine);

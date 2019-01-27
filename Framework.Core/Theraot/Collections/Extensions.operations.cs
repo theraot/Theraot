@@ -7,25 +7,24 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static T[] AsArray<T>(IEnumerable<T> source)
+        public static T[] AsArray<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case T[] array:
                     return array;
 
                 case ICollection<T> collection when collection.Count == 0:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case ICollection<T> collection:
                     var result = new T[collection.Count];
@@ -38,40 +37,13 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        internal static T[] AsArrayInternal<T>(IEnumerable<T> source)
-        {
-            switch (source)
-            {
-                case null:
-                    return ArrayReservoir<T>.EmptyArray;
-
-                case T[] array:
-                    return array;
-
-                case ReadOnlyCollectionEx<T> readOnlyCollectionEx when readOnlyCollectionEx.Wrapped is T[] array:
-                    return array;
-
-                case ICollection<T> collection when collection.Count == 0:
-                    return ArrayReservoir<T>.EmptyArray;
-
-                case ICollection<T> collection:
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return result;
-
-                default:
-                    return new List<T>(source).ToArray();
-            }
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ICollection<T> AsDistinctICollection<T>(IEnumerable<T> source)
+        public static ICollection<T> AsDistinctICollection<T>(this IEnumerable<T> source)
         {
 #if NET35
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case ISet<T> set:
                     return set;
@@ -90,12 +62,12 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ICollection<T> AsICollection<T>(IEnumerable<T> source)
+        public static ICollection<T> AsICollection<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case ICollection<T> result:
                     return result;
@@ -106,18 +78,18 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static IList<T> AsIList<T>(IEnumerable<T> source)
+        public static IList<T> AsIList<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case IList<T> list:
                     return list;
 
                 case ICollection<T> collection when collection.Count == 0:
-                    return EmptyCollection<T>.Instance;
+                    return ArrayEx.Empty<T>();
 
                 case ICollection<T> collection:
                     var result = new T[collection.Count];
@@ -130,7 +102,7 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static IReadOnlyCollection<T> AsIReadOnlyCollection<T>(IEnumerable<T> source)
+        public static IReadOnlyCollection<T> AsIReadOnlyCollection<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -146,7 +118,7 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static IReadOnlyCollection<T> AsIReadOnlyList<T>(IEnumerable<T> source)
+        public static IReadOnlyCollection<T> AsIReadOnlyList<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -162,7 +134,7 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ISet<T> AsISet<T>(IEnumerable<T> source)
+        public static ISet<T> AsISet<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -178,27 +150,29 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static IEnumerable<T> AsUnaryIEnumerable<T>(T source)
+        public static IEnumerable<T> AsUnaryIEnumerable<T>(this T source)
         {
             yield return source;
         }
 
         public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable == null)
+            switch (enumerable)
             {
-                return EmptyCollection<T>.Instance;
+                case null:
+                    return EmptyCollection<T>.Instance;
+                case ReadOnlyCollectionEx<T> arrayReadOnlyCollection:
+                    return arrayReadOnlyCollection;
+                default:
+                {
+                    var array = AsArrayInternal(enumerable);
+                    return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
+                }
             }
-            if (enumerable is ReadOnlyCollectionEx<T> arrayReadOnlyCollection)
-            {
-                return arrayReadOnlyCollection;
-            }
-            var array = AsArrayInternal(enumerable);
-            return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ICollection<T> WrapAsICollection<T>(IEnumerable<T> source)
+        public static ICollection<T> WrapAsICollection<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -214,7 +188,7 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static IList<T> WrapAsIList<T>(IEnumerable<T> source)
+        public static IList<T> WrapAsIList<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -230,7 +204,7 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(IEnumerable<T> source)
+        public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -256,7 +230,7 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(IEnumerable<T> source)
+        public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -280,6 +254,33 @@ namespace Theraot.Collections
                     return new EnumerationList<T>(source);
             }
         }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        internal static T[] AsArrayInternal<T>(this IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    return ArrayEx.Empty<T>();
+
+                case T[] array:
+                    return array;
+
+                case ReadOnlyCollectionEx<T> readOnlyCollectionEx when readOnlyCollectionEx.Wrapped is T[] array:
+                    return array;
+
+                case ICollection<T> collection when collection.Count == 0:
+                    return ArrayEx.Empty<T>();
+
+                case ICollection<T> collection:
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return result;
+
+                default:
+                    return new List<T>(source).ToArray();
+            }
+        }
     }
 
     public static partial class Extensions
@@ -290,14 +291,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (count == 0)
             {
                 return true;
             }
+
             if (source is ICollection<TSource> sourceAsCollection)
             {
                 return sourceAsCollection.Count >= count;
             }
+
             var result = 0;
             using (var item = source.GetEnumerator())
             {
@@ -307,12 +311,14 @@ namespace Theraot.Collections
                     {
                         result++;
                     }
+
                     if (result == count)
                     {
                         return true;
                     }
                 }
             }
+
             return false;
         }
 
@@ -322,6 +328,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return predicateCount == null ? SkipExtracted(source, skipCount) : SkipExtracted(source, predicateCount, skipCount);
         }
 
@@ -331,6 +338,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return StepItemsExtracted();
 
             IEnumerable<T> StepItemsExtracted()
@@ -357,6 +365,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return predicateCount == null ? TakeExtracted(source, takeCount) : TakeExtracted(source, predicateCount, takeCount);
         }
 
@@ -366,16 +375,19 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (count < 0)
             {
                 throw new ArgumentNullException(nameof(count));
             }
+
             if (source is ICollection<T> collection && count >= collection.Count)
             {
                 var array = new T[collection.Count];
                 collection.CopyTo(array, 0);
                 return array;
             }
+
             var result = new List<T>(count);
             foreach (var item in source)
             {
@@ -383,8 +395,10 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 result.Add(item);
             }
+
             return result.ToArray();
         }
 
@@ -432,6 +446,7 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 yield return item;
                 count++;
             }
@@ -446,6 +461,7 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 yield return item;
                 if (predicateCount(item))
                 {

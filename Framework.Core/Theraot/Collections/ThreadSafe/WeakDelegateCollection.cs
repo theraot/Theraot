@@ -1,12 +1,13 @@
 ﻿// Needed for Workaround
 
 using System;
+using System.Diagnostics;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class WeakDelegateCollection : WeakCollection<Delegate, WeakDelegateNeedle>
     {
         private readonly Action<object[]> _invoke;

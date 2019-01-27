@@ -7,29 +7,29 @@
 namespace System.Linq.Expressions
 {
     /// <summary>
-    /// Interface implemented by expression nodes that represent a dynamically bound operation.
+    ///     Interface implemented by expression nodes that represent a dynamically bound operation.
     /// </summary>
     public interface IDynamicExpression : IArgumentProvider
     {
         /// <summary>
-        /// Gets the type of the delegate used by the CallSite.
+        ///     Gets the type of the delegate used by the CallSite.
         /// </summary>
         Type DelegateType { get; }
 
         /// <summary>
-        /// Creates a CallSite for the node.
+        ///     Creates a CallSite for the node.
         /// </summary>
         object CreateCallSite();
 
         /// <summary>
-        /// <para>
-        /// Rewrite this node replacing the args with the provided values.  The
-        /// number of the args needs to match the number of the current block.
-        /// </para>
-        /// <para>
-        /// This helper is provided to allow re-writing of nodes to not depend on the specific
-        /// class of DynamicExpression which is being used.
-        /// </para>
+        ///     <para>
+        ///         Rewrite this node replacing the args with the provided values.  The
+        ///         number of the args needs to match the number of the current block.
+        ///     </para>
+        ///     <para>
+        ///         This helper is provided to allow re-writing of nodes to not depend on the specific
+        ///         class of DynamicExpression which is being used.
+        ///     </para>
         /// </summary>
         Expression Rewrite(Expression[] args);
     }

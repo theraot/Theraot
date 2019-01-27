@@ -7,7 +7,6 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Threading
 {
 #if LESSTHAN_NETSTANDARD20
-
     public static partial class GCMonitor
     {
         private static partial class Internal
@@ -47,20 +46,23 @@ namespace Theraot.Threading
             private static void RaiseCollected()
             {
                 var check = Volatile.Read(ref _status);
-                if (check == _statusReady)
+                if (check != _statusReady)
                 {
-                    try
-                    {
-                        CollectedEventHandlers.RemoveDeadItems();
-                        CollectedEventHandlers.Invoke(null, EventArgs.Empty);
-                    }
-                    catch (Exception exception)
-                    {
-                        // Catch them all
-                        No.Op(exception);
-                    }
-                    Volatile.Write(ref _status, _statusReady);
+                    return;
                 }
+
+                try
+                {
+                    CollectedEventHandlers.RemoveDeadItems();
+                    CollectedEventHandlers.Invoke(null, EventArgs.Empty);
+                }
+                catch (Exception exception)
+                {
+                    // Catch them all
+                    No.Op(exception);
+                }
+
+                Volatile.Write(ref _status, _statusReady);
             }
         }
     }

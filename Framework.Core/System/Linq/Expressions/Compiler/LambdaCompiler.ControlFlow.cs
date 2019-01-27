@@ -1,11 +1,11 @@
 ﻿#if LESSTHAN_NET35
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -44,6 +44,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             return;
                         }
+
                         for (var i = body.ExpressionCount - 1; i >= 0; i--)
                         {
                             expression = body.GetExpression(i);
@@ -52,6 +53,7 @@ namespace System.Linq.Expressions.Compiler
                                 break;
                             }
                         }
+
                         continue;
                 }
             }
@@ -63,6 +65,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return;
             }
+
             for (int i = 0, n = block.ExpressionCount; i < n; i++)
             {
                 var e = block.GetExpression(i);
@@ -80,6 +83,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return new LabelInfo(IL, null, false);
             }
+
             var result = EnsureLabel(node);
             result.Define(_labelBlock);
             return result;
@@ -182,12 +186,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 _labelInfo.Add(node, result = new LabelInfo(IL, node, false));
             }
+
             return result;
         }
 
         private void PopLabelBlock(LabelScopeKind kind)
         {
-            Theraot.No.Op(kind);
+            No.Op(kind);
             Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
             _labelBlock = _labelBlock.Parent;
         }
@@ -215,12 +220,13 @@ namespace System.Linq.Expressions.Compiler
             switch (node.NodeType)
             {
                 default:
-                    if (_labelBlock.Kind != LabelScopeKind.Expression)
+                    if (_labelBlock.Kind == LabelScopeKind.Expression)
                     {
-                        PushLabelBlock(LabelScopeKind.Expression);
-                        return true;
+                        return false;
                     }
-                    return false;
+
+                    PushLabelBlock(LabelScopeKind.Expression);
+                    return true;
 
                 case ExpressionType.Label:
                     // LabelExpression is a bit special, if it's directly in a
@@ -233,11 +239,13 @@ namespace System.Linq.Expressions.Compiler
                         {
                             return false;
                         }
+
                         if (_labelBlock.Parent.Kind == LabelScopeKind.Switch && _labelBlock.Parent.ContainsTarget(label))
                         {
                             return false;
                         }
                     }
+
                     PushLabelBlock(LabelScopeKind.Statement);
                     return true;
 
@@ -255,6 +263,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         DefineBlockLabels(node);
                     }
+
                     return true;
 
                 case ExpressionType.Switch:
@@ -267,6 +276,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         DefineBlockLabels(c.Body);
                     }
+
                     DefineBlockLabels(@switch.DefaultBody);
                     return true;
 
@@ -277,6 +287,7 @@ namespace System.Linq.Expressions.Compiler
                         // treat it as an expression
                         goto default;
                     }
+
                     PushLabelBlock(LabelScopeKind.Statement);
                     return true;
 

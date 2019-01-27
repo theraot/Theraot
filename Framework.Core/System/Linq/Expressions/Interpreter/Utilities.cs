@@ -197,7 +197,7 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     /// <summary>
-    /// A hybrid dictionary which compares based upon object identity.
+    ///     A hybrid dictionary which compares based upon object identity.
     /// </summary>
     internal class HybridReferenceDictionary<TKey, TValue> where TKey : class
     {
@@ -263,6 +263,7 @@ namespace System.Linq.Expressions.Interpreter
                         {
                             _dict[pair.Key] = pair.Value;
                         }
+
                         _keysAndValues = null;
 
                         _dict[key] = value;
@@ -281,28 +282,12 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var keysAndValues = _keysAndValues;
-            if (keysAndValues != null)
-            {
-                foreach (var pair in keysAndValues)
-                {
-                    if (pair.Key == key)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return keysAndValues?.Any(pair => pair.Key == key) == true;
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            if (_dict != null)
-            {
-                return _dict.GetEnumerator();
-            }
-
-            return GetEnumeratorWorker();
+            return _dict?.GetEnumerator() ?? GetEnumeratorWorker();
         }
 
         public void Remove(TKey key)
@@ -317,11 +302,13 @@ namespace System.Linq.Expressions.Interpreter
             {
                 for (var i = 0; i < _keysAndValues.Length; i++)
                 {
-                    if (_keysAndValues[i].Key == key)
+                    if (_keysAndValues[i].Key != key)
                     {
-                        _keysAndValues[i] = new KeyValuePair<TKey, TValue>();
-                        return;
+                        continue;
                     }
+
+                    _keysAndValues[i] = new KeyValuePair<TKey, TValue>();
+                    return;
                 }
             }
         }
@@ -339,27 +326,32 @@ namespace System.Linq.Expressions.Interpreter
             {
                 foreach (var pair in _keysAndValues)
                 {
-                    if (pair.Key == key)
+                    if (pair.Key != key)
                     {
-                        value = pair.Value;
-                        return true;
+                        continue;
                     }
+
+                    value = pair.Value;
+                    return true;
                 }
             }
+
             value = default;
             return false;
         }
 
         private IEnumerator<KeyValuePair<TKey, TValue>> GetEnumeratorWorker()
         {
-            if (_keysAndValues != null)
+            if (_keysAndValues == null)
             {
-                foreach (var pair in _keysAndValues)
+                yield break;
+            }
+
+            foreach (var pair in _keysAndValues)
+            {
+                if (pair.Key != null)
                 {
-                    if (pair.Key != null)
-                    {
-                        yield return pair;
-                    }
+                    yield return pair;
                 }
             }
         }

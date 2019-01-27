@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable CA2225 // Operator overloads have named alternates
-
 // Complex.cs: Complex number support
 
 // Author:
@@ -34,7 +32,6 @@ namespace System.Numerics
 {
     public struct Complex : IEquatable<Complex>, IFormattable
     {
-
         public static explicit operator Complex(decimal value)
         {
             return new Complex((double)value, 0);
@@ -98,6 +95,7 @@ namespace System.Numerics
         {
             return new Complex(value, 0);
         }
+
         public static readonly Complex ImaginaryOne = new Complex(0, 1);
         public static readonly Complex One = new Complex(1, 0);
         public static readonly Complex Zero = new Complex(0, 0);
@@ -121,10 +119,10 @@ namespace System.Numerics
         public static Complex operator -(Complex left, Complex right)
         {
             return new Complex
-                (
-                    left.Real - right.Real,
-                    left.Imaginary - right.Imaginary
-                );
+            (
+                left.Real - right.Real,
+                left.Imaginary - right.Imaginary
+            );
         }
 
         public static Complex operator -(Complex value)
@@ -140,29 +138,29 @@ namespace System.Numerics
         public static Complex operator *(Complex left, Complex right)
         {
             return new Complex
-                (
-                    (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
-                    (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
-                );
+            (
+                (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
+                (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
+            );
         }
 
         public static Complex operator /(Complex left, Complex right)
         {
             var d = (right.Real * right.Real) + (right.Imaginary * right.Imaginary);
             return new Complex
-                (
-                    ((left.Real * right.Real) + (left.Imaginary * right.Imaginary)) / d,
-                    ((left.Imaginary * right.Real) - (left.Real * right.Imaginary)) / d
-                );
+            (
+                ((left.Real * right.Real) + (left.Imaginary * right.Imaginary)) / d,
+                ((left.Imaginary * right.Real) - (left.Real * right.Imaginary)) / d
+            );
         }
 
         public static Complex operator +(Complex left, Complex right)
         {
             return new Complex
-                (
-                    left.Real + right.Real,
-                    left.Imaginary + right.Imaginary
-                );
+            (
+                left.Real + right.Real,
+                left.Imaginary + right.Imaginary
+            );
         }
 
         public static bool operator ==(Complex left, Complex right)
@@ -183,10 +181,10 @@ namespace System.Numerics
         public static Complex Add(Complex left, Complex right)
         {
             return new Complex
-                (
-                    left.Real + right.Real,
-                    left.Imaginary + right.Imaginary
-                );
+            (
+                left.Real + right.Real,
+                left.Imaginary + right.Imaginary
+            );
         }
 
         public static Complex Asin(Complex value)
@@ -207,57 +205,57 @@ namespace System.Numerics
         public static Complex Cos(Complex value)
         {
             return new Complex
-                (
-                    Math.Cos(value.Real) * Math.Cosh(value.Imaginary),
-                    -Math.Sin(value.Real) * Math.Sinh(value.Imaginary)
-                );
+            (
+                Math.Cos(value.Real) * Math.Cosh(value.Imaginary),
+                -Math.Sin(value.Real) * Math.Sinh(value.Imaginary)
+            );
         }
 
         public static Complex Cosh(Complex value)
         {
             return new Complex
-                (
-                    Math.Cosh(value.Real) * Math.Cos(value.Imaginary),
-                    -Math.Sinh(value.Real) * Math.Sin(value.Imaginary)
-                );
+            (
+                Math.Cosh(value.Real) * Math.Cos(value.Imaginary),
+                -Math.Sinh(value.Real) * Math.Sin(value.Imaginary)
+            );
         }
 
         public static Complex Divide(Complex dividend, Complex divisor)
         {
             var divisorMagnitudeSquared = divisor.MagnitudeSquared;
             return new Complex
-                (
-                    ((dividend.Real * divisor.Real) + (dividend.Imaginary * divisor.Imaginary)) / divisorMagnitudeSquared,
-                    ((dividend.Imaginary * divisor.Real) - (dividend.Real * divisor.Imaginary)) / divisorMagnitudeSquared
-                );
+            (
+                ((dividend.Real * divisor.Real) + (dividend.Imaginary * divisor.Imaginary)) / divisorMagnitudeSquared,
+                ((dividend.Imaginary * divisor.Real) - (dividend.Real * divisor.Imaginary)) / divisorMagnitudeSquared
+            );
         }
 
         public static Complex Exp(Complex value)
         {
             var expReal = Math.Exp(value.Real);
             return new Complex
-                (
-                    expReal * Math.Cos(value.Imaginary),
-                    expReal * Math.Sin(value.Imaginary)
-                );
+            (
+                expReal * Math.Cos(value.Imaginary),
+                expReal * Math.Sin(value.Imaginary)
+            );
         }
 
         public static Complex FromPolarCoordinates(double magnitude, double phase)
         {
             return new Complex
-                (
-                    magnitude * Math.Cos(phase),
-                    magnitude * Math.Sin(phase)
-                );
+            (
+                magnitude * Math.Cos(phase),
+                magnitude * Math.Sin(phase)
+            );
         }
 
         public static Complex Log(Complex value)
         {
             return new Complex
-                (
-                    Math.Log(Abs(value)),
-                    value.Phase
-                );
+            (
+                Math.Log(Abs(value)),
+                value.Phase
+            );
         }
 
         public static Complex Log(Complex value, double baseValue)
@@ -273,10 +271,10 @@ namespace System.Numerics
         public static Complex Multiply(Complex left, Complex right)
         {
             return new Complex
-                (
-                    (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
-                    (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
-                );
+            (
+                (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
+                (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
+            );
         }
 
         public static Complex Negate(Complex value)
@@ -302,19 +300,19 @@ namespace System.Numerics
         public static Complex Sin(Complex value)
         {
             return new Complex
-                (
-                    Math.Sin(value.Real) * Math.Cosh(value.Imaginary),
-                    Math.Cos(value.Real) * Math.Sinh(value.Imaginary)
-                );
+            (
+                Math.Sin(value.Real) * Math.Cosh(value.Imaginary),
+                Math.Cos(value.Real) * Math.Sinh(value.Imaginary)
+            );
         }
 
         public static Complex Sinh(Complex value)
         {
             return new Complex
-                (
-                    Math.Sinh(value.Real) * Math.Cos(value.Imaginary),
-                    Math.Cosh(value.Real) * Math.Sin(value.Imaginary)
-                );
+            (
+                Math.Sinh(value.Real) * Math.Cos(value.Imaginary),
+                Math.Cosh(value.Real) * Math.Sin(value.Imaginary)
+            );
         }
 
         public static Complex Sqrt(Complex value)
@@ -325,10 +323,10 @@ namespace System.Numerics
         public static Complex Subtract(Complex left, Complex right)
         {
             return new Complex
-                (
-                    left.Real - right.Real,
-                    left.Imaginary - right.Imaginary
-                );
+            (
+                left.Real - right.Real,
+                left.Imaginary - right.Imaginary
+            );
         }
 
         public static Complex Tan(Complex value)
@@ -352,6 +350,7 @@ namespace System.Numerics
             {
                 return Real.Equals(other.Real) && Imaginary.Equals(other.Imaginary);
             }
+
             return false;
         }
 

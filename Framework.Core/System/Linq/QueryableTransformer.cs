@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 // QueryableTransformer.cs
 //
@@ -47,12 +47,9 @@ namespace System.Linq
             {
                 return constant;
             }
+
             var enumerable = qe.GetEnumerable();
-            if (enumerable != null)
-            {
-                return Expression.Constant(enumerable);
-            }
-            return Visit(qe.Expression);
+            return enumerable != null ? Expression.Constant(enumerable) : Visit(qe.Expression);
         }
 
         protected override Expression VisitLambda(LambdaExpression lambda)
@@ -62,11 +59,7 @@ namespace System.Linq
 
         protected override Expression VisitMethodCall(MethodCallExpression methodCall)
         {
-            if (IsQueryableExtension(methodCall.Method))
-            {
-                return ReplaceQueryableMethod(methodCall);
-            }
-            return base.VisitMethodCall(methodCall);
+            return IsQueryableExtension(methodCall.Method) ? ReplaceQueryableMethod(methodCall) : base.VisitMethodCall(methodCall);
         }
 
         private static Type GetComparableType(Type type)
@@ -75,31 +68,28 @@ namespace System.Linq
             {
                 return typeof(IEnumerable<>).MakeGenericTypeFrom(type);
             }
+
             if (type.IsGenericInstanceOf(typeof(IOrderedQueryable<>)))
             {
                 return typeof(IOrderedEnumerable<>).MakeGenericTypeFrom(type);
             }
+
             if (type.IsGenericInstanceOf(typeof(Expression<>)))
             {
                 return type.GetGenericArguments()[0];
             }
+
             return type == typeof(IQueryable) ? typeof(IEnumerable) : type;
         }
 
         private static MethodInfo GetMatchingMethod(MethodInfo method, Type declaring)
         {
-            foreach (var candidate in declaring.GetMethods())
-            {
-                if (MethodMatch(candidate, method))
-                {
-                    if (method.IsGenericMethod)
-                    {
-                        return candidate.MakeGenericMethodFrom(method);
-                    }
-                    return candidate;
-                }
-            }
-            return null;
+            return (
+                from candidate
+                    in declaring.GetMethods()
+                where MethodMatch(candidate, method)
+                select method.IsGenericMethod ? candidate.MakeGenericMethodFrom(method) : candidate
+            ).FirstOrDefault();
         }
 
         private static Type GetTargetDeclaringType(MethodInfo method)
@@ -123,28 +113,34 @@ namespace System.Linq
             {
                 return false;
             }
+
             var parameters = method.GetParameterTypes();
             if (parameters.Length != candidate.GetParameters().Length)
             {
                 return false;
             }
+
             if (method.IsGenericMethod)
             {
                 if (!candidate.IsGenericMethod || candidate.GetGenericArguments().Length != method.GetGenericArguments().Length)
                 {
                     return false;
                 }
+
                 candidate = candidate.MakeGenericMethodFrom(method);
             }
+
             if (!TypeMatch(candidate.ReturnType, method.ReturnType))
             {
                 return false;
             }
+
             var candidateParameters = candidate.GetParameterTypes();
             if (candidateParameters[0] != GetComparableType(parameters[0]))
             {
                 return false;
             }
+
             for (var index = 1; index < candidateParameters.Length; ++index)
             {
                 if (!TypeMatch(candidateParameters[index], parameters[index]))
@@ -152,6 +148,7 @@ namespace System.Linq
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -163,6 +160,7 @@ namespace System.Linq
             {
                 return result;
             }
+
             throw new InvalidOperationException($"There is no method {method.Name} on type {targetType.FullName} that matches the specified arguments");
         }
 
@@ -172,6 +170,7 @@ namespace System.Linq
             {
                 return true;
             }
+
             return candidate == GetComparableType(type);
         }
 
@@ -181,12 +180,9 @@ namespace System.Linq
             {
                 return expression;
             }
+
             var lambda = (LambdaExpression)((UnaryExpression)expression).Operand;
-            if (lambda.Type == delegateType)
-            {
-                return lambda;
-            }
-            return expression;
+            return lambda.Type == delegateType ? lambda : expression;
         }
 
         private MethodCallExpression ReplaceQueryableMethod(MethodCallExpression old)
@@ -196,17 +192,19 @@ namespace System.Linq
             {
                 target = Visit(old.Object);
             }
+
             var method = ReplaceQueryableMethod(old.Method);
             var parameters = method.GetParameters();
             var arguments = new Expression[old.Arguments.Count];
             for (var index = 0; index < arguments.Length; index++)
             {
                 arguments[index] = UnquoteIfNeeded
-                    (
-                        Visit(old.Arguments[index]),
-                        parameters[index].ParameterType
-                    );
+                (
+                    Visit(old.Arguments[index]),
+                    parameters[index].ParameterType
+                );
             }
+
             return Expression.Call(target, method, arguments);
         }
     }

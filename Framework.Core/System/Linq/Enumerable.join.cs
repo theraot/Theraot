@@ -1,5 +1,4 @@
-#if LESSTHAN_NET35
-
+﻿#if LESSTHAN_NET35
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System.Collections.Generic;
@@ -43,12 +42,14 @@ namespace System.Linq
                 foreach (var element in outer)
                 {
                     var outerKey = outerKeySelector(element);
-                    if (outerKey != null && innerKeys.Contains(outerKey))
+                    if (outerKey == null || !innerKeys.Contains(outerKey))
                     {
-                        foreach (var innerElement in innerKeys[outerKey])
-                        {
-                            yield return resultSelector(element, innerElement);
-                        }
+                        continue;
+                    }
+
+                    foreach (var innerElement in innerKeys[outerKey])
+                    {
+                        yield return resultSelector(element, innerElement);
                     }
                 }
             }

@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETSTANDARD13
-
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable RCS1135 // Declare enum member with zero value (when enum has FlagsAttribute).

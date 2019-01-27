@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Collections.ThreadSafe;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -29,12 +29,12 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly object[] Objects;
 
         internal InstructionArray(int maxStackDepth, int maxContinuationDepth, Instruction[] instructions,
-            object[] objects, RuntimeLabel[] labels, IList<KeyValuePair<int, object>> debugCookies)
+            object[] objects, RuntimeLabel[] labels, IEnumerable<KeyValuePair<int, object>> debugCookies)
         {
             MaxStackDepth = maxStackDepth;
             MaxContinuationDepth = maxContinuationDepth;
             Instructions = instructions;
-            DebugCookies = Theraot.Collections.Extensions.AsArrayInternal(debugCookies);
+            DebugCookies = debugCookies.AsArrayInternal();
             Objects = objects;
             Labels = labels;
         }
@@ -50,11 +50,12 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionList.DebugView.InstructionView[]/*!*/ A0 => GetInstructionViews(includeDebugCookies: true);
+            public InstructionList.DebugView.InstructionView[] /*!*/ A0 => GetInstructionViews(true);
 
             public InstructionList.DebugView.InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {
-                return InstructionList.DebugView.GetInstructionViews(
+                return InstructionList.DebugView.GetInstructionViews
+                (
                     _array.Instructions,
                     _array.Objects,
                     index => _array.Labels[index].Index,
@@ -67,7 +68,6 @@ namespace System.Linq.Expressions.Interpreter
     [DebuggerTypeProxy(typeof(DebugView))]
     internal sealed class InstructionList
     {
-
 #if STATS
         private static Dictionary<string, int> _executedInstructions = new Dictionary<string, int>();
         private static Dictionary<string, Dictionary<object, bool>> _instances = new Dictionary<string, Dictionary<object, bool>>();
@@ -428,7 +428,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitLoad(object value)
         {
-            EmitLoad(value, type: null);
+            EmitLoad(value, null);
         }
 
         public void EmitLoad(bool value)
@@ -453,21 +453,23 @@ namespace System.Linq.Expressions.Interpreter
 
             if (type?.IsValueType != false)
             {
-                if (value is bool b)
+                switch (value)
                 {
-                    EmitLoad(b);
-                    return;
-                }
+                    case bool b:
+                        EmitLoad(b);
+                        return;
+                    case int i when i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue:
+                        if (_ints == null)
+                        {
+                            _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
+                        }
 
-                if (value is int i && i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue)
-                {
-                    if (_ints == null)
-                    {
-                        _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
-                    }
-                    i -= _pushIntMinCachedValue;
-                    Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
-                    return;
+                        i -= _pushIntMinCachedValue;
+                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
+                        return;
+
+                    default:
+                        break;
                 }
             }
 
@@ -790,11 +792,12 @@ namespace System.Linq.Expressions.Interpreter
                 });
             }
 #endif
-            return new InstructionArray(
+            return new InstructionArray
+            (
                 MaxStackDepth,
                 _maxContinuationDepth,
-                Theraot.Collections.Extensions.AsArrayInternal(_instructions),
-                _objects == null ? null : Theraot.Collections.Extensions.AsArrayInternal(_objects),
+                _instructions.AsArrayInternal(),
+                _objects?.AsArrayInternal(),
                 BuildRuntimeLabels(),
                 _debugCookies
             );
@@ -895,17 +898,22 @@ namespace System.Linq.Expressions.Interpreter
             _instructions[branchIndex] = ((OffsetInstruction)_instructions[branchIndex]).Fixup(offset);
         }
 
-        internal Instruction GetInstruction(int index) => _instructions[index];
+        internal Instruction GetInstruction(int index)
+        {
+            return _instructions[index];
+        }
 
         internal void SwitchToBoxed(int index, int instructionIndex)
         {
-            if (_instructions[instructionIndex] is IBoxableInstruction instruction)
+            if (!(_instructions[instructionIndex] is IBoxableInstruction instruction))
             {
-                var newInstruction = instruction.BoxIfIndexMatches(index);
-                if (newInstruction != null)
-                {
-                    _instructions[instructionIndex] = newInstruction;
-                }
+                return;
+            }
+
+            var newInstruction = instruction.BoxIfIndexMatches(index);
+            if (newInstruction != null)
+            {
+                _instructions[instructionIndex] = newInstruction;
             }
         }
 
@@ -913,11 +921,13 @@ namespace System.Linq.Expressions.Interpreter
         {
             lock (_loadFields)
             {
-                if (!_loadFields.TryGetValue(field, out var instruction))
+                if (_loadFields.TryGetValue(field, out var instruction))
                 {
-                    instruction = field.IsStatic ? (Instruction)new LoadStaticFieldInstruction(field) : new LoadFieldInstruction(field);
-                    _loadFields.Add(field, instruction);
+                    return instruction;
                 }
+
+                instruction = field.IsStatic ? (Instruction)new LoadStaticFieldInstruction(field) : new LoadFieldInstruction(field);
+                _loadFields.Add(field, instruction);
                 return instruction;
             }
         }
@@ -937,6 +947,7 @@ namespace System.Linq.Expressions.Interpreter
                     result[label.LabelIndex] = label.ToRuntimeLabel();
                 }
             }
+
             // "return and rethrow" label:
             result[result.Length - 1] = new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0);
             return result;
@@ -992,16 +1003,17 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionView[]/*!*/ A0 => GetInstructionViews(includeDebugCookies: true);
+            public InstructionView[] /*!*/ A0 => GetInstructionViews(true);
 
             public InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {
-                return GetInstructionViews(
-                        _list._instructions,
-                        _list._objects,
-                        index => _list._labels[index].TargetIndex,
-                        includeDebugCookies ? _list._debugCookies : null
-                    );
+                return GetInstructionViews
+                (
+                    _list._instructions,
+                    _list._objects,
+                    index => _list._labels[index].TargetIndex,
+                    includeDebugCookies ? _list._debugCookies : null
+                );
             }
 
             internal static InstructionView[] GetInstructionViews(IList<Instruction> instructions, IList<object> objects,
@@ -1014,11 +1026,11 @@ namespace System.Linq.Expressions.Interpreter
                 using
                 (
                     var cookieEnumerator =
-                    (
-                        debugCookies ??
-                        ArrayReservoir<KeyValuePair<int, object>>.EmptyArray
-                    )
-                    .GetEnumerator()
+                        (
+                            debugCookies ??
+                            ArrayEx.Empty<KeyValuePair<int, object>>()
+                        )
+                        .GetEnumerator()
                 )
                 {
                     var hasCookie = cookieEnumerator.MoveNext();
@@ -1043,7 +1055,7 @@ namespace System.Linq.Expressions.Interpreter
                         continuationsDepth += contDiff;
                     }
 
-                    return Theraot.Collections.Extensions.AsArrayInternal(result);
+                    return result.AsArrayInternal();
                 }
             }
 
@@ -1073,8 +1085,8 @@ namespace System.Linq.Expressions.Interpreter
                 internal string GetName()
                 {
                     return _index +
-                        (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth + ")") +
-                        (_stackDepth == 0 ? "" : " S(" + _stackDepth + ")");
+                           (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth + ")") +
+                           (_stackDepth == 0 ? "" : " S(" + _stackDepth + ")");
                 }
 
                 internal string GetValue()

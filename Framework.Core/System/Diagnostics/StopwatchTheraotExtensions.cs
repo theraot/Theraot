@@ -1,11 +1,10 @@
-﻿// Needed for Workaround
+﻿#if LESSTHAN_NET40
 
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Theraot.Core
+namespace System.Diagnostics
 {
-    public static class StopwatchExtensions
+    public static class StopwatchTheraotExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void Restart(this Stopwatch stopwatch)
@@ -15,3 +14,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

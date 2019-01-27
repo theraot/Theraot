@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -16,7 +17,8 @@ namespace Theraot.Reflection
                 source,
                 new Func<TTarget>
                 (
-                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name))
+                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name)
+                )
             );
         }
 
@@ -33,10 +35,12 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(alternative));
             }
+
             if (!(source is TTarget sourceAsTarget))
             {
                 return alternative();
             }
+
             return sourceAsTarget;
         }
 
@@ -47,7 +51,8 @@ namespace Theraot.Reflection
                 source,
                 new Func<TTarget>
                 (
-                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name))
+                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name)
+                )
             );
         }
 
@@ -62,6 +67,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(alternative));
             }
+
             try
             {
                 var sourceAsTarget = (TTarget)source;
@@ -76,24 +82,18 @@ namespace Theraot.Reflection
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
         {
-            foreach (var method in methods)
-            {
-                if (!string.Equals(method.Name, "op_Implicit", StringComparison.Ordinal) && (implicitOnly || !string.Equals(method.Name, "op_Explicit", StringComparison.Ordinal)))
-                {
-                    continue;
-                }
-                if (method.ReturnType != typeTo)
-                {
-                    continue;
-                }
-                var parameters = method.GetParameters();
-                if (parameters[0].ParameterType != typeFrom)
-                {
-                    continue;
-                }
-                return method;
-            }
-            return null;
+            return
+            (
+                from method
+                    in methods
+                where
+                    string.Equals(method.Name, "op_Implicit", StringComparison.Ordinal)
+                    || (!implicitOnly && string.Equals(method.Name, "op_Explicit", StringComparison.Ordinal))
+                where method.ReturnType == typeTo
+                let parameters = method.GetParameters()
+                where parameters[0].ParameterType == typeFrom
+                select method
+            ).FirstOrDefault();
         }
 
         public static bool IsImplicitBoxingConversion(Type source, Type target)
@@ -103,11 +103,8 @@ namespace Theraot.Reflection
             {
                 return true;
             }
-            if (info.IsEnum && target == typeof(Enum))
-            {
-                return true;
-            }
-            return false;
+
+            return info.IsEnum && target == typeof(Enum);
         }
 
         public static bool IsImplicitNumericConversion(Type source, Type target)
@@ -121,7 +118,7 @@ namespace Theraot.Reflection
                     || target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -138,7 +135,7 @@ namespace Theraot.Reflection
                     || target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -151,7 +148,7 @@ namespace Theraot.Reflection
                     || target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -166,7 +163,7 @@ namespace Theraot.Reflection
                     || target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -178,7 +175,7 @@ namespace Theraot.Reflection
                     || target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -190,7 +187,7 @@ namespace Theraot.Reflection
                     || target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -201,7 +198,7 @@ namespace Theraot.Reflection
                     target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -217,7 +214,7 @@ namespace Theraot.Reflection
                     || target == typeof(float)
                     || target == typeof(double)
                     || target == typeof(decimal)
-                    )
+                )
                 {
                     return true;
                 }
@@ -226,6 +223,7 @@ namespace Theraot.Reflection
             {
                 return target == typeof(double);
             }
+
             return false;
         }
 
@@ -237,11 +235,13 @@ namespace Theraot.Reflection
             {
                 return found;
             }
+
             found = Volatile.Read(ref target);
             if (found != null)
             {
                 return found;
             }
+
             T created;
             try
             {
@@ -251,6 +251,7 @@ namespace Theraot.Reflection
             {
                 throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
             }
+
             found = Interlocked.CompareExchange(ref target, created, null);
             return found ?? created;
         }
@@ -263,11 +264,13 @@ namespace Theraot.Reflection
             {
                 return found;
             }
+
             found = Volatile.Read(ref target);
             if (found != null)
             {
                 return found;
             }
+
             lock (syncRoot)
             {
                 return LazyCreate(ref target);
@@ -282,20 +285,24 @@ namespace Theraot.Reflection
             {
                 return found;
             }
+
             found = Volatile.Read(ref target);
             if (found != null)
             {
                 return found;
             }
+
             if (valueFactory == null)
             {
                 throw new ArgumentNullException(nameof(valueFactory));
             }
+
             var created = valueFactory();
             if (created == null)
             {
                 throw new InvalidOperationException("valueFactory returned null");
             }
+
             found = Interlocked.CompareExchange(ref target, created, null);
             return found ?? created;
         }
@@ -308,11 +315,13 @@ namespace Theraot.Reflection
             {
                 return found;
             }
+
             found = Volatile.Read(ref target);
             if (found != null)
             {
                 return found;
             }
+
             lock (syncRoot)
             {
                 return LazyCreate(ref target, valueFactory);

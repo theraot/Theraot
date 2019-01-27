@@ -1,11 +1,14 @@
-// Needed for Workaround
+﻿// Needed for Workaround
+
+#pragma warning disable RCS1231 // Make parameter ref read-only.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class Promise : IWaitablePromise
     {
         private readonly int _hashCode;
@@ -28,10 +31,7 @@ namespace Theraot.Threading.Needles
             _waitHandle = new ManualResetEventSlim(true);
         }
 
-        ~Promise()
-        {
-            ReleaseWaitHandle(false);
-        }
+        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
 
         public Exception Exception { get; private set; }
 
@@ -42,13 +42,35 @@ namespace Theraot.Threading.Needles
             get
             {
                 var waitHandle = _waitHandle.Value;
-                return waitHandle == null || waitHandle.IsSet;
+                return waitHandle?.IsSet != false;
             }
         }
 
         public bool IsFaulted => Exception != null;
 
-        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
+        public virtual void Wait()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle == null)
+            {
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait();
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
+            }
+        }
+
+        ~Promise()
+        {
+            ReleaseWaitHandle(false);
+        }
 
         public virtual void Free()
         {
@@ -61,6 +83,7 @@ namespace Theraot.Threading.Needles
             {
                 waitHandle.Reset();
             }
+
             Exception = null;
         }
 
@@ -70,8 +93,9 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(beforeFree));
             }
+
             var waitHandle = _waitHandle.Value;
-            if (waitHandle == null || waitHandle.IsSet)
+            if (waitHandle?.IsSet != false)
             {
                 try
                 {
@@ -87,6 +111,7 @@ namespace Theraot.Threading.Needles
                     {
                         waitHandle.Reset();
                     }
+
                     Exception = null;
                 }
             }
@@ -123,105 +148,98 @@ namespace Theraot.Threading.Needles
                 : "[Not Created]";
         }
 
-        public virtual void Wait()
-        {
-            var waitHandle = _waitHandle.Value;
-            if (waitHandle != null)
-            {
-                try
-                {
-                    waitHandle.Wait();
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    // Came late to the party, initialization was done
-                    No.Op(exception);
-                }
-            }
-        }
-
         public virtual void Wait(CancellationToken cancellationToken)
         {
             var waitHandle = _waitHandle.Value;
-            if (waitHandle != null)
+            if (waitHandle == null)
             {
-                try
-                {
-                    waitHandle.Wait(cancellationToken);
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    // Came late to the party, initialization was done
-                    No.Op(exception);
-                }
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait(cancellationToken);
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
             }
         }
 
         public virtual void Wait(int milliseconds)
         {
             var waitHandle = _waitHandle.Value;
-            if (waitHandle != null)
+            if (waitHandle == null)
             {
-                try
-                {
-                    waitHandle.Wait(milliseconds);
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    // Came late to the party, initialization was done
-                    No.Op(exception);
-                }
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait(milliseconds);
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
             }
         }
 
         public virtual void Wait(TimeSpan timeout)
         {
             var waitHandle = _waitHandle.Value;
-            if (waitHandle != null)
+            if (waitHandle == null)
             {
-                try
-                {
-                    waitHandle.Wait(timeout);
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    // Came late to the party, initialization was done
-                    No.Op(exception);
-                }
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait(timeout);
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
             }
         }
 
         public virtual void Wait(int milliseconds, CancellationToken cancellationToken)
         {
             var waitHandle = _waitHandle.Value;
-            if (waitHandle != null)
+            if (waitHandle == null)
             {
-                try
-                {
-                    waitHandle.Wait(milliseconds, cancellationToken);
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    // Came late to the party, initialization was done
-                    No.Op(exception);
-                }
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait(milliseconds, cancellationToken);
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
             }
         }
 
         public virtual void Wait(TimeSpan timeout, CancellationToken cancellationToken)
         {
             var waitHandle = _waitHandle.Value;
-            if (waitHandle != null)
+            if (waitHandle == null)
             {
-                try
-                {
-                    waitHandle.Wait(timeout, cancellationToken);
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    // Came late to the party, initialization was done
-                    No.Op(exception);
-                }
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait(timeout, cancellationToken);
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
             }
         }
 
@@ -234,8 +252,10 @@ namespace Theraot.Threading.Needles
                 {
                     waitHandle.Set();
                 }
+
                 waitHandle.Dispose();
             }
+
             _waitHandle.Value = null;
         }
     }

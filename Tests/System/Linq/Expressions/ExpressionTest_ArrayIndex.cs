@@ -180,6 +180,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private class Foo
         {
+            // Empty
         }
 
         [Test]

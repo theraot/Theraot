@@ -28,27 +28,28 @@ namespace System.Runtime.CompilerServices
 {
     [ComVisible(false)]
     public sealed class ConditionalWeakTable<TKey, TValue>
-    where TKey : class
+        where TKey : class
         where TValue : class
     {
-        private readonly WeakDictionary<TKey, TValue> _wrapped;
-
-        public ConditionalWeakTable()
-        {
-            _wrapped = new WeakDictionary<TKey, TValue> { AutoRemoveDeadItems = true };
-        }
-
         /// <summary>
-        /// Represents a method that creates a non-default value to add as part of a key/value pair to a <see cref="ConditionalWeakTable{TKey, TValue}"/> object.
+        ///     Represents a method that creates a non-default value to add as part of a key/value pair to a
+        ///     <see cref="ConditionalWeakTable{TKey, TValue}" /> object.
         /// </summary>
         /// <param name="key">The key that belongs to the value to create.</param>
         /// <returns>An instance of a reference type that represents the value to attach to the specified key.</returns>
         public delegate TValue CreateValueCallback(TKey key);
 
+        private readonly WeakDictionary<TKey, TValue> _wrapped;
+
+        public ConditionalWeakTable()
+        {
+            _wrapped = new WeakDictionary<TKey, TValue> {AutoRemoveDeadItems = true};
+        }
+
         internal ICollection<TKey> Keys => _wrapped.Keys;
 
         /// <summary>
-        /// Adds a key to the table.
+        ///     Adds a key to the table.
         /// </summary>
         /// <param name="key">The key to add. key represents the object to which the property is attached.</param>
         /// <param name="value">The key's property value.</param>
@@ -58,48 +59,64 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(key));
             }
+
             _wrapped.AddNew(key, value);
         }
 
         /// <summary>
-        /// Atomically searches for a specified key in the table and returns the corresponding value. If the key does not exist in the table, the method invokes the default constructor of the class that represents the table's value to create a value that is bound to the specified key.
+        ///     Atomically searches for a specified key in the table and returns the corresponding value. If the key does not exist
+        ///     in the table, the method invokes the default constructor of the class that represents the table's value to create a
+        ///     value that is bound to the specified key.
         /// </summary>
         /// <param name="key">The key to search for. key represents the object to which the property is attached.</param>
-        /// <returns>The value that corresponds to key, if key already exists in the table; otherwise, a new value created by the default constructor of the class defined by the TValue generic type parameter.</returns>
+        /// <returns>
+        ///     The value that corresponds to key, if key already exists in the table; otherwise, a new value created by the
+        ///     default constructor of the class defined by the TValue generic type parameter.
+        /// </returns>
         public TValue GetOrCreateValue(TKey key)
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
+
             return PrivateGetValue(key, _ => Activator.CreateInstance<TValue>());
         }
 
         /// <summary>
-        /// Atomically searches for a specified key in the table and returns the corresponding value.If the key does not exist in the table, the method invokes a callback method to create a value that is bound to the specified key.
+        ///     Atomically searches for a specified key in the table and returns the corresponding value.If the key does not exist
+        ///     in the table, the method invokes a callback method to create a value that is bound to the specified key.
         /// </summary>
         /// <param name="key">The key to search for. key represents the object to which the property is attached.</param>
-        /// <param name="createValueCallback">A delegate to a method that can create a value for the given key. It has a single parameter of type TKey, and returns a value of type TValue.</param>
-        /// <returns>The value attached to key, if key already exists in the table; otherwise, the new value returned by the createValueCallback delegate.</returns>
+        /// <param name="createValueCallback">
+        ///     A delegate to a method that can create a value for the given key. It has a single
+        ///     parameter of type TKey, and returns a value of type TValue.
+        /// </param>
+        /// <returns>
+        ///     The value attached to key, if key already exists in the table; otherwise, the new value returned by the
+        ///     createValueCallback delegate.
+        /// </returns>
         public TValue GetValue(TKey key, CreateValueCallback createValueCallback)
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
+
             if (createValueCallback == null)
             {
                 throw new ArgumentNullException(nameof(createValueCallback));
             }
+
             return _wrapped.GetOrAdd(key, input => createValueCallback(input));
         }
 
         /// <summary>
-        /// Removes a key and its value from the table.
+        ///     Removes a key and its value from the table.
         /// </summary>
         /// <param name="key">The key to remove.</param>
         /// <returns>
-        ///    <c>true</c> if the key is found and removed; otherwise, <c>false</c>.
+        ///     <c>true</c> if the key is found and removed; otherwise, <c>false</c>.
         /// </returns>
         public bool Remove(TKey key)
         {
@@ -107,16 +124,20 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(key));
             }
+
             return _wrapped.Remove(key);
         }
 
         /// <summary>
-        /// Gets the value of the specified key.
+        ///     Gets the value of the specified key.
         /// </summary>
         /// <param name="key">The key that represents an object with an attached property.</param>
-        /// <param name="value">When this method returns, contains the attached property value. If key is not found, value contains the default value.</param>
+        /// <param name="value">
+        ///     When this method returns, contains the attached property value. If key is not found, value contains
+        ///     the default value.
+        /// </param>
         /// <returns>
-        ///    <c>true</c> if the key is found; otherwise, <c>false</c>.
+        ///     <c>true</c> if the key is found; otherwise, <c>false</c>.
         /// </returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
@@ -124,6 +145,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(key));
             }
+
             return _wrapped.TryGetValue(key, out value);
         }
 

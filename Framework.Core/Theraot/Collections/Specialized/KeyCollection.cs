@@ -15,13 +15,18 @@ namespace Theraot.Collections.Specialized
             _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
         }
 
-        public int Count => _wrapped.Count;
-
-        bool ICollection<TKey>.IsReadOnly => true;
-
         bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
 
         object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            ((ICollection)_wrapped).CopyTo(array, index);
+        }
+
+        public int Count => _wrapped.Count;
+
+        bool ICollection<TKey>.IsReadOnly => true;
 
         public void CopyTo(TKey[] array, int arrayIndex)
         {
@@ -48,11 +53,6 @@ namespace Theraot.Collections.Specialized
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            ((ICollection)_wrapped).CopyTo(array, index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

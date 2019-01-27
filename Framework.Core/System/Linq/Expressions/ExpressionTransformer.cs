@@ -45,6 +45,7 @@ namespace System.Linq.Expressions
             {
                 return null;
             }
+
             switch (exp.NodeType)
             {
                 case ExpressionType.Negate:
@@ -137,6 +138,7 @@ namespace System.Linq.Expressions
             {
                 return b.NodeType == ExpressionType.Coalesce && b.Conversion != null ? Expression.Coalesce(left, right, conversion as LambdaExpression) : Expression.MakeBinary(b.NodeType, left, right, b.IsLiftedToNull, b.Method);
             }
+
             return b;
         }
 
@@ -174,6 +176,7 @@ namespace System.Linq.Expressions
             {
                 return Expression.Condition(test, ifTrue, ifFalse);
             }
+
             return c;
         }
 
@@ -222,11 +225,7 @@ namespace System.Linq.Expressions
         protected virtual Expression VisitMemberAccess(MemberExpression m)
         {
             var exp = Visit(m.Expression);
-            if (exp != m.Expression)
-            {
-                return Expression.MakeMemberAccess(exp, m.Member);
-            }
-            return m;
+            return exp != m.Expression ? Expression.MakeMemberAccess(exp, m.Member) : m;
         }
 
         protected virtual MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
@@ -262,15 +261,18 @@ namespace System.Linq.Expressions
             {
                 return Expression.Call(obj, methodCall.Method, args);
             }
+
             return methodCall;
         }
 
         protected virtual NewExpression VisitNew(NewExpression nex)
         {
             var args = VisitExpressionList(nex.Arguments);
-            return args != nex.Arguments ? nex.Members != null
-                ? Expression.New(nex.Constructor, args, nex.Members)
-                : Expression.New(nex.Constructor, args) : nex;
+            return args != nex.Arguments
+                ? nex.Members != null
+                    ? Expression.New(nex.Constructor, args, nex.Members)
+                    : Expression.New(nex.Constructor, args)
+                : nex;
         }
 
         protected virtual Expression VisitNewArray(NewArrayExpression na)
@@ -280,6 +282,7 @@ namespace System.Linq.Expressions
             {
                 return na.NodeType == ExpressionType.NewArrayInit ? Expression.NewArrayInit(na.Type.GetElementType(), expressionList) : Expression.NewArrayBounds(na.Type.GetElementType(), expressionList);
             }
+
             return na;
         }
 
@@ -325,9 +328,11 @@ namespace System.Linq.Expressions
                     {
                         list.Add(original[subIndex]);
                     }
+
                     list.Add(element);
                 }
             }
+
             return (IList<TElement>)list ?? original;
         }
     }

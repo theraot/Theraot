@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -8,9 +8,10 @@ namespace System.Runtime.CompilerServices
 {
     public static partial class RuntimeOps
     {
+        /// <inheritdoc />
         /// <summary>
-        /// Provides a list of variables, supporting read/write of the values
-        /// Exposed via RuntimeVariablesExpression
+        ///     Provides a list of variables, supporting read/write of the values
+        ///     Exposed via RuntimeVariablesExpression
         /// </summary>
         internal sealed class MergedRuntimeVariables : IRuntimeVariables
         {

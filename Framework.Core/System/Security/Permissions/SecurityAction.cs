@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
 #pragma warning disable CA1008 // Enums should have zero value
 
 namespace System.Security.Permissions
@@ -14,7 +13,7 @@ namespace System.Security.Permissions
         InheritanceDemand = 7,
         RequestMinimum = 8,
         RequestOptional = 9,
-        RequestRefuse = 10,
+        RequestRefuse = 10
     }
 }
 

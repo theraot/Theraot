@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -34,7 +35,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(body, nameof(body));
 
-            var values = Theraot.Collections.Extensions.AsArrayInternal(testValues);
+            var values = testValues.AsArrayInternal();
             ContractUtils.RequiresNotEmpty(values, nameof(testValues));
             RequiresCanRead(values, nameof(testValues));
 

@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
 #pragma warning disable CA1041 // Provide ObsoleteAttribute message
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -18,7 +17,6 @@ namespace System.Security
 
     public abstract class CodeAccessPermission : IPermission, IStackWalk
     {
-
         public static void RevertAll()
         {
             // Empty
@@ -39,6 +37,7 @@ namespace System.Security
         {
             // Empty
         }
+
         public void Assert()
         {
             // Empty

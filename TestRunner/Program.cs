@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 using Theraot.Reflection;
 
 namespace TestRunner
@@ -21,26 +19,31 @@ namespace TestRunner
             {
                 return;
             }
+
             while (true)
             {
-                if (exception is TargetInvocationException targetInvocationException && targetInvocationException.InnerException != null)
+                switch (exception)
                 {
-                    exception = targetInvocationException.InnerException;
-                    continue;
+                    case TargetInvocationException targetInvocationException when targetInvocationException.InnerException != null:
+                        exception = targetInvocationException.InnerException;
+                        continue;
+                    case AggregateException aggregateException when aggregateException.InnerException != null:
+                        exception = aggregateException.InnerException;
+                        continue;
+                    default:
+                        break;
                 }
-                if (exception is AggregateException aggregateException && aggregateException.InnerException != null)
-                {
-                    exception = aggregateException.InnerException;
-                    continue;
-                }
+
                 break;
             }
+
             if (exception is AssertionFailedException)
             {
                 Console.WriteLine(exception.Message);
-                Console.WriteLine(StringHelper.Implode("\r\n", exception.StackTrace.Split('\r', '\n').Skip(1)));
+                Console.WriteLine(StringEx.Implode("\r\n", exception.StackTrace.Split('\r', '\n').Skip(1)));
                 return;
             }
+
             var report = new StringBuilder();
             report.Append("Exception");
             report.Append("\r\n\r\n");
@@ -49,7 +52,7 @@ namespace TestRunner
             {
                 report.Append
                 (
-                    StringHelper.Join
+                    StringEx.Join
                     (
                         "\r\n\r\n",
                         "== Exception Type ==",
@@ -64,6 +67,7 @@ namespace TestRunner
                 );
                 report.Append("\r\n\r\n");
             }
+
             Console.WriteLine(report);
         }
 
@@ -84,7 +88,7 @@ namespace TestRunner
                     Exception capturedException = null;
                     Console.Write($"{test.Name}");
                     var parameters = test.GenerateParameters();
-                    Console.Write($"({StringHelper.Implode(", ", parameters)})");
+                    Console.Write($"({StringEx.Implode(", ", parameters)})");
                     try
                     {
                         stopwatch.Restart();
@@ -96,6 +100,7 @@ namespace TestRunner
                         stopwatch.Stop();
                         capturedException = exception;
                     }
+
                     if (capturedException == null)
                     {
                         Console.Write($"-> ok {capturedResult} ({stopwatch.Elapsed})");
@@ -106,8 +111,10 @@ namespace TestRunner
                         ExceptionReport(capturedException);
                     }
                 }
+
                 Console.WriteLine();
             }
+
             Exit();
         }
 
@@ -132,12 +139,12 @@ namespace TestRunner
 
         private sealed class Test : IDisposable
         {
-            private Delegate _delegate;
-            private object _instance;
             private readonly bool _isolatedThread;
             private readonly ParameterInfo[] _parameterInfos;
             private readonly Type[] _preferredGenerators;
             private readonly int _repeat;
+            private Delegate _delegate;
+            private object _instance;
 
             public Test(TestMethod testMethod)
             {
@@ -147,6 +154,7 @@ namespace TestRunner
                 {
                     throw new ArgumentException();
                 }
+
                 _instance = method.IsStatic ? null : Activator.CreateInstance(type);
                 _delegate = DelegateBuilder.BuildDelegate(method, _instance);
                 _parameterInfos = method.GetParameters();
@@ -165,6 +173,7 @@ namespace TestRunner
                 {
                     disposable.Dispose();
                 }
+
                 Interlocked.Exchange(ref _delegate, null);
             }
 
@@ -177,9 +186,10 @@ namespace TestRunner
                 {
                     var parameterInfo = parameterInfos[index];
                     var preferredGenerator = parameterInfo.GetAttributes<UseGeneratorAttribute>(false).FirstOrDefault();
-                    var generators = preferredGenerator == null ? preferredGenerators : new[] { preferredGenerator.GeneratorType };
+                    var generators = preferredGenerator == null ? preferredGenerators : new[] {preferredGenerator.GeneratorType};
                     parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, generators);
                 }
+
                 return parameters;
             }
 
@@ -189,11 +199,13 @@ namespace TestRunner
                 {
                     throw new ArgumentNullException(nameof(parameters));
                 }
+
                 var @delegate = Volatile.Read(ref _delegate);
                 if (@delegate == null)
                 {
                     throw new ObjectDisposedException(nameof(Test));
                 }
+
                 object capturedResult = null;
                 if (_isolatedThread)
                 {
@@ -229,13 +241,15 @@ namespace TestRunner
                         capturedResult = _delegate.DynamicInvoke(parameters);
                     }
                 }
-                if (capturedResult is Task task)
+
+                if (!(capturedResult is Task task))
                 {
-                    capturedResult = null;
-                    task.Wait();
-                    capturedResult = task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayReservoir<object>.EmptyArray);
+                    return capturedResult;
                 }
-                return capturedResult;
+
+                capturedResult = null;
+                task.Wait();
+                return task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayEx.Empty<object>());
             }
         }
 
@@ -249,6 +263,7 @@ namespace TestRunner
                 {
                     return;
                 }
+
                 TestFixtureAttribute = testFixtureAttributes[0];
                 Categories = type.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
             }
@@ -268,6 +283,7 @@ namespace TestRunner
                 {
                     return;
                 }
+
                 TestAttribute = testAttributes[0];
                 Categories = method.GetAttributes<CategoryAttribute>(false).Select(category => category.Name);
                 PreferredGenerators = method.GetAttributes<UseGeneratorAttribute>(false).Select(attribute => attribute.GeneratorType).ToArray();

@@ -30,10 +30,7 @@ namespace System.Linq.Expressions.Compiler
                 curTypeInfo = NextTypeInfo(typeof(CallSite), curTypeInfo);
 
                 // arguments
-                foreach (var type in types)
-                {
-                    curTypeInfo = NextTypeInfo(type.Type, curTypeInfo);
-                }
+                curTypeInfo = types.Aggregate(curTypeInfo, (current, type) => NextTypeInfo(type.Type, current));
 
                 // return type
                 curTypeInfo = NextTypeInfo(returnType, curTypeInfo);
@@ -73,7 +70,11 @@ namespace System.Linq.Expressions.Compiler
                 curTypeInfo = NextTypeInfo(returnType, curTypeInfo);
 
                 // see if we have the delegate already
-                if (curTypeInfo.DelegateType == null)
+                if (curTypeInfo.DelegateType != null)
+                {
+                    return curTypeInfo.DelegateType;
+                }
+
                 {
                     // nope, go ahead and create it and spend the
                     // cost of creating the array.

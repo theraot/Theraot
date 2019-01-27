@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 #pragma warning disable CA1822 // Mark members as static
@@ -29,6 +29,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks));
         }
 
@@ -38,6 +39,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
         }
 
@@ -47,6 +49,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
         }
 
@@ -56,6 +59,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -65,6 +69,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -74,6 +79,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
         }
 
@@ -83,6 +89,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
         }
 
@@ -92,6 +99,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks));
         }
 
@@ -101,6 +109,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -110,6 +119,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
         }
 
@@ -119,6 +129,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
         }
 
@@ -128,6 +139,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks));
         }
 
@@ -137,6 +149,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks));
         }
 
@@ -146,6 +159,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
         }
 
@@ -155,6 +169,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
         }
 
@@ -164,6 +179,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -173,6 +189,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks));
         }
 
@@ -182,6 +199,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
         }
 
@@ -191,6 +209,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
         }
 
@@ -200,6 +219,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -209,6 +229,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -218,6 +239,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
         }
 
@@ -227,6 +249,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
         }
 
@@ -236,6 +259,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks));
         }
 
@@ -245,6 +269,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -254,6 +279,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
         }
 
@@ -263,6 +289,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
         }
 
@@ -272,6 +299,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks));
         }
 
@@ -281,6 +309,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks));
         }
 
@@ -290,6 +319,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
         }
 
@@ -299,6 +329,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
         }
 
@@ -308,6 +339,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
+
             return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, continuationOptions, scheduler);
         }
 
@@ -436,10 +468,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(asyncResult));
             }
+
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
+
             return FromAsyncInternal(asyncResult, endMethod, TaskCreationOptions.None, _scheduler);
         }
 
@@ -449,10 +483,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(beginMethod));
             }
+
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
+
             return FromAsyncInternal(beginMethod, endMethod, state);
         }
 
@@ -462,10 +498,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(asyncResult));
             }
+
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
+
             return FromAsyncInternal(asyncResult, endMethod, creationOptions, _scheduler);
         }
 
@@ -475,10 +513,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(beginMethod));
             }
+
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
+
             return FromAsyncInternal(beginMethod, endMethod, state, creationOptions);
         }
 
@@ -488,14 +528,17 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(asyncResult));
             }
+
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
+
             if (scheduler == null)
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
+
             return FromAsyncInternal(asyncResult, endMethod, creationOptions, scheduler);
         }
 
@@ -505,10 +548,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(beginMethod));
             }
+
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
+
             return FromAsyncInternal(beginMethod, endMethod, state, creationOptions);
         }
 
@@ -518,10 +563,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(beginMethod));
             }
+
             if (endMethod == null)
             {
                 throw new ArgumentNullException(nameof(endMethod));
             }
+
             return FromAsyncInternal(beginMethod, endMethod, state, default);
         }
     }
@@ -530,7 +577,6 @@ namespace System.Threading.Tasks
 
     public partial class TaskFactory
     {
-
         internal static async Task FromAsyncInternal(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
         {
             endMethod(await FromBeginMethod(beginMethod, state).ConfigureAwait(false));
@@ -545,6 +591,7 @@ namespace System.Threading.Tasks
         {
             return endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
         }
+
         internal async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var task = new Task(() => endMethod(asyncResult), Task.InternalCurrentIfAttached(creationOptions), CancellationToken.None, creationOptions, InternalTaskOptions.None, scheduler);
@@ -557,6 +604,7 @@ namespace System.Threading.Tasks
                 await TaskEx.FromWaitHandleInternal(asyncResult.AsyncWaitHandle).ConfigureAwait(false);
                 task.InternalStart(scheduler, false, true);
             }
+
             await task;
             task.Dispose();
         }
@@ -564,19 +612,22 @@ namespace System.Threading.Tasks
         private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state)
         {
             var source = new TaskCompletionSource<IAsyncResult>();
-            var canInvokeEnd = new[] { 0 };
+            var canInvokeEnd = new[] {0};
             var asyncResult = beginMethod(AsyncCallback, state);
             if (asyncResult?.CompletedSynchronously == true)
             {
                 AsyncCallback(asyncResult);
             }
+
             return source.Task;
+
             void AsyncCallback(IAsyncResult r)
             {
                 if (Interlocked.CompareExchange(ref canInvokeEnd[0], 1, 0) != 0)
                 {
                     return;
                 }
+
                 source.TrySetResult(r);
             }
         }
@@ -584,19 +635,22 @@ namespace System.Threading.Tasks
         private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state, TaskCreationOptions creationOptions)
         {
             var source = new TaskCompletionSource<IAsyncResult>(creationOptions);
-            var canInvokeEnd = new[] { 0 };
+            var canInvokeEnd = new[] {0};
             var asyncResult = beginMethod(AsyncCallback, state);
             if (asyncResult?.CompletedSynchronously == true)
             {
                 AsyncCallback(asyncResult);
             }
+
             return source.Task;
+
             void AsyncCallback(IAsyncResult r)
             {
                 if (Interlocked.CompareExchange(ref canInvokeEnd[0], 1, 0) != 0)
                 {
                     return;
                 }
+
                 source.TrySetResult(r);
             }
         }

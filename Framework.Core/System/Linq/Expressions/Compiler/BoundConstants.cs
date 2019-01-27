@@ -8,33 +8,32 @@ using System.Diagnostics;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using Theraot.Core;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
     /// <summary>
-    /// This type tracks "runtime" constants--live objects that appear in
-    /// ConstantExpression nodes and must be bound to the delegate.
+    ///     This type tracks "runtime" constants--live objects that appear in
+    ///     ConstantExpression nodes and must be bound to the delegate.
     /// </summary>
     internal sealed class BoundConstants
     {
         /// <summary>
-        /// IL locals for storing frequently used constants
+        ///     IL locals for storing frequently used constants
         /// </summary>
         private readonly Dictionary<TypedConstant, LocalBuilder> _cache = new Dictionary<TypedConstant, LocalBuilder>();
 
         /// <summary>
-        /// The index of each constant in the constant array
+        ///     The index of each constant in the constant array
         /// </summary>
         private readonly Dictionary<object, int> _indexes = new Dictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
 
         /// <summary>
-        /// Each constant referenced within this lambda, and how often it was referenced
+        ///     Each constant referenced within this lambda, and how often it was referenced
         /// </summary>
         private readonly Dictionary<TypedConstant, int> _references = new Dictionary<TypedConstant, int>();
 
         /// <summary>
-        /// The list of constants in the order they appear in the constant array
+        ///     The list of constants in the order they appear in the constant array
         /// </summary>
         private readonly List<object> _values = new List<object>();
 
@@ -46,6 +45,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 _values.Add(value);
             }
+
             var key = new TypedConstant(value, type);
             _references.TryGetValue(key, out var count);
             _references[key] = count + 1;
@@ -60,15 +60,18 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw new InvalidOperationException($"CompileToMethod cannot compile constant '{reference.Key.Value}' because it is a non-trivial value, such as a live object. Instead, create an expression tree that can construct this value.");
                 }
+
                 if (ShouldCache(reference.Value))
                 {
                     count++;
                 }
             }
+
             if (count == 0)
             {
                 return;
             }
+
             EmitConstantsArray(lc);
 
             // The same lambda can be in multiple places in the tree, so we
@@ -77,18 +80,21 @@ namespace System.Linq.Expressions.Compiler
 
             foreach (var reference in _references)
             {
-                if (ShouldCache(reference.Value))
+                if (!ShouldCache(reference.Value))
                 {
-                    if (--count > 0)
-                    {
-                        // Dup array to keep it on the stack
-                        lc.IL.Emit(OpCodes.Dup);
-                    }
-                    var local = lc.IL.DeclareLocal(reference.Key.Type);
-                    EmitConstantFromArray(lc, reference.Key.Value, local.LocalType);
-                    lc.IL.Emit(OpCodes.Stloc, local);
-                    _cache.Add(reference.Key, local);
+                    continue;
                 }
+
+                if (--count > 0)
+                {
+                    // Dup array to keep it on the stack
+                    lc.IL.Emit(OpCodes.Dup);
+                }
+
+                var local = lc.IL.DeclareLocal(reference.Key.Type);
+                EmitConstantFromArray(lc, reference.Key.Value, local.LocalType);
+                lc.IL.Emit(OpCodes.Stloc, local);
+                _cache.Add(reference.Key, local);
             }
         }
 
@@ -106,6 +112,7 @@ namespace System.Linq.Expressions.Compiler
                 lc.IL.Emit(OpCodes.Ldloc, local);
                 return;
             }
+
             EmitConstantsArray(lc);
             EmitConstantFromArray(lc, value, type);
         }
@@ -120,7 +127,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(lc.CanEmitBoundConstants); // this should've been checked already
 
             lc.EmitClosureArgument();
-            lc.IL.Emit(OpCodes.Ldfld, ClosureConstants);
+            lc.IL.Emit(OpCodes.Ldfld, CachedReflectionInfo.ClosureConstants);
         }
 
         private static bool ShouldCache(int refCount)
@@ -152,11 +159,11 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Constants can emit themselves as different types
-        /// For caching purposes, we need to treat each distinct Type as a
-        /// separate thing to cache. (If we have to cast it on the way out, it
-        /// ends up using a JIT temp and defeats the purpose of caching the
-        /// value in a local)
+        ///     Constants can emit themselves as different types
+        ///     For caching purposes, we need to treat each distinct Type as a
+        ///     separate thing to cache. (If we have to cast it on the way out, it
+        ///     ends up using a JIT temp and defeats the purpose of caching the
+        ///     value in a local)
         /// </summary>
         private /*readonly*/ struct TypedConstant : IEquatable<TypedConstant>
         {

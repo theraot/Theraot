@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -9,7 +9,7 @@ using System.Reflection;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// Class that contains helper methods for DLR CallSites.
+    ///     Class that contains helper methods for DLR CallSites.
     /// </summary>
     public static class CallSiteHelpers
     {
@@ -17,13 +17,13 @@ namespace System.Runtime.CompilerServices
         private static readonly Type _knownNonDynamicMethodType = typeof(object).GetMethod(nameof(ToString)).GetType();
 
         /// <summary>
-        /// Checks if a <see cref="MethodBase"/> is internally used by DLR and should not
-        /// be displayed on the language code's stack.
+        ///     Checks if a <see cref="MethodBase" /> is internally used by DLR and should not
+        ///     be displayed on the language code's stack.
         /// </summary>
-        /// <param name="mb">The input <see cref="MethodBase"/></param>
+        /// <param name="mb">The input <see cref="MethodBase" /></param>
         /// <returns>
-        /// True if the input <see cref="MethodBase"/> is internally used by DLR and should not
-        /// be displayed on the language code's stack. Otherwise, false.
+        ///     True if the input <see cref="MethodBase" /> is internally used by DLR and should not
+        ///     be displayed on the language code's stack. Otherwise, false.
         /// </returns>
         public static bool IsInternalFrame(MethodBase mb)
         {

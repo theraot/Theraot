@@ -193,6 +193,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private MulOvfInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

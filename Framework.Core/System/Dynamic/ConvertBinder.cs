@@ -8,6 +8,7 @@ using System.Dynamic.Utils;
 
 namespace System.Dynamic
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Represents the convert dynamic operation at the call site, providing the binding semantic and the details about the
     ///     operation.
@@ -32,6 +33,7 @@ namespace System.Dynamic
         /// </summary>
         public bool Explicit { get; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     The result type of the operation.
         /// </summary>
@@ -42,17 +44,19 @@ namespace System.Dynamic
         /// </summary>
         public Type Type { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        ///     Always returns <c>true</c> because this is a standard <see cref="DynamicMetaObjectBinder" />.
+        ///     Always returns <c>true</c> because this is a standard <see cref="T:System.Dynamic.DynamicMetaObjectBinder" />.
         /// </summary>
         internal sealed override bool IsStandardBinder => true;
 
+        /// <inheritdoc />
         /// <summary>
         ///     Performs the binding of the dynamic convert operation.
         /// </summary>
         /// <param name="target">The target of the dynamic convert operation.</param>
         /// <param name="args">An array of arguments of the dynamic convert operation.</param>
-        /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
+        /// <returns>The <see cref="T:System.Dynamic.DynamicMetaObject" /> representing the result of the binding.</returns>
         public sealed override DynamicMetaObject Bind(DynamicMetaObject target, DynamicMetaObject[] args)
         {
             ContractUtils.RequiresNotNull(target, nameof(target));

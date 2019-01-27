@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 namespace System.Linq
 {
     public interface IOrderedQueryable : IQueryable
@@ -9,7 +8,7 @@ namespace System.Linq
 
     public interface IOrderedQueryable<T> : IOrderedQueryable, IQueryable<T>
     {
-        //Empty
+        // Empty
     }
 }
 

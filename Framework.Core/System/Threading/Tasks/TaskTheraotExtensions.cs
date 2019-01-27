@@ -1,5 +1,4 @@
 ﻿#if NET40
-
 using System.Runtime.CompilerServices;
 
 namespace System.Threading.Tasks

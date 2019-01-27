@@ -1,13 +1,13 @@
-﻿// Needed for Workaround
+﻿#if LESSTHAN_NET45
+// Needed for Workaround
 
-using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
+using Theraot;
 using Theraot.Threading;
 
-namespace Theraot.Core
+namespace System.Threading
 {
-    public static class CancellationTokenSourceExtensions
+    public static class CancellationTokenSourceTheraotExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CancelAfter(this CancellationTokenSource cancellationTokenSource, int millisecondsDelay)
@@ -52,3 +52,4 @@ namespace Theraot.Core
         }
     }
 }
+#endif

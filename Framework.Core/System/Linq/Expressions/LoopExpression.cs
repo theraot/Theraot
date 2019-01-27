@@ -12,33 +12,33 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         /// <summary>
-        /// Creates a <see cref="LoopExpression"/> with the given body.
+        ///     Creates a <see cref="LoopExpression" /> with the given body.
         /// </summary>
         /// <param name="body">The body of the loop.</param>
-        /// <returns>The created <see cref="LoopExpression"/>.</returns>
+        /// <returns>The created <see cref="LoopExpression" />.</returns>
         public static LoopExpression Loop(Expression body)
         {
-            return Loop(body, @break: null);
+            return Loop(body, null);
         }
 
         /// <summary>
-        /// Creates a <see cref="LoopExpression"/> with the given body and break target.
+        ///     Creates a <see cref="LoopExpression" /> with the given body and break target.
         /// </summary>
         /// <param name="body">The body of the loop.</param>
         /// <param name="break">The break target used by the loop body.</param>
-        /// <returns>The created <see cref="LoopExpression"/>.</returns>
+        /// <returns>The created <see cref="LoopExpression" />.</returns>
         public static LoopExpression Loop(Expression body, LabelTarget @break)
         {
-            return Loop(body, @break, @continue: null);
+            return Loop(body, @break, null);
         }
 
         /// <summary>
-        /// Creates a <see cref="LoopExpression"/> with the given body.
+        ///     Creates a <see cref="LoopExpression" /> with the given body.
         /// </summary>
         /// <param name="body">The body of the loop.</param>
         /// <param name="break">The break target used by the loop body.</param>
         /// <param name="continue">The continue target used by the loop body.</param>
-        /// <returns>The created <see cref="LoopExpression"/>.</returns>
+        /// <returns>The created <see cref="LoopExpression" />.</returns>
         public static LoopExpression Loop(Expression body, LabelTarget @break, LabelTarget @continue)
         {
             ExpressionUtils.RequiresCanRead(body, nameof(body));
@@ -51,8 +51,9 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
-    /// Represents an infinite loop. It can be exited with "break".
+    ///     Represents an infinite loop. It can be exited with "break".
     /// </summary>
     [DebuggerTypeProxy(typeof(LoopExpressionProxy))]
     public sealed class LoopExpression : Expression
@@ -65,41 +66,43 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the <see cref="Expression"/> that is the body of the loop.
+        ///     Gets the <see cref="Expression" /> that is the body of the loop.
         /// </summary>
         public Expression Body { get; }
 
         /// <summary>
-        /// Gets the <see cref="LabelTarget"/> that is used by the loop body as a break statement target.
+        ///     Gets the <see cref="LabelTarget" /> that is used by the loop body as a break statement target.
         /// </summary>
         public LabelTarget BreakLabel { get; }
 
         /// <summary>
-        /// Gets the <see cref="LabelTarget"/> that is used by the loop body as a continue statement target.
+        ///     Gets the <see cref="LabelTarget" /> that is used by the loop body as a continue statement target.
         /// </summary>
         public LabelTarget ContinueLabel { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this Expression. Extension nodes should return
-        /// ExpressionType.Extension when overriding this method.
+        ///     Returns the node type of this Expression. Extension nodes should return
+        ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Loop;
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="Expression"/> represents.
+        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="System.Type"/> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => BreakLabel == null ? typeof(void) : BreakLabel.Type;
 
         /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
+        ///     Creates a new expression that is like this one, but using the
+        ///     supplied children. If all of the children are the same, it will
+        ///     return this expression.
         /// </summary>
-        /// <param name="breakLabel">The <see cref="BreakLabel"/> property of the result.</param>
-        /// <param name="continueLabel">The <see cref="ContinueLabel"/> property of the result.</param>
-        /// <param name="body">The <see cref="Body"/> property of the result.</param>
+        /// <param name="breakLabel">The <see cref="BreakLabel" /> property of the result.</param>
+        /// <param name="continueLabel">The <see cref="ContinueLabel" /> property of the result.</param>
+        /// <param name="body">The <see cref="Body" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public LoopExpression Update(LabelTarget breakLabel, LabelTarget continueLabel, Expression body)
         {
@@ -107,6 +110,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
+
             return Loop(body, breakLabel, continueLabel);
         }
 

@@ -74,14 +74,17 @@ namespace System.Linq.Expressions.Interpreter
             _continuationStackDepth = instructions.CurrentContinuationsDepth;
             TargetIndex = instructions.Count;
 
-            if (_forwardBranchFixups != null)
+            if (_forwardBranchFixups == null)
             {
-                foreach (var branchIndex in _forwardBranchFixups)
-                {
-                    FixupBranch(instructions, branchIndex);
-                }
-                _forwardBranchFixups = null;
+                return;
             }
+
+            foreach (var branchIndex in _forwardBranchFixups)
+            {
+                FixupBranch(instructions, branchIndex);
+            }
+
+            _forwardBranchFixups = null;
         }
 
         internal RuntimeLabel ToRuntimeLabel()

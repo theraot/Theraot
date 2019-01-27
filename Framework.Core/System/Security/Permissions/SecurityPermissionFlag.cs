@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
 #pragma warning disable CA1008 // Enums should have zero value
 #pragma warning disable CA1714 // Flags enums should have plural names
 #pragma warning disable RCS1191 // Declare enum value as combination of names.
@@ -24,7 +23,7 @@ namespace System.Security.Permissions
         RemotingConfiguration = 2048,
         Infrastructure = 4096,
         BindingRedirects = 8192,
-        AllFlags = 16383,
+        AllFlags = 16383
     }
 }
 

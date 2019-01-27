@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace System.Collections.Concurrent
 {
@@ -21,10 +22,7 @@ namespace System.Collections.Concurrent
 
         public override IEnumerable<TSource> GetDynamicPartitions()
         {
-            foreach (var item in GetOrderableDynamicPartitions())
-            {
-                yield return item.Value;
-            }
+            return GetOrderableDynamicPartitions().Select(item => item.Value);
         }
 
         public virtual IEnumerable<KeyValuePair<long, TSource>> GetOrderableDynamicPartitions()

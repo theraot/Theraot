@@ -7,7 +7,6 @@
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -104,19 +103,19 @@ namespace System.Linq.Expressions.Interpreter
 
         protected object[] GetArgs(InterpretedFrame frame, int first)
         {
-            if (ArgumentCount > 0)
+            if (ArgumentCount <= 0)
             {
-                var args = new object[ArgumentCount];
-
-                for (var i = 0; i < args.Length; i++)
-                {
-                    args[i] = frame.Data[first + i];
-                }
-
-                return args;
+                return ArrayEx.Empty<object>();
             }
 
-            return ArrayReservoir<object>.EmptyArray;
+            var args = new object[ArgumentCount];
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                args[i] = frame.Data[first + i];
+            }
+
+            return args;
         }
     }
 }

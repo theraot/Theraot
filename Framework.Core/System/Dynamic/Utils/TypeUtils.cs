@@ -79,29 +79,13 @@ namespace System.Dynamic.Utils
             }
 
             // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic && method.MatchesArgumentTypes(types))
-                {
-                    return method;
-                }
-            }
-
-            return null;
+            return Array.Find(type.GetMethods(), method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic && method.MatchesArgumentTypes(types));
         }
 
         internal static MethodInfo GetStaticMethodInternal(this Type type, string name, Type[] types)
         {
             // Don't use BindingFlags.Static
-            foreach (var method in type.GetMethods())
-            {
-                if (string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic && method.MatchesArgumentTypes(types))
-                {
-                    return method;
-                }
-            }
-
-            return null;
+            return Array.Find(type.GetMethods(), method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic && method.MatchesArgumentTypes(types));
         }
 
         internal static bool HasBuiltInEqualityOperator(Type left, Type right)
@@ -244,12 +228,7 @@ namespace System.Dynamic.Utils
                 return false;
             }
 
-            if (type.GetArrayRank() != target.GetArrayRank())
-            {
-                return false;
-            }
-
-            return type.GetElementType().IsAssignableToInternal(target.GetElementType());
+            return type.GetArrayRank() == target.GetArrayRank() && type.GetElementType().IsAssignableToInternal(target.GetElementType());
         }
 
         internal static bool IsArrayTypeAssignableToInterface(Type type, Type target)
@@ -315,15 +294,7 @@ namespace System.Dynamic.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return type.GetInterfaces().Any(currentInterface => currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition));
         }
 
         internal static bool IsGenericImplementationOf(this Type type, params Type[] interfaceGenericTypeDefinitions)
@@ -333,19 +304,7 @@ namespace System.Dynamic.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (currentInterface.IsGenericTypeDefinition)
-                {
-                    var match = currentInterface.GetGenericTypeDefinition();
-                    if (Array.Exists(interfaceGenericTypeDefinitions, item => item == match))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return (from currentInterface in type.GetInterfaces() where currentInterface.IsGenericTypeDefinition select currentInterface.GetGenericTypeDefinition()).Any(match => Array.Exists(interfaceGenericTypeDefinitions, item => item == match));
         }
 
         internal static bool IsGenericImplementationOf(this Type type, out Type interfaceType, Type interfaceGenericTypeDefinition)
@@ -357,11 +316,13 @@ namespace System.Dynamic.Utils
 
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
+                if (!currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
                 {
-                    interfaceType = currentInterface;
-                    return true;
+                    continue;
                 }
+
+                interfaceType = currentInterface;
+                return true;
             }
 
             interfaceType = null;
@@ -379,11 +340,13 @@ namespace System.Dynamic.Utils
             foreach (var currentInterface in interfaceGenericTypeDefinitions)
             {
                 var index = Array.FindIndex(implementedInterfaces, item => item.IsGenericInstanceOf(currentInterface));
-                if (index != -1)
+                if (index == -1)
                 {
-                    interfaceType = implementedInterfaces[index];
-                    return true;
+                    continue;
                 }
+
+                interfaceType = implementedInterfaces[index];
+                return true;
             }
 
             interfaceType = null;
@@ -397,15 +360,7 @@ namespace System.Dynamic.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (currentInterface == interfaceType)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return type.GetInterfaces().Any(currentInterface => currentInterface == interfaceType);
         }
 
         internal static bool IsImplementationOf(this Type type, params Type[] interfaceTypes)
@@ -415,15 +370,7 @@ namespace System.Dynamic.Utils
                 throw new ArgumentNullException(nameof(type));
             }
 
-            foreach (var currentInterface in type.GetInterfaces())
-            {
-                if (Array.Exists(interfaceTypes, item => currentInterface == item))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return type.GetInterfaces().Any(currentInterface => Array.Exists(interfaceTypes, item => currentInterface == item));
         }
 
         internal static bool IsImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceTypes)
@@ -437,11 +384,13 @@ namespace System.Dynamic.Utils
             foreach (var currentInterface in interfaceTypes)
             {
                 var index = Array.FindIndex(implementedInterfaces, item => item == currentInterface);
-                if (index != -1)
+                if (index == -1)
                 {
-                    interfaceType = implementedInterfaces[index];
-                    return true;
+                    continue;
                 }
+
+                interfaceType = implementedInterfaces[index];
+                return true;
             }
 
             interfaceType = null;
@@ -459,12 +408,7 @@ namespace System.Dynamic.Utils
 
         internal static bool IsImplicitNullableConversion(Type source, Type target)
         {
-            if (target.IsNullable())
-            {
-                return source.GetNonNullable().IsImplicitlyConvertibleToInternal(target.GetNonNullable());
-            }
-
-            return false;
+            return target.IsNullable() && source.GetNonNullable().IsImplicitlyConvertibleToInternal(target.GetNonNullable());
         }
 
         internal static bool IsImplicitReferenceConversion(Type source, Type target)
@@ -596,38 +540,29 @@ namespace System.Dynamic.Utils
                 return true;
             }
 
-            if (instanceType.IsValueType)
+            if (!instanceType.IsValueType)
             {
-                if (targetType.IsReferenceAssignableFromInternal(typeof(object)))
-                {
-                    return true;
-                }
-
-                if (targetType.IsReferenceAssignableFromInternal(typeof(ValueType)))
-                {
-                    return true;
-                }
-
-                if (instanceType.IsEnum && targetType.IsReferenceAssignableFromInternal(typeof(Enum)))
-                {
-                    return true;
-                }
-
-                // A call to an interface implemented by a struct is legal whether the struct has
-                // been boxed or not.
-                if (targetType.IsInterface)
-                {
-                    foreach (var interfaceType in instanceType.GetInterfaces())
-                    {
-                        if (targetType.IsReferenceAssignableFromInternal(interfaceType))
-                        {
-                            return true;
-                        }
-                    }
-                }
+                return false;
             }
 
-            return false;
+            if (targetType.IsReferenceAssignableFromInternal(typeof(object)))
+            {
+                return true;
+            }
+
+            if (targetType.IsReferenceAssignableFromInternal(typeof(ValueType)))
+            {
+                return true;
+            }
+
+            if (instanceType.IsEnum && targetType.IsReferenceAssignableFromInternal(typeof(Enum)))
+            {
+                return true;
+            }
+
+            // A call to an interface implemented by a struct is legal whether the struct has
+            // been boxed or not.
+            return targetType.IsInterface && instanceType.GetInterfaces().Any(targetType.IsReferenceAssignableFromInternal);
         }
 
         internal static bool MatchesArgumentTypes(this MethodInfo method, Type[] argTypes)
@@ -643,15 +578,7 @@ namespace System.Dynamic.Utils
                 return false;
             }
 
-            for (var index = 0; index < parameters.Length; index++)
-            {
-                if (!IsReferenceAssignableFromInternal(parameters[index].ParameterType, argTypes[index]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !parameters.Where((t, index) => !IsReferenceAssignableFromInternal(t.ParameterType, argTypes[index])).Any();
         }
 
         internal static void ValidateType(Type type, string paramName)
@@ -661,17 +588,19 @@ namespace System.Dynamic.Utils
 
         internal static void ValidateType(Type type, string paramName, bool allowByRef, bool allowPointer)
         {
-            if (ValidateType(type, paramName, -1))
+            if (!ValidateType(type, paramName, -1))
             {
-                if (!allowByRef && type.IsByRef)
-                {
-                    throw new ArgumentException("type must not be ByRef", paramName);
-                }
+                return;
+            }
 
-                if (!allowPointer && type.IsPointer)
-                {
-                    throw new ArgumentException("Type must not be a pointer type", paramName);
-                }
+            if (!allowByRef && type.IsByRef)
+            {
+                throw new ArgumentException("type must not be ByRef", paramName);
+            }
+
+            if (!allowPointer && type.IsPointer)
+            {
+                throw new ArgumentException("Type must not be a pointer type", paramName);
             }
         }
 
@@ -706,15 +635,7 @@ namespace System.Dynamic.Utils
             }
 
             var targetGen = target.GetGenericTypeDefinition();
-            foreach (var currentInterface in _arrayAssignableInterfaces)
-            {
-                if (targetGen == currentInterface)
-                {
-                    return StrictHasReferenceConversionToInternal(source.GetElementType(), targetParams[0], false);
-                }
-            }
-
-            return false;
+            return _arrayAssignableInterfaces.Any(currentInterface => targetGen == currentInterface) && StrictHasReferenceConversionToInternal(source.GetElementType(), targetParams[0], false);
         }
 
         private static bool HasInterfaceToArrayConversion(Type source, Type target)
@@ -731,15 +652,7 @@ namespace System.Dynamic.Utils
             }
 
             var sourceGen = source.GetGenericTypeDefinition();
-            foreach (var currentInterface in _arrayAssignableInterfaces)
-            {
-                if (sourceGen == currentInterface)
-                {
-                    return StrictHasReferenceConversionToInternal(sourceParams[0], target.GetElementType(), false);
-                }
-            }
-
-            return false;
+            return _arrayAssignableInterfaces.Any(currentInterface => sourceGen == currentInterface) && StrictHasReferenceConversionToInternal(sourceParams[0], target.GetElementType(), false);
         }
 
         private static bool PrivateIsContravariant(Type type)
@@ -824,7 +737,7 @@ namespace System.Dynamic.Utils
 
                     if (source.IsInterface)
                     {
-                        if (target.IsInterface || target.IsClass && !target.IsSealed)
+                        if (target.IsInterface || (target.IsClass && !target.IsSealed))
                         {
                             return true;
                         }
@@ -853,18 +766,9 @@ namespace System.Dynamic.Utils
                         return HasArrayToInterfaceConversion(source, target);
                     }
                 }
-                else if (target.IsArray)
-                {
-                    if (HasInterfaceToArrayConversion(source, target))
-                    {
-                        return true;
-                    }
-
-                    return IsImplicitReferenceConversion(typeof(Array), source);
-                }
                 else
                 {
-                    return IsLegalExplicitVariantDelegateConversion(source, target);
+                    return target.IsArray ? HasInterfaceToArrayConversion(source, target) || IsImplicitReferenceConversion(typeof(Array), source) : IsLegalExplicitVariantDelegateConversion(source, target);
                 }
             }
         }

@@ -43,6 +43,7 @@ namespace System.Linq.Expressions.Compiler
                     default:
                         break;
                 }
+
                 throw new ArgumentException("Unhandled binding ");
             }
 
@@ -106,10 +107,12 @@ namespace System.Linq.Expressions.Compiler
                                 newInitializer[i] = new ElementInit(_initializers[i].AddMethod, cr[0, -1]);
                             }
                         }
+
                         return new MemberListBinding(Binding.Member, ReadOnlyCollectionEx.Create(newInitializer));
                     default:
                         break;
                 }
+
                 throw ContractUtils.Unreachable;
             }
 
@@ -134,7 +137,8 @@ namespace System.Linq.Expressions.Compiler
                 // We need to copy back value types
                 if (memberTemp.Type.IsValueType)
                 {
-                    block[count + 1] = Expression.Block(
+                    block[count + 1] = Expression.Block
+                    (
                         typeof(void),
                         new AssignBinaryExpression(MemberExpression.Make(target, Binding.Member), memberTemp)
                     );
@@ -172,6 +176,7 @@ namespace System.Linq.Expressions.Compiler
                     default:
                         break;
                 }
+
                 throw ContractUtils.Unreachable;
             }
 
@@ -180,7 +185,8 @@ namespace System.Linq.Expressions.Compiler
                 Expression member = MemberExpression.Make(target, Binding.Member);
                 Expression memberTemp = Spiller.MakeTemp(member.Type);
 
-                return MakeBlock(
+                return MakeBlock
+                (
                     new AssignBinaryExpression(memberTemp, _rhs),
                     new AssignBinaryExpression(member, memberTemp),
                     Utils.Empty
@@ -223,10 +229,12 @@ namespace System.Linq.Expressions.Compiler
                         {
                             newBindings[i] = _bindingRewriters[i].AsBinding();
                         }
+
                         return new MemberMemberBinding(Binding.Member, newBindings);
                     default:
                         break;
                 }
+
                 throw ContractUtils.Unreachable;
             }
 
@@ -250,7 +258,8 @@ namespace System.Linq.Expressions.Compiler
                 // We need to copy back value types.
                 if (memberTemp.Type.IsValueType)
                 {
-                    block[count + 1] = Expression.Block(
+                    block[count + 1] = Expression.Block
+                    (
                         typeof(void),
                         new AssignBinaryExpression(MemberExpression.Make(target, Binding.Member), memberTemp)
                     );

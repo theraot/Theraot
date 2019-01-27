@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 using System.IO;
 using System.Reflection;
@@ -109,7 +108,7 @@ namespace Theraot.Core
 
             private Cloner()
             {
-                //Empty
+                // Empty
             }
 
             public static ICloner<T> GetInstance()
@@ -181,7 +180,7 @@ namespace Theraot.Core
 
             private GenericCloner()
             {
-                //Empty
+                // Empty
             }
 
             public static ICloner<T> GetInstance()
@@ -227,7 +226,7 @@ namespace Theraot.Core
 
             private SerializerCloner()
             {
-                //Empty
+                // Empty
             }
 
             public static ICloner<T> GetInstance()
@@ -255,7 +254,7 @@ namespace Theraot.Core
 
             private StructCloner()
             {
-                //Empty
+                // Empty
             }
 
             public static ICloner<T> GetInstance()

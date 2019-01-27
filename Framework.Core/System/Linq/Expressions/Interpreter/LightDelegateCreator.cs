@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 namespace System.Linq.Expressions.Interpreter
 {
     /// <summary>
-    /// Manages creation of interpreted delegates.
+    ///     Manages creation of interpreted delegates.
     /// </summary>
     internal sealed class LightDelegateCreator
     {
@@ -27,7 +27,10 @@ namespace System.Linq.Expressions.Interpreter
 
         internal Interpreter Interpreter { get; }
 
-        public Delegate CreateDelegate() => CreateDelegate(closure: null);
+        public Delegate CreateDelegate()
+        {
+            return CreateDelegate(null);
+        }
 
         internal Delegate CreateDelegate(IStrongBox[] closure)
         {

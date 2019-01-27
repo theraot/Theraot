@@ -1,4 +1,4 @@
-// Needed for NET35 (SortedSet, OrderedCollection)
+﻿// Needed for NET35 (SortedSet, OrderedCollection)
 
 using System;
 using System.Collections;
@@ -36,13 +36,13 @@ namespace Theraot.Collections.Specialized
 
         public bool AddNonDuplicate(TKey key, TValue value)
         {
-            if (AVLNode<TKey, TValue>.AddNonDuplicate(ref _root, key, value, _comparer))
+            if (!AVLNode<TKey, TValue>.AddNonDuplicate(ref _root, key, value, _comparer))
             {
-                Count++;
-                return true;
+                return false;
             }
 
-            return false;
+            Count++;
+            return true;
         }
 
 #if FAT
@@ -106,13 +106,13 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            if (AVLNode<TKey, TValue>.Remove(ref _root, key, _comparer))
+            if (!AVLNode<TKey, TValue>.Remove(ref _root, key, _comparer))
             {
-                Count--;
-                return true;
+                return false;
             }
 
-            return false;
+            Count--;
+            return true;
         }
 
         public AVLNode<TKey, TValue> RemoveNearestLeft(TKey key)

@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +9,7 @@ namespace Theraot.Threading.Needles
     {
         private DefaultNeedle()
         {
-            //Empty
+            // Empty
         }
 
         public static DefaultNeedle<T> Instance { get; } = new DefaultNeedle<T>();

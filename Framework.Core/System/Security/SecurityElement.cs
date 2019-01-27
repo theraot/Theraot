@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CA2227 // Collection properties should be read only
 
@@ -16,7 +15,6 @@ namespace System.Security
 {
     public sealed class SecurityElement : ISecurityElementFactory
     {
-
         private const int _attributesTypical = 4 * 2;  // 4 attributes, times 2 strings per attribute
         private const int _childrenTypical = 1;
         private static readonly char[] _escapeChars = { '<', '>', '\"', '\'', '&' };
@@ -340,12 +338,14 @@ namespace System.Security
             {
                 var strAttrName = (string)_attributes[i];
 
-                if (string.Equals(strAttrName, name, StringComparison.Ordinal))
+                if (!string.Equals(strAttrName, name, StringComparison.Ordinal))
                 {
-                    var strAttrValue = (string)_attributes[i + 1];
-
-                    return Unescape(strAttrValue);
+                    continue;
                 }
+
+                var strAttrValue = (string)_attributes[i + 1];
+
+                return Unescape(strAttrValue);
             }
 
             // In the case where we didn't find it, we are expected to
@@ -597,11 +597,13 @@ namespace System.Security
 
                 var length = strEscValue.Length;
 
-                if (length <= maxCompareLength && string.Compare(strEscValue, 0, str, index, length, StringComparison.Ordinal) == 0)
+                if (length > maxCompareLength || string.Compare(strEscValue, 0, str, index, length, StringComparison.Ordinal) != 0)
                 {
-                    newIndex = index + strEscValue.Length;
-                    return strEscSeq;
+                    continue;
                 }
+
+                newIndex = index + strEscValue.Length;
+                return strEscSeq;
             }
 
             newIndex = index + 1;

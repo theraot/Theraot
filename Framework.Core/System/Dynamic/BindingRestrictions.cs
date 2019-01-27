@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -8,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using AstUtils = System.Linq.Expressions.Utils;
@@ -22,19 +25,19 @@ namespace System.Dynamic
     [DebuggerDisplay("{DebugView}")]
     public abstract class BindingRestrictions
     {
-        private const int _customRestrictionHash = 613566756;
-        private const int _instanceRestrictionHash = -1840700270;
-        private const int _typeRestrictionHash = 1227133513; // 00100 1001 0010 0100 1001 0010 0100 1001₂
-
         /// <summary>
         ///     Represents an empty set of binding restrictions. This field is read-only.
         /// </summary>
         public static readonly BindingRestrictions Empty = new CustomRestriction(AstUtils.Constant(true));
+        private const int _customRestrictionHash = 613566756;
+        private const int _instanceRestrictionHash = -1840700270;
+        private const int _typeRestrictionHash = 1227133513; // 00100 1001 0010 0100 1001 0010 0100 1001₂
         // 01001 0010 0100 1001 0010 0100 1001 0010₂
         // 10010 0100 1001 0010 0100 1001 0010 0100₂
 
         private BindingRestrictions()
         {
+            // Empty
         }
 
         private string DebugView => ToExpression().ToString();
@@ -51,18 +54,7 @@ namespace System.Dynamic
         public static BindingRestrictions Combine(IList<DynamicMetaObject> contributingObjects)
         {
             var res = Empty;
-            if (contributingObjects != null)
-            {
-                foreach (var mo in contributingObjects)
-                {
-                    if (mo != null)
-                    {
-                        res = res.Merge(mo.Restrictions);
-                    }
-                }
-            }
-
-            return res;
+            return contributingObjects == null ? res : contributingObjects.Where(mo => mo != null).Aggregate(res, (current, mo) => current.Merge(mo.Restrictions));
         }
 
         /// <summary>
@@ -121,12 +113,7 @@ namespace System.Dynamic
                 return restrictions;
             }
 
-            if (restrictions == Empty)
-            {
-                return this;
-            }
-
-            return new MergedRestriction(this, restrictions);
+            return restrictions == Empty ? this : new MergedRestriction(this, restrictions);
         }
 
         /// <summary>
@@ -290,7 +277,7 @@ namespace System.Dynamic
                 // left most node each iteration.
                 var stack = new Stack<BindingRestrictions>();
                 BindingRestrictions top = this;
-                for (;;)
+                for (; ; )
                 {
                     if (top is MergedRestriction m)
                     {
@@ -348,7 +335,7 @@ namespace System.Dynamic
                     depth++;
                 }
 
-                _tests.Push(new AndNode {Node = node, Depth = depth});
+                _tests.Push(new AndNode { Node = node, Depth = depth });
             }
 
             private struct AndNode

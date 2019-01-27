@@ -20,6 +20,7 @@
 #define DEBUG // The behavior of this contract library should be consistent regardless of build type.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using Theraot;
 
@@ -288,15 +289,7 @@ namespace System.Diagnostics.Contracts
 
             EndContractBlock();
 
-            foreach (var t in collection)
-            {
-                if (predicate(t))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return collection.Any(t => predicate(t));
         }
 
         /// <summary>
@@ -372,15 +365,7 @@ namespace System.Diagnostics.Contracts
 
             EndContractBlock();
 
-            foreach (var t in collection)
-            {
-                if (!predicate(t))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return collection.All(t => predicate(t));
         }
 
         /// <summary>

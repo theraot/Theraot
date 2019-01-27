@@ -10,7 +10,7 @@ using Theraot.Core;
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
-    /// Represent a fixed size thread-safe wait-free queue.
+    ///     Represent a fixed size thread-safe wait-free queue.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the queue.</typeparam>
     [Serializable]
@@ -22,7 +22,7 @@ namespace Theraot.Collections.ThreadSafe
         private int _preCount;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FixedSizeQueue{T}" /> class.
+        ///     Initializes a new instance of the <see cref="FixedSizeQueue{T}" /> class.
         /// </summary>
         /// <param name="capacity">The capacity.</param>
         public FixedSizeQueue(int capacity)
@@ -35,7 +35,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FixedSizeQueue{T}" /> class.
+        ///     Initializes a new instance of the <see cref="FixedSizeQueue{T}" /> class.
         /// </summary>
         public FixedSizeQueue(IEnumerable<T> source)
         {
@@ -47,12 +47,13 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the capacity.
+        ///     Gets the capacity.
         /// </summary>
         public int Capacity { get; }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the number of items actually contained.
+        ///     Gets the number of items actually contained.
         /// </summary>
         public int Count => _entries.Count;
 
@@ -65,30 +66,16 @@ namespace Theraot.Collections.ThreadSafe
             _entries.CopyTo(array, index);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
+        ///     A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
             return _entries.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns the next item to be taken without removing it.
-        /// </summary>
-        /// <returns>The next item to be taken.</returns>
-        /// <exception cref="InvalidOperationException">No more items to be taken.</exception>
-        public T Peek()
-        {
-            var index = Interlocked.Add(ref _indexEnqueue, 0);
-            if (index < Capacity && index > 0 && _entries.TryGet(index, out var item))
-            {
-                return item;
-            }
-            throw new InvalidOperationException("Empty");
         }
 
         public T[] ToArray()
@@ -97,50 +84,39 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Attempts to Adds the specified item.
+        ///     Attempts to Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>
-        ///   <c>true</c> if the item was added; otherwise, <c>false</c>.
+        ///     <c>true</c> if the item was added; otherwise, <c>false</c>.
         /// </returns>
         public bool TryAdd(T item)
         {
-            if (_entries.Count < Capacity)
+            if (_entries.Count >= Capacity)
             {
-                var preCount = Interlocked.Increment(ref _preCount);
-                if (preCount <= Capacity)
-                {
-                    var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (Capacity - 1);
-                    if (_entries.InsertInternal(index, item))
-                    {
-                        return true;
-                    }
-                }
-                Interlocked.Decrement(ref _preCount);
+                return false;
             }
+
+            var preCount = Interlocked.Increment(ref _preCount);
+            if (preCount <= Capacity)
+            {
+                var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (Capacity - 1);
+                if (_entries.InsertInternal(index, item))
+                {
+                    return true;
+                }
+            }
+
+            Interlocked.Decrement(ref _preCount);
             return false;
         }
 
         /// <summary>
-        /// Attempts to retrieve the next item to be taken without removing it.
-        /// </summary>
-        /// <param name="item">The item retrieved.</param>
-        /// <returns>
-        ///   <c>true</c> if an item was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryPeek(out T item)
-        {
-            item = default;
-            var index = Interlocked.Add(ref _indexDequeue, 0);
-            return index < Capacity && index > 0 && _entries.TryGetInternal(index, out item);
-        }
-
-        /// <summary>
-        /// Attempts to retrieve and remove the next item.
+        ///     Attempts to retrieve and remove the next item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>
-        ///   <c>true</c> if the item was taken; otherwise, <c>false</c>.
+        ///     <c>true</c> if the item was taken; otherwise, <c>false</c>.
         /// </returns>
         public bool TryTake(out T item)
         {
@@ -155,8 +131,10 @@ namespace Theraot.Collections.ThreadSafe
                         return true;
                     }
                 }
+
                 Interlocked.Increment(ref _preCount);
             }
+
             item = default;
             return false;
         }
@@ -170,6 +148,36 @@ namespace Theraot.Collections.ThreadSafe
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        ///     Returns the next item to be taken without removing it.
+        /// </summary>
+        /// <returns>The next item to be taken.</returns>
+        /// <exception cref="InvalidOperationException">No more items to be taken.</exception>
+        public T Peek()
+        {
+            var index = Interlocked.Add(ref _indexEnqueue, 0);
+            if (index < Capacity && index > 0 && _entries.TryGet(index, out var item))
+            {
+                return item;
+            }
+
+            throw new InvalidOperationException("Empty");
+        }
+
+        /// <summary>
+        ///     Attempts to retrieve the next item to be taken without removing it.
+        /// </summary>
+        /// <param name="item">The item retrieved.</param>
+        /// <returns>
+        ///     <c>true</c> if an item was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryPeek(out T item)
+        {
+            item = default;
+            var index = Interlocked.Add(ref _indexDequeue, 0);
+            return index < Capacity && index > 0 && _entries.TryGetInternal(index, out item);
         }
     }
 }

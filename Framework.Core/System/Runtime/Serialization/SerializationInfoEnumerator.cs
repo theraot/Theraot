@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETSTANDARD13
-
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -19,6 +18,7 @@ namespace System.Runtime.Serialization
             Value = entryValue;
             ObjectType = entryType;
         }
+
         public string Name { get; }
         public Type ObjectType { get; }
 

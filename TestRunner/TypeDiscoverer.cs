@@ -20,6 +20,7 @@ namespace TestRunner
             {
                 return;
             }
+
             var assembly = typeof(TypeDiscoverer).GetTypeInfo().Assembly;
             types = assembly.GetTypes();
         }

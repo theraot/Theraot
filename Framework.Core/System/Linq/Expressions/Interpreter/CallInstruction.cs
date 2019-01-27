@@ -6,7 +6,6 @@
 
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -100,7 +99,7 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class CallInstruction : Instruction
     {
         /// <summary>
-        /// The number of arguments including "this" for instance methods.
+        ///     The number of arguments including "this" for instance methods.
         /// </summary>
         public abstract int ArgumentCount { get; }
 
@@ -313,12 +312,7 @@ namespace System.Linq.Expressions.Interpreter
 
         protected object InterpretLambdaInvoke(LightLambda targetLambda, object[] args)
         {
-            if (ProducedStack > 0)
-            {
-                return targetLambda.Run(args);
-            }
-
-            return targetLambda.RunVoid(args);
+            return ProducedStack > 0 ? targetLambda.Run(args) : targetLambda.RunVoid(args);
         }
 
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount)
@@ -330,32 +324,21 @@ namespace System.Linq.Expressions.Interpreter
             switch (arrayType?.GetArrayRank())
             {
                 case 1:
-                    alternativeMethod = isGetter ?
-                        arrayType.GetMethod("GetValue", new[] { typeof(int) }) :
-                        typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter1));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter1));
                     break;
 
                 case 2:
-                    alternativeMethod = isGetter ?
-                        arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int) }) :
-                        typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter2));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int), typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter2));
                     break;
 
                 case 3:
-                    alternativeMethod = isGetter ?
-                        arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int), typeof(int) }) :
-                        typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter3));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int), typeof(int), typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter3));
                     break;
                 default:
                     break;
             }
 
-            if (alternativeMethod == null)
-            {
-                return new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            return Create(alternativeMethod);
+            return alternativeMethod == null ? new MethodInfoCallInstruction(info, argumentCount) : Create(alternativeMethod);
         }
     }
 
@@ -430,25 +413,28 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => "Call(" + Target + ")";
+        public override string ToString()
+        {
+            return "Call(" + Target + ")";
+        }
 
         protected object[] GetArgs(InterpretedFrame frame, int first, int skip)
         {
             var count = _argumentCount - skip;
 
-            if (count > 0)
+            if (count <= 0)
             {
-                var args = new object[count];
-
-                for (var i = 0; i < args.Length; i++)
-                {
-                    args[i] = frame.Data[first + i + skip];
-                }
-
-                return args;
+                return ArrayEx.Empty<object>();
             }
 
-            return ArrayReservoir<object>.EmptyArray;
+            var args = new object[count];
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                args[i] = frame.Data[first + i + skip];
+            }
+
+            return args;
         }
     }
 }

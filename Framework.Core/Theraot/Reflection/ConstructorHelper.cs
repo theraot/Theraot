@@ -16,16 +16,13 @@ namespace Theraot.Reflection
             {
                 return result();
             }
+
             throw new MissingMemberException($"There is no constructor for {typeof(TReturn)} with no type arguments.");
         }
 
         public static TReturn CreateOrDefault<TReturn>()
         {
-            if (TryGetCreate<TReturn>(out var result))
-            {
-                return result();
-            }
-            return default;
+            return TryGetCreate<TReturn>(out var result) ? result() : default;
         }
 
         public static bool TryGetCreate<TReturn>(out Func<TReturn> create)
@@ -37,6 +34,7 @@ namespace Theraot.Reflection
                 create = () => default;
                 return true;
             }
+
             if (_constructorCache.TryGetValue(type, out var result))
             {
                 if (result == null)
@@ -44,10 +42,12 @@ namespace Theraot.Reflection
                     create = null;
                     return false;
                 }
+
                 create = (Func<TReturn>)result;
                 return true;
             }
-            var typeArguments = ArrayReservoir<Type>.EmptyArray;
+
+            var typeArguments = ArrayEx.Empty<Type>();
             var constructorInfo = typeof(TReturn).GetTypeInfo().GetConstructor(typeArguments);
             if (constructorInfo == null)
             {
@@ -55,7 +55,12 @@ namespace Theraot.Reflection
                 create = null;
                 return false;
             }
-            TReturn Create() => (TReturn)constructorInfo.Invoke(ArrayReservoir<object>.EmptyArray);
+
+            TReturn Create()
+            {
+                return (TReturn)constructorInfo.Invoke(ArrayEx.Empty<object>());
+            }
+
             _constructorCache[type] = (Func<TReturn>)Create;
             create = Create;
             return true;

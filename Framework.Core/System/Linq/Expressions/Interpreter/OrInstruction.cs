@@ -56,6 +56,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         frame.Push((bool)right ? Utils.BoxedTrue : null);
                     }
+
                     return 1;
                 }
 
@@ -81,6 +82,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((byte)((byte)left | (byte)right));
                 return 1;
             }
@@ -97,6 +99,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((short)((short)left | (short)right));
                 return 1;
             }
@@ -113,6 +116,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((int)left | (int)right);
                 return 1;
             }
@@ -129,6 +133,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((long)left | (long)right);
                 return 1;
             }
@@ -145,6 +150,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((sbyte)((sbyte)left | (sbyte)right));
                 return 1;
             }
@@ -161,6 +167,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((ushort)((ushort)left | (ushort)right));
                 return 1;
             }
@@ -177,6 +184,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((uint)left | (uint)right);
                 return 1;
             }
@@ -193,6 +201,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return 1;
                 }
+
                 frame.Push((ulong)left | (ulong)right);
                 return 1;
             }

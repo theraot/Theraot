@@ -23,13 +23,13 @@ namespace System.Collections.ObjectModel
         , IReadOnlyList<T>
 #endif
     {
-        internal IList<T> Wrapped { get; }
-
         public ReadOnlyCollectionEx(IList<T> wrapped)
             : base(wrapped)
         {
             Wrapped = wrapped;
         }
+
+        internal IList<T> Wrapped { get; }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public void CopyTo(T[] array)
@@ -69,6 +69,7 @@ namespace System.Collections.ObjectModel
             {
                 h ^= (h << 5) ^ cmp.GetHashCode(t);
             }
+
             return h;
         }
     }

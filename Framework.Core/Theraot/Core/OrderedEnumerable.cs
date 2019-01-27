@@ -1,5 +1,7 @@
 ﻿//Needed for NET20 (Linq)
 
+#pragma warning disable RCS1231 // Make parameter ref read-only.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,6 +31,7 @@ namespace Theraot.Core
             {
                 _comparer = _comparer.Reverse();
             }
+
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
         }
@@ -39,25 +42,25 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             comparer = comparer ?? Comparer<TNewKey>.Default;
             if (descending)
             {
                 comparer = comparer.Reverse();
             }
+
             var compoundComparer = new CustomComparer<KeyValuePair<TKey, TNewKey>>(Compare);
             return new OrderedEnumerable<TElement, KeyValuePair<TKey, TNewKey>>(_source, CompoundKeySelector, compoundComparer);
+
             KeyValuePair<TKey, TNewKey> CompoundKeySelector(TElement item)
             {
                 return new KeyValuePair<TKey, TNewKey>(_keySelector(item), keySelector(item));
             }
+
             int Compare(KeyValuePair<TKey, TNewKey> x, KeyValuePair<TKey, TNewKey> y)
             {
                 var check = _comparer.Compare(x.Key, y.Key);
-                if (check == 0)
-                {
-                    return comparer.Compare(x.Value, y.Value);
-                }
-                return check;
+                return check == 0 ? comparer.Compare(x.Value, y.Value) : check;
             }
         }
 
@@ -73,14 +76,16 @@ namespace Theraot.Core
 
         private IEnumerable<TElement> Sort(IEnumerable<TElement> source)
         {
-            var array = Extensions.AsArrayInternal(source);
+            var array = source.AsArrayInternal();
             var keys = new KeyValuePair<TKey, int>[array.Length];
             for (var index = 0; index < array.Length; index++)
             {
                 keys[index] = new KeyValuePair<TKey, int>(_keySelector.Invoke(array[index]), index);
             }
+
             Array.Sort(keys, Compare);
             return Enumerable();
+
             int Compare(KeyValuePair<TKey, int> x, KeyValuePair<TKey, int> y)
             {
                 var check = _comparer.Compare(x.Key, y.Key);
@@ -88,8 +93,10 @@ namespace Theraot.Core
                 {
                     return x.Value - y.Value;
                 }
+
                 return check;
             }
+
             IEnumerable<TElement> Enumerable()
             {
                 foreach (var pair in keys)

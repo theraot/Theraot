@@ -10,8 +10,8 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class NumericConvertInstruction : Instruction
     {
-        internal readonly TypeCode From, To;
         private readonly bool _isLiftedToNull;
+        internal readonly TypeCode From, To;
 
         protected NumericConvertInstruction(TypeCode from, TypeCode to, bool isLiftedToNull)
         {
@@ -53,7 +53,10 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        public override string ToString() => InstructionName + "(" + From + "->" + To + ")";
+        public override string ToString()
+        {
+            return InstructionName + "(" + From + "->" + To + ")";
+        }
 
         protected abstract object Convert(object obj);
 
@@ -185,6 +188,7 @@ namespace System.Linq.Expressions.Interpreter
             public ToUnderlying(TypeCode to, bool isLiftedToNull)
                 : base(to, to, isLiftedToNull)
             {
+                // Empty
             }
 
             public override string InstructionName => "ConvertToUnderlying";
@@ -213,6 +217,7 @@ namespace System.Linq.Expressions.Interpreter
             public Unchecked(TypeCode from, TypeCode to, bool isLiftedToNull)
                 : base(from, to, isLiftedToNull)
             {
+                // Empty
             }
 
             public override string InstructionName => "UncheckedConvert";

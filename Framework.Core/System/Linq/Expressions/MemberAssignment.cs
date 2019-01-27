@@ -12,11 +12,11 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         /// <summary>
-        /// Creates a <see cref="MemberAssignment"/> binding the specified value to the given member.
+        ///     Creates a <see cref="MemberAssignment" /> binding the specified value to the given member.
         /// </summary>
-        /// <param name="member">The <see cref="MemberInfo"/> for the member which is being assigned to.</param>
-        /// <param name="expression">The value to be assigned to <paramref name="member"/>.</param>
-        /// <returns>The created <see cref="MemberAssignment"/>.</returns>
+        /// <param name="member">The <see cref="MemberInfo" /> for the member which is being assigned to.</param>
+        /// <param name="expression">The value to be assigned to <paramref name="member" />.</param>
+        /// <returns>The created <see cref="MemberAssignment" />.</returns>
         public static MemberAssignment Bind(MemberInfo member, Expression expression)
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
@@ -26,15 +26,16 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException("Argument types do not match");
             }
+
             return new MemberAssignment(member, expression);
         }
 
         /// <summary>
-        /// Creates a <see cref="MemberAssignment"/> binding the specified value to the given property.
+        ///     Creates a <see cref="MemberAssignment" /> binding the specified value to the given property.
         /// </summary>
-        /// <param name="propertyAccessor">The <see cref="PropertyInfo"/> for the property which is being assigned to.</param>
-        /// <param name="expression">The value to be assigned to <paramref name="propertyAccessor"/>.</param>
-        /// <returns>The created <see cref="MemberAssignment"/>.</returns>
+        /// <param name="propertyAccessor">The <see cref="PropertyInfo" /> for the property which is being assigned to.</param>
+        /// <param name="expression">The value to be assigned to <paramref name="propertyAccessor" />.</param>
+        /// <returns>The created <see cref="MemberAssignment" />.</returns>
         public static MemberAssignment Bind(MethodInfo propertyAccessor, Expression expression)
         {
             ContractUtils.RequiresNotNull(propertyAccessor, nameof(propertyAccessor));
@@ -74,8 +75,9 @@ namespace System.Linq.Expressions
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
-    /// Represents assignment to a member of an object.
+    ///     Represents assignment to a member of an object.
     /// </summary>
     public sealed class MemberAssignment : MemberBinding
     {
@@ -88,28 +90,25 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Gets the <see cref="Expression"/> which represents the object whose member is being assigned to.
+        ///     Gets the <see cref="Expression" /> which represents the object whose member is being assigned to.
         /// </summary>
         public Expression Expression { get; }
 
         /// <summary>
-        /// Creates a new expression that is like this one, but using the
-        /// supplied children. If all of the children are the same, it will
-        /// return this expression.
+        ///     Creates a new expression that is like this one, but using the
+        ///     supplied children. If all of the children are the same, it will
+        ///     return this expression.
         /// </summary>
-        /// <param name="expression">The <see cref="Expression"/> property of the result.</param>
+        /// <param name="expression">The <see cref="Expression" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberAssignment Update(Expression expression)
         {
-            if (expression == Expression)
-            {
-                return this;
-            }
-            return Expression.Bind(Member, expression);
+            return expression == Expression ? this : Expression.Bind(Member, expression);
         }
 
         internal override void ValidateAsDefinedHere(int index)
         {
+            // Empty
         }
     }
 }

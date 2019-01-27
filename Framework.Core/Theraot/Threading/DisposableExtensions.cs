@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 
 namespace Theraot.Threading
@@ -108,7 +107,7 @@ namespace Theraot.Threading
             {
                 try
                 {
-                    //Empty
+                    // Empty
                 }
                 finally
                 {

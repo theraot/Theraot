@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Theraot.Collections.ThreadSafe;
+using System.Linq;
 
 namespace Theraot.Collections.Specialized
 {
@@ -25,11 +25,11 @@ namespace Theraot.Collections.Specialized
 
         public ICollection<T> AsReadOnlyICollection { get; }
 
+        private ICollection<T> Instance => _wrapped.Invoke() ?? ArrayEx.Empty<T>();
+
         public int Count => Instance.Count;
 
         public bool IsReadOnly => Instance.IsReadOnly;
-
-        private ICollection<T> Instance => _wrapped.Invoke() ?? ArrayReservoir<T>.EmptyArray;
 
         public void Add(T item)
         {
@@ -51,17 +51,6 @@ namespace Theraot.Collections.Specialized
             Instance.CopyTo(array, arrayIndex);
         }
 
-        public void CopyTo(T[] array)
-        {
-            Instance.CopyTo(array, 0);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
-        {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Instance.CopyTo(array, arrayIndex, countLimit);
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             var collection = Instance;
@@ -71,6 +60,7 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new InvalidOperationException();
                 }
+
                 yield return item;
             }
         }
@@ -85,17 +75,25 @@ namespace Theraot.Collections.Specialized
             return Instance.Remove(item);
         }
 
+        public void CopyTo(T[] array)
+        {
+            Instance.CopyTo(array, 0);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex, int countLimit)
+        {
+            Extensions.CanCopyTo(array, arrayIndex, countLimit);
+            Instance.CopyTo(array, arrayIndex, countLimit);
+        }
+
         public bool Remove(T item, IEqualityComparer<T> comparer)
         {
             if (comparer == null)
             {
                 comparer = EqualityComparer<T>.Default;
             }
-            foreach (var _ in Instance.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
-            {
-                return true;
-            }
-            return false;
+
+            return Instance.RemoveWhereEnumerable(input => comparer.Equals(input, item)).Any();
         }
 
         public T[] ToArray()

@@ -4,11 +4,15 @@
 #pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
+#pragma warning disable CC0074 // Make field readonly
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 #pragma warning disable RECS0025 // Non-readonly field referenced in 'GetHashCode()'
+// ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable MergeSequentialChecks
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
+// ReSharper disable UseDeconstruction
+// ReSharper disable UseDeconstructionOnParameter
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -182,13 +186,14 @@ namespace System
             return new ValueTuple<T1, T2, T3, T4, T5, T6, T7, ValueTuple<T8>>(item1, item2, item3, item4, item5, item6, item7, Create(item8));
         }
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple other)
         {
@@ -205,9 +210,10 @@ namespace System
             return obj is ValueTuple;
         }
 
+        /// <inheritdoc />
         /// <summary>Returns a value indicating whether this instance is equal to a specified value.</summary>
         /// <param name="other">An instance to compare to this instance.</param>
-        /// <returns>true if <paramref name="other"/> has the same value as this instance; otherwise, false.</returns>
+        /// <returns>true if <paramref name="other" /> has the same value as this instance; otherwise, false.</returns>
         public bool Equals(ValueTuple other)
         {
             return true;
@@ -339,13 +345,14 @@ namespace System
 
         int ITupleInternal.Size => 1;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1> other)
         {
@@ -370,14 +377,15 @@ namespace System
             return obj is ValueTuple<T1> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`1" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`1" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its field
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its field
         /// is equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1> other)
@@ -502,23 +510,19 @@ namespace System
 
         int ITupleInternal.Size => 2;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2> other)
         {
             var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T2>.Default.Compare(Item2, other.Item2);
+            return c != 0 ? c : Comparer<T2>.Default.Compare(Item2, other.Item2);
         }
 
         /// <summary>
@@ -540,19 +544,20 @@ namespace System
             return obj is ValueTuple<T1, T2> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2}"/> instance is equal to a specified <see cref="ValueTuple{T1, T2}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`2" /> instance is equal to a specified <see cref="T:System.ValueTuple`2" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2);
+                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2);
         }
 
         /// <summary>
@@ -613,12 +618,7 @@ namespace System
             var objTuple = (ValueTuple<T1, T2>)other;
 
             var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item2, objTuple.Item2);
+            return c != 0 ? c : comparer.Compare(Item2, objTuple.Item2);
         }
 
         /// <summary>
@@ -652,7 +652,7 @@ namespace System
             var objTuple = (ValueTuple<T1, T2>)other;
 
             return comparer.Equals(Item1, objTuple.Item1)
-                && comparer.Equals(Item2, objTuple.Item2);
+                   && comparer.Equals(Item2, objTuple.Item2);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -667,8 +667,11 @@ namespace System
 
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
-            return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1),
-                                               comparer.GetHashCode(Item2));
+            return ValueTuple.CombineHashCodes
+            (
+                comparer.GetHashCode(Item1),
+                comparer.GetHashCode(Item2)
+            );
         }
 
         string ITupleInternal.ToStringEnd()
@@ -717,13 +720,14 @@ namespace System
 
         int ITupleInternal.Size => 3;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3> other)
         {
@@ -734,12 +738,7 @@ namespace System
             }
 
             c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T3>.Default.Compare(Item3, other.Item3);
+            return c != 0 ? c : Comparer<T3>.Default.Compare(Item3, other.Item3);
         }
 
         /// <summary>
@@ -760,21 +759,22 @@ namespace System
             return obj is ValueTuple<T1, T2, T3> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`3" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`3" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3);
+                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3);
         }
 
         /// <summary>
@@ -840,12 +840,7 @@ namespace System
             }
 
             c = comparer.Compare(Item2, objTuple.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item3, objTuple.Item3);
+            return c != 0 ? c : comparer.Compare(Item3, objTuple.Item3);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -858,8 +853,8 @@ namespace System
             var objTuple = (ValueTuple<T1, T2, T3>)other;
 
             return comparer.Equals(Item1, objTuple.Item1)
-                && comparer.Equals(Item2, objTuple.Item2)
-                && comparer.Equals(Item3, objTuple.Item3);
+                   && comparer.Equals(Item2, objTuple.Item2)
+                   && comparer.Equals(Item3, objTuple.Item3);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -874,9 +869,12 @@ namespace System
 
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
-            return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1),
-                                               comparer.GetHashCode(Item2),
-                                               comparer.GetHashCode(Item3));
+            return ValueTuple.CombineHashCodes
+            (
+                comparer.GetHashCode(Item1),
+                comparer.GetHashCode(Item2),
+                comparer.GetHashCode(Item3)
+            );
         }
 
         string ITupleInternal.ToStringEnd()
@@ -933,13 +931,14 @@ namespace System
 
         int ITupleInternal.Size => 4;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4> other)
         {
@@ -956,12 +955,7 @@ namespace System
             }
 
             c = Comparer<T3>.Default.Compare(Item3, other.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T4>.Default.Compare(Item4, other.Item4);
+            return c != 0 ? c : Comparer<T4>.Default.Compare(Item4, other.Item4);
         }
 
         /// <summary>
@@ -982,22 +976,23 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`4" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`4" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
-                && EqualityComparer<T4>.Default.Equals(Item4, other.Item4);
+                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
+                   && EqualityComparer<T4>.Default.Equals(Item4, other.Item4);
         }
 
         /// <summary>
@@ -1070,12 +1065,7 @@ namespace System
             }
 
             c = comparer.Compare(Item3, objTuple.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item4, objTuple.Item4);
+            return c != 0 ? c : comparer.Compare(Item4, objTuple.Item4);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -1088,9 +1078,9 @@ namespace System
             var objTuple = (ValueTuple<T1, T2, T3, T4>)other;
 
             return comparer.Equals(Item1, objTuple.Item1)
-                && comparer.Equals(Item2, objTuple.Item2)
-                && comparer.Equals(Item3, objTuple.Item3)
-                && comparer.Equals(Item4, objTuple.Item4);
+                   && comparer.Equals(Item2, objTuple.Item2)
+                   && comparer.Equals(Item3, objTuple.Item3)
+                   && comparer.Equals(Item4, objTuple.Item4);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1105,10 +1095,13 @@ namespace System
 
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
-            return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1),
-                                               comparer.GetHashCode(Item2),
-                                               comparer.GetHashCode(Item3),
-                                               comparer.GetHashCode(Item4));
+            return ValueTuple.CombineHashCodes
+            (
+                comparer.GetHashCode(Item1),
+                comparer.GetHashCode(Item2),
+                comparer.GetHashCode(Item3),
+                comparer.GetHashCode(Item4)
+            );
         }
 
         string ITupleInternal.ToStringEnd()
@@ -1173,13 +1166,14 @@ namespace System
 
         int ITupleInternal.Size => 5;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5> other)
         {
@@ -1202,12 +1196,7 @@ namespace System
             }
 
             c = Comparer<T4>.Default.Compare(Item4, other.Item4);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T5>.Default.Compare(Item5, other.Item5);
+            return c != 0 ? c : Comparer<T5>.Default.Compare(Item5, other.Item5);
         }
 
         /// <summary>
@@ -1228,23 +1217,24 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`5" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`5" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
-                && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
-                && EqualityComparer<T5>.Default.Equals(Item5, other.Item5);
+                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
+                   && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
+                   && EqualityComparer<T5>.Default.Equals(Item5, other.Item5);
         }
 
         /// <summary>
@@ -1324,12 +1314,7 @@ namespace System
             }
 
             c = comparer.Compare(Item4, objTuple.Item4);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item5, objTuple.Item5);
+            return c != 0 ? c : comparer.Compare(Item5, objTuple.Item5);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -1342,10 +1327,10 @@ namespace System
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5>)other;
 
             return comparer.Equals(Item1, objTuple.Item1)
-                && comparer.Equals(Item2, objTuple.Item2)
-                && comparer.Equals(Item3, objTuple.Item3)
-                && comparer.Equals(Item4, objTuple.Item4)
-                && comparer.Equals(Item5, objTuple.Item5);
+                   && comparer.Equals(Item2, objTuple.Item2)
+                   && comparer.Equals(Item3, objTuple.Item3)
+                   && comparer.Equals(Item4, objTuple.Item4)
+                   && comparer.Equals(Item5, objTuple.Item5);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1360,11 +1345,14 @@ namespace System
 
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
-            return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1),
-                                               comparer.GetHashCode(Item2),
-                                               comparer.GetHashCode(Item3),
-                                               comparer.GetHashCode(Item4),
-                                               comparer.GetHashCode(Item5));
+            return ValueTuple.CombineHashCodes
+            (
+                comparer.GetHashCode(Item1),
+                comparer.GetHashCode(Item2),
+                comparer.GetHashCode(Item3),
+                comparer.GetHashCode(Item4),
+                comparer.GetHashCode(Item5)
+            );
         }
 
         string ITupleInternal.ToStringEnd()
@@ -1437,13 +1425,14 @@ namespace System
 
         int ITupleInternal.Size => 6;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6> other)
         {
@@ -1472,12 +1461,7 @@ namespace System
             }
 
             c = Comparer<T5>.Default.Compare(Item5, other.Item5);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T6>.Default.Compare(Item6, other.Item6);
+            return c != 0 ? c : Comparer<T6>.Default.Compare(Item6, other.Item6);
         }
 
         /// <summary>
@@ -1498,24 +1482,25 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`6" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`6" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5, T6> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
-                && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
-                && EqualityComparer<T5>.Default.Equals(Item5, other.Item5)
-                && EqualityComparer<T6>.Default.Equals(Item6, other.Item6);
+                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
+                   && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
+                   && EqualityComparer<T5>.Default.Equals(Item5, other.Item5)
+                   && EqualityComparer<T6>.Default.Equals(Item6, other.Item6);
         }
 
         /// <summary>
@@ -1602,12 +1587,7 @@ namespace System
             }
 
             c = comparer.Compare(Item5, objTuple.Item5);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item6, objTuple.Item6);
+            return c != 0 ? c : comparer.Compare(Item6, objTuple.Item6);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -1620,11 +1600,11 @@ namespace System
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6>)other;
 
             return comparer.Equals(Item1, objTuple.Item1)
-                && comparer.Equals(Item2, objTuple.Item2)
-                && comparer.Equals(Item3, objTuple.Item3)
-                && comparer.Equals(Item4, objTuple.Item4)
-                && comparer.Equals(Item5, objTuple.Item5)
-                && comparer.Equals(Item6, objTuple.Item6);
+                   && comparer.Equals(Item2, objTuple.Item2)
+                   && comparer.Equals(Item3, objTuple.Item3)
+                   && comparer.Equals(Item4, objTuple.Item4)
+                   && comparer.Equals(Item5, objTuple.Item5)
+                   && comparer.Equals(Item6, objTuple.Item6);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1639,12 +1619,15 @@ namespace System
 
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
-            return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1),
-                                               comparer.GetHashCode(Item2),
-                                               comparer.GetHashCode(Item3),
-                                               comparer.GetHashCode(Item4),
-                                               comparer.GetHashCode(Item5),
-                                               comparer.GetHashCode(Item6));
+            return ValueTuple.CombineHashCodes
+            (
+                comparer.GetHashCode(Item1),
+                comparer.GetHashCode(Item2),
+                comparer.GetHashCode(Item3),
+                comparer.GetHashCode(Item4),
+                comparer.GetHashCode(Item5),
+                comparer.GetHashCode(Item6)
+            );
         }
 
         string ITupleInternal.ToStringEnd()
@@ -1725,13 +1708,14 @@ namespace System
 
         int ITupleInternal.Size => 7;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7> other)
         {
@@ -1766,12 +1750,7 @@ namespace System
             }
 
             c = Comparer<T6>.Default.Compare(Item6, other.Item6);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<T7>.Default.Compare(Item7, other.Item7);
+            return c != 0 ? c : Comparer<T7>.Default.Compare(Item7, other.Item7);
         }
 
         /// <summary>
@@ -1792,25 +1771,26 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7> valueTuple && Equals(valueTuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`7" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`7" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5, T6, T7> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
-                && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
-                && EqualityComparer<T5>.Default.Equals(Item5, other.Item5)
-                && EqualityComparer<T6>.Default.Equals(Item6, other.Item6)
-                && EqualityComparer<T7>.Default.Equals(Item7, other.Item7);
+                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
+                   && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
+                   && EqualityComparer<T5>.Default.Equals(Item5, other.Item5)
+                   && EqualityComparer<T6>.Default.Equals(Item6, other.Item6)
+                   && EqualityComparer<T7>.Default.Equals(Item7, other.Item7);
         }
 
         /// <summary>
@@ -1904,12 +1884,7 @@ namespace System
             }
 
             c = comparer.Compare(Item6, objTuple.Item6);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Item7, objTuple.Item7);
+            return c != 0 ? c : comparer.Compare(Item7, objTuple.Item7);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -1922,12 +1897,12 @@ namespace System
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7>)other;
 
             return comparer.Equals(Item1, objTuple.Item1)
-                && comparer.Equals(Item2, objTuple.Item2)
-                && comparer.Equals(Item3, objTuple.Item3)
-                && comparer.Equals(Item4, objTuple.Item4)
-                && comparer.Equals(Item5, objTuple.Item5)
-                && comparer.Equals(Item6, objTuple.Item6)
-                && comparer.Equals(Item7, objTuple.Item7);
+                   && comparer.Equals(Item2, objTuple.Item2)
+                   && comparer.Equals(Item3, objTuple.Item3)
+                   && comparer.Equals(Item4, objTuple.Item4)
+                   && comparer.Equals(Item5, objTuple.Item5)
+                   && comparer.Equals(Item6, objTuple.Item6)
+                   && comparer.Equals(Item7, objTuple.Item7);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1942,13 +1917,16 @@ namespace System
 
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
-            return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1),
-                                               comparer.GetHashCode(Item2),
-                                               comparer.GetHashCode(Item3),
-                                               comparer.GetHashCode(Item4),
-                                               comparer.GetHashCode(Item5),
-                                               comparer.GetHashCode(Item6),
-                                               comparer.GetHashCode(Item7));
+            return ValueTuple.CombineHashCodes
+            (
+                comparer.GetHashCode(Item1),
+                comparer.GetHashCode(Item2),
+                comparer.GetHashCode(Item3),
+                comparer.GetHashCode(Item4),
+                comparer.GetHashCode(Item5),
+                comparer.GetHashCode(Item6),
+                comparer.GetHashCode(Item7)
+            );
         }
 
         string ITupleInternal.ToStringEnd()
@@ -2043,13 +2021,14 @@ namespace System
 
         int ITupleInternal.Size => !(Rest is ITupleInternal rest) ? 8 : 7 + rest.Size;
 
+        /// <inheritdoc />
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and <paramref name="other"/>.
-        /// Returns less than zero if this instance is less than <paramref name="other"/>, zero if this
-        /// instance is equal to <paramref name="other"/>, and greater than zero if this instance is greater
-        /// than <paramref name="other"/>.
+        /// A signed number indicating the relative values of this instance and <paramref name="other" />.
+        /// Returns less than zero if this instance is less than <paramref name="other" />, zero if this
+        /// instance is equal to <paramref name="other" />, and greater than zero if this instance is greater
+        /// than <paramref name="other" />.
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> other)
         {
@@ -2090,12 +2069,7 @@ namespace System
             }
 
             c = Comparer<T7>.Default.Compare(Item7, other.Item7);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return Comparer<TRest>.Default.Compare(Rest, other.Rest);
+            return c != 0 ? c : Comparer<TRest>.Default.Compare(Rest, other.Rest);
         }
 
         /// <summary>
@@ -2116,26 +2090,27 @@ namespace System
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple && Equals(tuple);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/>
-        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}"/>.
+        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`8" />
+        /// instance is equal to a specified <see cref="T:System.ValueTuple`8" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified tuple; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
         /// <remarks>
-        /// The <paramref name="other"/> parameter is considered to be equal to the current instance if each of its fields
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its fields
         /// are equal to that of the current instance, using the default comparer for that field's type.
         /// </remarks>
         public bool Equals(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
-                && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
-                && EqualityComparer<T5>.Default.Equals(Item5, other.Item5)
-                && EqualityComparer<T6>.Default.Equals(Item6, other.Item6)
-                && EqualityComparer<T7>.Default.Equals(Item7, other.Item7)
-                && EqualityComparer<TRest>.Default.Equals(Rest, other.Rest);
+                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
+                   && EqualityComparer<T4>.Default.Equals(Item4, other.Item4)
+                   && EqualityComparer<T5>.Default.Equals(Item5, other.Item5)
+                   && EqualityComparer<T6>.Default.Equals(Item6, other.Item6)
+                   && EqualityComparer<T7>.Default.Equals(Item7, other.Item7)
+                   && EqualityComparer<TRest>.Default.Equals(Rest, other.Rest);
         }
 
         /// <summary>
@@ -2325,12 +2300,7 @@ namespace System
             }
 
             c = comparer.Compare(Item7, objTuple.Item7);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return comparer.Compare(Rest, objTuple.Rest);
+            return c != 0 ? c : comparer.Compare(Rest, objTuple.Rest);
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
@@ -2343,13 +2313,13 @@ namespace System
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>)other;
 
             return comparer.Equals(Item1, objTuple.Item1)
-                && comparer.Equals(Item2, objTuple.Item2)
-                && comparer.Equals(Item3, objTuple.Item3)
-                && comparer.Equals(Item4, objTuple.Item4)
-                && comparer.Equals(Item5, objTuple.Item5)
-                && comparer.Equals(Item6, objTuple.Item6)
-                && comparer.Equals(Item7, objTuple.Item7)
-                && comparer.Equals(Rest, objTuple.Rest);
+                   && comparer.Equals(Item2, objTuple.Item2)
+                   && comparer.Equals(Item3, objTuple.Item3)
+                   && comparer.Equals(Item4, objTuple.Item4)
+                   && comparer.Equals(Item5, objTuple.Item5)
+                   && comparer.Equals(Item6, objTuple.Item6)
+                   && comparer.Equals(Item7, objTuple.Item7)
+                   && comparer.Equals(Rest, objTuple.Rest);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -2367,9 +2337,12 @@ namespace System
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
             if (!(Rest is ITupleInternal rest))
             {
-                return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
-                                                   comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
-                                                   comparer.GetHashCode(Item7));
+                return ValueTuple.CombineHashCodes
+                (
+                    comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
+                    comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
+                    comparer.GetHashCode(Item7)
+                );
             }
 
             var size = rest.Size;
@@ -2389,27 +2362,42 @@ namespace System
                     return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
 
                 case 3:
-                    return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7),
-                                                       rest.GetHashCode(comparer));
+                    return ValueTuple.CombineHashCodes
+                    (
+                        comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7),
+                        rest.GetHashCode(comparer)
+                    );
 
                 case 4:
-                    return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
-                                                       comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
+                    return ValueTuple.CombineHashCodes
+                    (
+                        comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7), rest.GetHashCode(comparer)
+                    );
 
                 case 5:
-                    return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5),
-                                                       comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
+                    return ValueTuple.CombineHashCodes
+                    (
+                        comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5),
+                        comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), rest.GetHashCode(comparer)
+                    );
 
                 case 6:
-                    return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4),
-                                                       comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7),
-                                                       rest.GetHashCode(comparer));
+                    return ValueTuple.CombineHashCodes
+                    (
+                        comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4),
+                        comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7),
+                        rest.GetHashCode(comparer)
+                    );
 
                 case 7:
                 case 8:
-                    return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
-                                                       comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
-                                                       comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
+                    return ValueTuple.CombineHashCodes
+                    (
+                        comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
+                        comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7), rest.GetHashCode(comparer)
+                    );
 
                 default:
                     DebugEx.Fail("Missed all cases for computing ValueTuple hash code");

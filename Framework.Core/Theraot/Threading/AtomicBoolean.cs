@@ -1,6 +1,4 @@
-﻿#pragma warning disable CA2225 // Operator overloads have named alternates
-
-// AtomicBoolean.cs
+﻿// AtomicBoolean.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //

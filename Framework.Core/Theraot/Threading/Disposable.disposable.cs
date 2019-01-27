@@ -8,6 +8,24 @@ namespace Theraot.Threading
     {
         private int _disposeStatus;
 
+        public bool IsDisposed
+        {
+            [DebuggerNonUserCode] get => _disposeStatus == -1;
+        }
+
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
         [DebuggerNonUserCode]
         ~Disposable()
         {
@@ -29,25 +47,6 @@ namespace Theraot.Threading
             }
         }
 
-        public bool IsDisposed
-        {
-            [DebuggerNonUserCode]
-            get => _disposeStatus == -1;
-        }
-
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
-        }
-
         [DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
@@ -57,23 +56,25 @@ namespace Theraot.Threading
             }
             else
             {
-                if (whenNotDisposed != null)
+                if (whenNotDisposed == null)
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+                    return;
+                }
+
+                if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+                {
+                    try
                     {
-                        try
-                        {
-                            whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref _disposeStatus);
-                        }
+                        whenNotDisposed.Invoke();
                     }
-                    else
+                    finally
                     {
-                        whenDisposed?.Invoke();
+                        Interlocked.Decrement(ref _disposeStatus);
                     }
+                }
+                else
+                {
+                    whenDisposed?.Invoke();
                 }
             }
         }
@@ -83,48 +84,45 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (whenDisposed == null)
-                {
-                    return default;
-                }
-                return whenDisposed.Invoke();
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
+
             if (whenNotDisposed == null)
             {
                 return default;
             }
-            if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+
+            if (!ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
-                try
-                {
-                    return whenNotDisposed.Invoke();
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _disposeStatus);
-                }
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
-            if (whenDisposed == null)
+
+            try
             {
-                return default;
+                return whenNotDisposed.Invoke();
             }
-            return whenDisposed.Invoke();
+            finally
+            {
+                Interlocked.Decrement(ref _disposeStatus);
+            }
         }
 
         [DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
             No.Op(disposeManagedResources);
-            if (TakeDisposalExecution())
+            if (!TakeDisposalExecution())
             {
-                try
-                {
-                    _release.Invoke();
-                }
-                finally
-                {
-                    _release = null;
-                }
+                return;
+            }
+
+            try
+            {
+                _release.Invoke();
+            }
+            finally
+            {
+                _release = null;
             }
         }
 

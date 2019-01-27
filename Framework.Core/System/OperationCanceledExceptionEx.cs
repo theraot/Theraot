@@ -4,6 +4,7 @@
 
 using System.Runtime.Serialization;
 using System.Threading;
+using Theraot;
 
 namespace System
 {
@@ -18,13 +19,13 @@ namespace System
         public OperationCanceledExceptionEx(string message)
             : base(message)
         {
-            //Empty
+            // Empty
         }
 
         public OperationCanceledExceptionEx(string message, Exception innerException)
             : base(message, innerException)
         {
-            //Empty
+            // Empty
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
@@ -35,8 +36,8 @@ namespace System
         protected OperationCanceledExceptionEx(SerializationInfo info, StreamingContext context)
 #endif
         {
-            Theraot.No.Op(info);
-            Theraot.No.Op(context);
+            No.Op(info);
+            No.Op(context);
         }
     }
 
@@ -67,7 +68,6 @@ namespace System
         public CancellationToken CancellationToken => _token ?? CancellationToken.None;
 
 #else
-
         public OperationCanceledExceptionEx(CancellationToken token)
             : base(token)
         {

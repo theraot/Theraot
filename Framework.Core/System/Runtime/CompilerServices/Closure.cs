@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1051 // Do not declare visible instance fields
 
@@ -12,24 +12,26 @@ using System.Diagnostics;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    /// This API supports the .NET Framework infrastructure and is not intended to be used directly from your code.
-    /// Represents the runtime state of a dynamically generated method.
+    ///     This API supports the .NET Framework infrastructure and is not intended to be used directly from your code.
+    ///     Represents the runtime state of a dynamically generated method.
     /// </summary>
-    [EditorBrowsable(EditorBrowsableState.Never), DebuggerStepThrough]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [DebuggerStepThrough]
     public sealed class Closure
     {
         /// <summary>
-        /// Represents the non-trivial constants and locally executable expressions that are referenced by a dynamically generated method.
+        ///     Represents the non-trivial constants and locally executable expressions that are referenced by a dynamically
+        ///     generated method.
         /// </summary>
         public readonly object[] Constants;
 
         /// <summary>
-        /// Represents the hoisted local variables from the parent context.
+        ///     Represents the hoisted local variables from the parent context.
         /// </summary>
         public readonly object[] Locals;
 
         /// <summary>
-        /// Creates an object to hold state of a dynamically generated method.
+        ///     Creates an object to hold state of a dynamically generated method.
         /// </summary>
         /// <param name="constants">The constant values used by the method.</param>
         /// <param name="locals">The hoisted local variables from the parent context.</param>

@@ -46,12 +46,14 @@ namespace Theraot.Collections.ThreadSafe
                     ArrayReservoir<object>.DonateArray(arrayFirst);
                     _arrayFirst = null;
                 }
+
                 var arraySecond = _arraySecond;
                 if (arraySecond != null)
                 {
                     ArrayReservoir<object>.DonateArray(arraySecond);
                     _arraySecond = null;
                 }
+
                 var arrayUse = _arrayUse;
                 if (arrayUse != null)
                 {
@@ -71,27 +73,28 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
                 return Do
-                    (
-                        ref arrayUse[subIndex],
-                        ref arrayFirst[subIndex],
-                        ref arraySecond[subIndex],
-                        callback
-                    );
+                (
+                    ref arrayUse[subIndex],
+                    ref arrayFirst[subIndex],
+                    ref arraySecond[subIndex],
+                    callback
+                );
             }
             else
             {
                 var subIndex = SubIndex(index);
                 return Do
-                    (
-                        ref arrayUse[subIndex],
-                        ref arrayFirst[subIndex],
-                        ref arraySecond[subIndex],
-                        (ref object target) => target is BucketCore core && core.Do(index, callback)
-                    );
+                (
+                    ref arrayUse[subIndex],
+                    ref arrayFirst[subIndex],
+                    ref arraySecond[subIndex],
+                    (ref object target) => target is BucketCore core && core.Do(index, callback)
+                );
             }
         }
 
@@ -105,27 +108,28 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
                 return DoMayDecrement
-                    (
-                        ref arrayUse[subIndex],
-                        ref arrayFirst[subIndex],
-                        ref arraySecond[subIndex],
-                        callback
-                    );
+                (
+                    ref arrayUse[subIndex],
+                    ref arrayFirst[subIndex],
+                    ref arraySecond[subIndex],
+                    callback
+                );
             }
             else
             {
                 var subIndex = SubIndex(index);
                 return DoMayDecrement
-                    (
-                        ref arrayUse[subIndex],
-                        ref arrayFirst[subIndex],
-                        ref arraySecond[subIndex],
-                        (ref object target) => target is BucketCore core && core.DoMayDecrement(index, callback)
-                    );
+                (
+                    ref arrayUse[subIndex],
+                    ref arrayFirst[subIndex],
+                    ref arraySecond[subIndex],
+                    (ref object target) => target is BucketCore core && core.DoMayDecrement(index, callback)
+                );
             }
         }
 
@@ -139,29 +143,30 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
                 return DoMayIncrement
-                    (
-                        ref arrayUse[subIndex],
-                        ref arrayFirst[subIndex],
-                        ref arraySecond[subIndex],
-                        FuncHelper.GetDefaultFunc<object>(),
-                        callback
-                    );
+                (
+                    ref arrayUse[subIndex],
+                    ref arrayFirst[subIndex],
+                    ref arraySecond[subIndex],
+                    FuncHelper.GetDefaultFunc<object>(),
+                    callback
+                );
             }
             else
             {
                 var subIndex = SubIndex(index);
                 return DoMayIncrement
-                    (
-                        ref arrayUse[subIndex],
-                        ref arrayFirst[subIndex],
-                        ref arraySecond[subIndex],
-                        () => new BucketCore(_level - 1),
-                        (ref object target) => target is BucketCore core && core.DoMayIncrement(index, callback)
-                    );
+                (
+                    ref arrayUse[subIndex],
+                    ref arrayFirst[subIndex],
+                    ref arraySecond[subIndex],
+                    () => new BucketCore(_level - 1),
+                    (ref object target) => target is BucketCore core && core.DoMayIncrement(index, callback)
+                );
             }
         }
 
@@ -192,11 +197,14 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return Empty();
             }
+
             return GetEnumeratorExtracted();
+
             IEnumerator<object> Empty()
             {
                 yield break;
             }
+
             IEnumerator<object> GetEnumeratorExtracted()
             {
                 for (var subIndex = 0; subIndex < _capacity; subIndex++)
@@ -206,6 +214,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         continue;
                     }
+
                     try
                     {
                         Interlocked.Increment(ref arrayUse[subIndex]);
@@ -243,6 +252,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+
             try
             {
                 Interlocked.Increment(ref use);
@@ -285,6 +295,7 @@ namespace Theraot.Collections.ThreadSafe
                         {
                             Interlocked.Increment(ref use);
                         }
+
                         // Try to set to second
                         Interlocked.CompareExchange(ref second, result, null);
                     }
@@ -302,6 +313,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return;
             }
+
             // Erase second
             Interlocked.Exchange(ref second, null);
             // Erase first - second may have been restored by another thread
@@ -333,6 +345,7 @@ namespace Theraot.Collections.ThreadSafe
                     Interlocked.Decrement(ref use);
                     return true;
                 }
+
                 return false;
             }
             finally
@@ -359,6 +372,7 @@ namespace Theraot.Collections.ThreadSafe
                     Interlocked.Increment(ref use);
                     return true;
                 }
+
                 return false;
             }
             finally

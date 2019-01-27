@@ -9,14 +9,20 @@ namespace Theraot.Threading
     internal sealed class Timer : IDisposable
     {
         private static readonly Pool<Timer> _pool = new Pool<Timer>(64, time => time.Stop());
+        private readonly System.Threading.Timer _timer;
 
         private Action _callback;
-        private readonly System.Threading.Timer _timer;
 
         private Timer(Action callback, TimeSpan dueTime, TimeSpan period)
         {
             _callback = callback;
             _timer = new System.Threading.Timer(Callback, null, dueTime, period);
+        }
+
+        void IDisposable.Dispose()
+        {
+            _timer.Dispose();
+            _callback = null;
         }
 
         public static void Donate(Timer timer)
@@ -34,6 +40,7 @@ namespace Theraot.Threading
             {
                 timer = new Timer(callback, dueTime, period);
             }
+
             return timer;
         }
 
@@ -44,6 +51,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
+
             timer.Change(dueTime, period);
             _callback = callback;
         }
@@ -55,6 +63,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
+
             timer.Change(Timeout.Infinite, Timeout.Infinite);
             _callback = null;
         }
@@ -62,12 +71,6 @@ namespace Theraot.Threading
         private void Callback(object state)
         {
             _callback?.Invoke();
-        }
-
-        void IDisposable.Dispose()
-        {
-            _timer.Dispose();
-            _callback = null;
         }
     }
 }

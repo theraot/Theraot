@@ -11,28 +11,28 @@ namespace System.Linq.Expressions.Compiler
     internal sealed partial class StackSpiller
     {
         /// <summary>
-        /// Should the parent nodes be rewritten, and in what way?
+        ///     Should the parent nodes be rewritten, and in what way?
         /// </summary>
         /// <remarks>
-        /// Designed so bitwise-or produces the correct result when merging two
-        /// subtrees. In particular, SpillStack is preferred over Copy which is
-        /// preferred over None.
+        ///     Designed so bitwise-or produces the correct result when merging two
+        ///     subtrees. In particular, SpillStack is preferred over Copy which is
+        ///     preferred over None.
         /// </remarks>
         [Flags]
         private enum RewriteAction
         {
             /// <summary>
-            /// No rewrite needed.
+            ///     No rewrite needed.
             /// </summary>
             None = 0,
 
             /// <summary>
-            /// Copy into a new node.
+            ///     Copy into a new node.
             /// </summary>
             Copy = 1,
 
             /// <summary>
-            /// Spill stack into temps.
+            ///     Spill stack into temps.
             /// </summary>
             SpillStack = 3
         }

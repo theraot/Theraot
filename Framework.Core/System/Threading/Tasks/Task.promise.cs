@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
@@ -36,11 +36,13 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(creationOptions));
             }
+
             // Only set a parent if AttachedToParent is specified.
             if ((creationOptions & TaskCreationOptions.AttachedToParent) != 0)
             {
                 _parent = InternalCurrent;
             }
+
             State = state;
             CreationOptions = creationOptions;
             _status = (int)TaskStatus.WaitingForActivation;
@@ -98,11 +100,13 @@ namespace System.Threading.Tasks
                 {
                     return false;
                 }
+
                 var tmp = Interlocked.CompareExchange(ref _status, 5, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
+
                 spinWait.SpinOnce();
             }
         }
@@ -118,6 +122,7 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
+
             CancellationToken = cancellationToken;
             try
             {
@@ -136,6 +141,7 @@ namespace System.Threading.Tasks
                     var registration = cancellationToken.Register(_taskCancelCallback, this);
                     _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                 }
+
                 return true;
             }
             catch (Exception)
@@ -151,6 +157,7 @@ namespace System.Threading.Tasks
                 {
                     _parent.DisregardChild();
                 }
+
                 throw;
             }
         }
@@ -165,6 +172,7 @@ namespace System.Threading.Tasks
             {
                 CancellationToken = tokenToRecord;
             }
+
             returnValue |= InternalCancel(false);
             return returnValue;
         }
@@ -174,11 +182,13 @@ namespace System.Threading.Tasks
             AddException(exception);
             var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            if (!succeeded)
             {
-                MarkCompleted();
-                FinishStageThree();
+                return succeeded;
             }
+
+            MarkCompleted();
+            FinishStageThree();
             return succeeded;
         }
 
@@ -188,13 +198,16 @@ namespace System.Threading.Tasks
             {
                 AddException(exception);
             }
+
             var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            if (!succeeded)
             {
-                MarkCompleted();
-                FinishStageThree();
+                return succeeded;
             }
+
+            MarkCompleted();
+            FinishStageThree();
             return succeeded;
         }
 
@@ -204,13 +217,16 @@ namespace System.Threading.Tasks
             {
                 AddException(exception);
             }
+
             var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            if (!succeeded)
             {
-                MarkCompleted();
-                FinishStageThree();
+                return succeeded;
             }
+
+            MarkCompleted();
+            FinishStageThree();
             return succeeded;
         }
 
@@ -245,18 +261,21 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
+
             if (IsCanceled)
             {
                 return false;
             }
-            if (SetCompleted(true))
+
+            if (!SetCompleted(true))
             {
-                InternalResult = result;
-                MarkCompleted();
-                FinishStageThree();
-                return true;
+                return false;
             }
-            return false;
+
+            InternalResult = result;
+            MarkCompleted();
+            FinishStageThree();
+            return true;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CC0021 // Use nameof
 
 namespace System.Linq.Expressions.Interpreter
@@ -34,8 +35,10 @@ namespace System.Linq.Expressions.Interpreter
             throw ex;
         }
 
-        private static Exception WrapThrownObject(object thrown) =>
-            thrown == null ? null : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
+        private static Exception WrapThrownObject(object thrown)
+        {
+            return thrown == null ? null : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
+        }
     }
 }
 

@@ -11,13 +11,11 @@ using System.Dynamic.Utils;
 using System.Globalization;
 using System.Reflection.Emit;
 using Theraot.Reflection;
-using static System.Linq.Expressions.CachedReflectionInfo;
 
 namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-
         // Add key to a new or existing bucket
         private static void AddToBuckets(List<List<SwitchLabel>> buckets, SwitchLabel key)
         {
@@ -32,8 +30,9 @@ namespace System.Linq.Expressions.Compiler
                     return;
                 }
             }
+
             // else create a new bucket
-            buckets.Add(new List<SwitchLabel> { key });
+            buckets.Add(new List<SwitchLabel> {key});
         }
 
         // Determines if the type is an integer we can switch on.
@@ -64,6 +63,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return c;
             }
+
             return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
         }
 
@@ -75,6 +75,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return false;
             }
+
             // density must be > 50%
             return (buckets.Count + count) * 2 > jumpTableSlots;
         }
@@ -94,14 +95,17 @@ namespace System.Linq.Expressions.Compiler
             {
                 result = result.GetNullable();
             }
+
             return result;
         }
+
         private static bool HasVariables(object node)
         {
             if (node is BlockExpression block)
             {
                 return block.Variables.Count > 0;
             }
+
             return ((CatchBlock)node).Variable != null;
         }
 
@@ -139,6 +143,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
                 }
             }
+
             throw new InvalidOperationException("Rethrow statement is valid only inside a Catch block.");
         }
 
@@ -173,6 +178,7 @@ namespace System.Linq.Expressions.Compiler
                     return;
                 }
             }
+
             // otherwise, just define a new label
             label = IL.DefineLabel();
             isGoto = false;
@@ -262,7 +268,7 @@ namespace System.Linq.Expressions.Compiler
             // begin the catch, clear the exception, we've
             // already saved it
             IL.MarkLabel(endFilter);
-            IL.BeginCatchBlock(exceptionType: null);
+            IL.BeginCatchBlock(null);
             IL.Emit(OpCodes.Pop);
         }
 
@@ -365,6 +371,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     jmpLabels[slot++] = info.Default;
                 }
+
                 jmpLabels[slot++] = label.Label;
             }
 
@@ -383,7 +390,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitSwitchBuckets(SwitchInfo info, List<List<SwitchLabel>> buckets, int first, int last)
         {
-            for (; ; )
+            for (;;)
             {
                 if (first == last)
                 {
@@ -435,18 +442,20 @@ namespace System.Linq.Expressions.Compiler
                 EmitExpressionAsType(node.Cases[i].Body, node.Type, flags);
 
                 // Last case doesn't need branch
-                if (node.DefaultBody != null || i < n - 1)
+                if (node.DefaultBody == null && i >= n - 1)
                 {
-                    if ((flags & CompilationFlags.EmitAsTailCallMask) == CompilationFlags.EmitAsTail)
-                    {
-                        //The switch case is at the tail of the lambda so
-                        //it is safe to emit a Ret.
-                        IL.Emit(OpCodes.Ret);
-                    }
-                    else
-                    {
-                        IL.Emit(OpCodes.Br, end);
-                    }
+                    continue;
+                }
+
+                if ((flags & CompilationFlags.EmitAsTailCallMask) == CompilationFlags.EmitAsTail)
+                {
+                    //The switch case is at the tail of the lambda so
+                    //it is safe to emit a Ret.
+                    IL.Emit(OpCodes.Ret);
+                }
+                else
+                {
+                    IL.Emit(OpCodes.Br, end);
                 }
             }
 
@@ -634,32 +643,35 @@ namespace System.Linq.Expressions.Compiler
                 IL.Emit(OpCodes.Ldloc, value);
                 FreeLocal(value);
             }
+
             PopLabelBlock(LabelScopeKind.Try);
         }
 
         private void EnterScope(object node)
         {
-            if (HasVariables(node) && (_scope.MergedScopes?.Contains(node as BlockExpression) != true))
+            if (!HasVariables(node) || _scope.MergedScopes?.Contains(node as BlockExpression) == true)
             {
-                if (!_tree.Scopes.TryGetValue(node, out var scope))
-                {
-                    //
-                    // Very often, we want to compile nodes as reductions
-                    // rather than as IL, but usually they need to allocate
-                    // some IL locals. To support this, we allow emitting a
-                    // BlockExpression that was not bound by VariableBinder.
-                    // This works as long as the variables are only used
-                    // locally -- i.e. not closed over.
-                    //
-                    // User-created blocks will never hit this case; only our
-                    // internally reduced nodes will.
-                    //
-                    scope = new CompilerScope(node, false) { NeedsClosure = _scope.NeedsClosure };
-                }
-
-                _scope = scope.Enter(this, _scope);
-                Debug.Assert(_scope.Node == node);
+                return;
             }
+
+            if (!_tree.Scopes.TryGetValue(node, out var scope))
+            {
+                //
+                // Very often, we want to compile nodes as reductions
+                // rather than as IL, but usually they need to allocate
+                // some IL locals. To support this, we allow emitting a
+                // BlockExpression that was not bound by VariableBinder.
+                // This works as long as the variables are only used
+                // locally -- i.e. not closed over.
+                //
+                // User-created blocks will never hit this case; only our
+                // internally reduced nodes will.
+                //
+                scope = new CompilerScope(node, false) {NeedsClosure = _scope.NeedsClosure};
+            }
+
+            _scope = scope.Enter(this, _scope);
+            Debug.Assert(_scope.Node == node);
         }
 
         private void ExitScope(object node)
@@ -673,7 +685,7 @@ namespace System.Linq.Expressions.Compiler
         private bool TryEmitHashtableSwitch(SwitchExpression node, CompilationFlags flags)
         {
             // If we have a comparison other than string equality, bail
-            if (node.Comparison != StringOpEqualityStringString && node.Comparison != StringEqualsStringString)
+            if (node.Comparison != CachedReflectionInfo.StringOpEqualityStringString && node.Comparison != CachedReflectionInfo.StringEqualsStringString)
             {
                 return false;
             }
@@ -688,6 +700,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         return false;
                     }
+
                     tests++;
                 }
             }
@@ -705,7 +718,7 @@ namespace System.Linq.Expressions.Compiler
             var cases = new ArrayBuilder<SwitchCase>(node.Cases.Count);
 
             var nullCase = -1;
-            var add = DictionaryOfStringInt32AddStringInt32;
+            var add = CachedReflectionInfo.DictionaryOfStringInt32AddStringInt32;
             for (int i = 0, n = node.Cases.Count; i < n; i++)
             {
                 foreach (var expression in node.Cases[i].TestValues)
@@ -720,6 +733,7 @@ namespace System.Linq.Expressions.Compiler
                         nullCase = i;
                     }
                 }
+
                 cases.UncheckedAdd(Expression.SwitchCase(node.Cases[i].Body, ReadOnlyCollectionEx.Create<Expression>(Utils.Constant(i))));
             }
 
@@ -729,14 +743,19 @@ namespace System.Linq.Expressions.Compiler
             // If we happen to initialize it twice (multithreaded case), it's
             // not the end of the world. The C# compiler does better here by
             // emitting a volatile access to the field.
-            Expression dictInit = Expression.Condition(
+            Expression dictInit = Expression.Condition
+            (
                 Expression.Equal(dictField, Expression.Constant(null, dictField.Type)),
-                Expression.Assign(
+                Expression.Assign
+                (
                     dictField,
-                    Expression.ListInit(
-                        Expression.New(
-                            DictionaryOfStringInt32CtorInt32,
-                            ReadOnlyCollectionEx.Create<Expression>(
+                    Expression.ListInit
+                    (
+                        Expression.New
+                        (
+                            CachedReflectionInfo.DictionaryOfStringInt32CtorInt32,
+                            ReadOnlyCollectionEx.Create<Expression>
+                            (
                                 Utils.Constant(initializers.Count)
                             )
                         ),
@@ -769,14 +788,18 @@ namespace System.Linq.Expressions.Compiler
             //
             var switchValue = Expression.Variable(typeof(string), "switchValue");
             var switchIndex = Expression.Variable(typeof(int), "switchIndex");
-            var reduced = Expression.Block(
+            var reduced = Expression.Block
+            (
                 ReadOnlyCollectionEx.Create(switchIndex, switchValue),
-                ReadOnlyCollectionEx.Create<Expression>(
+                ReadOnlyCollectionEx.Create<Expression>
+                (
                     Expression.Assign(switchValue, node.SwitchValue),
-                    Expression.IfThenElse(
+                    Expression.IfThenElse
+                    (
                         Expression.Equal(switchValue, Expression.Constant(null, typeof(string))),
                         Expression.Assign(switchIndex, Utils.Constant(nullCase)),
-                        Expression.IfThenElse(
+                        Expression.IfThenElse
+                        (
                             Expression.Call(dictInit, "TryGetValue", null, switchValue, switchIndex),
                             Utils.Empty,
                             Expression.Assign(switchIndex, Utils.Constant(-1))

@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,7 +11,7 @@ namespace Theraot.Collections.Specialized
         private EnumCollection()
             : base(GetEnumerable())
         {
-            //Empty
+            // Empty
         }
 
         public static EnumCollection<TEnum> Instance { get; } = new EnumCollection<TEnum>();

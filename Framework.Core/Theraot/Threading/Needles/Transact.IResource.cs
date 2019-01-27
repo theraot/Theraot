@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact

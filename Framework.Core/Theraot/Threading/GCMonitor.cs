@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Threading;
 
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-
 using System.Runtime.ConstrainedExecution;
 
 #endif
@@ -21,7 +20,6 @@ namespace Theraot.Threading
         private static int _status = _statusNotReady;
 
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
-
         private const int _statusFinished = 1;
 
         static GCMonitor()
@@ -53,37 +51,40 @@ namespace Theraot.Threading
                     {
                         return;
                     }
+
                     throw;
                 }
             }
             remove
             {
-                if (Volatile.Read(ref _status) == _statusReady)
+                if (Volatile.Read(ref _status) != _statusReady)
                 {
-                    try
+                    return;
+                }
+
+                try
+                {
+                    Internal.CollectedEventHandlers.Remove(value);
+                }
+                catch
+                {
+                    if (value == null)
                     {
-                        Internal.CollectedEventHandlers.Remove(value);
+                        return;
                     }
-                    catch
-                    {
-                        if (value == null)
-                        {
-                            return;
-                        }
-                        throw;
-                    }
+
+                    throw;
                 }
             }
         }
 
         public static bool FinalizingForUnload =>
-                // If you need to get rid of this, just set this property to return false
+            // If you need to get rid of this, just set this property to return false
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
                 AppDomain.CurrentDomain.IsFinalizingForUnload();
 #else
-                false;
+            false;
 #endif
-
 
         private static void Initialize()
         {

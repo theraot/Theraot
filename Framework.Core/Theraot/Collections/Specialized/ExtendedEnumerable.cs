@@ -1,4 +1,4 @@
-// Needed for NET35 (BigInteger)
+﻿// Needed for NET35 (BigInteger)
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ namespace Theraot.Collections.Specialized
         public ExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> append)
             : base(target, append)
         {
-            //Empty
+            // Empty
         }
 
         public override IEnumerator<T> GetEnumerator()
@@ -20,6 +20,7 @@ namespace Theraot.Collections.Specialized
             {
                 yield return item;
             }
+
             foreach (var item in Append)
             {
                 yield return item;

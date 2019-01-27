@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NET35
+// ReSharper disable LoopCanBeConvertedToQuery
 
 using System.Collections;
 using System.Collections.Generic;
@@ -119,9 +120,9 @@ namespace System.Linq
 
             private IEnumerator<TResult> Enumerator(IDictionary<TKey, Tuple<Grouping<TKey, TElement>, List<TElement>>> groupings)
             {
-                foreach (var grouping in groupings.Values)
+                foreach (var (grouping, _) in groupings.Values)
                 {
-                    yield return _resultSelector(grouping.Item1.Key, grouping.Item1);
+                    yield return _resultSelector(grouping.Key, grouping);
                 }
             }
 

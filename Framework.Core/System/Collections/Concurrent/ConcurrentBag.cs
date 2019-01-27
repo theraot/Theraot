@@ -13,11 +13,11 @@ namespace System.Collections.Concurrent
     [DebuggerDisplay("Count = {Count}")]
     public class ConcurrentBag<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
-        private SafeQueue<T> _wrapped;
+        private ThreadSafeQueue<T> _wrapped;
 
         public ConcurrentBag()
         {
-            _wrapped = new SafeQueue<T>();
+            _wrapped = new ThreadSafeQueue<T>();
         }
 
         public ConcurrentBag(IEnumerable<T> collection)
@@ -27,16 +27,26 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(collection));
             }
 
-            _wrapped = new SafeQueue<T>(collection);
+            _wrapped = new ThreadSafeQueue<T>(collection);
         }
 
-        public bool IsEmpty => Count == 0;
-
         public int Count => _wrapped.Count;
+
+        public bool IsEmpty => Count == 0;
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
+
+        public void Add(T item)
+        {
+            _wrapped.Add(item);
+        }
+
+        public void Clear()
+        {
+            _wrapped = new ThreadSafeQueue<T>();
+        }
 
         public void CopyTo(T[] array, int index)
         {
@@ -51,6 +61,11 @@ namespace System.Collections.Concurrent
         public T[] ToArray()
         {
             return _wrapped.ToArray();
+        }
+
+        public bool TryPeek(out T result)
+        {
+            return _wrapped.TryPeek(out result);
         }
 
         public bool TryTake(out T item)
@@ -73,21 +88,6 @@ namespace System.Collections.Concurrent
         {
             Add(item);
             return true;
-        }
-
-        public void Add(T item)
-        {
-            _wrapped.Add(item);
-        }
-
-        public void Clear()
-        {
-            _wrapped = new SafeQueue<T>();
-        }
-
-        public bool TryPeek(out T result)
-        {
-            return _wrapped.TryPeek(out result);
         }
     }
 }

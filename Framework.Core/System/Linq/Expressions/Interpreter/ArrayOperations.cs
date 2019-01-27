@@ -91,6 +91,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 lengths[i] = length;
             }
+
             var array = Array.CreateInstance(_elementType, lengths);
             frame.Push(array);
             return 1;
@@ -118,6 +119,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 array.SetValue(frame.Pop(), i);
             }
+
             frame.Push(array);
             return 1;
         }

@@ -9,7 +9,7 @@ namespace Theraot.Core
         public static ReferenceEqualityComparer<object> Default { get; } = ReferenceEqualityComparer<object>.Instance;
     }
 
-    public class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+    public sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T>
     {
         private ReferenceEqualityComparer()
         {

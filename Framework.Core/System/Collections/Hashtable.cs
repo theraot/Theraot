@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable CC0021 // Use nameof
@@ -168,6 +169,7 @@ namespace System.Collections
         //
         public Hashtable(int capacity) : this(capacity, 1.0f)
         {
+            // Empty
         }
 
         // Constructs a new hashtable with the given initial capacity and load
@@ -219,23 +221,27 @@ namespace System.Collections
 
         [Obsolete("Please use Hashtable(IEqualityComparer) instead.")]
         public Hashtable(IHashCodeProvider hcp, IComparer comparer)
-                    : this(0, 1.0f, hcp, comparer)
+            : this(0, 1.0f, hcp, comparer)
         {
+            // Empty
         }
 
         public Hashtable(IEqualityComparer equalityComparer) : this(0, 1.0f, equalityComparer)
         {
+            // Empty
         }
 
         [Obsolete("Please use Hashtable(int, IEqualityComparer) instead.")]
         public Hashtable(int capacity, IHashCodeProvider hcp, IComparer comparer)
-                    : this(capacity, 1.0f, hcp, comparer)
+            : this(capacity, 1.0f, hcp, comparer)
         {
+            // Empty
         }
 
         public Hashtable(int capacity, IEqualityComparer equalityComparer)
-                    : this(capacity, 1.0f, equalityComparer)
+            : this(capacity, 1.0f, equalityComparer)
         {
+            // Empty
         }
 
         // Constructs a new hashtable containing a copy of the entries in the given
@@ -243,6 +249,7 @@ namespace System.Collections
         //
         public Hashtable(IDictionary d) : this(d, 1.0f)
         {
+            // Empty
         }
 
         // Constructs a new hashtable containing a copy of the entries in the given
@@ -251,22 +258,25 @@ namespace System.Collections
         public Hashtable(IDictionary d, float loadFactor)
             : this(d, loadFactor, null)
         {
+            // Empty
         }
 
         [Obsolete("Please use Hashtable(IDictionary, IEqualityComparer) instead.")]
         public Hashtable(IDictionary d, IHashCodeProvider hcp, IComparer comparer)
-                    : this(d, 1.0f, hcp, comparer)
+            : this(d, 1.0f, hcp, comparer)
         {
+            // Empty
         }
 
         public Hashtable(IDictionary d, IEqualityComparer equalityComparer)
-                    : this(d, 1.0f, equalityComparer)
+            : this(d, 1.0f, equalityComparer)
         {
+            // Empty
         }
 
         [Obsolete("Please use Hashtable(int, float, IEqualityComparer) instead.")]
         public Hashtable(int capacity, float loadFactor, IHashCodeProvider hcp, IComparer comparer)
-                    : this(capacity, loadFactor)
+            : this(capacity, loadFactor)
         {
             if (hcp != null || comparer != null)
             {
@@ -276,7 +286,7 @@ namespace System.Collections
 
         [Obsolete("Please use Hashtable(IDictionary, float, IEqualityComparer) instead.")]
         public Hashtable(IDictionary d, float loadFactor, IHashCodeProvider hcp, IComparer comparer)
-                    : this(d?.Count ?? 0, loadFactor, hcp, comparer)
+            : this(d?.Count ?? 0, loadFactor, hcp, comparer)
         {
             if (d == null)
             {
@@ -291,7 +301,7 @@ namespace System.Collections
         }
 
         public Hashtable(IDictionary d, float loadFactor, IEqualityComparer equalityComparer)
-                    : this(d?.Count ?? 0, loadFactor, equalityComparer)
+            : this(d?.Count ?? 0, loadFactor, equalityComparer)
         {
             if (d == null)
             {
@@ -314,6 +324,7 @@ namespace System.Collections
 
         protected Hashtable(SerializationInfo info, StreamingContext context)
         {
+            Theraot.No.Op(context);
             //We can't do anything with the keys and values until the entire graph has been deserialized
             //and we have a reasonable estimate that GetHashCode is not going to fail.  For the time being,
             //we'll just cache this.  The graph is not valid until OnDeserialization has been called.
@@ -1136,7 +1147,6 @@ namespace System.Collections
                     _occupancy++;
                 }
 
-
                 bucketNumber = (int)((bucketNumber + incr) % (uint)_buckets.Length);
             } while (++attempt < _buckets.Length);
 
@@ -1246,6 +1256,7 @@ namespace System.Collections
             public object Val;
             // Store hash code; sign bit means there was a collision.
         }
+
         // internal debug view class for hashtable
         internal class HashtableDebugView
         {
@@ -1440,7 +1451,8 @@ namespace System.Collections
         {
             private readonly Hashtable _table;
 
-            internal SyncHashtable(Hashtable table) : base(false)
+            internal SyncHashtable(Hashtable table)
+                : base(false)
             {
                 _table = table;
             }

@@ -29,33 +29,19 @@ namespace Theraot.Collections
         protected ProgressiveCollection(Progressor<T> progressor, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
+            Cache = _cache.WrapAsIReadOnlyCollection();
             Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
             _subscription = Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        ~ProgressiveCollection()
-        {
-            Close();
-        }
-
         public IReadOnlyCollection<T> Cache { get; }
-
-        public int Count
-        {
-            get
-            {
-                ConsumeAll();
-                return _cache.Count;
-            }
-        }
-
-        bool ICollection<T>.IsReadOnly => true;
 
         protected IEqualityComparer<T> Comparer { get; }
 
         private Progressor<T> Progressor { get; }
+
+        bool ICollection<T>.IsReadOnly => true;
 
         void ICollection<T>.Add(T item)
         {
@@ -67,35 +53,76 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
-        public void Close()
-        {
-            _subscription?.Dispose();
-            Progressor?.Close();
-        }
-
         public bool Contains(T item)
         {
-            if (CacheContains(item))
-            {
-                return true;
-            }
-            return ProgressorWhere(Check).Any();
+            return CacheContains(item) || ProgressorWhere(Check).Any();
+
             bool Check(T found)
             {
                 return Comparer.Equals(item, found);
             }
         }
 
-        public void CopyTo(T[] array)
-        {
-            Progressor.Consume();
-            _cache.CopyTo(array, 0);
-        }
-
         public void CopyTo(T[] array, int arrayIndex)
         {
             Progressor.Consume();
             _cache.CopyTo(array, arrayIndex);
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        public int Count
+        {
+            get
+            {
+                ConsumeAll();
+                return _cache.Count;
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            foreach (var item in _cache)
+            {
+                yield return item;
+            }
+
+            var knownCount = _cache.Count;
+            while (Progressor.TryTake(out var item))
+            {
+                if (_cache.Count <= knownCount)
+                {
+                    continue;
+                }
+
+                yield return item;
+                knownCount = _cache.Count;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        ~ProgressiveCollection()
+        {
+            Close();
+        }
+
+        public void Close()
+        {
+            _subscription?.Dispose();
+            Progressor?.Close();
+        }
+
+        public void CopyTo(T[] array)
+        {
+            Progressor.Consume();
+            _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
@@ -105,39 +132,13 @@ namespace Theraot.Collections
             _cache.CopyTo(array, arrayIndex, countLimit);
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            foreach (var item in _cache)
-            {
-                yield return item;
-            }
-            var knownCount = _cache.Count;
-            while (Progressor.TryTake(out var item))
-            {
-                if (_cache.Count > knownCount)
-                {
-                    yield return item;
-                    knownCount = _cache.Count;
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
         public IEnumerable<T> Where(Predicate<T> check)
         {
             foreach (var item in _cache)
             {
                 yield return item;
             }
+
             foreach (var p in ProgressorWhere(check))
             {
                 yield return p;
@@ -165,14 +166,17 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+
+                knownCount = _cache.Count;
             }
         }
 
@@ -181,18 +185,21 @@ namespace Theraot.Collections
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
-                if (_cache.Count > knownCount)
+                if (_cache.Count <= knownCount)
                 {
-                    if (check(item))
-                    {
-                        yield return item;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    knownCount = _cache.Count;
+                    continue;
                 }
+
+                if (check(item))
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
+
+                knownCount = _cache.Count;
             }
         }
     }

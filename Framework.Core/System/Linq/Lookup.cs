@@ -1,11 +1,9 @@
 ﻿#if LESSTHAN_NET35
-
 #pragma warning disable CC0031 // Check for null before calling a delegate
 
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
 namespace System.Linq
@@ -31,17 +29,14 @@ namespace System.Linq
                 {
                     return grouping;
                 }
-                return ArrayReservoir<TElement>.EmptyArray;
+                return ArrayEx.Empty<TElement>();
             }
         }
 
         public IEnumerable<TResult> ApplyResultSelector<TResult>(Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
             // MICROSFT does not null check resultSelector
-            foreach (var group in _groupings.Values)
-            {
-                yield return resultSelector(group.Key, group);
-            }
+            return _groupings.Values.Select(group => resultSelector(group.Key, group));
         }
 
         public bool Contains(TKey key)
@@ -51,10 +46,7 @@ namespace System.Linq
 
         public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
         {
-            foreach (var grouping in _groupings.Values)
-            {
-                yield return grouping;
-            }
+            return _groupings.Values.Cast<IGrouping<TKey, TElement>>().GetEnumerator();
         }
 
         internal static Lookup<TKey, TElement> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)

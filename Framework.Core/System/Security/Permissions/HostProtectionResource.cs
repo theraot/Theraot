@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
 #pragma warning disable CA1714 // Flags enums should have plural names
 #pragma warning disable RCS1154 // Sort enum members.
 #pragma warning disable RCS1191 // Declare enum value as combination of names.
@@ -23,7 +22,7 @@ namespace System.Security.Permissions
         SelfAffectingThreading = 32,
         SharedState = 2,
         Synchronization = 1,
-        UI = 128,
+        UI = 128
     }
 }
 

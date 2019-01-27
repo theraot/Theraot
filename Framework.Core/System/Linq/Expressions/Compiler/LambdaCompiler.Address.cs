@@ -1,5 +1,4 @@
 ﻿#if LESSTHAN_NET35
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -68,6 +67,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     EmitInstance(node.Expression, out objectType);
                 }
+
                 EmitMemberAddress(node.Member, objectType);
             }
             else
@@ -143,12 +143,7 @@ namespace System.Linq.Expressions.Compiler
 
         private WriteBack AddressOfWriteBack(IndexExpression node)
         {
-            if (node.Indexer?.CanWrite != true)
-            {
-                return null;
-            }
-
-            return AddressOfWriteBackCore(node); // avoids closure allocation
+            return node.Indexer?.CanWrite != true ? null : AddressOfWriteBackCore(node);
         }
 
         private WriteBack AddressOfWriteBackCore(MemberExpression node)
@@ -168,7 +163,7 @@ namespace System.Linq.Expressions.Compiler
             var pi = (PropertyInfo)node.Member;
 
             // emit the get
-            EmitCall(instanceType, pi.GetGetMethod(nonPublic: true));
+            EmitCall(instanceType, pi.GetGetMethod(true));
 
             // emit the address of the value
             var valueLocal = GetLocal(node.Type);
@@ -184,9 +179,10 @@ namespace System.Linq.Expressions.Compiler
                     @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
+
                 @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
-                @this.EmitCall(instanceLocal?.LocalType, pi.GetSetMethod(nonPublic: true));
+                @this.EmitCall(instanceLocal?.LocalType, pi.GetSetMethod(true));
             };
         }
 
@@ -236,11 +232,13 @@ namespace System.Linq.Expressions.Compiler
                     @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
+
                 foreach (var arg in args)
                 {
                     @this.IL.Emit(OpCodes.Ldloc, arg);
                     @this.FreeLocal(arg);
                 }
+
                 @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
 
@@ -319,10 +317,12 @@ namespace System.Linq.Expressions.Compiler
                         break;
                 }
             }
+
             if (result == null)
             {
                 EmitAddress(node, type, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
             }
+
             EmitExpressionEnd(startEmitted);
             return result;
         }

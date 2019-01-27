@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 using System.Diagnostics;
 
 namespace Theraot.Core

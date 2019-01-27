@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
 namespace TestRunner
@@ -16,25 +15,29 @@ namespace TestRunner
 
         public static object Get(Type type, IEnumerable<Type> preferredTypes)
         {
-            if (_dataGenerators.TryGetValue(type, out var dictionary))
+            if (!_dataGenerators.TryGetValue(type, out var dictionary))
             {
-                Delegate @delegate = null;
-                foreach (var preferredType in preferredTypes)
-                {
-                    if (!dictionary.TryGetValue(preferredType, out var found))
-                    {
-                        continue;
-                    }
-                    @delegate = found;
-                    break;
-                }
-                if (@delegate == null)
-                {
-                    @delegate = dictionary.First().Value;
-                }
-                return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
+                return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
             }
-            return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
+
+            Delegate @delegate = null;
+            foreach (var preferredType in preferredTypes)
+            {
+                if (!dictionary.TryGetValue(preferredType, out var found))
+                {
+                    continue;
+                }
+
+                @delegate = found;
+                break;
+            }
+
+            if (@delegate == null)
+            {
+                @delegate = dictionary.First().Value;
+            }
+
+            return @delegate.DynamicInvoke(ArrayEx.Empty<object>());
         }
 
         private static Dictionary<Type, SortedDictionary<Type, Delegate>> FindAllGenerators()
@@ -45,30 +48,30 @@ namespace TestRunner
                 .Where(IsGeneratorMethod)
                 .Select(GetGenerators);
             var typeComparer = new CustomComparer<Type>
-                (
-                    (left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal)
-                );
-            foreach (var generator in generators)
+            (
+                (left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal)
+            );
+            foreach (var (returnType, generatorType, @delegate) in generators)
             {
-                var type = generator.ReturnType;
-                var @delegate = generator.Delegate;
                 if (@delegate == null)
                 {
                     continue;
                 }
-                if (result.TryGetValue(type, out var dictionary))
+
+                if (result.TryGetValue(returnType, out var dictionary))
                 {
-                    dictionary.TryAdd(generator.GeneratorType, @delegate);
+                    dictionary.TryAdd(generatorType, @delegate);
                 }
                 else
                 {
                     dictionary = new SortedDictionary<Type, Delegate>(typeComparer)
                     {
-                        {generator.GeneratorType, @delegate}
+                        {generatorType, @delegate}
                     };
-                    result.Add(type, dictionary);
+                    result.Add(returnType, dictionary);
                 }
             }
+
             return result;
         }
 
@@ -86,6 +89,7 @@ namespace TestRunner
                 {
                     throw new InvalidOperationException();
                 }
+
                 if (!_instances.TryGetValue(declaringType, out var instance))
                 {
                     try
@@ -96,10 +100,13 @@ namespace TestRunner
                     {
                         Console.WriteLine(exception);
                     }
+
                     _instances[declaringType] = instance;
                 }
+
                 @delegate = instance == null ? null : DelegateBuilder.BuildDelegate(methodInfo, instance);
             }
+
             return (methodInfo.GetReturnType(), methodInfo.DeclaringType, @delegate);
         }
 
@@ -155,12 +162,15 @@ namespace TestRunner
             {
                 stringBuilder.Append(_chars[_random.Next(0, _chars.Length)]);
             }
+
             return stringBuilder.ToString();
         }
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    public sealed class DataGeneratorAttribute : Attribute { }
+    public sealed class DataGeneratorAttribute : Attribute
+    {
+    }
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
     public sealed class UseGeneratorAttribute : Attribute

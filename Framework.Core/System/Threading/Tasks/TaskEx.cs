@@ -4,9 +4,9 @@
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Theraot;
 
 #if NET40
-
 using System.Linq;
 
 #endif
@@ -14,11 +14,10 @@ using System.Linq;
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Provides methods for creating and manipulating tasks.
+    ///     Provides methods for creating and manipulating tasks.
     /// </summary>
-    ///
     /// <remarks>
-    /// TaskEx is a placeholder.
+    ///     TaskEx is a placeholder.
     /// </remarks>
     public static partial class TaskEx
     {
@@ -26,6 +25,7 @@ namespace System.Threading.Tasks
         /// <remarks>May not always return the same instance.</remarks>
         public static Task CompletedTask
         {
+            [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             get
             {
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
@@ -34,6 +34,7 @@ namespace System.Threading.Tasks
                 {
                     _completedTask = completedTask = CreateCompletedTask();
                 }
+
                 return completedTask;
 #else
                 return Task.CompletedTask;
@@ -44,7 +45,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FromCanceled(CancellationToken cancellationToken)
         {
-            return FromCanceled<Theraot.VoidStruct>(cancellationToken);
+            return FromCanceled<VoidStruct>(cancellationToken);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -56,16 +57,20 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(cancellationToken));
             }
+
             var task = new Task<TResult>();
             var value = task.TrySetCanceled(cancellationToken);
-            if (!value && !task.IsCompleted)
+            if (value || task.IsCompleted)
             {
-                var sw = new SpinWait();
-                while (!task.IsCompleted)
-                {
-                    sw.SpinOnce();
-                }
+                return task;
             }
+
+            var sw = new SpinWait();
+            while (!task.IsCompleted)
+            {
+                sw.SpinOnce();
+            }
+
             return task;
 #elif LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
             // Microsoft says Task.FromCancellation throws ArgumentOutOfRangeException when cancellation has not been requested for cancellationToken
@@ -84,7 +89,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FromCancellation(CancellationToken token)
         {
-            return FromCancellation<Theraot.VoidStruct>(token);
+            return FromCancellation<VoidStruct>(token);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -104,6 +109,7 @@ namespace System.Threading.Tasks
             {
                 token.Register(() => result.InternalCancel(false));
             }
+
             return result;
 #else
             var taskCompleteSource = new TaskCompletionSource<TResult>();
@@ -123,7 +129,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FromException(Exception exception)
         {
-            return FromException<Theraot.VoidStruct>(exception);
+            return FromException<VoidStruct>(exception);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -134,16 +140,20 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(exception));
             }
+
             var task = new Task<TResult>();
             var value = task.TrySetException(exception);
-            if (!value && !task.IsCompleted)
+            if (value || task.IsCompleted)
             {
-                var sw = new SpinWait();
-                while (!task.IsCompleted)
-                {
-                    sw.SpinOnce();
-                }
+                return task;
             }
+
+            var sw = new SpinWait();
+            while (!task.IsCompleted)
+            {
+                sw.SpinOnce();
+            }
+
             return task;
 #elif LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
             if (exception == null)
@@ -159,11 +169,11 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates an already completed <see cref="T:System.Threading.Tasks.Task`1"/> from the specified result.
+        ///     Creates an already completed <see cref="T:System.Threading.Tasks.Task`1" /> from the specified result.
         /// </summary>
         /// <param name="result">The result from which to create the completed task.</param>
         /// <returns>
-        /// The completed task.
+        ///     The completed task.
         /// </returns>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromResult<TResult>(TResult result)
@@ -179,13 +189,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified action.
+        ///     Creates a task that runs the specified action.
         /// </summary>
         /// <param name="action">The action to execute asynchronously.</param>
         /// <returns>
-        /// A task that represents the completion of the action.
+        ///     A task that represents the completion of the action.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="action" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Run(Action action)
         {
@@ -193,13 +203,14 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified action.
+        ///     Creates a task that runs the specified action.
         /// </summary>
-        /// <param name="action">The action to execute.</param><param name="cancellationToken">The CancellationToken to use to request cancellation of this task.</param>
+        /// <param name="action">The action to execute.</param>
+        /// <param name="cancellationToken">The CancellationToken to use to request cancellation of this task.</param>
         /// <returns>
-        /// A task that represents the completion of the action.
+        ///     A task that represents the completion of the action.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="action" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Run(Action action, CancellationToken cancellationToken)
         {
@@ -207,13 +218,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified function.
+        ///     Creates a task that runs the specified function.
         /// </summary>
         /// <param name="function">The function to execute asynchronously.</param>
         /// <returns>
-        /// A task that represents the completion of the action.
+        ///     A task that represents the completion of the action.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> Run<TResult>(Func<TResult> function)
         {
@@ -221,13 +232,14 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified function.
+        ///     Creates a task that runs the specified function.
         /// </summary>
-        /// <param name="function">The action to execute.</param><param name="cancellationToken">The CancellationToken to use to cancel the task.</param>
+        /// <param name="function">The action to execute.</param>
+        /// <param name="cancellationToken">The CancellationToken to use to cancel the task.</param>
         /// <returns>
-        /// A task that represents the completion of the action.
+        ///     A task that represents the completion of the action.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
         {
@@ -235,13 +247,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified function.
+        ///     Creates a task that runs the specified function.
         /// </summary>
         /// <param name="function">The action to execute asynchronously.</param>
         /// <returns>
-        /// A task that represents the completion of the action.
+        ///     A task that represents the completion of the action.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Run(Func<Task> function)
         {
@@ -249,13 +261,14 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified function.
+        ///     Creates a task that runs the specified function.
         /// </summary>
-        /// <param name="function">The function to execute.</param><param name="cancellationToken">The CancellationToken to use to request cancellation of this task.</param>
+        /// <param name="function">The function to execute.</param>
+        /// <param name="cancellationToken">The CancellationToken to use to request cancellation of this task.</param>
         /// <returns>
-        /// A task that represents the completion of the function.
+        ///     A task that represents the completion of the function.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Run(Func<Task> function, CancellationToken cancellationToken)
         {
@@ -263,13 +276,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified function.
+        ///     Creates a task that runs the specified function.
         /// </summary>
         /// <param name="function">The function to execute asynchronously.</param>
         /// <returns>
-        /// A task that represents the completion of the action.
+        ///     A task that represents the completion of the action.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
@@ -277,13 +290,14 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a task that runs the specified function.
+        ///     Creates a task that runs the specified function.
         /// </summary>
-        /// <param name="function">The action to execute.</param><param name="cancellationToken">The CancellationToken to use to cancel the task.</param>
+        /// <param name="function">The action to execute.</param>
+        /// <param name="cancellationToken">The CancellationToken to use to cancel the task.</param>
         /// <returns>
-        /// A task that represents the completion of the action.
+        ///     A task that represents the completion of the action.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function"/> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="function" /> argument is null.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function, CancellationToken cancellationToken)
         {
@@ -291,20 +305,19 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete only when all of the provided collection of Tasks has completed.
+        ///     Creates a Task that will complete only when all of the provided collection of Tasks has completed.
         /// </summary>
         /// <param name="tasks">The Tasks to monitor for completion.</param>
         /// <returns>
-        /// A Task that represents the completion of all of the provided tasks.
+        ///     A Task that represents the completion of all of the provided tasks.
         /// </returns>
-        ///
         /// <remarks>
-        /// If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
-        ///             about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
-        ///             Task will also be canceled.
-        ///
+        ///     If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
+        ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
+        ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WhenAll(params Task[] tasks)
         {
@@ -312,20 +325,19 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete only when all of the provided collection of Tasks has completed.
+        ///     Creates a Task that will complete only when all of the provided collection of Tasks has completed.
         /// </summary>
         /// <param name="tasks">The Tasks to monitor for completion.</param>
         /// <returns>
-        /// A Task that represents the completion of all of the provided tasks.
+        ///     A Task that represents the completion of all of the provided tasks.
         /// </returns>
-        ///
         /// <remarks>
-        /// If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
-        ///             about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
-        ///             Task will also be canceled.
-        ///
+        ///     If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
+        ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
+        ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
         {
@@ -333,20 +345,19 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete only when all of the provided collection of Tasks has completed.
+        ///     Creates a Task that will complete only when all of the provided collection of Tasks has completed.
         /// </summary>
         /// <param name="tasks">The Tasks to monitor for completion.</param>
         /// <returns>
-        /// A Task that represents the completion of all of the provided tasks.
+        ///     A Task that represents the completion of all of the provided tasks.
         /// </returns>
-        ///
         /// <remarks>
-        /// If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
-        ///             about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
-        ///             Task will also be canceled.
-        ///
+        ///     If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
+        ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
+        ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
@@ -359,20 +370,19 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete only when all of the provided collection of Tasks has completed.
+        ///     Creates a Task that will complete only when all of the provided collection of Tasks has completed.
         /// </summary>
         /// <param name="tasks">The Tasks to monitor for completion.</param>
         /// <returns>
-        /// A Task that represents the completion of all of the provided tasks.
+        ///     A Task that represents the completion of all of the provided tasks.
         /// </returns>
-        ///
         /// <remarks>
-        /// If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
-        ///             about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
-        ///             Task will also be canceled.
-        ///
+        ///     If any of the provided Tasks faults, the returned Task will also fault, and its Exception will contain information
+        ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
+        ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
@@ -389,18 +399,17 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete when any of the tasks in the provided collection completes.
+        ///     Creates a Task that will complete when any of the tasks in the provided collection completes.
         /// </summary>
         /// <param name="tasks">The Tasks to be monitored.</param>
         /// <returns>
-        /// A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
-        ///
+        ///     A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
         /// </returns>
-        ///
         /// <remarks>
-        /// Any Tasks that fault will need to have their exceptions observed elsewhere.
+        ///     Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<Task> WhenAny(params Task[] tasks)
         {
@@ -408,18 +417,17 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete when any of the tasks in the provided collection completes.
+        ///     Creates a Task that will complete when any of the tasks in the provided collection completes.
         /// </summary>
         /// <param name="tasks">The Tasks to be monitored.</param>
         /// <returns>
-        /// A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
-        ///
+        ///     A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
         /// </returns>
-        ///
         /// <remarks>
-        /// Any Tasks that fault will need to have their exceptions observed elsewhere.
+        ///     Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<Task> WhenAny(IEnumerable<Task> tasks)
         {
@@ -439,18 +447,17 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete when any of the tasks in the provided collection completes.
+        ///     Creates a Task that will complete when any of the tasks in the provided collection completes.
         /// </summary>
         /// <param name="tasks">The Tasks to be monitored.</param>
         /// <returns>
-        /// A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
-        ///
+        ///     A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
         /// </returns>
-        ///
         /// <remarks>
-        /// Any Tasks that fault will need to have their exceptions observed elsewhere.
+        ///     Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
         {
@@ -458,18 +465,17 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates a Task that will complete when any of the tasks in the provided collection completes.
+        ///     Creates a Task that will complete when any of the tasks in the provided collection completes.
         /// </summary>
         /// <param name="tasks">The Tasks to be monitored.</param>
         /// <returns>
-        /// A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
-        ///
+        ///     A Task that represents the completion of any of the provided Tasks.  The completed Task is this Task's result.
         /// </returns>
-        ///
         /// <remarks>
-        /// Any Tasks that fault will need to have their exceptions observed elsewhere.
+        ///     Any Tasks that fault will need to have their exceptions observed elsewhere.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="T:System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
         {
@@ -489,14 +495,12 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Creates an awaitable that asynchronously yields back to the current context when awaited.
+        ///     Creates an awaitable that asynchronously yields back to the current context when awaited.
         /// </summary>
-        ///
         /// <returns>
-        /// A context that, when awaited, will asynchronously transition back into the current context.
-        ///             If SynchronizationContext.Current is non-null, that is treated as the current context.
-        ///             Otherwise, TaskScheduler.Current is treated as the current context.
-        ///
+        ///     A context that, when awaited, will asynchronously transition back into the current context.
+        ///     If SynchronizationContext.Current is non-null, that is treated as the current context.
+        ///     Otherwise, TaskScheduler.Current is treated as the current context.
         /// </returns>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static YieldAwaitable Yield()
@@ -612,7 +616,7 @@ namespace System.Threading.Tasks
                 CancellationToken = default
             };
 #else
-            return FromResult(default(Theraot.VoidStruct));
+            return FromResult(default(VoidStruct));
 #endif
         }
     }
@@ -621,14 +625,15 @@ namespace System.Threading.Tasks
     public static partial class TaskEx
     {
         /// <summary>
-        /// Starts a Task that will complete after the specified due time.
+        ///     Starts a Task that will complete after the specified due time.
         /// </summary>
         /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param>
         /// <returns>
-        /// The timed Task.
+        ///     The timed Task.
         /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Delay(int dueTime)
         {
@@ -636,14 +641,15 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Starts a Task that will complete after the specified due time.
+        ///     Starts a Task that will complete after the specified due time.
         /// </summary>
         /// <param name="dueTime">The delay before the returned task completes.</param>
         /// <returns>
-        /// The timed Task.
+        ///     The timed Task.
         /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Delay(TimeSpan dueTime)
         {
@@ -651,14 +657,16 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Starts a Task that will complete after the specified due time.
+        ///     Starts a Task that will complete after the specified due time.
         /// </summary>
-        /// <param name="dueTime">The delay before the returned task completes.</param><param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
+        /// <param name="dueTime">The delay before the returned task completes.</param>
+        /// <param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
         /// <returns>
-        /// The timed Task.
+        ///     The timed Task.
         /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Delay(TimeSpan dueTime, CancellationToken cancellationToken)
         {
@@ -677,14 +685,16 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Starts a Task that will complete after the specified due time.
+        ///     Starts a Task that will complete after the specified due time.
         /// </summary>
-        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param><param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
+        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param>
+        /// <param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
         /// <returns>
-        /// The timed Task.
+        ///     The timed Task.
         /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="dueTime"/> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
-        ///             </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Delay(int dueTime, CancellationToken cancellationToken)
         {
@@ -717,24 +727,25 @@ namespace System.Threading.Tasks
             }
             catch (ObjectDisposedException exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
             return tcs.Task;
             CancellationTokenRegistration GetRegistrationToken()
             {
-                if (cancellationToken.CanBeCanceled)
+                if (!cancellationToken.CanBeCanceled)
                 {
-                    var newRegistration = cancellationToken.Register
-                    (
-                        () =>
-                        {
-                            Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
-                            tcs.TrySetCanceled();
-                        }
-                    );
-                    return newRegistration;
+                    return default;
                 }
-                return default;
+
+                var newRegistration = cancellationToken.Register
+                (
+                    () =>
+                    {
+                        Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
+                        tcs.TrySetCanceled();
+                    }
+                );
+                return newRegistration;
             }
 #else
             // Missing in .NET 4.0
@@ -744,7 +755,6 @@ namespace System.Threading.Tasks
     }
 
 #if TARGETS_NETSTANDARD
-
     public static partial class TaskEx
     {
         private class WaitHandleCancellableTaskCompletionSourceManager
@@ -870,6 +880,7 @@ namespace System.Threading.Tasks
                     _taskCompletionSource.TrySetCanceled();
                     return;
                 }
+
                 _taskCompletionSource.TrySetResult(true);
             }
 
@@ -881,11 +892,13 @@ namespace System.Threading.Tasks
                     _taskCompletionSource.TrySetCanceled();
                     return;
                 }
+
                 if (timeOut)
                 {
                     _taskCompletionSource.TrySetResult(false);
                     return;
                 }
+
                 _taskCompletionSource.TrySetResult(true);
             }
 
@@ -932,6 +945,7 @@ namespace System.Threading.Tasks
                     _taskCompletionSource.TrySetResult(false);
                     return;
                 }
+
                 _taskCompletionSource.TrySetResult(true);
             }
 
@@ -952,6 +966,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(waitHandle));
             }
+
             return FromWaitHandleInternal(waitHandle);
         }
 
@@ -961,6 +976,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(waitHandle));
             }
+
             return FromWaitHandleInternal(waitHandle, cancellationToken);
         }
 
@@ -970,6 +986,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(waitHandle));
             }
+
             return FromWaitHandleInternal(waitHandle, millisecondsTimeout);
         }
 
@@ -979,6 +996,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(waitHandle));
             }
+
             return FromWaitHandleInternal(waitHandle, (int)timeout.TotalMilliseconds);
         }
 
@@ -988,6 +1006,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(waitHandle));
             }
+
             return FromWaitHandleInternal(waitHandle, (int)timeout.TotalMilliseconds, cancellationToken);
         }
 
@@ -997,6 +1016,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(waitHandle));
             }
+
             return FromWaitHandleInternal(waitHandle, millisecondsTimeout, cancellationToken);
         }
 
@@ -1007,6 +1027,7 @@ namespace System.Threading.Tasks
             {
                 source.SetResult(true);
             }
+
             WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
             return source.Task;
         }
@@ -1018,6 +1039,7 @@ namespace System.Threading.Tasks
             {
                 source.SetResult(true);
             }
+
             WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
             return source.Task;
         }
@@ -1028,6 +1050,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
+
             var source = new TaskCompletionSource<bool>();
             if (waitHandle.WaitOne(0))
             {
@@ -1041,6 +1064,7 @@ namespace System.Threading.Tasks
             {
                 WaitHandleTaskCompletionSourceManager.CreateWithTimeout(waitHandle, source, millisecondsTimeout);
             }
+
             return source.Task;
         }
 
@@ -1050,11 +1074,13 @@ namespace System.Threading.Tasks
             {
                 return FromCanceled<bool>(cancellationToken);
             }
+
             var source = new TaskCompletionSource<bool>();
             if (waitHandle.WaitOne(0))
             {
                 source.SetResult(true);
             }
+
             WaitHandleCancellableTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, cancellationToken, source);
             return source.Task;
         }
@@ -1065,10 +1091,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
+
             if (cancellationToken.IsCancellationRequested)
             {
                 return FromCanceled<bool>(cancellationToken);
             }
+
             var source = new TaskCompletionSource<bool>();
             if (waitHandle.WaitOne(0))
             {
@@ -1082,6 +1110,7 @@ namespace System.Threading.Tasks
             {
                 WaitHandleCancellableTaskCompletionSourceManager.CreateWithTimeout(waitHandle, cancellationToken, source, millisecondsTimeout);
             }
+
             return source.Task;
         }
     }

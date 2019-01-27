@@ -28,9 +28,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
-            return cookie == null ?
-                InstructionName + "(" + Index + ")" :
-                InstructionName + "(" + cookie + ": " + Index + ")";
+            return cookie == null ? InstructionName + "(" + Index + ")" : InstructionName + "(" + cookie + ": " + Index + ")";
         }
     }
 
@@ -39,6 +37,7 @@ namespace System.Linq.Expressions.Interpreter
         internal LoadLocalBoxedInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override string InstructionName => "LoadLocalBox";
@@ -57,6 +56,7 @@ namespace System.Linq.Expressions.Interpreter
         internal LoadLocalFromClosureBoxedInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override string InstructionName => "LoadLocal";
@@ -75,6 +75,7 @@ namespace System.Linq.Expressions.Interpreter
         internal LoadLocalFromClosureInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override string InstructionName => "LoadLocalClosure";
@@ -93,6 +94,7 @@ namespace System.Linq.Expressions.Interpreter
         internal LoadLocalInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override string InstructionName => "LoadLocal";
@@ -115,6 +117,7 @@ namespace System.Linq.Expressions.Interpreter
         internal AssignLocalBoxedInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -134,6 +137,7 @@ namespace System.Linq.Expressions.Interpreter
         internal AssignLocalInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -157,6 +161,7 @@ namespace System.Linq.Expressions.Interpreter
         internal AssignLocalToClosureInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -176,6 +181,7 @@ namespace System.Linq.Expressions.Interpreter
         internal StoreLocalBoxedInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -194,6 +200,7 @@ namespace System.Linq.Expressions.Interpreter
         internal StoreLocalInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -232,6 +239,7 @@ namespace System.Linq.Expressions.Interpreter
         internal InitializeLocalInstruction(int index)
             : base(index)
         {
+            // Empty
         }
 
         internal sealed class ImmutableBox : InitializeLocalInstruction
@@ -261,6 +269,7 @@ namespace System.Linq.Expressions.Interpreter
             internal ImmutableRefBox(int index)
                 : base(index)
             {
+                // Empty
             }
 
             public override string InstructionName => "InitImmutableBox";
@@ -367,17 +376,14 @@ namespace System.Linq.Expressions.Interpreter
             internal Parameter(int index)
                 : base(index)
             {
+                // Empty
             }
 
             public override string InstructionName => "InitParameter";
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                if (index == Index)
-                {
-                    return InstructionList.ParameterBox(index);
-                }
-                return null;
+                return index == Index ? InstructionList.ParameterBox(index) : null;
             }
 
             public override int Run(InterpretedFrame frame)
@@ -392,6 +398,7 @@ namespace System.Linq.Expressions.Interpreter
             public ParameterBox(int index)
                 : base(index)
             {
+                // Empty
             }
 
             public override string InstructionName => "InitParameterBox";
@@ -443,6 +450,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 ret[i] = (IStrongBox)frame.Pop();
             }
+
             frame.Push(RuntimeVariables.Create(ret));
             return 1;
         }

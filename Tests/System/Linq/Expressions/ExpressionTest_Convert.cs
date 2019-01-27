@@ -58,22 +58,27 @@ namespace MonoTests.System.Linq.Expressions
 
         private interface IFoo
         {
+            // Empty
         }
 
         private class Foo : IFoo
         {
+            // Empty
         }
 
         private class Bar : Foo
         {
+            // Empty
         }
 
         private class Baz
         {
+            // Empty
         }
 
         private interface ITzap
         {
+            // Empty
         }
 
         [Test]
@@ -126,6 +131,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct EineStrukt
         {
+            // Empty
         }
 
         [Test]

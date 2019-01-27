@@ -1,7 +1,5 @@
 ﻿#if TARGETS_NETSTANDARD
-
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 
 namespace System.Threading
 {
@@ -10,7 +8,7 @@ namespace System.Threading
         private static readonly Pool<ThreadPoolThread> _pool = new Pool<ThreadPoolThread>(1024, null);
         private static int _threadCount;
 
-        private static readonly SafeQueue<Action> _work = new SafeQueue<Action>();
+        private static readonly ThreadSafeQueue<Action> _work = new ThreadSafeQueue<Action>();
 
         public static bool QueueUserWorkItem(WaitCallback callBack)
         {
@@ -19,19 +17,22 @@ namespace System.Threading
                 throw new ArgumentNullException(nameof(callBack));
             }
             _work.Add(() => callBack(null));
-            if (Volatile.Read(ref _threadCount) < EnvironmentHelper.ProcessorCount)
+            if (Volatile.Read(ref _threadCount) >= Environment.ProcessorCount)
             {
-                if (_pool.TryGet(out var thread))
-                {
-                    thread.Awake();
-                }
-                else
-                {
-                    GC.KeepAlive(new ThreadPoolThread());
-                }
+                return true;
+            }
+
+            if (_pool.TryGet(out var thread))
+            {
+                thread.Awake();
+            }
+            else
+            {
+                GC.KeepAlive(new ThreadPoolThread());
             }
             return true;
         }
+
         private class ThreadPoolThread
         {
             private readonly AutoResetEvent _event;

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -44,24 +46,15 @@ namespace System.Dynamic.Utils
     internal abstract class ListProvider<T> : IList<T>
         where T : class
     {
-        protected abstract int ElementCount { get; }
-        protected abstract T First { get; }
-
         public int Count => ElementCount;
 
         public bool IsReadOnly => true;
+        protected abstract int ElementCount { get; }
+        protected abstract T First { get; }
 
         public T this[int index]
         {
-            get
-            {
-                if (index == 0)
-                {
-                    return First;
-                }
-
-                return GetElement(index);
-            }
+            get => index == 0 ? First : GetElement(index);
             set => throw ContractUtils.Unreachable;
         }
 
@@ -145,12 +138,12 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
+        protected abstract T GetElement(int index);
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
-        protected abstract T GetElement(int index);
     }
 }
 

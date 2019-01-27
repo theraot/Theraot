@@ -1,9 +1,10 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 #pragma warning disable RCS1079 // Throwing of new NotImplementedException.
 #pragma warning disable RECS0083 // Shows NotImplementedException throws in the quick task bar
 
 using System.Collections.Generic;
+using Theraot;
 using Theraot.Core;
 
 namespace System.Threading.Tasks
@@ -22,11 +23,7 @@ namespace System.Threading.Tasks
             get
             {
                 var currentTask = Task.InternalCurrent;
-                if (currentTask != null)
-                {
-                    return currentTask.ExecutingTaskScheduler;
-                }
-                return Default;
+                return currentTask != null ? currentTask.ExecutingTaskScheduler : Default;
             }
         }
 
@@ -75,7 +72,7 @@ namespace System.Threading.Tasks
 
         protected virtual bool TryDequeue(Task task)
         {
-            Theraot.No.Op(task);
+            No.Op(task);
             return false;
         }
 
@@ -85,6 +82,7 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Wrong Task Scheduler");
             }
+
             return task.ExecuteEntry(true);
         }
 

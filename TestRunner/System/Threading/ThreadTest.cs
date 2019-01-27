@@ -93,6 +93,7 @@ namespace TestRunner.System.Threading
                     {
                         spinWait.SpinOnce();
                     }
+
                     Volatile.Write(ref control[2], 1);
                 }
             );
@@ -106,7 +107,8 @@ namespace TestRunner.System.Threading
         [Test]
         public static void SleepDurationIsAtLeastMillisecondsTimeout
         (
-            [UseGenerator(typeof(SmallPositiveNumericGenerator))] int millisecondsTimeout
+            [UseGenerator(typeof(SmallPositiveNumericGenerator))]
+            int millisecondsTimeout
         )
         {
             var stopWatch = new Stopwatch();
@@ -149,7 +151,7 @@ namespace TestRunner.System.Threading
         [Test]
         public static void TaskThreadIsBackgroundWhileLooping()
         {
-            var signal = new[] { 0 };
+            var signal = new[] {0};
             Thread thread = null;
             TaskEx.Run
             (
@@ -194,7 +196,7 @@ namespace TestRunner.System.Threading
         [Test]
         public static void ThreadIsRunningWhileLooping()
         {
-            var signal = new[] { 0 };
+            var signal = new[] {0};
             var thread = new Thread
             (
                 () =>

@@ -17,6 +17,7 @@ namespace System.Threading.Tasks
                 Contract.Assert(false);
                 throw new InvalidOperationException();
             }
+
             task.Start(task.ExecutingTaskScheduler, true, false);
         }
     }

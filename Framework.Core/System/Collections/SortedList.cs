@@ -1,4 +1,6 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+
+#pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 
@@ -151,6 +153,7 @@ namespace System.Collections
         public SortedList(IDictionary d)
             : this(d, null)
         {
+            // Empty
         }
 
         // Constructs a new sorted list containing a copy of the entries in the
@@ -216,8 +219,8 @@ namespace System.Collections
                     {
                         // size can only be zero here.
                         Debug.Assert(_size == 0, "Size is not zero");
-                        _keys = ArrayReservoir<object>.EmptyArray;
-                        _values = ArrayReservoir<object>.EmptyArray;
+                        _keys = ArrayEx.Empty<object>();
+                        _values = ArrayEx.Empty<object>();
                     }
                 }
             }
@@ -600,8 +603,8 @@ namespace System.Collections
 
         private void Init()
         {
-            _keys = ArrayReservoir<object>.EmptyArray;
-            _values = ArrayReservoir<object>.EmptyArray;
+            _keys = ArrayEx.Empty<object>();
+            _values = ArrayEx.Empty<object>();
             _size = 0;
             _comparer = new Comparer(CultureInfo.CurrentCulture);
         }

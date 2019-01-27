@@ -9,17 +9,17 @@ namespace Theraot.Collections.Specialized
     internal sealed class GroupBuilder<TKey, TSource, TElement>
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
-        private IEnumerator<TSource> _enumerator;
         private readonly Func<TSource, TKey> _keySelector;
-        private readonly SafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
-        private readonly SafeQueue<Grouping<TKey, TElement>> _results;
+        private readonly ThreadSafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
+        private readonly ThreadSafeQueue<Grouping<TKey, TElement>> _results;
         private readonly Func<TSource, TElement> _resultSelector;
+        private IEnumerator<TSource> _enumerator;
 
         private GroupBuilder(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {
             _enumerator = source.GetEnumerator();
-            _results = new SafeQueue<Grouping<TKey, TElement>>();
-            _proxies = new SafeDictionary<TKey, ProxyObservable<TElement>>(comparer);
+            _results = new ThreadSafeQueue<Grouping<TKey, TElement>>();
+            _proxies = new ThreadSafeDictionary<TKey, ProxyObservable<TElement>>(comparer);
             _keySelector = keySelector;
             _resultSelector = resultSelector;
             _cancellationTokenSource = new CancellationTokenSource();
@@ -56,6 +56,7 @@ namespace Theraot.Collections.Specialized
             {
                 return false;
             }
+
             lock (_enumerator)
             {
                 if (!_enumerator.MoveNext())
@@ -65,8 +66,10 @@ namespace Theraot.Collections.Specialized
                     _enumerator = null;
                     return false;
                 }
+
                 item = _enumerator.Current;
             }
+
             var key = _keySelector(item);
             var element = _resultSelector(item);
             if (_proxies.TryGetOrAdd(key, _ => new ProxyObservable<TElement>(), out var proxy))
@@ -77,7 +80,7 @@ namespace Theraot.Collections.Specialized
                     Advance,
                     _cancellationTokenSource.Token
                 );
-                var items = ProgressiveCollection<TElement>.Create<SafeCollection<TElement>>
+                var items = ProgressiveCollection<TElement>.Create<ThreadSafeCollection<TElement>>
                 (
                     progressor,
                     EqualityComparer<TElement>.Default
@@ -85,6 +88,7 @@ namespace Theraot.Collections.Specialized
                 var result = new Grouping<TKey, TElement>(key, items);
                 _results.Add(result);
             }
+
             proxy.OnNext(element);
             return true;
         }

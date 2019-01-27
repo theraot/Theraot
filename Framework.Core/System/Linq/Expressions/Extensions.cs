@@ -48,6 +48,7 @@ namespace System.Linq.Expressions
             {
                 types[index] = parameters[index].ParameterType;
             }
+
             return types;
         }
 
@@ -79,6 +80,7 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException(nameof(onField));
             }
+
             if (onProperty == null)
             {
                 throw new ArgumentNullException(nameof(onProperty));
@@ -107,6 +109,7 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException(nameof(onField));
             }
+
             if (onProperty == null)
             {
                 throw new ArgumentNullException(nameof(onProperty));

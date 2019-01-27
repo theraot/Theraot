@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -11,7 +11,7 @@ namespace System.Linq.Expressions.Compiler
         private readonly StackGuard _guard = new StackGuard();
 
         /// <summary>
-        /// Rewrite the expression by performing stack spilling where necessary.
+        ///     Rewrite the expression by performing stack spilling where necessary.
         /// </summary>
         /// <param name="node">Expression to rewrite.</param>
         /// <param name="stack">State of the stack before the expression is emitted.</param>
@@ -28,7 +28,7 @@ namespace System.Linq.Expressions.Compiler
             // another thread when we run out of stack space.
             if (!_guard.TryEnterOnCurrentStack())
             {
-                return _guard.RunOnEmptyStack((StackSpiller @this, Expression n, Stack s) => @this.RewriteExpression(n, s), this, node, stack);
+                return _guard.RunOnEmptyStack((@this, n, s) => @this.RewriteExpression(n, s), this, node, stack);
             }
 
             Result result;

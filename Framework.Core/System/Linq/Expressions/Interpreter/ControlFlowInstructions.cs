@@ -34,9 +34,9 @@ namespace System.Linq.Expressions.Interpreter
 
     internal class BranchInstruction : OffsetInstruction
     {
+        private static Instruction[][][] _caches;
         internal readonly bool HasResult;
         internal readonly bool HasValue;
-        private static Instruction[][][] _caches;
 
         public BranchInstruction(bool hasResult, bool hasValue)
         {
@@ -47,6 +47,7 @@ namespace System.Linq.Expressions.Interpreter
         internal BranchInstruction()
             : this(false, false)
         {
+            // Empty
         }
 
         public override Instruction[] Cache
@@ -55,8 +56,9 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (_caches == null)
                 {
-                    _caches = new[] { new Instruction[2][], new Instruction[2][] };
+                    _caches = new[] {new Instruction[2][], new Instruction[2][]};
                 }
+
                 return _caches[ConsumedStack][ProducedStack] ?? (_caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
             }
         }
@@ -109,12 +111,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             Debug.Assert(Offset != Unknown);
 
-            if (frame.Peek() != null)
-            {
-                return Offset;
-            }
-
-            return 1;
+            return frame.Peek() != null ? Offset : 1;
         }
     }
 
@@ -125,6 +122,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private EnterExceptionFilterInstruction()
         {
+            // Empty
         }
 
         public override string InstructionName => "EnterExceptionFilter";
@@ -132,7 +130,10 @@ namespace System.Linq.Expressions.Interpreter
         // The exception is pushed onto the stack in the filter runner.
         public override int ProducedStack => 1;
 
-        public override int Run(InterpretedFrame frame) => 1;
+        public override int Run(InterpretedFrame frame)
+        {
+            return 1;
+        }
     }
 
     // no-op: we need this just to balance the stack depth.
@@ -176,6 +177,7 @@ namespace System.Linq.Expressions.Interpreter
         private EnterFaultInstruction(int labelIndex)
             : base(labelIndex)
         {
+            // Empty
         }
 
         public override string InstructionName => "EnterFault";
@@ -203,7 +205,7 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     /// <summary>
-    /// The first instruction of finally block.
+    ///     The first instruction of finally block.
     /// </summary>
     internal sealed class EnterFinallyInstruction : IndexedBranchInstruction
     {
@@ -212,6 +214,7 @@ namespace System.Linq.Expressions.Interpreter
         private EnterFinallyInstruction(int labelIndex)
             : base(labelIndex)
         {
+            // Empty
         }
 
         public override int ConsumedContinuations => 1;
@@ -239,6 +242,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return _cache[labelIndex] ?? (_cache[labelIndex] = new EnterFinallyInstruction(labelIndex));
             }
+
             return new EnterFinallyInstruction(labelIndex);
         }
     }
@@ -268,6 +272,7 @@ namespace System.Linq.Expressions.Interpreter
                 // Push finally.
                 frame.PushContinuation(LabelIndex);
             }
+
             var prevInstrIndex = frame.InstructionIndex;
             frame.InstructionIndex++;
 
@@ -294,7 +299,7 @@ namespace System.Linq.Expressions.Interpreter
             catch (Exception exception) when (Handler.HasHandler(frame, exception, out var exHandler, out var unwrappedException))
             {
                 Debug.Assert(!(unwrappedException is RethrowException));
-                frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, gotoExceptionHandler: true);
+                frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, true);
 
 #if FEATURE_THREAD_ABORT
                 // stay in the current catch so that ThreadAbortException is not rethrown by CLR:
@@ -331,7 +336,10 @@ namespace System.Linq.Expressions.Interpreter
                     rethrow = true;
                 }
 
-                if (rethrow) { throw; }
+                if (rethrow)
+                {
+                    throw;
+                }
             }
             finally
             {
@@ -362,7 +370,10 @@ namespace System.Linq.Expressions.Interpreter
             return frame.InstructionIndex - prevInstrIndex;
         }
 
-        public override string ToString() => _hasFinally ? "EnterTryFinally[" + LabelIndex + "]" : "EnterTryCatch";
+        public override string ToString()
+        {
+            return _hasFinally ? "EnterTryFinally[" + LabelIndex + "]" : "EnterTryCatch";
+        }
 
         internal static EnterTryCatchFinallyInstruction CreateTryCatch()
         {
@@ -386,6 +397,7 @@ namespace System.Linq.Expressions.Interpreter
         internal EnterTryFaultInstruction(int targetIndex)
             : base(targetIndex)
         {
+            // Empty
         }
 
         public override string InstructionName => "EnterTryFault";
@@ -459,32 +471,32 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     /// <summary>
-    /// <para>
-    /// This instruction implements a goto expression that can jump out of any expression.
-    /// It pops values (arguments) from the evaluation stack that the expression tree nodes in between
-    /// the goto expression and the target label node pushed and not consumed yet.
-    /// A goto expression can jump into a node that evaluates arguments only if it carries
-    /// a value and jumps right after the first argument (the carried value will be used as the first argument).
-    /// Goto can jump into an arbitrary child of a BlockExpression since the block doesn't accumulate values
-    /// on evaluation stack as its child expressions are being evaluated.
-    /// </para>
-    /// <para>
-    /// Goto needs to execute any finally blocks on the way to the target label.
-    /// <example>
-    /// {
-    ///     f(1, 2, try { g(3, 4, try { goto L } finally { ... }, 6) } finally { ... }, 7, 8)
-    ///     L: ...
-    /// }
-    /// </example>
-    /// The goto expression here jumps to label L while having 4 items on evaluation stack (1, 2, 3 and 4).
-    /// The jump needs to execute both finally blocks, the first one on stack level 4 the
-    /// second one on stack level 2. So, it needs to jump the first finally block, pop 2 items from the stack,
-    /// run second finally block and pop another 2 items from the stack and set instruction pointer to label L.
-    /// </para>
-    /// <para>
-    /// Goto also needs to rethrow ThreadAbortException iff it jumps out of a catch handler and
-    /// the current thread is in "abort requested" state.
-    /// </para>
+    ///     <para>
+    ///         This instruction implements a goto expression that can jump out of any expression.
+    ///         It pops values (arguments) from the evaluation stack that the expression tree nodes in between
+    ///         the goto expression and the target label node pushed and not consumed yet.
+    ///         A goto expression can jump into a node that evaluates arguments only if it carries
+    ///         a value and jumps right after the first argument (the carried value will be used as the first argument).
+    ///         Goto can jump into an arbitrary child of a BlockExpression since the block doesn't accumulate values
+    ///         on evaluation stack as its child expressions are being evaluated.
+    ///     </para>
+    ///     <para>
+    ///         Goto needs to execute any finally blocks on the way to the target label.
+    ///         <example>
+    ///             {
+    ///             f(1, 2, try { g(3, 4, try { goto L } finally { ... }, 6) } finally { ... }, 7, 8)
+    ///             L: ...
+    ///             }
+    ///         </example>
+    ///         The goto expression here jumps to label L while having 4 items on evaluation stack (1, 2, 3 and 4).
+    ///         The jump needs to execute both finally blocks, the first one on stack level 4 the
+    ///         second one on stack level 2. So, it needs to jump the first finally block, pop 2 items from the stack,
+    ///         run second finally block and pop another 2 items from the stack and set instruction pointer to label L.
+    ///     </para>
+    ///     <para>
+    ///         Goto also needs to rethrow ThreadAbortException iff it jumps out of a catch handler and
+    ///         the current thread is in "abort requested" state.
+    ///     </para>
     /// </summary>
     internal sealed class GotoInstruction : IndexedBranchInstruction
     {
@@ -522,17 +534,18 @@ namespace System.Linq.Expressions.Interpreter
 
             // goto the target label or the current finally continuation:
             var value = _hasValue ? frame.Pop() : Interpreter.NoValue;
-            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, gotoExceptionHandler: false);
+            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, false);
         }
 
         internal static GotoInstruction Create(int labelIndex, bool hasResult, bool hasValue, bool labelTargetGetsValue)
         {
-            if (labelIndex < CacheSize)
+            if (labelIndex >= CacheSize)
             {
-                var index = _variants * labelIndex | (labelTargetGetsValue ? 4 : 0) | (hasResult ? 2 : 0) | (hasValue ? 1 : 0);
-                return _cache[index] ?? (_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
+                return new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue);
             }
-            return new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue);
+
+            var index = (_variants * labelIndex) | (labelTargetGetsValue ? 4 : 0) | (hasResult ? 2 : 0) | (hasValue ? 1 : 0);
+            return _cache[index] ?? (_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
         }
     }
 
@@ -562,6 +575,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LeaveExceptionFilterInstruction()
         {
+            // Empty
         }
 
         // The exception and the boolean result are popped from the stack in the filter runner.
@@ -569,11 +583,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName => "LeaveExceptionFilter";
 
-        public override int Run(InterpretedFrame frame) => 1;
+        public override int Run(InterpretedFrame frame)
+        {
+            return 1;
+        }
     }
 
     /// <summary>
-    /// The last instruction of a catch exception handler.
+    ///     The last instruction of a catch exception handler.
     /// </summary>
     internal sealed class LeaveExceptionHandlerInstruction : IndexedBranchInstruction
     {
@@ -604,12 +621,13 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static LeaveExceptionHandlerInstruction Create(int labelIndex, bool hasValue)
         {
-            if (labelIndex < CacheSize)
+            if (labelIndex >= CacheSize)
             {
-                var index = (2 * labelIndex) | (hasValue ? 1 : 0);
-                return _cache[index] ?? (_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
+                return new LeaveExceptionHandlerInstruction(labelIndex, hasValue);
             }
-            return new LeaveExceptionHandlerInstruction(labelIndex, hasValue);
+
+            var index = (2 * labelIndex) | (hasValue ? 1 : 0);
+            return _cache[index] ?? (_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
         }
     }
 
@@ -619,6 +637,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LeaveFaultInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedContinuations => 1;
@@ -636,7 +655,7 @@ namespace System.Linq.Expressions.Interpreter
     }
 
     /// <summary>
-    /// The last instruction of finally block.
+    ///     The last instruction of finally block.
     /// </summary>
     internal sealed class LeaveFinallyInstruction : Instruction
     {
@@ -644,6 +663,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LeaveFinallyInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;
@@ -655,9 +675,8 @@ namespace System.Linq.Expressions.Interpreter
 
             // If _pendingContinuation == -1 then we were getting into the finally block because an exception was thrown
             // In this case we just return 1, and the real instruction index will be calculated by GotoHandler later
-            if (!frame.IsJumpHappened()) { return 1; }
+            return !frame.IsJumpHappened() ? 1 : frame.YieldToPendingContinuation();
             // jump to goto target or to the next finally:
-            return frame.YieldToPendingContinuation();
         }
     }
 

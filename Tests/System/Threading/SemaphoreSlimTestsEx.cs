@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 
 namespace Tests.System.Threading
@@ -42,7 +43,7 @@ namespace Tests.System.Threading
             }
             catch (OperationCanceledException exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
                 return;
             }
             Assert.Fail();

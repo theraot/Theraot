@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.IO;
+using Theraot;
 using Theraot.Core;
 
 namespace Tests.Theraot.Threading
@@ -25,7 +26,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -35,7 +36,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -45,7 +46,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             Assert.AreEqual(Concat(sep, "one", "two", "three"), PathHelper.Combine("one", "two", "three"), "#A2-1");
@@ -76,7 +77,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -86,7 +87,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -96,7 +97,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -106,7 +107,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             Assert.AreEqual(Concat(sep, "one", "two", "three", "four"),
@@ -140,7 +141,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -150,7 +151,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -160,7 +161,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -170,7 +171,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             try
@@ -180,7 +181,7 @@ namespace Tests.Theraot.Threading
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
 
             Assert.AreEqual(Concat(sep, "one", "two", "three", "four", "five"),

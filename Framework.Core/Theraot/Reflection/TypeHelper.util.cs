@@ -21,28 +21,31 @@ namespace Theraot.Reflection
                 if (nonNullableTarget == target)
                 {
                     return FindConversionOperator(nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
-                        ?? FindConversionOperator(nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly);
+                           ?? FindConversionOperator(nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly);
                 }
+
                 return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
-                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
-                    ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
-                    ?? FindConversionOperator(targetStaticMethods, source, nonNullableTarget, implicitOnly);
+                       ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
+                       ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
+                       ?? FindConversionOperator(targetStaticMethods, source, nonNullableTarget, implicitOnly);
             }
+
             if (nonNullableTarget == target)
             {
                 return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
-                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
-                    ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
-                    ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly);
+                       ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
+                       ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
+                       ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly);
             }
+
             return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethodsInternal(), source, target, implicitOnly)
-                ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
-                ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
-                ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly)
-                ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
-                ?? FindConversionOperator(targetStaticMethods, source, nonNullableTarget, implicitOnly)
-                ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, nonNullableTarget, implicitOnly)
-                ?? FindConversionOperator(targetStaticMethods, nonNullableSource, nonNullableTarget, implicitOnly);
+                   ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethodsInternal(), source, target, implicitOnly)
+                   ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
+                   ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly)
+                   ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
+                   ?? FindConversionOperator(targetStaticMethods, source, nonNullableTarget, implicitOnly)
+                   ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, nonNullableTarget, implicitOnly)
+                   ?? FindConversionOperator(targetStaticMethods, nonNullableSource, nonNullableTarget, implicitOnly);
         }
     }
 }

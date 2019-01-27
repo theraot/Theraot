@@ -16,9 +16,9 @@ namespace Theraot.Collections.Specialized
     {
         private readonly Func<T, bool> _contains;
         private readonly Func<int> _count;
+        private readonly Func<IEnumerator<T>> _getEnumerator;
         private readonly Func<int, T> _index;
         private readonly Func<T, int> _indexOf;
-        private readonly Func<IEnumerator<T>> _getEnumerator;
 
         public EnumerationList(IEnumerable<T> wrapped)
         {
@@ -77,16 +77,19 @@ namespace Theraot.Collections.Specialized
 
             T Index(int index)
             {
-                if (index < _count())
+                if (index >= _count())
                 {
-                    using (var enumerator = wrapped.Skip(index).GetEnumerator())
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                }
+
+                using (var enumerator = wrapped.Skip(index).GetEnumerator())
+                {
+                    if (enumerator.MoveNext())
                     {
-                        if (enumerator.MoveNext())
-                        {
-                            return enumerator.Current;
-                        }
+                        return enumerator.Current;
                     }
                 }
+
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -100,8 +103,6 @@ namespace Theraot.Collections.Specialized
             get => this[index];
             set => throw new NotSupportedException();
         }
-
-        public T this[int index] => _index(index);
 
         void ICollection<T>.Add(T item)
         {
@@ -153,5 +154,7 @@ namespace Theraot.Collections.Specialized
         {
             throw new NotSupportedException();
         }
+
+        public T this[int index] => _index(index);
     }
 }

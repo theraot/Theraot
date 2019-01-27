@@ -13,13 +13,13 @@
 
 using System.Globalization;
 using System.Runtime.Serialization;
+using Theraot;
 
 namespace System.Collections
 {
     [Serializable]
     public sealed class Comparer : IComparer, ISerializable
     {
-
         public static readonly Comparer Default = new Comparer(CultureInfo.CurrentCulture);
         public static readonly Comparer DefaultInvariant = new Comparer(CultureInfo.InvariantCulture);
         private readonly CompareInfo _compareInfo;
@@ -41,6 +41,7 @@ namespace System.Collections
                 throw new ArgumentNullException(nameof(info));
             }
 
+            No.Op(context);
             _compareInfo = (CompareInfo)info.GetValue("CompareInfo", typeof(CompareInfo));
         }
 

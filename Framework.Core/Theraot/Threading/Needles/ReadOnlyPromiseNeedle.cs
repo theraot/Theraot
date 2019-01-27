@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Diagnostics;
@@ -16,14 +16,24 @@ namespace Theraot.Threading.Needles
             _promised = promised;
         }
 
-        public bool IsAlive => _promised.IsAlive;
-
         T INeedle<T>.Value
         {
             get => _promised.Value;
 
             set => throw new NotSupportedException();
         }
+
+        public bool TryGetValue(out T value)
+        {
+            return _promised.TryGetValue(out value);
+        }
+
+        public bool Equals(ReadOnlyPromiseNeedle<T> other)
+        {
+            return !(other is null) && _promised.Equals(other._promised);
+        }
+
+        public bool IsAlive => _promised.IsAlive;
 
         public T Value => _promised.Value;
 
@@ -33,6 +43,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(needle));
             }
+
             return needle.Value;
         }
 
@@ -42,10 +53,12 @@ namespace Theraot.Threading.Needles
             {
                 return !(right is null);
             }
+
             if (right is null)
             {
                 return true;
             }
+
             return !left._promised.Equals(right._promised);
         }
 
@@ -55,11 +68,8 @@ namespace Theraot.Threading.Needles
             {
                 return right is null;
             }
-            if (right is null)
-            {
-                return false;
-            }
-            return left._promised.Equals(right._promised);
+
+            return !(right is null) && left._promised.Equals(right._promised);
         }
 
         public override bool Equals(object obj)
@@ -68,16 +78,8 @@ namespace Theraot.Threading.Needles
             {
                 return _promised.Equals(needle._promised);
             }
-            return _promised.IsCompleted && _promised.Value.Equals(null);
-        }
 
-        public bool Equals(ReadOnlyPromiseNeedle<T> other)
-        {
-            if (other is null)
-            {
-                return false;
-            }
-            return _promised.Equals(other._promised);
+            return _promised.IsCompleted && _promised.Value.Equals(null);
         }
 
         public override int GetHashCode()
@@ -88,11 +90,6 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return $"{{Promise: {_promised}}}";
-        }
-
-        public bool TryGetValue(out T value)
-        {
-            return _promised.TryGetValue(out value);
         }
     }
 }

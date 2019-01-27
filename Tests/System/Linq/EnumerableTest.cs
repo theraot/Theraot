@@ -71,10 +71,12 @@ namespace MonoTests.System.Linq
 
         private class Foo
         {
+            // Empty
         }
 
         private class Bar : Foo
         {
+            // Empty
         }
 
         [Test]

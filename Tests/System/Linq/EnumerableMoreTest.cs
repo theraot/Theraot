@@ -2101,6 +2101,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void AsEnumerableArgumentNullTest()
         {
+            // Empty
         }
 
         [Test]
@@ -2335,6 +2336,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void RangeArgumentNullTest()
         {
+            // Empty
         }
 
         [Test]

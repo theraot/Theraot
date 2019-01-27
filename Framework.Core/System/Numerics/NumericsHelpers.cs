@@ -21,24 +21,26 @@ namespace System.Numerics
         // a mutation and needs to be used with care for immutable types.
         public static void DangerousMakeTwosComplement(uint[] d)
         {
-            if (d?.Length > 0)
+            if (!(d?.Length > 0))
             {
-                d[0] = ~d[0] + 1;
+                return;
+            }
 
-                var i = 1;
-                // first do complement and +1 as long as carry is needed
-                for (; d[i - 1] == 0 && i < d.Length; i++)
-                {
-                    ref var current = ref d[i];
-                    current = ~current + 1;
-                }
+            d[0] = ~d[0] + 1;
 
-                // now ones complement is sufficient
-                for (; i < d.Length; i++)
-                {
-                    ref var current = ref d[i];
-                    current = ~current;
-                }
+            var i = 1;
+            // first do complement and +1 as long as carry is needed
+            for (; d[i - 1] == 0 && i < d.Length; i++)
+            {
+                ref var current = ref d[i];
+                current = ~current + 1;
+            }
+
+            // now ones complement is sufficient
+            for (; i < d.Length; i++)
+            {
+                ref var current = ref d[i];
+                current = ~current;
             }
         }
     }
