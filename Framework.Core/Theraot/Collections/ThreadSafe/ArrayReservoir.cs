@@ -7,13 +7,9 @@ namespace Theraot.Collections.ThreadSafe
 {
     internal static class ArrayReservoir
     {
-        // sizes:
-        // 0  1   2   3   4    5    6    7
-        // 8, 16, 32, 64, 128, 256, 512, 1024
-
         internal const int CapacityCount = 1 + MaxCapacityLog2 - MinCapacityLog2;
         internal const int MaxCapacity = 1 << MaxCapacityLog2;
-        internal const int MaxCapacityLog2 = 10;
+        internal const int MaxCapacityLog2 = 16;
         internal const int MinCapacity = 1 << MinCapacityLog2;
         internal const int MinCapacityLog2 = 3;
         internal const int PoolSize = 16;
