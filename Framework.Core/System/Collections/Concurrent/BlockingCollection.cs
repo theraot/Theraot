@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
+using Theraot;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -64,8 +65,6 @@ namespace System.Collections.Concurrent
 
         public int BoundedCapacity => Data.Capacity;
 
-        public int Count => Data.Count;
-
         public bool IsAddingCompleted => !Data.CanAdd;
 
         public bool IsCompleted
@@ -91,6 +90,8 @@ namespace System.Collections.Concurrent
             }
         }
 
+        public int Count => Data.Count;
+
         bool ICollection.IsSynchronized
         {
             get
@@ -101,6 +102,27 @@ namespace System.Collections.Concurrent
         }
 
         object ICollection.SyncRoot => throw new NotSupportedException();
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Data.CopyTo(array, index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<T>)this).GetEnumerator();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return Data.GetEnumerator();
+        }
 
         public static int AddToAny(BlockingCollection<T>[] collections, T item)
         {
@@ -430,18 +452,12 @@ namespace System.Collections.Concurrent
 
         public void CompleteAdding()
         {
-            Data.CanAdd = false;
+            Data.CompleteAdding();
         }
 
         public void CopyTo(T[] array, int index)
         {
             ((ICollection)this).CopyTo(array, index);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public IEnumerable<T> GetConsumingEnumerable()
@@ -525,24 +541,10 @@ namespace System.Collections.Concurrent
             }
         }
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Data.CopyTo(array, index);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<T>)this).GetEnumerator();
-        }
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return Data.GetEnumerator();
-        }
-
         private sealed class PrivateData : IDisposable, IReadOnlyCollection<T>
         {
             public readonly int Capacity;
+            private readonly CancellationTokenSource _addCancellation;
             private readonly SemaphoreSlim _addSemaphore;
             private int _addWaiters;
             private int _cannotAdd;
@@ -555,17 +557,20 @@ namespace System.Collections.Concurrent
                 Capacity = capacity;
                 _addSemaphore = new SemaphoreSlim(capacity, capacity);
                 _takeSemaphore = new SemaphoreSlim(0, capacity);
+                _addCancellation = new CancellationTokenSource();
             }
 
-            public bool CanAdd
-            {
-                get => Volatile.Read(ref _cannotAdd) == 0;
-                set => Volatile.Write(ref _cannotAdd, value ? 0 : 1);
-            }
+            public bool CanAdd => Volatile.Read(ref _cannotAdd) == 0;
 
             public int Count => _collection.Count;
 
             public WaitHandle WaitHandle => _addSemaphore.AvailableWaitHandle;
+
+            public void CompleteAdding()
+            {
+                Volatile.Write(ref _cannotAdd, 1);
+                _addCancellation.Cancel();
+            }
 
             public void CopyTo(Array array, int index)
             {
@@ -599,9 +604,22 @@ namespace System.Collections.Concurrent
                 Interlocked.Increment(ref _addWaiters);
                 try
                 {
-                    if (!_addSemaphore.Wait(millisecondsTimeout, cancellationToken))
+                    var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token);
+                    try
                     {
-                        return false;
+                        if (!_addSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                        {
+                            return false;
+                        }
+                    }
+                    catch (OperationCanceledException exception)
+                    {
+                        No.Op(exception);
+                    }
+
+                    if (_addCancellation.IsCancellationRequested)
+                    {
+                        throw new InvalidOperationException("The BlockingCollection<T> has been marked as complete with regards to additions.");
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
@@ -632,19 +650,36 @@ namespace System.Collections.Concurrent
                 {
                     return false;
                 }
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!_takeSemaphore.Wait(millisecondsTimeout, cancellationToken))
+
+                var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token);
+                try
                 {
-                    return false;
+                    if (!_takeSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                    {
+                        return false;
+                    }
+                }
+                catch (OperationCanceledException exception)
+                {
+                    No.Op(exception);
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!_collection.TryTake(out item))
                 {
+                    if (_addCancellation.IsCancellationRequested)
+                    {
+                        return false;
+                    }
+
                     throw new InvalidOperationException("The underlying collection was modified outside this BlockingCollection<T> instance.");
                 }
 
-                _addSemaphore.Release();
+                if (!_addCancellation.IsCancellationRequested)
+                {
+                    _addSemaphore.Release();
+                }
+
                 return true;
             }
 
