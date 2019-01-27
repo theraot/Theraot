@@ -153,6 +153,7 @@ namespace System.Collections
         public SortedList(IDictionary d)
             : this(d, null)
         {
+            // Empty
         }
 
         // Constructs a new sorted list containing a copy of the entries in the

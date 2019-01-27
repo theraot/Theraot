@@ -274,6 +274,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private NullableMethodCallInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;
@@ -629,6 +630,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private TypeEqualsInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

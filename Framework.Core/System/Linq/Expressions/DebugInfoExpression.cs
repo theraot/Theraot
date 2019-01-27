@@ -82,6 +82,7 @@ namespace System.Linq.Expressions
         internal ClearDebugInfoExpression(SymbolDocumentInfo document)
             : base(document)
         {
+            // Empty
         }
 
         public override int EndColumn => 0;

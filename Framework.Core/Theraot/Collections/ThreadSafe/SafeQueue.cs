@@ -9,7 +9,7 @@ using System.Threading;
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
-    /// Represent a fixed size thread-safe lock-free (read may loop) queue.
+    ///     Represent a fixed size thread-safe lock-free (read may loop) queue.
     /// </summary>
     /// <typeparam name="T">The type of items stored in the queue.</typeparam>
     [Serializable]
@@ -20,7 +20,7 @@ namespace Theraot.Collections.ThreadSafe
         private Node<FixedSizeQueue<T>> _tail;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
+        ///     Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
         /// </summary>
         public SafeQueue()
         {
@@ -29,7 +29,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
+        ///     Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
         /// </summary>
         public SafeQueue(IEnumerable<T> source)
         {
@@ -40,38 +40,13 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        /// Gets the number of items actually contained.
+        ///     Gets the number of items actually contained.
         /// </summary>
         public int Count => Volatile.Read(ref _count);
 
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => throw new NotSupportedException();
-
-        /// <summary>
-        /// Attempts to Adds the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public void Add(T item)
-        {
-            var spinWait = new SpinWait();
-            while (true)
-            {
-                var tail = Volatile.Read(ref _tail);
-                if (tail.Value.TryAdd(item))
-                {
-                    Interlocked.Increment(ref _count);
-                    return;
-                }
-                var node = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
-                var found = Interlocked.CompareExchange(ref tail.Link, node, null);
-                if (found == null)
-                {
-                    Volatile.Write(ref _tail, node);
-                }
-                spinWait.SpinOnce();
-            }
-        }
 
         public void CopyTo(T[] array, int index)
         {
@@ -81,10 +56,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        ///     A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -95,6 +70,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     yield return item;
                 }
+
                 root = root.Link;
             } while (root != null);
         }
@@ -105,41 +81,11 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Attempts to retrieve the next item to be taken without removing it.
-        /// </summary>
-        /// <param name="item">The item retrieved.</param>
-        /// <returns>
-        ///   <c>true</c> if an item was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryPeek(out T item)
-        {
-            var spinWait = new SpinWait();
-            while (true)
-            {
-                var root = Volatile.Read(ref _root);
-                if (root.Value.TryPeek(out item))
-                {
-                    return true;
-                }
-                if (root.Link == null)
-                {
-                    return false;
-                }
-                var found = Interlocked.CompareExchange(ref _root, root.Link, root);
-                if (found == root)
-                {
-                    Node<FixedSizeQueue<T>>.Donate(root);
-                }
-                spinWait.SpinOnce();
-            }
-        }
-
-        /// <summary>
-        /// Attempts to retrieve and remove the next item.
+        ///     Attempts to retrieve and remove the next item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>
-        ///   <c>true</c> if the item was taken; otherwise, <c>false</c>.
+        ///     <c>true</c> if the item was taken; otherwise, <c>false</c>.
         /// </returns>
         public bool TryTake(out T item)
         {
@@ -152,15 +98,18 @@ namespace Theraot.Collections.ThreadSafe
                     Interlocked.Decrement(ref _count);
                     return true;
                 }
+
                 if (root.Link == null)
                 {
                     return false;
                 }
+
                 var found = Interlocked.CompareExchange(ref _root, root.Link, root);
                 if (found == root)
                 {
                     Node<FixedSizeQueue<T>>.Donate(root);
                 }
+
                 spinWait.SpinOnce();
             }
         }
@@ -180,6 +129,66 @@ namespace Theraot.Collections.ThreadSafe
         {
             Add(item);
             return true;
+        }
+
+        /// <summary>
+        ///     Attempts to Adds the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        public void Add(T item)
+        {
+            var spinWait = new SpinWait();
+            while (true)
+            {
+                var tail = Volatile.Read(ref _tail);
+                if (tail.Value.TryAdd(item))
+                {
+                    Interlocked.Increment(ref _count);
+                    return;
+                }
+
+                var node = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
+                var found = Interlocked.CompareExchange(ref tail.Link, node, null);
+                if (found == null)
+                {
+                    Volatile.Write(ref _tail, node);
+                }
+
+                spinWait.SpinOnce();
+            }
+        }
+
+        /// <summary>
+        ///     Attempts to retrieve the next item to be taken without removing it.
+        /// </summary>
+        /// <param name="item">The item retrieved.</param>
+        /// <returns>
+        ///     <c>true</c> if an item was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryPeek(out T item)
+        {
+            var spinWait = new SpinWait();
+            while (true)
+            {
+                var root = Volatile.Read(ref _root);
+                if (root.Value.TryPeek(out item))
+                {
+                    return true;
+                }
+
+                if (root.Link == null)
+                {
+                    return false;
+                }
+
+                var found = Interlocked.CompareExchange(ref _root, root.Link, root);
+                if (found == root)
+                {
+                    Node<FixedSizeQueue<T>>.Donate(root);
+                }
+
+                spinWait.SpinOnce();
+            }
         }
     }
 }

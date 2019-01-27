@@ -6,7 +6,7 @@ namespace System.Linq
     public static class EnumerableTheraotExtensions
     {
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
-		{
+        {
             if (first == null)
             {
                 throw new ArgumentNullException(nameof(first));

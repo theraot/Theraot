@@ -37,6 +37,7 @@ namespace System.Dynamic
 
         private BindingRestrictions()
         {
+            // Empty
         }
 
         private string DebugView => ToExpression().ToString();

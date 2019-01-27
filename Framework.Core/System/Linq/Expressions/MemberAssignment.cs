@@ -108,6 +108,7 @@ namespace System.Linq.Expressions
 
         internal override void ValidateAsDefinedHere(int index)
         {
+            // Empty
         }
     }
 }

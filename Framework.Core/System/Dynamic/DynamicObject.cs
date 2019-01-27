@@ -47,6 +47,7 @@ namespace System.Dynamic
         /// </remarks>
         protected DynamicObject()
         {
+            // Empty
         }
 
         /// <summary>

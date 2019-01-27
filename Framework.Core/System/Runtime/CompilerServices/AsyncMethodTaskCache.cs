@@ -102,6 +102,7 @@ namespace System.Runtime.CompilerServices
 
         static AsyncMethodTaskCache()
         {
+            // Empty
         }
 
         /// <summary>

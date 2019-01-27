@@ -141,6 +141,7 @@ namespace System.Runtime.CompilerServices
         private CallSite()
             : base(null)
         {
+            // Empty
         }
 
         /// <summary>

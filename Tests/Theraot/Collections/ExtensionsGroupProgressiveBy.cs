@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using MonoTests.System.Linq;
 using NUnit.Framework;
+using Theraot;
 using Theraot.Collections;
 using Theraot.Core;
 
@@ -30,7 +31,7 @@ namespace Tests.Theraot.Collections
             }
             catch (Exception exception)
             {
-                Theraot.No.Op(exception);
+                No.Op(exception);
                 Assert.Fail("Expected: " + typeof(T).Name);
             }
         }

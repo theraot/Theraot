@@ -773,6 +773,7 @@ namespace System.Linq.Expressions
         public InstanceMethodCallExpression0(MethodInfo method, Expression instance)
             : base(method, instance)
         {
+            // Empty
         }
 
         public override int ArgumentCount => 0;
@@ -1031,6 +1032,7 @@ namespace System.Linq.Expressions
         public MethodCallExpression0(MethodInfo method)
             : base(method)
         {
+            // Empty
         }
 
         public override int ArgumentCount => 0;

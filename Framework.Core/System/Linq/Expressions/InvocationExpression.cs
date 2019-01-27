@@ -526,6 +526,7 @@ namespace System.Linq.Expressions
         public InvocationExpression0(Expression lambda, Type returnType)
             : base(lambda, returnType)
         {
+            // Empty
         }
 
         public override int ArgumentCount => 0;

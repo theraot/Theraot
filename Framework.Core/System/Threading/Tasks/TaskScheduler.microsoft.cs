@@ -134,6 +134,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal virtual void NotifyWorkItemProgress()
         {
+            // Empty
         }
 
         /// <summary>

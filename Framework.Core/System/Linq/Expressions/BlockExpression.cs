@@ -518,6 +518,7 @@ namespace System.Linq.Expressions
         internal Scope1(ParameterExpression[] variables, Expression body)
             : this(variables, (object)body)
         {
+            // Empty
         }
 
         private Scope1(ParameterExpression[] variables, object body)

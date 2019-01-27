@@ -270,18 +270,22 @@ namespace MonoTests.System.Linq.Expressions
 
         private interface IBar
         {
+            // Empty
         }
 
         private class Bar : IBar
         {
+            // Empty
         }
 
         private interface IBaz<T>
         {
+            // Empty
         }
 
         private class Baz<T> : IBaz<T>
         {
+            // Empty
         }
 
         [Test]

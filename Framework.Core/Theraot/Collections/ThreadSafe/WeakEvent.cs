@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class WeakEvent<TEventArgs> : IEvent<TEventArgs>
         where TEventArgs : EventArgs
     {

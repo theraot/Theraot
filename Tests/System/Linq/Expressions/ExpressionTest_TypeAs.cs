@@ -94,14 +94,17 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Foo
         {
+            // Empty
         }
 
         private class Bar
         {
+            // Empty
         }
 
         private class Baz : Bar
         {
+            // Empty
         }
 
         [Test]

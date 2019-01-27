@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -30,6 +30,7 @@ namespace System.Linq.Expressions.Interpreter
         public LoadFieldInstruction(FieldInfo field)
             : base(field)
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;

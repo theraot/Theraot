@@ -233,6 +233,7 @@ namespace System.Linq.Expressions
         internal NewArrayBoundsExpression(Type type, Expression[] expressions)
             : base(type, expressions)
         {
+            // Empty
         }
 
         /// <inheritdoc />
@@ -249,6 +250,7 @@ namespace System.Linq.Expressions
         internal NewArrayInitExpression(Type type, Expression[] expressions)
             : base(type, expressions)
         {
+            // Empty
         }
 
         /// <inheritdoc />

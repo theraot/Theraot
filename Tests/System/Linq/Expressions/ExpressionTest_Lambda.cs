@@ -175,6 +175,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void Foo()
         {
+            // Empty
         }
 
         [Test]

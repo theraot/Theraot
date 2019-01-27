@@ -562,6 +562,7 @@ namespace System.Runtime.CompilerServices
 
             public void Dispose()
             {
+                // Empty
             }
 
             public bool MoveNext()

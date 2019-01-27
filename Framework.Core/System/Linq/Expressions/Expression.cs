@@ -60,6 +60,7 @@ namespace System.Linq.Expressions
         /// </summary>
         protected Expression()
         {
+            // Empty
         }
 
         /// <summary>

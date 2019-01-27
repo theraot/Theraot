@@ -18,6 +18,7 @@ namespace System.Runtime.CompilerServices
         public AsyncStateMachineAttribute(Type stateMachineType)
             : base(stateMachineType)
         {
+            // Empty
         }
     }
 }

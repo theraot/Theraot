@@ -65,6 +65,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public struct Baz
         {
+            // Empty
         }
 
         [Test]

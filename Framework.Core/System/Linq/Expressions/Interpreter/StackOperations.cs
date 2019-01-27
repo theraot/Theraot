@@ -87,6 +87,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private PopInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;

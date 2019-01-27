@@ -47,6 +47,7 @@ namespace System.Linq.Expressions.Interpreter
         internal BranchInstruction()
             : this(false, false)
         {
+            // Empty
         }
 
         public override Instruction[] Cache
@@ -121,6 +122,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private EnterExceptionFilterInstruction()
         {
+            // Empty
         }
 
         public override string InstructionName => "EnterExceptionFilter";
@@ -175,6 +177,7 @@ namespace System.Linq.Expressions.Interpreter
         private EnterFaultInstruction(int labelIndex)
             : base(labelIndex)
         {
+            // Empty
         }
 
         public override string InstructionName => "EnterFault";
@@ -211,6 +214,7 @@ namespace System.Linq.Expressions.Interpreter
         private EnterFinallyInstruction(int labelIndex)
             : base(labelIndex)
         {
+            // Empty
         }
 
         public override int ConsumedContinuations => 1;
@@ -393,6 +397,7 @@ namespace System.Linq.Expressions.Interpreter
         internal EnterTryFaultInstruction(int targetIndex)
             : base(targetIndex)
         {
+            // Empty
         }
 
         public override string InstructionName => "EnterTryFault";
@@ -570,6 +575,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LeaveExceptionFilterInstruction()
         {
+            // Empty
         }
 
         // The exception and the boolean result are popped from the stack in the filter runner.
@@ -631,6 +637,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LeaveFaultInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedContinuations => 1;
@@ -656,6 +663,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LeaveFinallyInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

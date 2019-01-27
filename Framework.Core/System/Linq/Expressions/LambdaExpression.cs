@@ -34,6 +34,7 @@ namespace System.Linq.Expressions
         internal Expression(Expression body)
             : base(body)
         {
+            // Empty
         }
 
         internal override Type PublicType => typeof(Expression<TDelegate>);
@@ -1026,6 +1027,7 @@ namespace System.Linq.Expressions
         public Expression0(Expression body)
             : base(body)
         {
+            // Empty
         }
 
         internal override int ParameterCount => 0;

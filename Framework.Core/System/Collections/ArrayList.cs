@@ -1930,7 +1930,8 @@ namespace System.Collections
             private int _baseSize;
             private int _baseVersion;
 
-            internal Range(ArrayList list, int index, int count) : base(false)
+            internal Range(ArrayList list, int index, int count)
+                : base(false)
             {
                 _baseList = list;
                 _baseIndex = index;

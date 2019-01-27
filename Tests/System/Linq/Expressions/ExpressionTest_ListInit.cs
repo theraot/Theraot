@@ -39,6 +39,7 @@ namespace MonoTests.System.Linq.Expressions
     {
         public class Foo
         {
+            // Empty
         }
 
         public class Bar : IEnumerable

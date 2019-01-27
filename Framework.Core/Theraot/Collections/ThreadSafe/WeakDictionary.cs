@@ -75,17 +75,17 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public IEqualityComparer<TKey> Comparer { get; }
+
+        protected SafeDictionary<WeakNeedle<TKey>, TValue> Wrapped { get; }
+
         public int Count => Wrapped.Count;
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
-        public IEqualityComparer<TKey> Comparer { get; }
-
         public ICollection<TKey> Keys => _keyCollection;
 
         public ICollection<TValue> Values => _valueCollection;
-
-        protected SafeDictionary<WeakNeedle<TKey>, TValue> Wrapped { get; }
 
         public TValue this[TKey key]
         {
@@ -95,6 +95,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return value;
                 }
+
                 throw new KeyNotFoundException();
             }
 
@@ -112,8 +113,161 @@ namespace Theraot.Collections.ThreadSafe
             AddNew(item.Key, item.Value);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// Adds the specified key and associated value.
+        ///     Removes all the elements.
+        /// </summary>
+        public void Clear()
+        {
+            foreach (var item in Wrapped.ClearEnumerable())
+            {
+                _reservoir.DonateNeedle(item.Key);
+            }
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            bool Check(WeakNeedle<TKey> input)
+            {
+                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
+            }
+
+            return Wrapped.ContainsKey
+            (
+                Comparer.GetHashCode(item.Key),
+                Check,
+                input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
+            );
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Determines whether the specified key is contained.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
+        /// </returns>
+        public bool ContainsKey(TKey key)
+        {
+            return Wrapped.ContainsKey
+            (
+                Comparer.GetHashCode(key),
+                input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key)
+            );
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="arrayIndex">Index of the array.</param>
+        /// <exception cref="T:System.ArgumentNullException">array</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
+            }
+
+            if (Wrapped.Count > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
+            }
+
+            GetPairs().CopyTo(array, arrayIndex);
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        /// </summary>
+        /// <returns>
+        ///     An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the
+        ///     collection.
+        /// </returns>
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            // No risk of dead needles here
+            foreach (var pair in Wrapped)
+            {
+                if (PrivateTryGetValue(pair.Key, out var foundKey))
+                {
+                    yield return new KeyValuePair<TKey, TValue>(foundKey, pair.Value);
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Removes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(TKey key)
+        {
+            return Wrapped.Remove
+            (
+                Comparer.GetHashCode(key),
+                input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
+                out _
+            );
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            bool Check(WeakNeedle<TKey> input)
+            {
+                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
+            }
+
+            return Wrapped.Remove
+            (
+                Comparer.GetHashCode(item.Key),
+                Check,
+                input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
+                out _
+            );
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Tries to retrieve the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            bool Check(WeakNeedle<TKey> found)
+            {
+                return PrivateTryGetValue(found, out var foundKey) && Comparer.Equals(key, foundKey);
+            }
+
+            return Wrapped.TryGetValue(Comparer.GetHashCode(key), Check, out value);
+        }
+
+        /// <summary>
+        ///     Adds the specified key and associated value.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
@@ -138,27 +292,36 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var needle = PrivateGetNeedle(key);
+
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
                 return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValueFactory(key);
             }
-            TValue ValueFactory(WeakNeedle<TKey> _) => addValueFactory(key);
+
+            TValue ValueFactory(WeakNeedle<TKey> _)
+            {
+                return addValueFactory(key);
+            }
+
             var result = Wrapped.AddOrUpdate
-                (
-                    needle,
-                    ValueFactory,
-                    Factory,
-                    out var added
-                );
+            (
+                needle,
+                ValueFactory,
+                Factory,
+                out var added
+            );
             if (!added)
             {
                 _reservoir.DonateNeedle(needle);
             }
+
             return result;
         }
 
@@ -168,22 +331,26 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var needle = PrivateGetNeedle(key);
+
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
                 return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValue;
             }
+
             var result = Wrapped.AddOrUpdate
-                (
-                    needle,
-                    addValue,
-                    Factory,
-                    out var added
-                );
+            (
+                needle,
+                addValue,
+                Factory,
+                out var added
+            );
             if (!added)
             {
                 _reservoir.DonateNeedle(needle);
             }
+
             return result;
         }
 
@@ -193,27 +360,36 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var needle = PrivateGetNeedle(key);
+
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
                 return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValueFactory(key);
             }
-            TValue ValueFactory(WeakNeedle<TKey> _) => addValueFactory(key);
+
+            TValue ValueFactory(WeakNeedle<TKey> _)
+            {
+                return addValueFactory(key);
+            }
+
             var result = Wrapped.AddOrUpdate
-                (
-                    needle,
-                    ValueFactory,
-                    Factory,
-                    out added
-                );
+            (
+                needle,
+                ValueFactory,
+                Factory,
+                out added
+            );
             if (!added)
             {
                 _reservoir.DonateNeedle(needle);
             }
+
             return result;
         }
 
@@ -223,39 +399,31 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var needle = PrivateGetNeedle(key);
+
             TValue Factory(WeakNeedle<TKey> pairKey, TValue foundValue)
             {
                 return PrivateTryGetValue(pairKey, out var foundKey) ? updateValueFactory(foundKey, foundValue) : addValue;
             }
+
             var result = Wrapped.AddOrUpdate
-                (
-                    needle,
-                    addValue,
-                    Factory,
-                    out added
-                );
+            (
+                needle,
+                addValue,
+                Factory,
+                out added
+            );
             if (!added)
             {
                 _reservoir.DonateNeedle(needle);
             }
+
             return result;
         }
 
-        /// <inheritdoc />
         /// <summary>
-        /// Removes all the elements.
-        /// </summary>
-        public void Clear()
-        {
-            foreach (var item in Wrapped.ClearEnumerable())
-            {
-                _reservoir.DonateNeedle(item.Key);
-            }
-        }
-
-        /// <summary>
-        /// Removes all the elements.
+        ///     Removes all the elements.
         /// </summary>
         public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
         {
@@ -273,136 +441,57 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            bool Check(WeakNeedle<TKey> input)
-            {
-                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
-            }
-            return Wrapped.ContainsKey
-                (
-                    Comparer.GetHashCode(item.Key),
-                    Check,
-                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
-                );
-        }
-
-        /// <inheritdoc />
         /// <summary>
-        /// Determines whether the specified key is contained.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
-        /// </returns>
-        public bool ContainsKey(TKey key)
-        {
-            return Wrapped.ContainsKey
-                (
-                    Comparer.GetHashCode(key),
-                    input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key)
-            );
-        }
-
-        /// <summary>
-        /// Determines whether the specified key is contained.
+        ///     Determines whether the specified key is contained.
         /// </summary>
         /// <param name="hashCode">The hash code to look for.</param>
         /// <param name="keyCheck">The key predicate.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             return Wrapped.ContainsKey
-                (
-                    hashCode,
-                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey)
+            (
+                hashCode,
+                input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey)
             );
         }
 
         /// <summary>
-        /// Determines whether the specified key is contained.
+        ///     Determines whether the specified key is contained.
         /// </summary>
         /// <param name="hashCode">The hash code to look for.</param>
         /// <param name="keyCheck">The key predicate.</param>
         /// <param name="valueCheck">The value predicate.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             if (valueCheck == null)
             {
                 throw new ArgumentNullException(nameof(valueCheck));
             }
+
             return Wrapped.ContainsKey
-                (
-                    hashCode,
-                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey),
-                    valueCheck
-                );
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="T:System.ArgumentNullException">array</exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
-            }
-            if (Wrapped.Count > array.Length - arrayIndex)
-            {
-                throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
-            }
-            GetPairs().CopyTo(array, arrayIndex);
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the collection.
-        /// </returns>
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            // No risk of dead needles here
-            foreach (var pair in Wrapped)
-            {
-                if (PrivateTryGetValue(pair.Key, out var foundKey))
-                {
-                    yield return new KeyValuePair<TKey, TValue>(foundKey, pair.Value);
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            (
+                hashCode,
+                input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey),
+                valueCheck
+            );
         }
 
         public TValue GetOrAdd(TKey key, TValue value)
@@ -412,6 +501,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 _reservoir.DonateNeedle(needle);
             }
+
             return result;
         }
 
@@ -421,19 +511,26 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(valueFactory));
             }
+
             var needle = PrivateGetNeedle(key);
             TValue result;
-            TValue Factory(WeakNeedle<TKey> pairKey, TValue _) => result = valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
+
+            TValue Factory(WeakNeedle<TKey> pairKey, TValue _)
+            {
+                return result = valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
+            }
+
             if (Wrapped.TryGetOrAdd(needle, () => valueFactory(key), Factory, out result))
             {
                 return result;
             }
+
             _reservoir.DonateNeedle(needle);
             return result;
         }
 
         /// <summary>
-        /// Gets the pairs contained in this object.
+        ///     Gets the pairs contained in this object.
         /// </summary>
         public IList<KeyValuePair<TKey, TValue>> GetPairs()
         {
@@ -449,133 +546,103 @@ namespace Theraot.Collections.ThreadSafe
                 var value = pair.Value;
                 result.Add(new KeyValuePair<TKey, TValue>(foundKey, value));
             }
+
             return result;
         }
 
         /// <summary>
-        /// Removes a key by hash code, key predicate and value predicate.
+        ///     Removes a key by hash code, key predicate and value predicate.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="valueCheck">The value predicate.</param>
         /// <param name="value">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
         public bool Remove(TKey key, Predicate<TValue> valueCheck, out TValue value)
-        {
-            return Wrapped.Remove
-                (
-                    Comparer.GetHashCode(key),
-                    input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
-                    valueCheck,
-                    out value
-                );
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Removes the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Remove(TKey key)
         {
             return Wrapped.Remove
             (
                 Comparer.GetHashCode(key),
                 input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
-                out _
+                valueCheck,
+                out value
             );
         }
 
         /// <summary>
-        /// Removes the specified key.
+        ///     Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
         public bool Remove(TKey key, out TValue value)
         {
             return Wrapped.Remove
-                (
-                    Comparer.GetHashCode(key),
-                    input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
-                    out value
-                );
+            (
+                Comparer.GetHashCode(key),
+                input => PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, key),
+                out value
+            );
         }
 
         /// <summary>
-        /// Removes a key by hash code and a key predicate.
+        ///     Removes a key by hash code and a key predicate.
         /// </summary>
         /// <param name="hashCode">The hash code to look for.</param>
         /// <param name="keyCheck">The key predicate.</param>
         /// <param name="value">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             return Wrapped.Remove
-                (
-                    hashCode,
-                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey),
-                    out value
-                );
+            (
+                hashCode,
+                input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey),
+                out value
+            );
         }
 
         /// <summary>
-        /// Removes a key by hash code, key predicate and value predicate.
+        ///     Removes a key by hash code, key predicate and value predicate.
         /// </summary>
         /// <param name="hashCode">The hash code to look for.</param>
         /// <param name="keyCheck">The key predicate.</param>
         /// <param name="valueCheck">The value predicate.</param>
         /// <param name="value">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck, out TValue value)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             if (valueCheck == null)
             {
                 throw new ArgumentNullException(nameof(valueCheck));
             }
-            return Wrapped.Remove
-                (
-                    hashCode,
-                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey),
-                    valueCheck,
-                    out value
-                );
-        }
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            bool Check(WeakNeedle<TKey> input)
-            {
-                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
-            }
             return Wrapped.Remove
-                (
-                    Comparer.GetHashCode(item.Key),
-                    Check,
-                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
-                    out _
-                );
+            (
+                hashCode,
+                input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey),
+                valueCheck,
+                out value
+            );
         }
 
         public int RemoveDeadItems()
@@ -584,93 +651,97 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Removes the keys and associated values where the key satisfies the predicate.
+        ///     Removes the keys and associated values where the key satisfies the predicate.
         /// </summary>
         /// <param name="keyCheck">The predicate.</param>
         /// <returns>
-        /// The number or removed pairs of keys and associated values.
+        ///     The number or removed pairs of keys and associated values.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        ///     It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public int RemoveWhereKey(Predicate<TKey> keyCheck)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             return Wrapped.RemoveWhereKey
-                (
-                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey)
+            (
+                input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey)
             );
         }
 
         /// <summary>
-        /// Removes the keys and associated values where the key satisfies the predicate.
+        ///     Removes the keys and associated values where the key satisfies the predicate.
         /// </summary>
         /// <param name="keyCheck">The predicate.</param>
         /// <returns>
-        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the removed pairs.
+        ///     An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the removed pairs.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        ///     It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public IEnumerable<TValue> RemoveWhereKeyEnumerable(Predicate<TKey> keyCheck)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             return Wrapped.RemoveWhereKeyEnumerable
-                (
-                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey)
+            (
+                input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey)
             );
         }
 
         /// <summary>
-        /// Removes the keys and associated values where the value satisfies the predicate.
+        ///     Removes the keys and associated values where the value satisfies the predicate.
         /// </summary>
         /// <param name="valueCheck">The predicate.</param>
         /// <returns>
-        /// The number or removed pairs of keys and associated values.
+        ///     The number or removed pairs of keys and associated values.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        ///     It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="valueCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="valueCheck" /> is <c>null</c>.</exception>
         public int RemoveWhereValue(Predicate<TValue> valueCheck)
         {
             if (valueCheck == null)
             {
                 throw new ArgumentNullException(nameof(valueCheck));
             }
+
             return Wrapped.RemoveWhereValue(valueCheck);
         }
 
         /// <summary>
-        /// Removes the keys and associated values where the value satisfies the predicate.
+        ///     Removes the keys and associated values where the value satisfies the predicate.
         /// </summary>
         /// <param name="valueCheck">The predicate.</param>
         /// <returns>
-        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the removed pairs.
+        ///     An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the removed pairs.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        ///     It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="valueCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="valueCheck" /> is <c>null</c>.</exception>
         public IEnumerable<TValue> RemoveWhereValueEnumerable(Predicate<TValue> valueCheck)
         {
             if (valueCheck == null)
             {
                 throw new ArgumentNullException(nameof(valueCheck));
             }
+
             return Wrapped.RemoveWhereValueEnumerable(valueCheck);
         }
 
         /// <summary>
-        /// Sets the value associated with the specified key.
+        ///     Sets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
@@ -681,7 +752,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Sets the value associated with the specified key.
+        ///     Sets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
@@ -693,12 +764,12 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        ///     Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
         /// </returns>
         public bool TryAdd(TKey key, TValue value)
         {
@@ -707,23 +778,25 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }
 
         /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        ///     Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="stored">The stored pair independently of success.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
         /// </returns>
         public bool TryAdd(TKey key, TValue value, out KeyValuePair<TKey, TValue> stored)
         {
             // No risk of dead needles here
             var needle = PrivateGetNeedle(key);
+
             bool Check(WeakNeedle<TKey> found)
             {
                 if (!PrivateTryGetValue(found, out var foundKey))
@@ -739,11 +812,13 @@ namespace Theraot.Collections.ThreadSafe
                 key = foundKey;
                 return false;
             }
+
             var result = Wrapped.TryAdd(needle, Check, value, out var storedPair);
             if (!result)
             {
                 _reservoir.DonateNeedle(needle);
             }
+
             stored = new KeyValuePair<TKey, TValue>(key, storedPair.Value);
             return result;
         }
@@ -754,12 +829,19 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(valueFactory));
             }
+
             var needle = PrivateGetNeedle(key);
-            TValue Factory(WeakNeedle<TKey> pairKey, TValue _) => valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
+
+            TValue Factory(WeakNeedle<TKey> pairKey, TValue _)
+            {
+                return valueFactory(PrivateTryGetValue(pairKey, out var foundKey) ? foundKey : key);
+            }
+
             if (Wrapped.TryGetOrAdd(needle, () => valueFactory(key), Factory, out stored))
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }
@@ -771,48 +853,33 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }
 
-        /// <inheritdoc />
         /// <summary>
-        /// Tries to retrieve the value associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            bool Check(WeakNeedle<TKey> found)
-            {
-                return PrivateTryGetValue(found, out var foundKey) && Comparer.Equals(key, foundKey);
-            }
-            return Wrapped.TryGetValue(Comparer.GetHashCode(key), Check, out value);
-        }
-
-        /// <summary>
-        /// Tries to retrieve the value by hash code and key predicate.
+        ///     Tries to retrieve the value by hash code and key predicate.
         /// </summary>
         /// <param name="hashCode">The hash code to look for.</param>
         /// <param name="keyCheck">The key predicate.</param>
         /// <param name="value">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
+        ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public bool TryGetValue(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             bool Check(WeakNeedle<TKey> found)
             {
                 return PrivateTryGetValue(found, out var foundKey) && keyCheck(foundKey);
             }
+
             return Wrapped.TryGetValue(hashCode, Check, out value);
         }
 
@@ -823,6 +890,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }
@@ -834,6 +902,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }
@@ -845,55 +914,60 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }
 
         /// <summary>
-        /// Returns the values where the key satisfies the predicate.
+        ///     Returns the values where the key satisfies the predicate.
         /// </summary>
         /// <param name="keyCheck">The predicate.</param>
         /// <returns>
-        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the matched pairs.
+        ///     An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the matched pairs.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be returned.
+        ///     It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be
+        ///     returned.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
         public IEnumerable<TValue> Where(Predicate<TKey> keyCheck)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
+
             return Wrapped.Where
-                (
-                    input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey)
+            (
+                input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey)
             );
         }
 
         /// <summary>
-        /// Returns the values where the value satisfies the predicate.
+        ///     Returns the values where the value satisfies the predicate.
         /// </summary>
         /// <param name="valueCheck">The predicate.</param>
         /// <returns>
-        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the matched pairs.
+        ///     An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the matched pairs.
         /// </returns>
         /// <remarks>
-        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be returned.
+        ///     It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be
+        ///     returned.
         /// </remarks>
-        /// <exception cref="ArgumentNullException"><paramref name="valueCheck"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="valueCheck" /> is <c>null</c>.</exception>
         public IEnumerable<TValue> WhereValue(Predicate<TValue> valueCheck)
         {
             if (valueCheck == null)
             {
                 throw new ArgumentNullException(nameof(valueCheck));
             }
+
             return Wrapped.WhereValue(valueCheck);
         }
 
         /// <summary>
-        /// Adds the specified key and associated value.
+        ///     Adds the specified key and associated value.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
@@ -906,11 +980,11 @@ namespace Theraot.Collections.ThreadSafe
             try
             {
                 Wrapped.AddNew
-                    (
-                        needle,
-                        input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
-                        value
-                    );
+                (
+                    needle,
+                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
+                    value
+                );
             }
             catch (ArgumentException)
             {
@@ -935,11 +1009,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 _reservoir.DonateNeedle(needle);
             }
+
             return stored;
         }
 
         /// <summary>
-        /// Sets the value associated with the specified key.
+        ///     Sets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
@@ -949,15 +1024,15 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
             Wrapped.Set
-                (
-                    needle,
-                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
-                    value
-                );
+            (
+                needle,
+                input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
+                value
+            );
         }
 
         /// <summary>
-        /// Sets the value associated with the specified key.
+        ///     Sets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
@@ -968,39 +1043,40 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
             Wrapped.Set
-                (
-                    needle,
-                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
-                    value,
-                    out isNew
-                );
+            (
+                needle,
+                input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
+                value,
+                out isNew
+            );
         }
 
         /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        ///     Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
         /// <param name="value">The value.</param>
         /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
         /// </returns>
         internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
             if
+            (
+                Wrapped.TryAdd
                 (
-                    Wrapped.TryAdd
-                    (
-                        needle,
-                        input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
-                        value
-                    )
+                    needle,
+                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
+                    value
                 )
+            )
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }
@@ -1010,18 +1086,19 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
             if
+            (
+                Wrapped.TryGetOrAdd
                 (
-                    Wrapped.TryGetOrAdd
-                    (
-                        needle,
-                        input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
-                        value,
-                        out stored
-                    )
+                    needle,
+                    input => !PrivateTryGetValue(input, out var foundKey) || keyOverwriteCheck(foundKey),
+                    value,
+                    out stored
                 )
+            )
             {
                 return true;
             }
+
             _reservoir.DonateNeedle(needle);
             return false;
         }

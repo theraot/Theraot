@@ -222,6 +222,7 @@ namespace System.Runtime.CompilerServices
 
         void IAsyncMethodBuilder.PreBoxInitialization()
         {
+            // Empty
         }
     }
 }

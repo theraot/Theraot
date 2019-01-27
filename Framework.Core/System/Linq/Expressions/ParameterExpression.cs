@@ -193,6 +193,7 @@ namespace System.Linq.Expressions
         internal ByRefParameterExpression(Type type, string name)
             : base(type, name)
         {
+            // Empty
         }
 
         internal override bool GetIsByRef()
@@ -211,6 +212,7 @@ namespace System.Linq.Expressions
         internal PrimitiveParameterExpression(string name)
             : base(name)
         {
+            // Empty
         }
 
         public override Type Type => typeof(T);

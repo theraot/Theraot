@@ -97,6 +97,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private NegateInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 1;

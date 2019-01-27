@@ -23,6 +23,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private EqualInstruction()
         {
+            // Empty
         }
 
         public override int ConsumedStack => 2;

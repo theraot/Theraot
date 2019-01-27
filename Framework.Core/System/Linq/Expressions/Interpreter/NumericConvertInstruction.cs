@@ -188,6 +188,7 @@ namespace System.Linq.Expressions.Interpreter
             public ToUnderlying(TypeCode to, bool isLiftedToNull)
                 : base(to, to, isLiftedToNull)
             {
+                // Empty
             }
 
             public override string InstructionName => "ConvertToUnderlying";
@@ -216,6 +217,7 @@ namespace System.Linq.Expressions.Interpreter
             public Unchecked(TypeCode from, TypeCode to, bool isLiftedToNull)
                 : base(from, to, isLiftedToNull)
             {
+                // Empty
             }
 
             public override string InstructionName => "UncheckedConvert";

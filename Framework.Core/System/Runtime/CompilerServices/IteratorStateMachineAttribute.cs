@@ -18,6 +18,7 @@ namespace System.Runtime.CompilerServices
         public IteratorStateMachineAttribute(Type stateMachineType)
             : base(stateMachineType)
         {
+            // Empty
         }
     }
 }

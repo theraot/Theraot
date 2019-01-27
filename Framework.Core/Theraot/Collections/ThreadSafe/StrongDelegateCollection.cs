@@ -3,11 +3,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class StrongDelegateCollection : ICollection<Delegate>
     {
         private readonly Action<object[]> _invoke;
@@ -68,6 +69,11 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
+        public bool Remove(Delegate item)
+        {
+            return _wrapped.Remove(item);
+        }
+
         public void Invoke(params object[] args)
         {
             _invoke(args);
@@ -76,11 +82,6 @@ namespace Theraot.Collections.ThreadSafe
         public void InvokeWithException(Action<Exception> onException, params object[] args)
         {
             _invokeWithException(onException, args);
-        }
-
-        public bool Remove(Delegate item)
-        {
-            return _wrapped.Remove(item);
         }
 
         private void InvokeExtracted(object[] args)

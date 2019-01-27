@@ -47,6 +47,7 @@ namespace System.Dynamic
         public CallInfo(int argCount, params string[] argNames)
             : this(argCount, (IEnumerable<string>)argNames)
         {
+            // Empty
         }
 
         /// <summary>

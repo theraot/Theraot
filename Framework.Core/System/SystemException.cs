@@ -8,12 +8,14 @@ namespace System
             // Empty
         }
 
-        public SystemException(string message) : base(message)
+        public SystemException(string message)
+            : base(message)
         {
             // Empty
         }
 
-        public SystemException(string message, Exception inner) : base(message, inner)
+        public SystemException(string message, Exception inner)
+            : base(message, inner)
         {
             // Empty
         }
