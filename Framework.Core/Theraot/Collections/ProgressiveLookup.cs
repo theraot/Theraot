@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
@@ -76,6 +78,7 @@ namespace Theraot.Collections
                 {
                     return grouping;
                 }
+
                 return ArrayReservoir<T>.EmptyArray;
             }
         }
@@ -106,7 +109,6 @@ namespace Theraot.Collections
         }
 
 #if FAT
-
         internal static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(Progressor<IGrouping<TKey, T>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
             where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
         {
@@ -168,6 +170,7 @@ namespace Theraot.Collections
             {
                 yield return item.Value;
             }
+
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
@@ -178,7 +181,7 @@ namespace Theraot.Collections
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -189,12 +192,15 @@ namespace Theraot.Collections
             {
                 return true;
             }
+
             foreach (var found in ProgressorWhere(Check))
             {
                 value = found;
                 return true;
             }
+
             return false;
+
             bool Check(IGrouping<TKey, T> item)
             {
                 return Comparer.Equals(key, item.Key);
@@ -220,6 +226,7 @@ namespace Theraot.Collections
                 {
                     yield return item;
                 }
+
                 knownCount = _cache.Count;
             }
         }
@@ -242,6 +249,7 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 knownCount = _cache.Count;
             }
         }

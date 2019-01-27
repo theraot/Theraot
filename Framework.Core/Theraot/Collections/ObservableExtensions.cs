@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 using System;
 
@@ -12,6 +12,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(observable));
             }
+
             return observable.Subscribe(listener.ToObserver());
         }
 
@@ -21,6 +22,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(observable));
             }
+
             return observable.Subscribe(listener.ToObserver());
         }
 
@@ -30,6 +32,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(listener));
             }
+
             return new CustomObserver<T>(listener);
         }
 
@@ -39,6 +42,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(listener));
             }
+
             return new CustomObserver<T>(listener.Report);
         }
     }

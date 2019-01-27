@@ -35,27 +35,13 @@ namespace Theraot.Collections
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        ~ProgressiveCollection()
-        {
-            Close();
-        }
-
         public IReadOnlyCollection<T> Cache { get; }
-
-        public int Count
-        {
-            get
-            {
-                ConsumeAll();
-                return _cache.Count;
-            }
-        }
-
-        bool ICollection<T>.IsReadOnly => true;
 
         protected IEqualityComparer<T> Comparer { get; }
 
         private Progressor<T> Progressor { get; }
+
+        bool ICollection<T>.IsReadOnly => true;
 
         void ICollection<T>.Add(T item)
         {
@@ -65,12 +51,6 @@ namespace Theraot.Collections
         void ICollection<T>.Clear()
         {
             throw new NotSupportedException();
-        }
-
-        public void Close()
-        {
-            _subscription?.Dispose();
-            Progressor?.Close();
         }
 
         public bool Contains(T item)
@@ -83,23 +63,24 @@ namespace Theraot.Collections
             }
         }
 
-        public void CopyTo(T[] array)
-        {
-            Progressor.Consume();
-            _cache.CopyTo(array, 0);
-        }
-
         public void CopyTo(T[] array, int arrayIndex)
         {
             Progressor.Consume();
             _cache.CopyTo(array, arrayIndex);
         }
 
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
+        bool ICollection<T>.Remove(T item)
         {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Progressor.While(() => _cache.Count < countLimit).Consume();
-            _cache.CopyTo(array, arrayIndex, countLimit);
+            throw new NotSupportedException();
+        }
+
+        public int Count
+        {
+            get
+            {
+                ConsumeAll();
+                return _cache.Count;
+            }
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -108,6 +89,7 @@ namespace Theraot.Collections
             {
                 yield return item;
             }
+
             var knownCount = _cache.Count;
             while (Progressor.TryTake(out var item))
             {
@@ -126,9 +108,28 @@ namespace Theraot.Collections
             return GetEnumerator();
         }
 
-        bool ICollection<T>.Remove(T item)
+        ~ProgressiveCollection()
         {
-            throw new NotSupportedException();
+            Close();
+        }
+
+        public void Close()
+        {
+            _subscription?.Dispose();
+            Progressor?.Close();
+        }
+
+        public void CopyTo(T[] array)
+        {
+            Progressor.Consume();
+            _cache.CopyTo(array, 0);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex, int countLimit)
+        {
+            Extensions.CanCopyTo(array, arrayIndex, countLimit);
+            Progressor.While(() => _cache.Count < countLimit).Consume();
+            _cache.CopyTo(array, arrayIndex, countLimit);
         }
 
         public IEnumerable<T> Where(Predicate<T> check)
@@ -137,6 +138,7 @@ namespace Theraot.Collections
             {
                 yield return item;
             }
+
             foreach (var p in ProgressorWhere(check))
             {
                 yield return p;
@@ -173,6 +175,7 @@ namespace Theraot.Collections
                 {
                     yield return item;
                 }
+
                 knownCount = _cache.Count;
             }
         }
@@ -195,6 +198,7 @@ namespace Theraot.Collections
                 {
                     break;
                 }
+
                 knownCount = _cache.Count;
             }
         }

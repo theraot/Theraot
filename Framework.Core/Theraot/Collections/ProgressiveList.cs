@@ -54,6 +54,7 @@ namespace Theraot.Collections
                 {
                     ProgressorWhile(_ => _cache.Count < index + 1).Consume();
                 }
+
                 return _cache[index];
             }
         }
@@ -82,6 +83,7 @@ namespace Theraot.Collections
             {
                 return cacheIndex;
             }
+
             var index = _cache.Count - 1;
             var found = false;
             ProgressorWhile
@@ -102,6 +104,7 @@ namespace Theraot.Collections
             {
                 return index;
             }
+
             return -1;
         }
 
