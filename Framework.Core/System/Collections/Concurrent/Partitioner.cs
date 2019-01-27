@@ -64,7 +64,7 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(toExclusive));
             }
 
-            var rangeCount = EnvironmentHelper.ProcessorCount * _coreOversubscriptionRate;
+            var rangeCount = Environment.ProcessorCount * _coreOversubscriptionRate;
             var size = toExclusive - fromInclusive;
             var rangeSize = size / rangeCount;
             if (rangeSize * rangeCount < size)
@@ -97,7 +97,7 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(toExclusive));
             }
 
-            var rangeCount = EnvironmentHelper.ProcessorCount * _coreOversubscriptionRate;
+            var rangeCount = Environment.ProcessorCount * _coreOversubscriptionRate;
             var size = toExclusive - fromInclusive;
             var rangeSize = size / rangeCount;
             if (rangeSize * rangeCount < size)

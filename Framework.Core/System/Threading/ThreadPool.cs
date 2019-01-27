@@ -1,6 +1,5 @@
 ﻿#if TARGETS_NETSTANDARD
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 
 namespace System.Threading
 {
@@ -18,7 +17,7 @@ namespace System.Threading
                 throw new ArgumentNullException(nameof(callBack));
             }
             _work.Add(() => callBack(null));
-            if (Volatile.Read(ref _threadCount) >= EnvironmentHelper.ProcessorCount)
+            if (Volatile.Read(ref _threadCount) >= Environment.ProcessorCount)
             {
                 return true;
             }

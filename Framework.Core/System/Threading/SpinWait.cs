@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Theraot.Core;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -35,7 +34,7 @@ namespace System.Threading
 
         public int Count { get; private set; }
 
-        public bool NextSpinWillYield => EnvironmentHelper.IsSingleCPU || Count % ThreadingHelper.SleepCountHint == 0;
+        public bool NextSpinWillYield => Environment.ProcessorCount == 1 || Count % ThreadingHelper.SleepCountHint == 0;
 
         public static void SpinUntil(Func<bool> condition)
         {
@@ -60,7 +59,7 @@ namespace System.Threading
         public void SpinOnce()
         {
             Count++;
-            if (EnvironmentHelper.IsSingleCPU || Count % ThreadingHelper.SleepCountHint == 0)
+            if (Environment.ProcessorCount == 1 || Count % ThreadingHelper.SleepCountHint == 0)
             {
                 Thread.Sleep(0);
             }
