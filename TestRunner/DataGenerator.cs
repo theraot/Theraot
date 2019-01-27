@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
 namespace TestRunner
@@ -38,7 +37,7 @@ namespace TestRunner
                 @delegate = dictionary.First().Value;
             }
 
-            return @delegate.DynamicInvoke(ArrayReservoir<object>.EmptyArray);
+            return @delegate.DynamicInvoke(ArrayEx.Empty<object>());
         }
 
         private static Dictionary<Type, SortedDictionary<Type, Delegate>> FindAllGenerators()

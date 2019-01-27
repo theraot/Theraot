@@ -7,7 +7,6 @@
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -106,7 +105,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (ArgumentCount <= 0)
             {
-                return ArrayReservoir<object>.EmptyArray;
+                return ArrayEx.Empty<object>();
             }
 
             var args = new object[ArgumentCount];

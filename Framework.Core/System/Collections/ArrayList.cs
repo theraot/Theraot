@@ -48,7 +48,7 @@ namespace System.Collections
         // increased to _defaultCapacity, and then increased in multiples of two as required.
         public ArrayList()
         {
-            _items = ArrayReservoir<object>.EmptyArray;
+            _items = ArrayEx.Empty<object>();
         }
 
         // Constructs a ArrayList with a given initial capacity. The list is
@@ -62,7 +62,7 @@ namespace System.Collections
                 throw new ArgumentOutOfRangeException(nameof(capacity), $"'{nameof(capacity)}' must be non-negative.");
             }
 
-            _items = capacity == 0 ? ArrayReservoir<object>.EmptyArray : new object[capacity];
+            _items = capacity == 0 ? ArrayEx.Empty<object>() : new object[capacity];
         }
 
         // Constructs a ArrayList, copying the contents of the given collection. The
@@ -79,7 +79,7 @@ namespace System.Collections
             var count = c.Count;
             if (count == 0)
             {
-                _items = ArrayReservoir<object>.EmptyArray;
+                _items = ArrayEx.Empty<object>();
             }
             else
             {
@@ -854,7 +854,7 @@ namespace System.Collections
         {
             if (_size == 0)
             {
-                return ArrayReservoir<object>.EmptyArray;
+                return ArrayEx.Empty<object>();
             }
 
             var array = new object[_size];
@@ -1805,7 +1805,7 @@ namespace System.Collections
             {
                 if (Count == 0)
                 {
-                    return ArrayReservoir<object>.EmptyArray;
+                    return ArrayEx.Empty<object>();
                 }
 
                 var array = new object[Count];
@@ -2410,7 +2410,7 @@ namespace System.Collections
                 InternalUpdateRange();
                 if (_baseSize == 0)
                 {
-                    return ArrayReservoir<object>.EmptyArray;
+                    return ArrayEx.Empty<object>();
                 }
 
                 var array = new object[_baseSize];

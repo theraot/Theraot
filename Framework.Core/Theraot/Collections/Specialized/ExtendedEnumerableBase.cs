@@ -1,9 +1,9 @@
-// Needed for NET30
+﻿// Needed for NET30
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
@@ -12,8 +12,8 @@ namespace Theraot.Collections.Specialized
     {
         protected ExtendedEnumerableBase(IEnumerable<T> target, IEnumerable<T> append)
         {
-            Target = target ?? ArrayReservoir<T>.EmptyArray;
-            Append = append ?? ArrayReservoir<T>.EmptyArray;
+            Target = target ?? ArrayEx.Empty<T>();
+            Append = append ?? ArrayEx.Empty<T>();
         }
 
         protected IEnumerable<T> Append { get; }

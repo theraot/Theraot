@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Dynamic
 {
@@ -20,7 +19,7 @@ namespace System.Dynamic
         /// <summary>
         ///     Represents an empty array of type <see cref="DynamicMetaObject" />. This field is read-only.
         /// </summary>
-        public static readonly DynamicMetaObject[] EmptyMetaObjects = ArrayReservoir<DynamicMetaObject>.EmptyArray;
+        public static readonly DynamicMetaObject[] EmptyMetaObjects = ArrayEx.Empty<DynamicMetaObject>();
 
         // having sentinel value means having no value. (this way we do not need a separate hasValue field)
         private static readonly object _noValueSentinel = new object();
@@ -330,7 +329,7 @@ namespace System.Dynamic
         /// <returns>The list of dynamic member names.</returns>
         public virtual IEnumerable<string> GetDynamicMemberNames()
         {
-            return ArrayReservoir<string>.EmptyArray;
+            return ArrayEx.Empty<string>();
         }
 
         /// <summary>

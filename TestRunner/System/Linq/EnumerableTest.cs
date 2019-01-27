@@ -2,7 +2,6 @@
 
 using System;
 using System.Linq;
-using Theraot.Collections.ThreadSafe;
 
 namespace TestRunner.System.Linq
 {
@@ -12,15 +11,15 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MaxOfEmptyEnumerableThrows()
         {
-            Assert.Throws<InvalidOperationException, double>(() => ArrayReservoir<double>.EmptyArray.Max());
-            Assert.Throws<InvalidOperationException, float>(() => ArrayReservoir<float>.EmptyArray.Max());
+            Assert.Throws<InvalidOperationException, double>(() => ArrayEx.Empty<double>().Max());
+            Assert.Throws<InvalidOperationException, float>(() => ArrayEx.Empty<float>().Max());
         }
 
         [Test]
         public static void MaxOfEmptyNullableEnumerableIsNull()
         {
-            Assert.AreEqual(null, ArrayReservoir<double?>.EmptyArray.Max());
-            Assert.AreEqual(null, ArrayReservoir<float?>.EmptyArray.Max());
+            Assert.AreEqual(null, ArrayEx.Empty<double?>().Max());
+            Assert.AreEqual(null, ArrayEx.Empty<float?>().Max());
         }
 
         [Test]
@@ -77,15 +76,15 @@ namespace TestRunner.System.Linq
         [Test]
         public static void MinOfEmptyEnumerableThrows()
         {
-            Assert.Throws<InvalidOperationException, double>(() => ArrayReservoir<double>.EmptyArray.Min());
-            Assert.Throws<InvalidOperationException, float>(() => ArrayReservoir<float>.EmptyArray.Min());
+            Assert.Throws<InvalidOperationException, double>(() => ArrayEx.Empty<double>().Min());
+            Assert.Throws<InvalidOperationException, float>(() => ArrayEx.Empty<float>().Min());
         }
 
         [Test]
         public static void MinOfEmptyNullableEnumerableIsNull()
         {
-            Assert.AreEqual(null, ArrayReservoir<double?>.EmptyArray.Min());
-            Assert.AreEqual(null, ArrayReservoir<float?>.EmptyArray.Min());
+            Assert.AreEqual(null, ArrayEx.Empty<double?>().Min());
+            Assert.AreEqual(null, ArrayEx.Empty<float?>().Min());
         }
 
         [Test]

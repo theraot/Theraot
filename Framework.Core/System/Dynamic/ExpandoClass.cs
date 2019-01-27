@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Dynamic
 {
@@ -33,7 +32,7 @@ namespace System.Dynamic
         internal ExpandoClass()
         {
             _hashCode = _emptyHashCode;
-            Keys = ArrayReservoir<string>.EmptyArray;
+            Keys = ArrayEx.Empty<string>();
         }
 
         /// <summary>

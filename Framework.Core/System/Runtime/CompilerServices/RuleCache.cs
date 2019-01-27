@@ -8,7 +8,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
 {
@@ -27,7 +26,7 @@ namespace System.Runtime.CompilerServices
 
         private const int _maxRules = 128;
         private readonly object _cacheLock = new object();
-        private T[] _rules = ArrayReservoir<T>.EmptyArray;
+        private T[] _rules = ArrayEx.Empty<T>();
 
         internal RuleCache()
         {

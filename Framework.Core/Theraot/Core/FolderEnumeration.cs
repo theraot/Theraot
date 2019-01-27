@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
@@ -36,7 +35,7 @@ namespace Theraot.Core
                 // Empty
             }
 
-            return fileEntries ?? ArrayReservoir<string>.EmptyArray;
+            return fileEntries ?? ArrayEx.Empty<string>();
         }
 
         public static IEnumerable<string> GetFilesAndFoldersRecursive(string folder, string pattern)
@@ -82,7 +81,7 @@ namespace Theraot.Core
             catch
             {
                 // Catch them all
-                return ArrayReservoir<string>.EmptyArray;
+                return ArrayEx.Empty<string>();
             }
         }
 

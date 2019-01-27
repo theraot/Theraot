@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
@@ -26,7 +25,7 @@ namespace Theraot.Collections.Specialized
 
         public ICollection<T> AsReadOnlyICollection { get; }
 
-        private ICollection<T> Instance => _wrapped.Invoke() ?? ArrayReservoir<T>.EmptyArray;
+        private ICollection<T> Instance => _wrapped.Invoke() ?? ArrayEx.Empty<T>();
 
         public int Count => Instance.Count;
 

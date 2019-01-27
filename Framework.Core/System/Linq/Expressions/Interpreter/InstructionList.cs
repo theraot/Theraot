@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -1028,7 +1027,7 @@ namespace System.Linq.Expressions.Interpreter
                     var cookieEnumerator =
                         (
                             debugCookies ??
-                            ArrayReservoir<KeyValuePair<int, object>>.EmptyArray
+                            ArrayEx.Empty<KeyValuePair<int, object>>()
                         )
                         .GetEnumerator()
                 )

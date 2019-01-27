@@ -219,8 +219,8 @@ namespace System.Collections
                     {
                         // size can only be zero here.
                         Debug.Assert(_size == 0, "Size is not zero");
-                        _keys = ArrayReservoir<object>.EmptyArray;
-                        _values = ArrayReservoir<object>.EmptyArray;
+                        _keys = ArrayEx.Empty<object>();
+                        _values = ArrayEx.Empty<object>();
                     }
                 }
             }
@@ -603,8 +603,8 @@ namespace System.Collections
 
         private void Init()
         {
-            _keys = ArrayReservoir<object>.EmptyArray;
-            _values = ArrayReservoir<object>.EmptyArray;
+            _keys = ArrayEx.Empty<object>();
+            _values = ArrayEx.Empty<object>();
             _size = 0;
             _comparer = new Comparer(CultureInfo.CurrentCulture);
         }

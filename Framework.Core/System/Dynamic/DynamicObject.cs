@@ -15,7 +15,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot;
-using Theraot.Collections.ThreadSafe;
 using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Dynamic
@@ -56,7 +55,7 @@ namespace System.Dynamic
         /// <returns>The list of dynamic member names.</returns>
         public virtual IEnumerable<string> GetDynamicMemberNames()
         {
-            return ArrayReservoir<string>.EmptyArray;
+            return ArrayEx.Empty<string>();
         }
 
         /// <inheritdoc />

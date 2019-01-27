@@ -16,7 +16,8 @@ namespace System.Dynamic.Utils
 {
     internal static class DelegateHelpers
     {
-        private static readonly MethodInfo _arrayEmpty = typeof(ArrayReservoir<object>).GetMethod("get_" + nameof(ArrayReservoir<object>.EmptyArray));
+        // ReSharper disable once PossibleNullReferenceException
+        private static readonly MethodInfo _arrayEmpty = typeof(ArrayEx).GetMethod(nameof(ArrayEx.Empty)).MakeGenericMethod(typeof(object));
 
         private static readonly MethodInfo _funcInvoke = typeof(Func<object[], object>).GetMethod("Invoke");
 

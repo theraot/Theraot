@@ -4,7 +4,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
 namespace System.Linq
@@ -30,7 +29,7 @@ namespace System.Linq
                 {
                     return grouping;
                 }
-                return ArrayReservoir<TElement>.EmptyArray;
+                return ArrayEx.Empty<TElement>();
             }
         }
 

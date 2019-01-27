@@ -6,7 +6,6 @@
 
 using System.Dynamic.Utils;
 using System.Reflection;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -425,7 +424,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (count <= 0)
             {
-                return ArrayReservoir<object>.EmptyArray;
+                return ArrayEx.Empty<object>();
             }
 
             var args = new object[count];

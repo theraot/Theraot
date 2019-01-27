@@ -1,8 +1,8 @@
 ﻿// Needed for NET30
 
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
@@ -10,7 +10,7 @@ namespace Theraot.Collections
     public sealed class EmptyCollection<T> : ReadOnlyCollectionEx<T>
     {
         private EmptyCollection()
-            : base(ArrayReservoir<T>.EmptyArray)
+            : base(ArrayEx.Empty<T>())
         {
             // Empty
         }

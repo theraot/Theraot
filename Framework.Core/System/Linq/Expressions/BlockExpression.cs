@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Threading;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
 {
@@ -1069,7 +1068,7 @@ namespace System.Linq.Expressions
         {
             switch (expressions.Length)
             {
-                case 0: return BlockCore(typeof(void), ArrayReservoir<ParameterExpression>.EmptyArray, ArrayReservoir<Expression>.EmptyArray);
+                case 0: return BlockCore(typeof(void), ArrayEx.Empty<ParameterExpression>(), ArrayEx.Empty<Expression>());
                 case 2: return new Block2(expressions[0], expressions[1]);
                 case 3: return new Block3(expressions[0], expressions[1], expressions[2]);
                 case 4: return new Block4(expressions[0], expressions[1], expressions[2], expressions[3]);

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
@@ -19,13 +18,13 @@ namespace Theraot.Collections
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case T[] array:
                     return array;
 
                 case ICollection<T> collection when collection.Count == 0:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case ICollection<T> collection:
                     var result = new T[collection.Count];
@@ -44,7 +43,7 @@ namespace Theraot.Collections
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case ISet<T> set:
                     return set;
@@ -68,7 +67,7 @@ namespace Theraot.Collections
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case ICollection<T> result:
                     return result;
@@ -84,7 +83,7 @@ namespace Theraot.Collections
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case IList<T> list:
                     return list;
@@ -262,7 +261,7 @@ namespace Theraot.Collections
             switch (source)
             {
                 case null:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case T[] array:
                     return array;
@@ -271,7 +270,7 @@ namespace Theraot.Collections
                     return array;
 
                 case ICollection<T> collection when collection.Count == 0:
-                    return ArrayReservoir<T>.EmptyArray;
+                    return ArrayEx.Empty<T>();
 
                 case ICollection<T> collection:
                     var result = new T[collection.Count];

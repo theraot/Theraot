@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
 namespace TestRunner
@@ -250,7 +249,7 @@ namespace TestRunner
 
                 capturedResult = null;
                 task.Wait();
-                return task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayReservoir<object>.EmptyArray);
+                return task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayEx.Empty<object>());
             }
         }
 

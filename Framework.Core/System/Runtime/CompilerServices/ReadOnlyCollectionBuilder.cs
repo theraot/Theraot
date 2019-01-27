@@ -9,7 +9,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
 {
@@ -29,7 +28,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         public ReadOnlyCollectionBuilder()
         {
-            _items = ArrayReservoir<T>.EmptyArray;
+            _items = ArrayEx.Empty<T>();
         }
 
         /// <summary>
@@ -107,7 +106,7 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    _items = ArrayReservoir<T>.EmptyArray;
+                    _items = ArrayEx.Empty<T>();
                 }
             }
         }
@@ -490,7 +489,7 @@ namespace System.Runtime.CompilerServices
         {
             // Can we use the stored array?
             var items = Count == _items.Length ? _items : ToArray();
-            _items = ArrayReservoir<T>.EmptyArray;
+            _items = ArrayEx.Empty<T>();
             Count = 0;
             _version++;
 

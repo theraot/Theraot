@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions
@@ -332,7 +331,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(methodName, nameof(methodName));
             if (arguments == null)
             {
-                arguments = ArrayReservoir<Expression>.EmptyArray;
+                arguments = ArrayEx.Empty<Expression>();
             }
 
             const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
@@ -358,7 +357,7 @@ namespace System.Linq.Expressions
 
             if (arguments == null)
             {
-                arguments = ArrayReservoir<Expression>.EmptyArray;
+                arguments = ArrayEx.Empty<Expression>();
             }
 
             const BindingFlags Flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;

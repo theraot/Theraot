@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 
 namespace TestRunner
 {
@@ -12,6 +12,6 @@ namespace TestRunner
         public static readonly IReadOnlyCollection<string> HashSetExAsIReadOnlyCollection = new HashSetEx<string>();
         public static readonly ISet<string> HashSetExAsISet = new HashSetEx<string>();
         public static readonly IReadOnlyList<string> ListExAsReadOnlyList = new ListEx<string>();
-        public static readonly IReadOnlyList<string> ReadOnlyCollectionExAsIReadOnlyList = new ReadOnlyCollectionEx<string>(ArrayReservoir<string>.EmptyArray);
+        public static readonly IReadOnlyList<string> ReadOnlyCollectionExAsIReadOnlyList = new ReadOnlyCollectionEx<string>(ArrayEx.Empty<string>());
     }
 }

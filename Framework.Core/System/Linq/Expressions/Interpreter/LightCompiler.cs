@@ -13,7 +13,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 using AstUtils = System.Linq.Expressions.Utils;
 
@@ -265,7 +264,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class LightCompiler
     {
-        private static readonly LocalDefinition[] _emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
+        private static readonly LocalDefinition[] _emptyLocals = ArrayEx.Empty<LocalDefinition>();
         private readonly List<DebugInfo> _debugInfos = new List<DebugInfo>();
         private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new Stack<ParameterExpression>();
         private readonly StackGuard _guard = new StackGuard();
@@ -1476,7 +1475,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (typeof(LambdaExpression).IsAssignableFrom(node.Expression.Type))
             {
-                var compMethod = node.Expression.Type.GetMethod("Compile", ArrayReservoir<Type>.EmptyArray);
+                var compMethod = node.Expression.Type.GetMethod("Compile", ArrayEx.Empty<Type>());
                 CompileMethodCallExpression
                 (
                     Expression.Call
@@ -1766,7 +1765,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     // reflection doesn't let us call methods on Nullable<T> when the value
                     // is null...  so we get to special case those methods!
-                    Instructions.EmitNullableCall(method, ArrayReservoir<ParameterInfo>.EmptyArray);
+                    Instructions.EmitNullableCall(method, ArrayEx.Empty<ParameterInfo>());
                 }
                 else
                 {
@@ -3205,7 +3204,7 @@ namespace System.Linq.Expressions.Interpreter
 
             protected internal override Expression VisitLambda<T>(Expression<T> node)
             {
-                IEnumerable<ParameterExpression> parameters = ArrayReservoir<ParameterExpression>.EmptyArray;
+                IEnumerable<ParameterExpression> parameters = ArrayEx.Empty<ParameterExpression>();
 
                 var count = node.ParameterCount;
 

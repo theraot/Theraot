@@ -487,7 +487,7 @@ namespace System.Dynamic
             private ExpandoData()
             {
                 Class = ExpandoClass.Empty;
-                _dataArray = ArrayReservoir<object>.EmptyArray;
+                _dataArray = ArrayEx.Empty<object>();
             }
 
             internal int Length => _dataArray.Length;

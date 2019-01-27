@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
@@ -19,8 +18,8 @@ namespace Theraot.Collections.Specialized
 
         public ConditionalExtendedList(IEnumerable<T> target, IEnumerable<T> append, Func<bool> enumerateTarget, Func<bool> enumerateAppend)
         {
-            _target = target == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(target);
-            _append = append == null ? ArrayReservoir<T>.EmptyArray : Extensions.WrapAsIList(append);
+            _target = target == null ? ArrayEx.Empty<T>() : Extensions.WrapAsIList(target);
+            _append = append == null ? ArrayEx.Empty<T>() : Extensions.WrapAsIList(append);
             _enumerateTarget = enumerateTarget ?? (target == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
             _enumerateAppend = enumerateAppend ?? (append == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }

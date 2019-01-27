@@ -23,13 +23,6 @@ namespace Theraot.Collections.ThreadSafe
         private const int _poolSize = 16;
         private static readonly Pool<T[]>[] _pools = CreatePools();
 
-        public static T[] EmptyArray { get; }
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-            = new T[0];
-#else
-            = typeof(T) == typeof(Type) ? (T[])(object)Type.EmptyTypes : new T[0];
-#endif
-
         internal static void DonateArray(T[] donation)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
@@ -60,7 +53,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (capacity == 0)
             {
-                return EmptyArray;
+                return ArrayEx.Empty<T>();
             }
 
             if (capacity < _minCapacity)

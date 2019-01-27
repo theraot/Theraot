@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
 {
@@ -164,7 +163,7 @@ namespace System.Linq.Expressions
 
             if (type.IsValueType)
             {
-                return new NewValueTypeExpression(type, ArrayReservoir<Expression>.EmptyArray, null);
+                return new NewValueTypeExpression(type, ArrayEx.Empty<Expression>(), null);
             }
 
             var ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);

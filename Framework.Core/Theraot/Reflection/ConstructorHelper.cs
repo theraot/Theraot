@@ -47,7 +47,7 @@ namespace Theraot.Reflection
                 return true;
             }
 
-            var typeArguments = ArrayReservoir<Type>.EmptyArray;
+            var typeArguments = ArrayEx.Empty<Type>();
             var constructorInfo = typeof(TReturn).GetTypeInfo().GetConstructor(typeArguments);
             if (constructorInfo == null)
             {
@@ -58,7 +58,7 @@ namespace Theraot.Reflection
 
             TReturn Create()
             {
-                return (TReturn)constructorInfo.Invoke(ArrayReservoir<object>.EmptyArray);
+                return (TReturn)constructorInfo.Invoke(ArrayEx.Empty<object>());
             }
 
             _constructorCache[type] = (Func<TReturn>)Create;

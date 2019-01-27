@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
@@ -79,7 +78,7 @@ namespace Theraot.Collections
                     return grouping;
                 }
 
-                return ArrayReservoir<T>.EmptyArray;
+                return ArrayEx.Empty<T>();
             }
         }
 

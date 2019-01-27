@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections.Generic
 {
@@ -101,7 +100,7 @@ namespace System.Collections.Generic
         {
             if (Count == 0)
             {
-                return ArrayReservoir<T>.EmptyArray;
+                return ArrayEx.Empty<T>();
             }
 
             Debug.Assert(Buffer != null); // Nonzero _count should imply this
