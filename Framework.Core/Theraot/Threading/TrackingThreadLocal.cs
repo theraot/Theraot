@@ -25,6 +25,26 @@ namespace Theraot.Threading
             _slots = new SafeDictionary<Thread, INeedle<T>>(_maxProbingHint);
         }
 
+        public bool TryGetValue(out T value)
+        {
+            return TryGetValue(Thread.CurrentThread, out value);
+        }
+
+        void IObserver<T>.OnCompleted()
+        {
+            // Empty
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            SetError(Thread.CurrentThread, error);
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
         public bool IsValueCreated
         {
             get
@@ -33,10 +53,12 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
                 }
+
                 if (_slots.TryGetValue(Thread.CurrentThread, out var needle))
                 {
                     return needle is ReadOnlyStructNeedle<T>;
                 }
+
                 return false;
             }
         }
@@ -50,16 +72,6 @@ namespace Theraot.Threading
 
         public IList<T> Values => _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
 
-        Exception IPromise.Exception => null;
-
-        bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
-
-        bool IPromise.IsCanceled => false;
-
-        bool IPromise.IsCompleted => IsValueCreated;
-
-        bool IPromise.IsFaulted => false;
-
         T IThreadLocal<T>.ValueForDebugDisplay => TryGetValue(Thread.CurrentThread, out var target) ? target : default;
 
         [DebuggerNonUserCode]
@@ -72,6 +84,21 @@ namespace Theraot.Threading
 
             _slots = null;
             _valueFactory = null;
+        }
+
+        Exception IPromise.Exception => null;
+
+        bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
+
+        bool IPromise.IsCanceled => false;
+
+        bool IPromise.IsCompleted => IsValueCreated;
+
+        bool IPromise.IsFaulted => false;
+
+        void IWaitablePromise.Wait()
+        {
+            GC.KeepAlive(Value);
         }
 
         public void EraseValue()
@@ -90,18 +117,15 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
+
             if (_slots.TryGetValue(thread, out var tmp))
             {
                 target = tmp.Value;
                 return true;
             }
+
             target = default;
             return false;
-        }
-
-        public bool TryGetValue(out T value)
-        {
-            return TryGetValue(Thread.CurrentThread, out value);
         }
 
         private void EraseValue(Thread thread)
@@ -110,6 +134,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
+
             _slots.Remove(thread);
         }
 
@@ -136,23 +161,9 @@ namespace Theraot.Threading
                     needle = new ExceptionStructNeedle<T>(exception);
                 }
             }
+
             _slots.Set(thread, needle);
             return needle.Value;
-        }
-
-        void IObserver<T>.OnCompleted()
-        {
-            // Empty
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            SetError(Thread.CurrentThread, error);
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
         }
 
         private void SetError(Thread thread, Exception error)
@@ -161,6 +172,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
+
             _slots.Set(thread, new ExceptionStructNeedle<T>(error));
         }
 
@@ -170,12 +182,8 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
             }
-            _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
-        }
 
-        void IWaitablePromise.Wait()
-        {
-            GC.KeepAlive(Value);
+            _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
         }
     }
 }

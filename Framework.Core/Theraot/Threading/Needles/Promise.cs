@@ -3,11 +3,12 @@
 #pragma warning disable RCS1231 // Make parameter ref read-only.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class Promise : IWaitablePromise
     {
         private readonly int _hashCode;
@@ -30,10 +31,7 @@ namespace Theraot.Threading.Needles
             _waitHandle = new ManualResetEventSlim(true);
         }
 
-        ~Promise()
-        {
-            ReleaseWaitHandle(false);
-        }
+        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
 
         public Exception Exception { get; private set; }
 
@@ -50,7 +48,29 @@ namespace Theraot.Threading.Needles
 
         public bool IsFaulted => Exception != null;
 
-        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
+        public virtual void Wait()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle == null)
+            {
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait();
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
+            }
+        }
+
+        ~Promise()
+        {
+            ReleaseWaitHandle(false);
+        }
 
         public virtual void Free()
         {
@@ -63,6 +83,7 @@ namespace Theraot.Threading.Needles
             {
                 waitHandle.Reset();
             }
+
             Exception = null;
         }
 
@@ -72,6 +93,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(beforeFree));
             }
+
             var waitHandle = _waitHandle.Value;
             if (waitHandle?.IsSet != false)
             {
@@ -89,6 +111,7 @@ namespace Theraot.Threading.Needles
                     {
                         waitHandle.Reset();
                     }
+
                     Exception = null;
                 }
             }
@@ -123,25 +146,6 @@ namespace Theraot.Threading.Needles
                     ? "[Done]"
                     : Exception.ToString()
                 : "[Not Created]";
-        }
-
-        public virtual void Wait()
-        {
-            var waitHandle = _waitHandle.Value;
-            if (waitHandle == null)
-            {
-                return;
-            }
-
-            try
-            {
-                waitHandle.Wait();
-            }
-            catch (ObjectDisposedException exception)
-            {
-                // Came late to the party, initialization was done
-                No.Op(exception);
-            }
         }
 
         public virtual void Wait(CancellationToken cancellationToken)
@@ -248,8 +252,10 @@ namespace Theraot.Threading.Needles
                 {
                     waitHandle.Set();
                 }
+
                 waitHandle.Dispose();
             }
+
             _waitHandle.Value = null;
         }
     }

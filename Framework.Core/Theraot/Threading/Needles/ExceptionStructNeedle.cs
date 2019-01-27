@@ -46,6 +46,7 @@ namespace Theraot.Threading.Needles
             {
                 return rightException != null;
             }
+
             return !leftException.Equals(rightException);
         }
 
@@ -57,6 +58,7 @@ namespace Theraot.Threading.Needles
             {
                 return rightException == null;
             }
+
             return leftException.Equals(rightException);
         }
 
@@ -66,6 +68,7 @@ namespace Theraot.Threading.Needles
             {
                 return this == needle;
             }
+
             return obj is Exception && obj.Equals(Exception);
         }
 

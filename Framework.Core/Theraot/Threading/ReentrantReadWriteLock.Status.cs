@@ -1,5 +1,4 @@
-#if FAT
-
+﻿#if FAT
 namespace Theraot.Threading
 {
     internal sealed partial class ReentrantReadWriteLock

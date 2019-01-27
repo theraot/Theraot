@@ -7,7 +7,6 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Threading
 {
 #if LESSTHAN_NETSTANDARD20
-
     public static partial class GCMonitor
     {
         private static partial class Internal
@@ -62,6 +61,7 @@ namespace Theraot.Threading
                     // Catch them all
                     No.Op(exception);
                 }
+
                 Volatile.Write(ref _status, _statusReady);
             }
         }

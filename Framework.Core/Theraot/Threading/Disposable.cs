@@ -27,6 +27,7 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException(nameof(condition));
             }
+
             return DisposedConditional
             (
                 FuncHelper.GetFallacyFunc(),

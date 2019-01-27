@@ -3,10 +3,11 @@
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System;
+using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class PromiseNeedle<T> : Promise, IWaitablePromise<T>, IRecyclableNeedle<T>, ICacheNeedle<T>
     {
         private readonly int _hashCode;
@@ -33,6 +34,19 @@ namespace Theraot.Threading.Needles
             _hashCode = target == null ? base.GetHashCode() : target.GetHashCode();
         }
 
+        public bool TryGetValue(out T value)
+        {
+            var result = IsCompleted;
+            value = _target;
+            return result;
+        }
+
+        public override void Free()
+        {
+            base.Free();
+            _target = default;
+        }
+
         public bool IsAlive => _target != null;
 
         public virtual T Value
@@ -44,6 +58,7 @@ namespace Theraot.Threading.Needles
                 {
                     return _target;
                 }
+
                 throw exception;
             }
             set
@@ -64,6 +79,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(needle));
             }
+
             return needle.Value;
         }
 
@@ -73,10 +89,12 @@ namespace Theraot.Threading.Needles
             {
                 return !(right is null);
             }
+
             if (right is null)
             {
                 return true;
             }
+
             return !left._target.Equals(right._target);
         }
 
@@ -86,6 +104,7 @@ namespace Theraot.Threading.Needles
             {
                 return right is null;
             }
+
             return !(right is null) && left._target.Equals(right._target);
         }
 
@@ -95,18 +114,13 @@ namespace Theraot.Threading.Needles
             {
                 return _target.Equals(needle._target);
             }
+
             return IsCompleted && Value.Equals(obj);
         }
 
         public bool Equals(PromiseNeedle<T> other)
         {
             return !(other is null) && _target.Equals(other._target);
-        }
-
-        public override void Free()
-        {
-            base.Free();
-            _target = default;
         }
 
         public override int GetHashCode()
@@ -121,13 +135,6 @@ namespace Theraot.Threading.Needles
                     ? _target.ToString()
                     : Exception.ToString()
                 : "[Not Created]";
-        }
-
-        public bool TryGetValue(out T value)
-        {
-            var result = IsCompleted;
-            value = _target;
-            return result;
         }
     }
 }

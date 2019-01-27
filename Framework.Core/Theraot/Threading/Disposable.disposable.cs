@@ -8,6 +8,24 @@ namespace Theraot.Threading
     {
         private int _disposeStatus;
 
+        public bool IsDisposed
+        {
+            [DebuggerNonUserCode] get => _disposeStatus == -1;
+        }
+
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
         [DebuggerNonUserCode]
         ~Disposable()
         {
@@ -26,25 +44,6 @@ namespace Theraot.Threading
                     // Catch them all - fields may be partially collected.
                     No.Op(exception);
                 }
-            }
-        }
-
-        public bool IsDisposed
-        {
-            [DebuggerNonUserCode]
-            get => _disposeStatus == -1;
-        }
-
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
             }
         }
 
@@ -87,14 +86,17 @@ namespace Theraot.Threading
             {
                 return whenDisposed == null ? default : whenDisposed.Invoke();
             }
+
             if (whenNotDisposed == null)
             {
                 return default;
             }
+
             if (!ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
                 return whenDisposed == null ? default : whenDisposed.Invoke();
             }
+
             try
             {
                 return whenNotDisposed.Invoke();

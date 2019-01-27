@@ -12,7 +12,6 @@ namespace Theraot.Threading
 {
     public class RootedTimeout : IPromise
     {
-        protected Action Callback;
         private const int _canceled = 4;
         private const int _canceling = 3;
         private const int _changing = 6;
@@ -27,15 +26,11 @@ namespace Theraot.Threading
         private int _status;
         private long _targetTime;
         private Timer _wrapped;
+        protected Action Callback;
 
         protected RootedTimeout()
         {
             _hashcode = unchecked((int)DateTime.Now.Ticks);
-        }
-
-        ~RootedTimeout()
-        {
-            Close();
         }
 
         public bool IsCanceled => Volatile.Read(ref _status) == _canceled;
@@ -45,6 +40,11 @@ namespace Theraot.Threading
         Exception IPromise.Exception => null;
 
         bool IPromise.IsFaulted => false;
+
+        ~RootedTimeout()
+        {
+            Close();
+        }
 
         public static RootedTimeout Launch(Action callback, long dueTime)
         {

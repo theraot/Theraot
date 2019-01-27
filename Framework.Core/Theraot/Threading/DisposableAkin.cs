@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class DisposableAkin :
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
         System.Runtime.ConstrainedExecution.CriticalFinalizerObject,
@@ -74,7 +75,7 @@ namespace Theraot.Threading
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         public void Dispose()
         {
             try

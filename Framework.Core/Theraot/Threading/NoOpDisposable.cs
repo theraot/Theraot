@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public sealed class NoOpDisposable : IDisposable
     {
         private NoOpDisposable()

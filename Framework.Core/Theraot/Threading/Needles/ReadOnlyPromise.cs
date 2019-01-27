@@ -1,4 +1,4 @@
-// Needed for Workaround
+﻿// Needed for Workaround
 
 using System;
 using System.Diagnostics;
@@ -28,7 +28,7 @@ namespace Theraot.Threading.Needles
             else
             {
                 _wait =
-                () => throw new InvalidOperationException();
+                    () => throw new InvalidOperationException();
             }
         }
 
@@ -40,6 +40,11 @@ namespace Theraot.Threading.Needles
 
         public bool IsFaulted => _promised.IsFaulted;
 
+        public void Wait()
+        {
+            _wait();
+        }
+
         public override int GetHashCode()
         {
             return _promised.GetHashCode();
@@ -48,11 +53,6 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return $"{{Promise: {_promised}}}";
-        }
-
-        public void Wait()
-        {
-            _wait();
         }
     }
 }

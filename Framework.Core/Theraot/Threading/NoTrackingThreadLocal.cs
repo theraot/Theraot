@@ -1,7 +1,6 @@
 ﻿// Needed for NET35 (ThreadLocal)
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

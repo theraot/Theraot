@@ -65,6 +65,7 @@ namespace Theraot.Threading.Needles
                 {
                     return !IsAlive;
                 }
+
                 obj = right.Value;
             }
 

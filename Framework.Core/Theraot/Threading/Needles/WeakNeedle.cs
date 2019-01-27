@@ -43,12 +43,13 @@ namespace Theraot.Threading.Needles
                 SetTargetValue(target);
                 _hashCode = target.GetHashCode();
             }
+
             _trackResurrection = trackResurrection;
         }
 
-        public Exception Exception { get; private set; }
+        public virtual bool TrackResurrection => _trackResurrection;
 
-        public bool IsAlive => Exception != null && _handle.TryGetTarget(out _);
+        public Exception Exception { get; private set; }
 
         bool IPromise.IsCanceled => false;
 
@@ -56,7 +57,18 @@ namespace Theraot.Threading.Needles
 
         public bool IsFaulted => Exception != null;
 
-        public virtual bool TrackResurrection => _trackResurrection;
+        public virtual bool TryGetValue(out T value)
+        {
+            value = null;
+            return Exception == null && _handle.TryGetTarget(out value);
+        }
+
+        public bool Equals(WeakNeedle<T> other)
+        {
+            return !(other is null) && EqualsExtractedExtracted(this, other);
+        }
+
+        public bool IsAlive => Exception != null && _handle.TryGetTarget(out _);
 
         public virtual T Value
         {
@@ -66,9 +78,15 @@ namespace Theraot.Threading.Needles
                 {
                     return target;
                 }
+
                 return null;
             }
             set => SetTargetValue(value);
+        }
+
+        public void Free()
+        {
+            SetTargetValue(null);
         }
 
         public static explicit operator T(WeakNeedle<T> needle)
@@ -77,6 +95,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(needle));
             }
+
             return needle.Value;
         }
 
@@ -91,6 +110,7 @@ namespace Theraot.Threading.Needles
             {
                 return !(right is null);
             }
+
             return right is null || !EqualsExtractedExtracted(left, right);
         }
 
@@ -100,6 +120,7 @@ namespace Theraot.Threading.Needles
             {
                 return right is null;
             }
+
             return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
@@ -110,21 +131,13 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtractedExtracted(this, needle);
             }
+
             if (obj is T value && TryGetValue(out var target))
             {
                 return EqualityComparer<T>.Default.Equals(target, value);
             }
+
             return false;
-        }
-
-        public bool Equals(WeakNeedle<T> other)
-        {
-            return !(other is null) && EqualsExtractedExtracted(this, other);
-        }
-
-        public void Free()
-        {
-            SetTargetValue(null);
         }
 
         public sealed override int GetHashCode()
@@ -138,13 +151,8 @@ namespace Theraot.Threading.Needles
             {
                 return $"<Faulted: {Exception}>";
             }
-            return _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
-        }
 
-        public virtual bool TryGetValue(out T value)
-        {
-            value = null;
-            return Exception == null && _handle.TryGetTarget(out value);
+            return _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
         }
 
         protected void SetTargetError(Exception error)
@@ -163,6 +171,7 @@ namespace Theraot.Threading.Needles
             {
                 _handle.SetTarget(value);
             }
+
             Exception = null;
         }
 
@@ -174,10 +183,12 @@ namespace Theraot.Threading.Needles
             {
                 return EqualityComparer<Exception>.Default.Equals(leftException, rightException);
             }
+
             if (left._handle.TryGetTarget(out var leftValue) && right._handle.TryGetTarget(out var rightValue))
             {
                 return EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
+
             return false;
         }
     }
