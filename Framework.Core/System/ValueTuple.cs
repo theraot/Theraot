@@ -11,6 +11,7 @@
 // ReSharper disable MergeSequentialChecks
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
+// ReSharper disable UseDeconstruction
 // ReSharper disable UseDeconstructionOnParameter
 
 // Licensed to the .NET Foundation under one or more agreements.

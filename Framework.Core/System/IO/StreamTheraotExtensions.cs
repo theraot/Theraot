@@ -115,12 +115,14 @@ namespace System.IO
 
         private static IAsyncResult BeginRead(AsyncCallback callback, object state)
         {
+            // ReSharper disable once UseDeconstruction
             var tuple = (Tuple<Stream, byte[], int, int>)state;
             return tuple.Item1.BeginRead(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }
 
         private static IAsyncResult BeginWrite(AsyncCallback callback, object state)
         {
+            // ReSharper disable once UseDeconstruction
             var tuple = (Tuple<Stream, byte[], int, int>)state;
             return tuple.Item1.BeginWrite(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }
