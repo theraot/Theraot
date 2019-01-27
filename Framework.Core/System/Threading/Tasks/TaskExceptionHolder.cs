@@ -7,7 +7,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -214,13 +213,13 @@ namespace System.Threading.Tasks
         ///     the holder assumes exceptions to have been "observed", such that the finalization
         ///     check will be subsequently skipped.
         /// </summary>
-        internal ReadOnlyCollection<ExceptionDispatchInfo> GetExceptionDispatchInfos()
+        internal IEnumerable<ExceptionDispatchInfo> GetExceptionDispatchInfos()
         {
             var exceptions = _faultExceptions;
             Debug.Assert(exceptions != null, "Expected an initialized list.");
             Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
             MarkAsHandled(false);
-            return new ReadOnlyCollection<ExceptionDispatchInfo>(exceptions);
+            return exceptions;
         }
 
         /// <summary>
