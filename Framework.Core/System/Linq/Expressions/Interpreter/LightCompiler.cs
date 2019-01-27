@@ -338,12 +338,12 @@ namespace System.Linq.Expressions.Interpreter
             return e is ConstantExpression c && c.Value == null;
         }
 
+#endif
+
         private static bool MaybeMutableValueType(Type type)
         {
             return type.IsValueType && !type.IsEnum && !type.IsPrimitive;
         }
-
-#endif
 
         private static bool ShouldWritebackNode(Expression node)
         {
