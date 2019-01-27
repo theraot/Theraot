@@ -75,12 +75,11 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             var index = NumericHelper.Log2(capacity) - _minCapacityLog2;
-            var currentPool = _pools[index];
+            var currentPool = _pools?[index];
             if (currentPool != null && currentPool.TryGet(out var result))
             {
                 return result;
             }
-
             return new T[capacity];
         }
 
@@ -90,7 +89,7 @@ namespace Theraot.Collections.ThreadSafe
             for (var index = 0; index < _capacityCount; index++)
             {
                 var currentIndex = index;
-                _pools[index] = new Pool<T[]>
+                pools[index] = new Pool<T[]>
                 (
                     _poolSize,
                     item =>
