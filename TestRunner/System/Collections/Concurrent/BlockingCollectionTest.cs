@@ -55,33 +55,25 @@ namespace TestRunner.System.Collections.Concurrent
         private static void GetConsumingEnumerableTestImpl(CancellationToken? cancellationToken)
         {
             var called = 0;
-            var ev = new ManualResetEventSlim[1];
-            using (ev[0] = new ManualResetEventSlim(false))
+            var waitHandle = new ManualResetEventSlim[1];
+            using (waitHandle[0] = new ManualResetEventSlim(false))
             {
-                var bc = new BlockingCollection<Action>[1];
-                using (bc[0] = new BlockingCollection<Action>())
+                var blockingCollection = new BlockingCollection<Action>[1];
+                using (blockingCollection[0] = new BlockingCollection<Action>())
                 {
-                    var t = new Thread
+                    var thread = new Thread
                     (
                         () =>
                         {
                             try
                             {
-                                ev[0].Set();
-
-                                if (cancellationToken.HasValue)
+                                waitHandle[0].Set();
+                                var enumerable = cancellationToken.HasValue
+                                    ? blockingCollection[0].GetConsumingEnumerable(cancellationToken.Value)
+                                    : blockingCollection[0].GetConsumingEnumerable();
+                                foreach (var action in enumerable)
                                 {
-                                    foreach (var e in bc[0].GetConsumingEnumerable(cancellationToken.Value))
-                                    {
-                                        e();
-                                    }
-                                }
-                                else
-                                {
-                                    foreach (var e in bc[0].GetConsumingEnumerable())
-                                    {
-                                        e();
-                                    }
+                                    action();
                                 }
                             }
                             catch (OperationCanceledException exception)
@@ -90,17 +82,17 @@ namespace TestRunner.System.Collections.Concurrent
                             }
                         }
                     );
-                    t.Start();
+                    thread.Start();
 
                     // Make sure thread is running
-                    ev[0].Wait();
+                    waitHandle[0].Wait();
                     Thread.Sleep(200);
 
-                    bc[0].Add(() => called++);
-                    bc[0].Add(() => called++);
+                    blockingCollection[0].Add(() => called++);
+                    blockingCollection[0].Add(() => called++);
 
-                    bc[0].CompleteAdding();
-                    t.Join();
+                    blockingCollection[0].CompleteAdding();
+                    thread.Join();
                     Assert.AreEqual(2, called);
                 }
             }
