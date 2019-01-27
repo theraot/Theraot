@@ -12,7 +12,6 @@ namespace System.Collections.Concurrent
             {
                 // Empty
             }
-            concurrentQueue.Clear();
         }
     }
 }
