@@ -1028,7 +1028,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arguments, nameof(arguments));
             ContractUtils.RequiresNotNull(returnType, nameof(returnType));
 
-            var args = Theraot.Collections.Extensions.AsArrayInternal(arguments);
+            var args = arguments.AsArrayInternal();
             ContractUtils.RequiresNotEmpty(args, nameof(arguments));
             return MakeDynamic(binder, returnType, args);
         }
@@ -1068,7 +1068,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static DynamicExpression MakeDynamic(Type delegateType, CallSiteBinder binder, IEnumerable<Expression> arguments)
         {
-            var argumentList = Theraot.Collections.Extensions.AsArrayInternal(arguments);
+            var argumentList = arguments.AsArrayInternal();
             switch (argumentList.Length)
             {
                 case 1:

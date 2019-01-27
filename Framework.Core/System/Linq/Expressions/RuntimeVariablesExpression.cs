@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -47,7 +48,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(variables, nameof(variables));
 
-            var vars = Theraot.Collections.Extensions.AsArrayInternal(variables);
+            var vars = variables.AsArrayInternal();
             for (var i = 0; i < vars.Length; i++)
             {
                 ContractUtils.RequiresNotNull(vars[i], nameof(variables), i);

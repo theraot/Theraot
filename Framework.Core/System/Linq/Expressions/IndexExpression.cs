@@ -53,7 +53,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Argument must be array", nameof(array));
             }
 
-            var indexList = Theraot.Collections.Extensions.AsArrayInternal(indexes);
+            var indexList = indexes.AsArrayInternal();
             if (arrayType.GetArrayRank() != indexList.Length)
             {
                 throw new ArgumentException("Incorrect number of indexes");
@@ -125,7 +125,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="IndexExpression" />.</returns>
         public static IndexExpression Property(Expression instance, PropertyInfo indexer, IEnumerable<Expression> arguments)
         {
-            return MakeIndexProperty(instance, indexer, nameof(indexer), Theraot.Collections.Extensions.AsArrayInternal(arguments));
+            return MakeIndexProperty(instance, indexer, nameof(indexer), arguments.AsArrayInternal());
         }
 
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)

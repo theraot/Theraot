@@ -29,7 +29,7 @@ namespace Theraot.Collections
         protected ProgressiveCollection(Progressor<T> progressor, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-            Cache = Extensions.WrapAsIReadOnlyCollection(_cache);
+            Cache = _cache.WrapAsIReadOnlyCollection();
             Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
             _subscription = Progressor.SubscribeAction(obj => _cache.Add(obj));
             Comparer = comparer ?? EqualityComparer<T>.Default;

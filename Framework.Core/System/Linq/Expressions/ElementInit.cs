@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -100,7 +101,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(addMethod, nameof(addMethod));
             ContractUtils.RequiresNotNull(arguments, nameof(arguments));
 
-            var argumentsRo = Theraot.Collections.Extensions.AsArrayInternal(arguments);
+            var argumentsRo = arguments.AsArrayInternal();
 
             RequiresCanRead(argumentsRo, nameof(arguments));
             ValidateElementInitAddMethodInfo(addMethod, nameof(addMethod));

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -66,7 +67,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
             ContractUtils.RequiresNotNull(bindings, nameof(bindings));
-            var bindingsArray = Theraot.Collections.Extensions.AsArrayInternal(bindings);
+            var bindingsArray = bindings.AsArrayInternal();
             ValidateMemberInitArgs(newExpression.Type, bindingsArray);
             return new MemberInitExpression(newExpression, bindingsArray);
         }
@@ -166,7 +167,7 @@ namespace System.Linq.Expressions
             }
 
             block[count + 1] = keepOnStack ? (Expression)listVar : Utils.Empty;
-            return Block(new[] {listVar}, block);
+            return Block(new[] { listVar }, block);
         }
 
         internal static Expression ReduceMemberBinding(ParameterExpression objVar, MemberBinding binding)
@@ -205,7 +206,7 @@ namespace System.Linq.Expressions
             }
 
             block[count + 1] = keepOnStack ? (Expression)objVar : Utils.Empty;
-            return Block(new[] {objVar}, block);
+            return Block(new[] { objVar }, block);
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -33,7 +34,7 @@ namespace System.Linq.Expressions.Interpreter
             MaxStackDepth = maxStackDepth;
             MaxContinuationDepth = maxContinuationDepth;
             Instructions = instructions;
-            DebugCookies = Theraot.Collections.Extensions.AsArrayInternal(debugCookies);
+            DebugCookies = debugCookies.AsArrayInternal();
             Objects = objects;
             Labels = labels;
         }
@@ -106,7 +107,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static Instruction[] _assignLocalToClosure;
 
-        private static readonly RuntimeLabel[] _emptyRuntimeLabels = {new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0)};
+        private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
         private static Instruction _false;
         private static Instruction[] _ints;
 
@@ -795,8 +796,8 @@ namespace System.Linq.Expressions.Interpreter
             (
                 MaxStackDepth,
                 _maxContinuationDepth,
-                Theraot.Collections.Extensions.AsArrayInternal(_instructions),
-                _objects == null ? null : Theraot.Collections.Extensions.AsArrayInternal(_objects),
+                _instructions.AsArrayInternal(),
+                _objects?.AsArrayInternal(),
                 BuildRuntimeLabels(),
                 _debugCookies
             );
@@ -1054,7 +1055,7 @@ namespace System.Linq.Expressions.Interpreter
                         continuationsDepth += contDiff;
                     }
 
-                    return Theraot.Collections.Extensions.AsArrayInternal(result);
+                    return result.AsArrayInternal();
                 }
             }
 

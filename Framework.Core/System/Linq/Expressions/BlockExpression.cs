@@ -544,7 +544,7 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            var array = Theraot.Collections.Extensions.AsArrayInternal(variables);
+            var array = variables.AsArrayInternal();
             if (args == null)
             {
                 Debug.Assert(variables.Count == Variables.Count);
@@ -644,7 +644,7 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            var array = Theraot.Collections.Extensions.AsArrayInternal(variables);
+            var array = variables.AsArrayInternal();
             if (args == null)
             {
                 Debug.Assert(variables.Count == Variables.Count);
@@ -676,12 +676,12 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            var array = Theraot.Collections.Extensions.AsArrayInternal(variables);
+            var array = variables.AsArrayInternal();
             if (args == null)
             {
                 Debug.Assert(variables.Count == Variables.Count);
                 ValidateVariables(array, nameof(variables));
-                return new ScopeWithType(array, Theraot.Collections.Extensions.AsArrayInternal(Body), Type);
+                return new ScopeWithType(array, Body.AsArrayInternal(), Type);
             }
 
             Debug.Assert(args.Length == ExpressionCount);
@@ -957,8 +957,8 @@ namespace System.Linq.Expressions
         public static BlockExpression Block(IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
         {
             ContractUtils.RequiresNotNull(expressions, nameof(expressions));
-            var variableArray = Theraot.Collections.Extensions.AsArrayInternal(variables);
-            var expressionArray = Theraot.Collections.Extensions.AsArrayInternal(expressions);
+            var variableArray = variables.AsArrayInternal();
+            var expressionArray = expressions.AsArrayInternal();
             RequiresCanRead(expressionArray, nameof(expressions));
             return variableArray.Length == 0 ? GetOptimizedBlockExpression(expressionArray) : BlockCore(null, variableArray, expressionArray);
         }
@@ -975,10 +975,10 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(expressions, nameof(expressions));
 
-            var expressionList = Theraot.Collections.Extensions.AsArrayInternal(expressions);
+            var expressionList = expressions.AsArrayInternal();
             RequiresCanRead(expressionList, nameof(expressions));
 
-            var variableList = Theraot.Collections.Extensions.AsArrayInternal(variables);
+            var variableList = variables.AsArrayInternal();
 
             if (variableList.Length != 0 || expressionList.Length == 0)
             {

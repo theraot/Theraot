@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Reflection;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -95,7 +96,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Argument type cannot be System.Void.", nameof(switchValue));
             }
 
-            var caseArray = Theraot.Collections.Extensions.AsArrayInternal(cases);
+            var caseArray = cases.AsArrayInternal();
             ContractUtils.RequiresNotNullItems(caseArray, nameof(cases));
 
             // Type of the result. Either provided, or it is type of the branches.

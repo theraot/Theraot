@@ -173,7 +173,7 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public MemberListBinding Update(IEnumerable<ElementInit> initializers)
         {
-            if (initializers != null && ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArrayInternal(Initializers)))
+            if (initializers != null && ExpressionUtils.SameElements(ref initializers, Initializers.AsArrayInternal()))
             {
                 return this;
             }

@@ -368,7 +368,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static Expression<TDelegate> Lambda<TDelegate>(Expression body, string name, bool tailCall, IEnumerable<ParameterExpression> parameters)
         {
-            var parameterList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
+            var parameterList = parameters.AsArrayInternal();
             ValidateLambdaArgs(typeof(TDelegate), ref body, parameterList, nameof(TDelegate));
             return (Expression<TDelegate>)CreateLambda(typeof(TDelegate), body, name, tailCall, parameterList);
         }
@@ -578,7 +578,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
 
-            var parameterList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
+            var parameterList = parameters.AsArrayInternal();
 
             var paramCount = parameterList.Length;
             var typeArgs = new Type[paramCount + 1];
@@ -621,7 +621,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, string name, IEnumerable<ParameterExpression> parameters)
         {
-            var paramList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
+            var paramList = parameters.AsArrayInternal();
             ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
 
             return CreateLambda(delegateType, body, name, false, paramList);
@@ -648,7 +648,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, string name, bool tailCall, IEnumerable<ParameterExpression> parameters)
         {
-            var paramList = Theraot.Collections.Extensions.AsArrayInternal(parameters);
+            var paramList = parameters.AsArrayInternal();
             ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
 
             return CreateLambda(delegateType, body, name, tailCall, paramList);

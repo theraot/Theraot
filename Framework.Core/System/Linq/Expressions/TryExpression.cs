@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -32,7 +33,7 @@ namespace System.Linq.Expressions
         {
             ExpressionUtils.RequiresCanRead(body, nameof(body));
 
-            var @catch = Theraot.Collections.Extensions.AsArrayInternal(handlers);
+            var @catch = handlers.AsArrayInternal();
             ContractUtils.RequiresNotNullItems(@catch, nameof(handlers));
             ValidateTryAndCatchHaveSameType(type, body, @catch);
 

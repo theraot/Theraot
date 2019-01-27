@@ -262,9 +262,9 @@ namespace System.Linq.Expressions.Compiler
             switch (scope)
             {
                 case LambdaExpression lambda:
-                    return Theraot.Collections.Extensions.AsArrayInternal(new ParameterList(lambda));
+                    return new ParameterList(lambda).AsArrayInternal();
                 case BlockExpression block:
-                    return Theraot.Collections.Extensions.AsArrayInternal(block.Variables);
+                    return block.Variables.AsArrayInternal();
                 default:
                     return new[] { ((CatchBlock)scope).Variable };
             }

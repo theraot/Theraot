@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -50,7 +51,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
             ContractUtils.RequiresNotNull(bindings, nameof(bindings));
-            var bindingsArray = Theraot.Collections.Extensions.AsArrayInternal(bindings);
+            var bindingsArray = bindings.AsArrayInternal();
             ValidateGettableFieldOrPropertyMember(member, out var memberType);
             ValidateMemberInitArgs(memberType, bindingsArray);
             return new MemberMemberBinding(member, bindingsArray);

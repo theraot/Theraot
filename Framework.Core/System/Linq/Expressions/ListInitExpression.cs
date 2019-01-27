@@ -65,7 +65,7 @@ namespace System.Linq.Expressions
                 return new ListInitExpression(newExpression, EmptyCollection<ElementInit>.Instance);
             }
 
-            var addMethod = FindMethod(newExpression.Type, "Add", null, new[] {initializerList[0]}, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializerList[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             return ListInit(newExpression, addMethod, initializerList);
         }
 
@@ -270,7 +270,7 @@ namespace System.Linq.Expressions
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
         public ListInitExpression Update(NewExpression newExpression, IEnumerable<ElementInit> initializers)
         {
-            if (newExpression == NewExpression && initializers != null && ExpressionUtils.SameElements(ref initializers, Theraot.Collections.Extensions.AsArrayInternal(Initializers)))
+            if (newExpression == NewExpression && initializers != null && ExpressionUtils.SameElements(ref initializers, Initializers.AsArrayInternal()))
             {
                 return this;
             }

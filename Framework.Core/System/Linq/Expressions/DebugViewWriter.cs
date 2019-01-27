@@ -10,6 +10,7 @@ using System.Dynamic.Utils;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
@@ -252,10 +253,10 @@ namespace System.Linq.Expressions
                 Out(string.Format(CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString()));
             }
 
-            VisitDeclarations(Theraot.Collections.Extensions.AsArrayInternal(node.Variables));
+            VisitDeclarations(node.Variables.AsArrayInternal());
             Out(" ");
             // Use ; to separate expressions in the block
-            VisitExpressions('{', ';', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
+            VisitExpressions('{', ';', node.Expressions.AsArrayInternal());
 
             return node;
         }
@@ -324,29 +325,29 @@ namespace System.Linq.Expressions
                     Out(value.ToString());
                     break;
                 default:
-                {
-                    var suffix = GetConstantValueSuffix(node.Type);
-                    if (suffix != null)
                     {
-                        Out(value.ToString());
-                        Out(suffix);
-                    }
-                    else
-                    {
-                        Out
-                        (
-                            string.Format
+                        var suffix = GetConstantValueSuffix(node.Type);
+                        if (suffix != null)
+                        {
+                            Out(value.ToString());
+                            Out(suffix);
+                        }
+                        else
+                        {
+                            Out
                             (
-                                CultureInfo.CurrentCulture,
-                                ".Constant<{0}>({1})",
-                                node.Type.ToString(),
-                                value
-                            )
-                        );
-                    }
+                                string.Format
+                                (
+                                    CultureInfo.CurrentCulture,
+                                    ".Constant<{0}>({1})",
+                                    node.Type.ToString(),
+                                    value
+                                )
+                            );
+                        }
 
-                    break;
-                }
+                        break;
+                    }
             }
 
             return node;
@@ -415,7 +416,7 @@ namespace System.Linq.Expressions
                 ParenthesizedVisit(node, node.Object);
             }
 
-            VisitExpressions('[', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('[', node.Arguments.AsArrayInternal());
             return node;
         }
 
@@ -423,7 +424,7 @@ namespace System.Linq.Expressions
         {
             Out(".Invoke ");
             ParenthesizedVisit(node, node.Expression);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('(', node.Arguments.AsArrayInternal());
             return node;
         }
 
@@ -468,7 +469,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitListInit(ListInitExpression node)
         {
             Visit(node.NewExpression);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Initializers), e => VisitElementInit(e));
+            VisitExpressions('{', ',', node.Initializers.AsArrayInternal(), e => VisitElementInit(e));
             return node;
         }
 
@@ -504,7 +505,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitMemberInit(MemberInitExpression node)
         {
             Visit(node.NewExpression);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Bindings), e => VisitMemberBinding(e));
+            VisitExpressions('{', ',', node.Bindings.AsArrayInternal(), e => VisitMemberBinding(e));
             return node;
         }
 
@@ -526,14 +527,14 @@ namespace System.Linq.Expressions
 
             Out(".");
             Out(node.Method.Name);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('(', node.Arguments.AsArrayInternal());
             return node;
         }
 
         protected internal override Expression VisitNew(NewExpression node)
         {
             Out(".New " + node.Type);
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+            VisitExpressions('(', node.Arguments.AsArrayInternal());
             return node;
         }
 
@@ -543,13 +544,13 @@ namespace System.Linq.Expressions
             {
                 // .NewArray MyType[expr1, expr2]
                 Out(".NewArray " + node.Type.GetElementType());
-                VisitExpressions('[', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
+                VisitExpressions('[', node.Expressions.AsArrayInternal());
             }
             else
             {
                 // .NewArray MyType {expr1, expr2}
                 Out(".NewArray " + node.Type, Flow.Space);
-                VisitExpressions('{', Theraot.Collections.Extensions.AsArrayInternal(node.Expressions));
+                VisitExpressions('{', node.Expressions.AsArrayInternal());
             }
 
             return node;
@@ -578,7 +579,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
         {
             Out(".RuntimeVariables");
-            VisitExpressions('(', Theraot.Collections.Extensions.AsArrayInternal(node.Variables));
+            VisitExpressions('(', node.Variables.AsArrayInternal());
             return node;
         }
 
@@ -792,7 +793,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                VisitExpressions('{', Theraot.Collections.Extensions.AsArrayInternal(node.Arguments));
+                VisitExpressions('{', node.Arguments.AsArrayInternal());
             }
 
             return node;
@@ -810,7 +811,7 @@ namespace System.Linq.Expressions
         {
             Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Initializers), e => VisitElementInit(e));
+            VisitExpressions('{', ',', node.Initializers.AsArrayInternal(), e => VisitElementInit(e));
             return node;
         }
 
@@ -818,7 +819,7 @@ namespace System.Linq.Expressions
         {
             Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', Theraot.Collections.Extensions.AsArrayInternal(node.Bindings), e => VisitMemberBinding(e));
+            VisitExpressions('{', ',', node.Bindings.AsArrayInternal(), e => VisitMemberBinding(e));
             return node;
         }
 
@@ -873,7 +874,7 @@ namespace System.Linq.Expressions
         {
             if (ids == null)
             {
-                ids = new Dictionary<T, int> {{e, 1}};
+                ids = new Dictionary<T, int> { { e, 1 } };
                 return 1;
             }
 
@@ -1357,7 +1358,7 @@ namespace System.Linq.Expressions
                 )
             );
 
-            VisitDeclarations(Theraot.Collections.Extensions.AsArrayInternal(lambda.Parameters));
+            VisitDeclarations(lambda.Parameters.AsArrayInternal());
 
             Out(Flow.Space, "{", Flow.NewLine);
             Indent();
