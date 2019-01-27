@@ -1,13 +1,10 @@
 ﻿#if NET40
-
-using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Threading;
 
-namespace Theraot.Core
+namespace System.Threading
 {
-    public static class SemaphoreSlimExtensions
+    public static class SemaphoreSlimTheraotExtensions
     {
         public static Task WaitAsync(this SemaphoreSlim semaphore)
         {
