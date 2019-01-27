@@ -25,6 +25,7 @@ namespace System.Threading.Tasks
         /// <remarks>May not always return the same instance.</remarks>
         public static Task CompletedTask
         {
+            [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             get
             {
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
