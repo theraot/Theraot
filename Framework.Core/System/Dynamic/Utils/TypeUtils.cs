@@ -578,7 +578,16 @@ namespace System.Dynamic.Utils
                 return false;
             }
 
-            return !parameters.Where((t, index) => !IsReferenceAssignableFromInternal(t.ParameterType, argTypes[index])).Any();
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            for (var index = 0; index < parameters.Length; index++)
+            {
+                if (!IsReferenceAssignableFromInternal(parameters[index].ParameterType, argTypes[index]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         internal static void ValidateType(Type type, string paramName)

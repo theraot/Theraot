@@ -95,7 +95,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void UserDefinedClass() // Fail
+        public void UserDefinedClass()
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.

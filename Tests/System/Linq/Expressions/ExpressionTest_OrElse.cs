@@ -120,7 +120,7 @@ namespace MonoTests.System.Linq.Expressions
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public void MethodInfoReturnType2() // Fail
+        public void MethodInfoReturnType2()
         {
             Expression.OrElse(Expression.Constant(new BrokenMethod2()),
                        Expression.Constant(1));

@@ -78,7 +78,7 @@ namespace MonoTests.System.Linq.Expressions
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void MismatchedTypes() // Fail
+        public void MismatchedTypes()
         {
             Expression.LessThan(Expression.Constant(new OpClass()), Expression.Constant(true));
         }
