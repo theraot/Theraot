@@ -1,8 +1,11 @@
 ﻿#if LESSTHAN_NET45
 
+#pragma warning disable RECS0002 // Convert anonymous method to method group
+
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.IO
 {
@@ -65,8 +68,71 @@ namespace System.IO
 #if LESSTHAN_NET40
         partial
 #endif
-        class StreamTheraotExtensions
+    class StreamTheraotExtensions
     {
+        public static Task CopyToAsync(this Stream source, Stream destination)
+        {
+            return source.CopyToAsync(destination, ArrayReservoir.MaxCapacity);
+        }
+
+        public static Task CopyToAsync(this Stream source, Stream destination, int bufferSize)
+        {
+            return source.CopyToAsync(destination, bufferSize, CancellationToken.None);
+        }
+
+        public static Task CopyToAsync(this Stream source, Stream destination, CancellationToken cancellationToken)
+        {
+            return source.CopyToAsync(destination, ArrayReservoir.MaxCapacity, cancellationToken);
+        }
+
+        public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+            if (bufferSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            }
+            if (!source.CanRead)
+            {
+                throw new NotSupportedException("Source stream does not support read.");
+            }
+            if (!destination.CanWrite)
+            {
+                throw new NotSupportedException("Destination stream does not support write.");
+            }
+            var buffer = ArrayReservoir<byte>.GetArray(bufferSize);
+            try
+            {
+                while (true)
+                {
+                    var bytesRead = await source.ReadAsync(buffer, 0, bufferSize, cancellationToken).ConfigureAwait(false);
+                    if (bytesRead == 0)
+                    {
+                        break;
+                    }
+                    await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                ArrayReservoir<byte>.DonateArray(buffer);
+            }
+        }
+
+        public static Task FlushAsync(this Stream stream)
+        {
+            return TaskEx.Run(() => stream.Flush());
+        }
+
+        public static Task FlushAsync(this Stream stream, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            return TaskEx.Run(() => stream.Flush(), token);
+        }
+
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {

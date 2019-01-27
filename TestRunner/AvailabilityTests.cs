@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
@@ -209,6 +210,22 @@ namespace TestRunner
             No.Op<Func<object, object, string>>(string.Concat);
             No.Op<Func<object, object, object, string>>(string.Concat);
             No.Op<Func<string, bool>>(StringEx.IsNullOrWhiteSpace);
+        }
+
+        public static void StreamMethodAvailability()
+        {
+            var stream = Stream.Null;
+            No.Op<Action<Stream>>(stream.CopyTo);
+            No.Op<Action<Stream, int>>(stream.CopyTo);
+            No.Op<Func<Stream, Task>>(stream.CopyToAsync);
+            No.Op<Func<Stream, int, Task>>(stream.CopyToAsync);
+            No.Op<Func<Stream, int, CancellationToken, Task>>(stream.CopyToAsync);
+            No.Op<Func<Task>>(stream.FlushAsync);
+            No.Op<Func<CancellationToken, Task>>(stream.FlushAsync);
+            No.Op<Func<byte[], int, int, Task<int>>>(stream.ReadAsync);
+            No.Op<Func<byte[], int, int, CancellationToken, Task<int>>>(stream.ReadAsync);
+            No.Op<Func<byte[], int, int, Task>>(stream.WriteAsync);
+            No.Op<Func<byte[], int, int, CancellationToken, Task>>(stream.WriteAsync);
         }
     }
 }
