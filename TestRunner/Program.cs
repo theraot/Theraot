@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 using Theraot.Reflection;
 
 namespace TestRunner
@@ -40,7 +39,7 @@ namespace TestRunner
             if (exception is AssertionFailedException)
             {
                 Console.WriteLine(exception.Message);
-                Console.WriteLine(StringHelper.Implode("\r\n", exception.StackTrace.Split('\r', '\n').Skip(1)));
+                Console.WriteLine(StringEx.Implode("\r\n", exception.StackTrace.Split('\r', '\n').Skip(1)));
                 return;
             }
             var report = new StringBuilder();
@@ -51,7 +50,7 @@ namespace TestRunner
             {
                 report.Append
                 (
-                    StringHelper.Join
+                    StringEx.Join
                     (
                         "\r\n\r\n",
                         "== Exception Type ==",
@@ -86,7 +85,7 @@ namespace TestRunner
                     Exception capturedException = null;
                     Console.Write($"{test.Name}");
                     var parameters = test.GenerateParameters();
-                    Console.Write($"({StringHelper.Implode(", ", parameters)})");
+                    Console.Write($"({StringEx.Implode(", ", parameters)})");
                     try
                     {
                         stopwatch.Restart();

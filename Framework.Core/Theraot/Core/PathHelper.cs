@@ -4,11 +4,9 @@
 
 using System;
 using System.IO;
-using Theraot.Collections;
 using System.Runtime.CompilerServices;
-
-#if NET20 || NET30 || NET35
-
+using Theraot.Collections;
+#if LESSTHAN_NET40
 using System.Collections.Generic;
 
 #endif
@@ -17,9 +15,9 @@ namespace Theraot.Core
 {
     public static class PathHelper
     {
-        public static string AltDirectorySeparatorString { get; } = new string(new []{Path.AltDirectorySeparatorChar});
-        public static string DirectorySeparatorString { get; } = new string(new []{Path.DirectorySeparatorChar});
-        public static string VolumeSeparatorString { get; } = new string(new []{Path.VolumeSeparatorChar});
+        public static string AltDirectorySeparatorString { get; } = new string(new[] {Path.AltDirectorySeparatorChar});
+        public static string DirectorySeparatorString { get; } = new string(new[] {Path.DirectorySeparatorChar});
+        public static string VolumeSeparatorString { get; } = new string(new[] {Path.VolumeSeparatorChar});
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(params string[] paths)
@@ -29,6 +27,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(paths));
             }
+
             var combine = new List<string>();
             for (var index = paths.Length - 1; index >= 0; index--)
             {
@@ -60,7 +59,8 @@ namespace Theraot.Core
                     break;
                 }
             }
-            return StringHelper.Concat(combine);
+
+            return StringEx.Concat(combine);
 #else
             return Path.Combine(paths);
 #endif
@@ -75,6 +75,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
+
             if (path2.Length != 0 && Path.IsPathRooted(path2))
             {
                 return path2;
@@ -105,6 +106,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
+
             if (path3.Length != 0 && Path.IsPathRooted(path3))
             {
                 return path3;
@@ -118,11 +120,13 @@ namespace Theraot.Core
                 {
                     path2 += DirectorySeparatorString;
                 }
+
                 if (Path.IsPathRooted(path2))
                 {
                     return string.Concat(path2, path3);
                 }
             }
+
             if
             (
                 path1.Length != 0
@@ -148,6 +152,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentException("invalid characters in path");
             }
+
             if (path4.Length != 0 && Path.IsPathRooted(path4))
             {
                 return path4;
@@ -161,11 +166,13 @@ namespace Theraot.Core
                 {
                     path3 += DirectorySeparatorString;
                 }
+
                 if (Path.IsPathRooted(path3))
                 {
                     return string.Concat(path3, path4);
                 }
             }
+
             if (path2.Length != 0)
             {
                 if (!path2.EndsWith(DirectorySeparatorString, StringComparison.Ordinal)
@@ -174,11 +181,13 @@ namespace Theraot.Core
                 {
                     path2 += DirectorySeparatorString;
                 }
+
                 if (Path.IsPathRooted(path2))
                 {
                     return string.Concat(path2, path3, path4);
                 }
             }
+
             if
             (
                 path1.Length != 0
@@ -203,6 +212,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(fileName));
             }
+
             return fileName.ContainsAny(Path.GetInvalidFileNameChars());
         }
 
@@ -213,6 +223,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(path));
             }
+
             return path.Length != 0 && path.ContainsAny(Path.GetInvalidPathChars());
         }
     }

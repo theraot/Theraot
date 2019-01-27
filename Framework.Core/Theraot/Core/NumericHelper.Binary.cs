@@ -59,10 +59,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -83,10 +83,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -107,10 +107,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -131,10 +131,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -154,10 +154,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -178,10 +178,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -202,10 +202,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -226,10 +226,10 @@ namespace Theraot.Core
                     {
                         yield return 0;
                     }
+
                     check >>= 1;
                     log2--;
-                }
-                while (log2 > 0);
+                } while (log2 > 0);
             }
         }
 
@@ -363,45 +363,45 @@ namespace Theraot.Core
         [CLSCompliant(false)]
         public static string ToStringBinary(this sbyte value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this short value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this int value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this long value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this byte value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         [CLSCompliant(false)]
         public static string ToStringBinary(this ushort value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         [CLSCompliant(false)]
         public static string ToStringBinary(this uint value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         [CLSCompliant(false)]
         public static string ToStringBinary(this ulong value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
+            return StringEx.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static int TrailingZeroCount(this int value)

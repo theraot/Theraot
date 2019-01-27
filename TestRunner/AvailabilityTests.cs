@@ -1,6 +1,6 @@
-﻿using Theraot;
+﻿#pragma warning disable CC0037 // Remove commented code.
 
-#pragma warning disable CC0037 // Remove commented code.
+using Theraot;
 
 namespace TestRunner
 {
@@ -20,7 +20,7 @@ namespace TestRunner
             No.Op(typeof(global::System.Collections.Concurrent.OrderablePartitioner<int>));
             No.Op(typeof(global::System.Collections.Concurrent.Partitioner));
             No.Op(typeof(global::System.Collections.Concurrent.Partitioner<int>));
-            
+
             // System.Collections.Generic
 
             No.Op(typeof(global::System.Collections.Generic.CollectionExtensions));
@@ -49,7 +49,7 @@ namespace TestRunner
             // No.Op(typeof(global::System.Collections.Generic.SortedList<int, int>));
             No.Op(typeof(global::System.Collections.Generic.SortedSet<int>));
             No.Op(typeof(global::System.Collections.Generic.Stack<int>));
-            
+
             // System.Collections.ObjectModel
 
             No.Op(typeof(global::System.Collections.ObjectModel.Collection<int>));
@@ -57,7 +57,7 @@ namespace TestRunner
             No.Op(typeof(global::System.Collections.ObjectModel.ObservableCollection<int>));
             No.Op(typeof(global::System.Collections.ObjectModel.ReadOnlyCollection<int>));
             No.Op(typeof(global::System.Collections.ObjectModel.ReadOnlyDictionary<int, int>));
-            
+
             // System.Collections.Specialized
 
             // No.Op(typeof(global::System.Collections.Specialized.BitVector32));
@@ -75,7 +75,7 @@ namespace TestRunner
             // No.Op(typeof(global::System.Collections.Specialized.StringCollection));
             // No.Op(typeof(global::System.Collections.Specialized.StringDictionary));
             // No.Op(typeof(global::System.Collections.Specialized.StringEnumerator));
-            
+
             // System.Collections
 
             No.Op(typeof(global::System.Collections.ArrayList));
@@ -103,7 +103,7 @@ namespace TestRunner
             No.Op(typeof(global::System.Collections.SortedList));
             // No.Op(typeof(global::System.Collections.Stack));
             No.Op(typeof(global::System.Collections.StructuralComparisons));
-            
+
             // System
 
             No.Op(typeof(global::System.Action));
@@ -150,7 +150,7 @@ namespace TestRunner
             No.Op(typeof(global::System.Tuple<int, int, int, int, int, int>));
             No.Op(typeof(global::System.Tuple<int, int, int, int, int, int, int>));
             No.Op(typeof(global::System.Tuple<int, int, int, int, int, int, int, int>));
-            
+
             No.Op(typeof(global::System.Dynamic.CallInfo));
             // No.Op(typeof(global::System.Runtime.CompilerServices.Closure));
             No.Op(typeof(global::System.Security.CodeAccessPermission));
@@ -178,6 +178,20 @@ namespace TestRunner
             No.Op(typeof(global::System.Threading.Tasks.ValueTask<int>));
             No.Op(typeof(global::System.ValueTuple));
             No.Op(typeof(global::System.Threading.Volatile));
+        }
+
+        public static void StringMethodAvailability()
+        {
+            No.Op<global::System.Func<string, string[], int, int, string>>(string.Join);
+            No.Op<global::System.Func<string, string[], string>>(string.Join);
+            No.Op<global::System.Func<string, object[], string>>(global::System.StringEx.Join);
+            No.Op<global::System.Func<string, global::System.Collections.Generic.IEnumerable<string>, string>>(global::System.StringEx.Join);
+            No.Op<global::System.Func<string, global::System.Collections.Generic.IEnumerable<int>, string>>(global::System.StringEx.Join);
+            No.Op<global::System.Func<global::System.Collections.Generic.IEnumerable<int>, string>>(global::System.StringEx.Concat);
+            No.Op<global::System.Func<object, string>>(string.Concat);
+            No.Op<global::System.Func<object, object, string>>(string.Concat);
+            No.Op<global::System.Func<object, object, object, string>>(string.Concat);
+            No.Op<global::System.Func<string, bool>>(global::System.StringEx.IsNullOrWhiteSpace);
         }
     }
 }
