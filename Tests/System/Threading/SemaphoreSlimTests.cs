@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -263,8 +264,6 @@ namespace System.Threading.Tests
         /// The test verifies that SemaphoreSlim.Release() does not execute any user code synchronously.
         /// </summary>
         [Test]
-        [Category("NotWorking")] // The current implementation allows WaitAsync to awake concurrently
-        [Ignore]
         public static void RunSemaphoreSlimTest1_WaitAsync2()
         {
             using (var semaphore = new SemaphoreSlim(1))
@@ -468,5 +467,94 @@ namespace System.Threading.Tests
         }
 
 #endif
+
+        #region Lock cancellation
+
+        [Test]
+        public static async Task LockCancellationTest()
+        {
+            var asyncLock = new AsyncLock();
+            var holdTime = TimeSpan.FromSeconds(2);
+            var delayTime = TimeSpan.FromMilliseconds(200);
+
+            var lock1Started = new ManualResetEventSlim(false);
+
+            var lock1 = TryTakeAndHold(asyncLock, holdTime, callback: () => lock1Started.Set());
+            lock1Started.Wait();
+
+            var cts2 = new CancellationTokenSource();
+            var sw2 = Stopwatch.StartNew();
+            var lock2 = TryTakeAndHold(asyncLock, holdTime, cts2.Token);
+            await TaskEx.Delay(delayTime);
+            cts2.Cancel();
+            var lock2Taken = await lock2;
+            sw2.Stop();
+
+            var sw3 = Stopwatch.StartNew();
+            var lock3 = TryTakeAndHold(asyncLock, delayTime);
+            await TaskEx.Delay(delayTime);
+            var lock3Taken = await lock3;
+            sw3.Stop();
+
+            var lock1Taken = await lock1;
+
+            Assert.IsTrue(lock1Taken);
+            Assert.IsFalse(lock2Taken);
+            Assert.Less(sw2.Elapsed, holdTime - delayTime);
+            Assert.IsFalse(lock3Taken);
+            Assert.Less(sw3.Elapsed, holdTime - delayTime);
+        }
+
+        private class AsyncLock
+        {
+            private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+            public async Task<IDisposable> AcquireAsync(TimeSpan timeout, CancellationToken cancellation)
+            {
+                var succeeded = await _semaphore.WaitAsync(timeout, cancellation);
+                if (!succeeded)
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    throw new TimeoutException($"Attempt to take lock timed out in {timeout}.");
+                }
+
+                return new DisposableSemaphore(_semaphore);
+            }
+
+            private class DisposableSemaphore : IDisposable
+            {
+                private readonly SemaphoreSlim _s;
+                public DisposableSemaphore(SemaphoreSlim s) => _s = s;
+                public void Dispose() => _s.Dispose();
+            }
+        }
+
+        private static async Task<bool> TryTakeAndHold(
+            AsyncLock asyncLock,
+            TimeSpan holdTime,
+            CancellationToken cancellation = default(CancellationToken),
+            Action callback = null)
+        {
+            try
+            {
+                using (await asyncLock.AcquireAsync(holdTime, cancellation))
+                {
+                    callback?.Invoke();
+                    await TaskEx.Delay(holdTime);
+                }
+
+                return true;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            catch (TimeoutException)
+            {
+                return false;
+            }
+        }
+
+        #endregion
     }
 }
