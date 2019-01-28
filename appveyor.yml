@@ -8,13 +8,6 @@ cache:
 init:
 - cmd: git config --global core.autocrlf true
 
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.cs'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-
 dotnet_csproj:
   patch: true
   file: 'Framework.Core\Framework.Core.csproj'
@@ -25,18 +18,13 @@ nuget:
   account_feed: false
   project_feed: false
 
-#before_build:
-#- ps: .\Build\CodeJam.AppVeyor.FixVersionProps.ps1 -path Build\CodeJam.Default.props -buildVersion $env:buildVersion -nugetVersion $env:nugetVersion
-#- ps: .\Build\CodeJam.AppVeyor.FixVersionProps.ps1 -path Build\CodeJam.PerfTests.Default.props -buildVersion $env:perfTestsBuildVersion -nugetVersion $env:perfTestsNugetVersion
-
 #build:
 #  project: CodeJam.sln
 #  publish_nuget: false
 #  verbosity: minimal
 
 build_script:
-  - msbuild Theraot.sln /p:Configuration=Release /t:Restore;Build /v:m
-# Run msbuild /t:pack
+  - msbuild Theraot.sln /p:Configuration=Release /t:Restore;Build;Pack /v:m
 
 #test:
 #  assemblies:
