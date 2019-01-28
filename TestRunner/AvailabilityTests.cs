@@ -197,6 +197,7 @@ namespace TestRunner
             No.Op(typeof(ValueTuple));
             No.Op(typeof(Volatile));
             No.Op(typeof(ParallelOptions));
+            No.Op(typeof(ContractFailedEventArgs));
         }
 
         public static void StringMethodAvailability()
