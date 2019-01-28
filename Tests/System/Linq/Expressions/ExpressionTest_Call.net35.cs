@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_Call.cs
 //
@@ -40,31 +44,27 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestCall
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Call((Type)null, "TestMethod", null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Call((Type)null, "TestMethod", null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.Call(typeof(MemberClass), null, null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Call(typeof(MemberClass), null, null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Arg4WrongType()
         {
-            Expression.Call(typeof(MemberClass), "StaticMethod", null, Expression.Constant(true));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Call(typeof(MemberClass), "StaticMethod", null, Expression.Constant(true)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void InstanceMethod()
         {
-            Expression.Call(typeof(MemberClass), "TestMethod", null, Expression.Constant(1));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Call(typeof(MemberClass), "TestMethod", null, Expression.Constant(1)); });
         }
 
         [Test]
@@ -80,36 +80,35 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgMethodNull()
         {
-            Expression.Call(Expression.Constant(new object()), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Call(Expression.Constant(new object()), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         [Category("NotDotNet")]
         public void ArgInstanceNullForNonStaticMethod() // Passing on .NET 2.0, .3.0, .4.0 and .4.5 Failing on .NET 3.5
         {
-            Expression.Call(null, typeof(object).GetMethod("ToString"));
+            Assert.Throws<ArgumentException>(() => { Expression.Call(null, typeof(object).GetMethod("ToString")); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void InstanceTypeDoesntMatchMethodDeclaringType()
         {
 #if MOBILE
-			// ensure that String.Intern won't be removed by the linker
-			string s = String.Intern (String.Empty);
+            // ensure that String.Intern won't be removed by the linker
+            string s = String.Intern (String.Empty);
 #endif
-            Expression.Call(Expression.Constant(1), typeof(string).GetMethod("Intern"));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression.Call(Expression.Constant(1), typeof(string).GetMethod("Intern"));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgumentCountDoesnMatchParameterLength()
         {
-            Expression.Call(Expression.Constant(new object()), typeof(object).GetMethod("ToString"), Expression.Constant(new object()));
+            Assert.Throws<ArgumentException>(() => { Expression.Call(Expression.Constant(new object()), typeof(object).GetMethod("ToString"), Expression.Constant(new object())); });
         }
 
         public class Foo
@@ -121,17 +120,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void MethodHasNullArgument()
         {
-            Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), null as Expression);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), null as Expression); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgumentDoesntMatchParameterType()
         {
-            Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), Expression.Constant(42));
+            Assert.Throws<ArgumentException>(() => { Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), Expression.Constant(42)); });
         }
 
         [Test]
@@ -150,13 +147,15 @@ namespace MonoTests.System.Linq.Expressions
 
         [Test]
         [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351
-        [ExpectedException(typeof(ArgumentException))]
         public void CallStaticMethodWithInstanceArgument()
         {
-            Expression.Call(
-                Expression.Parameter(GetType(), "t"),
-                GetType().GetMethod("Identity"),
-                Expression.Constant(null));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression.Call(
+                    Expression.Parameter(GetType(), "t"),
+                    GetType().GetMethod("Identity"),
+                    Expression.Constant(null));
+            });
         }
 
         public static object Identity(object o)
@@ -192,10 +191,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void CheckTypeArgsIsNotUsedForParameterLookup()
         {
-            Expression.Call(GetType(), "EineMethod", new[] { typeof(string), typeof(int) }, "foo".ToConstant(), 2.ToConstant());
+            Assert.Throws<InvalidOperationException>(() => { Expression.Call(GetType(), "EineMethod", new[] { typeof(string), typeof(int) }, "foo".ToConstant(), 2.ToConstant()); });
         }
 
         public static void EineGenericMethod<TX, TY>(string foo, int bar)
@@ -250,12 +248,14 @@ namespace MonoTests.System.Linq.Expressions
 
         [Test]
         [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351
-        [ExpectedException(typeof(ArgumentException))]
         public void CallStaticMethodOnNonSenseInstanceExpression()
         {
-            Expression.Call(
-                Expression.Constant("la la la"),
-                GetType().GetMethod("OneStaticMethod"));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression.Call(
+                    Expression.Constant("la la la"),
+                    GetType().GetMethod("OneStaticMethod"));
+            });
         }
 
         public static int DoSomethingWith(ref int a)

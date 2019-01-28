@@ -1,4 +1,8 @@
-﻿// Permission is hereby granted, free of charge, to any person obtaining
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+// Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
 // without limitation the rights to use, copy, modify, merge, publish,
@@ -30,45 +34,39 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestOrElse
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.OrElse(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.OrElse(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.OrElse(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.OrElse(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.OrElse(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Double()
         {
-            Expression.OrElse(Expression.Constant(1.0), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(1.0), Expression.Constant(2.0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Integer()
         {
-            Expression.OrElse(Expression.Constant(1), Expression.Constant(2));
+            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(1), Expression.Constant(2)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void MismatchedTypes()
         {
-            Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(true));
+            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(true)); });
         }
 
         [Test]
@@ -111,19 +109,23 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodInfoReturnType()
         {
-            Expression.OrElse(Expression.Constant(new BrokenMethod()),
-                       Expression.Constant(new BrokenMethod()));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression.OrElse(Expression.Constant(new BrokenMethod()),
+                    Expression.Constant(new BrokenMethod()));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodInfoReturnType2()
         {
-            Expression.OrElse(Expression.Constant(new BrokenMethod2()),
-                       Expression.Constant(1));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression.OrElse(Expression.Constant(new BrokenMethod2()),
+                    Expression.Constant(1));
+            });
         }
 
         [Test]
@@ -321,15 +323,17 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void IncompleteUserDefinedOrElse()
         {
-            var l = Expression.Parameter(typeof(Incomplete), "l");
-            var r = Expression.Parameter(typeof(Incomplete), "r");
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var l = Expression.Parameter(typeof(Incomplete), "l");
+                var r = Expression.Parameter(typeof(Incomplete), "r");
 
-            var method = typeof(Incomplete).GetMethod("op_BitwiseOr");
+                var method = typeof(Incomplete).GetMethod("op_BitwiseOr");
 
-            Expression.OrElse(l, r, method);
+                Expression.OrElse(l, r, method);
+            });
         }
     }
 }

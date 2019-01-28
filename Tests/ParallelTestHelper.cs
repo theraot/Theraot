@@ -1,4 +1,8 @@
-﻿#define NET_4_0
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+#define NET_4_0
 #if NET_4_0
 // TestHelper.cs
 //

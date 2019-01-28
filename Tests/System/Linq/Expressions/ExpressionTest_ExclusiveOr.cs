@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,38 +33,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestExclusiveOr
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.ExclusiveOr(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.ExclusiveOr(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.ExclusiveOr(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.ExclusiveOr(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.ExclusiveOr(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+            Assert.Throws<InvalidOperationException>(() => { Expression.ExclusiveOr(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgTypesDifferent()
         {
-            Expression.ExclusiveOr(Expression.Constant(1), Expression.Constant(true));
+            Assert.Throws<InvalidOperationException>(() => { Expression.ExclusiveOr(Expression.Constant(1), Expression.Constant(true)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Double()
         {
-            Expression.ExclusiveOr(Expression.Constant(1.0), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.ExclusiveOr(Expression.Constant(1.0), Expression.Constant(2.0)); });
         }
 
         [Test]

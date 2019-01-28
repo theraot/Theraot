@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -30,63 +34,61 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestArrayIndex
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.ArrayIndex(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null1()
         {
-            Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression)null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression)null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null2()
         {
-            Expression.ArrayIndex(Expression.Constant(new int[1]), (IEnumerable<Expression>)null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), (IEnumerable<Expression>)null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null3()
         {
-            Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression[])null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression[])null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Arg2WrongType1()
         {
-            Expression.ArrayIndex(Expression.Constant(new int[1]), Expression.Constant(true));
+            Assert.Throws<ArgumentException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), Expression.Constant(true)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Arg1NotArray()
         {
-            Expression.ArrayIndex(Expression.Constant("This is not an array!"), Expression.Constant(1));
+            Assert.Throws<ArgumentException>(() => { Expression.ArrayIndex(Expression.Constant("This is not an array!"), Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Arg2WrongType2()
         {
-            Expression[] indexes = { Expression.Constant(1), Expression.Constant(1L) };
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression[] indexes = {Expression.Constant(1), Expression.Constant(1L)};
 
-            Expression.ArrayIndex(Expression.Constant(new int[1, 1]), indexes);
+                Expression.ArrayIndex(Expression.Constant(new int[1, 1]), indexes);
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Arg2WrongNumber1()
         {
-            Expression[] indexes = { Expression.Constant(1), Expression.Constant(0) };
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression[] indexes = {Expression.Constant(1), Expression.Constant(0)};
 
-            Expression.ArrayIndex(Expression.Constant(new int[1]), indexes);
+                Expression.ArrayIndex(Expression.Constant(new int[1]), indexes);
+            });
         }
 
         [Test]

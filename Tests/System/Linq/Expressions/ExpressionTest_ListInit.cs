@@ -1,3 +1,6 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
 //
 // ExpressionTest_ListInit.cs
 //
@@ -65,38 +68,33 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullExpression()
         {
-            Expression.ListInit(null, new List<ElementInit>());
+            Assert.Throws<ArgumentNullException>(() => { Expression.ListInit(null, new List<ElementInit>()); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullElementInitializer()
         {
-            Expression.ListInit(CreateNewList(), new ElementInit[] { null });
+            Assert.Throws<ArgumentNullException>(() => { Expression.ListInit(CreateNewList(), new ElementInit[] { null }); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullExpressionInitializer()
         {
-            Expression.ListInit(CreateNewList(), new Expression[] { null });
+            Assert.Throws<ArgumentNullException>(() => { Expression.ListInit(CreateNewList(), new Expression[] { null }); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ExpressionTypeDoesntImplementIEnumerable()
         {
-            Expression.ListInit(Expression.New(typeof(Foo)), "foo".ToConstant());
+            Assert.Throws<InvalidOperationException>(() => { Expression.ListInit(Expression.New(typeof(Foo)), "foo".ToConstant()); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ExpressionTypeDoesnHaveAddMethod()
         {
-            Expression.ListInit(Expression.New(typeof(Bar)), "foo".ToConstant());
+            Assert.Throws<InvalidOperationException>(() => { Expression.ListInit(Expression.New(typeof(Bar)), "foo".ToConstant()); });
         }
 
         [Test]

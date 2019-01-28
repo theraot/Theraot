@@ -245,22 +245,28 @@ namespace MonoTests.System.Threading
             }
         }
 
-        [Test, ExpectedException(typeof(SynchronizationLockException))]
+        [Test]
         public void ExitReadLock()
         {
-            using (var v = new ReaderWriterLockSlim())
+            Assert.Throws<SynchronizationLockException>(() =>
             {
-                v.ExitReadLock();
-            }
+                using (var v = new ReaderWriterLockSlim())
+                {
+                    v.ExitReadLock();
+                }
+            });
         }
 
-        [Test, ExpectedException(typeof(SynchronizationLockException))]
+        [Test]
         public void ExitWriteLock()
         {
-            using (var v = new ReaderWriterLockSlim())
+            Assert.Throws<SynchronizationLockException>(() =>
             {
-                v.ExitWriteLock();
-            }
+                using (var v = new ReaderWriterLockSlim())
+                {
+                    v.ExitWriteLock();
+                }
+            });
         }
 
         [Test]

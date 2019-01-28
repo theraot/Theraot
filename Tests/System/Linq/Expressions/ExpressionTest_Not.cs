@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_Not.cs
 //
@@ -36,31 +40,27 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestNot
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Not(null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Not(null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgNotStatic()
         {
-            Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic"));
+            Assert.Throws<ArgumentException>(() => { Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic")); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgParameterCount()
         {
-            Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount"));
+            Assert.Throws<ArgumentException>(() => { Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount")); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgReturnsVoid()
         {
-            Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid"));
+            Assert.Throws<ArgumentException>(() => { Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid")); });
         }
 
         [Test]

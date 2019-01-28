@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -82,33 +86,39 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodCheck_BadArgs()
         {
-            Expression left = Expression.Constant("");
-            Expression right = Expression.Constant(1.0);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression left = Expression.Constant("");
+                Expression right = Expression.Constant(1.0);
 
-            Expression.Add(left, right, Gm("BadMethodSig_1"));
+                Expression.Add(left, right, Gm("BadMethodSig_1"));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodCheck_BadArgs2()
         {
-            Expression left = Expression.Constant("");
-            Expression right = Expression.Constant(1.0);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression left = Expression.Constant("");
+                Expression right = Expression.Constant(1.0);
 
-            Expression.Add(left, right, Gm("BadMethodSig_2"));
+                Expression.Add(left, right, Gm("BadMethodSig_2"));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodCheck_BadArgs3()
         {
-            Expression left = Expression.Constant("");
-            Expression right = Expression.Constant(1.0);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression left = Expression.Constant("");
+                Expression right = Expression.Constant(1.0);
 
-            Expression.Add(left, right, Gm("BadMethodSig_3"));
+                Expression.Add(left, right, Gm("BadMethodSig_3"));
+            });
         }
 
         private static void PassInt(ExpressionType nt)

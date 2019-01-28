@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_NewArrayInit.cs
 //
@@ -37,39 +41,34 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestNewArrayInit
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullType()
         {
-            Expression.NewArrayInit(null, new Expression[0]);
+            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayInit(null, new Expression[0]); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullInitializers()
         {
-            Expression.NewArrayInit(typeof(int), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayInit(typeof(int), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void InitializersContainNull()
         {
-            Expression.NewArrayInit(typeof(int), 1.ToConstant(), null, 3.ToConstant());
+            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayInit(typeof(int), 1.ToConstant(), null, 3.ToConstant()); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void WrongInitializer()
         {
-            Expression.NewArrayInit(typeof(int), 1.ToConstant(), "2".ToConstant(), 3.ToConstant());
+            Assert.Throws<InvalidOperationException>(() => { Expression.NewArrayInit(typeof(int), 1.ToConstant(), "2".ToConstant(), 3.ToConstant()); });
         }
 
         [Test]
         [Category("NotDotNet")]
-        [ExpectedException(typeof(ArgumentException))]
         public void NewVoid()
         {
-            Expression.NewArrayInit(typeof(void), new Expression[0]);
+            Assert.Throws<ArgumentException>(() => { Expression.NewArrayInit(typeof(void), new Expression[0]); });
         }
 
         [Test]

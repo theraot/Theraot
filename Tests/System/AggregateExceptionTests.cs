@@ -1,4 +1,8 @@
-﻿// AggregateExceptionTests.cs
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+// AggregateExceptionTests.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -69,24 +73,24 @@ namespace MonoTests.System
             Assert.AreEqual(3, ex.InnerExceptions.Count((exception) => !(exception is AggregateException)), "#2");
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void InitializationWithNullInnerValuesTest()
         {
-            GC.KeepAlive(new AggregateException(new[] { new Exception(), null, new ApplicationException() }));
+            Assert.Throws<ArgumentException>(() =>
+                GC.KeepAlive(new AggregateException(new[] {new Exception(), null, new ApplicationException()})));
         }
 
         [Test]
         public void InitializationWithNullValuesTest()
         {
-            Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new AggregateException((IEnumerable<Exception>)null)));
-            Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new AggregateException((Exception[])null)));
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((IEnumerable<Exception>)null)));
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((Exception[])null)));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Handle_Invalid()
         {
-            _e.Handle(null);
+            Assert.Throws<ArgumentNullException>(() => { _e.Handle(null); });
         }
 
         [Test]
@@ -126,28 +130,6 @@ namespace MonoTests.System
             var inner = new ArgumentNullException();
             var outer = new InvalidOperationException("x", inner);
             Assert.AreEqual(outer, new AggregateException(outer).GetBaseException());
-        }
-
-        private static void Throws(Type t, Action action)
-        {
-            if (action == null)
-            {
-                return;
-            }
-            Exception e = null;
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-            }
-
-            if (e == null || e.GetType() != t)
-            {
-                Assert.Fail();
-            }
         }
     }
 }

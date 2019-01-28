@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -30,31 +34,27 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestField
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Field(null, "NoField");
+            Assert.Throws<ArgumentNullException>(() => { Expression.Field(null, "NoField"); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null1()
         {
-            Expression.Field(Expression.Constant(new MemberClass()), (string)null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Field(Expression.Constant(new MemberClass()), (string)null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null2()
         {
-            Expression.Field(Expression.Constant(new MemberClass()), (FieldInfo)null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Field(Expression.Constant(new MemberClass()), (FieldInfo)null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void NoField()
         {
-            Expression.Field(Expression.Constant(new MemberClass()), "NoField");
+            Assert.Throws<ArgumentException>(() => { Expression.Field(Expression.Constant(new MemberClass()), "NoField"); });
         }
 
         [Test]
@@ -67,12 +67,14 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void StaticField1()
         {
-            // This will fail because access to a static field should be created using a FieldInfo and
-            // not an instance plus the field name.
-            Expression.Field(Expression.Constant(new MemberClass()), "StaticField");
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // This will fail because access to a static field should be created using a FieldInfo and 
+                // not an instance plus the field name.
+                Expression.Field(Expression.Constant(new MemberClass()), "StaticField");
+            });
         }
 
         [Test]
@@ -86,12 +88,14 @@ namespace MonoTests.System.Linq.Expressions
 
         [Test]
         [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351
-        [ExpectedException(typeof(ArgumentException))]
         public void StaticFieldWithInstanceArgument()
         {
-            Expression.Field(
-                Expression.Parameter(GetType(), "t"),
-                GetType().GetField("Foo"));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression.Field(
+                    Expression.Parameter(GetType(), "t"),
+                    GetType().GetField("Foo"));
+            });
         }
 
         public static string Foo = "foo";

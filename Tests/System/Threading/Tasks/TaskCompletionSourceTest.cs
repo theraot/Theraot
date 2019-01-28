@@ -217,7 +217,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(TaskStatus.Faulted, _completionSource.Task.Status, "#9");
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void SetResultExceptionTest()
         {
             Assert.IsNotNull(_completionSource.Task, "#1");
@@ -225,7 +225,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(TaskStatus.RanToCompletion, _completionSource.Task.Status, "#3");
             Assert.AreEqual(42, _completionSource.Task.Result, "#4");
 
-            _completionSource.SetResult(43);
+            Assert.Throws<InvalidOperationException>(() => _completionSource.SetResult(43));
         }
 
         [Test]

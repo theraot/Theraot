@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_TypeAs.cs
 //
@@ -37,24 +41,21 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestTypeAs
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.TypeAs(null, typeof(int));
+            Assert.Throws<ArgumentNullException>(() => { Expression.TypeAs(null, typeof(int)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.TypeAs(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.TypeAs(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Arg2NotReferenceNorNullable()
         {
-            Expression.TypeAs(Expression.Constant(1), typeof(int));
+            Assert.Throws<ArgumentException>(() => { Expression.TypeAs(Expression.Constant(1), typeof(int)); });
         }
 
         [Test]
@@ -120,10 +121,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void TypeAsVoid()
         {
-            Expression.TypeAs("yoyo".ToConstant(), typeof(void));
+            Assert.Throws<ArgumentException>(() => { Expression.TypeAs("yoyo".ToConstant(), typeof(void)); });
         }
     }
 }

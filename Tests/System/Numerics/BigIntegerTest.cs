@@ -54,7 +54,7 @@ namespace MonoTests.System.Numerics
         private readonly NumberFormatInfo _nfi = NumberFormatInfo.InvariantInfo;
         private NumberFormatInfo _nfiUser;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUpFixture()
         {
             _nfiUser = new NumberFormatInfo

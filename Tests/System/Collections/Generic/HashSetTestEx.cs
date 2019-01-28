@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 

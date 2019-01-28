@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -31,24 +35,21 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestNotEqual
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.NotEqual(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.NotEqual(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.NotEqual(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.NotEqual(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgTypesDifferent()
         {
-            Expression.NotEqual(Expression.Constant(1), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.NotEqual(Expression.Constant(1), Expression.Constant(2.0)); });
         }
 
         [Test]
@@ -63,10 +64,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.NotEqual(Expression.Constant(new D()), Expression.Constant(new D()));
+            Assert.Throws<InvalidOperationException>(() => { Expression.NotEqual(Expression.Constant(new D()), Expression.Constant(new D())); });
         }
 
         [Test]
@@ -114,14 +114,16 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Nullable_Mixed()
         {
-            int? a = 1;
-            const int B = 2;
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                int? a = 1;
+                const int B = 2;
 
-            Expression.NotEqual(Expression.Constant(a, typeof(int?)),
-                      Expression.Constant(B, typeof(int)));
+                Expression.NotEqual(Expression.Constant(a, typeof(int?)),
+                    Expression.Constant(B, typeof(int)));
+            });
         }
 
         [Test]

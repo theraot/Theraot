@@ -1,4 +1,8 @@
-﻿//
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+//
 // EnumerableTest.cs
 //
 // Author:
@@ -372,7 +376,7 @@ namespace MonoTests.System.Linq
 
         [Test]
         [Category("NotDotNet")] // Mirosoft is failing at this, from .NET 3.5 on :/
-        [Ignore]
+        [Ignore("Not working")]
         public void TestAverageOverflowOnInt64()
         {
             var x = new[] { long.MaxValue, long.MaxValue };

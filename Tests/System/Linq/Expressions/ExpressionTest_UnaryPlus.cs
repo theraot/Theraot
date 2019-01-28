@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_UnaryPlus.cs
 //
@@ -36,38 +40,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestUnaryPlus
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.UnaryPlus(null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.UnaryPlus(null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgNotStatic()
         {
-            Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic"));
+            Assert.Throws<ArgumentException>(() => { Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic")); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgParameterCount()
         {
-            Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount"));
+            Assert.Throws<ArgumentException>(() => { Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount")); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgReturnsVoid()
         {
-            Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid"));
+            Assert.Throws<ArgumentException>(() => { Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid")); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void PlusBool()
         {
-            Expression.UnaryPlus(true.ToConstant());
+            Assert.Throws<InvalidOperationException>(() => { Expression.UnaryPlus(true.ToConstant()); });
         }
 
         [Test]

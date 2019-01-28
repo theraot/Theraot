@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,38 +33,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestSubtract
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Subtract(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Subtract(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.Subtract(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Subtract(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgTypesDifferent()
         {
-            Expression.Subtract(Expression.Constant(1), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Subtract(Expression.Constant(1), Expression.Constant(2.0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.Subtract(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Subtract(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Boolean()
         {
-            Expression.Subtract(Expression.Constant(true), Expression.Constant(false));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Subtract(Expression.Constant(true), Expression.Constant(false)); });
         }
 
         [Test]

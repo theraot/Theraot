@@ -1,4 +1,8 @@
-﻿//
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+//
 // LookupTest.cs
 //
 // Author:

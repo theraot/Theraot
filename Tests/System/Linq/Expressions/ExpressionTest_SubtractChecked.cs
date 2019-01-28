@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,38 +33,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestSubtractChecked
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.SubtractChecked(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.SubtractChecked(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.SubtractChecked(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.SubtractChecked(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgTypesDifferent()
         {
-            Expression.SubtractChecked(Expression.Constant(1), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.SubtractChecked(Expression.Constant(1), Expression.Constant(2.0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.SubtractChecked(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+            Assert.Throws<InvalidOperationException>(() => { Expression.SubtractChecked(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Boolean()
         {
-            Expression.SubtractChecked(Expression.Constant(true), Expression.Constant(false));
+            Assert.Throws<InvalidOperationException>(() => { Expression.SubtractChecked(Expression.Constant(true), Expression.Constant(false)); });
         }
 
         [Test]

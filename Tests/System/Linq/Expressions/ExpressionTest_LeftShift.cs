@@ -1,4 +1,8 @@
-﻿// Permission is hereby granted, free of charge, to any person obtaining
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+// Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
 // without limitation the rights to use, copy, modify, merge, publish,
@@ -30,45 +34,39 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestLeftShift
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.LeftShift(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.LeftShift(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.LeftShift(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.LeftShift(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Arg2WrongType()
         {
-            Expression.LeftShift(Expression.Constant(1), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.LeftShift(Expression.Constant(1), Expression.Constant(2.0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.LeftShift(Expression.Constant(new NoOpClass()), Expression.Constant(1));
+            Assert.Throws<InvalidOperationException>(() => { Expression.LeftShift(Expression.Constant(new NoOpClass()), Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Boolean()
         {
-            Expression.LeftShift(Expression.Constant(true), Expression.Constant(1));
+            Assert.Throws<InvalidOperationException>(() => { Expression.LeftShift(Expression.Constant(true), Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Double()
         {
-            Expression.LeftShift(Expression.Constant(2.0), Expression.Constant(1));
+            Assert.Throws<InvalidOperationException>(() => { Expression.LeftShift(Expression.Constant(2.0), Expression.Constant(1)); });
         }
 
         [Test]

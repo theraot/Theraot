@@ -1,4 +1,4 @@
-//
+﻿//
 // TupleTest.cs
 //
 // Authors:
@@ -38,19 +38,24 @@ namespace MonoTests.System
     public class TupleTest
     {
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void TupleWithRest_Invalid()
         {
-            var tuple = new Tuple<int, int, int, int, int, int, int, int>(1, 2, 3, 4, 5, 6, 7, 8);
-            GC.KeepAlive(tuple);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var tuple = new Tuple<int, int, int, int, int, int, int, int>(1, 2, 3, 4, 5, 6, 7, 8);
+                GC.KeepAlive(tuple);
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void TupleWithRest_InvalidDueToNull()
         {
-            var tuple = new Tuple<int, object, int, int, int, int, int, Tuple<string, string>>(1, null, 3, 4, 5, 6, 7, null);
-            GC.KeepAlive(tuple);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var tuple = new Tuple<int, object, int, int, int, int, int, Tuple<string, string>>(1, null, 3, 4, 5, 6,
+                    7, null);
+                GC.KeepAlive(tuple);
+            });
         }
 
         [Test]

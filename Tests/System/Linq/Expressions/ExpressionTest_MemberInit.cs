@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_MemberInit.cs
 //
@@ -47,28 +51,28 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullExpression()
         {
-            Expression.MemberInit(null, new MemberBinding[0]);
+            Assert.Throws<ArgumentNullException>(() => { Expression.MemberInit(null, new MemberBinding[0]); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullBindings()
         {
-            Expression.MemberInit(
+            Assert.Throws<ArgumentNullException>(() => { Expression.MemberInit(
                 Expression.New(typeof(Foo)),
                 null);
+             });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MemberNotAssignableToNewType()
         {
-            Expression.MemberInit(
-                Expression.New(typeof(Foo)),
-                new MemberBinding[] { Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant()) });
+            Assert.Throws<ArgumentException>(() => {
+                Expression.MemberInit(
+                    Expression.New(typeof(Foo)),
+                    new MemberBinding[] { Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant()) });
+            });
         }
 
         [Test]

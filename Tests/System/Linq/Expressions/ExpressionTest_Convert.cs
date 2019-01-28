@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_Convert.cs
 //
@@ -36,24 +40,21 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestConvert
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullExpression()
         {
-            Expression.Convert(null, typeof(int));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Convert(null, typeof(int)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullType()
         {
-            Expression.Convert(1.ToConstant(), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Convert(1.ToConstant(), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ConvertIntToString()
         {
-            Expression.Convert(1.ToConstant(), typeof(string));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(1.ToConstant(), typeof(string)); });
         }
 
         private interface IFoo
@@ -123,10 +124,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ConvertBazToFoo()
         {
-            Expression.Convert(Expression.Parameter(typeof(Baz), ""), typeof(Foo));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(Expression.Parameter(typeof(Baz), ""), typeof(Foo)); });
         }
 
         private struct EineStrukt
@@ -135,17 +135,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ConvertStructToFoo()
         {
-            Expression.Convert(Expression.Parameter(typeof(EineStrukt), ""), typeof(Foo));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(Expression.Parameter(typeof(EineStrukt), ""), typeof(Foo)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ConvertInt32ToBool()
         {
-            Expression.Convert(Expression.Parameter(typeof(int), ""), typeof(bool));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(Expression.Parameter(typeof(int), ""), typeof(bool)); });
         }
 
         [Test]
@@ -594,13 +592,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ConvertNullableIntToStringWithConvertMethod()
         {
-            Expression.Convert(
-                Expression.Constant((int?)0),
-                typeof(string),
-                typeof(Convert).GetMethod("ToString", new[] { typeof(object) }));
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                Expression.Convert(
+                    Expression.Constant((int?)0),
+                    typeof(string),
+                    typeof(Convert).GetMethod("ToString", new[] {typeof(object)}));
+            });
         }
 
         [Test] // #678897

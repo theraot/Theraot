@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_ArrayLength.cs
 //
@@ -37,17 +41,15 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestArrayLength
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.ArrayLength(null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayLength(null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Arg1NotArray()
         {
-            Expression.ArrayLength(Expression.Constant("This is not an array!"));
+            Assert.Throws<ArgumentException>(() => { Expression.ArrayLength(Expression.Constant("This is not an array!")); });
         }
 
         [Test]
@@ -63,12 +65,14 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Rank2String()
         {
-            string[,] array = { { }, { } };
+            Assert.Throws<ArgumentException>(() =>
+            {
+                string[,] array = {{ }, { }};
 
-            Expression.ArrayLength(Expression.Constant(array));
+                Expression.ArrayLength(Expression.Constant(array));
+            });
         }
 
         [Test]

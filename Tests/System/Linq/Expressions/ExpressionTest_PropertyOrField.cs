@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,24 +33,21 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestPropertyOrField
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.PropertyOrField(null, "NoPropertyOrField");
+            Assert.Throws<ArgumentNullException>(() => { Expression.PropertyOrField(null, "NoPropertyOrField"); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.PropertyOrField(Expression.Constant(new MemberClass()), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.PropertyOrField(Expression.Constant(new MemberClass()), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void NoPropertyOrField()
         {
-            Expression.PropertyOrField(Expression.Constant(new MemberClass()), "NoPropertyOrField");
+            Assert.Throws<ArgumentException>(() => { Expression.PropertyOrField(Expression.Constant(new MemberClass()), "NoPropertyOrField"); });
         }
 
         [Test]

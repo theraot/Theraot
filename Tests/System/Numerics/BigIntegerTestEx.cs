@@ -1,4 +1,8 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+#if NET20 || NET30 || NET35
 
 using NUnit.Framework;
 using System.Diagnostics;

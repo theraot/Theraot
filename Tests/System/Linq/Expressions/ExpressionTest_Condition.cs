@@ -1,3 +1,7 @@
+#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest.cs
 //
@@ -36,38 +40,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestCondition
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Condition(null, Expression.Constant(1), Expression.Constant(0));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Condition(null, Expression.Constant(1), Expression.Constant(0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), null, Expression.Constant(0));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), null, Expression.Constant(0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg3Null()
         {
-            Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void TestNotBool()
         {
-            Expression.Condition(Expression.Constant(42), Expression.Constant(1), Expression.Constant(0));
+            Assert.Throws<ArgumentException>(() => { Expression.Condition(Expression.Constant(42), Expression.Constant(1), Expression.Constant(0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void TrueBlockTypeNotFalseBlockType()
         {
-            Expression.Condition(Expression.Constant(42), Expression.Constant(1.1), Expression.Constant(0));
+            Assert.Throws<ArgumentException>(() => { Expression.Condition(Expression.Constant(42), Expression.Constant(1.1), Expression.Constant(0)); });
         }
 
         [Test]
