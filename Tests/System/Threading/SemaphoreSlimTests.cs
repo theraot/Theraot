@@ -70,8 +70,6 @@ namespace System.Threading.Tests
                (10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
-#if !NET40
-
         [Test]
         public static void RunSemaphoreSlimTest1_WaitAsync()
         {
@@ -99,8 +97,6 @@ namespace System.Threading.Tests
                (10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
-#endif
-
         [Test]
         public static void RunSemaphoreSlimTest2_Release()
         {
@@ -122,8 +118,6 @@ namespace System.Threading.Tests
             RunSemaphoreSlimTest2_Release(5, 10, 6, typeof(SemaphoreFullException));
             RunSemaphoreSlimTest2_Release(int.MaxValue - 1, int.MaxValue, 10, typeof(SemaphoreFullException));
         }
-
-#if !NET40
 
         [Test]
         public static void RunSemaphoreSlimTest4_Dispose()
@@ -164,8 +158,6 @@ namespace System.Threading.Tests
             RunSemaphoreSlimTest7_AvailableWaitHandle(5, 10, SemaphoreSlimActions.WaitAsync, true);
             RunSemaphoreSlimTest7_AvailableWaitHandle(0, 10, SemaphoreSlimActions.Release, true);
         }
-
-#endif
 
         /// <summary>
         /// Test SemaphoreSlim constructor
@@ -223,8 +215,6 @@ namespace System.Threading.Tests
                 }
             }
         }
-
-#if !NET40
 
         /// <summary>
         /// Test SemaphoreSlim WaitAsync
@@ -310,8 +300,6 @@ namespace System.Threading.Tests
             }
         }
 
-#endif
-
         /// <summary>
         /// Test SemaphoreSlim Release
         /// </summary>
@@ -339,8 +327,6 @@ namespace System.Threading.Tests
                 }
             }
         }
-
-#if !NET40
 
         /// <summary>
         /// Call specific SemaphoreSlim method or property
@@ -465,8 +451,6 @@ namespace System.Threading.Tests
             Assert.NotNull(semaphore.AvailableWaitHandle);
             Assert.AreEqual(state, semaphore.AvailableWaitHandle.WaitOne(0));
         }
-
-#endif
 
         #region Lock cancellation
 
