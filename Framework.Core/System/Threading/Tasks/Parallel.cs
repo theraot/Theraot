@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 // BASEDON: https://github.com/dotnet/corefx/blob/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/Parallel.cs
 
@@ -18,120 +18,10 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Runtime.ExceptionServices;
 using System.Diagnostics;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
 {
-    /// <summary>
-    /// Stores options that configure the operation of methods on the
-    /// <see cref="T:System.Threading.Tasks.Parallel">Parallel</see> class.
-    /// </summary>
-    /// <remarks>
-    /// By default, methods on the Parallel class attempt to utilize all available processors, are non-cancelable, and target
-    /// the default TaskScheduler (TaskScheduler.Default). <see cref="ParallelOptions"/> enables
-    /// overriding these defaults.
-    /// </remarks>
-    public class ParallelOptions
-    {
-        private TaskScheduler _scheduler;
-        private int _maxDegreeOfParallelism;
-        private CancellationToken _cancellationToken;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParallelOptions"/> class.
-        /// </summary>
-        /// <remarks>
-        /// This constructor initializes the instance with default values.  <see cref="MaxDegreeOfParallelism"/>
-        /// is initialized to -1, signifying that there is no upper bound set on how much parallelism should
-        /// be employed.  <see cref="CancellationToken"/> is initialized to a non-cancelable token,
-        /// and <see cref="TaskScheduler"/> is initialized to the default scheduler (TaskScheduler.Default).
-        /// All of these defaults may be overwritten using the property set accessors on the instance.
-        /// </remarks>
-        public ParallelOptions()
-        {
-            _scheduler = TaskScheduler.Default;
-            _maxDegreeOfParallelism = -1;
-            _cancellationToken = CancellationToken.None;
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="T:System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
-        /// associated with this <see cref="ParallelOptions"/> instance. Setting this property to null
-        /// indicates that the current scheduler should be used.
-        /// </summary>
-        public TaskScheduler TaskScheduler
-        {
-            get { return _scheduler; }
-            set { _scheduler = value; }
-        }
-
-        // Convenience property used by TPL logic
-        internal TaskScheduler EffectiveTaskScheduler
-        {
-            get
-            {
-                if (_scheduler == null) return TaskScheduler.Current;
-                else return _scheduler;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum degree of parallelism enabled by this ParallelOptions instance.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="MaxDegreeOfParallelism"/> limits the number of concurrent operations run by <see
-        /// cref="T:System.Threading.Tasks.Parallel">Parallel</see> method calls that are passed this
-        /// ParallelOptions instance to the set value, if it is positive. If <see
-        /// cref="MaxDegreeOfParallelism"/> is -1, then there is no limit placed on the number of concurrently
-        /// running operations.
-        /// </remarks>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The exception that is thrown when this <see cref="MaxDegreeOfParallelism"/> is set to 0 or some
-        /// value less than -1.
-        /// </exception>
-        public int MaxDegreeOfParallelism
-        {
-            get { return _maxDegreeOfParallelism; }
-            set
-            {
-                if ((value == 0) || (value < -1))
-                    throw new ArgumentOutOfRangeException(nameof(MaxDegreeOfParallelism));
-                _maxDegreeOfParallelism = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="T:System.Threading.CancellationToken">CancellationToken</see>
-        /// associated with this <see cref="ParallelOptions"/> instance.
-        /// </summary>
-        /// <remarks>
-        /// Providing a <see cref="T:System.Threading.CancellationToken">CancellationToken</see>
-        /// to a <see cref="T:System.Threading.Tasks.Parallel">Parallel</see> method enables the operation to be
-        /// exited early. Code external to the operation may cancel the token, and if the operation observes the
-        /// token being set, it may exit early by throwing an
-        /// <see cref="T:System.OperationCanceledExceptionEx"/>.
-        /// </remarks>
-        public CancellationToken CancellationToken
-        {
-            get { return _cancellationToken; }
-            set { _cancellationToken = value; }
-        }
-
-        internal int EffectiveMaxConcurrencyLevel
-        {
-            get
-            {
-                int rval = MaxDegreeOfParallelism;
-                int schedulerMax = EffectiveTaskScheduler.MaximumConcurrencyLevel;
-                if ((schedulerMax > 0) && (schedulerMax != int.MaxValue))
-                {
-                    rval = (rval == -1) ? schedulerMax : Math.Min(schedulerMax, rval);
-                }
-
-                return rval;
-            }
-        }
-    } // class ParallelOptions
-
     /// <summary>
     /// Provides support for parallel loops and regions.
     /// </summary>
@@ -139,13 +29,13 @@ namespace System.Threading.Tasks
     /// The <see cref="T:System.Threading.Tasks.Parallel"/> class provides library-based data parallel replacements
     /// for common operations such as for loops, for each loops, and execution of a set of statements.
     /// </remarks>
-    public static class Parallel
+    public static partial class Parallel
     {
         // We use a stride for loops to amortize the frequency of interlocked operations.
-        internal const int DEFAULT_LOOP_STRIDE = 16;
+        internal const int Default_Loop_Stride = 16;
 
         // Static variable to hold default parallel options
-        internal static readonly ParallelOptions s_defaultParallelOptions = new ParallelOptions();
+        private static readonly ParallelOptions DefaultParallelOptions = new ParallelOptions();
 
         /// <summary>
         /// Executes each of the provided actions, possibly in parallel.
@@ -166,7 +56,7 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static void Invoke(params Action[] actions)
         {
-            Invoke(s_defaultParallelOptions, actions);
+            Invoke(DefaultParallelOptions, actions);
         }
 
         /// <summary>
@@ -219,153 +109,159 @@ namespace System.Threading.Tasks
 
             // We must validate that the actions array contains no null elements, and also
             // make a defensive copy of the actions array.
-            Action[] actionsCopy = new Action[actions.Length];
-            for (int i = 0; i < actionsCopy.Length; i++)
+            var actionsCopy = new Action[actions.Length];
+            for (var i = 0; i < actionsCopy.Length; i++)
             {
                 actionsCopy[i] = actions[i];
                 if (actionsCopy[i] == null)
                 {
-                    throw new ArgumentException("SR.Parallel_Invoke_ActionNull");
+                    throw new ArgumentException("One of the actions was null.");
                 }
             }
 
-#if DEBUG
-            actions = null; // Ensure we don't accidentally use this below.
-#endif
+            InvokeExtracted(parallelOptions, actionsCopy);
+        }
 
+        private static void InvokeExtracted(ParallelOptions parallelOptions, Action[] actionsCopy)
+        {
             // If we have no work to do, we are done.
-            if (actionsCopy.Length < 1) return;
+            if (actionsCopy.Length < 1)
+            {
+                return;
+            }
 
             // In the algorithm below, if the number of actions is greater than this, we automatically
             // use Parallel.For() to handle the actions, rather than the Task-per-Action strategy.
-            const int SMALL_ACTIONCOUNT_LIMIT = 10;
+            const int Small_Action_Count_Limit = 10;
 
-            try
+            // If we've gotten this far, it's time to process the actions.
+
+            // This is more efficient for a large number of actions, or for enforcing MaxDegreeOfParallelism:
+            if
+            (
+                actionsCopy.Length > Small_Action_Count_Limit
+                || (parallelOptions.MaxDegreeOfParallelism != -1 && parallelOptions.MaxDegreeOfParallelism < actionsCopy.Length)
+            )
             {
-                // If we've gotten this far, it's time to process the actions.
+                // Used to hold any exceptions encountered during action processing
+                var exceptionQ = new ThreadSafeQueue<Exception>[1]; // will be lazily initialized if necessary
 
-                // This is more efficient for a large number of actions, or for enforcing MaxDegreeOfParallelism:
-                if ((actionsCopy.Length > SMALL_ACTIONCOUNT_LIMIT) ||
-                    (parallelOptions.MaxDegreeOfParallelism != -1 &&
-                     parallelOptions.MaxDegreeOfParallelism < actionsCopy.Length))
+                // Launch a task replicator to handle the execution of all actions.
+                // This allows us to use as many cores as are available, and no more.
+                // The exception to this rule is that, in the case of a blocked action,
+                // the ThreadPool may inject extra threads, which means extra tasks can run.
+                var actionIndex = 0;
+
+                try
                 {
-                    // Used to hold any exceptions encountered during action processing
-                    ConcurrentQueue<Exception> exceptionQ = null; // will be lazily initialized if necessary
+                    TaskReplicator.Run
+                    (
+                        (ref object state, int timeout, out bool replicationDelegateYieldedBeforeCompletion) =>
+                        {
+                            Theraot.No.Op(state);
+                            Theraot.No.Op(timeout);
 
-                    // Launch a task replicator to handle the execution of all actions.
-                    // This allows us to use as many cores as are available, and no more.
-                    // The exception to this rule is that, in the case of a blocked action,
-                    // the ThreadPool may inject extra threads, which means extra tasks can run.
-                    int actionIndex = 0;
+                            // In this particular case, we do not participate in cooperative multitasking:
+                            replicationDelegateYieldedBeforeCompletion = false;
 
-                    try
-                    {
-                        TaskReplicator.Run(
-                            (ref object state, int timeout, out bool replicationDelegateYieldedBeforeCompletion) =>
+                            // Each for-task will pull an action at a time from the list
+                            var myIndex = Interlocked.Increment(ref actionIndex); // = index to use + 1
+                            while (myIndex <= actionsCopy.Length)
                             {
-                                // In this particular case, we do not participate in cooperative multitasking:
-                                replicationDelegateYieldedBeforeCompletion = false;
-
-                                // Each for-task will pull an action at a time from the list
-                                int myIndex = Interlocked.Increment(ref actionIndex); // = index to use + 1
-                                while (myIndex <= actionsCopy.Length)
+                                // Catch and store any exceptions.  If we don't catch them, the self-replicating
+                                // task will exit, and that may cause other SR-tasks to exit.
+                                // And (absent cancellation) we want all actions to execute.
+                                try
                                 {
-                                    // Catch and store any exceptions.  If we don't catch them, the self-replicating
-                                    // task will exit, and that may cause other SR-tasks to exit.
-                                    // And (absent cancellation) we want all actions to execute.
-                                    try
-                                    {
-                                        actionsCopy[myIndex - 1]();
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        LazyInitializer.EnsureInitialized<ConcurrentQueue<Exception>>(ref exceptionQ,
-                                            () => { return new ConcurrentQueue<Exception>(); });
-                                        exceptionQ.Enqueue(e);
-                                    }
-
-                                    // Check for cancellation.  If it is encountered, then exit the delegate.
-                                    parallelOptions.CancellationToken.ThrowIfCancellationRequested();
-
-                                    // You're still in the game.  Grab your next action index.
-                                    myIndex = Interlocked.Increment(ref actionIndex);
+                                    actionsCopy[myIndex - 1]();
                                 }
-                            },
-                            parallelOptions,
-                            stopOnFirstFailure: false);
-                    }
-                    catch (Exception e)
+                                catch (Exception e)
+                                {
+                                    LazyInitializer.EnsureInitialized(ref exceptionQ[0],() => new ThreadSafeQueue<Exception>());
+                                    exceptionQ[0].Add(e);
+                                }
+
+                                // Check for cancellation.  If it is encountered, then exit the delegate.
+                                parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+
+                                // You're still in the game.  Grab your next action index.
+                                myIndex = Interlocked.Increment(ref actionIndex);
+                            }
+                        },
+                        parallelOptions,
+                        false
+                    );
+                }
+                catch (Exception e)
+                {
+                    LazyInitializer.EnsureInitialized(ref exceptionQ[0], () => new ThreadSafeQueue<Exception>());
+
+                    // Since we're consuming all action exceptions, there are very few reasons that
+                    // we would see an exception here.  Two that come to mind:
+                    //   (1) An OCE thrown by one or more actions (AggregateException thrown)
+                    //   (2) An exception thrown from the TaskReplicator constructor
+                    //       (regular exception thrown).
+                    // We'll need to cover them both.
+
+                    switch (e)
                     {
-                        LazyInitializer.EnsureInitialized<ConcurrentQueue<Exception>>(ref exceptionQ,
-                            () => { return new ConcurrentQueue<Exception>(); });
-
-                        // Since we're consuming all action exceptions, there are very few reasons that
-                        // we would see an exception here.  Two that come to mind:
-                        //   (1) An OCE thrown by one or more actions (AggregateException thrown)
-                        //   (2) An exception thrown from the TaskReplicator constructor
-                        //       (regular exception thrown).
-                        // We'll need to cover them both.
-
-                        ObjectDisposedException ode = e as ObjectDisposedException;
-                        if (ode != null)
+                        case ObjectDisposedException _:
                             throw;
 
-                        AggregateException ae = e as AggregateException;
-                        if (ae != null)
-                        {
+                        case AggregateException ae:
                             // Strip off outer container of an AggregateException, because downstream
                             // logic needs OCEs to be at the top level.
-                            foreach (Exception exc in ae.InnerExceptions) exceptionQ.Enqueue(exc);
-                        }
-                        else
-                        {
-                            exceptionQ.Enqueue(e);
-                        }
-                    }
+                            foreach (var exc in ae.InnerExceptions)
+                            {
+                                exceptionQ[0].Add(exc);
+                            }
 
-                    // If we have encountered any exceptions, then throw.
-                    if ((exceptionQ != null) && (exceptionQ.Count > 0))
-                    {
-                        ThrowSingleCancellationExceptionOrOtherException(exceptionQ, parallelOptions.CancellationToken,
-                            new AggregateException(exceptionQ));
+                            break;
+
+                        default:
+                            exceptionQ[0].Add(e);
+                            break;
                     }
                 }
-                else // This is more efficient for a small number of actions and no DOP support:
+
+                // If we have encountered any exceptions, then throw.
+                if (exceptionQ[0]?.Count > 0)
                 {
-                    // Initialize our array of tasks, one per action.
-                    Task[] tasks = new Task[actionsCopy.Length];
-
-                    // One more check before we begin...
-                    parallelOptions.CancellationToken.ThrowIfCancellationRequested();
-
-                    // Invoke all actions as tasks.  Queue N-1 of them, and run 1 synchronously.
-                    for (int i = 1; i < tasks.Length; i++)
-                    {
-                        tasks[i] = Task.Factory.StartNew(actionsCopy[i], parallelOptions.CancellationToken,
-                            TaskCreationOptions.None,
-                            parallelOptions.EffectiveTaskScheduler);
-                    }
-
-                    tasks[0] = new Task(actionsCopy[0], parallelOptions.CancellationToken, TaskCreationOptions.None);
-                    tasks[0].RunSynchronously(parallelOptions.EffectiveTaskScheduler);
-
-                    // Now wait for the tasks to complete.  This will not unblock until all of
-                    // them complete, and it will throw an exception if one or more of them also
-                    // threw an exception.  We let such exceptions go completely unhandled.
-                    try
-                    {
-                        Task.WaitAll(tasks);
-                    }
-                    catch (AggregateException aggExp)
-                    {
-                        // see if we can combine it into a single OCE. If not propagate the original exception
-                        ThrowSingleCancellationExceptionOrOtherException(aggExp.InnerExceptions,
-                            parallelOptions.CancellationToken, aggExp);
-                    }
+                    ThrowSingleCancellationExceptionOrOtherException(exceptionQ, parallelOptions.CancellationToken, new AggregateException(exceptionQ[0]));
                 }
             }
-            finally
+            else // This is more efficient for a small number of actions and no DOP support:
             {
+                // Initialize our array of tasks, one per action.
+                var tasks = new Task[actionsCopy.Length];
+
+                // One more check before we begin...
+                parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+
+                // Invoke all actions as tasks.  Queue N-1 of them, and run 1 synchronously.
+                for (var i = 1; i < tasks.Length; i++)
+                {
+                    tasks[i] = Task.Factory.StartNew(actionsCopy[i], parallelOptions.CancellationToken,
+                        TaskCreationOptions.None,
+                        parallelOptions.EffectiveTaskScheduler);
+                }
+
+                tasks[0] = new Task(actionsCopy[0], parallelOptions.CancellationToken, TaskCreationOptions.None);
+                tasks[0].RunSynchronously(parallelOptions.EffectiveTaskScheduler);
+
+                // Now wait for the tasks to complete.  This will not unblock until all of
+                // them complete, and it will throw an exception if one or more of them also
+                // threw an exception.  We let such exceptions go completely unhandled.
+                try
+                {
+                    Task.WaitAll(tasks);
+                }
+                catch (AggregateException aggExp)
+                {
+                    // see if we can combine it into a single OCE. If not propagate the original exception
+                    ThrowSingleCancellationExceptionOrOtherException(aggExp.InnerExceptions,
+                        parallelOptions.CancellationToken, aggExp);
+                }
             }
         }
 
@@ -392,10 +288,16 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(body));
             }
 
-            return ForWorker<object>(
+            return ForWorker<object>
+            (
                 fromInclusive, toExclusive,
-                s_defaultParallelOptions,
-                body, null, null, null, null);
+                DefaultParallelOptions,
+                body,
+                null,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -421,9 +323,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(body));
             }
 
-            return ForWorker64<object>(
-                fromInclusive, toExclusive, s_defaultParallelOptions,
-                body, null, null, null, null);
+            return ForWorker64<object>
+            (
+                fromInclusive,
+                toExclusive,
+                DefaultParallelOptions,
+                body,
+                null,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -453,11 +363,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="body"/> delegate is invoked once for each value in the iteration range:
         /// [fromInclusive, toExclusive).  It is provided with the iteration count (an Int32) as a parameter.
         /// </remarks>
-        public static ParallelLoopResult For(
-            int fromInclusive,
-            int toExclusive,
-            ParallelOptions parallelOptions,
-            Action<int> body)
+        public static ParallelLoopResult For(int fromInclusive, int toExclusive, ParallelOptions parallelOptions, Action<int> body)
         {
             if (body == null)
             {
@@ -469,9 +375,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(parallelOptions));
             }
 
-            return ForWorker<object>(
-                fromInclusive, toExclusive, parallelOptions,
-                body, null, null, null, null);
+            return ForWorker<object>
+            (
+                fromInclusive,
+                toExclusive,
+                parallelOptions,
+                body,
+                null,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -501,11 +415,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="body"/> delegate is invoked once for each value in the iteration range:
         /// [fromInclusive, toExclusive).  It is provided with the iteration count (an Int64) as a parameter.
         /// </remarks>
-        public static ParallelLoopResult For(
-            long fromInclusive,
-            long toExclusive,
-            ParallelOptions parallelOptions,
-            Action<long> body)
+        public static ParallelLoopResult For(long fromInclusive, long toExclusive, ParallelOptions parallelOptions, Action<long> body)
         {
             if (body == null)
             {
@@ -517,9 +427,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(parallelOptions));
             }
 
-            return ForWorker64<object>(
-                fromInclusive, toExclusive, parallelOptions,
-                body, null, null, null, null);
+            return ForWorker64<object>
+            (
+                fromInclusive,
+                toExclusive,
+                parallelOptions,
+                body,
+                null,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -569,9 +487,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(body));
             }
 
-            return ForWorker<object>(
-                fromInclusive, toExclusive, s_defaultParallelOptions,
-                null, body, null, null, null);
+            return ForWorker<object>
+            (
+                fromInclusive,
+                toExclusive,
+                DefaultParallelOptions,
+                null,
+                body,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -599,9 +525,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(body));
             }
 
-            return ForWorker64<object>(
-                fromInclusive, toExclusive, s_defaultParallelOptions,
-                null, body, null, null, null);
+            return ForWorker64<object>
+            (
+                fromInclusive,
+                toExclusive,
+                DefaultParallelOptions,
+                null,
+                body,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -633,11 +567,7 @@ namespace System.Threading.Tasks
         /// and a <see cref="System.Threading.Tasks.ParallelLoopState">ParallelLoopState</see> instance that may be
         /// used to break out of the loop prematurely.
         /// </remarks>
-        public static ParallelLoopResult For(
-            int fromInclusive,
-            int toExclusive,
-            ParallelOptions parallelOptions,
-            Action<int, ParallelLoopState> body)
+        public static ParallelLoopResult For(int fromInclusive, int toExclusive, ParallelOptions parallelOptions, Action<int, ParallelLoopState> body)
         {
             if (body == null)
             {
@@ -649,9 +579,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(parallelOptions));
             }
 
-            return ForWorker<object>(
-                fromInclusive, toExclusive, parallelOptions,
-                null, body, null, null, null);
+            return ForWorker<object>
+            (
+                fromInclusive,
+                toExclusive,
+                parallelOptions,
+                null,
+                body,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -683,11 +621,7 @@ namespace System.Threading.Tasks
         /// and a <see cref="System.Threading.Tasks.ParallelLoopState">ParallelLoopState</see> instance that may be
         /// used to break out of the loop prematurely.
         /// </remarks>
-        public static ParallelLoopResult For(
-            long fromInclusive,
-            long toExclusive,
-            ParallelOptions parallelOptions,
-            Action<long, ParallelLoopState> body)
+        public static ParallelLoopResult For(long fromInclusive, long toExclusive, ParallelOptions parallelOptions, Action<long, ParallelLoopState> body)
         {
             if (body == null)
             {
@@ -699,9 +633,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(parallelOptions));
             }
 
-            return ForWorker64<object>(
-                fromInclusive, toExclusive, parallelOptions,
-                null, body, null, null, null);
+            return ForWorker64<object>
+            (
+                fromInclusive,
+                toExclusive,
+                parallelOptions,
+                null,
+                body,
+                null,
+                null,
+                null
+            );
         }
 
         /// <summary>
@@ -742,12 +684,7 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult For<TLocal>(
-            int fromInclusive,
-            int toExclusive,
-            Func<TLocal> localInit,
-            Func<int, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+        public static ParallelLoopResult For<TLocal>(int fromInclusive, int toExclusive, Func<TLocal> localInit, Func<int, ParallelLoopState, TLocal, TLocal> body, Action<TLocal> localFinally)
         {
             if (body == null)
             {
@@ -764,9 +701,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(localFinally));
             }
 
-            return ForWorker(
-                fromInclusive, toExclusive, s_defaultParallelOptions,
-                null, null, body, localInit, localFinally);
+            return ForWorker
+            (
+                fromInclusive,
+                toExclusive,
+                DefaultParallelOptions,
+                null,
+                null,
+                body,
+                localInit,
+                localFinally
+            );
         }
 
         /// <summary>
@@ -807,12 +752,7 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult For<TLocal>(
-            long fromInclusive,
-            long toExclusive,
-            Func<TLocal> localInit,
-            Func<long, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+        public static ParallelLoopResult For<TLocal>(long fromInclusive, long toExclusive, Func<TLocal> localInit, Func<long, ParallelLoopState, TLocal, TLocal> body,Action<TLocal> localFinally)
         {
             if (body == null)
             {
@@ -829,9 +769,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(localFinally));
             }
 
-            return ForWorker64(
-                fromInclusive, toExclusive, s_defaultParallelOptions,
-                null, null, body, localInit, localFinally);
+            return ForWorker64
+            (
+                fromInclusive,
+                toExclusive,
+                DefaultParallelOptions,
+                null,
+                null,
+                body,
+                localInit,
+                localFinally
+            );
         }
 
         /// <summary>
@@ -883,13 +831,15 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult For<TLocal>(
+        public static ParallelLoopResult For<TLocal>
+        (
             int fromInclusive,
             int toExclusive,
             ParallelOptions parallelOptions,
             Func<TLocal> localInit,
             Func<int, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (body == null)
             {
@@ -911,9 +861,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(parallelOptions));
             }
 
-            return ForWorker(
-                fromInclusive, toExclusive, parallelOptions,
-                null, null, body, localInit, localFinally);
+            return ForWorker
+            (
+                fromInclusive,
+                toExclusive,
+                parallelOptions,
+                null,
+                null,
+                body,
+                localInit,
+                localFinally
+            );
         }
 
         /// <summary>
@@ -965,13 +923,15 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult For<TLocal>(
+        public static ParallelLoopResult For<TLocal>
+        (
             long fromInclusive,
             long toExclusive,
             ParallelOptions parallelOptions,
             Func<TLocal> localInit,
             Func<long, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (body == null)
             {
@@ -993,27 +953,31 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(parallelOptions));
             }
 
-
-            return ForWorker64(
-                fromInclusive, toExclusive, parallelOptions,
-                null, null, body, localInit, localFinally);
+            return ForWorker64
+            (
+                fromInclusive,
+                toExclusive,
+                parallelOptions,
+                null,
+                null,
+                body,
+                localInit,
+                localFinally
+            );
         }
-
 
         private static bool CheckTimeoutReached(int timeoutOccursAt)
         {
             // Note that both, Environment.TickCount and timeoutOccursAt are ints and can overflow and become negative.
-            int currentMillis = Environment.TickCount;
+            var currentMillis = Environment.TickCount;
 
             if (currentMillis < timeoutOccursAt)
+            {
                 return false;
+            }
 
-            if (0 > timeoutOccursAt && 0 < currentMillis)
-                return false;
-
-            return true;
+            return 0 <= timeoutOccursAt || 0 >= currentMillis;
         }
-
 
         private static int ComputeTimeoutPoint(int timeoutLength)
         {
@@ -1025,496 +989,6 @@ namespace System.Threading.Tasks
                 return Environment.TickCount + timeoutLength;
             }
         }
-
-        /// <summary>
-        /// Performs the major work of the parallel for loop. It assumes that argument validation has already
-        /// been performed by the caller. This function's whole purpose in life is to enable as much reuse of
-        /// common implementation details for the various For overloads we offer. Without it, we'd end up
-        /// with lots of duplicate code. It handles: (1) simple for loops, (2) for loops that depend on
-        /// ParallelState, and (3) for loops with thread local data.
-        ///
-        /// </summary>
-        /// <typeparam name="TLocal">The type of the local data.</typeparam>
-        /// <param name="fromInclusive">The loop's start index, inclusive.</param>
-        /// <param name="toExclusive">The loop's end index, exclusive.</param>
-        /// <param name="parallelOptions">A ParallelOptions instance.</param>
-        /// <param name="body">The simple loop body.</param>
-        /// <param name="bodyWithState">The loop body for ParallelState overloads.</param>
-        /// <param name="bodyWithLocal">The loop body for thread local state overloads.</param>
-        /// <param name="localInit">A selector function that returns new thread local state.</param>
-        /// <param name="localFinally">A cleanup function to destroy thread local state.</param>
-        /// <remarks>Only one of the body arguments may be supplied (i.e. they are exclusive).</remarks>
-        /// <returns>A <see cref="T:System.Threading.Tasks.ParallelLoopResult"/> structure.</returns>
-        private static ParallelLoopResult ForWorker<TLocal>(
-            int fromInclusive,
-            int toExclusive,
-            ParallelOptions parallelOptions,
-            Action<int> body,
-            Action<int, ParallelLoopState> bodyWithState,
-            Func<int, ParallelLoopState, TLocal, TLocal> bodyWithLocal,
-            Func<TLocal> localInit,
-            Action<TLocal> localFinally)
-        {
-            Debug.Assert(
-                ((body == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) + (bodyWithLocal == null ? 0 : 1)) == 1,
-                "expected exactly one body function to be supplied");
-            Debug.Assert(bodyWithLocal != null || (localInit == null && localFinally == null),
-                "thread local functions should only be supplied for loops w/ thread local bodies");
-
-            // Instantiate our result.  Specifics will be filled in later.
-            ParallelLoopResult result = new ParallelLoopResult();
-
-            // We just return immediately if 'to' is smaller (or equal to) 'from'.
-            if (toExclusive <= fromInclusive)
-            {
-                result._completed = true;
-                return result;
-            }
-
-            // For all loops we need a shared flag even though we don't have a body with state,
-            // because the shared flag contains the exceptional bool, which triggers other workers
-            // to exit their loops if one worker catches an exception
-            ParallelLoopStateFlags32 sharedPStateFlags = new ParallelLoopStateFlags32();
-
-            // Before getting started, do a quick peek to see if we have been canceled already
-            parallelOptions.CancellationToken.ThrowIfCancellationRequested();
-
-            // initialize ranges with passed in loop arguments and expected number of workers
-            int numExpectedWorkers = (parallelOptions.EffectiveMaxConcurrencyLevel == -1)
-                ? Environment.ProcessorCount
-                : parallelOptions.EffectiveMaxConcurrencyLevel;
-            RangeManager rangeManager = new RangeManager(fromInclusive, toExclusive, 1, numExpectedWorkers);
-
-            // Keep track of any cancellations
-            OperationCanceledExceptionEx oce = null;
-
-            // if cancellation is enabled, we need to register a callback to stop the loop when it gets signaled
-            CancellationTokenRegistration ctr = (!parallelOptions.CancellationToken.CanBeCanceled)
-                ? default(CancellationTokenRegistration)
-                : parallelOptions.CancellationToken.Register((o) =>
-                {
-                    // Record our cancellation before stopping processing
-                    oce = new OperationCanceledExceptionEx("parallelOptions.CancellationToken");
-                    // Cause processing to stop
-                    sharedPStateFlags.Cancel();
-                }, state: null, useSynchronizationContext: false);
-
-            try
-            {
-                try
-                {
-                    TaskReplicator.Run(
-                        (
-                            ref RangeWorker currentWorker,
-                            int timeout,
-                            out bool replicationDelegateYieldedBeforeCompletion) =>
-                        {
-                            // First thing we do upon entering the task is to register as a new "RangeWorker" with the
-                            // shared RangeManager instance.
-
-                            if (!currentWorker.IsInitialized)
-                                currentWorker = rangeManager.RegisterNewWorker();
-
-                            // We will need to reset this to true if we exit due to a timeout:
-                            replicationDelegateYieldedBeforeCompletion = false;
-
-                            // We need to call FindNewWork32() on it to see whether there's a chunk available.
-                            // These are the local index values to be used in the sequential loop.
-                            // Their values filled in by FindNewWork32
-                            int nFromInclusiveLocal;
-                            int nToExclusiveLocal;
-
-                            if (currentWorker.FindNewWork32(out nFromInclusiveLocal, out nToExclusiveLocal) == false ||
-                                sharedPStateFlags.ShouldExitLoop(nFromInclusiveLocal) == true)
-                            {
-                                return; // no need to run
-                            }
-
-                            TLocal localValue = default(TLocal);
-                            bool bLocalValueInitialized =
-                                false; // Tracks whether localInit ran without exceptions, so that we can skip localFinally if it wasn't
-
-                            try
-                            {
-                                // Create a new state object that references the shared "stopped" and "exceptional" flags
-                                // If needed, it will contain a new instance of thread-local state by invoking the selector.
-                                ParallelLoopState32 state = null;
-
-                                if (bodyWithState != null)
-                                {
-                                    Debug.Assert(sharedPStateFlags != null);
-                                    state = new ParallelLoopState32(sharedPStateFlags);
-                                }
-                                else if (bodyWithLocal != null)
-                                {
-                                    Debug.Assert(sharedPStateFlags != null);
-                                    state = new ParallelLoopState32(sharedPStateFlags);
-                                    if (localInit != null)
-                                    {
-                                        localValue = localInit();
-                                        bLocalValueInitialized = true;
-                                    }
-                                }
-
-                                // initialize a loop timer which will help us decide whether we should exit early
-                                int loopTimeout = ComputeTimeoutPoint(timeout);
-
-                                // Now perform the loop itself.
-                                do
-                                {
-                                    if (body != null)
-                                    {
-                                        for (int j = nFromInclusiveLocal;
-                                            j < nToExclusiveLocal &&
-                                            (sharedPStateFlags.LoopStateFlags ==
-                                             ParallelLoopStateFlags
-                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
-                                             || !sharedPStateFlags.ShouldExitLoop()
-                                            ); // the no-arg version is used since we have no state
-                                            j += 1)
-                                        {
-                                            body(j);
-                                        }
-                                    }
-                                    else if (bodyWithState != null)
-                                    {
-                                        for (int j = nFromInclusiveLocal;
-                                            j < nToExclusiveLocal &&
-                                            (sharedPStateFlags.LoopStateFlags ==
-                                             ParallelLoopStateFlags
-                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
-                                             || !sharedPStateFlags.ShouldExitLoop(j));
-                                            j += 1)
-                                        {
-                                            state.CurrentIteration = j;
-                                            bodyWithState(j, state);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        for (int j = nFromInclusiveLocal;
-                                            j < nToExclusiveLocal &&
-                                            (sharedPStateFlags.LoopStateFlags ==
-                                             ParallelLoopStateFlags
-                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
-                                             || !sharedPStateFlags.ShouldExitLoop(j));
-                                            j += 1)
-                                        {
-                                            state.CurrentIteration = j;
-                                            localValue = bodyWithLocal(j, state, localValue);
-                                        }
-                                    }
-
-                                    // Cooperative multitasking:
-                                    // Check if allowed loop time is exceeded, if so save current state and return.
-                                    // The task replicator will queue up a replacement task. Note that we don't do this on the root task.
-                                    if (CheckTimeoutReached(loopTimeout))
-                                    {
-                                        replicationDelegateYieldedBeforeCompletion = true;
-                                        break;
-                                    }
-
-                                    // Exit DO-loop if we can't find new work, or if the loop was stopped:
-                                } while (currentWorker.FindNewWork32(out nFromInclusiveLocal, out nToExclusiveLocal) &&
-                                         ((sharedPStateFlags.LoopStateFlags ==
-                                           ParallelLoopStateFlags.ParallelLoopStateNone) ||
-                                          !sharedPStateFlags.ShouldExitLoop(nFromInclusiveLocal)));
-                            }
-                            catch (Exception ex)
-                            {
-                                // if we catch an exception in a worker, we signal the other workers to exit the loop, and we rethrow
-                                sharedPStateFlags.SetExceptional();
-                                ExceptionDispatchInfo.Capture(ex).Throw();
-                            }
-                            finally
-                            {
-                                // If a cleanup function was specified, call it. Otherwise, if the type is
-                                // IDisposable, we will invoke Dispose on behalf of the user.
-                                if (localFinally != null && bLocalValueInitialized)
-                                {
-                                    localFinally(localValue);
-                                }
-                            }
-                        },
-                        parallelOptions,
-                        stopOnFirstFailure: true);
-                }
-                finally
-                {
-                    // Dispose the cancellation token registration before checking for a cancellation exception
-                    if (parallelOptions.CancellationToken.CanBeCanceled)
-                        ctr.Dispose();
-                }
-
-                // If we got through that with no exceptions, and we were canceled, then
-                // throw our cancellation exception
-                if (oce != null) throw oce;
-            }
-            catch (AggregateException aggExp)
-            {
-                // If we have many cancellation exceptions all caused by the specified user cancel control, then throw only one OCE:
-                ThrowSingleCancellationExceptionOrOtherException(aggExp.InnerExceptions,
-                    parallelOptions.CancellationToken, aggExp);
-            }
-            finally
-            {
-                int sb_status = sharedPStateFlags.LoopStateFlags;
-                result._completed = (sb_status == ParallelLoopStateFlags.ParallelLoopStateNone);
-                if ((sb_status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
-                {
-                    result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Performs the major work of the 64-bit parallel for loop. It assumes that argument validation has already
-        /// been performed by the caller. This function's whole purpose in life is to enable as much reuse of
-        /// common implementation details for the various For overloads we offer. Without it, we'd end up
-        /// with lots of duplicate code. It handles: (1) simple for loops, (2) for loops that depend on
-        /// ParallelState, and (3) for loops with thread local data.
-        ///
-        /// </summary>
-        /// <typeparam name="TLocal">The type of the local data.</typeparam>
-        /// <param name="fromInclusive">The loop's start index, inclusive.</param>
-        /// <param name="toExclusive">The loop's end index, exclusive.</param>
-        /// <param name="parallelOptions">A ParallelOptions instance.</param>
-        /// <param name="body">The simple loop body.</param>
-        /// <param name="bodyWithState">The loop body for ParallelState overloads.</param>
-        /// <param name="bodyWithLocal">The loop body for thread local state overloads.</param>
-        /// <param name="localInit">A selector function that returns new thread local state.</param>
-        /// <param name="localFinally">A cleanup function to destroy thread local state.</param>
-        /// <remarks>Only one of the body arguments may be supplied (i.e. they are exclusive).</remarks>
-        /// <returns>A <see cref="T:System.Threading.Tasks.ParallelLoopResult"/> structure.</returns>
-        private static ParallelLoopResult ForWorker64<TLocal>(
-            long fromInclusive,
-            long toExclusive,
-            ParallelOptions parallelOptions,
-            Action<long> body,
-            Action<long, ParallelLoopState> bodyWithState,
-            Func<long, ParallelLoopState, TLocal, TLocal> bodyWithLocal,
-            Func<TLocal> localInit,
-            Action<TLocal> localFinally)
-        {
-            Debug.Assert(
-                ((body == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) + (bodyWithLocal == null ? 0 : 1)) == 1,
-                "expected exactly one body function to be supplied");
-            Debug.Assert(bodyWithLocal != null || (localInit == null && localFinally == null),
-                "thread local functions should only be supplied for loops w/ thread local bodies");
-
-            // Instantiate our result.  Specifics will be filled in later.
-            ParallelLoopResult result = new ParallelLoopResult();
-
-            // We just return immediately if 'to' is smaller (or equal to) 'from'.
-            if (toExclusive <= fromInclusive)
-            {
-                result._completed = true;
-                return result;
-            }
-
-            // For all loops we need a shared flag even though we don't have a body with state,
-            // because the shared flag contains the exceptional bool, which triggers other workers
-            // to exit their loops if one worker catches an exception
-            ParallelLoopStateFlags64 sharedPStateFlags = new ParallelLoopStateFlags64();
-
-            // Before getting started, do a quick peek to see if we have been canceled already
-            parallelOptions.CancellationToken.ThrowIfCancellationRequested();
-
-
-            // initialize ranges with passed in loop arguments and expected number of workers
-            int numExpectedWorkers = (parallelOptions.EffectiveMaxConcurrencyLevel == -1)
-                ? Environment.ProcessorCount
-                : parallelOptions.EffectiveMaxConcurrencyLevel;
-            RangeManager rangeManager = new RangeManager(fromInclusive, toExclusive, 1, numExpectedWorkers);
-
-            // Keep track of any cancellations
-            OperationCanceledExceptionEx oce = null;
-
-            // if cancellation is enabled, we need to register a callback to stop the loop when it gets signaled
-            CancellationTokenRegistration ctr = (!parallelOptions.CancellationToken.CanBeCanceled)
-                ? default(CancellationTokenRegistration)
-                : parallelOptions.CancellationToken.Register((o) =>
-                {
-                    // Record our cancellation before stopping processing
-                    oce = new OperationCanceledExceptionEx("parallelOptions.CancellationToken");
-                    // Cause processing to stop
-                    sharedPStateFlags.Cancel();
-                }, state: null, useSynchronizationContext: false);
-
-            try
-            {
-                try
-                {
-                    TaskReplicator.Run(
-                        (
-                            ref RangeWorker currentWorker,
-                            int timeout,
-                            out bool replicationDelegateYieldedBeforeCompletion) =>
-                        {
-                            // First thing we do upon entering the task is to register as a new "RangeWorker" with the
-                            // shared RangeManager instance.
-
-                            if (!currentWorker.IsInitialized)
-                                currentWorker = rangeManager.RegisterNewWorker();
-
-                            // We will need to reset this to true if we exit due to a timeout:
-                            replicationDelegateYieldedBeforeCompletion = false;
-
-
-                            // These are the local index values to be used in the sequential loop.
-                            // Their values filled in by FindNewWork
-                            long nFromInclusiveLocal;
-                            long nToExclusiveLocal;
-
-                            if (currentWorker.FindNewWork(out nFromInclusiveLocal, out nToExclusiveLocal) == false ||
-                                sharedPStateFlags.ShouldExitLoop(nFromInclusiveLocal) == true)
-                            {
-                                return; // no need to run
-                            }
-
-                            TLocal localValue = default(TLocal);
-                            bool bLocalValueInitialized =
-                                false; // Tracks whether localInit ran without exceptions, so that we can skip localFinally if it wasn't
-
-                            try
-                            {
-                                // Create a new state object that references the shared "stopped" and "exceptional" flags
-                                // If needed, it will contain a new instance of thread-local state by invoking the selector.
-                                ParallelLoopState64 state = null;
-
-                                if (bodyWithState != null)
-                                {
-                                    Debug.Assert(sharedPStateFlags != null);
-                                    state = new ParallelLoopState64(sharedPStateFlags);
-                                }
-                                else if (bodyWithLocal != null)
-                                {
-                                    Debug.Assert(sharedPStateFlags != null);
-                                    state = new ParallelLoopState64(sharedPStateFlags);
-
-                                    // If a thread-local selector was supplied, invoke it. Otherwise, use the default.
-                                    if (localInit != null)
-                                    {
-                                        localValue = localInit();
-                                        bLocalValueInitialized = true;
-                                    }
-                                }
-
-                                // initialize a loop timer which will help us decide whether we should exit early
-                                int loopTimeout = ComputeTimeoutPoint(timeout);
-
-                                // Now perform the loop itself.
-                                do
-                                {
-                                    if (body != null)
-                                    {
-                                        for (long j = nFromInclusiveLocal;
-                                            j < nToExclusiveLocal &&
-                                            (sharedPStateFlags.LoopStateFlags ==
-                                             ParallelLoopStateFlags
-                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
-                                             || !sharedPStateFlags.ShouldExitLoop()
-                                            ); // the no-arg version is used since we have no state
-                                            j += 1)
-                                        {
-                                            body(j);
-                                        }
-                                    }
-                                    else if (bodyWithState != null)
-                                    {
-                                        for (long j = nFromInclusiveLocal;
-                                            j < nToExclusiveLocal &&
-                                            (sharedPStateFlags.LoopStateFlags ==
-                                             ParallelLoopStateFlags
-                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
-                                             || !sharedPStateFlags.ShouldExitLoop(j));
-                                            j += 1)
-                                        {
-                                            state.CurrentIteration = j;
-                                            bodyWithState(j, state);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        for (long j = nFromInclusiveLocal;
-                                            j < nToExclusiveLocal &&
-                                            (sharedPStateFlags.LoopStateFlags ==
-                                             ParallelLoopStateFlags
-                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
-                                             || !sharedPStateFlags.ShouldExitLoop(j));
-                                            j += 1)
-                                        {
-                                            state.CurrentIteration = j;
-                                            localValue = bodyWithLocal(j, state, localValue);
-                                        }
-                                    }
-
-                                    // Cooperative multitasking:
-                                    // Check if allowed loop time is exceeded, if so save current state and return.
-                                    // The task replicator will queue up a replacement task. Note that we don't do this on the root task.
-                                    if (CheckTimeoutReached(loopTimeout))
-                                    {
-                                        replicationDelegateYieldedBeforeCompletion = true;
-                                        break;
-                                    }
-
-                                    // Exit DO-loop if we can't find new work, or if the loop was stopped:
-                                } while (currentWorker.FindNewWork(out nFromInclusiveLocal, out nToExclusiveLocal) &&
-                                         ((sharedPStateFlags.LoopStateFlags ==
-                                           ParallelLoopStateFlags.ParallelLoopStateNone) ||
-                                          !sharedPStateFlags.ShouldExitLoop(nFromInclusiveLocal)));
-                            }
-                            catch (Exception ex)
-                            {
-                                // if we catch an exception in a worker, we signal the other workers to exit the loop, and we rethrow
-                                sharedPStateFlags.SetExceptional();
-                                ExceptionDispatchInfo.Capture(ex).Throw();
-                            }
-                            finally
-                            {
-                                // If a cleanup function was specified, call it. Otherwise, if the type is
-                                // IDisposable, we will invoke Dispose on behalf of the user.
-                                if (localFinally != null && bLocalValueInitialized)
-                                {
-                                    localFinally(localValue);
-                                }
-                            }
-                        },
-                        parallelOptions,
-                        stopOnFirstFailure: true);
-                }
-                finally
-                {
-                    // Dispose the cancellation token registration before checking for a cancellation exception
-                    if (parallelOptions.CancellationToken.CanBeCanceled)
-                        ctr.Dispose();
-                }
-
-                // If we got through that with no exceptions, and we were canceled, then
-                // throw our cancellation exception
-                if (oce != null) throw oce;
-            }
-            catch (AggregateException aggExp)
-            {
-                // If we have many cancellation exceptions all caused by the specified user cancel control, then throw only one OCE:
-                ThrowSingleCancellationExceptionOrOtherException(aggExp.InnerExceptions,
-                    parallelOptions.CancellationToken, aggExp);
-            }
-            finally
-            {
-                int sb_status = sharedPStateFlags.LoopStateFlags;
-                result._completed = (sb_status == ParallelLoopStateFlags.ParallelLoopStateNone);
-                if ((sb_status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
-                {
-                    result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
-                }
-            }
-
-            return result;
-        }
-
 
         /// <summary>
         /// Executes a for each operation on an <see cref="T:System.Collections.IEnumerable{TSource}"/>
@@ -1548,7 +1022,7 @@ namespace System.Threading.Tasks
             }
 
             return ForEachWorker<TSource, object>(
-                source, s_defaultParallelOptions, body, null, null, null, null, null, null);
+                source, DefaultParallelOptions, body, null, null, null, null, null, null);
         }
 
         /// <summary>
@@ -1641,7 +1115,7 @@ namespace System.Threading.Tasks
             }
 
             return ForEachWorker<TSource, object>(
-                source, s_defaultParallelOptions, null, body, null, null, null, null, null);
+                source, DefaultParallelOptions, null, body, null, null, null, null, null);
         }
 
         /// <summary>
@@ -1736,7 +1210,7 @@ namespace System.Threading.Tasks
             }
 
             return ForEachWorker<TSource, object>(
-                source, s_defaultParallelOptions, null, null, body, null, null, null, null);
+                source, DefaultParallelOptions, null, null, body, null, null, null, null);
         }
 
         /// <summary>
@@ -1863,7 +1337,7 @@ namespace System.Threading.Tasks
             }
 
             return ForEachWorker<TSource, TLocal>(
-                source, s_defaultParallelOptions, null, null, null, body, null, localInit, localFinally);
+                source, DefaultParallelOptions, null, null, null, body, null, localInit, localFinally);
         }
 
         /// <summary>
@@ -2022,7 +1496,7 @@ namespace System.Threading.Tasks
             }
 
             return ForEachWorker<TSource, TLocal>(
-                source, s_defaultParallelOptions, null, null, null, null, body, localInit, localFinally);
+                source, DefaultParallelOptions, null, null, null, null, body, localInit, localFinally);
         }
 
         /// <summary>
@@ -2147,20 +1621,20 @@ namespace System.Threading.Tasks
             Func<TLocal> localInit,
             Action<TLocal> localFinally)
         {
-            Debug.Assert(((body == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) +
-                          (bodyWithStateAndIndex == null ? 0 : 1) + (bodyWithStateAndLocal == null ? 0 : 1) +
-                          (bodyWithEverything == null ? 0 : 1)) == 1,
+            Debug.Assert((body == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) +
+                         (bodyWithStateAndIndex == null ? 0 : 1) + (bodyWithStateAndLocal == null ? 0 : 1) +
+                         (bodyWithEverything == null ? 0 : 1) == 1,
                 "expected exactly one body function to be supplied");
             Debug.Assert(
-                (bodyWithStateAndLocal != null) || (bodyWithEverything != null) ||
-                (localInit == null && localFinally == null),
+                bodyWithStateAndLocal != null || bodyWithEverything != null ||
+                localInit == null && localFinally == null,
                 "thread local functions should only be supplied for loops w/ thread local bodies");
 
             // Before getting started, do a quick peek to see if we have been canceled already
             parallelOptions.CancellationToken.ThrowIfCancellationRequested();
 
             // If it's an array, we can use a fast-path that uses ldelems in the IL.
-            TSource[] sourceAsArray = source as TSource[];
+            var sourceAsArray = source as TSource[];
             if (sourceAsArray != null)
             {
                 return ForEachWorker<TSource, TLocal>(
@@ -2170,7 +1644,7 @@ namespace System.Threading.Tasks
 
             // If we can index into the list, we can use a faster code-path that doesn't result in
             // contention for the single, shared enumerator object.
-            IList<TSource> sourceAsList = source as IList<TSource>;
+            var sourceAsList = source as IList<TSource>;
             if (sourceAsList != null)
             {
                 return ForEachWorker<TSource, TLocal>(
@@ -2215,8 +1689,8 @@ namespace System.Threading.Tasks
             Debug.Assert(array != null);
             Debug.Assert(parallelOptions != null, "ForEachWorker(array): parallelOptions is null");
 
-            int from = array.GetLowerBound(0);
-            int to = array.GetUpperBound(0) + 1;
+            var from = array.GetLowerBound(0);
+            var to = array.GetUpperBound(0) + 1;
 
             if (body != null)
             {
@@ -2366,7 +1840,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(body));
             }
 
-            return PartitionerForEachWorker<TSource, object>(source, s_defaultParallelOptions, body, null, null, null,
+            return PartitionerForEachWorker<TSource, object>(source, DefaultParallelOptions, body, null, null, null,
                 null, null, null);
         }
 
@@ -2427,7 +1901,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(body));
             }
 
-            return PartitionerForEachWorker<TSource, object>(source, s_defaultParallelOptions, null, body, null, null,
+            return PartitionerForEachWorker<TSource, object>(source, DefaultParallelOptions, null, body, null, null,
                 null, null, null);
         }
 
@@ -2496,7 +1970,7 @@ namespace System.Threading.Tasks
                 throw new InvalidOperationException("SR.Parallel_ForEach_OrderedPartitionerKeysNotNormalized");
             }
 
-            return PartitionerForEachWorker<TSource, object>(source, s_defaultParallelOptions, null, null, body, null,
+            return PartitionerForEachWorker<TSource, object>(source, DefaultParallelOptions, null, null, body, null,
                 null, null, null);
         }
 
@@ -2587,7 +2061,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(localFinally));
             }
 
-            return PartitionerForEachWorker<TSource, TLocal>(source, s_defaultParallelOptions, null, null, null, body,
+            return PartitionerForEachWorker<TSource, TLocal>(source, DefaultParallelOptions, null, null, null, body,
                 null, localInit, localFinally);
         }
 
@@ -2686,7 +2160,7 @@ namespace System.Threading.Tasks
                 throw new InvalidOperationException("SR.Parallel_ForEach_OrderedPartitionerKeysNotNormalized");
             }
 
-            return PartitionerForEachWorker<TSource, TLocal>(source, s_defaultParallelOptions, null, null, null, null,
+            return PartitionerForEachWorker<TSource, TLocal>(source, DefaultParallelOptions, null, null, null, null,
                 body, localInit, localFinally);
         }
 
@@ -3166,17 +2640,17 @@ namespace System.Threading.Tasks
             Func<TLocal> localInit,
             Action<TLocal> localFinally)
         {
-            Debug.Assert(((simpleBody == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) +
-                          (bodyWithStateAndIndex == null ? 0 : 1) + (bodyWithStateAndLocal == null ? 0 : 1) +
-                          (bodyWithEverything == null ? 0 : 1)) == 1,
+            Debug.Assert((simpleBody == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) +
+                         (bodyWithStateAndIndex == null ? 0 : 1) + (bodyWithStateAndLocal == null ? 0 : 1) +
+                         (bodyWithEverything == null ? 0 : 1) == 1,
                 "PartitionForEach: expected exactly one body function to be supplied");
             Debug.Assert(
-                (bodyWithStateAndLocal != null) || (bodyWithEverything != null) ||
-                (localInit == null && localFinally == null),
+                bodyWithStateAndLocal != null || bodyWithEverything != null ||
+                localInit == null && localFinally == null,
                 "PartitionForEach: thread local functions should only be supplied for loops w/ thread local bodies");
 
-            OrderablePartitioner<TSource> orderedSource = source as OrderablePartitioner<TSource>;
-            Debug.Assert((orderedSource != null) || (bodyWithStateAndIndex == null && bodyWithEverything == null),
+            var orderedSource = source as OrderablePartitioner<TSource>;
+            Debug.Assert(orderedSource != null || bodyWithStateAndIndex == null && bodyWithEverything == null,
                 "PartitionForEach: bodies with indices are only allowable for OrderablePartitioner");
 
             if (!source.SupportsDynamicPartitions)
@@ -3190,16 +2664,16 @@ namespace System.Threading.Tasks
             // For all loops we need a shared flag even though we don't have a body with state,
             // because the shared flag contains the exceptional bool, which triggers other workers
             // to exit their loops if one worker catches an exception
-            ParallelLoopStateFlags64 sharedPStateFlags = new ParallelLoopStateFlags64();
+            var sharedPStateFlags = new ParallelLoopStateFlags64();
 
             // Instantiate our result.  Specifics will be filled in later.
-            ParallelLoopResult result = new ParallelLoopResult();
+            var result = new ParallelLoopResult();
 
             // Keep track of any cancellations
             OperationCanceledExceptionEx oce = null;
 
             // if cancellation is enabled, we need to register a callback to stop the loop when it gets signaled
-            CancellationTokenRegistration ctr = (!parallelOptions.CancellationToken.CanBeCanceled)
+            var ctr = !parallelOptions.CancellationToken.CanBeCanceled
                 ? default(CancellationTokenRegistration)
                 : parallelOptions.CancellationToken.Register((o) =>
                 {
@@ -3243,8 +2717,8 @@ namespace System.Threading.Tasks
                             // We will need to reset this to true if we exit due to a timeout:
                             replicationDelegateYieldedBeforeCompletion = false;
 
-                            TLocal localValue = default(TLocal);
-                            bool bLocalValueInitialized =
+                            var localValue = default(TLocal);
+                            var bLocalValueInitialized =
                                 false; // Tracks whether localInit ran without exceptions, so that we can skip localFinally if it wasn't
 
                             try
@@ -3269,13 +2743,13 @@ namespace System.Threading.Tasks
                                 }
 
                                 // initialize a loop timer which will help us decide whether we should exit early
-                                int loopTimeout = ComputeTimeoutPoint(timeout);
+                                var loopTimeout = ComputeTimeoutPoint(timeout);
 
                                 if (orderedSource != null) // Use this path for OrderablePartitioner:
                                 {
                                     // first check if there's saved state from a previous replica that we might be replacing.
                                     // the only state to be passed down in such a transition is the enumerator
-                                    IEnumerator<KeyValuePair<long, TSource>> myPartition =
+                                    var myPartition =
                                         partitionState as IEnumerator<KeyValuePair<long, TSource>>;
                                     if (myPartition == null)
                                     {
@@ -3284,29 +2758,47 @@ namespace System.Threading.Tasks
                                     }
 
                                     if (myPartition == null)
+                                    {
                                         throw new InvalidOperationException("SR.Parallel_ForEach_NullEnumerator");
+                                    }
 
                                     while (myPartition.MoveNext())
                                     {
-                                        KeyValuePair<long, TSource> kvp = myPartition.Current;
-                                        long index = kvp.Key;
-                                        TSource value = kvp.Value;
+                                        var kvp = myPartition.Current;
+                                        var index = kvp.Key;
+                                        var value = kvp.Value;
 
                                         // Update our iteration index
-                                        if (state != null) state.CurrentIteration = index;
+                                        if (state != null)
+                                        {
+                                            state.CurrentIteration = index;
+                                        }
 
                                         if (simpleBody != null)
+                                        {
                                             simpleBody(value);
+                                        }
                                         else if (bodyWithState != null)
+                                        {
                                             bodyWithState(value, state);
+                                        }
                                         else if (bodyWithStateAndIndex != null)
+                                        {
                                             bodyWithStateAndIndex(value, state, index);
+                                        }
                                         else if (bodyWithStateAndLocal != null)
+                                        {
                                             localValue = bodyWithStateAndLocal(value, state, localValue);
+                                        }
                                         else
+                                        {
                                             localValue = bodyWithEverything(value, state, index, localValue);
+                                        }
 
-                                        if (sharedPStateFlags.ShouldExitLoop(index)) break;
+                                        if (sharedPStateFlags.ShouldExitLoop(index))
+                                        {
+                                            break;
+                                        }
 
                                         // Cooperative multitasking:
                                         // Check if allowed loop time is exceeded, if so save current state and return.
@@ -3322,7 +2814,7 @@ namespace System.Threading.Tasks
                                 {
                                     // first check if there's saved state from a previous replica that we might be replacing.
                                     // the only state to be passed down in such a transition is the enumerator
-                                    IEnumerator<TSource> myPartition = partitionState as IEnumerator<TSource>;
+                                    var myPartition = partitionState as IEnumerator<TSource>;
                                     if (myPartition == null)
                                     {
                                         myPartition = partitionerSource.GetEnumerator();
@@ -3330,31 +2822,45 @@ namespace System.Threading.Tasks
                                     }
 
                                     if (myPartition == null)
+                                    {
                                         throw new InvalidOperationException("SR.Parallel_ForEach_NullEnumerator");
+                                    }
 
                                     // I'm not going to try to maintain this
                                     if (state != null)
+                                    {
                                         state.CurrentIteration = 0;
+                                    }
 
                                     while (myPartition.MoveNext())
                                     {
-                                        TSource t = myPartition.Current;
+                                        var t = myPartition.Current;
 
                                         if (simpleBody != null)
+                                        {
                                             simpleBody(t);
+                                        }
                                         else if (bodyWithState != null)
+                                        {
                                             bodyWithState(t, state);
+                                        }
                                         else if (bodyWithStateAndLocal != null)
+                                        {
                                             localValue = bodyWithStateAndLocal(t, state, localValue);
+                                        }
                                         else
-                                            Debug.Fail("PartitionerForEach: illegal body type in Partitioner handler");
+                                        {
+                                            DebugEx.Fail("PartitionerForEach: illegal body type in Partitioner handler");
+                                        }
 
                                         // Any break, stop or exception causes us to halt
                                         // We don't have the global indexing information to discriminate whether or not
                                         // we are before or after a break point.
                                         if (sharedPStateFlags.LoopStateFlags !=
                                             ParallelLoopStateFlags.ParallelLoopStateNone)
+                                        {
                                             break;
+                                        }
 
                                         // Cooperative multitasking:
                                         // Check if allowed loop time is exceeded, if so save current state and return.
@@ -3382,9 +2888,11 @@ namespace System.Threading.Tasks
 
                                 if (!replicationDelegateYieldedBeforeCompletion)
                                 {
-                                    IDisposable partitionToDispose = partitionState as IDisposable;
+                                    var partitionToDispose = partitionState as IDisposable;
                                     if (partitionToDispose != null)
+                                    {
                                         partitionToDispose.Dispose();
+                                    }
                                 }
                             }
                         },
@@ -3395,12 +2903,17 @@ namespace System.Threading.Tasks
                 {
                     // Dispose the cancellation token registration before checking for a cancellation exception
                     if (parallelOptions.CancellationToken.CanBeCanceled)
+                    {
                         ctr.Dispose();
+                    }
                 }
 
                 // If we got through that with no exceptions, and we were canceled, then
                 // throw our cancellation exception
-                if (oce != null) throw oce;
+                if (oce != null)
+                {
+                    throw oce;
+                }
             }
             catch (AggregateException aggExp)
             {
@@ -3410,8 +2923,8 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                int sb_status = sharedPStateFlags.LoopStateFlags;
-                result._completed = (sb_status == ParallelLoopStateFlags.ParallelLoopStateNone);
+                var sb_status = sharedPStateFlags.LoopStateFlags;
+                result._completed = sb_status == ParallelLoopStateFlags.ParallelLoopStateNone;
                 if ((sb_status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
                 {
                     result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
@@ -3447,26 +2960,34 @@ namespace System.Threading.Tasks
         {
             // If collection is empty - no match:
             if (exceptions == null || exceptions.Count == 0)
+            {
                 return null;
+            }
 
             // If token is not cancelled, it can not be part of an exception:
             if (!cancelToken.IsCancellationRequested)
+            {
                 return null;
+            }
 
             // Check all exceptions:
             Exception first = null;
-            foreach (object exObj in exceptions)
+            foreach (var exObj in exceptions)
             {
                 Debug.Assert(exObj is Exception);
-                Exception ex = (Exception)exObj;
+                var ex = (Exception)exObj;
 
                 if (first == null)
+                {
                     first = ex;
+                }
 
                 // If mismatch found, fail-fast:
-                OperationCanceledExceptionEx ocEx = ex as OperationCanceledExceptionEx;
+                var ocEx = ex as OperationCanceledExceptionEx;
                 if (ocEx == null || !cancelToken.Equals(ocEx.CancellationToken))
+                {
                     return null;
+                }
             }
 
             // All exceptions are OCEs with this token, let's just pick the first:
@@ -3475,21 +2996,535 @@ namespace System.Threading.Tasks
         }
 
 
-        /// <summary>
-        /// IF exceptions are all OperationCanceledExceptionExs with the specified cancelToken,
-        /// THEN throw that unique OperationCanceledExceptionEx (pick any);
-        /// OTHERWISE throw the specified otherException.
-        /// </summary>
-        private static void ThrowSingleCancellationExceptionOrOtherException(
-            ICollection exceptions,
-            CancellationToken cancelToken,
-            Exception otherException)
+        private static void ThrowSingleCancellationExceptionOrOtherException(ICollection exceptions, CancellationToken cancelToken, Exception otherException)
         {
-            OperationCanceledExceptionEx reducedCancelEx = ReduceToSingleCancellationException(exceptions, cancelToken);
+            // IF exceptions are all OperationCanceledExceptionExs with the specified cancelToken,
+            // THEN throw that unique OperationCanceledExceptionEx (pick any);
+            // OTHERWISE throw the specified otherException.
+            var reducedCancelEx = ReduceToSingleCancellationException(exceptions, cancelToken);
             ExceptionDispatchInfo.Capture(reducedCancelEx ?? otherException).Throw();
         }
-    } // class Parallel
-} // namespace
+    }
+
+    public static partial class Parallel
+    {
+                /// <summary>
+        /// Performs the major work of the parallel for loop. It assumes that argument validation has already
+        /// been performed by the caller. This function's whole purpose in life is to enable as much reuse of
+        /// common implementation details for the various For overloads we offer. Without it, we'd end up
+        /// with lots of duplicate code. It handles: (1) simple for loops, (2) for loops that depend on
+        /// ParallelState, and (3) for loops with thread local data.
+        ///
+        /// </summary>
+        /// <typeparam name="TLocal">The type of the local data.</typeparam>
+        /// <param name="fromInclusive">The loop's start index, inclusive.</param>
+        /// <param name="toExclusive">The loop's end index, exclusive.</param>
+        /// <param name="parallelOptions">A ParallelOptions instance.</param>
+        /// <param name="body">The simple loop body.</param>
+        /// <param name="bodyWithState">The loop body for ParallelState overloads.</param>
+        /// <param name="bodyWithLocal">The loop body for thread local state overloads.</param>
+        /// <param name="localInit">A selector function that returns new thread local state.</param>
+        /// <param name="localFinally">A cleanup function to destroy thread local state.</param>
+        /// <remarks>Only one of the body arguments may be supplied (i.e. they are exclusive).</remarks>
+        /// <returns>A <see cref="T:System.Threading.Tasks.ParallelLoopResult"/> structure.</returns>
+        private static ParallelLoopResult ForWorker<TLocal>
+        (
+            int fromInclusive,
+            int toExclusive,
+            ParallelOptions parallelOptions,
+            Action<int> body,
+            Action<int, ParallelLoopState> bodyWithState,
+            Func<int, ParallelLoopState, TLocal, TLocal> bodyWithLocal,
+            Func<TLocal> localInit,
+            Action<TLocal> localFinally)
+        {
+            Debug.Assert((body == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) + (bodyWithLocal == null ? 0 : 1) == 1,
+                "expected exactly one body function to be supplied");
+            Debug.Assert(bodyWithLocal != null || (localInit == null && localFinally == null),
+                "thread local functions should only be supplied for loops w/ thread local bodies");
+
+            // Instantiate our result.  Specifics will be filled in later.
+            var result = new ParallelLoopResult();
+
+            // We just return immediately if 'to' is smaller (or equal to) 'from'.
+            if (toExclusive <= fromInclusive)
+            {
+                result._completed = true;
+                return result;
+            }
+
+            // For all loops we need a shared flag even though we don't have a body with state,
+            // because the shared flag contains the exceptional bool, which triggers other workers
+            // to exit their loops if one worker catches an exception
+            var sharedPStateFlags = new ParallelLoopStateFlags32();
+
+            // Before getting started, do a quick peek to see if we have been canceled already
+            parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+
+            // initialize ranges with passed in loop arguments and expected number of workers
+            var numExpectedWorkers = parallelOptions.EffectiveMaxConcurrencyLevel == -1
+                ? Environment.ProcessorCount
+                : parallelOptions.EffectiveMaxConcurrencyLevel;
+            var rangeManager = new RangeManager(fromInclusive, toExclusive, 1, numExpectedWorkers);
+
+            // Keep track of any cancellations
+            OperationCanceledExceptionEx oce = null;
+
+            // if cancellation is enabled, we need to register a callback to stop the loop when it gets signaled
+            var ctr = !parallelOptions.CancellationToken.CanBeCanceled
+                ? default
+                : parallelOptions.CancellationToken.Register(_ =>
+                {
+                    // Record our cancellation before stopping processing
+                    oce = new OperationCanceledExceptionEx("parallelOptions.CancellationToken");
+                    // Cause processing to stop
+                    sharedPStateFlags.Cancel();
+                }, state: null, useSynchronizationContext: false);
+
+            try
+            {
+                try
+                {
+                    TaskReplicator.Run(
+                        (
+                            ref RangeWorker currentWorker,
+                            int timeout,
+                            out bool replicationDelegateYieldedBeforeCompletion) =>
+                        {
+                            // First thing we do upon entering the task is to register as a new "RangeWorker" with the
+                            // shared RangeManager instance.
+
+                            if (!currentWorker.IsInitialized)
+                            {
+                                currentWorker = rangeManager.RegisterNewWorker();
+                            }
+
+                            // We will need to reset this to true if we exit due to a timeout:
+                            replicationDelegateYieldedBeforeCompletion = false;
+
+                            // We need to call FindNewWork32() on it to see whether there's a chunk available.
+                            // These are the local index values to be used in the sequential loop.
+                            // Their values filled in by FindNewWork32
+
+                            if
+                            (
+                                !currentWorker.FindNewWork32(out var fromInclusiveLocal, out var toExclusiveLocal)
+                                || sharedPStateFlags.ShouldExitLoop(fromInclusiveLocal)
+                            )
+                            {
+                                return; // no need to run
+                            }
+
+                            var localValue = default(TLocal);
+                            var bLocalValueInitialized =
+                                false; // Tracks whether localInit ran without exceptions, so that we can skip localFinally if it wasn't
+
+                            try
+                            {
+                                // Create a new state object that references the shared "stopped" and "exceptional" flags
+                                // If needed, it will contain a new instance of thread-local state by invoking the selector.
+                                ParallelLoopState32 state = null;
+
+                                if (bodyWithState != null)
+                                {
+                                    Debug.Assert(sharedPStateFlags != null);
+                                    state = new ParallelLoopState32(sharedPStateFlags);
+                                }
+                                else if (bodyWithLocal != null)
+                                {
+                                    Debug.Assert(sharedPStateFlags != null);
+                                    state = new ParallelLoopState32(sharedPStateFlags);
+                                    if (localInit != null)
+                                    {
+                                        localValue = localInit();
+                                        bLocalValueInitialized = true;
+                                    }
+                                }
+
+                                // initialize a loop timer which will help us decide whether we should exit early
+                                var loopTimeout = ComputeTimeoutPoint(timeout);
+
+                                // Now perform the loop itself.
+                                do
+                                {
+                                    if (body != null)
+                                    {
+                                        for
+                                        (
+                                            var j = fromInclusiveLocal;
+                                            j < toExclusiveLocal
+                                            &&
+                                            (
+                                                sharedPStateFlags.LoopStateFlags == ParallelLoopStateFlags.ParallelLoopStateNone // fast path check as SEL() doesn't inline
+                                                || !sharedPStateFlags.ShouldExitLoop()
+                                            ); // the no-arg version is used since we have no state
+                                            j++
+                                        )
+                                        {
+                                            body(j);
+                                        }
+                                    }
+                                    else if (bodyWithState != null)
+                                    {
+                                        for
+                                        (
+                                            var j = fromInclusiveLocal;
+                                            j < toExclusiveLocal
+                                            &&
+                                            (
+                                                sharedPStateFlags.LoopStateFlags ==
+                                                ParallelLoopStateFlags.ParallelLoopStateNone // fast path check as SEL() doesn't inline
+                                                || !sharedPStateFlags.ShouldExitLoop(j)
+                                            );
+                                            j++
+                                        )
+                                        {
+                                            state.CurrentIteration = j;
+                                            bodyWithState(j, state);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for
+                                        (
+                                            var j = fromInclusiveLocal;
+                                            j < toExclusiveLocal
+                                            &&
+                                            (
+                                                sharedPStateFlags.LoopStateFlags == ParallelLoopStateFlags.ParallelLoopStateNone // fast path check as SEL() doesn't inline
+                                                || !sharedPStateFlags.ShouldExitLoop(j)
+                                            );
+                                            j++
+                                        )
+                                        {
+                                            state.CurrentIteration = j;
+                                            localValue = bodyWithLocal(j, state, localValue);
+                                        }
+                                    }
+
+                                    // Cooperative multitasking:
+                                    // Check if allowed loop time is exceeded, if so save current state and return.
+                                    // The task replicator will queue up a replacement task. Note that we don't do this on the root task.
+                                    if (CheckTimeoutReached(loopTimeout))
+                                    {
+                                        replicationDelegateYieldedBeforeCompletion = true;
+                                        break;
+                                    }
+
+                                    // Exit DO-loop if we can't find new work, or if the loop was stopped:
+                                } while (currentWorker.FindNewWork32(out fromInclusiveLocal, out toExclusiveLocal) &&
+                                         (sharedPStateFlags.LoopStateFlags ==
+                                          ParallelLoopStateFlags.ParallelLoopStateNone ||
+                                          !sharedPStateFlags.ShouldExitLoop(fromInclusiveLocal)));
+                            }
+                            catch (Exception ex)
+                            {
+                                // if we catch an exception in a worker, we signal the other workers to exit the loop, and we rethrow
+                                sharedPStateFlags.SetExceptional();
+                                ExceptionDispatchInfo.Capture(ex).Throw();
+                            }
+                            finally
+                            {
+                                // If a cleanup function was specified, call it. Otherwise, if the type is
+                                // IDisposable, we will invoke Dispose on behalf of the user.
+                                if (localFinally != null && bLocalValueInitialized)
+                                {
+                                    localFinally(localValue);
+                                }
+                            }
+                        },
+                        parallelOptions,
+                        stopOnFirstFailure: true);
+                }
+                finally
+                {
+                    // Dispose the cancellation token registration before checking for a cancellation exception
+                    if (parallelOptions.CancellationToken.CanBeCanceled)
+                    {
+                        ctr.Dispose();
+                    }
+                }
+
+                // If we got through that with no exceptions, and we were canceled, then
+                // throw our cancellation exception
+                if (oce != null)
+                {
+                    throw oce;
+                }
+            }
+            catch (AggregateException aggExp)
+            {
+                // If we have many cancellation exceptions all caused by the specified user cancel control, then throw only one OCE:
+                ThrowSingleCancellationExceptionOrOtherException(aggExp.InnerExceptions,
+                    parallelOptions.CancellationToken, aggExp);
+            }
+            finally
+            {
+                var status = sharedPStateFlags.LoopStateFlags;
+                result._completed = status == ParallelLoopStateFlags.ParallelLoopStateNone;
+                if ((status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
+                {
+                    result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Performs the major work of the 64-bit parallel for loop. It assumes that argument validation has already
+        /// been performed by the caller. This function's whole purpose in life is to enable as much reuse of
+        /// common implementation details for the various For overloads we offer. Without it, we'd end up
+        /// with lots of duplicate code. It handles: (1) simple for loops, (2) for loops that depend on
+        /// ParallelState, and (3) for loops with thread local data.
+        ///
+        /// </summary>
+        /// <typeparam name="TLocal">The type of the local data.</typeparam>
+        /// <param name="fromInclusive">The loop's start index, inclusive.</param>
+        /// <param name="toExclusive">The loop's end index, exclusive.</param>
+        /// <param name="parallelOptions">A ParallelOptions instance.</param>
+        /// <param name="body">The simple loop body.</param>
+        /// <param name="bodyWithState">The loop body for ParallelState overloads.</param>
+        /// <param name="bodyWithLocal">The loop body for thread local state overloads.</param>
+        /// <param name="localInit">A selector function that returns new thread local state.</param>
+        /// <param name="localFinally">A cleanup function to destroy thread local state.</param>
+        /// <remarks>Only one of the body arguments may be supplied (i.e. they are exclusive).</remarks>
+        /// <returns>A <see cref="T:System.Threading.Tasks.ParallelLoopResult"/> structure.</returns>
+        private static ParallelLoopResult ForWorker64<TLocal>(
+            long fromInclusive,
+            long toExclusive,
+            ParallelOptions parallelOptions,
+            Action<long> body,
+            Action<long, ParallelLoopState> bodyWithState,
+            Func<long, ParallelLoopState, TLocal, TLocal> bodyWithLocal,
+            Func<TLocal> localInit,
+            Action<TLocal> localFinally)
+        {
+            Debug.Assert(
+                (body == null ? 0 : 1) + (bodyWithState == null ? 0 : 1) + (bodyWithLocal == null ? 0 : 1) == 1,
+                "expected exactly one body function to be supplied");
+            Debug.Assert(bodyWithLocal != null || localInit == null && localFinally == null,
+                "thread local functions should only be supplied for loops w/ thread local bodies");
+
+            // Instantiate our result.  Specifics will be filled in later.
+            var result = new ParallelLoopResult();
+
+            // We just return immediately if 'to' is smaller (or equal to) 'from'.
+            if (toExclusive <= fromInclusive)
+            {
+                result._completed = true;
+                return result;
+            }
+
+            // For all loops we need a shared flag even though we don't have a body with state,
+            // because the shared flag contains the exceptional bool, which triggers other workers
+            // to exit their loops if one worker catches an exception
+            var sharedPStateFlags = new ParallelLoopStateFlags64();
+
+            // Before getting started, do a quick peek to see if we have been canceled already
+            parallelOptions.CancellationToken.ThrowIfCancellationRequested();
+
+
+            // initialize ranges with passed in loop arguments and expected number of workers
+            var numExpectedWorkers = parallelOptions.EffectiveMaxConcurrencyLevel == -1
+                ? Environment.ProcessorCount
+                : parallelOptions.EffectiveMaxConcurrencyLevel;
+            var rangeManager = new RangeManager(fromInclusive, toExclusive, 1, numExpectedWorkers);
+
+            // Keep track of any cancellations
+            OperationCanceledExceptionEx oce = null;
+
+            // if cancellation is enabled, we need to register a callback to stop the loop when it gets signaled
+            var ctr = !parallelOptions.CancellationToken.CanBeCanceled
+                ? default(CancellationTokenRegistration)
+                : parallelOptions.CancellationToken.Register((o) =>
+                {
+                    // Record our cancellation before stopping processing
+                    oce = new OperationCanceledExceptionEx("parallelOptions.CancellationToken");
+                    // Cause processing to stop
+                    sharedPStateFlags.Cancel();
+                }, state: null, useSynchronizationContext: false);
+
+            try
+            {
+                try
+                {
+                    TaskReplicator.Run(
+                        (
+                            ref RangeWorker currentWorker,
+                            int timeout,
+                            out bool replicationDelegateYieldedBeforeCompletion) =>
+                        {
+                            // First thing we do upon entering the task is to register as a new "RangeWorker" with the
+                            // shared RangeManager instance.
+
+                            if (!currentWorker.IsInitialized)
+                            {
+                                currentWorker = rangeManager.RegisterNewWorker();
+                            }
+
+                            // We will need to reset this to true if we exit due to a timeout:
+                            replicationDelegateYieldedBeforeCompletion = false;
+
+
+                            // These are the local index values to be used in the sequential loop.
+                            // Their values filled in by FindNewWork
+                            long nFromInclusiveLocal;
+                            long nToExclusiveLocal;
+
+                            if (currentWorker.FindNewWork(out nFromInclusiveLocal, out nToExclusiveLocal) == false ||
+                                sharedPStateFlags.ShouldExitLoop(nFromInclusiveLocal))
+                            {
+                                return; // no need to run
+                            }
+
+                            var localValue = default(TLocal);
+                            var bLocalValueInitialized =
+                                false; // Tracks whether localInit ran without exceptions, so that we can skip localFinally if it wasn't
+
+                            try
+                            {
+                                // Create a new state object that references the shared "stopped" and "exceptional" flags
+                                // If needed, it will contain a new instance of thread-local state by invoking the selector.
+                                ParallelLoopState64 state = null;
+
+                                if (bodyWithState != null)
+                                {
+                                    Debug.Assert(sharedPStateFlags != null);
+                                    state = new ParallelLoopState64(sharedPStateFlags);
+                                }
+                                else if (bodyWithLocal != null)
+                                {
+                                    Debug.Assert(sharedPStateFlags != null);
+                                    state = new ParallelLoopState64(sharedPStateFlags);
+
+                                    // If a thread-local selector was supplied, invoke it. Otherwise, use the default.
+                                    if (localInit != null)
+                                    {
+                                        localValue = localInit();
+                                        bLocalValueInitialized = true;
+                                    }
+                                }
+
+                                // initialize a loop timer which will help us decide whether we should exit early
+                                var loopTimeout = ComputeTimeoutPoint(timeout);
+
+                                // Now perform the loop itself.
+                                do
+                                {
+                                    if (body != null)
+                                    {
+                                        for (var j = nFromInclusiveLocal;
+                                            j < nToExclusiveLocal &&
+                                            (sharedPStateFlags.LoopStateFlags ==
+                                             ParallelLoopStateFlags
+                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
+                                             || !sharedPStateFlags.ShouldExitLoop()
+                                            ); // the no-arg version is used since we have no state
+                                            j += 1)
+                                        {
+                                            body(j);
+                                        }
+                                    }
+                                    else if (bodyWithState != null)
+                                    {
+                                        for (var j = nFromInclusiveLocal;
+                                            j < nToExclusiveLocal &&
+                                            (sharedPStateFlags.LoopStateFlags ==
+                                             ParallelLoopStateFlags
+                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
+                                             || !sharedPStateFlags.ShouldExitLoop(j));
+                                            j += 1)
+                                        {
+                                            state.CurrentIteration = j;
+                                            bodyWithState(j, state);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (var j = nFromInclusiveLocal;
+                                            j < nToExclusiveLocal &&
+                                            (sharedPStateFlags.LoopStateFlags ==
+                                             ParallelLoopStateFlags
+                                                 .ParallelLoopStateNone // fast path check as SEL() doesn't inline
+                                             || !sharedPStateFlags.ShouldExitLoop(j));
+                                            j += 1)
+                                        {
+                                            state.CurrentIteration = j;
+                                            localValue = bodyWithLocal(j, state, localValue);
+                                        }
+                                    }
+
+                                    // Cooperative multitasking:
+                                    // Check if allowed loop time is exceeded, if so save current state and return.
+                                    // The task replicator will queue up a replacement task. Note that we don't do this on the root task.
+                                    if (CheckTimeoutReached(loopTimeout))
+                                    {
+                                        replicationDelegateYieldedBeforeCompletion = true;
+                                        break;
+                                    }
+
+                                    // Exit DO-loop if we can't find new work, or if the loop was stopped:
+                                } while (currentWorker.FindNewWork(out nFromInclusiveLocal, out nToExclusiveLocal) &&
+                                         (sharedPStateFlags.LoopStateFlags ==
+                                          ParallelLoopStateFlags.ParallelLoopStateNone ||
+                                          !sharedPStateFlags.ShouldExitLoop(nFromInclusiveLocal)));
+                            }
+                            catch (Exception ex)
+                            {
+                                // if we catch an exception in a worker, we signal the other workers to exit the loop, and we rethrow
+                                sharedPStateFlags.SetExceptional();
+                                ExceptionDispatchInfo.Capture(ex).Throw();
+                            }
+                            finally
+                            {
+                                // If a cleanup function was specified, call it. Otherwise, if the type is
+                                // IDisposable, we will invoke Dispose on behalf of the user.
+                                if (localFinally != null && bLocalValueInitialized)
+                                {
+                                    localFinally(localValue);
+                                }
+                            }
+                        },
+                        parallelOptions,
+                        stopOnFirstFailure: true);
+                }
+                finally
+                {
+                    // Dispose the cancellation token registration before checking for a cancellation exception
+                    if (parallelOptions.CancellationToken.CanBeCanceled)
+                    {
+                        ctr.Dispose();
+                    }
+                }
+
+                // If we got through that with no exceptions, and we were canceled, then
+                // throw our cancellation exception
+                if (oce != null)
+                {
+                    throw oce;
+                }
+            }
+            catch (AggregateException aggExp)
+            {
+                // If we have many cancellation exceptions all caused by the specified user cancel control, then throw only one OCE:
+                ThrowSingleCancellationExceptionOrOtherException(aggExp.InnerExceptions,
+                    parallelOptions.CancellationToken, aggExp);
+            }
+            finally
+            {
+                var sb_status = sharedPStateFlags.LoopStateFlags;
+                result._completed = sb_status == ParallelLoopStateFlags.ParallelLoopStateNone;
+                if ((sb_status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
+                {
+                    result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
+                }
+            }
+
+            return result;
+        }
+    }
+}
 
 
 #endif

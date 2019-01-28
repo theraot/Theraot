@@ -196,6 +196,8 @@ namespace TestRunner
             No.Op(typeof(ValueTask<int>));
             No.Op(typeof(ValueTuple));
             No.Op(typeof(Volatile));
+            No.Op(typeof(ParallelOptions));
+            No.Op(typeof(ContractFailedEventArgs));
         }
 
         public static void StringMethodAvailability()
@@ -214,6 +216,7 @@ namespace TestRunner
 
         public static void StreamMethodAvailability()
         {
+            // ReSharper disable once RedundantAssignment
             var stream = Stream.Null;
             No.Op<Action<Stream>>(stream.CopyTo);
             No.Op<Action<Stream, int>>(stream.CopyTo);
@@ -226,6 +229,7 @@ namespace TestRunner
             No.Op<Func<byte[], int, int, CancellationToken, Task<int>>>(stream.ReadAsync);
             No.Op<Func<byte[], int, int, Task>>(stream.WriteAsync);
             No.Op<Func<byte[], int, int, CancellationToken, Task>>(stream.WriteAsync);
+            No.Op(stream);
         }
     }
 }
