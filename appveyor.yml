@@ -31,13 +31,11 @@ build_script:
 #    only:
 #      - '**\*.Tests.dll'
 
-#test_script:
-#  - ps: .\Build\BuildScripts\CodeJam.AppVeyor.NUnit.Tests.ps1
-#  - ps: .\Build\BuildScripts\CodeJam.AppVeyor.xUnit.Tests.ps1
-#  - ps: .\Build\BuildScripts\CodeJam.AppVeyor.MsTest.Tests.ps1
+test_script:
+  - ps: .\Tests\Build\NUnit.Tests.ps1
 
-artifacts:
-  - path: '_Results\*.nupkg'
+#artifacts:
+#  - path: '_Results\*.nupkg'
 
 #after_build:
 # - ps: Get-ChildItem .\_Results\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
