@@ -31,14 +31,12 @@ namespace MonoTests.System.Threading
             TestException(true);
         }
 
+#if LESSTHAN_NET40
+
         [Test]
         [Category("NotDotNet")] // nunit results in stack overflow
         public void MultipleReferenceToValueTest()
         {
-            if (Environment.Version.Major >= 4)
-            {
-                throw new NotSupportedException("Results in stack overflow - blame Microsoft");
-            }
             Assert.Throws(
                 typeof(InvalidOperationException),
                 () =>
@@ -62,6 +60,8 @@ namespace MonoTests.System.Threading
                 }
             );
         }
+
+#endif
 
         [Test]
         public void TestValues()
@@ -195,4 +195,4 @@ namespace MonoTests.System.Threading
     }
 
 #endif
-}
+    }

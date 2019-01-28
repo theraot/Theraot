@@ -134,6 +134,8 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(1, callTime, "#6");
         }
 
+#if LESSTHAN_NET40
+
         [Test]
         [Category("NotDotNet")] // nunit results in stack overflow
         [Ignore("Not working")]
@@ -141,15 +143,12 @@ namespace MonoTests.System.Threading
         {
             Assert.Throws<InvalidOperationException>(() =>
             {
-                if (Environment.Version.Major >= 4)
-                {
-                    throw new NotSupportedException("Results in stack overflow - blame Microsoft");
-                }
-
                 _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
                 GC.KeepAlive(_threadLocal.Value);
             });
         }
+
+#endif
 
         [Test]
         public void PerThreadException()
