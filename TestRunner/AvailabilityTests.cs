@@ -215,6 +215,7 @@ namespace TestRunner
 
         public static void StreamMethodAvailability()
         {
+            // ReSharper disable once RedundantAssignment
             var stream = Stream.Null;
             No.Op<Action<Stream>>(stream.CopyTo);
             No.Op<Action<Stream, int>>(stream.CopyTo);
