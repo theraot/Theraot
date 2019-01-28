@@ -1,4 +1,8 @@
-﻿//
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+//
 // EnumerableAsQueryableTest.cs
 //
 // Authors:
@@ -350,16 +354,19 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void UserExtensionMethodNegative()
         {
-            const BindingFlags ExtensionFlags = BindingFlags.Static | BindingFlags.Public;
-            var method = (from m in typeof(Ext).GetMethods(ExtensionFlags)
-                          where (m.Name == "UserQueryableExt3" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                          select m).FirstOrDefault().MakeGenericMethod(typeof(int));
-            Expression<Func<int, int>> exp = i => i;
-            Expression e = Expression.Call(method, _src.Expression, Expression.Quote(exp), Expression.Constant(10));
-            _src.Provider.Execute(e);
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                const BindingFlags ExtensionFlags = BindingFlags.Static | BindingFlags.Public;
+                var method = (from m in typeof(Ext).GetMethods(ExtensionFlags)
+                    where (m.Name == "UserQueryableExt3" &&
+                           m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                    select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+                Expression<Func<int, int>> exp = i => i;
+                Expression e = Expression.Call(method, _src.Expression, Expression.Quote(exp), Expression.Constant(10));
+                _src.Provider.Execute(e);
+            });
         }
 
         [Test]
@@ -375,31 +382,35 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void InstantiatedGenericMethod()
         {
-            const BindingFlags ExtensionFlags = BindingFlags.Static | BindingFlags.Public;
-            var method = (from m in typeof(Ext).GetMethods(ExtensionFlags)
-                          where (m.Name == "InstantiatedGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                          select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                const BindingFlags ExtensionFlags = BindingFlags.Static | BindingFlags.Public;
+                var method = (from m in typeof(Ext).GetMethods(ExtensionFlags)
+                    where (m.Name == "InstantiatedGenericMethod" &&
+                           m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                    select m).FirstOrDefault().MakeGenericMethod(typeof(int));
 
-            Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
-            _src.Provider.Execute(e);
+                Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
+                _src.Provider.Execute(e);
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullEnumerable()
         {
-            const IEnumerable<int> A = null;
-            A.AsQueryable();
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                const IEnumerable<int> A = null;
+                A.AsQueryable();
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void NonGenericEnumerable1()
         {
-            new MyEnum().AsQueryable();
+            Assert.Throws<ArgumentException>(() => { new MyEnum().AsQueryable(); });
         }
 
         [Test]

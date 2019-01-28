@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -30,38 +34,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestProperty
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Property(null, "NoProperty");
+            Assert.Throws<ArgumentNullException>(() => { Expression.Property(null, "NoProperty"); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null1()
         {
-            Expression.Property(Expression.Constant(new MemberClass()), (string)null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Property(Expression.Constant(new MemberClass()), (string)null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null2()
         {
-            Expression.Property(Expression.Constant(new MemberClass()), (PropertyInfo)null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Property(Expression.Constant(new MemberClass()), (PropertyInfo)null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null3()
         {
-            Expression.Property(Expression.Constant(new MemberClass()), (MethodInfo)null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Property(Expression.Constant(new MemberClass()), (MethodInfo)null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void NoProperty()
         {
-            Expression.Property(Expression.Constant(new MemberClass()), "NoProperty");
+            Assert.Throws<ArgumentException>(() => { Expression.Property(Expression.Constant(new MemberClass()), "NoProperty"); });
         }
 
         [Test]
@@ -95,12 +94,12 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void StaticProperty1()
         {
-            // This will fail because access to a static field should be created using a PropertyInfo and
-            // not an instance plus the field name.
-            Expression.Property(Expression.Constant(new MemberClass()), "StaticProperty");
+            Assert.Throws<ArgumentException>(() => { // This will fail because access to a static field should be created using a PropertyInfo and
+                // not an instance plus the field name.
+                Expression.Property(Expression.Constant(new MemberClass()), "StaticProperty");
+            });
         }
 
         [Test]
@@ -175,12 +174,14 @@ namespace MonoTests.System.Linq.Expressions
 
         [Test]
         [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351
-        [ExpectedException(typeof(ArgumentException))]
         public void StaticPropertyWithInstanceArgument()
         {
-            Expression.Property(
-                Expression.Parameter(GetType(), "t"),
-                GetType().GetProperty("StaticProperty"));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Expression.Property(
+                    Expression.Parameter(GetType(), "t"),
+                    GetType().GetProperty("StaticProperty"));
+            });
         }
     }
 }

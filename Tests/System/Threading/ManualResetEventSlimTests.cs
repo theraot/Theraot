@@ -263,11 +263,14 @@ namespace MonoTests.System.Threading
             }
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void WaitAfterDisposeTest() // TODO: Review
         {
-            _mre.Dispose();
-            _mre.Wait();
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _mre.Dispose();
+                _mre.Wait();
+            });
         }
 
         [Test]

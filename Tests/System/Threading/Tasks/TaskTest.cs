@@ -222,7 +222,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Review
         {
             using (var mre = new ManualResetEventSlim())
@@ -381,7 +381,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void ContinueWithOnFailedTestCase()
         {
             ParallelTestHelper.Repeat
@@ -446,13 +446,14 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void DisposeUnstartedTest()
         {
-            var t = new Task(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
+                var t = new Task(() => { });
+                t.Dispose();
             });
-            t.Dispose();
         }
 
         [Test]
@@ -657,15 +658,16 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void StartFinishedTaskTest()
         {
-            var t = Task.Factory.StartNew(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
-            });
-            t.Wait();
+                var t = Task.Factory.StartNew(() => { });
+                t.Wait();
 
-            t.Start();
+                t.Start();
+            });
         }
 
         [Test]
@@ -788,7 +790,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void WaitAll_Cancelled()
         {
             using (var cancelation = new CancellationTokenSource())
@@ -954,7 +956,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void WaitAllExceptionThenCancelled() // TODO: Review
         {
             using (var cancelation = new CancellationTokenSource())
@@ -1586,7 +1588,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void ContinuationOnBrokenScheduler()
         {
             var s = new ExceptionScheduler();
@@ -1831,7 +1833,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this fails if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void Run()
         {
             var ranOnDefaultScheduler = false;

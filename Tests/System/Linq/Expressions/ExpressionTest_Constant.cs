@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,17 +33,15 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestConstant
     {
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Arg2NotNullable()
         {
-            Expression.Constant(null, typeof(int));
+            Assert.Throws<ArgumentException>(() => { Expression.Constant(null, typeof(int)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.Constant(1, null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Constant(1, null); });
         }
 
         [Test]
@@ -125,26 +127,29 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void TestInvalidCtor_1()
         {
-            // null value, type == valuetype is invalid
-            Expression.Constant(null, typeof(int));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // null value, type == valuetype is invalid
+                Expression.Constant(null, typeof(int));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void TestInvalidCtor_2()
         {
-            // type mismatch: int value, type == double
-            Expression.Constant(0, typeof(double));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // type mismatch: int value, type == double
+                Expression.Constant(0, typeof(double));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void VoidConstant()
         {
-            Expression.Constant(null, typeof(void));
+            Assert.Throws<ArgumentException>(() => { Expression.Constant(null, typeof(void)); });
         }
 
         private static T Check<T>(T val)

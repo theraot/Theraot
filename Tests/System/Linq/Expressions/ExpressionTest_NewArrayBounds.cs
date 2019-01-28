@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_NewArrayBounds.cs
 //
@@ -37,32 +41,28 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestNewArrayBounds
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgTypeNull()
         {
-            Expression.NewArrayBounds(null, new Expression[0]);
+            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayBounds(null, new Expression[0]); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgBoundsNull()
         {
-            Expression.NewArrayBounds(typeof(int), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayBounds(typeof(int), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void ArgBoundsContainsExpressionTypeNotInteger()
         {
-            Expression.NewArrayBounds(typeof(int), 1.ToConstant(), "2".ToConstant());
+            Assert.Throws<ArgumentException>(() => { Expression.NewArrayBounds(typeof(int), 1.ToConstant(), "2".ToConstant()); });
         }
 
         [Test]
         [Category("NotDotNet")]
-        [ExpectedException(typeof(ArgumentException))]
         public void NewVoid()
         {
-            Expression.NewArrayBounds(typeof(void), 1.ToConstant());
+            Assert.Throws<ArgumentException>(() => { Expression.NewArrayBounds(typeof(void), 1.ToConstant()); });
         }
 
         [Test]

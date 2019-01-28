@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_Negate.cs
 //
@@ -36,38 +40,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestNegate
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Negate(null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Negate(null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgNotStatic()
         {
-            Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic"));
+            Assert.Throws<ArgumentException>(() => { Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic")); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgParameterCount()
         {
-            Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount"));
+            Assert.Throws<ArgumentException>(() => { Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount")); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodArgReturnsVoid()
         {
-            Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid"));
+            Assert.Throws<ArgumentException>(() => { Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid")); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NegateBool()
         {
-            Expression.Negate(true.ToConstant());
+            Assert.Throws<InvalidOperationException>(() => { Expression.Negate(true.ToConstant()); });
         }
 
         [Test]
@@ -185,10 +184,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void UserDefinedToNullableNegateFromNullable()
         {
-            Expression.Negate(Expression.Parameter(typeof(SlotToNullable?), "s"));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Negate(Expression.Parameter(typeof(SlotToNullable?), "s")); });
         }
 
         [Test]

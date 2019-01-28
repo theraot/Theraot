@@ -76,11 +76,13 @@ namespace MonoTests.System.Collections.Generic
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CtorNullCollection()
         {
-            var x = new SortedSet<int>(null as IEnumerable<int>);
-            GC.KeepAlive(x);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var x = new SortedSet<int>(null as IEnumerable<int>);
+                GC.KeepAlive(x);
+            });
         }
 
         [Test]
@@ -107,11 +109,11 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.SequenceEqual(new[] { 1, 9 }));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void ExceptWith_Null()
         {
             var set = new SortedSet<int>();
-            set.ExceptWith(null);
+            Assert.Throws<ArgumentNullException>(() => set.ExceptWith(null));
         }
 
         [Test]
@@ -139,11 +141,13 @@ namespace MonoTests.System.Collections.Generic
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetViewBetweenLowerBiggerThanUpper()
         {
-            var set = new SortedSet<int> { 1, 2, 3, 4, 5, 6 };
-            set.GetViewBetween(4, 2);
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var set = new SortedSet<int> {1, 2, 3, 4, 5, 6};
+                set.GetViewBetween(4, 2);
+            });
         }
 
         [Test]
@@ -154,11 +158,11 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.SequenceEqual(new[] { 3, 5, 7 }));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void IntersectWith_Null()
         {
             var set = new SortedSet<int>();
-            set.IntersectWith(null);
+            Assert.Throws<ArgumentNullException>(() => set.IntersectWith(null));
         }
 
         [Test]
@@ -222,11 +226,11 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.SequenceEqual(new[] { 1, 2, 9, 11 }));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void SymmetricExceptWith_Null()
         {
             var set = new SortedSet<int>();
-            set.SymmetricExceptWith(null);
+            Assert.Throws<ArgumentNullException>(() => { set.SymmetricExceptWith(null); });
         }
 
         [Test]
@@ -304,11 +308,11 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.SequenceEqual(new[] { 1, 2, 3, 5, 7, 9, 11 }));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void UnionWith_Null()
         {
             var set = new SortedSet<int>();
-            set.UnionWith(null);
+            Assert.Throws<ArgumentNullException>(() => { set.UnionWith(null); });
         }
 
         [Test]
@@ -325,13 +329,15 @@ namespace MonoTests.System.Collections.Generic
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ViewAddOutOfRange()
         {
-            var set = new SortedSet<int> { 1, 3, 5, 7 };
-            var view = set.GetViewBetween(3, 5);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var set = new SortedSet<int> {1, 3, 5, 7};
+                var view = set.GetViewBetween(3, 5);
 
-            view.Add(7);
+                view.Add(7);
+            });
         }
 
         [Test]
@@ -398,21 +404,25 @@ namespace MonoTests.System.Collections.Generic
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ViewGetViewLowerOutOfRange()
         {
-            var set = new SortedSet<int> { 1, 3, 5, 7, 9 };
-            var view = set.GetViewBetween(3, 7);
-            view.GetViewBetween(2, 5);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var set = new SortedSet<int> {1, 3, 5, 7, 9};
+                var view = set.GetViewBetween(3, 7);
+                view.GetViewBetween(2, 5);
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ViewGetViewUpperOutOfRange()
         {
-            var set = new SortedSet<int> { 1, 3, 5, 7, 9 };
-            var view = set.GetViewBetween(3, 7);
-            view.GetViewBetween(5, 9);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var set = new SortedSet<int> {1, 3, 5, 7, 9};
+                var view = set.GetViewBetween(3, 7);
+                view.GetViewBetween(5, 9);
+            });
         }
 
         [Test]
@@ -481,12 +491,15 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 4, 6, 7, 9 }));
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Test]
         public void ViewSymmetricExceptWith_oor()
         {
-            var set = new SortedSet<int> { 1, 3, 5, 7, 9 };
-            var view = set.GetViewBetween(4, 8);
-            view.SymmetricExceptWith(new[] { 2 });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var set = new SortedSet<int> {1, 3, 5, 7, 9};
+                var view = set.GetViewBetween(4, 8);
+                view.SymmetricExceptWith(new[] {2});
+            });
         }
 
         [Test]
@@ -499,12 +512,15 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 4, 5, 6, 7, 9 }));
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Test]
         public void ViewUnionWith_oor()
         {
-            var set = new SortedSet<int> { 1, 3, 5, 7, 9 };
-            var view = set.GetViewBetween(4, 8);
-            view.UnionWith(new[] { 1 });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var set = new SortedSet<int> {1, 3, 5, 7, 9};
+                var view = set.GetViewBetween(4, 8);
+                view.UnionWith(new[] {1});
+            });
         }
 
         private static void EmptySubView(SortedSet<int> set)

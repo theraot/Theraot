@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_Invoke.cs
 //
@@ -41,38 +45,33 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullExpression()
         {
-            Expression.Invoke(null, new Expression[0]);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Invoke(null, new Expression[0]); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullArgument()
         {
-            Expression.Invoke(CreateInvokable<Action<int>>(), new[] { null as Expression });
+            Assert.Throws<ArgumentNullException>(() => { Expression.Invoke(CreateInvokable<Action<int>>(), new[] { null as Expression }); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void NonInvokableExpressionType()
         {
-            Expression.Invoke(CreateInvokable<int>(), null);
+            Assert.Throws<ArgumentException>(() => { Expression.Invoke(CreateInvokable<int>(), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgumentCountDoesntMatchParametersLength()
         {
-            Expression.Invoke(CreateInvokable<Action<int>>(), 1.ToConstant(), 2.ToConstant());
+            Assert.Throws<InvalidOperationException>(() => { Expression.Invoke(CreateInvokable<Action<int>>(), 1.ToConstant(), 2.ToConstant()); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void ArgumentNotAssignableToParameterType()
         {
-            Expression.Invoke(CreateInvokable<Action<int>>(), "".ToConstant());
+            Assert.Throws<ArgumentException>(() => { Expression.Invoke(CreateInvokable<Action<int>>(), "".ToConstant()); });
         }
 
         [Test]

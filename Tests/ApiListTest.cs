@@ -1,4 +1,8 @@
-﻿#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1
 
 using System;
 using System.Collections.Generic;

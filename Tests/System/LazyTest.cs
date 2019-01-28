@@ -39,19 +39,23 @@ namespace MonoTests.System
     public class LazyTest
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Ctor_Null_1()
         {
-            var lazy = new Lazy<int>(null);
-            GC.KeepAlive(lazy);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var lazy = new Lazy<int>(null);
+                GC.KeepAlive(lazy);
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Ctor_Null_2()
         {
-            var lazy = new Lazy<int>(null, false);
-            GC.KeepAlive(lazy);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var lazy = new Lazy<int>(null, false);
+                GC.KeepAlive(lazy);
+            });
         }
 
         [Test]

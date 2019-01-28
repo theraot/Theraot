@@ -1,3 +1,7 @@
+#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest.cs
 //
@@ -38,10 +42,9 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTest
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void GetFuncTypeArgNull()
         {
-            Expression.GetFuncType(null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.GetFuncType(null); });
         }
 
         private static Type[] GetTestTypeArray(int length)
@@ -52,17 +55,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetFuncTypeArgEmpty()
         {
-            Expression.GetFuncType(Type.EmptyTypes);
+            Assert.Throws<ArgumentException>(() => { Expression.GetFuncType(Type.EmptyTypes); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetFuncTypeArgTooBig()
         {
-            Expression.GetFuncType(GetTestTypeArray(64));
+            Assert.Throws<ArgumentException>(() => { Expression.GetFuncType(GetTestTypeArray(64)); });
         }
 
         [Test]
@@ -85,17 +86,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void GetActionTypeArgNull()
         {
-            Expression.GetActionType(null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.GetActionType(null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void GetActionTypeArgTooBig()
         {
-            Expression.GetActionType(GetTestTypeArray(45));
+            Assert.Throws<ArgumentException>(() => { Expression.GetActionType(GetTestTypeArray(45)); });
         }
 
         [Test]
@@ -118,10 +117,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ParameterNullType()
         {
-            Expression.Parameter(null, "foo");
+            Assert.Throws<ArgumentNullException>(() => { Expression.Parameter(null, "foo"); });
         }
 
         [Test]
@@ -151,10 +149,9 @@ namespace MonoTests.System.Linq.Expressions
 
         [Test]
         [Category("NotDotNet")]
-        [ExpectedException(typeof(ArgumentException))]
         public void VoidParameter()
         {
-            Expression.Parameter(typeof(void), "hello");
+            Assert.Throws<ArgumentException>(() => { Expression.Parameter(typeof(void), "hello"); });
         }
 
         private static int _buffer;

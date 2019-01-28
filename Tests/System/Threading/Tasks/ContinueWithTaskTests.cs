@@ -153,7 +153,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void ContinueWithOnFailedTestCase()
         {
             ParallelTestHelper.Repeat
@@ -218,7 +218,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Review
         {
             using (var mre = new ManualResetEventSlim())
@@ -473,7 +473,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
-        [Ignore]
+        [Ignore("Not working")]
         public void ContinuationOnBrokenScheduler()
         {
             var s = new ExceptionScheduler();

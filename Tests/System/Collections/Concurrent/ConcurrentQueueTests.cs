@@ -154,7 +154,7 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(8, _queue.Count, "#2");
         }
 
-        //[Ignore]
+        //[Ignore("Not working")]
         [Test]
         public void EnumerateTestCase()
         {
@@ -229,28 +229,28 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual("0123456789", s, "#2 : " + s);
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void ToExistingArray_Null()
         {
-            _queue.CopyTo(null, 0);
+            Assert.Throws<ArgumentNullException>(() => { _queue.CopyTo(null, 0); });
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Test]
         public void ToExistingArray_OutOfRange()
         {
-            _queue.CopyTo(new int[3], -1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => { _queue.CopyTo(new int[3], -1); });
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void ToExistingArray_IndexOverflow()
         {
-            _queue.CopyTo(new int[3], 4);
+            Assert.Throws<ArgumentException>(() => { _queue.CopyTo(new int[3], 4); });
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void ToExistingArray_Overflow()
         {
-            _queue.CopyTo(new int[3], 0);
+            Assert.Throws<ArgumentException>(() => { _queue.CopyTo(new int[3], 0); });
         }
 
         private static WeakReference CreateWeakReference(object obj)

@@ -9,16 +9,16 @@ namespace MonoTests.System.Threading.Tasks
     public class TaskTestsEx
     {
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void StartCancelled()
         {
-            var cancellation = new CancellationToken(true);
-            using (var task = new Task(() =>
+            Assert.Throws<InvalidOperationException>(() =>
             {
-            }, cancellation))
-            {
-                task.Start();
-            }
+                var cancellation = new CancellationToken(true);
+                using (var task = new Task(() => { }, cancellation))
+                {
+                    task.Start();
+                }
+            });
         }
     }
 }

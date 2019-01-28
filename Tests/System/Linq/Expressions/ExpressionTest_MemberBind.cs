@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_MemberBind.cs
 //
@@ -69,45 +73,39 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullMethod()
         {
-            Expression.MemberBind(null, new MemberBinding[0]);
+            Assert.Throws<ArgumentNullException>(() => { Expression.MemberBind(null, new MemberBinding[0]); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullMember()
         {
-            Expression.MemberBind(null as MemberInfo, new MemberBinding[0]);
+            Assert.Throws<ArgumentNullException>(() => { Expression.MemberBind(null as MemberInfo, new MemberBinding[0]); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void NullBindings()
         {
-            Expression.MemberBind(typeof(Foo).GetField("Bar"), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.MemberBind(typeof(Foo).GetField("Bar"), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MemberNotFieldOrProp()
         {
-            Expression.MemberBind(typeof(Gazonk).GetMethod("Bang") as MemberInfo, new MemberBinding[0]);
+            Assert.Throws<ArgumentException>(() => { Expression.MemberBind(typeof(Gazonk).GetMethod("Bang") as MemberInfo, new MemberBinding[0]); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MemberTypeMismatch()
         {
-            Expression.MemberBind(typeof(Gazonk).GetField("Klang"), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant()));
+            Assert.Throws<ArgumentException>(() => { Expression.MemberBind(typeof(Gazonk).GetField("Klang"), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant())); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodNotPropertyAccessor()
         {
-            Expression.MemberBind(typeof(Gazonk).GetMethod("Bang"), new MemberBinding[0]);
+            Assert.Throws<ArgumentException>(() => { Expression.MemberBind(typeof(Gazonk).GetMethod("Bang"), new MemberBinding[0]); });
         }
 
         [Test]

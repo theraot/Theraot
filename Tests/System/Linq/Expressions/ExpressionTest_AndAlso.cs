@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -30,45 +34,39 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestAndAlso
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.AndAlso(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.AndAlso(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.AndAlso(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.AndAlso(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.AndAlso(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+            Assert.Throws<InvalidOperationException>(() => { Expression.AndAlso(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Double()
         {
-            Expression.AndAlso(Expression.Constant(1.0), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.AndAlso(Expression.Constant(1.0), Expression.Constant(2.0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Integer()
         {
-            Expression.AndAlso(Expression.Constant(1), Expression.Constant(2));
+            Assert.Throws<InvalidOperationException>(() => { Expression.AndAlso(Expression.Constant(1), Expression.Constant(2)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void MismatchedTypes()
         {
-            Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(true));
+            Assert.Throws<InvalidOperationException>(() => { Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(true)); });
         }
 
         [Test]
@@ -318,15 +316,17 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void IncompleteUserDefinedAndAlso()
         {
-            var l = Expression.Parameter(typeof(Incomplete), "l");
-            var r = Expression.Parameter(typeof(Incomplete), "r");
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var l = Expression.Parameter(typeof(Incomplete), "l");
+                var r = Expression.Parameter(typeof(Incomplete), "r");
 
-            var method = typeof(Incomplete).GetMethod("op_BitwiseAnd");
+                var method = typeof(Incomplete).GetMethod("op_BitwiseAnd");
 
-            Expression.AndAlso(l, r, method);
+                Expression.AndAlso(l, r, method);
+            });
         }
 
         private class A // Should not be static, inheritance is needed for testing

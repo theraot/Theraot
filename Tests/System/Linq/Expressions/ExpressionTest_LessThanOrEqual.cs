@@ -1,4 +1,8 @@
-﻿//
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+//
 // ExpressionTest_LessThanOrEqual.cs
 //
 // Author:
@@ -36,24 +40,21 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestLessThanOrEqual
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.LessThanOrEqual(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.LessThanOrEqual(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.LessThanOrEqual(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.LessThanOrEqual(Expression.Constant(1), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void NoOperatorClass()
         {
-            Expression.LessThanOrEqual(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+            Assert.Throws<InvalidOperationException>(() => { Expression.LessThanOrEqual(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
         }
 
         [Test]
@@ -77,17 +78,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void MismatchedTypes()
         {
-            Expression.LessThanOrEqual(Expression.Constant(new OpClass()), Expression.Constant(true));
+            Assert.Throws<InvalidOperationException>(() => { Expression.LessThanOrEqual(Expression.Constant(new OpClass()), Expression.Constant(true)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Boolean()
         {
-            Expression.LessThanOrEqual(Expression.Constant(true), Expression.Constant(false));
+            Assert.Throws<InvalidOperationException>(() => { Expression.LessThanOrEqual(Expression.Constant(true), Expression.Constant(false)); });
         }
 
         [Test]

@@ -43,16 +43,20 @@ namespace MonoTests.System.Threading
             _sl = new SpinLock(true);
         }
 
-        [Test, ExpectedException(typeof(LockRecursionException))]
+        [Test]
         public void RecursionExceptionTest()
         {
-            _sl = new SpinLock(true);
-            var taken = false;
-            var taken2 = false;
+            Assert.Throws<LockRecursionException>(() =>
+            {
 
-            _sl.Enter(ref taken);
-            Assert.IsTrue(taken, "#1");
-            _sl.Enter(ref taken2);
+                _sl = new SpinLock(true);
+                var taken = false;
+                var taken2 = false;
+
+                _sl.Enter(ref taken);
+                Assert.IsTrue(taken, "#1");
+                _sl.Enter(ref taken2);
+            });
         }
 
         [Test]
@@ -87,20 +91,26 @@ namespace MonoTests.System.Threading
             Assert.IsTrue(taken2, "#3");
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void FirstTakenParameterTest()
         {
-            var taken = true;
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var taken = true;
 
-            _sl.Enter(ref taken);
+                _sl.Enter(ref taken);
+            });
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void SecondTakenParameterTest()
         {
-            var taken = true;
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var taken = true;
 
-            _sl.TryEnter(ref taken);
+                _sl.TryEnter(ref taken);
+            });
         }
 
         internal class SpinLockWrapper

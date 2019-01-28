@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <TargetFrameworks>net20;net30;net35;net40;net45</TargetFrameworks>
+    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp2.0;netcoreapp2.1;</TargetFrameworks>
+    <!--netcoreapp1.0;netcoreapp1.1;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;-->
     <ProjectGuid>{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -49,6 +50,68 @@
     <DefineConstants>NET45</DefineConstants>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworks)' == 'net46' ">
+    <DefineConstants>NET46</DefineConstants>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworks)' == 'net47' ">
+    <DefineConstants>NET47</DefineConstants>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net47'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net40'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net30'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net20'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;LESSTHAN_NET30</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+    <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;GREATERTHAN_NETSTANDARD15;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
+    <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.4'">
+    <DefineConstants>TARGETS_NETSTANDARD;TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
+    <DefineConstants>TARGETS_NETSTANDARD;TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.2'">
+    <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
+    <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;LESSTHAN_NETSTANDARD11</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP10</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
+  </PropertyGroup>
   <ItemGroup Condition="'$(TargetFrameworks)' == 'net20'">
     <Reference Include="System" />
   </ItemGroup>
@@ -67,38 +130,29 @@
     <Reference Include="WindowsBase" />
     <Reference Include="System.Core" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net20'">
-    <PackageReference Include="NUnit">
-      <Version>2.6.4</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net30'">
-    <PackageReference Include="NUnit">
-      <Version>2.6.4</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net35'">
-    <PackageReference Include="NUnit">
-      <Version>2.6.4</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net40'">
-    <PackageReference Include="NUnit">
-      <Version>2.6.4</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworks)' == 'net45'">
-    <PackageReference Include="NUnit">
-      <Version>2.6.4</Version>
-    </PackageReference>
-  </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NUnit" Version="2.6.4" />
-  </ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' != 'net20'">
+		<PackageReference Include="NUnit" Version="3.11.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+	</ItemGroup>
+
+	<!-- NUnit 3.11 is the last NUnit supporting .NET 2.0 -->
+	<!-- See: https://github.com/nunit/nunit/issues/3070 -->
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net20'">
+		<PackageReference Include="NUnit" Version="3.11.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
   </ItemGroup>
+
+	<Target Name="ChangeAliasesOfNugetRefs" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences" Condition="('$(TargetFramework)' == 'net20') OR ('$(TargetFramework)' == 'net30')">
+   	<ItemGroup>
+			<ReferencePath Condition="'%(FileName)' == 'NUnit.System.Linq'">
+				<Aliases>nunitlinq</Aliases>
+			</ReferencePath>
+		</ItemGroup>
+	</Target>
 </Project>

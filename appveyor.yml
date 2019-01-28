@@ -1,0 +1,44 @@
+configuration: Release
+image: Visual Studio 2017
+version: '3.0.{build}'
+
+cache:
+- packages -> **\packages.config
+
+init:
+- cmd: git config --global core.autocrlf true
+
+dotnet_csproj:
+  patch: true
+  file: 'Framework.Core\Framework.Core.csproj'
+  version: '{version}'
+  package_version: '{version}'
+
+nuget:
+  account_feed: false
+  project_feed: false
+
+#build:
+#  project: CodeJam.sln
+#  publish_nuget: false
+#  verbosity: minimal
+
+build_script:
+  - msbuild Theraot.sln /p:Configuration=Release /t:Restore;Build;Pack /v:m
+
+#test:
+#  assemblies:
+#    only:
+#      - '**\*.Tests.dll'
+
+test_script:
+  - ps: .\Tests\Build\NUnit.Tests.ps1
+
+#artifacts:
+#  - path: '_Results\*.nupkg'
+
+#after_build:
+# - ps: Get-ChildItem .\_Results\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+
+#on_finish:
+#

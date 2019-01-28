@@ -69,25 +69,31 @@ namespace MonoTests.System.Threading
             }
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void DisposedOnIsValueCreatedTest()
         {
-            var tl = new ThreadLocal<int>();
-            tl.Dispose();
-            GC.KeepAlive(tl.IsValueCreated);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                var tl = new ThreadLocal<int>();
+                tl.Dispose();
+                GC.KeepAlive(tl.IsValueCreated);
+            });
         }
 
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        [Test]
         public void DisposedOnValueTest()
         {
-            var tl = new ThreadLocal<int>();
-            tl.Dispose();
-            GC.KeepAlive(tl.Value);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                var tl = new ThreadLocal<int>();
+                tl.Dispose();
+                GC.KeepAlive(tl.Value);
+            });
         }
 
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
-        [Ignore]
+        [Ignore("Not working")]
         public void InitializeThrowingTest()
         {
             var callTime = 0;
@@ -128,18 +134,21 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(1, callTime, "#6");
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+#if LESSTHAN_NET40
+
+        [Test]
         [Category("NotDotNet")] // nunit results in stack overflow
-        [Ignore]
+        [Ignore("Not working")]
         public void MultipleReferenceToValueTest()
         {
-            if (Environment.Version.Major >= 4)
+            Assert.Throws<InvalidOperationException>(() =>
             {
-                throw new NotSupportedException("Results in stack overflow - blame Microsoft");
-            }
-            _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
-            GC.KeepAlive(_threadLocal.Value);
+                _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
+                GC.KeepAlive(_threadLocal.Value);
+            });
         }
+
+#endif
 
         [Test]
         public void PerThreadException()

@@ -1,5 +1,10 @@
 ﻿#define NET_4_0
 #if NET_4_0
+
+#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // ConcurrentDictionaryTests.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
@@ -136,11 +141,11 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(3, _map.Count, "#3");
         }
 
-        [Test, ExpectedException(typeof(KeyNotFoundException))]
+        [Test]
         public void GetValueUnknownTest()
         {
             Assert.IsFalse(_map.TryGetValue("barfoo", out _));
-            GC.KeepAlive(_map["barfoo"]);
+            Assert.Throws<KeyNotFoundException>(() => GC.KeepAlive(_map["barfoo"]));
         }
 
         [Test]

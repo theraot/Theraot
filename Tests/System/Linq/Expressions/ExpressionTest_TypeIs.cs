@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -29,17 +33,15 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestTypeIs
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.TypeIs(null, typeof(int));
+            Assert.Throws<ArgumentNullException>(() => { Expression.TypeIs(null, typeof(int)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.TypeIs(Expression.Constant(1), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.TypeIs(Expression.Constant(1), null); });
         }
 
         [Test]

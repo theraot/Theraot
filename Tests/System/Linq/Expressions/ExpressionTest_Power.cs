@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -30,38 +34,33 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestPower
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Power(null, Expression.Constant(1.0));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Power(null, Expression.Constant(1.0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.Power(Expression.Constant(1.0), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Power(Expression.Constant(1.0), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgTypesDifferent()
         {
-            Expression.Power(Expression.Constant(1), Expression.Constant(2.0));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Power(Expression.Constant(1), Expression.Constant(2.0)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgTypesInt()
         {
-            Expression.Power(Expression.Constant(1), Expression.Constant(2));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Power(Expression.Constant(1), Expression.Constant(2)); });
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgTypesFloat()
         {
-            Expression.Power(Expression.Constant((float)1), Expression.Constant((float)2));
+            Assert.Throws<InvalidOperationException>(() => { Expression.Power(Expression.Constant((float)1), Expression.Constant((float)2)); });
         }
 
         [Test]

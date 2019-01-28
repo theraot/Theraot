@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 //
 // ExpressionTest_ListBind.cs
 //
@@ -38,49 +42,46 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestListBind
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void MemberNull()
         {
-            Expression.ListBind(null as MemberInfo, new List<ElementInit>());
+            Assert.Throws<ArgumentNullException>(() => { Expression.ListBind(null as MemberInfo, new List<ElementInit>()); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void PropertyAccessorNull()
         {
-            Expression.ListBind(null, new List<ElementInit>());
+            Assert.Throws<ArgumentNullException>(() => { Expression.ListBind(null, new List<ElementInit>()); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgNull()
         {
-            var list = new List<ElementInit>
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                null
-            };
-            Expression.ListBind(typeof(Foo).GetProperty("Bar").GetSetMethod(), list);
+                var list = new List<ElementInit>
+                {
+                    null
+                };
+                Expression.ListBind(typeof(Foo).GetProperty("Bar").GetSetMethod(), list);
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MemberTypeImplementIEnumerable()
         {
-            Expression.ListBind(typeof(Foo).GetMember("Baz")[0], new List<ElementInit>());
+            Assert.Throws<ArgumentException>(() => { Expression.ListBind(typeof(Foo).GetMember("Baz")[0], new List<ElementInit>()); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodeGetImplementIEnumerable2()
         {
-            Expression.ListBind(typeof(Foo).GetProperty("BarBar").GetGetMethod(), new List<ElementInit>());
+            Assert.Throws<ArgumentException>(() => { Expression.ListBind(typeof(Foo).GetProperty("BarBar").GetGetMethod(), new List<ElementInit>()); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void MethodMustBeAnAccessor()
         {
-            Expression.ListBind(typeof(Foo).GetMethod("Test"), new List<ElementInit>());
+            Assert.Throws<ArgumentException>(() => { Expression.ListBind(typeof(Foo).GetMethod("Test"), new List<ElementInit>()); });
         }
 
         [Test]

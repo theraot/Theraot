@@ -1,3 +1,7 @@
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -30,49 +34,49 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestBind
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg1Null()
         {
-            Expression.Bind(null, Expression.Constant(1));
+            Assert.Throws<ArgumentNullException>(() => { Expression.Bind(null, Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Arg2Null()
         {
-            Expression.Bind(MemberClass.GetRwFieldInfo(), null);
+            Assert.Throws<ArgumentNullException>(() => { Expression.Bind(MemberClass.GetRwFieldInfo(), null); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Method1()
         {
-            // This tests the MethodInfo version of Bind(): should raise an exception
-            // because the method is not an accessor.
-            Expression.Bind(MemberClass.GetMethodInfo(), Expression.Constant(1));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // This tests the MethodInfo version of Bind(): should raise an exception
+                // because the method is not an accessor.
+                Expression.Bind(MemberClass.GetMethodInfo(), Expression.Constant(1));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Method2()
         {
-            // This tests the MemberInfo version of Bind(): should raise an exception
-            // because the argument is not a field or property accessor.
-            Expression.Bind((MemberInfo)MemberClass.GetMethodInfo(), Expression.Constant(1));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // This tests the MemberInfo version of Bind(): should raise an exception
+                // because the argument is not a field or property accessor.
+                Expression.Bind((MemberInfo)MemberClass.GetMethodInfo(), Expression.Constant(1));
+            });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Event()
         {
-            Expression.Bind(MemberClass.GetEventInfo(), Expression.Constant(1));
+            Assert.Throws<ArgumentException>(() => { Expression.Bind(MemberClass.GetEventInfo(), Expression.Constant(1)); });
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void PropertyRo()
         {
-            Expression.Bind(MemberClass.GetRoPropertyInfo(), Expression.Constant(1));
+            Assert.Throws<ArgumentException>(() => { Expression.Bind(MemberClass.GetRoPropertyInfo(), Expression.Constant(1)); });
         }
 
         [Test]

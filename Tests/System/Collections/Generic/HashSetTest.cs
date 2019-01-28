@@ -1,4 +1,8 @@
-﻿//
+﻿#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
+
+//
 // HashSetTest.cs
 //
 // Authors:
@@ -133,14 +137,17 @@ namespace MonoTests.System.Collections.Generic
             }
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void TestModifySetWhileForeach()
         {
-            var set = new HashSet<int>(new[] { 1, 2, 3, 4 });
-            foreach (var item in set)
+            Assert.Throws<InvalidOperationException>(() =>
             {
-                set.Add(item + 2);
-            }
+                var set = new HashSet<int>(new[] {1, 2, 3, 4});
+                foreach (var item in set)
+                {
+                    set.Add(item + 2);
+                }
+            });
         }
 
         [Test]
