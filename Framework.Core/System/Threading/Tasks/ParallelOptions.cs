@@ -51,6 +51,8 @@ namespace System.Threading.Tasks
         ///     associated with this <see cref="ParallelOptions" /> instance. Setting this property to null
         ///     indicates that the current scheduler should be used.
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
         public TaskScheduler TaskScheduler { get; set; }
 
         // Convenience property used by TPL logic
