@@ -1,6 +1,7 @@
 Theraot.Core
 ===
 
+[![Build status](https://ci.appveyor.com/api/projects/status/lk3aey42hdfnyym5?svg=true)](https://ci.appveyor.com/project/theraot/theraot)
 [![Join the chat at https://gitter.im/Theraot/community](https://badges.gitter.im/Theraot/community.svg)](https://gitter.im/Theraot/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 These Libraries are an ongoing effort to ease the work on .NET, including a backport/polyfill/bridge of recent .NET features to .NET 2.0, .NET Core 1.0, .NET Standard 1.0, among other things.
