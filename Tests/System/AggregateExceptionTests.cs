@@ -1,8 +1,4 @@
-﻿#if LESSTHAN_NET35
-extern alias nunitlinq;
-#endif
-
-// AggregateExceptionTests.cs
+﻿// AggregateExceptionTests.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -28,6 +24,10 @@ extern alias nunitlinq;
 
 #define NET_4_0
 #if NET_4_0
+
+#if LESSTHAN_NET35
+extern alias nunitlinq;
+#endif
 
 using NUnit.Framework;
 using System;
