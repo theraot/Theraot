@@ -1,6 +1,4 @@
-﻿// Pending Theraot Parallel.For support
-
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 // BASEDON: https://raw.githubusercontent.com/dotnet/corefx/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/TaskReplicator.cs
 
@@ -8,9 +6,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace System.Threading.Tasks
 {

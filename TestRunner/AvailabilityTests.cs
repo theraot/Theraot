@@ -196,6 +196,7 @@ namespace TestRunner
             No.Op(typeof(ValueTask<int>));
             No.Op(typeof(ValueTuple));
             No.Op(typeof(Volatile));
+            No.Op(typeof(ParallelOptions));
         }
 
         public static void StringMethodAvailability()

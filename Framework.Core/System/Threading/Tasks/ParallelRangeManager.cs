@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 // BASEDON: https://github.com/dotnet/corefx/blob/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/ParallelRangeManager.cs
 
@@ -82,7 +82,7 @@ namespace System.Threading.Tasks
 
 			_nIncrementValue = nStep;
 
-			_nMaxIncrementValue = Parallel.DEFAULT_LOOP_STRIDE * nStep;
+			_nMaxIncrementValue = Parallel.Default_Loop_Stride * nStep;
 		}
 
 		/// <summary>
