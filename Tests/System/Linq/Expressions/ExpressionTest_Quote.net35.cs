@@ -45,7 +45,7 @@ namespace MonoTests.System.Linq.Expressions
 		public void QuoteConstant ()
 		{
             // Failing in .NET35
-            Assert.Throws<ArgumentNullException>(() => { Expression.Quote(Expression.Constant(1)); });
+            Assert.Throws<ArgumentException>(() => { Expression.Quote(Expression.Constant(1)); });
         }
 
 		[Test]
