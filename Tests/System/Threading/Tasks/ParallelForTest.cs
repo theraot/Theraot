@@ -901,9 +901,8 @@ namespace System.Threading.Tasks.Tests
                     return Partitioner.Create(new List<T>(dataSource).ToArray(), true);
                 case PartitionerType.IEnumerableOOB:
                     return Partitioner.Create(dataSource);
-                // Not supported
-                // case PartitionerType.IEnumerable1Chunk:
-                //     return Partitioner.Create<T>(dataSource, EnumerablePartitionerOptions.NoBuffering);
+                case PartitionerType.IEnumerable1Chunk:
+                    return PartitionerEx.Create<T>(dataSource, EnumerablePartitionerOptions.NoBuffering);
                 default:
                     break;
             }
@@ -932,8 +931,7 @@ namespace System.Threading.Tasks.Tests
         ArrayBalancedOOB = 1, // Out of the box Array partitioner
         IEnumerableOOB = 2,  // Out of the box Enumerable partitioner
         RangePartitioner = 3,  // out of the box range partitioner
-        // Not supported
-        // IEnumerable1Chunk = 4  // partitioner one chunk
+        IEnumerable1Chunk = 4  // partitioner one chunk
     }
 
     public enum DataSourceType
