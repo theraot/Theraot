@@ -226,6 +226,7 @@ namespace TestRunner
             No.Op<Func<byte[], int, int, CancellationToken, Task<int>>>(stream.ReadAsync);
             No.Op<Func<byte[], int, int, Task>>(stream.WriteAsync);
             No.Op<Func<byte[], int, int, CancellationToken, Task>>(stream.WriteAsync);
+            No.Op(stream);
         }
     }
 }
