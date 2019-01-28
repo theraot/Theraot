@@ -103,7 +103,7 @@ namespace System.IO
             {
                 throw new NotSupportedException("Destination stream does not support write.");
             }
-            return CopyToAsyncPrivate(source, destination, bufferSize, cancellationToken);
+            return CopyToPrivateAsync(source, destination, bufferSize, cancellationToken);
         }
 
         public static Task FlushAsync(this Stream stream)
@@ -177,7 +177,7 @@ namespace System.IO
             return tuple.Item1.BeginWrite(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
         }
 
-        private static async Task CopyToAsyncPrivate(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        private static async Task CopyToPrivateAsync(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
             var buffer = ArrayReservoir<byte>.GetArray(bufferSize);
             try
