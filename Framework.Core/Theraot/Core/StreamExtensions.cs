@@ -5,17 +5,9 @@ namespace Theraot.Core
 {
     public static class StreamExtensions
     {
-        public static bool IsDisposed(this Stream stream)
+        public static bool IsClosed(this Stream stream)
         {
-            try
-            {
-                stream.Seek(0, SeekOrigin.Current);
-                return false;
-            }
-            catch (ObjectDisposedException)
-            {
-                return true;
-            }
+            return !stream.CanRead && !stream.CanWrite;
         }
 
         public static void ReadComplete(this Stream stream, byte[] buffer, int offset, int length)
