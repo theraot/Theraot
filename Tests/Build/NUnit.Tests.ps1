@@ -4,9 +4,9 @@ $exclude = "ExcludeTests"
 $wc = New-Object System.Net.WebClient
 
 foreach ($n in ("45","40","35","30","20")) {
-    $logFileName = "$env:APPVEYOR_BUILD_FOLDER\_Results\net_" + $n + "nunit_results.xml"
-    echo "nunit3-console Tests\bin\Debug\" $n "\Tests.dll --result=$logFileName"
-    &"nunit3-console Tests\bin\Debug\" $n "\Tests.dll --result=$logFileName"
+    $logFileName = "$env:APPVEYOR_BUILD_FOLDER\_Results\net_" + $n + "_nunit_results.xml"
+    echo "nunit3-console Tests\bin\Release\" $n "\Tests.dll --framework=net" $n " --result=$logFileName"
+    &"nunit3-console Tests\bin\Release\" $n "\Tests.dll --framework=net" $n " --result=$logFileName"
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
     echo "UploadFile: https://ci.appveyor.com/api/testresults/nunit3/$env:APPVEYOR_JOB_ID from $logFileName"
     $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$env:APPVEYOR_JOB_ID", "$logFileName")
