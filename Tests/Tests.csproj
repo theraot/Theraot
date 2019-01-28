@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;</TargetFrameworks>
+    <!--netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6-->
     <ProjectGuid>{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -48,6 +49,14 @@
   <PropertyGroup Condition=" '$(TargetFrameworks)' == 'net45' ">
     <DefineConstants>NET45</DefineConstants>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworks)' == 'net46' ">
+    <DefineConstants>NET46</DefineConstants>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworks)' == 'net47' ">
+    <DefineConstants>NET47</DefineConstants>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net47'">
     <DefineConstants>TARGETS_NET;LESSTHAN_NET48;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
