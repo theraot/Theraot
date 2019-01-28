@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FAT
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -74,3 +75,4 @@ namespace Theraot.Core
         }
     }
 }
+#endif
