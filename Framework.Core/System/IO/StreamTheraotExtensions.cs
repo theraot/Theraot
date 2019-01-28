@@ -85,7 +85,7 @@ namespace System.IO
             return source.CopyToAsync(destination, ArrayReservoir.MaxCapacity, cancellationToken);
         }
 
-        public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        public static Task CopyToAsync(this Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
             if (destination == null)
             {
@@ -103,23 +103,7 @@ namespace System.IO
             {
                 throw new NotSupportedException("Destination stream does not support write.");
             }
-            var buffer = ArrayReservoir<byte>.GetArray(bufferSize);
-            try
-            {
-                while (true)
-                {
-                    var bytesRead = await source.ReadAsync(buffer, 0, bufferSize, cancellationToken).ConfigureAwait(false);
-                    if (bytesRead == 0)
-                    {
-                        break;
-                    }
-                    await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
-                }
-            }
-            finally
-            {
-                ArrayReservoir<byte>.DonateArray(buffer);
-            }
+            return CopyToPrivateAsync(source, destination, bufferSize, cancellationToken);
         }
 
         public static Task FlushAsync(this Stream stream)
@@ -191,6 +175,27 @@ namespace System.IO
             // ReSharper disable once UseDeconstruction
             var tuple = (Tuple<Stream, byte[], int, int>)state;
             return tuple.Item1.BeginWrite(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
+        }
+
+        private static async Task CopyToPrivateAsync(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            var buffer = ArrayReservoir<byte>.GetArray(bufferSize);
+            try
+            {
+                while (true)
+                {
+                    var bytesRead = await source.ReadAsync(buffer, 0, bufferSize, cancellationToken).ConfigureAwait(false);
+                    if (bytesRead == 0)
+                    {
+                        break;
+                    }
+                    await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                ArrayReservoir<byte>.DonateArray(buffer);
+            }
         }
     }
 }

@@ -67,12 +67,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="System.Core" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Framework.Core\Framekwork.Core.csproj">
-      <Project>{B5078871-4299-49ED-B921-3B5EBE57336A}</Project>
-      <Name>Framekwork.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFrameworks)' == 'net20'">
     <PackageReference Include="NUnit">
       <Version>2.6.4</Version>
@@ -103,5 +97,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NUnit" Version="2.6.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
   </ItemGroup>
 </Project>
