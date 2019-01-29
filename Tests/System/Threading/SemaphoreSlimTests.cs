@@ -455,7 +455,12 @@ namespace System.Threading.Tests
         #region Lock cancellation
 
         [Test]
-        public static async Task LockCancellationTest()
+        public static void LockCancellationTest()
+        {
+            LockCancellationTestAsync().Wait();
+        }
+
+        public static async Task LockCancellationTestAsync()
         {
             var asyncLock = new AsyncLock();
             var holdTime = TimeSpan.FromSeconds(2);
