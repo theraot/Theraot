@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET30
 
 namespace System.Collections.Specialized
 {

@@ -92,11 +92,18 @@
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net30'">
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -120,6 +127,7 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -143,6 +151,7 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -166,6 +175,7 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
     <PackageReference Include="System.Diagnostics.Contracts">
