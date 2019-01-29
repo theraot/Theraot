@@ -13,6 +13,7 @@ namespace MonoTests.System.Threading
     public class CancellationTokenSourceTestEx
     {
         [Test]
+        [Category("LongRunning")]
         public void CancelAfterDisposed()
         {
             var cts = new CancellationTokenSource();

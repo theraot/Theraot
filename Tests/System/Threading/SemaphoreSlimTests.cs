@@ -455,6 +455,7 @@ namespace System.Threading.Tests
         #region Lock cancellation
 
         [Test]
+        [Category("LongRunning")]
         public static void LockCancellationTest()
         {
             LockCancellationTestAsync().Wait();

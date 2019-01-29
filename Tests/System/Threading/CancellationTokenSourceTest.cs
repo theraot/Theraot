@@ -250,6 +250,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void ConcurrentCancelLinkedTokenSourceWhileDisposing() // TODO: Review
         {
             ParallelTestHelper.Repeat(delegate
@@ -544,6 +545,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void CancelAfter_Disposed()
         {
             var called = 0;

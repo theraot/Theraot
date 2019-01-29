@@ -83,6 +83,7 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
+        [Category("LongRunning")]
         public void EditWhileIteratingThreaded()
         {
             var d = new ConcurrentDictionary<string, string>();

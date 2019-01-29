@@ -46,6 +46,7 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
+        [Category("LongRunning")]
         public void StressEnqueueTestCase()
         {
             /*ParallelTestHelper.Repeat (delegate {
@@ -75,6 +76,7 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
+        [Category("LongRunning")]
         public void StressDequeueTestCase()
         {
             /*ParallelTestHelper.Repeat (delegate {
@@ -112,6 +114,7 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
+        [Category("LongRunning")]
         public void StressTryPeekTestCase()
         {
             ParallelTestHelper.Repeat(delegate

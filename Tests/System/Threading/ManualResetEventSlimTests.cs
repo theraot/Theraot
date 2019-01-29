@@ -328,6 +328,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void WaitWithCancellationTokenAndCancel() // TODO: Review
         {
             using (var mres = new ManualResetEventSlim())
@@ -353,6 +354,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void WaitWithCancellationTokenAndNotImmediateSetTest() // TODO: Review
         {
             using (var mres = new ManualResetEventSlim())
@@ -370,6 +372,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void WaitWithCancellationTokenAndTimeout()
         {
             using (var mres = new ManualResetEventSlim())

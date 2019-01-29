@@ -822,6 +822,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("LongRunning")]
         public void WaitAll_ManyTasks()
         {
             for (var r = 0; r < 2000; ++r)

@@ -49,6 +49,7 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
+        [Category("LongRunning")]
         public void AddParallelWithoutDuplicateTest()
         {
             ParallelTestHelper.Repeat(delegate
@@ -259,6 +260,7 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
+        [Category("LongRunning")]
         public void RemoveParallelTest()
         {
             ParallelTestHelper.Repeat(delegate

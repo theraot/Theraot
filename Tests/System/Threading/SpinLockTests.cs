@@ -117,6 +117,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void LockUnicityTest()
         {
             ParallelTestHelper.Repeat(delegate
