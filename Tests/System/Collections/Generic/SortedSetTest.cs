@@ -34,7 +34,7 @@ using System.Linq;
 namespace MonoTests.System.Collections.Generic
 {
     [TestFixture]
-    public class SortedSetTest
+    public partial class SortedSetTest
     {
         [Test]
         public void Add()
@@ -282,17 +282,6 @@ namespace MonoTests.System.Collections.Generic
             DoTestE(digits, trio.Concat(nonTrio), /*o:*/ true, /*se:*/ true, false, false);
             DoTestE(nonTrio, new[] { 3, 4, 5, 6, 7, 8, 9 }, /*o:*/ true, /*se:*/ true, false, false);
             DoTest(digits.GetViewBetween(0, 2), trio, false, /*se:*/ true, false, false);
-        }
-
-        [Test]
-        public void TestSetComparesC()
-        {
-            var trio = new SortedSet<int> { 0, 1, 2 };
-            var digits = new SortedSet<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-            var nonTrio = digits.GetViewBetween(3, 42);
-
-            DoTest(trio, nonTrio, false, false, false, false); // <- This line fails against Microsoft .NET 4.0 and 4.5
         }
 
         [Test]
@@ -563,5 +552,22 @@ namespace MonoTests.System.Collections.Generic
             Assert.AreEqual(psb, s1.IsProperSubsetOf(s2));
             Assert.AreEqual(psu, s1.IsProperSupersetOf(s2));
         }
+    }
+
+    public partial class SortedSetTest
+    {
+#if LESSTHAN_NET40
+        [Test]
+        public void TestSetComparesC()
+        {
+            // From .NET 4.0 onward this fails, blame Microsoft
+            var trio = new SortedSet<int> { 0, 1, 2 };
+            var digits = new SortedSet<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            var nonTrio = digits.GetViewBetween(3, 42);
+
+            DoTest(trio, nonTrio, false, false, false, false); // <- This line fails against Microsoft .NET 4.0 and 4.5
+        }
+#endif
     }
 }
