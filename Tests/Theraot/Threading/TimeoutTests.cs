@@ -46,6 +46,7 @@ namespace Theraot.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public static void TimeoutChange()
         {
             again:

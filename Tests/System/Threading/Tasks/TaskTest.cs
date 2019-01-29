@@ -1007,6 +1007,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("LongRunning")]
         public void WaitAllTest()
         {
             void Action()

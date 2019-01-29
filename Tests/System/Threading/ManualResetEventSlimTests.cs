@@ -151,6 +151,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void SetAfterDisposeTest() // TODO:Review
         {
             ParallelTestHelper.Repeat(delegate

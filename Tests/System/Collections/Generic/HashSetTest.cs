@@ -584,6 +584,7 @@ namespace MonoTests.System.Collections.Generic
         }
 
         [Test]
+        [Category("LongRunning")]
         public void TrimWithoutChange()
         {
             var lookup = new HashSet<string>();
