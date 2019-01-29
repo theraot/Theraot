@@ -185,7 +185,7 @@ namespace Theraot.Core
 
         public static Func<T, TReturn> GetReturnFunc<T, TReturn>(TReturn def)
         {
-            return /*T*/ obj => def;
+            return (/*T*/ obj) => def;
         }
 
         public static Func<T1, T2, TReturn> GetReturnFunc<T1, T2, TReturn>(TReturn def)
@@ -355,7 +355,7 @@ namespace Theraot.Core
 
         public static Func<T, TReturn> GetThrowFunc<T, TReturn>(Exception exception)
         {
-            return /*T*/ obj => throw exception;
+            return (/*T*/ obj) => throw exception;
         }
 
         public static Func<T1, T2, TReturn> GetThrowFunc<T1, T2, TReturn>(Exception exception)
