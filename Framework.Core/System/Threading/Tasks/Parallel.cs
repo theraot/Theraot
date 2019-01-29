@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable CC0014 // Use ternary operator
 #pragma warning disable CC0031 // Check for null before calling a delegate
 // ReSharper disable PossibleNullReferenceException
 
@@ -808,10 +809,12 @@ namespace System.Threading.Tasks
         /// The <paramref name="body"/> delegate is invoked once for each element in the <paramref name="source"/>
         /// enumerable.  It is provided with the current element as a parameter.
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             IEnumerable<TSource> source,
             ParallelOptions parallelOptions,
-            Action<TSource> body)
+            Action<TSource> body
+        )
         {
             if (source == null)
             {
@@ -855,9 +858,11 @@ namespace System.Threading.Tasks
         /// and a <see cref="System.Threading.Tasks.ParallelLoopState">ParallelLoopState</see> instance that may be
         /// used to break out of the loop prematurely.
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             IEnumerable<TSource> source,
-            Action<TSource, ParallelLoopState> body)
+            Action<TSource, ParallelLoopState> body
+        )
         {
             if (source == null)
             {
@@ -907,10 +912,12 @@ namespace System.Threading.Tasks
         /// and a <see cref="System.Threading.Tasks.ParallelLoopState">ParallelLoopState</see> instance that may be
         /// used to break out of the loop prematurely.
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             IEnumerable<TSource> source,
             ParallelOptions parallelOptions,
-            Action<TSource, ParallelLoopState> body)
+            Action<TSource, ParallelLoopState> body
+        )
         {
             if (source == null)
             {
@@ -954,9 +961,11 @@ namespace System.Threading.Tasks
         /// a <see cref="System.Threading.Tasks.ParallelLoopState">ParallelLoopState</see> instance that may be
         /// used to break out of the loop prematurely, and the current element's index (an Int64).
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             IEnumerable<TSource> source,
-            Action<TSource, ParallelLoopState, long> body)
+            Action<TSource, ParallelLoopState, long> body
+        )
         {
             if (source == null)
             {
@@ -1006,10 +1015,12 @@ namespace System.Threading.Tasks
         /// a <see cref="System.Threading.Tasks.ParallelLoopState">ParallelLoopState</see> instance that may be
         /// used to break out of the loop prematurely, and the current element's index (an Int64).
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             IEnumerable<TSource> source,
             ParallelOptions parallelOptions,
-            Action<TSource, ParallelLoopState, long> body)
+            Action<TSource, ParallelLoopState, long> body
+        )
         {
             if (source == null)
             {
@@ -1073,11 +1084,13 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource, TLocal>(
+        public static ParallelLoopResult ForEach<TSource, TLocal>
+        (
             IEnumerable<TSource> source,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -1164,12 +1177,14 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource, TLocal>(
+        public static ParallelLoopResult ForEach<TSource, TLocal>
+        (
             IEnumerable<TSource> source,
             ParallelOptions parallelOptions,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -1243,11 +1258,13 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource, TLocal>(
+        public static ParallelLoopResult ForEach<TSource, TLocal>
+        (
             IEnumerable<TSource> source,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, long, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -1335,12 +1352,14 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource, TLocal>(
+        public static ParallelLoopResult ForEach<TSource, TLocal>
+        (
             IEnumerable<TSource> source,
             ParallelOptions parallelOptions,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, long, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -1422,9 +1441,11 @@ namespace System.Threading.Tasks
         /// Partitioner.  It is provided with the current element as a parameter.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             Partitioner<TSource> source,
-            Action<TSource> body)
+            Action<TSource> body
+        )
         {
             if (source == null)
             {
@@ -1486,9 +1507,11 @@ namespace System.Threading.Tasks
         /// used to break out of the loop prematurely.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             Partitioner<TSource> source,
-            Action<TSource, ParallelLoopState> body)
+            Action<TSource, ParallelLoopState> body
+        )
         {
             if (source == null)
             {
@@ -1553,9 +1576,11 @@ namespace System.Threading.Tasks
         /// used to break out of the loop prematurely, and the current element's index (an Int64).
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             OrderablePartitioner<TSource> source,
-            Action<TSource, ParallelLoopState, long> body)
+            Action<TSource, ParallelLoopState, long> body
+        )
         {
             if (source == null)
             {
@@ -1640,11 +1665,13 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource, TLocal>(
+        public static ParallelLoopResult ForEach<TSource, TLocal>
+        (
             Partitioner<TSource> source,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -1744,11 +1771,13 @@ namespace System.Threading.Tasks
         /// action on each thread's local state.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource, TLocal>(
+        public static ParallelLoopResult ForEach<TSource, TLocal>
+        (
             OrderablePartitioner<TSource> source,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, long, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -1841,10 +1870,12 @@ namespace System.Threading.Tasks
         /// Partitioner.  It is provided with the current element as a parameter.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             Partitioner<TSource> source,
             ParallelOptions parallelOptions,
-            Action<TSource> body)
+            Action<TSource> body
+        )
         {
             if (source == null)
             {
@@ -1929,10 +1960,12 @@ namespace System.Threading.Tasks
         /// used to break out of the loop prematurely.
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             Partitioner<TSource> source,
             ParallelOptions parallelOptions,
-            Action<TSource, ParallelLoopState> body)
+            Action<TSource, ParallelLoopState> body
+        )
         {
             if (source == null)
             {
@@ -2020,10 +2053,12 @@ namespace System.Threading.Tasks
         /// used to break out of the loop prematurely, and the current element's index (an Int64).
         /// </para>
         /// </remarks>
-        public static ParallelLoopResult ForEach<TSource>(
+        public static ParallelLoopResult ForEach<TSource>
+        (
             OrderablePartitioner<TSource> source,
             ParallelOptions parallelOptions,
-            Action<TSource, ParallelLoopState, long> body)
+            Action<TSource, ParallelLoopState, long> body
+        )
         {
             if (source == null)
             {
@@ -2136,7 +2171,8 @@ namespace System.Threading.Tasks
             ParallelOptions parallelOptions,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -2257,7 +2293,8 @@ namespace System.Threading.Tasks
             ParallelOptions parallelOptions,
             Func<TLocal> localInit,
             Func<TSource, ParallelLoopState, long, TLocal, TLocal> body,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             if (source == null)
             {
@@ -2443,7 +2480,8 @@ namespace System.Threading.Tasks
             Func<TSource, ParallelLoopState, TLocal, TLocal> bodyWithStateAndLocal,
             Func<TSource, ParallelLoopState, long, TLocal, TLocal> bodyWithEverything,
             Func<TLocal> localInit,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             Debug.Assert
             (
@@ -2458,7 +2496,7 @@ namespace System.Threading.Tasks
             (
                 bodyWithStateAndLocal != null
                 || bodyWithEverything != null
-                || localInit == null && localFinally == null,
+                || (localInit == null && localFinally == null),
                 "thread local functions should only be supplied for loops w/ thread local bodies"
             );
 
@@ -2541,7 +2579,8 @@ namespace System.Threading.Tasks
             Func<TSource, ParallelLoopState, TLocal, TLocal> bodyWithStateAndLocal,
             Func<TSource, ParallelLoopState, long, TLocal, TLocal> bodyWithEverything,
             Func<TLocal> localInit,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             Debug.Assert(array != null);
             Debug.Assert(parallelOptions != null, "ForEachWorker(array): parallelOptions is null");
@@ -2647,7 +2686,8 @@ namespace System.Threading.Tasks
             Func<TSource, ParallelLoopState, TLocal, TLocal> bodyWithStateAndLocal,
             Func<TSource, ParallelLoopState, long, TLocal, TLocal> bodyWithEverything,
             Func<TLocal> localInit,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             Debug.Assert(list != null);
             Debug.Assert(parallelOptions != null, "ForEachWorker(list): parallelOptions is null");
@@ -2753,7 +2793,8 @@ namespace System.Threading.Tasks
             Action<int, ParallelLoopState> bodyWithState,
             Func<int, ParallelLoopState, TLocal, TLocal> bodyWithLocal,
             Func<TLocal> localInit,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             Debug.Assert
             (
@@ -2762,7 +2803,7 @@ namespace System.Threading.Tasks
             );
             Debug.Assert
             (
-                bodyWithLocal != null || localInit == null && localFinally == null,
+                bodyWithLocal != null || (localInit == null && localFinally == null),
                 "thread local functions should only be supplied for loops w/ thread local bodies"
             );
 
@@ -3027,7 +3068,8 @@ namespace System.Threading.Tasks
         /// <param name="localFinally">A cleanup function to destroy thread local state.</param>
         /// <remarks>Only one of the body arguments may be supplied (i.e. they are exclusive).</remarks>
         /// <returns>A <see cref="T:System.Threading.Tasks.ParallelLoopResult"/> structure.</returns>
-        private static ParallelLoopResult ForWorker64<TLocal>(
+        private static ParallelLoopResult ForWorker64<TLocal>
+        (
             long fromInclusive,
             long toExclusive,
             ParallelOptions parallelOptions,
@@ -3035,7 +3077,8 @@ namespace System.Threading.Tasks
             Action<long, ParallelLoopState> bodyWithState,
             Func<long, ParallelLoopState, TLocal, TLocal> bodyWithLocal,
             Func<TLocal> localInit,
-            Action<TLocal> localFinally)
+            Action<TLocal> localFinally
+        )
         {
             Debug.Assert
             (
@@ -3047,7 +3090,7 @@ namespace System.Threading.Tasks
             Debug.Assert
             (
                 bodyWithLocal != null
-                || localInit == null && localFinally == null,
+                || (localInit == null && localFinally == null),
                 "thread local functions should only be supplied for loops w/ thread local bodies"
             );
 
@@ -3313,7 +3356,7 @@ namespace System.Threading.Tasks
             if
             (
                 actionsCopy.Length > Small_Action_Count_Limit
-                || parallelOptions.MaxDegreeOfParallelism != -1 && parallelOptions.MaxDegreeOfParallelism < actionsCopy.Length
+                || (parallelOptions.MaxDegreeOfParallelism != -1 && parallelOptions.MaxDegreeOfParallelism < actionsCopy.Length)
             )
             {
                 // Used to hold any exceptions encountered during action processing
@@ -3469,7 +3512,7 @@ namespace System.Threading.Tasks
             (
                 bodyWithStateAndLocal != null
                 || bodyWithEverything != null
-                || localInit == null && localFinally == null,
+                || (localInit == null && localFinally == null),
                 "PartitionForEach: thread local functions should only be supplied for loops w/ thread local bodies"
             );
 
@@ -3477,7 +3520,7 @@ namespace System.Threading.Tasks
             Debug.Assert
             (
                 orderedSource != null
-                || bodyWithStateAndIndex == null && bodyWithEverything == null,
+                || (bodyWithStateAndIndex == null && bodyWithEverything == null),
                 "PartitionForEach: bodies with indices are only allowable for OrderablePartitioner"
             );
 
