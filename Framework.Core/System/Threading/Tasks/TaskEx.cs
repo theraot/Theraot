@@ -214,7 +214,11 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task Run(Action action, CancellationToken cancellationToken)
         {
+#if NET40
+            return Task.Factory.StartNew(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+#else
             return Task.Factory.StartNew(action, cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+#endif
         }
 
         /// <summary>
@@ -243,7 +247,11 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
         {
+#if NET40
+            return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+#else
             return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+#endif
         }
 
         /// <summary>
