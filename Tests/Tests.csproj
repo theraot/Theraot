@@ -450,26 +450,26 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' != 'net20'">
-		<PackageReference Include="NUnit" Version="3.11.0" />
-		<PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
-	</ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net20'">
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+  </ItemGroup>
 
-	<!-- NUnit 3.11 is the last NUnit supporting .NET 2.0 -->
-	<!-- See: https://github.com/nunit/nunit/issues/3070 -->
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net20'">
-		<PackageReference Include="NUnit" Version="3.11.0" />
-		<PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
-	</ItemGroup>
+  <!-- NUnit 3.11 is the last NUnit supporting .NET 2.0 -->
+  <!-- See: https://github.com/nunit/nunit/issues/3070 -->
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net20'">
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
   </ItemGroup>
 
-	<Target Name="ChangeAliasesOfNugetRefs" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences" Condition="('$(TargetFramework)' == 'net20') OR ('$(TargetFramework)' == 'net30')">
-   	<ItemGroup>
-			<ReferencePath Condition="'%(FileName)' == 'NUnit.System.Linq'">
-				<Aliases>nunitlinq</Aliases>
-			</ReferencePath>
-		</ItemGroup>
-	</Target>
+  <Target Name="ChangeAliasesOfNugetRefs" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences" Condition="('$(TargetFramework)' == 'net20') OR ('$(TargetFramework)' == 'net30')">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'NUnit.System.Linq'">
+        <Aliases>nunitlinq</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
 </Project>

@@ -1,12 +1,7 @@
 ﻿using NUnit.Framework;
-
-#if NET20 || NET30 || NET35 || NET45
-
 using System.Threading;
 
-#endif
-
-#if FAT && (NET20 || NET30 || NET35)
+#if FAT
 
 using System.Threading.Tasks;
 
@@ -17,8 +12,6 @@ namespace MonoTests.System.Threading
     [TestFixture]
     public class CancellationTokenSourceTestEx
     {
-#if NET20 || NET30 || NET35 || NET45
-
         [Test]
         public void CancelAfterDisposed()
         {
@@ -29,9 +22,7 @@ namespace MonoTests.System.Threading
             Assert.IsFalse(cts.IsCancellationRequested);
         }
 
-#endif
-
-#if FAT && (NET20 || NET30 || NET35)
+#if FAT
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition, that when resolved sequentially will fail

@@ -1564,15 +1564,13 @@ namespace MonoTests.System.Threading.Tasks
 
     public partial class TaskTests
     {
-#if NET20 || NET30 || NET35 || NET45
-
         [Test]
         public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;
             var child = Task.Factory.StartNew(() =>
             {
-                inner = Task.Run(() => { throw new ApplicationException(); }).ContinueWith(task =>
+                inner = TaskEx.Run(() => { throw new ApplicationException(); }).ContinueWith(task =>
                  {
                  }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
             });
@@ -1680,7 +1678,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             using (var cancelation = new CancellationTokenSource())
             {
-                var t = Task.Delay(5000, cancelation.Token);
+                var t = TaskEx.Delay(5000, cancelation.Token);
                 Assert.IsTrue(TaskStatus.WaitingForActivation == t.Status || TaskStatus.Running == t.Status, "#1");
                 cancelation.Cancel();
                 try
@@ -1695,7 +1693,7 @@ namespace MonoTests.System.Threading.Tasks
             }
             using (var cancelation = new CancellationTokenSource())
             {
-                var t = Task.Delay(Timeout.Infinite, cancelation.Token);
+                var t = TaskEx.Delay(Timeout.Infinite, cancelation.Token);
                 Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#11");
                 cancelation.Cancel();
                 try
@@ -1715,7 +1713,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             try
             {
-                Task.Delay(-100);
+                TaskEx.Delay(-100);
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -1727,7 +1725,7 @@ namespace MonoTests.System.Threading.Tasks
         [Category("RaceCondition")] // This test creates a race condition
         public void Delay_Simple()
         {
-            var t = Task.Delay(300);
+            var t = TaskEx.Delay(300);
             Assert.IsTrue(TaskStatus.WaitingForActivation == t.Status || TaskStatus.Running == t.Status, "#1");
             Assert.IsTrue(t.Wait(400), "#2");
         }
@@ -1735,7 +1733,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void Delay_Start()
         {
-            var t = Task.Delay(5000);
+            var t = TaskEx.Delay(5000);
             try
             {
                 t.Start();
@@ -1749,30 +1747,16 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void Delay_TimeManagement()
         {
-            var delay1 = Task.Delay(50);
-            var delay2 = Task.Delay(25);
-            Assert.IsTrue(Task.WhenAny(new[] { delay1, delay2 }).Wait(1000));
+            var delay1 = TaskEx.Delay(50);
+            var delay2 = TaskEx.Delay(25);
+            Assert.IsTrue(TaskEx.WhenAny(new[] { delay1, delay2 }).Wait(1000));
             Assert.AreEqual(TaskStatus.RanToCompletion, delay2.Status);
-        }
-
-        [Test]
-        [Category("RaceCondition")] // This test creates a race condition
-        public void DenyChildAttachTest() // TODO: Review
-        {
-            using (var mre = new ManualResetEventSlim())
-            {
-                Task nested = null;
-                var parent = Task.Factory.StartNew(() => nested = Task.Factory.StartNew(() => mre.Wait(2000), TaskCreationOptions.AttachedToParent), TaskCreationOptions.DenyChildAttach);
-                Assert.IsTrue(parent.Wait(1000), "#1");
-                mre.Set();
-                Assert.IsTrue(nested.Wait(2000), "#2");
-            }
         }
 
         [Test]
         public void FromResult()
         {
-            var t = Task.FromResult<object>(null);
+            var t = TaskEx.FromResult<object>(null);
             Assert.IsTrue(t.IsCompleted, "#1");
             Assert.AreEqual(null, t.Result, "#2");
             t.Dispose();
@@ -1784,71 +1768,11 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("RaceCondition")] // This test creates a race condition
-        public void HideSchedulerTest() // TODO: Review
-        {
-            using (var mre = new ManualResetEventSlim())
-            {
-                var ranOnDefault = false;
-                var scheduler = new SynchronousScheduler();
-                Task.Factory.StartNew(() =>
-                                {
-                                    Task.Factory.StartNew(() =>
-                                    {
-                                        ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
-                                        mre.Set();
-                                    });
-                                }, CancellationToken.None, TaskCreationOptions.HideScheduler, scheduler);
-
-                Assert.IsTrue(mre.Wait(10000), "#1");
-                Assert.IsTrue(ranOnDefault, "#2");
-            }
-        }
-
-        [Test]
-        public void LazyCancelationTest()
-        {
-            using (var source = new CancellationTokenSource())
-            {
-                source.Cancel();
-                // Do not dispose Task
-                var parent = new Task(ActionHelper.GetNoopAction());
-                var cont = parent.ContinueWith(ActionHelper.GetNoopAction<Task>(), source.Token,
-                    TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
-
-                Assert.AreNotEqual(TaskStatus.Canceled, cont.Status, "#1");
-                parent.Start();
-                try
-                {
-                    Assert.IsTrue(cont.Wait(1000), "#2");
-                    Assert.Fail();
-                }
-                catch (AggregateException ex)
-                {
-                    Assert.That(ex.InnerException, Is.TypeOf(typeof(TaskCanceledException)), "#3");
-                }
-            }
-        }
-
-        [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this fails if serialized
-        [Category("ThreadPool")]
-        [Ignore("Not working")]
-        public void Run()
-        {
-            var ranOnDefaultScheduler = false;
-            var t = Task.Run(() => ranOnDefaultScheduler = Thread.CurrentThread.IsThreadPoolThread);
-            Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
-            t.Wait();
-            Assert.IsTrue(ranOnDefaultScheduler, "#2");
-        }
-
-        [Test]
         public void Run_ArgumentCheck()
         {
             try
             {
-                Task.Run(null as Action);
+                TaskEx.Run(null as Action);
                 Assert.Fail("#1");
             }
             catch (ArgumentNullException ex)
@@ -1860,7 +1784,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void Run_Cancel()
         {
-            var t = Task.Run(() => 1, new CancellationToken(true));
+            var t = TaskEx.Run(() => 1, new CancellationToken(true));
             try
             {
                 GC.KeepAlive(t.Result);
@@ -1886,7 +1810,7 @@ namespace MonoTests.System.Threading.Tasks
                 )
             )
             {
-                var t2 = Task.Run
+                var t2 = TaskEx.Run
                 (
                     () =>
                     {
@@ -1914,7 +1838,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             using (var t = new Task<int>(() => 5))
             {
-                var t2 = Task.Run
+                var t2 = TaskEx.Run
                 (
                     () =>
                     {
@@ -2024,7 +1948,7 @@ namespace MonoTests.System.Threading.Tasks
             var ct = new CancellationToken(true);
             using (var t1 = new Task(ActionHelper.GetNoopAction(), ct))
             {
-                var t2 = Task.Delay(3000);
+                var t2 = TaskEx.Delay(3000);
                 Assert.IsFalse(Task.WaitAll(new[] { t1, t2 }, 10));
             }
         }
@@ -2033,7 +1957,7 @@ namespace MonoTests.System.Threading.Tasks
         public void WaitAny_WithNull()
         {
             var tasks = new Task[] {
-                Task.FromResult (2),
+                TaskEx.FromResult (2),
                 null
             };
 
@@ -2057,7 +1981,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     var tasks = new[] { t1, t2 };
 
-                    var t = Task.WhenAll(tasks);
+                    var t = TaskEx.WhenAll(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                     t2.Start();
 
@@ -2079,7 +2003,7 @@ namespace MonoTests.System.Threading.Tasks
 
                         cancelation.Cancel();
 
-                        var t = Task.WhenAll(tasks);
+                        var t = TaskEx.WhenAll(tasks);
                         Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                         tasks[0].Start();
 
@@ -2102,7 +2026,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var tasks = new Task[0];
 
-            var t = Task.WhenAll(tasks);
+            var t = TaskEx.WhenAll(tasks);
 
             Assert.IsTrue(t.Wait(1000), "#1");
         }
@@ -2126,7 +2050,7 @@ namespace MonoTests.System.Threading.Tasks
 
                         cancelation.Cancel();
 
-                        var t = Task.WhenAll(tasks);
+                        var t = TaskEx.WhenAll(tasks);
                         Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                         tasks[0].Start();
 
@@ -2149,10 +2073,10 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAll_Start()
         {
             Task[] tasks = {
-                Task.FromResult (2),
+                TaskEx.FromResult (2),
             };
 
-            var t = Task.WhenAll(tasks);
+            var t = TaskEx.WhenAll(tasks);
             Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
 
             try
@@ -2168,7 +2092,7 @@ namespace MonoTests.System.Threading.Tasks
             var task = new Task(ActionHelper.GetNoopAction());
             tasks = new[] { task };
 
-            t = Task.WhenAll(tasks);
+            t = TaskEx.WhenAll(tasks);
             Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#11");
 
             try
@@ -2186,13 +2110,13 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAll_WithNull()
         {
             var tasks = new Task[] {
-                Task.FromResult (2),
+                TaskEx.FromResult (2),
                 null
             };
 
             try
             {
-                Task.WhenAll(tasks);
+                TaskEx.WhenAll(tasks);
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)
@@ -2202,7 +2126,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAll(null);
+                TaskEx.WhenAll(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)
@@ -2236,7 +2160,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     var tasks = new[] { t1, t2 };
 
-                    var t = Task.WhenAll(tasks);
+                    var t = TaskEx.WhenAll(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                     t2.Start();
 
@@ -2274,7 +2198,7 @@ namespace MonoTests.System.Threading.Tasks
 
                         cancelation.Cancel();
 
-                        var t = Task.WhenAll(tasks);
+                        var t = TaskEx.WhenAll(tasks);
                         Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                         tasks[0].Start();
 
@@ -2306,11 +2230,11 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAllResult_Completed()
         {
             var tasks = new[] {
-                Task.FromResult (1),
-                Task.FromResult (2)
+                TaskEx.FromResult (1),
+                TaskEx.FromResult (2)
             };
 
-            var t = Task.WhenAll(tasks);
+            var t = TaskEx.WhenAll(tasks);
             Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
             Assert.AreEqual(2, t.Result.Length, "#2");
             Assert.AreEqual(1, t.Result[0], "#2a");
@@ -2322,7 +2246,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var tasks = new Task<int>[0];
 
-            var t = Task.WhenAll(tasks);
+            var t = TaskEx.WhenAll(tasks);
 
             Assert.IsTrue(t.Wait(1000), "#1");
             Assert.IsNotNull(t.Result, "#2");
@@ -2333,13 +2257,13 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAllResult_WithNull()
         {
             var tasks = new[] {
-                Task.FromResult (2),
+                TaskEx.FromResult (2),
                 null
             };
 
             try
             {
-                Task.WhenAll(tasks);
+                TaskEx.WhenAll(tasks);
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)
@@ -2349,7 +2273,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAll<int>(null);
+                TaskEx.WhenAll<int>(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)
@@ -2372,7 +2296,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     var tasks = new[] { t1, t2 };
 
-                    var t = Task.WhenAny(tasks);
+                    var t = TaskEx.WhenAny(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1a");
                     t2.Start();
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1b");
@@ -2396,7 +2320,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 cancelation.Cancel();
 
-                var t = Task.WhenAny(tasks);
+                var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
                 tasks[0].Start();
 
@@ -2424,7 +2348,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 cancelation.Cancel();
 
-                var t = Task.WhenAny(tasks);
+                var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
                 tasks[0].Start();
 
@@ -2439,10 +2363,10 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAny_Start()
         {
             Task[] tasks = {
-                Task.FromResult (2),
+                TaskEx.FromResult (2),
             };
 
-            var t = Task.WhenAny(tasks);
+            var t = TaskEx.WhenAny(tasks);
             Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
 
             try
@@ -2459,7 +2383,7 @@ namespace MonoTests.System.Threading.Tasks
             var task = new Task(ActionHelper.GetNoopAction());
             tasks = new[] { task };
 
-            t = Task.WhenAny(tasks);
+            t = TaskEx.WhenAny(tasks);
             Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#11");
 
             try
@@ -2477,13 +2401,13 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAny_WithNull()
         {
             var tasks = new Task[] {
-                Task.FromResult (2),
+                TaskEx.FromResult (2),
                 null
             };
 
             try
             {
-                Task.WhenAny(tasks);
+                TaskEx.WhenAny(tasks);
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)
@@ -2493,7 +2417,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAny(null);
+                TaskEx.WhenAny(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)
@@ -2503,7 +2427,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAny(new Task[0]);
+                TaskEx.WhenAny(new Task[0]);
                 Assert.Fail("#3");
             }
             catch (ArgumentException ex)
@@ -2543,7 +2467,7 @@ namespace MonoTests.System.Threading.Tasks
                         t2,
                     };
 
-                    var t = Task.WhenAny(tasks);
+                    var t = TaskEx.WhenAny(tasks);
                     Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
                     t2.Start();
 
@@ -2573,7 +2497,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 cancelation.Cancel();
 
-                var t = Task.WhenAny(tasks);
+                var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
                 tasks[0].Start();
 
@@ -2614,7 +2538,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 cancelation.Cancel();
 
-                var t = Task.WhenAny(tasks);
+                var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
                 tasks[0].Start();
 
@@ -2630,10 +2554,10 @@ namespace MonoTests.System.Threading.Tasks
         {
             var tasks = new[]
             {
-                Task.FromResult(2),
+                TaskEx.FromResult(2),
             };
 
-            var t = Task.WhenAny(tasks);
+            var t = TaskEx.WhenAny(tasks);
             Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
 
             try
@@ -2653,7 +2577,7 @@ namespace MonoTests.System.Threading.Tasks
             );
             tasks = new[] { task };
 
-            t = Task.WhenAny(tasks);
+            t = TaskEx.WhenAny(tasks);
             Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#11");
 
             try
@@ -2671,13 +2595,13 @@ namespace MonoTests.System.Threading.Tasks
         public void WhenAnyResult_WithNull()
         {
             var tasks = new[] {
-                Task.FromResult (2),
+                TaskEx.FromResult (2),
                 null
             };
 
             try
             {
-                Task.WhenAny(tasks);
+                TaskEx.WhenAny(tasks);
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)
@@ -2687,7 +2611,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAny<int>(null);
+                TaskEx.WhenAny<int>(null);
                 Assert.Fail("#2");
             }
             catch (ArgumentException ex)
@@ -2697,7 +2621,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Task.WhenAny(new Task<short>[0]);
+                TaskEx.WhenAny(new Task<short>[0]);
                 Assert.Fail("#3");
             }
             catch (ArgumentException ex)
@@ -2705,7 +2629,84 @@ namespace MonoTests.System.Threading.Tasks
                 Theraot.No.Op(ex);
             }
         }
+    }
 
+    public partial class TaskTests
+    {
+#if LESSTHAN_NET40
+        [Test]
+        [Category("RaceCondition")] // This test creates a race condition
+        public void DenyChildAttachTest() // TODO: Review
+        {
+            using (var mre = new ManualResetEventSlim())
+            {
+                Task nested = null;
+                var parent = Task.Factory.StartNew(() => nested = Task.Factory.StartNew(() => mre.Wait(2000), TaskCreationOptions.AttachedToParent), TaskCreationOptions.DenyChildAttach);
+                Assert.IsTrue(parent.Wait(1000), "#1");
+                mre.Set();
+                Assert.IsTrue(nested.Wait(2000), "#2");
+            }
+        }
+
+        [Test]
+        [Category("RaceCondition")] // This test creates a race condition
+        public void HideSchedulerTest() // TODO: Review
+        {
+            using (var mre = new ManualResetEventSlim())
+            {
+                var ranOnDefault = false;
+                var scheduler = new SynchronousScheduler();
+                Task.Factory.StartNew(() =>
+                                {
+                                    Task.Factory.StartNew(() =>
+                                    {
+                                        ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
+                                        mre.Set();
+                                    });
+                                }, CancellationToken.None, TaskCreationOptions.HideScheduler, scheduler);
+
+                Assert.IsTrue(mre.Wait(10000), "#1");
+                Assert.IsTrue(ranOnDefault, "#2");
+            }
+        }
+
+        [Test]
+        public void LazyCancelationTest()
+        {
+            using (var source = new CancellationTokenSource())
+            {
+                source.Cancel();
+                // Do not dispose Task
+                var parent = new Task(ActionHelper.GetNoopAction());
+                var cont = parent.ContinueWith(ActionHelper.GetNoopAction<Task>(), source.Token,
+                    TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
+
+                Assert.AreNotEqual(TaskStatus.Canceled, cont.Status, "#1");
+                parent.Start();
+                try
+                {
+                    Assert.IsTrue(cont.Wait(1000), "#2");
+                    Assert.Fail();
+                }
+                catch (AggregateException ex)
+                {
+                    Assert.That(ex.InnerException, Is.TypeOf(typeof(TaskCanceledException)), "#3");
+                }
+            }
+        }
+
+        [Test]
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this fails if serialized
+        [Category("ThreadPool")]
+        [Ignore("Not working")]
+        public void Run()
+        {
+            var ranOnDefaultScheduler = false;
+            var t = TaskEx.Run(() => ranOnDefaultScheduler = Thread.CurrentThread.IsThreadPoolThread);
+            Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
+            t.Wait();
+            Assert.IsTrue(ranOnDefaultScheduler, "#2");
+        }
 #endif
     }
 }

@@ -1,6 +1,4 @@
-﻿#if NET20 || NET30 || NET35
-
-// BigIntegerTest.cs
+﻿// BigIntegerTest.cs
 //
 // Authors:
 // Rodrigo Kumpera <rkumpera@novell.com>
@@ -1518,5 +1516,3 @@ namespace MonoTests.System.Numerics
         }
     }
 }
-
-#endif

@@ -26,9 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#define NET_4_0
-#if NET_4_0
-
 using NUnit.Framework;
 using System.Collections;
 
@@ -52,5 +49,3 @@ namespace MonoTests.System.Collections
         }
     }
 }
-
-#endif

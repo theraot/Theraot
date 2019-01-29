@@ -2,8 +2,6 @@
 extern alias nunitlinq;
 #endif
 
-#if NET20 || NET30 || NET35
-
 using NUnit.Framework;
 using System.Diagnostics;
 using System.Globalization;
@@ -759,5 +757,3 @@ namespace MonoTests.System.Numerics
         }
     }
 }
-
-#endif

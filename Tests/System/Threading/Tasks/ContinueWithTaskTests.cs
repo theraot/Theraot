@@ -7,7 +7,7 @@ using Theraot.Core;
 namespace MonoTests.System.Threading.Tasks
 {
     [TestFixture]
-    public class ContinueTaskTests
+    public partial class ContinueTaskTests
     {
         [Test]
         public void ContinueWithInvalidArguments()
@@ -468,8 +468,6 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-#if NET20 || NET30 || NET35 || NET45
-
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
@@ -562,8 +560,6 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual('d', d.Result, "#3r");
         }
 
-#endif
-
         [Test]
         public void ContinueWith_CustomScheduleRejected()
         {
@@ -578,39 +574,13 @@ namespace MonoTests.System.Threading.Tasks
             Assert.IsTrue(t.Wait(5000));
         }
 
-#if NET20 || NET30 || NET35 || NET45
-
-        [Test]
-        public void LazyCancelationTest()
-        {
-            using (var source = new CancellationTokenSource())
-            {
-                source.Cancel();
-                // Do not dispose Task
-                var parent = new Task(ActionHelper.GetNoopAction());
-                var cont = parent.ContinueWith(ActionHelper.GetNoopAction<Task>(), source.Token, TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
-
-                Assert.AreNotEqual(TaskStatus.Canceled, cont.Status, "#1");
-                parent.Start();
-                try
-                {
-                    Assert.IsTrue(cont.Wait(1000), "#2");
-                    Assert.Fail();
-                }
-                catch (AggregateException ex)
-                {
-                    Assert.That(ex.InnerException, Is.TypeOf(typeof(TaskCanceledException)), "#3");
-                }
-            }
-        }
-
         [Test]
         public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;
             var child = Task.Factory.StartNew(() =>
             {
-                inner = Task.Run(() => { throw new ApplicationException(); }).ContinueWith(_ => { }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+                inner = TaskEx.Run(() => { throw new ApplicationException(); }).ContinueWith(_ => { }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
             });
 
             var counter = 0;
@@ -620,8 +590,6 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(TaskStatus.RanToCompletion, child.Status, "#3");
             Assert.AreEqual(TaskStatus.Canceled, inner.Status, "#4");
         }
-
-#endif
 
         [Test]
         public void TaskContinuationChainLeak()
@@ -649,5 +617,34 @@ namespace MonoTests.System.Threading.Tasks
                 tester.Stop();
             }
         }
+    }
+
+    public partial class ContinueTaskTests
+    {
+#if LESSTHAN_NET40
+        [Test]
+        public void LazyCancelationTest()
+        {
+            using (var source = new CancellationTokenSource())
+            {
+                source.Cancel();
+                // Do not dispose Task
+                var parent = new Task(ActionHelper.GetNoopAction());
+                var cont = parent.ContinueWith(ActionHelper.GetNoopAction<Task>(), source.Token, TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
+
+                Assert.AreNotEqual(TaskStatus.Canceled, cont.Status, "#1");
+                parent.Start();
+                try
+                {
+                    Assert.IsTrue(cont.Wait(1000), "#2");
+                    Assert.Fail();
+                }
+                catch (AggregateException ex)
+                {
+                    Assert.That(ex.InnerException, Is.TypeOf(typeof(TaskCanceledException)), "#3");
+                }
+            }
+        }
+#endif
     }
 }

@@ -21,9 +21,6 @@
 //	Brian O'Keefe (zer0keefie@gmail.com)
 //
 
-#define NET_4_0
-#if NET_4_0
-
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Specialized;
@@ -107,5 +104,3 @@ namespace MonoTests.System.Collections.Specialized
         #endregion Validators
     }
 }
-
-#endif

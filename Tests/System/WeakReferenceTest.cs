@@ -1,6 +1,4 @@
-﻿#define NET_4_5
-
-//
+﻿//
 // WeakReferenceTest.cs - NUnit Test Cases for WeakReference
 //
 // Author:
@@ -133,8 +131,6 @@ namespace MonoTests.System
             Assert.IsFalse(Foo.Failed);
         }
 
-#if NET_4_5
-
         [Test]
         public void WeakReferenceT_TryGetTarget_NullTarget()
         {
@@ -142,7 +138,5 @@ namespace MonoTests.System
             object obj;
             Assert.IsFalse(r.TryGetTarget(out obj), "#1");
         }
-
-#endif
     }
 }

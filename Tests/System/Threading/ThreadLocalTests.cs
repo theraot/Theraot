@@ -1,6 +1,4 @@
-﻿#define NET_4_0
-#if NET_4_0
-//
+﻿//
 // ThreadLazyTests.cs
 //
 // Author:
@@ -240,5 +238,3 @@ namespace MonoTests.System.Threading
         }
     }
 }
-
-#endif

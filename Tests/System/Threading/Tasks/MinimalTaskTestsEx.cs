@@ -2,38 +2,13 @@
 using System;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-
-#if NET20 || NET30 || NET35 || NET45
-
 using System.Threading;
-
-#endif
 
 namespace MonoTests.System.Threading.Tasks
 {
     [TestFixture]
-    public class MinimalTaskTestsEx
+    public partial class MinimalTaskTestsEx
     {
-#if NET20 || NET30 || NET35 || NET45
-
-        [Test]
-        public void Run()
-        {
-            var expectedScheduler = TaskScheduler.Current;
-            TaskScheduler foundScheduler = null;
-            var t = Task.Run(() =>
-            {
-                foundScheduler = TaskScheduler.Current;
-                Console.WriteLine("Task Scheduler: {0}", TaskScheduler.Current);
-                Console.WriteLine("IsThreadPoolThread: {0}", Thread.CurrentThread.IsThreadPoolThread);
-            });
-            Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
-            t.Wait();
-            Assert.AreEqual(expectedScheduler, foundScheduler);
-        }
-
-#endif
-
         [Test]
         public void WrapAggregateExceptionCorrectly()
         {
@@ -171,5 +146,26 @@ namespace MonoTests.System.Threading.Tasks
             {
             }
         }
+    }
+
+    public partial class MinimalTaskTestsEx
+    {
+#if LESSTHAN_NET40
+        [Test]
+        public void Run()
+        {
+            var expectedScheduler = TaskScheduler.Current;
+            TaskScheduler foundScheduler = null;
+            var t = TaskEx.Run(() =>
+            {
+                foundScheduler = TaskScheduler.Current;
+                Console.WriteLine("Task Scheduler: {0}", TaskScheduler.Current);
+                Console.WriteLine("IsThreadPoolThread: {0}", Thread.CurrentThread.IsThreadPoolThread);
+            });
+            Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
+            t.Wait();
+            Assert.AreEqual(expectedScheduler, foundScheduler);
+        }
+#endif
     }
 }

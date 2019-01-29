@@ -26,9 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#define NET_4_0
-#if NET_4_0
-
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -626,5 +623,3 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
     }
 }
-
-#endif

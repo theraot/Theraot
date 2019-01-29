@@ -29,6 +29,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Theraot.Core;
 
@@ -510,8 +511,6 @@ namespace MonoTests.System.Threading
 
     public partial class CancellationTokenSourceTest
     {
-#if NET20 || NET30 || NET35 || NET_45
-
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
         public void CancelAfter()
@@ -570,35 +569,6 @@ namespace MonoTests.System.Threading
                 {
                     Theraot.No.Op(ex);
                 }
-            }
-        }
-
-        [Test]
-        public void Ctor_Invalid()
-        {
-            try
-            {
-                using (var cancellationTokenSource = new CancellationTokenSource(-4))
-                {
-                    GC.KeepAlive(cancellationTokenSource);
-                }
-                Assert.Fail("#1");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-        }
-
-        [Test]
-        public void Ctor_Timeout()
-        {
-            var called = 0;
-            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(20)))
-            {
-                cts.Token.Register(() => called++);
-                Thread.Sleep(50);
-                Assert.AreEqual(1, called, "#1");
             }
         }
 
@@ -689,7 +659,39 @@ namespace MonoTests.System.Threading
                 }
             }
         }
-
-#endif
     }
+
+#if !NET40
+    public partial class CancellationTokenSourceTest
+    {
+        [Test]
+        public void Ctor_Invalid()
+        {
+            try
+            {
+                using (var cancellationTokenSource = new CancellationTokenSource(-4))
+                {
+                    GC.KeepAlive(cancellationTokenSource);
+                }
+                Assert.Fail("#1");
+            }
+            catch (ArgumentException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+        }
+
+        [Test]
+        public void Ctor_Timeout()
+        {
+            var called = 0;
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(20)))
+            {
+                cts.Token.Register(() => called++);
+                Thread.Sleep(50);
+                Assert.AreEqual(1, called, "#1");
+            }
+        }
+    }
+#endif
 }

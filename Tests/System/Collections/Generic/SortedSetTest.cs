@@ -26,9 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#define NET_4_0
-#if NET_4_0
-
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -287,7 +284,6 @@ namespace MonoTests.System.Collections.Generic
             DoTest(digits.GetViewBetween(0, 2), trio, false, /*se:*/ true, false, false);
         }
 
-#if NET20 || NET30 || NET35
         [Test]
         public void TestSetComparesC()
         {
@@ -298,7 +294,6 @@ namespace MonoTests.System.Collections.Generic
 
             DoTest(trio, nonTrio, false, false, false, false); // <- This line fails against Microsoft .NET 4.0 and 4.5
         }
-#endif
 
         [Test]
         public void UnionWith()
@@ -570,5 +565,3 @@ namespace MonoTests.System.Collections.Generic
         }
     }
 }
-
-#endif

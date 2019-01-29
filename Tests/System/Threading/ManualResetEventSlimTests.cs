@@ -27,9 +27,6 @@
 //
 //
 
-#define NET_4_0
-#if NET_4_0
-
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -394,5 +391,3 @@ namespace MonoTests.System.Threading
         }
     }
 }
-
-#endif

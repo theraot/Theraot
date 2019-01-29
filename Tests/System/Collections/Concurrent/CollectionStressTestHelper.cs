@@ -1,6 +1,4 @@
-﻿#define NET_4_0
-#if NET_4_0
-//
+﻿//
 // CollectionStressTestHelper.cs
 //
 // Author:
@@ -144,5 +142,3 @@ namespace MonoTests.System.Collections.Concurrent
         }
     }
 }
-
-#endif

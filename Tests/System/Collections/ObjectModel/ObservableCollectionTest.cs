@@ -26,9 +26,6 @@
 //	Marek Safar (marek.safar@gmail.com)
 //
 
-#define NET_4_0
-#if NET_4_0
-
 using MonoTests.System.Collections.Specialized;
 using NUnit.Framework;
 using System;
@@ -415,5 +412,3 @@ namespace MonoTests.System.Collections.ObjectModel
         }
     }
 }
-
-#endif

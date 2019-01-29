@@ -26,9 +26,6 @@
 //
 //
 
-#define NET_4_0
-#if NET_4_0
-
 using NUnit.Framework;
 using System;
 using System.Threading;
@@ -115,6 +112,7 @@ namespace MonoTests.System.Threading
                     Theraot.No.Op(ex);
                 }
             }
+
             using (var ev = new CountdownEvent(1))
             {
                 Assert.IsTrue(ev.Signal(), "#2");
@@ -136,18 +134,21 @@ namespace MonoTests.System.Threading
             var evt = new CountdownEvent(5);
 
             var count = 0;
-            ParallelTestHelper.ParallelStressTest(evt, e =>
-            {
-                var num = Interlocked.Increment(ref count);
-                if (num % 2 == 0)
+            ParallelTestHelper.ParallelStressTest
+            (
+                evt, e =>
                 {
-                    e.AddCount();
-                }
-                else
-                {
-                    e.Signal();
-                }
-            }, 7);
+                    var num = Interlocked.Increment(ref count);
+                    if (num % 2 == 0)
+                    {
+                        e.AddCount();
+                    }
+                    else
+                    {
+                        e.Signal();
+                    }
+                }, 7
+            );
 
             Assert.AreEqual(4, evt.CurrentCount, "#1");
             Assert.IsFalse(evt.IsSet, "#2");
@@ -390,10 +391,7 @@ namespace MonoTests.System.Threading
                 {
                     for (var i = 0; i < ce.InitialCount; ++i)
                     {
-                        ThreadPool.QueueUserWorkItem(delegate
-                        {
-                            ce.Signal();
-                        });
+                        ThreadPool.QueueUserWorkItem(delegate { ce.Signal(); });
                     }
 
                     Assert.IsTrue(ce.Wait(1000), "#1");
@@ -446,11 +444,13 @@ namespace MonoTests.System.Threading
             {
                 Assert.IsFalse(ev.TryAddCount(1), "#1");
             }
+
             using (var ev = new CountdownEvent(1))
             {
                 ev.Signal();
                 Assert.IsFalse(ev.TryAddCount(1), "#2");
             }
+
             using (var ev = new CountdownEvent(2))
             {
                 ev.Signal(2);
@@ -466,22 +466,25 @@ namespace MonoTests.System.Threading
             var count = 0;
             var s = false;
 
-            ParallelTestHelper.ParallelStressTest(evt, e =>
-            {
-                if (Interlocked.Increment(ref count) % 2 == 0)
+            ParallelTestHelper.ParallelStressTest
+            (
+                evt, e =>
                 {
-                    Thread.Sleep(100);
-                    while (!e.IsSet)
+                    if (Interlocked.Increment(ref count) % 2 == 0)
                     {
-                        e.Signal();
+                        Thread.Sleep(100);
+                        while (!e.IsSet)
+                        {
+                            e.Signal();
+                        }
                     }
-                }
-                else
-                {
-                    e.Wait();
-                    s = true;
-                }
-            }, 3);
+                    else
+                    {
+                        e.Wait();
+                        s = true;
+                    }
+                }, 3
+            );
 
             Assert.IsTrue(s, "#1");
             Assert.IsTrue(evt.IsSet, "#2");
@@ -509,5 +512,3 @@ namespace MonoTests.System.Threading
         }
     }
 }
-
-#endif

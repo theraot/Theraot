@@ -1,6 +1,4 @@
-﻿#define NET_4_0
-#if NET_4_0
-//
+﻿//
 // SpinLockTests.cs
 //
 // Author:
@@ -170,5 +168,3 @@ namespace MonoTests.System.Threading
         }
     }
 }
-
-#endif
