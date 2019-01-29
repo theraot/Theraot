@@ -605,6 +605,7 @@ namespace MonoTests.System.Threading
                 Theraot.No.Op(ex);
             }
 
+#if LESSTHAN_NET46
             try
             {
                 token.Register(() =>
@@ -616,6 +617,7 @@ namespace MonoTests.System.Threading
             {
                 Theraot.No.Op(ex);
             }
+#endif
 
             try
             {
@@ -627,6 +629,7 @@ namespace MonoTests.System.Threading
                 Theraot.No.Op(ex);
             }
 
+#if LESSTHAN_NET46
             try
             {
                 CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -636,6 +639,7 @@ namespace MonoTests.System.Threading
             {
                 Theraot.No.Op(ex);
             }
+#endif
             try
             {
                 cts.CancelAfter(1);
