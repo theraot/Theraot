@@ -479,41 +479,6 @@ namespace Theraot.Reflection
             return type.IsSameOrSubclassOfInternal(baseType);
         }
 
-        public static bool IsSubclassOf(this Type type, Type baseType)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (baseType == null)
-            {
-                throw new ArgumentNullException(nameof(baseType));
-            }
-
-            return type.IsSubclassOfInternal(baseType);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static bool IsSubclassOfInternal(this Type type, Type baseType)
-        {
-#if LESSTHAN_NETCOREAPP20
-            while (type != null)
-            {
-                var info = type.GetTypeInfo();
-                type = info.BaseType;
-                if (type == baseType)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-#else
-            return type.IsSubclassOf(baseType);
-#endif
-        }
-
         public static bool IsValueTypeRecursive(this Type type)
         {
             if (type == null)
@@ -579,7 +544,7 @@ namespace Theraot.Reflection
 
         internal static bool IsSameOrSubclassOfInternal(this Type type, Type baseType)
         {
-            return type == baseType || type.IsSubclassOfInternal(baseType);
+            return type == baseType || type.GetTypeInfo().IsSubclassOf(baseType);
         }
 
         internal static bool IsUnsigned(this Type type)
