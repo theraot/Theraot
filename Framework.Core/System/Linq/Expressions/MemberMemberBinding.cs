@@ -160,9 +160,9 @@ namespace System.Linq.Expressions
         private readonly ReadOnlyCollectionEx<MemberBinding> _bindingsAsReadOnlyCollection;
 
         internal MemberMemberBinding(MemberInfo member, MemberBinding[] bindings)
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
+#pragma warning disable CS0618 // Type or member is obsolete
             : base(MemberBindingType.MemberBinding, member)
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             _bindings = bindings;
             _bindingsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_bindings);

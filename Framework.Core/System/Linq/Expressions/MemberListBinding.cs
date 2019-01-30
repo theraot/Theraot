@@ -152,9 +152,9 @@ namespace System.Linq.Expressions
     public sealed class MemberListBinding : MemberBinding
     {
         internal MemberListBinding(MemberInfo member, ReadOnlyCollection<ElementInit> initializers)
-#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
+#pragma warning disable CS0618 // Type or member is obsolete
             : base(MemberBindingType.ListBinding, member)
-#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             Initializers = initializers;
         }
