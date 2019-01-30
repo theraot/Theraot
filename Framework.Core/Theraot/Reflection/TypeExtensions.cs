@@ -179,17 +179,6 @@ namespace Theraot.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static object GetValue(this PropertyInfo info, object obj)
-        {
-            //Added in .NET 4.5
-#if NET45
-            return info.GetValue(obj);
-#else
-            return info.GetValue(obj, null);
-#endif
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool HasAttribute<TAttribute>(this Assembly item)
             where TAttribute : Attribute
         {
