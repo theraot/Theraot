@@ -14,4 +14,26 @@ namespace System.Reflection
     }
 }
 
+#elif LESSTHAN_NETSTANDARD15
+
+using System.Runtime.CompilerServices;
+
+namespace System.Reflection
+{
+    public static class PropertyInfoTheraotExtensions
+    {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
+        {
+            return propertyInfo.GetMethod;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo)
+        {
+            return propertyInfo.SetMethod;
+        }
+    }
+}
+
 #endif

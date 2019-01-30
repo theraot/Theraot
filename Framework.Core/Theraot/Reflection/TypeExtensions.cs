@@ -978,21 +978,4 @@ namespace Theraot.Reflection
 #endif
         }
     }
-
-#if LESSTHAN_NETSTANDARD15
-    public static partial class TypeExtensions
-    {
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
-        {
-            return propertyInfo.GetMethod;
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo)
-        {
-            return propertyInfo.SetMethod;
-        }
-    }
-#endif
 }
