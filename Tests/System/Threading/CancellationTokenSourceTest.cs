@@ -281,8 +281,14 @@ namespace MonoTests.System.Threading
 
                         t1.Start();
                         t2.Start();
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
                         t1.Join(500);
                         t2.Join(500);
+#else
+                        t1.Join();
+                        t2.Join();
+#endif
                     }
                 }
             }, 500);

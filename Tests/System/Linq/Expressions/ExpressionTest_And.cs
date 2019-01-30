@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 extern alias nunitlinq;
 #endif
 
@@ -27,6 +27,7 @@ extern alias nunitlinq;
 using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MonoTests.System.Linq.Expressions
 {

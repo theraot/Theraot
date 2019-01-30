@@ -224,6 +224,8 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(date, lambda());
         }
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
         [Test]
         public void EmitDbNullConstant()
         {
@@ -231,6 +233,7 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual(DBNull.Value, lambda());
         }
+#endif
 
         [Test]
         public void EmitNullString()

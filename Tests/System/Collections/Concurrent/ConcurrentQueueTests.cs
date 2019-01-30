@@ -267,10 +267,18 @@ namespace MonoTests.System.Collections.Concurrent
             var queue = new ConcurrentQueue<object>();
             var weakReference = AddObjectWeakReference(queue);
             DequeueIgnore(queue);
+#if TARGETS_NET
             Thread.MemoryBarrier();
+#else
+            Interlocked.MemoryBarrier();
+#endif
             GC.Collect();
             GC.WaitForPendingFinalizers();
+#if TARGETS_NET
             Thread.MemoryBarrier();
+#else
+            Interlocked.MemoryBarrier();
+#endif
             Assert.IsFalse(weakReference.IsAlive);
         }
 
