@@ -779,15 +779,15 @@ namespace System.Threading.Tasks
             public static void CreateWithoutTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource)
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(waitHandle, cancellationToken, taskCompletionSource);
-                var thread = new Thread(result.CallbackWithoutTimeout);
-                thread.Start();
+                // ReSharper disable once MethodSupportsCancellation
+                Task.Run((Action)result.CallbackWithoutTimeout);
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(waitHandle, cancellationToken, taskCompletionSource);
-                var thread = new Thread(result.CallbackWithTimeout);
-                thread.Start(millisecondsTimeout);
+                // ReSharper disable once MethodSupportsCancellation
+                Task.Run(() => result.CallbackWithTimeout(millisecondsTimeout));
             }
 
             private void CallbackWithoutTimeout()
@@ -825,15 +825,15 @@ namespace System.Threading.Tasks
             public static void CreateWithoutTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource)
             {
                 var result = new WaitHandleTaskCompletionSourceManager(waitHandle, taskCompletionSource);
-                var thread = new Thread(result.CallbackWithoutTimeout);
-                thread.Start();
+                // ReSharper disable once MethodSupportsCancellation
+                Task.Run((Action)result.CallbackWithoutTimeout);
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleTaskCompletionSourceManager(waitHandle, taskCompletionSource);
-                var thread = new Thread(result.CallbackWithTimeout);
-                thread.Start(millisecondsTimeout);
+                // ReSharper disable once MethodSupportsCancellation
+                Task.Run(() => result.CallbackWithTimeout(millisecondsTimeout));
             }
 
             private void CallbackWithoutTimeout()

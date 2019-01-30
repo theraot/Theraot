@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Theraot.Threading
@@ -12,12 +13,12 @@ namespace Theraot.Threading
         IDisposable
     {
         private Action _release;
-        private Thread _thread;
+        private StrongBox<UniqueId> _threadUniqueId;
 
-        private DisposableAkin(Action release, Thread thread)
+        private DisposableAkin(Action release, UniqueId threadUniqueId)
         {
             _release = release ?? throw new ArgumentNullException(nameof(release));
-            _thread = thread ?? throw new ArgumentNullException(nameof(thread));
+            _threadUniqueId = new StrongBox<UniqueId>(threadUniqueId);
         }
 
         ~DisposableAkin()
@@ -40,11 +41,11 @@ namespace Theraot.Threading
             }
         }
 
-        public bool IsDisposed => _thread == null;
+        public bool IsDisposed => _threadUniqueId == null;
 
         public static DisposableAkin Create(Action release)
         {
-            return new DisposableAkin(release, Thread.CurrentThread);
+            return new DisposableAkin(release, ThreadUniqueId.CurrentThreadId);
         }
 
         public bool Dispose(Func<bool> condition)
@@ -54,7 +55,8 @@ namespace Theraot.Threading
                 throw new ArgumentNullException(nameof(condition));
             }
 
-            if (Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) != Thread.CurrentThread)
+            var found = Interlocked.CompareExchange(ref _threadUniqueId, null, new StrongBox<UniqueId>(ThreadUniqueId.CurrentThreadId));
+            if (found == null || found.Value != ThreadUniqueId.CurrentThreadId)
             {
                 return false;
             }
@@ -90,9 +92,13 @@ namespace Theraot.Threading
 
         private void Dispose(bool disposeManagedResources)
         {
-            if (disposeManagedResources && Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread) != Thread.CurrentThread)
+            if (disposeManagedResources)
             {
-                return;
+                var found = Interlocked.CompareExchange(ref _threadUniqueId, null, new StrongBox<UniqueId>(ThreadUniqueId.CurrentThreadId));
+                if (found == null || found.Value != ThreadUniqueId.CurrentThreadId)
+                {
+                    return;
+                }
             }
 
             try
