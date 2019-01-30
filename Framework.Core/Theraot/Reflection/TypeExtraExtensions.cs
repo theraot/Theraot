@@ -8,7 +8,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Reflection
 {
-    public static partial class TypeExtensions
+    public static partial class TypeExtraExtensions
     {
         private static readonly CacheDict<Type, bool> _binaryPortableCache = new CacheDict<Type, bool>(256);
         private static readonly CacheDict<Type, bool> _blittableCache = new CacheDict<Type, bool>(256);
@@ -514,12 +514,12 @@ namespace Theraot.Reflection
         internal static MethodInfo GetStaticMethodInternal(this Type type, string name)
         {
             // Don't use BindingFlags.Static
-            return Array.Find(type.GetTypeInfo().GetMethods(), method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic);
+            return Array.Find(type.GetMethods(), method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic);
         }
 
         internal static MethodInfo[] GetStaticMethodsInternal(this Type type)
         {
-            var methods = type.GetTypeInfo().GetMethods();
+            var methods = type.GetMethods();
             var list = new List<MethodInfo>(methods.Length);
             list.AddRange(methods.Where(method => method.IsStatic));
             return list.ToArray();
@@ -583,7 +583,7 @@ namespace Theraot.Reflection
                 return false;
             }
 
-            if (info.GetFields().Any(field => !IsBinaryPortableExtracted(field.FieldType)))
+            if (type.GetFields().Any(field => !IsBinaryPortableExtracted(field.FieldType)))
             {
                 return false;
             }
@@ -600,7 +600,7 @@ namespace Theraot.Reflection
                        && type != typeof(bool);
             }
 
-            return info.IsValueType && type.GetTypeInfo().GetFields().All(field => IsBlittableExtracted(field.FieldType));
+            return info.IsValueType && type.GetFields().All(field => IsBlittableExtracted(field.FieldType));
         }
 
         private static bool GetValueTypeRecursiveResult(Type type)
@@ -611,7 +611,7 @@ namespace Theraot.Reflection
                 return true;
             }
 
-            return info.IsValueType && type.GetTypeInfo().GetFields().All(field => IsValueTypeRecursiveExtracted(field.FieldType));
+            return info.IsValueType && type.GetFields().All(field => IsValueTypeRecursiveExtracted(field.FieldType));
         }
 
         private static bool IsBinaryPortableExtracted(Type type)
@@ -669,292 +669,7 @@ namespace Theraot.Reflection
         }
     }
 
-#if GREATERTHAN_NET40 || GREATERTHAN_NETCOREAPP11
-    public static partial class TypeExtensions
-    {
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
-        {
-            return typeInfo.AsType().GetConstructor(typeArguments);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
-        {
-            return typeInfo.AsType().GetConstructors();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static FieldInfo[] GetFields(this TypeInfo typeInfo)
-        {
-            return typeInfo.AsType().GetFields();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name, Type[] typeArguments)
-        {
-            return typeInfo.AsType().GetMethod(name, typeArguments);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
-        {
-            return typeInfo.AsType().GetMethod(name);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
-        {
-            return typeInfo.AsType().GetMethods();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo[] GetProperties(this TypeInfo typeInfo)
-        {
-            return typeInfo.AsType().GetProperties();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name, Type[] typeArguments)
-        {
-            return typeInfo.AsType().GetProperty(name, typeArguments);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name)
-        {
-            return typeInfo.AsType().GetProperty(name);
-        }
-    }
-
-#elif LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD15
-
-    public static partial class TypeExtensions
-    {
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConstructorInfo GetConstructor(this TypeInfo typeInfo, Type[] typeArguments)
-        {
-            var members = typeInfo.DeclaredMembers;
-            foreach (var member in members)
-            {
-                if (!(member is ConstructorInfo constructorInfo))
-                {
-                    continue;
-                }
-
-                var parameters = constructorInfo.GetParameters();
-                if (parameters.Length != typeArguments.Length)
-                {
-                    continue;
-                }
-
-                var ok = !typeArguments.Where((t, index) => parameters[index].GetType() != t).Any();
-
-                if (!ok)
-                {
-                    continue;
-                }
-
-                return constructorInfo;
-            }
-
-            return null;
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConstructorInfo[] GetConstructors(this TypeInfo typeInfo)
-        {
-            var members = typeInfo.DeclaredMembers;
-            var result = new List<ConstructorInfo>();
-            foreach (var member in members)
-            {
-                if (member is ConstructorInfo constructorInfo)
-                {
-                    result.Add(constructorInfo);
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static FieldInfo[] GetFields(this TypeInfo typeInfo)
-        {
-            var members = typeInfo.DeclaredMembers;
-            var result = new List<FieldInfo>();
-            foreach (var member in members)
-            {
-                if (member is FieldInfo fieldInfo)
-                {
-                    result.Add(fieldInfo);
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name, Type[] typeArguments)
-        {
-            var members = typeInfo.DeclaredMembers;
-            foreach (var member in members)
-            {
-                if (!(member is MethodInfo methodInfo))
-                {
-                    continue;
-                }
-
-                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                var parameters = methodInfo.GetParameters();
-                if (parameters.Length != typeArguments.Length)
-                {
-                    continue;
-                }
-
-                var ok = !typeArguments.Where((t, index) => parameters[index].GetType() != t).Any();
-
-                if (!ok)
-                {
-                    continue;
-                }
-
-                return methodInfo;
-            }
-
-            return null;
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetMethod(this TypeInfo typeInfo, string name)
-        {
-            var members = typeInfo.DeclaredMembers;
-            MethodInfo found = null;
-            foreach (var member in members)
-            {
-                if (!(member is MethodInfo methodInfo))
-                {
-                    continue;
-                }
-
-                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                if (found != null)
-                {
-                    throw new AmbiguousMatchException();
-                }
-
-                found = methodInfo;
-            }
-
-            return found;
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo[] GetMethods(this TypeInfo typeInfo)
-        {
-            var members = typeInfo.DeclaredMembers;
-            var result = new List<MethodInfo>();
-            foreach (var member in members)
-            {
-                if (member is MethodInfo methodInfo)
-                {
-                    result.Add(methodInfo);
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo[] GetProperties(this TypeInfo typeInfo)
-        {
-            var members = typeInfo.DeclaredMembers;
-            var result = new List<PropertyInfo>();
-            foreach (var member in members)
-            {
-                if (member is PropertyInfo propertyInfo)
-                {
-                    result.Add(propertyInfo);
-                }
-            }
-
-            return result.ToArray();
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name, Type[] typeArguments)
-        {
-            var members = typeInfo.DeclaredMembers;
-            foreach (var member in members)
-            {
-                if (!(member is PropertyInfo propertyInfo))
-                {
-                    continue;
-                }
-
-                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                var parameters = propertyInfo.GetIndexParameters();
-                if (parameters.Length != typeArguments.Length)
-                {
-                    continue;
-                }
-
-                var ok = !typeArguments.Where((t, index) => parameters[index].GetType() != t).Any();
-
-                if (!ok)
-                {
-                    continue;
-                }
-
-                return propertyInfo;
-            }
-
-            return null;
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this TypeInfo typeInfo, string name)
-        {
-            var members = typeInfo.DeclaredMembers;
-            PropertyInfo found = null;
-            foreach (var member in members)
-            {
-                if (!(member is PropertyInfo propertyInfo))
-                {
-                    continue;
-                }
-
-                if (!string.Equals(member.Name, name, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                if (found != null)
-                {
-                    throw new AmbiguousMatchException();
-                }
-
-                found = propertyInfo;
-            }
-
-            return found;
-        }
-    }
-
-#endif
-
-    public static partial class TypeExtensions
+    public static partial class TypeExtraExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static StructLayoutAttribute GetStructLayoutAttribute(this Type type)

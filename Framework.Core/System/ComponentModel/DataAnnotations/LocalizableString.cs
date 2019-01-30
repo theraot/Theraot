@@ -8,11 +8,6 @@
 
 using System.Reflection;
 
-#if NETSTANDARD1_0
-using Theraot.Reflection;
-
-#endif
-
 namespace System.ComponentModel.DataAnnotations
 {
     /// <summary>
@@ -114,7 +109,7 @@ namespace System.ComponentModel.DataAnnotations
                     var resourceTypeInfo = _resourceType.GetTypeInfo();
 
                     // Get the property from the resource type for this resource key
-                    var property = resourceTypeInfo.GetProperty(_propertyValue);
+                    var property = _resourceType.GetProperty(_propertyValue);
 
                     // We need to detect bad configurations so that we can throw exceptions accordingly
                     var badlyConfigured = false;

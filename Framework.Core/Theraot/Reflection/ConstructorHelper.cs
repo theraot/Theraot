@@ -48,7 +48,7 @@ namespace Theraot.Reflection
             }
 
             var typeArguments = ArrayEx.Empty<Type>();
-            var constructorInfo = typeof(TReturn).GetTypeInfo().GetConstructor(typeArguments);
+            var constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
             if (constructorInfo == null)
             {
                 _constructorCache[type] = null;

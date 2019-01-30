@@ -22,7 +22,7 @@ namespace Theraot.Reflection
                 throw new ArgumentException("Not a delegate.");
             }
 
-            var methodInfo = delegateType.GetTypeInfo().GetMethod("Invoke");
+            var methodInfo = delegateType.GetMethod("Invoke");
             if (methodInfo == null)
             {
                 throw new ArgumentException("Not a delegate.");
