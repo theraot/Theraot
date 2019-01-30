@@ -446,7 +446,7 @@ namespace MonoTests.System.Collections.Generic
             var set1 = new HashSet<string>(data, StringComparer.Ordinal);
             var set2 = new HashSet<string>(data, StringComparer.OrdinalIgnoreCase);
 
-            var comparer = HashSet<string>.CreateSetComparer();
+            var comparer = HashSetEx<string>.CreateSetComparer();
             Assert.IsTrue(comparer.Equals(set1, set1));
             Assert.IsTrue(comparer.Equals(set1, set2));
             Assert.AreEqual(comparer.GetHashCode(set1), comparer.GetHashCode(set2));

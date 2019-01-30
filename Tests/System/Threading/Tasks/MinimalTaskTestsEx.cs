@@ -12,72 +12,63 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WrapAggregateExceptionCorrectly()
         {
-            using (var x = new Task(() => { throw new AggregateException(new CustomException()); }))
+            var x = new Task(() => { throw new AggregateException(new CustomException()); });
+            try
             {
-                try
-                {
-                    x.Start();
-                    x.Wait();
-                }
-                catch (Exception ex)
-                {
-                    Assert.IsTrue(ex is AggregateException);
-                    Assert.IsTrue(ex.InnerException is AggregateException);
-                    Assert.IsTrue(((AggregateException)ex.InnerException).InnerException is CustomException);
-                }
+                x.Start();
+                x.Wait();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is AggregateException);
+                Assert.IsTrue(ex.InnerException is AggregateException);
+                Assert.IsTrue(((AggregateException)ex.InnerException).InnerException is CustomException);
             }
         }
 
         [Test]
         public void WrapChildExceptionsCorrectly()
         {
-            using
+            var x = new Task
             (
-                var x = new Task
-                (
-                    () =>
-                    {
-                        Task.Factory.StartNew(() => { throw new CustomException(); }, TaskCreationOptions.AttachedToParent);
-                        throw new OtherException();
-                    }
-                )
-            )
+                () =>
+                {
+                    Task.Factory.StartNew(() => { throw new CustomException(); }, TaskCreationOptions.AttachedToParent);
+                    throw new OtherException();
+                }
+            );
+            try
             {
-                try
-                {
-                    x.Start();
-                    x.Wait();
-                }
-                catch (Exception ex)
-                {
-                    Assert.IsTrue(ex is AggregateException);
-                    Assert.IsTrue(ex.InnerException is OtherException);
-                    Assert.IsTrue(((AggregateException)ex).InnerExceptions.Count == 2);
-                    Assert.IsTrue(((AggregateException)ex).InnerExceptions[0] is OtherException);
-                    var aggregateException = ((AggregateException)ex).InnerExceptions[1] as AggregateException;
-                    Assert.IsTrue(aggregateException != null);
-                    Assert.IsTrue(aggregateException.InnerException is CustomException);
-                    Assert.IsTrue(aggregateException.InnerExceptions.Count == 1);
-                    Assert.IsTrue(aggregateException.InnerExceptions[0] is CustomException);
-                }
+                x.Start();
+                x.Wait();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is AggregateException);
+                Assert.IsTrue(ex.InnerException is OtherException);
+                Assert.IsTrue(((AggregateException)ex).InnerExceptions.Count == 2);
+                Assert.IsTrue(((AggregateException)ex).InnerExceptions[0] is OtherException);
+                var aggregateException = ((AggregateException)ex).InnerExceptions[1] as AggregateException;
+                Assert.IsTrue(aggregateException != null);
+                Assert.IsTrue(aggregateException.InnerException is CustomException);
+                Assert.IsTrue(aggregateException.InnerExceptions.Count == 1);
+                Assert.IsTrue(aggregateException.InnerExceptions[0] is CustomException);
             }
         }
 
         [Test]
         public void WrapCustomExceptionCorrectly()
         {
-            using (var x = new Task(() => { throw new CustomException(); }))
+            var x = new Task(() => { throw new CustomException(); });
+            try
             {
-                try
-                {
-                    x.Start();
-                    x.Wait();
-                }
-                catch (Exception ex)
-                {
-                    Assert.IsTrue(ex is AggregateException);
-                    Assert.IsTrue(ex.InnerException is CustomException);
-                }
+                x.Start();
+                x.Wait();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is AggregateException);
+                Assert.IsTrue(ex.InnerException is CustomException);
             }
         }
 
@@ -85,19 +76,17 @@ namespace MonoTests.System.Threading.Tasks
         public void WrapObjectDisposedExceptionCorrectly()
         {
             const string ObjectName = "AAAAAAAAAAAAAAAA";
-            using (var x = new Task(() => { throw new ObjectDisposedException(ObjectName); }))
+            var x = new Task(() => { throw new ObjectDisposedException(ObjectName); });
+            try
             {
-                try
-                {
-                    x.Start();
-                    x.Wait();
-                }
-                catch (Exception ex)
-                {
-                    Assert.IsTrue(ex is AggregateException);
-                    Assert.IsTrue(ex.InnerException is ObjectDisposedException);
-                    Assert.IsTrue(((ObjectDisposedException)ex.InnerException).ObjectName == ObjectName);
-                }
+                x.Start();
+                x.Wait();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is AggregateException);
+                Assert.IsTrue(ex.InnerException is ObjectDisposedException);
+                Assert.IsTrue(((ObjectDisposedException)ex.InnerException).ObjectName == ObjectName);
             }
         }
 
@@ -118,10 +107,12 @@ namespace MonoTests.System.Threading.Tasks
             {
             }
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             protected CustomException(SerializationInfo info, StreamingContext context)
                 : base(info, context)
             {
             }
+#endif
         }
 
         [Serializable]
@@ -141,10 +132,12 @@ namespace MonoTests.System.Threading.Tasks
             {
             }
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             protected OtherException(SerializationInfo info, StreamingContext context)
                 : base(info, context)
             {
             }
+#endif
         }
     }
 

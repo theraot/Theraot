@@ -125,5 +125,12 @@ namespace System.Collections.Generic
         }
 
 #endif
+
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+        public static IEqualityComparer<HashSet<T>> CreateSetComparer()
+        {
+            return HashSetEqualityComparer<T>.Instance;
+        }
+#endif
     }
 }

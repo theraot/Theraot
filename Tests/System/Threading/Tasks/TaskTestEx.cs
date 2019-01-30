@@ -14,10 +14,8 @@ namespace MonoTests.System.Threading.Tasks
             Assert.Throws<InvalidOperationException>(() =>
             {
                 var cancellation = new CancellationToken(true);
-                using (var task = new Task(() => { }, cancellation))
-                {
-                    task.Start();
-                }
+                var task = new Task(() => { }, cancellation);
+                task.Start();
             });
         }
     }

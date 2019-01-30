@@ -75,7 +75,7 @@ namespace System.Collections.Generic
 
         public static IEqualityComparer<HashSet<T>> CreateSetComparer()
         {
-            return HashSetEqualityComparer.Instance;
+            return HashSetEqualityComparer<T>.Instance;
         }
 
         public bool Add(T item)
@@ -447,53 +447,6 @@ namespace System.Collections.Generic
 
                 Current = _enumerator.Current.Key;
                 _enumerator.Reset();
-            }
-        }
-
-        private sealed class HashSetEqualityComparer : IEqualityComparer<HashSet<T>>
-        {
-            public static readonly HashSetEqualityComparer Instance = new HashSetEqualityComparer();
-
-            public bool Equals(HashSet<T> x, HashSet<T> y)
-            {
-                if (x == y)
-                {
-                    return true;
-                }
-
-                if (x == null || y == null || x.Count != y.Count)
-                {
-                    return false;
-                }
-
-                foreach (var item in x)
-                {
-                    if (!y.Contains(item))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
-            public int GetHashCode(HashSet<T> obj)
-            {
-                try
-                {
-                    var comparer = EqualityComparer<T>.Default;
-                    var hash = 0;
-                    foreach (var item in obj)
-                    {
-                        hash ^= comparer.GetHashCode(item);
-                    }
-
-                    return hash;
-                }
-                catch (NullReferenceException)
-                {
-                    return 0;
-                }
             }
         }
     }

@@ -281,8 +281,14 @@ namespace MonoTests.System.Threading
 
                         t1.Start();
                         t2.Start();
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
                         t1.Join(500);
                         t2.Join(500);
+#else
+                        t1.Join();
+                        t2.Join();
+#endif
                     }
                 }
             }, 500);
@@ -691,10 +697,10 @@ namespace MonoTests.System.Threading
         public void Ctor_Timeout()
         {
             var called = 0;
-            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(20)))
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)))
             {
                 cts.Token.Register(() => called++);
-                Thread.Sleep(50);
+                Thread.Sleep(100);
                 Assert.AreEqual(1, called, "#1");
             }
         }

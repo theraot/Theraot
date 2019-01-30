@@ -46,9 +46,19 @@ namespace Tests.Theraot.Collections
                 )
             )
             {
+#if TARGETS_NET
                 Thread.MemoryBarrier();
+                Thread.MemoryBarrier();
+#else
+                Interlocked.MemoryBarrier();
+                Interlocked.MemoryBarrier();
+#endif
                 source.Show();
+#if TARGETS_NET
                 Thread.MemoryBarrier();
+#else
+                Interlocked.MemoryBarrier();
+#endif
                 while (progressor.TryTake(out var item))
                 {
                     Assert.AreEqual(0, Volatile.Read(ref data[2]));

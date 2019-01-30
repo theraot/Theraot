@@ -158,7 +158,9 @@ namespace Tests.Theraot.Threading.Needles
                     Thread.Sleep(0);
                 }
                 Assert.AreEqual(10, Volatile.Read(ref count[2]));
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
                 handle.Close();
+#endif
             }
         }
 

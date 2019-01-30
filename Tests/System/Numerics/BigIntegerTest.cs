@@ -897,7 +897,9 @@ namespace MonoTests.System.Numerics
         {
             var a = new BigInteger(99);
             Assert.AreEqual(-1, a.CompareTo(100), "#1");
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             Assert.AreEqual(1, a.CompareTo(null), "#2");
+#endif
         }
 
         [Test]
@@ -1045,12 +1047,14 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(0m, (decimal)new BigInteger(), "#8");
         }
 
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
         [SetCulture("pt-BR")]
         [Test]
         public void Parse_pt_BR()
         {
             Parse();
         }
+#endif
 
         [Test]
         public void Parse()
@@ -1229,6 +1233,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(Val2, (int)v);
         }
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
         [Test]
         public void TryParseWeirdCulture()
         {
@@ -1257,6 +1262,7 @@ namespace MonoTests.System.Numerics
                 Thread.CurrentThread.CurrentCulture = old;
             }
         }
+#endif
 
         [Test]
         public void CompareToLongToWithBigNumber()

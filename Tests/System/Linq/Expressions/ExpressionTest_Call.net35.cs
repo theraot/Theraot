@@ -370,6 +370,7 @@ namespace MonoTests.System.Linq.Expressions
             lambda();
         }
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
         [Test]
         [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=319190
         public void Connect319190()
@@ -381,6 +382,7 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.IsTrue(lambda());
         }
+#endif
 
         public static int Truc()
         {

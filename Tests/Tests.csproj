@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp2.0;netcoreapp2.1;</TargetFrameworks>
-    <!--netcoreapp1.0;netcoreapp1.1;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6-->
+    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;</TargetFrameworks>
+    <!--netstandard1.0;netstandard1.1;netstandard1.2;-->
     <ProjectGuid>{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -58,6 +58,9 @@
     <DefineConstants>NET47</DefineConstants>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+    <DefineConstants>TARGETS_NET;GREATERTHAN_NET47;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net47'">
     <DefineConstants>TARGETS_NET;LESSTHAN_NET48;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
@@ -79,6 +82,9 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'net20'">
     <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;LESSTHAN_NET30</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <DefineConstants>TARGETS_NETSTANDARD;GREATERTHAN_NETSTANDARD16;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
     <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;GREATERTHAN_NETSTANDARD15;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
   </PropertyGroup>
@@ -99,6 +105,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;LESSTHAN_NETSTANDARD11</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
+    <DefineConstants>TARGETS_NETCORE;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
     <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
@@ -132,10 +141,16 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -156,10 +171,16 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -180,10 +201,16 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -204,10 +231,28 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -227,10 +272,28 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -250,10 +313,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -273,10 +351,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -296,14 +389,32 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
-      <Version>4.5.2</Version>
+      <Version>4.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Parallel">
+      <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
@@ -316,10 +427,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -339,10 +465,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -362,10 +503,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -385,10 +541,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -408,10 +579,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -431,10 +617,25 @@
     <PackageReference Include="System.Dynamic.Runtime">
       <Version>4.3.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Linq.Expressions">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.TypeExtensions">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.Numerics">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
@@ -450,14 +651,19 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net20'">
+  <ItemGroup Condition=" ('$(TargetFramework)' != 'net20') AND ('$(TargetFramework)' != 'netstandard1.3') ">
     <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <PackageReference Include="NUnit" Version="3.8.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
   </ItemGroup>
 
   <!-- NUnit 3.11 is the last NUnit supporting .NET 2.0 -->
   <!-- See: https://github.com/nunit/nunit/issues/3070 -->
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net20'">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net20' ">
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
   </ItemGroup>

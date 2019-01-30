@@ -22,6 +22,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(first.ToString("C3", CultureInfo.InvariantCulture), "¤123,456,789.000");
             Assert.AreEqual(first.ToString("c3", CultureInfo.InvariantCulture), "¤123,456,789.000");
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             Assert.AreEqual(first.ToString("C3", CultureInfo.GetCultureInfo("en-US")), "$123,456,789.000");
             Assert.AreEqual(first.ToString("c3", CultureInfo.GetCultureInfo("en-US")), "$123,456,789.000");
 
@@ -30,6 +31,7 @@ namespace MonoTests.System.Numerics
 
             Assert.AreEqual(first.ToString("C3", CultureInfo.GetCultureInfo("ja-JP")), "¥123,456,789.000");
             Assert.AreEqual(first.ToString("c3", CultureInfo.GetCultureInfo("ja-JP")), "¥123,456,789.000");
+#endif
 
             var second = BigInteger.Parse("100000090000000010", CultureInfo.InvariantCulture);
             Assert.AreEqual(second.ToString("C", CultureInfo.InvariantCulture), "¤100,000,090,000,000,010.00");
@@ -37,6 +39,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(second.ToString("C3", CultureInfo.InvariantCulture), "¤100,000,090,000,000,010.000");
             Assert.AreEqual(second.ToString("c3", CultureInfo.InvariantCulture), "¤100,000,090,000,000,010.000");
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             Assert.AreEqual(second.ToString("C3", CultureInfo.GetCultureInfo("en-US")), "$100,000,090,000,000,010.000");
             Assert.AreEqual(second.ToString("c3", CultureInfo.GetCultureInfo("en-US")), "$100,000,090,000,000,010.000");
 
@@ -45,6 +48,7 @@ namespace MonoTests.System.Numerics
 
             Assert.AreEqual(second.ToString("C3", CultureInfo.GetCultureInfo("ja-JP")), "¥100,000,090,000,000,010.000");
             Assert.AreEqual(second.ToString("c3", CultureInfo.GetCultureInfo("ja-JP")), "¥100,000,090,000,000,010.000");
+#endif
         }
 
         [Test]
@@ -70,31 +74,31 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(first.ToString("E", CultureInfo.InvariantCulture), "1.234568E+008");
             Assert.AreEqual(first.ToString("e", CultureInfo.InvariantCulture), "1.234568e+008");
 
-            Debug.Print("BigInteger Format First ok");
+            Debug.WriteLine("BigInteger Format First ok");
 
             var second = BigInteger.Parse("10000009000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(second.ToString("E", CultureInfo.InvariantCulture), "1.000001E+016");
             Assert.AreEqual(second.ToString("e", CultureInfo.InvariantCulture), "1.000001e+016");
 
-            Debug.Print("BigInteger Format Second ok");
+            Debug.WriteLine("BigInteger Format Second ok");
 
             var third = BigInteger.Parse("10000005000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(third.ToString("E", CultureInfo.InvariantCulture), "1.000001E+016");
             Assert.AreEqual(third.ToString("e", CultureInfo.InvariantCulture), "1.000001e+016");
 
-            Debug.Print("BigInteger Format Third ok");
+            Debug.WriteLine("BigInteger Format Third ok");
 
             var fourth = BigInteger.Parse("10000004000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(fourth.ToString("E", CultureInfo.InvariantCulture), "1.000000E+016");
             Assert.AreEqual(fourth.ToString("e", CultureInfo.InvariantCulture), "1.000000e+016");
 
-            Debug.Print("BigInteger Format Fourth ok");
+            Debug.WriteLine("BigInteger Format Fourth ok");
 
             var fifth = BigInteger.Parse("10000095000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(fifth.ToString("E", CultureInfo.InvariantCulture), "1.000010E+016");
             Assert.AreEqual(fifth.ToString("e", CultureInfo.InvariantCulture), "1.000010e+016");
 
-            Debug.Print("BigInteger Format Fifth ok");
+            Debug.WriteLine("BigInteger Format Fifth ok");
         }
 
         [Test]
@@ -104,31 +108,31 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(first.ToString("E2", CultureInfo.InvariantCulture), "1.23E+008");
             Assert.AreEqual(first.ToString("e2", CultureInfo.InvariantCulture), "1.23e+008");
 
-            Debug.Print("BigInteger Format First ok");
+            Debug.WriteLine("BigInteger Format First ok");
 
             var second = BigInteger.Parse("10000009000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(second.ToString("E20", CultureInfo.InvariantCulture), "1.00000090000000010000E+016");
             Assert.AreEqual(second.ToString("e20", CultureInfo.InvariantCulture), "1.00000090000000010000e+016");
 
-            Debug.Print("BigInteger Format Second ok");
+            Debug.WriteLine("BigInteger Format Second ok");
 
             var third = BigInteger.Parse("10000005000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(third.ToString("E17", CultureInfo.InvariantCulture), "1.00000050000000010E+016");
             Assert.AreEqual(third.ToString("e17", CultureInfo.InvariantCulture), "1.00000050000000010e+016");
 
-            Debug.Print("BigInteger Format Third ok");
+            Debug.WriteLine("BigInteger Format Third ok");
 
             var fourth = BigInteger.Parse("10000004000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(fourth.ToString("E16", CultureInfo.InvariantCulture), "1.0000004000000001E+016");
             Assert.AreEqual(fourth.ToString("e16", CultureInfo.InvariantCulture), "1.0000004000000001e+016");
 
-            Debug.Print("BigInteger Format Fourth ok");
+            Debug.WriteLine("BigInteger Format Fourth ok");
 
             var fifth = BigInteger.Parse("10000095000000001", CultureInfo.InvariantCulture);
             Assert.AreEqual(fifth.ToString("E15", CultureInfo.InvariantCulture), "1.000009500000000E+016");
             Assert.AreEqual(fifth.ToString("e15", CultureInfo.InvariantCulture), "1.000009500000000e+016");
 
-            Debug.Print("BigInteger Format Fifth ok");
+            Debug.WriteLine("BigInteger Format Fifth ok");
         }
 
         [Test]
@@ -138,31 +142,31 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(first.ToString("E", CultureInfo.InvariantCulture), "1.234568E+026");
             Assert.AreEqual(first.ToString("e", CultureInfo.InvariantCulture), "1.234568e+026");
 
-            Debug.Print("BigInteger Format First ok");
+            Debug.WriteLine("BigInteger Format First ok");
 
             var second = BigInteger.Parse("10000009000000001000000000000000000", CultureInfo.InvariantCulture);
             Assert.AreEqual(second.ToString("E", CultureInfo.InvariantCulture), "1.000001E+034");
             Assert.AreEqual(second.ToString("e", CultureInfo.InvariantCulture), "1.000001e+034");
 
-            Debug.Print("BigInteger Format Second ok");
+            Debug.WriteLine("BigInteger Format Second ok");
 
             var third = BigInteger.Parse("1000000900000000100000000000000000000000", CultureInfo.InvariantCulture);
             Assert.AreEqual(third.ToString("E", CultureInfo.InvariantCulture), "1.000001E+039");
             Assert.AreEqual(third.ToString("e", CultureInfo.InvariantCulture), "1.000001e+039");
 
-            Debug.Print("BigInteger Format Third ok");
+            Debug.WriteLine("BigInteger Format Third ok");
 
             var fourth = BigInteger.Parse("1000000900000000100000000000000000085161812", CultureInfo.InvariantCulture);
             Assert.AreEqual(fourth.ToString("E", CultureInfo.InvariantCulture), "1.000001E+042");
             Assert.AreEqual(fourth.ToString("e", CultureInfo.InvariantCulture), "1.000001e+042");
 
-            Debug.Print("BigInteger Format Fourth ok");
+            Debug.WriteLine("BigInteger Format Fourth ok");
 
             var fifth = BigInteger.Parse("54161605161103534310841634874874621308503540", CultureInfo.InvariantCulture);
             Assert.AreEqual(fifth.ToString("E", CultureInfo.InvariantCulture), "5.416161E+043");
             Assert.AreEqual(fifth.ToString("e", CultureInfo.InvariantCulture), "5.416161e+043");
 
-            Debug.Print("BigInteger Format Fifth ok");
+            Debug.WriteLine("BigInteger Format Fifth ok");
         }
 
         [Test]
@@ -739,18 +743,18 @@ namespace MonoTests.System.Numerics
             var result = a.ToByteArray();
             if (!result.SequenceEqual(array))
             {
-                Debug.Print(" - Failed - ");
-                Debug.Print(msg);
-                Debug.Print("Value = " + a.ToString());
-                Debug.Print("ToByteArray returned:");
+                Debug.WriteLine(" - Failed - ");
+                Debug.WriteLine(msg);
+                Debug.WriteLine("Value = " + a.ToString());
+                Debug.WriteLine("ToByteArray returned:");
                 foreach (var item in result)
                 {
-                    Debug.Print(item.ToString());
+                    Debug.WriteLine(item.ToString());
                 }
-                Debug.Print("Expected:");
+                Debug.WriteLine("Expected:");
                 foreach (var item in array)
                 {
-                    Debug.Print(item.ToString());
+                    Debug.WriteLine(item.ToString());
                 }
                 Assert.Fail();
             }

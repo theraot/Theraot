@@ -37,7 +37,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye" },
-                    c => c[0].ToString(CultureInfo.InvariantCulture)
+                    c => c[0].ToString()
                 );
 
             Assert.IsTrue(lookup.Contains("h"));
@@ -51,7 +51,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye", "42" },
-                    c => char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture)
+                    c => char.IsNumber(c[0]) ? null : c[0].ToString()
                 );
 
             Assert.IsTrue(lookup.Contains("h"));
@@ -65,7 +65,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye", "42" },
-                    c => char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture)
+                    c => char.IsNumber(c[0]) ? null : c[0].ToString()
                 );
 
             Assert.IsTrue(lookup.Any(g => g.Key == "h"));
@@ -79,7 +79,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye" },
-                    c => c[0].ToString(CultureInfo.InvariantCulture)
+                    c => c[0].ToString()
                 );
 
             Assert.IsTrue(lookup.Any(g => g.Key == "h"));
@@ -109,7 +109,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye" },
-                    c => c[0].ToString(CultureInfo.InvariantCulture)
+                    c => c[0].ToString()
                 );
 
             Assert.AreEqual(2, lookup.Count);
