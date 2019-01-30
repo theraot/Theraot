@@ -697,10 +697,10 @@ namespace MonoTests.System.Threading
         public void Ctor_Timeout()
         {
             var called = 0;
-            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(20)))
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)))
             {
                 cts.Token.Register(() => called++);
-                Thread.Sleep(50);
+                Thread.Sleep(100);
                 Assert.AreEqual(1, called, "#1");
             }
         }

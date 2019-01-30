@@ -509,18 +509,24 @@ namespace MonoTests.System.Threading.Tasks
             bool? isBg = null;
             var t = new Task(() =>
             {
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
                 isTp = Thread.CurrentThread.IsThreadPoolThread;
+#endif
                 isBg = Thread.CurrentThread.IsBackground;
             });
             t.Start();
             Assert.IsTrue(t.Wait(5000), "#0");
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
             Assert.IsTrue((bool)isTp, "#1");
+#endif
             Assert.IsTrue((bool)isBg, "#2");
             isTp = null;
             isBg = null;
             var t2 = new Task(() =>
             {
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
                 isTp = Thread.CurrentThread.IsThreadPoolThread;
+#endif
                 isBg = Thread.CurrentThread.IsBackground;
             }, TaskCreationOptions.LongRunning);
             t2.Start();
@@ -2548,13 +2554,17 @@ namespace MonoTests.System.Threading.Tasks
                                 {
                                     Task.Factory.StartNew(() =>
                                     {
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
                                         ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
+#endif
                                         mre.Set();
                                     });
                                 }, CancellationToken.None, TaskCreationOptions.HideScheduler, scheduler);
 
                 Assert.IsTrue(mre.Wait(10000), "#1");
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
                 Assert.IsTrue(ranOnDefault, "#2");
+#endif
             }
         }
 
