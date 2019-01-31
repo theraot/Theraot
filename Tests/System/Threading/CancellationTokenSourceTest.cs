@@ -451,7 +451,7 @@ namespace MonoTests.System.Threading
                 });
                 source.Cancel();
 
-#if TARGETS_NETCORE
+#if GREATERTHAN_NETCOREAPP20
                 // Apparently callback execution order changed in .NET Core
                 // This would also mean we should not rely on it for portable code
                 Assert.IsTrue(unregister);
