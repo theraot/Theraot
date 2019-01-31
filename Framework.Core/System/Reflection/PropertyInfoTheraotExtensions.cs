@@ -14,7 +14,7 @@ namespace System.Reflection
     }
 }
 
-#elif LESSTHAN_NETSTANDARD15
+#elif LESSTHAN_NETSTANDARD13
 
 using System.Runtime.CompilerServices;
 

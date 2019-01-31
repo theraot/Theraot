@@ -509,7 +509,7 @@ namespace MonoTests.System.Threading.Tasks
             bool? isBg = null;
             var t = new Task(() =>
             {
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
                 isTp = Thread.CurrentThread.IsThreadPoolThread;
 #endif
                 isBg = Thread.CurrentThread.IsBackground;
@@ -524,7 +524,7 @@ namespace MonoTests.System.Threading.Tasks
             isBg = null;
             var t2 = new Task(() =>
             {
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
                 isTp = Thread.CurrentThread.IsThreadPoolThread;
 #endif
                 isBg = Thread.CurrentThread.IsBackground;

@@ -209,6 +209,7 @@ namespace TestRunner
             No.Op(typeof(Timer));
             No.Op(typeof(SemaphoreSlim));
             No.Op(typeof(BindingFlags));
+            No.Op(typeof(WaitCallback));
         }
 
         public static void StringMethodAvailability()
