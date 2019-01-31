@@ -870,20 +870,19 @@ namespace System.Threading.Tasks
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(cancellationToken, taskCompletionSource);
                 result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, null, -1, true);
-                cancellationToken.Register(result.Unregister);
+                cancellationToken.Register(() => result.Unregister());
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(cancellationToken, taskCompletionSource);
                 result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, null, millisecondsTimeout, true);
-                cancellationToken.Register(result.Unregister);
+                cancellationToken.Register(() => result.Unregister());
             }
 
             private void CallbackWithoutTimeout(object state, bool timeOut)
             {
-                Unregister();
-                if (_cancellationToken.IsCancellationRequested)
+                if (Unregister())
                 {
                     _taskCompletionSource.TrySetCanceled();
                     return;
@@ -894,10 +893,8 @@ namespace System.Threading.Tasks
 
             private void CallbackWithTimeout(object state, bool timeOut)
             {
-                Unregister();
-                if (_cancellationToken.IsCancellationRequested)
+                if (Unregister())
                 {
-                    _taskCompletionSource.TrySetCanceled();
                     return;
                 }
 
@@ -910,9 +907,17 @@ namespace System.Threading.Tasks
                 _taskCompletionSource.TrySetResult(true);
             }
 
-            private void Unregister()
+            private bool Unregister()
             {
                 Volatile.Read(ref _registeredWaitHandle[0]).Unregister(null);
+                if (!_cancellationToken.IsCancellationRequested)
+                {
+                    return false;
+                }
+
+                _taskCompletionSource.TrySetCanceled();
+                return true;
+
             }
         }
 
