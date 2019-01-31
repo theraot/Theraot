@@ -341,6 +341,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")]
         public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute()
         {
             var continuationRan = false;
@@ -360,7 +361,7 @@ namespace MonoTests.System.Threading.Tasks
 
             var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
             testTask.RunSynchronously();
-            onErrorTask.Wait(100);
+            onErrorTask.Wait(200);
             Assert.IsTrue(continuationRan);
         }
 
