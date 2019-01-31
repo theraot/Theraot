@@ -1501,7 +1501,7 @@ namespace Theraot.Collections
                 if (sourceCollection.Count == 0)
                 {
                     onEmpty();
-                    return ArrayEx.Empty<T>();
+                    return Enumerable.Empty<T>();
                 }
             }
             return NullOrEmptyCheckedExtracted(source, onEmpty);
@@ -1526,7 +1526,7 @@ namespace Theraot.Collections
                 if (sourceCollection.Count == 0)
                 {
                     onEmpty();
-                    return ArrayEx.Empty<T>();
+                    return Enumerable.Empty<T>();
                 }
                 onNotEmpty();
             }
@@ -1556,7 +1556,7 @@ namespace Theraot.Collections
                 if (sourceCollection.Count == 0)
                 {
                     onEmpty();
-                    return ArrayEx.Empty<T>();
+                    return Enumerable.Empty<T>();
                 }
                 onKnownSize(sourceCollection.Count);
             }
@@ -2624,14 +2624,14 @@ namespace Theraot.Collections
             if (source == null)
             {
                 onEmpty();
-                return ArrayEx.Empty<T>();
+                return Enumerable.Empty<T>();
             }
             if (source is ICollection<T> sourceCollection)
             {
                 if (sourceCollection.Count == 0)
                 {
                     onEmpty();
-                    return ArrayEx.Empty<T>();
+                    return Enumerable.Empty<T>();
                 }
             }
             return NullOrEmptyCheckedExtracted(source, onEmpty);
@@ -2646,7 +2646,7 @@ namespace Theraot.Collections
             if (source == null)
             {
                 onEmpty();
-                return ArrayEx.Empty<T>();
+                return Enumerable.Empty<T>();
             }
             if (onNotEmpty == null)
             {
@@ -2657,7 +2657,7 @@ namespace Theraot.Collections
                 if (sourceCollection.Count == 0)
                 {
                     onEmpty();
-                    return ArrayEx.Empty<T>();
+                    return Enumerable.Empty<T>();
                 }
                 onNotEmpty();
             }
@@ -2673,7 +2673,7 @@ namespace Theraot.Collections
             if (source == null)
             {
                 onEmpty();
-                return ArrayEx.Empty<T>();
+                return Enumerable.Empty<T>();
             }
             if (onUnknownSize == null)
             {
@@ -2688,7 +2688,7 @@ namespace Theraot.Collections
                 if (sourceCollection.Count == 0)
                 {
                     onEmpty();
-                    return ArrayEx.Empty<T>();
+                    return Enumerable.Empty<T>();
                 }
                 onKnownSize(sourceCollection.Count);
             }

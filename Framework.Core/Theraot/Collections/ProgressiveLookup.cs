@@ -78,7 +78,7 @@ namespace Theraot.Collections
                     return grouping;
                 }
 
-                return ArrayEx.Empty<T>();
+                return Enumerable.Empty<T>();
             }
         }
 

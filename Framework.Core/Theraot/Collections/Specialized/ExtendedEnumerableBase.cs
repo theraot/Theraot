@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Theraot.Collections.Specialized
 {
@@ -12,8 +13,8 @@ namespace Theraot.Collections.Specialized
     {
         protected ExtendedEnumerableBase(IEnumerable<T> target, IEnumerable<T> append)
         {
-            Target = target ?? ArrayEx.Empty<T>();
-            Append = append ?? ArrayEx.Empty<T>();
+            Target = target ?? Enumerable.Empty<T>();
+            Append = append ?? Enumerable.Empty<T>();
         }
 
         protected IEnumerable<T> Append { get; }

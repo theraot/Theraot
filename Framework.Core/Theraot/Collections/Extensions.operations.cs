@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
 
@@ -155,7 +156,7 @@ namespace Theraot.Collections
             switch (source)
             {
                 case null:
-                    return new List<T>(ArrayEx.Empty<T>());
+                    return new List<T>(Enumerable.Empty<T>());
 
                 case T[] array:
                     return new List<T>(array);
@@ -164,7 +165,7 @@ namespace Theraot.Collections
                     return list;
 
                 case ICollection<T> collection when collection.Count == 0:
-                    return new List<T>(ArrayEx.Empty<T>());
+                    return new List<T>(Enumerable.Empty<T>());
 
                 case ICollection<T> collection:
                     var result = new T[collection.Count];
