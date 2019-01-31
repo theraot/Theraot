@@ -48,7 +48,14 @@ namespace MonoTests.System.Threading
         public void Constructor_Defaults()
         {
             Assert.IsFalse(_mre.IsSet, "#1");
+#if TARGETS_NETCORE
+            // .NET Core has different defaults
+            // This means we should not rely on these defaults for portable code
+            // Specify the SpinCount in the constructor if you need it
+            Assert.AreEqual(35, _mre.SpinCount, "#2");
+#else
             Assert.AreEqual(10, _mre.SpinCount, "#2");
+#endif
         }
 
         [Test]

@@ -88,8 +88,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             var c = Expression.Convert(
                 Expression.Constant(null, typeof(Bar)), typeof(Foo));
-
+#if TARGETS_NETCORE
+            // Expressions in .NET Core also output the types
+            Assert.AreEqual("Convert(null, Foo)", c.ToString());
+#else
             Assert.AreEqual("Convert(null)", c.ToString());
+#endif
         }
 
         [Test]
@@ -112,7 +116,12 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.Constant(2, typeof(int)), typeof(long));
 
             Assert.AreEqual(ExpressionType.ConvertChecked, c.NodeType);
+#if TARGETS_NETCORE
+            // Expressions in .NET Core also output the types
+            Assert.AreEqual("ConvertChecked(2, Int64)", c.ToString());
+#else
             Assert.AreEqual("ConvertChecked(2)", c.ToString());
+#endif
         }
 
         [Test]
