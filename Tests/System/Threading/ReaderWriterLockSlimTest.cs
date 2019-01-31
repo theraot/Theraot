@@ -446,6 +446,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("LongRunning")]
         public void EnterReadLock_MultiRead() // TODO: Review
         {
             using (var v = new ReaderWriterLockSlim())
