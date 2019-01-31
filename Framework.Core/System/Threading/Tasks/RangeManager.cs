@@ -30,7 +30,6 @@ namespace System.Threading.Tasks
         internal int CurrentIndexRangeToAssign;
         internal readonly IndexRange[] IndexRanges;
         internal readonly long Step;
-        internal readonly bool Use32BitCurrentIndex;
 
         /// <summary>
         /// Initializes a RangeManager with the given loop parameters, and the desired number of outer ranges
@@ -76,7 +75,6 @@ namespace System.Threading.Tasks
             // Convert to signed so the rest of the logic works.
             // Should be fine so long as uRangeSize < Int64.MaxValue, which we guaranteed by setting #workers >= 2.
             var nRangeSize = (long)uRangeSize;
-            Use32BitCurrentIndex = IntPtr.Size == 4 && nRangeSize <= int.MaxValue;
 
             // allocate the array of index ranges
             IndexRanges = new IndexRange[nNumRanges];
