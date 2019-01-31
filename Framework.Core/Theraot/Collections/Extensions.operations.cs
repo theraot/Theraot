@@ -150,6 +150,33 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static List<T> AsList<T>(this IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    return new List<T>(ArrayEx.Empty<T>());
+
+                case T[] array:
+                    return new List<T>(array);
+
+                case List<T> list:
+                    return list;
+
+                case ICollection<T> collection when collection.Count == 0:
+                    return new List<T>(ArrayEx.Empty<T>());
+
+                case ICollection<T> collection:
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return new List<T>(result);
+
+                default:
+                    return new List<T>(source);
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static IEnumerable<T> AsUnaryIEnumerable<T>(this T source)
         {
             yield return source;
