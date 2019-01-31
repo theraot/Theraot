@@ -2503,55 +2503,53 @@ namespace System.Threading.Tasks
             // Before getting started, do a quick peek to see if we have been canceled already
             parallelOptions.CancellationToken.ThrowIfCancellationRequested();
 
-            // If it's an array, we can use a fast-path that uses ldelems in the IL.
-            if (source is TSource[] sourceAsArray)
+            switch (source)
             {
-                return ForEachWorker
-                (
-                    sourceAsArray,
-                    parallelOptions,
-                    body,
-                    bodyWithState,
-                    bodyWithStateAndIndex,
-                    bodyWithStateAndLocal,
-                    bodyWithEverything,
-                    localInit,
-                    localFinally
-                );
+                case TSource[] sourceAsArray:
+                    // If it's an array, we can use a fast-path that uses ldelems in the IL.
+                    return ForEachWorker
+                    (
+                        sourceAsArray,
+                        parallelOptions,
+                        body,
+                        bodyWithState,
+                        bodyWithStateAndIndex,
+                        bodyWithStateAndLocal,
+                        bodyWithEverything,
+                        localInit,
+                        localFinally
+                    );
+                case IList<TSource> sourceAsList:
+                    // If we can index into the list, we can use a faster code-path that doesn't result in
+                    // contention for the single, shared enumerator object.
+                    return ForEachWorker
+                    (
+                        sourceAsList,
+                        parallelOptions,
+                        body,
+                        bodyWithState,
+                        bodyWithStateAndIndex,
+                        bodyWithStateAndLocal,
+                        bodyWithEverything,
+                        localInit,
+                        localFinally
+                    );
+                default:
+                    // This is an honest-to-goodness IEnumerable.  Wrap it in a Partitioner and defer to our
+                    // ForEach(Partitioner) logic.
+                    return PartitionerForEachWorker
+                    (
+                        Partitioner.Create(source),
+                        parallelOptions,
+                        body,
+                        bodyWithState,
+                        bodyWithStateAndIndex,
+                        bodyWithStateAndLocal,
+                        bodyWithEverything,
+                        localInit,
+                        localFinally
+                    );
             }
-
-            // If we can index into the list, we can use a faster code-path that doesn't result in
-            // contention for the single, shared enumerator object.
-            if (source is IList<TSource> sourceAsList)
-            {
-                return ForEachWorker
-                (
-                    sourceAsList,
-                    parallelOptions,
-                    body,
-                    bodyWithState,
-                    bodyWithStateAndIndex,
-                    bodyWithStateAndLocal,
-                    bodyWithEverything,
-                    localInit,
-                    localFinally
-                );
-            }
-
-            // This is an honest-to-goodness IEnumerable.  Wrap it in a Partitioner and defer to our
-            // ForEach(Partitioner) logic.
-            return PartitionerForEachWorker
-            (
-                Partitioner.Create(source),
-                parallelOptions,
-                body,
-                bodyWithState,
-                bodyWithStateAndIndex,
-                bodyWithStateAndLocal,
-                bodyWithEverything,
-                localInit,
-                localFinally
-            );
         }
 
         /// <summary>
