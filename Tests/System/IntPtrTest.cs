@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD10
+
+using NUnit.Framework;
 using System;
 using System.Runtime.InteropServices;
 using Theraot.Core;
@@ -53,3 +55,5 @@ namespace Tests.System
         }
     }
 }
+
+#endif
