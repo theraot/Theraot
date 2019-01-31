@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 extern alias nunitlinq;
 #endif
 
@@ -57,7 +57,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetFuncTypeArgEmpty()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.GetFuncType(Type.EmptyTypes); });
+            Assert.Throws<ArgumentException>(() => { Expression.GetFuncType(ArrayEx.Empty<Type>());});
         }
 
         [Test]
@@ -237,7 +237,7 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Lambda<Func<int, string>>(
                 Expression.Invoke(
                     Expression.Lambda<Func<string>>(
-                        Expression.Call(i, typeof(int).GetMethod("ToString", Type.EmptyTypes)))), i).Compile();
+                        Expression.Call(i, typeof(int).GetMethod("ToString", ArrayEx.Empty<Type>())))), i).Compile();
 
             Assert.AreEqual("42", l(42));
         }

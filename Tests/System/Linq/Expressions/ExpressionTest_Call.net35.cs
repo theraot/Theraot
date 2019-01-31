@@ -181,7 +181,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(string), "p");
             var lambda = Expression.Lambda<Func<string, string>>(
                 Expression.Call(
-                    p, typeof(string).GetMethod("ToString", Type.EmptyTypes)),
+                    p, typeof(string).GetMethod("ToString", ArrayEx.Empty<Type>())),
                 p);
 
             var ts = lambda.Compile();
@@ -489,7 +489,7 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.Call(
                     value,
                     "GetValueOrDefault",
-                    Type.EmptyTypes,
+                    ArrayEx.Empty<Type>(),
                     defaultParameter),
                 value,
                 defaultParameter).Compile();

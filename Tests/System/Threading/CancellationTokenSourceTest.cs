@@ -441,12 +441,12 @@ namespace MonoTests.System.Threading
             {
                 var token = source.Token;
 
-                Console.WriteLine("Test1");
+                Debug.WriteLine("Test1");
                 var reg = token.Register(() => unregister = true);
                 token.Register(reg.Dispose);
                 token.Register(() =>
                 {
-                    Console.WriteLine("Gnyah");
+                    Debug.WriteLine("Gnyah");
                     token.Register(() => register = true);
                 });
                 source.Cancel();

@@ -37,49 +37,13 @@ using System.Threading;
 namespace MonoTests.System.Runtime.CompilerServices
 {
     [TestFixture]
-    public class ConditionalWeakTableTest
+    public partial class ConditionalWeakTableTest
     {
         private static readonly object _lock1 = new object();
 
         private static readonly object _lock2 = new object();
 
         private static int _reachable;
-
-        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public static void PromotedCwtPointingToYoungStuff()
-        {
-            var cwt = new ConditionalWeakTable<object, object>();
-
-            var handles = FillTable3(cwt);
-
-            GC.Collect(0);
-
-            /*Be 100% sure it will be on the young gen*/
-
-            /*cwt array now will be on old gen*/
-            ForceMinor();
-            ForceMinor();
-            ForceMinor();
-
-            //Make them non pinned
-            MakeObjMovable(handles);
-
-            GC.Collect(0);
-
-            //Force a minor GC - this should cause
-            ForceMinor();
-            ForceMinor();
-            ForceMinor();
-            ForceMinor();
-
-            GC.Collect(0);
-
-            Assert.IsTrue(cwt.TryGetValue(handles[0].Target, out _), "#1");
-            Assert.IsTrue(cwt.TryGetValue(handles[1].Target, out _), "#2");
-
-            GC.Collect();
-            GC.KeepAlive(cwt.GetHashCode());
-        }
 
         [Test]
         public void Add()
@@ -144,40 +108,6 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
 
             Assert.AreEqual(20, _reachable, "#1");
-        }
-
-        [Test]
-        public void GetOrCreateValue()
-        {
-            var cwt = new ConditionalWeakTable<object, object>();
-
-            try
-            {
-                cwt.GetOrCreateValue(null);
-                Assert.Fail("#0");
-            }
-            catch (ArgumentNullException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            object key = "foo";
-            var val = cwt.GetOrCreateValue(key);
-            Assert.IsTrue(val != null, "#2");
-            Assert.AreEqual(typeof(object), val.GetType(), "#3");
-
-            Assert.AreEqual(val, cwt.GetOrCreateValue(key), "#4");
-
-            var cwt2 = new ConditionalWeakTable<object, string>();
-            try
-            {
-                cwt2.GetOrCreateValue(key);
-                Assert.Fail("#5");
-            }
-            catch (MissingMethodException ex)
-            {
-                Theraot.No.Op(ex);
-            }
         }
 
         [Test]
@@ -447,27 +377,6 @@ namespace MonoTests.System.Runtime.CompilerServices
             keys.Add(new WeakReference(c));
         }
 
-        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        private static List<GCHandle> FillTable3(ConditionalWeakTable<object, object> cwt)
-        {
-            var handles = new List<GCHandle>();
-
-            var a = (object)10;
-            var b = (object)20;
-            var k1 = (object)30;
-            var k2 = (object)40;
-
-            handles.Add(GCHandle.Alloc(a, GCHandleType.Pinned));
-            handles.Add(GCHandle.Alloc(b, GCHandleType.Pinned));
-            handles.Add(GCHandle.Alloc(k1, GCHandleType.Pinned));
-            handles.Add(GCHandle.Alloc(k2, GCHandleType.Pinned));
-
-            cwt.Add(a, k1);
-            cwt.Add(b, k2);
-
-            return handles;
-        }
-
         private static void FillWithFinalizable(ConditionalWeakTable<object, object> cwt)
         {
             var a = new object();
@@ -542,17 +451,6 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        private static void MakeObjMovable(List<GCHandle> handles)
-        {
-            for (var i = 0; i < handles.Count; ++i)
-            {
-                var o = handles[i].Target;
-                handles[i].Free();
-                handles[i] = GCHandle.Alloc(o, GCHandleType.Normal);
-            }
-        }
-
         public class FinalizableLink
         {
             // The sole purpose of this object is to keep a reference to another object, so it is fine to not use it.
@@ -622,5 +520,114 @@ namespace MonoTests.System.Runtime.CompilerServices
                 return "value-" + Foo.ToString();
             }
         }
+    }
+
+    public partial class ConditionalWeakTableTest
+    {
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
+
+        [Test]
+        public void GetOrCreateValue()
+        {
+            var cwt = new ConditionalWeakTable<object, object>();
+
+            try
+            {
+                cwt.GetOrCreateValue(null);
+                Assert.Fail("#0");
+            }
+            catch (ArgumentNullException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            object key = "foo";
+            var val = cwt.GetOrCreateValue(key);
+            Assert.IsTrue(val != null, "#2");
+            Assert.AreEqual(typeof(object), val.GetType(), "#3");
+
+            Assert.AreEqual(val, cwt.GetOrCreateValue(key), "#4");
+
+            var cwt2 = new ConditionalWeakTable<object, string>();
+            try
+            {
+                cwt2.GetOrCreateValue(key);
+                Assert.Fail("#5");
+            }
+            catch (MissingMethodException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        public static void PromotedCwtPointingToYoungStuff()
+        {
+            var cwt = new ConditionalWeakTable<object, object>();
+
+            var handles = FillTable3(cwt);
+
+            GC.Collect(0);
+
+            /*Be 100% sure it will be on the young gen*/
+
+            /*cwt array now will be on old gen*/
+            ForceMinor();
+            ForceMinor();
+            ForceMinor();
+
+            //Make them non pinned
+            MakeObjMovable(handles);
+
+            GC.Collect(0);
+
+            //Force a minor GC - this should cause
+            ForceMinor();
+            ForceMinor();
+            ForceMinor();
+            ForceMinor();
+
+            GC.Collect(0);
+
+            Assert.IsTrue(cwt.TryGetValue(handles[0].Target, out _), "#1");
+            Assert.IsTrue(cwt.TryGetValue(handles[1].Target, out _), "#2");
+
+            GC.Collect();
+            GC.KeepAlive(cwt.GetHashCode());
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        private static List<GCHandle> FillTable3(ConditionalWeakTable<object, object> cwt)
+        {
+            var handles = new List<GCHandle>();
+
+            var a = (object)10;
+            var b = (object)20;
+            var k1 = (object)30;
+            var k2 = (object)40;
+
+            handles.Add(GCHandle.Alloc(a, GCHandleType.Pinned));
+            handles.Add(GCHandle.Alloc(b, GCHandleType.Pinned));
+            handles.Add(GCHandle.Alloc(k1, GCHandleType.Pinned));
+            handles.Add(GCHandle.Alloc(k2, GCHandleType.Pinned));
+
+            cwt.Add(a, k1);
+            cwt.Add(b, k2);
+
+            return handles;
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        private static void MakeObjMovable(List<GCHandle> handles)
+        {
+            for (var i = 0; i < handles.Count; ++i)
+            {
+                var o = handles[i].Target;
+                handles[i].Free();
+                handles[i] = GCHandle.Alloc(o, GCHandleType.Normal);
+            }
+        }
+
+#endif
     }
 }

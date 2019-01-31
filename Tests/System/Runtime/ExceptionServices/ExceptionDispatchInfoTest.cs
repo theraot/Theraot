@@ -28,6 +28,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
@@ -169,9 +170,9 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception e2)
             {
-                Console.WriteLine("");
-                Console.WriteLine("");
-                Console.WriteLine(e2.StackTrace);
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine(e2.StackTrace);
                 e = e2;
             }
 
@@ -183,9 +184,9 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception e3)
             {
-                Console.WriteLine("");
-                Console.WriteLine("");
-                Console.WriteLine(e3.StackTrace);
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine(e3.StackTrace);
                 edi = ExceptionDispatchInfo.Capture(e3);
             }
 
@@ -195,9 +196,9 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine("");
-                Console.WriteLine("");
-                Console.WriteLine(ex.StackTrace);
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine(ex.StackTrace);
                 var split = ex.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 Assert.AreEqual(7, split.Length, "#1");
                 Assert.IsTrue(split[1].Contains("---"), "#2");

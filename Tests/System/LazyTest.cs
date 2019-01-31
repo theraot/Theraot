@@ -28,6 +28,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace MonoTests.System
@@ -165,7 +166,7 @@ namespace MonoTests.System
             (
                 () =>
                 {
-                    Console.WriteLine(c[0].Value);
+                    Debug.WriteLine(c[0].Value);
                     return null;
                 }
             );

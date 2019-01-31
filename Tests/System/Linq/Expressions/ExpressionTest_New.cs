@@ -124,7 +124,7 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual("new Bar()", n.ToString());
 
-            n = Expression.New(typeof(Bar).GetConstructor(Type.EmptyTypes));
+            n = Expression.New(typeof(Bar).GetConstructor(ArrayEx.Empty<Type>()));
 
             Assert.AreEqual("new Bar()", n.ToString());
         }

@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
+
+using NUnit.Framework;
 using System;
 using System.IO;
 using Theraot;
@@ -235,3 +237,5 @@ namespace Tests.Theraot.Threading
         }
     }
 }
+
+#endif

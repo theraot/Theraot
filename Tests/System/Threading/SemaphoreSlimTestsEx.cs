@@ -2,6 +2,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -117,13 +118,13 @@ namespace Tests.System.Threading
                 sb.Append(entry);
             }
             var str = sb.ToString();
-            Console.WriteLine(str);
+            Debug.WriteLine(str);
             // Make sure that threads have not sneaked in the ordering
             // If this has happen, it would have been a false failure
             // So, we will retry until it does not happen
             if ((new Regex("c[bc]+d")).IsMatch(str))
             {
-                Console.WriteLine("...");
+                Debug.WriteLine("...");
                 goto retry;
             }
             var regexSuccess = string.Format("a{{{0}}}x(b{{0,{1}}}(cd)+)+z", maxTasks, maxCount);
@@ -133,7 +134,7 @@ namespace Tests.System.Threading
             var first = true;
             foreach (var entry in logCount)
             {
-                Console.WriteLine(entry.ToString());
+                Debug.WriteLine(entry.ToString());
                 if (entry == -1)
                 {
                     first = true;

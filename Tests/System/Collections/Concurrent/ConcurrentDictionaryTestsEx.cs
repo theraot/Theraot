@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Theraot.Collections;
@@ -71,7 +72,7 @@ namespace MonoTests.System.Collections.Concurrent
             {
                 foreach (var item in array)
                 {
-                    Console.WriteLine(item);
+                    Debug.WriteLine(item);
                 }
                 Assert.Fail();
             }
@@ -168,7 +169,7 @@ namespace MonoTests.System.Collections.Concurrent
             {
                 foreach (var item in array)
                 {
-                    Console.WriteLine(item);
+                    Debug.WriteLine(item);
                 }
                 Assert.Fail();
             }

@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
@@ -13,46 +14,46 @@ namespace MonoTests.System
         {
             // No Cache Publication Only
             var a = new Lazy<DefectiveCtorClass>(false);
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run (total 1)
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run (total 2)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run (total 1)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run (total 2)
             Assert.AreEqual(3, a.Value.Prop); // Did run once (total 3)
 
             // No Cache Execution and Publication
             a = new Lazy<DefectiveCtorClass>(true);
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 4)
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 5)
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 6)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 4)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 5)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 6)
             Assert.AreEqual(7, a.Value.Prop); // Did run once (total 7)
 
             // Cache Execution and Publication
             a = new Lazy<DefectiveCtorClass>(() => new DefectiveCtorClass(), LazyThreadSafetyMode.ExecutionAndPublication);
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value)); // Did run once (total 8)
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value));
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value));
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value)); // Did run once (total 8)
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value));
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value));
 
             // No Cache Publication Only
             a = new Lazy<DefectiveCtorClass>(() => new DefectiveCtorClass(), LazyThreadSafetyMode.PublicationOnly);
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value)); // Did run once (total 9)
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value)); // Did run once (total 10)
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value)); // Did run once (total 9)
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value)); // Did run once (total 10)
             Assert.AreEqual(11, a.Value.Prop); // Did run once (total 11)
 
             // Cache None
             a = new Lazy<DefectiveCtorClass>(() => new DefectiveCtorClass(), LazyThreadSafetyMode.None);
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value)); // Did run once (total 12)
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value));
-            Assert.Throws(typeof(InvalidOperationException), () => Console.WriteLine(a.Value));
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value)); // Did run once (total 12)
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value));
+            Assert.Throws(typeof(InvalidOperationException), () => Debug.WriteLine(a.Value));
 
             // No Cache Publication Only (Again)
             a = new Lazy<DefectiveCtorClass>(false);
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 13)
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 14)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 13)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 14)
             Assert.AreEqual(15, a.Value.Prop); // Did run once (total 15)
 
             // No Cache Execution and Publication (Again)
             a = new Lazy<DefectiveCtorClass>(true);
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 16)
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 17)
-            Assert.Throws(typeof(TargetInvocationException), () => Console.WriteLine(a.Value)); // Did run once (total 18)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 16)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 17)
+            Assert.Throws(typeof(TargetInvocationException), () => Debug.WriteLine(a.Value)); // Did run once (total 18)
             Assert.AreEqual(19, a.Value.Prop); // Did run once (total 23)
         }
 

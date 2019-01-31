@@ -26,6 +26,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -133,7 +134,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Console.WriteLine(_completionSource.Task.Result);
+                Debug.WriteLine(_completionSource.Task.Result);
                 Assert.Fail("#6");
             }
             catch (AggregateException e)

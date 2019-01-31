@@ -34,6 +34,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Theraot.Collections;
 
@@ -617,7 +618,7 @@ namespace MonoTests.System.Linq
         {
             if (b)
             {
-                Console.WriteLine(data.Contains(0));
+                Debug.WriteLine(data.Contains(0));
                 const object O = null;
                 GC.KeepAlive(O.ToString());
                 Assert.IsFalse(true);
@@ -635,7 +636,7 @@ namespace MonoTests.System.Linq
             Assert.IsTrue(data.Contains(2));
             for (var i = 0; i < 50; ++i)
             {
-                Console.WriteLine(icoll.Contains(0));//Console.WriteLine (data.Contains (0));
+                Debug.WriteLine(icoll.Contains(0));//Console.WriteLine (data.Contains (0));
             }
 
             IsFalse(data.Contains(0), data);

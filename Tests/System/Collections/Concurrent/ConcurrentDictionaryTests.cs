@@ -31,6 +31,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -320,7 +321,7 @@ namespace MonoTests.System.Collections.Concurrent
             var class2 = new DumbClass(2);
 
             Assert.IsTrue(classMap.TryAdd(class1, "class1"), "class 1");
-            Console.WriteLine();
+            Debug.WriteLine(string.Empty);
             Assert.IsTrue(classMap.TryAdd(class2, "class2"), "class 2");
 
             Assert.AreEqual("class1", classMap[class1], "class 1 check");
