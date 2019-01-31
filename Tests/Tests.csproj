@@ -1,8 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;</TargetFrameworks>
-    <!--netstandard1.0;netstandard1.1;netstandard1.2;-->
+    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;</TargetFrameworks>
     <ProjectGuid>{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -99,12 +98,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.2'">
     <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    <PackageTargetFallback>portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
     <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD10</DefineConstants>
+    <PackageTargetFallback>portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;LESSTHAN_NETSTANDARD11</DefineConstants>
+    <PackageTargetFallback>portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
     <DefineConstants>TARGETS_NETCORE;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
