@@ -34,6 +34,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Theraot.Collections;
 
 namespace MonoTests.System.Linq
 {
@@ -132,7 +133,7 @@ namespace MonoTests.System.Linq
 
             var l = lookup["notexist"];
             Assert.IsNotNull(l);
-            var values = (int[])l;
+            var values = l.AsArray();
             Assert.AreEqual(values.Length, 0);
         }
     }

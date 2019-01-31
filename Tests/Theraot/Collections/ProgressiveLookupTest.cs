@@ -27,7 +27,7 @@ namespace Tests.Theraot.Collections
 
             var l = lookup["notExist"];
             Assert.IsNotNull(l);
-            var values = (int[])l;
+            var values = l.AsArray();
             Assert.AreEqual(values.Length, 0);
         }
 
