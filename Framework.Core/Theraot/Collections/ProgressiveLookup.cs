@@ -73,12 +73,7 @@ namespace Theraot.Collections
         {
             get
             {
-                if (TryGetValue(key, out var grouping))
-                {
-                    return grouping;
-                }
-
-                return Enumerable.Empty<T>();
+                return TryGetValue(key, out var grouping) ? grouping : Enumerable.Empty<T>();
             }
         }
 

@@ -1,9 +1,12 @@
 ﻿// Needed for NET40
 
 using System;
-using System.Linq;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
+
+#if GREATERTHAN_NETSTANDARD12
+using System.Linq;
+#endif
 
 namespace Theraot.Reflection
 {
