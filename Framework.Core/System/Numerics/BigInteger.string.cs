@@ -1,7 +1,7 @@
-﻿#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Theraot.Collections.Specialized;
@@ -426,7 +426,7 @@ namespace System.Numerics
                         continue;
                     }
 
-                    var currencyGroupSeparator = info.CurrencyGroupSeparator;
+                    var currencyGroupSeparator = info.CurrencyGroupSeparator.ToCharArray();
                     // Testing on .NET show that combining currency and number group separators is allowed
                     // But not if the currency symbol has already appeared
                     reader.SkipWhile(currencyGroupSeparator);
@@ -435,7 +435,7 @@ namespace System.Numerics
                         continue;
                     }
 
-                    var numberGroupSeparator = info.NumberGroupSeparator;
+                    var numberGroupSeparator = info.NumberGroupSeparator.ToCharArray();
                     reader.SkipWhile(numberGroupSeparator);
                 }
 
@@ -738,7 +738,7 @@ namespace System.Numerics
                 }
                 else
                 {
-                    Contract.Assert(c >= 'a' && c <= 'f');
+                    Debug.Assert(c >= 'a' && c <= 'f');
                     b = (byte)(c + (10 - 'a'));
                 }
 

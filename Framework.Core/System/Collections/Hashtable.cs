@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections
 {
@@ -328,7 +329,7 @@ namespace System.Collections
             //We can't do anything with the keys and values until the entire graph has been deserialized
             //and we have a reasonable estimate that GetHashCode is not going to fail.  For the time being,
             //we'll just cache this.  The graph is not valid until OnDeserialization has been called.
-            HashHelpers.SerializationInfoTable.Add(this, info);
+            HashHelpers.SerializationInfoTable.AddNew(this, info);
         }
 
         // Returns the number of associations in this hashtable.
@@ -1668,15 +1669,15 @@ namespace System.Collections
             187751, 225307, 270371, 324449, 389357, 467237, 560689, 672827, 807403, 968897, 1162687, 1395263,
             1674319, 2009191, 2411033, 2893249, 3471899, 4166287, 4999559, 5999471, 7199369 };
 
-        private static ConditionalWeakTable<object, SerializationInfo> _serializationInfoTable;
+        private static WeakDictionary<object, SerializationInfo> _serializationInfoTable;
 
-        public static ConditionalWeakTable<object, SerializationInfo> SerializationInfoTable
+        public static WeakDictionary<object, SerializationInfo> SerializationInfoTable
         {
             get
             {
                 if (_serializationInfoTable == null)
                 {
-                    Interlocked.CompareExchange(ref _serializationInfoTable, new ConditionalWeakTable<object, SerializationInfo>(), null);
+                    Interlocked.CompareExchange(ref _serializationInfoTable, new WeakDictionary<object, SerializationInfo>(), null);
                 }
 
                 return _serializationInfoTable;

@@ -11,8 +11,10 @@ using System.Diagnostics.Contracts;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
@@ -199,6 +201,8 @@ namespace TestRunner
             No.Op(typeof(ParallelOptions));
             No.Op(typeof(ContractFailedEventArgs));
             No.Op(typeof(ApplicationException));
+            No.Op(typeof(ConditionalWeakTable<object, object>));
+            No.Op(typeof(BigInteger));
         }
 
         public static void StringMethodAvailability()

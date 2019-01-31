@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 using System.Text;
 

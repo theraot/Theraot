@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40 || LESSTHAN_NETSTANDARD13
+﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
