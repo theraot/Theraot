@@ -10,7 +10,7 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
-    <Version>3.0.0-beta2</Version>
+    <Version>3.0.0-beta3</Version>
     <Authors>Theraot</Authors>
     <Company>Theraot</Company>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -24,8 +24,8 @@
     <RepositoryUrl>https://github.com/theraot/Theraot/</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <CodeAnalysisRuleSet>rules.ruleset</CodeAnalysisRuleSet>
-    <AssemblyVersion>3.0.0.1</AssemblyVersion>
-    <FileVersion>3.0.0.1</FileVersion>
+    <AssemblyVersion>3.0.0.2</AssemblyVersion>
+    <FileVersion>3.0.0.2</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugSymbols>true</DebugSymbols>
