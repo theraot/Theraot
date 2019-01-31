@@ -1,4 +1,4 @@
-﻿#pragma warning disable CC0037 // Remove commented code.
+#pragma warning disable CC0037 // Remove commented code.
 
 using System;
 using System.Collections;
@@ -203,6 +203,10 @@ namespace TestRunner
             No.Op(typeof(ApplicationException));
             No.Op(typeof(ConditionalWeakTable<object, object>));
             No.Op(typeof(BigInteger));
+            No.Op(typeof(Thread));
+            No.Op(typeof(ThreadPool));
+            No.Op(typeof(Timer));
+            No.Op(typeof(SemaphoreSlim));
         }
 
         public static void StringMethodAvailability()

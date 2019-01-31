@@ -1,4 +1,4 @@
-﻿#if TARGETS_NETSTANDARD
+﻿#if LESSTHAN_NETSTANDARD13
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
 

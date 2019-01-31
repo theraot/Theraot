@@ -1,4 +1,4 @@
-﻿#if TARGETS_NETSTANDARD
+﻿#if LESSTHAN_NETSTANDARD13
 namespace System.Threading
 {
     [Runtime.InteropServices.ComVisible(false)]
