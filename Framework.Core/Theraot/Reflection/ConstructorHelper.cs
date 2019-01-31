@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Linq;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
 
@@ -48,7 +49,7 @@ namespace Theraot.Reflection
             }
 
             var typeArguments = ArrayEx.Empty<Type>();
-            var constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+            var constructorInfo = GetConstructor(typeof(TReturn), typeArguments);
             if (constructorInfo == null)
             {
                 _constructorCache[type] = null;
@@ -64,6 +65,33 @@ namespace Theraot.Reflection
             _constructorCache[type] = (Func<TReturn>)Create;
             create = Create;
             return true;
+        }
+
+        private static ConstructorInfo GetConstructor(Type type, Type[] typeArguments)
+        {
+#if GREATERTHAN_NETSTANDARD12
+            foreach (var constructorInfo in type.GetTypeInfo().DeclaredConstructors)
+            {
+                var parameters = constructorInfo.GetParameters();
+                if (parameters.Length != typeArguments.Length)
+                {
+                    continue;
+                }
+
+                var ok = !typeArguments.Where((t, index) => parameters[index].GetType() != t).Any();
+
+                if (!ok)
+                {
+                    continue;
+                }
+
+                return constructorInfo;
+            }
+
+            return null;
+#else
+            return type.GetConstructor(typeArguments);
+#endif
         }
     }
 }

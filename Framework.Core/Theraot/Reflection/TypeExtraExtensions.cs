@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Reflection
@@ -151,31 +152,6 @@ namespace Theraot.Reflection
             }
 
             return methodInfo.IsConstructor ? methodInfo.DeclaringType : ((MethodInfo)methodInfo).ReturnType;
-        }
-
-        public static MethodInfo GetStaticMethod(this Type type, string name)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            return type.GetStaticMethodInternal(name);
-        }
-
-        public static MethodInfo[] GetStaticMethods(this Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            return type.GetStaticMethodsInternal();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -511,15 +487,9 @@ namespace Theraot.Reflection
             return type.IsByRef ? type.GetElementType() : type;
         }
 
-        internal static MethodInfo GetStaticMethodInternal(this Type type, string name)
-        {
-            // Don't use BindingFlags.Static
-            return Array.Find(type.GetMethods(), method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic);
-        }
-
         internal static MethodInfo[] GetStaticMethodsInternal(this Type type)
         {
-            var methods = type.GetMethods();
+            var methods = type.GetRuntimeMethods().AsArray();
             var list = new List<MethodInfo>(methods.Length);
             list.AddRange(methods.Where(method => method.IsStatic));
             return list.ToArray();
@@ -583,7 +553,7 @@ namespace Theraot.Reflection
                 return false;
             }
 
-            if (type.GetFields().Any(field => !IsBinaryPortableExtracted(field.FieldType)))
+            if (type.GetRuntimeFields().Any(field => !IsBinaryPortableExtracted(field.FieldType)))
             {
                 return false;
             }
@@ -600,7 +570,7 @@ namespace Theraot.Reflection
                        && type != typeof(bool);
             }
 
-            return info.IsValueType && type.GetFields().All(field => IsBlittableExtracted(field.FieldType));
+            return info.IsValueType && type.GetRuntimeFields().All(field => IsBlittableExtracted(field.FieldType));
         }
 
         private static bool GetValueTypeRecursiveResult(Type type)
@@ -611,7 +581,7 @@ namespace Theraot.Reflection
                 return true;
             }
 
-            return info.IsValueType && type.GetFields().All(field => IsValueTypeRecursiveExtracted(field.FieldType));
+            return info.IsValueType && type.GetRuntimeFields().All(field => IsValueTypeRecursiveExtracted(field.FieldType));
         }
 
         private static bool IsBinaryPortableExtracted(Type type)

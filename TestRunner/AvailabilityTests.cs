@@ -1,4 +1,4 @@
-#pragma warning disable CC0037 // Remove commented code.
+﻿#pragma warning disable CC0037 // Remove commented code.
 
 using System;
 using System.Collections;
@@ -12,6 +12,7 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
@@ -207,6 +208,7 @@ namespace TestRunner
             No.Op(typeof(ThreadPool));
             No.Op(typeof(Timer));
             No.Op(typeof(SemaphoreSlim));
+            No.Op(typeof(BindingFlags));
         }
 
         public static void StringMethodAvailability()

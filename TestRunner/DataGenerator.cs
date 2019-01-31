@@ -44,7 +44,7 @@ namespace TestRunner
         {
             var result = new Dictionary<Type, SortedDictionary<Type, Delegate>>();
             var generators = TypeDiscoverer.GetAllTypes()
-                .SelectMany(t => t.GetTypeInfo().GetMethods())
+                .SelectMany(t => t.GetMethods())
                 .Where(IsGeneratorMethod)
                 .Select(GetGenerators);
             var typeComparer = new CustomComparer<Type>

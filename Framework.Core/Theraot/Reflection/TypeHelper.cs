@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace Theraot.Reflection
@@ -22,7 +23,7 @@ namespace Theraot.Reflection
                 throw new ArgumentException("Not a delegate.");
             }
 
-            var methodInfo = delegateType.GetMethod("Invoke");
+            var methodInfo = delegateType.GetRuntimeMethods().FirstOrDefault(info => string.Equals(info.Name, "Invoke", StringComparison.Ordinal));
             if (methodInfo == null)
             {
                 throw new ArgumentException("Not a delegate.");

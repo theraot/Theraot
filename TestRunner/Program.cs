@@ -131,7 +131,7 @@ namespace TestRunner
                 .Where(type => type.HasAttribute<TestFixtureAttribute>())
                 .Select(type => new TestFixture(type))
                 .Where(testFixture => testFixture.TestFixtureAttribute != null && !testFixture.Categories.Overlaps(ignoredCategories))
-                .SelectMany(testFixture => testFixture.Type.GetTypeInfo().GetMethods())
+                .SelectMany(testFixture => testFixture.Type.GetMethods())
                 .Select(method => new TestMethod(method))
                 .Where(testMethod => testMethod.TestAttribute != null && !testMethod.Categories.Overlaps(ignoredCategories))
                 .Select(testMethod => new Test(testMethod));
@@ -249,7 +249,7 @@ namespace TestRunner
 
                 capturedResult = null;
                 task.Wait();
-                return task.GetType().GetTypeInfo().GetProperty("Result")?.GetValue(task, ArrayEx.Empty<object>());
+                return task.GetType().GetProperty("Result")?.GetValue(task, ArrayEx.Empty<object>());
             }
         }
 
