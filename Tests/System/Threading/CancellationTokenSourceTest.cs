@@ -700,6 +700,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("RaceCondition")]
         public void Ctor_Timeout()
         {
             var called = 0;

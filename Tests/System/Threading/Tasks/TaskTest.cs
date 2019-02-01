@@ -1111,6 +1111,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")]
         public void WaitAnyTest()
         {
             ParallelTestHelper.Repeat
