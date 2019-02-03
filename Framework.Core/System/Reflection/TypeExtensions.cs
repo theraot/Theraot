@@ -338,7 +338,7 @@ namespace System.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Type[] GetInterfaces(this Type type)
         {
-            throw new NotSupportedException();
+            return type.GetTypeInfo().ImplementedInterfaces.ToArray();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
