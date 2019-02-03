@@ -43,7 +43,7 @@ namespace Theraot.Core
             if (indice == 1)
             {
 #>
-            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
+            _comparer = comparer ?? EqualityComparer<T>.Default;
 <#
             }
             else
@@ -51,7 +51,7 @@ namespace Theraot.Core
                 for (var subindice = 1; subindice <= indice; subindice++)
                 {
 #>
-            _comparer<#=subindice#> = comparer<#=subindice#> ?? EqualityComparerHelper<T<#=subindice#>>.Default;
+            _comparer<#=subindice#> = comparer<#=subindice#> ?? EqualityComparer<T<#=subindice#>>.Default;
 <#
                 }
             }
@@ -64,7 +64,7 @@ namespace Theraot.Core
             if (indice == 1)
             {
 #>
-            _comparer = EqualityComparerHelper<T>.Default;
+            _comparer = EqualityComparer<T>.Default;
 <#
             }
             else
@@ -72,7 +72,7 @@ namespace Theraot.Core
                 for (var subindice = 1; subindice <= indice; subindice++)
                 {
 #>
-            _comparer<#=subindice#> = EqualityComparerHelper<T<#=subindice#>>.Default;
+            _comparer<#=subindice#> = EqualityComparer<T<#=subindice#>>.Default;
 <#
                 }
             }

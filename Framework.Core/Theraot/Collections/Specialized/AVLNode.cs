@@ -352,7 +352,7 @@ namespace Theraot.Collections.Specialized
         }
 
 #if FAT
-        private static AVLNode GetOrAddExtracted(ref AVLNode node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, AVLNode created, out bool isNew)
+        private static AVLNode<TKey, TValue> GetOrAddExtracted(ref AVLNode<TKey, TValue> node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, AVLNode<TKey, TValue> created, out bool isNew)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -370,7 +370,7 @@ namespace Theraot.Collections.Specialized
             {
                 if (created == null)
                 {
-                    created = new AVLNode(key, factory(key));
+                    created = new AVLNode<TKey, TValue>(key, factory(key));
                     factory = null;
                 }
                 var found = Interlocked.CompareExchange(ref node, created, null);

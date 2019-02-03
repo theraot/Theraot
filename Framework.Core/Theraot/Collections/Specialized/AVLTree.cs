@@ -46,9 +46,9 @@ namespace Theraot.Collections.Specialized
         }
 
 #if FAT
-        public void Bound(TKey key, out AVLNode lower, out AVLNode upper)
+        public void Bound(TKey key, out AVLNode<TKey, TValue> lower, out AVLNode<TKey, TValue> upper)
         {
-            AVLNode.Bound(_root, key, _comparer, out lower, out upper);
+            AVLNode<TKey, TValue>.Bound(_root, key, _comparer, out lower, out upper);
         }
 #endif
 

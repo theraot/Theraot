@@ -1,8 +1,9 @@
 ﻿#if FAT
 using System;
+using System.Dynamic.Utils;
 using System.IO;
 using System.Reflection;
-
+using Theraot.Reflection;
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
 
 using System.Runtime.Serialization.Formatters.Binary;
@@ -214,7 +215,7 @@ namespace Theraot.Core
 
             public T Clone(T target)
             {
-                return (T)_method.Invoke(target, TypeHelper.EmptyObjects);
+                return (T)_method.Invoke(target, ArrayEx.Empty<object>());
             }
         }
 

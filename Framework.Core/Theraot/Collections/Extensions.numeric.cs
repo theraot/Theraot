@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Theraot.Core;
+using Theraot.Reflection;
 
 namespace Theraot.Collections
 {

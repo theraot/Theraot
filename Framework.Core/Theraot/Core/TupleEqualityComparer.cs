@@ -18,12 +18,12 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T> comparer)
         {
-            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
+            _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer = EqualityComparerHelper<T>.Default;
+            _comparer = EqualityComparer<T>.Default;
         }
 
         public static TupleEqualityComparer<T> Default { get; }
@@ -72,14 +72,14 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2)
         {
-            _comparer1 = comparer1 ?? EqualityComparerHelper<T1>.Default;
-            _comparer2 = comparer2 ?? EqualityComparerHelper<T2>.Default;
+            _comparer1 = comparer1 ?? EqualityComparer<T1>.Default;
+            _comparer2 = comparer2 ?? EqualityComparer<T2>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer1 = EqualityComparerHelper<T1>.Default;
-            _comparer2 = EqualityComparerHelper<T2>.Default;
+            _comparer1 = EqualityComparer<T1>.Default;
+            _comparer2 = EqualityComparer<T2>.Default;
         }
 
         public static TupleEqualityComparer<T1, T2> Default { get; }
@@ -131,16 +131,16 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3)
         {
-            _comparer1 = comparer1 ?? EqualityComparerHelper<T1>.Default;
-            _comparer2 = comparer2 ?? EqualityComparerHelper<T2>.Default;
-            _comparer3 = comparer3 ?? EqualityComparerHelper<T3>.Default;
+            _comparer1 = comparer1 ?? EqualityComparer<T1>.Default;
+            _comparer2 = comparer2 ?? EqualityComparer<T2>.Default;
+            _comparer3 = comparer3 ?? EqualityComparer<T3>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer1 = EqualityComparerHelper<T1>.Default;
-            _comparer2 = EqualityComparerHelper<T2>.Default;
-            _comparer3 = EqualityComparerHelper<T3>.Default;
+            _comparer1 = EqualityComparer<T1>.Default;
+            _comparer2 = EqualityComparer<T2>.Default;
+            _comparer3 = EqualityComparer<T3>.Default;
         }
 
         public static TupleEqualityComparer<T1, T2, T3> Default { get; }
@@ -195,18 +195,18 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4)
         {
-            _comparer1 = comparer1 ?? EqualityComparerHelper<T1>.Default;
-            _comparer2 = comparer2 ?? EqualityComparerHelper<T2>.Default;
-            _comparer3 = comparer3 ?? EqualityComparerHelper<T3>.Default;
-            _comparer4 = comparer4 ?? EqualityComparerHelper<T4>.Default;
+            _comparer1 = comparer1 ?? EqualityComparer<T1>.Default;
+            _comparer2 = comparer2 ?? EqualityComparer<T2>.Default;
+            _comparer3 = comparer3 ?? EqualityComparer<T3>.Default;
+            _comparer4 = comparer4 ?? EqualityComparer<T4>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer1 = EqualityComparerHelper<T1>.Default;
-            _comparer2 = EqualityComparerHelper<T2>.Default;
-            _comparer3 = EqualityComparerHelper<T3>.Default;
-            _comparer4 = EqualityComparerHelper<T4>.Default;
+            _comparer1 = EqualityComparer<T1>.Default;
+            _comparer2 = EqualityComparer<T2>.Default;
+            _comparer3 = EqualityComparer<T3>.Default;
+            _comparer4 = EqualityComparer<T4>.Default;
         }
 
         public static TupleEqualityComparer<T1, T2, T3, T4> Default { get; }
@@ -264,20 +264,20 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5)
         {
-            _comparer1 = comparer1 ?? EqualityComparerHelper<T1>.Default;
-            _comparer2 = comparer2 ?? EqualityComparerHelper<T2>.Default;
-            _comparer3 = comparer3 ?? EqualityComparerHelper<T3>.Default;
-            _comparer4 = comparer4 ?? EqualityComparerHelper<T4>.Default;
-            _comparer5 = comparer5 ?? EqualityComparerHelper<T5>.Default;
+            _comparer1 = comparer1 ?? EqualityComparer<T1>.Default;
+            _comparer2 = comparer2 ?? EqualityComparer<T2>.Default;
+            _comparer3 = comparer3 ?? EqualityComparer<T3>.Default;
+            _comparer4 = comparer4 ?? EqualityComparer<T4>.Default;
+            _comparer5 = comparer5 ?? EqualityComparer<T5>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer1 = EqualityComparerHelper<T1>.Default;
-            _comparer2 = EqualityComparerHelper<T2>.Default;
-            _comparer3 = EqualityComparerHelper<T3>.Default;
-            _comparer4 = EqualityComparerHelper<T4>.Default;
-            _comparer5 = EqualityComparerHelper<T5>.Default;
+            _comparer1 = EqualityComparer<T1>.Default;
+            _comparer2 = EqualityComparer<T2>.Default;
+            _comparer3 = EqualityComparer<T3>.Default;
+            _comparer4 = EqualityComparer<T4>.Default;
+            _comparer5 = EqualityComparer<T5>.Default;
         }
 
         public static TupleEqualityComparer<T1, T2, T3, T4, T5> Default { get; }
@@ -338,22 +338,22 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5, IEqualityComparer<T6> comparer6)
         {
-            _comparer1 = comparer1 ?? EqualityComparerHelper<T1>.Default;
-            _comparer2 = comparer2 ?? EqualityComparerHelper<T2>.Default;
-            _comparer3 = comparer3 ?? EqualityComparerHelper<T3>.Default;
-            _comparer4 = comparer4 ?? EqualityComparerHelper<T4>.Default;
-            _comparer5 = comparer5 ?? EqualityComparerHelper<T5>.Default;
-            _comparer6 = comparer6 ?? EqualityComparerHelper<T6>.Default;
+            _comparer1 = comparer1 ?? EqualityComparer<T1>.Default;
+            _comparer2 = comparer2 ?? EqualityComparer<T2>.Default;
+            _comparer3 = comparer3 ?? EqualityComparer<T3>.Default;
+            _comparer4 = comparer4 ?? EqualityComparer<T4>.Default;
+            _comparer5 = comparer5 ?? EqualityComparer<T5>.Default;
+            _comparer6 = comparer6 ?? EqualityComparer<T6>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer1 = EqualityComparerHelper<T1>.Default;
-            _comparer2 = EqualityComparerHelper<T2>.Default;
-            _comparer3 = EqualityComparerHelper<T3>.Default;
-            _comparer4 = EqualityComparerHelper<T4>.Default;
-            _comparer5 = EqualityComparerHelper<T5>.Default;
-            _comparer6 = EqualityComparerHelper<T6>.Default;
+            _comparer1 = EqualityComparer<T1>.Default;
+            _comparer2 = EqualityComparer<T2>.Default;
+            _comparer3 = EqualityComparer<T3>.Default;
+            _comparer4 = EqualityComparer<T4>.Default;
+            _comparer5 = EqualityComparer<T5>.Default;
+            _comparer6 = EqualityComparer<T6>.Default;
         }
 
         public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6> Default { get; }
@@ -417,24 +417,24 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5, IEqualityComparer<T6> comparer6, IEqualityComparer<T7> comparer7)
         {
-            _comparer1 = comparer1 ?? EqualityComparerHelper<T1>.Default;
-            _comparer2 = comparer2 ?? EqualityComparerHelper<T2>.Default;
-            _comparer3 = comparer3 ?? EqualityComparerHelper<T3>.Default;
-            _comparer4 = comparer4 ?? EqualityComparerHelper<T4>.Default;
-            _comparer5 = comparer5 ?? EqualityComparerHelper<T5>.Default;
-            _comparer6 = comparer6 ?? EqualityComparerHelper<T6>.Default;
-            _comparer7 = comparer7 ?? EqualityComparerHelper<T7>.Default;
+            _comparer1 = comparer1 ?? EqualityComparer<T1>.Default;
+            _comparer2 = comparer2 ?? EqualityComparer<T2>.Default;
+            _comparer3 = comparer3 ?? EqualityComparer<T3>.Default;
+            _comparer4 = comparer4 ?? EqualityComparer<T4>.Default;
+            _comparer5 = comparer5 ?? EqualityComparer<T5>.Default;
+            _comparer6 = comparer6 ?? EqualityComparer<T6>.Default;
+            _comparer7 = comparer7 ?? EqualityComparer<T7>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer1 = EqualityComparerHelper<T1>.Default;
-            _comparer2 = EqualityComparerHelper<T2>.Default;
-            _comparer3 = EqualityComparerHelper<T3>.Default;
-            _comparer4 = EqualityComparerHelper<T4>.Default;
-            _comparer5 = EqualityComparerHelper<T5>.Default;
-            _comparer6 = EqualityComparerHelper<T6>.Default;
-            _comparer7 = EqualityComparerHelper<T7>.Default;
+            _comparer1 = EqualityComparer<T1>.Default;
+            _comparer2 = EqualityComparer<T2>.Default;
+            _comparer3 = EqualityComparer<T3>.Default;
+            _comparer4 = EqualityComparer<T4>.Default;
+            _comparer5 = EqualityComparer<T5>.Default;
+            _comparer6 = EqualityComparer<T6>.Default;
+            _comparer7 = EqualityComparer<T7>.Default;
         }
 
         public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> Default { get; }
@@ -501,26 +501,26 @@ namespace Theraot.Core
 
         public TupleEqualityComparer(IEqualityComparer<T1> comparer1, IEqualityComparer<T2> comparer2, IEqualityComparer<T3> comparer3, IEqualityComparer<T4> comparer4, IEqualityComparer<T5> comparer5, IEqualityComparer<T6> comparer6, IEqualityComparer<T7> comparer7, IEqualityComparer<T8> comparer8)
         {
-            _comparer1 = comparer1 ?? EqualityComparerHelper<T1>.Default;
-            _comparer2 = comparer2 ?? EqualityComparerHelper<T2>.Default;
-            _comparer3 = comparer3 ?? EqualityComparerHelper<T3>.Default;
-            _comparer4 = comparer4 ?? EqualityComparerHelper<T4>.Default;
-            _comparer5 = comparer5 ?? EqualityComparerHelper<T5>.Default;
-            _comparer6 = comparer6 ?? EqualityComparerHelper<T6>.Default;
-            _comparer7 = comparer7 ?? EqualityComparerHelper<T7>.Default;
-            _comparer8 = comparer8 ?? EqualityComparerHelper<T8>.Default;
+            _comparer1 = comparer1 ?? EqualityComparer<T1>.Default;
+            _comparer2 = comparer2 ?? EqualityComparer<T2>.Default;
+            _comparer3 = comparer3 ?? EqualityComparer<T3>.Default;
+            _comparer4 = comparer4 ?? EqualityComparer<T4>.Default;
+            _comparer5 = comparer5 ?? EqualityComparer<T5>.Default;
+            _comparer6 = comparer6 ?? EqualityComparer<T6>.Default;
+            _comparer7 = comparer7 ?? EqualityComparer<T7>.Default;
+            _comparer8 = comparer8 ?? EqualityComparer<T8>.Default;
         }
 
         private TupleEqualityComparer()
         {
-            _comparer1 = EqualityComparerHelper<T1>.Default;
-            _comparer2 = EqualityComparerHelper<T2>.Default;
-            _comparer3 = EqualityComparerHelper<T3>.Default;
-            _comparer4 = EqualityComparerHelper<T4>.Default;
-            _comparer5 = EqualityComparerHelper<T5>.Default;
-            _comparer6 = EqualityComparerHelper<T6>.Default;
-            _comparer7 = EqualityComparerHelper<T7>.Default;
-            _comparer8 = EqualityComparerHelper<T8>.Default;
+            _comparer1 = EqualityComparer<T1>.Default;
+            _comparer2 = EqualityComparer<T2>.Default;
+            _comparer3 = EqualityComparer<T3>.Default;
+            _comparer4 = EqualityComparer<T4>.Default;
+            _comparer5 = EqualityComparer<T5>.Default;
+            _comparer6 = EqualityComparer<T6>.Default;
+            _comparer7 = EqualityComparer<T7>.Default;
+            _comparer8 = EqualityComparer<T8>.Default;
         }
 
         public static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> Default { get; }

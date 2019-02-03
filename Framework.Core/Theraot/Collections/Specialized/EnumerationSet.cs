@@ -24,12 +24,6 @@ namespace Theraot.Collections.Specialized
             // Empty
         }
 
-        public EnumerationSet(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> contains)
-            : base(wrapped, count, contains)
-        {
-            // Empty
-        }
-
         bool ISet<T>.Add(T item)
         {
             throw new NotSupportedException();

@@ -137,33 +137,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected override void Dispose(bool disposeManagedResources)
-        {
-            if (TakeDisposalExecution())
-            {
-                try
-                {
-                    if (disposeManagedResources)
-                    {
-                        // Empty
-                    }
-                }
-                finally
-                {
-                    try
-                    {
-                        ReleaseWaitHandle();
-                    }
-                    finally
-                    {
-                        _valueFactory = null;
-                    }
-                    base.Dispose(disposeManagedResources);
-                }
-            }
-        }
-
         protected virtual void Initialize(Action beforeInitialize)
         {
             if (beforeInitialize == null)

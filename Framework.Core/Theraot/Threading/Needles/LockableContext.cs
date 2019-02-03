@@ -29,7 +29,7 @@ namespace Theraot.Threading.Needles
 
         internal bool TryGetSlot(out LockableSlot slot)
         {
-            return _slots.Value.TryGetValue(Thread.CurrentThread, out slot) && slot != null;
+            return _slots.Value.TryGetValue(out slot) && slot != null;
         }
     }
 }

@@ -2736,19 +2736,6 @@ namespace Theraot.Collections
             }
         }
 
-        public static bool Remove<T>(this ICollection<T> source, T item, IEqualityComparer<T> comparer)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            comparer = comparer ?? EqualityComparer<T>.Default;
-            using (var enumerator = source.RemoveWhereEnumerable(input => comparer.Equals(input, item)).GetEnumerator())
-            {
-                return enumerator.MoveNext();
-            }
-        }
-
         public static void Reverse<T>(this IList<T> list, int index, int count)
         {
             if (list == null)
@@ -2800,7 +2787,8 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> SymmetricExceptWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)
         {
-            return source.AddRangeEnumerable(Where(other.Distinct(), input => !source.Remove(input)));
+            bool Predicate(T input) => !source.Remove(input);
+            return source.AddRangeEnumerable(other.Distinct().Where(Predicate));
         }
 
         public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T found)
