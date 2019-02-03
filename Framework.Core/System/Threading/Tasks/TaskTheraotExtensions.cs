@@ -1,4 +1,8 @@
 ﻿#if NET40
+
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+
 using System.Runtime.CompilerServices;
 using Theraot;
 

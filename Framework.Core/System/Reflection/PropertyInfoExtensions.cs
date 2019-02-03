@@ -10,22 +10,14 @@ namespace System.Reflection
         public static MethodInfo GetGetMethod(this PropertyInfo property)
         {
             var result = property.GetMethod;
-            if (result == null || !result.IsPublic)
-            {
-                return null;
-            }
-            return result;
+            return result?.IsPublic != true ? null : result;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MethodInfo GetSetMethod(this PropertyInfo property)
         {
             var result = property.SetMethod;
-            if (result == null || !result.IsPublic)
-            {
-                return null;
-            }
-            return result;
+            return result?.IsPublic != true ? null : result;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

@@ -917,7 +917,6 @@ namespace System.Threading.Tasks
 
                 _taskCompletionSource.TrySetCanceled();
                 return true;
-
             }
         }
 
