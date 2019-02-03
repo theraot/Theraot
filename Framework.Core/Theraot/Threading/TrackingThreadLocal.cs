@@ -110,7 +110,7 @@ namespace Theraot.Threading
         {
             return Value.ToString();
         }
-        
+
         private bool TryGetValue(UniqueId threadUniqueId, out T target)
         {
             if (Volatile.Read(ref _disposing) == 1)
