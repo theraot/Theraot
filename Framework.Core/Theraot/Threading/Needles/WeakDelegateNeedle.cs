@@ -25,8 +25,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                var value = Value;
-                return IsAlive ? value.GetMethodInfo() : null;
+                return TryGetValue(out var value) ? value.GetMethodInfo() : null;
             }
         }
 
@@ -43,14 +42,15 @@ namespace Theraot.Threading.Needles
                 return false;
             }
 
-            var value = Value;
-            if (!IsAlive)
+            bool isAlive = TryGetValue(out var value);
+            bool isOtherAlive = TryGetValue(out var otherValue);
+
+            if (!isAlive)
             {
-                return !other.IsAlive;
+                return !isOtherAlive;
             }
 
-            var otherValue = other.Value;
-            if (!other.IsAlive)
+            if (!isOtherAlive)
             {
                 return false;
             }
@@ -61,8 +61,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(MethodInfo method, object target)
         {
-            var value = Value;
-            return IsAlive && value.DelegateEquals(method, target);
+            return TryGetValue(out var value) && value.DelegateEquals(method, target);
         }
 
         public void Invoke(object[] args)
@@ -72,8 +71,7 @@ namespace Theraot.Threading.Needles
 
         public bool TryInvoke(object[] args)
         {
-            var value = Value;
-            if (!IsAlive)
+            if (!TryGetValue(out var value))
             {
                 return false;
             }
@@ -84,8 +82,7 @@ namespace Theraot.Threading.Needles
 
         public bool TryInvoke(object[] args, out object result)
         {
-            var value = Value;
-            if (IsAlive)
+            if (TryGetValue(out var value))
             {
                 result = value.DynamicInvoke(args);
                 return true;
@@ -97,8 +94,7 @@ namespace Theraot.Threading.Needles
 
         public bool TryInvoke<TResult>(object[] args, out TResult result)
         {
-            var value = Value;
-            if (IsAlive)
+            if (TryGetValue(out var value))
             {
                 result = (TResult)value.DynamicInvoke(args);
                 return true;
