@@ -57,7 +57,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 catch (Exception exception)
                 {
-                    onException(exception);
+                    onException?.Invoke(exception);
                 }
             }
         }
