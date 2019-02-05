@@ -6,12 +6,10 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [Serializable]
     [DebuggerNonUserCode]
     public class CacheNeedle<T> : WeakNeedle<T>, IEquatable<CacheNeedle<T>>
         where T : class
     {
-        [NonSerialized]
         private Thread _initializerThread;
 
         private Func<T> _valueFactory;
