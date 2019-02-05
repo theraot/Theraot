@@ -1,4 +1,7 @@
 ﻿#if FAT
+
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -55,8 +58,7 @@ namespace Theraot.Core
 
         public override int GetHashCode()
         {
-            return Minimum.GetHashCode() * 7
-                   + Maximum.GetHashCode();
+            return (Minimum.GetHashCode() * 7) + Maximum.GetHashCode();
         }
 
         public IEnumerable<T> Iterate(Func<T, T> increment)
@@ -70,6 +72,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(comparer));
             }
+
             return IterateIterator(increment, comparer, Minimum, ClosedMinimum, Maximum, ClosedMaximum);
         }
 
@@ -84,6 +87,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(comparer));
             }
+
             return ReverseIterateIterator(decrement, comparer, Minimum, ClosedMinimum, Maximum, ClosedMaximum);
         }
 
@@ -98,12 +102,14 @@ namespace Theraot.Core
             {
                 yield return minimum;
             }
+
             var item = increment.Invoke(minimum);
             while (comparer.Compare(maximum, item) > 0)
             {
                 yield return item;
                 item = increment.Invoke(item);
             }
+
             if (closedMaximum && comparer.Compare(maximum, item) == 0)
             {
                 yield return item;
@@ -116,12 +122,14 @@ namespace Theraot.Core
             {
                 yield return maximum;
             }
+
             var item = decrement.Invoke(maximum);
             while (comparer.Compare(minimum, item) < 0)
             {
                 yield return item;
                 item = decrement.Invoke(item);
             }
+
             if (closedMinimum && comparer.Compare(minimum, item) == 0)
             {
                 yield return item;

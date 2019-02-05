@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class LazyNeedle<T> : PromiseNeedle<T>, IEquatable<LazyNeedle<T>>
+    public class LazyNeedle<T> : PromiseNeedle<T>
     {
         [NonSerialized]
         private Thread _runnerThread;
@@ -68,21 +68,6 @@ namespace Theraot.Threading.Needles
         }
 
         protected Thread RunnerThread => _runnerThread;
-
-        public override bool Equals(object obj)
-        {
-            return obj is LazyNeedle<T> && base.Equals(obj);
-        }
-
-        public bool Equals(LazyNeedle<T> other)
-        {
-            return other != null && base.Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
 
         public virtual void Initialize()
         {

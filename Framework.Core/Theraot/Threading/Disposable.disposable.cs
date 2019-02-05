@@ -16,14 +16,8 @@ namespace Theraot.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         [DebuggerNonUserCode]

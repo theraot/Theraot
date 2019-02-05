@@ -98,7 +98,9 @@ namespace Theraot.Core
                 // Only called with ICloneable target
                 // No need to check for null - let it throw
                 // ReSharper disable once PossibleNullReferenceException
+#pragma warning disable RCS1202 // Avoid NullReferenceException.
                 return (T)(target as ICloneable).Clone();
+#pragma warning restore RCS1202 // Avoid NullReferenceException.
             }
         }
 

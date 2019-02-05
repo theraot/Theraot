@@ -63,7 +63,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             _needleFactory = needleFactory ?? throw new ArgumentNullException(nameof(needleFactory));
             _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
-            _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
+            _needleIndexFactory = _ => Reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
         }
 
@@ -498,10 +498,11 @@ namespace Theraot.Collections.ThreadSafe
             return WhereExtracted();
             IEnumerable<KeyValuePair<int, T>> WhereExtracted()
             {
-                int index = 0;
+                var index = 0;
                 foreach (var needle in _entries.Where(needle => check(needle.Value)))
                 {
                     yield return new KeyValuePair<int, T>(index, needle.Value);
+                    index++;
                 }
             }
         }

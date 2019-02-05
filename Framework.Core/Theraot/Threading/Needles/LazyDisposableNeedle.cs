@@ -5,7 +5,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class LazyDisposableNeedle<T> : LazyNeedle<T>
+    public class LazyDisposableNeedle<T> : LazyNeedle<T>, IDisposable
         where T : IDisposable
     {
         private int _status;
@@ -25,14 +25,7 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         ~LazyDisposableNeedle()
         {
-            try
-            {
-                // Empty
-            }
-            finally
-            {
-                Dispose(false);
-            }
+            Dispose(false);
         }
 
         public bool IsDisposed => _status == -1;
@@ -40,14 +33,8 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -121,7 +108,7 @@ namespace Theraot.Threading.Needles
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
-        internal void Dispose(bool disposeManagedResources)
+        protected virtual void Dispose(bool disposeManagedResources)
         {
             try
             {

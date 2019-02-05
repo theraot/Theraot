@@ -64,7 +64,7 @@ namespace Theraot.Core
         {
             while (length > 0)
             {
-                var delta = await source.ReadAsync(buffer, offset, length);
+                var delta = await source.ReadAsync(buffer, offset, length).ConfigureAwait(false);
                 if (delta <= 0)
                 {
                     throw new EndOfStreamException();

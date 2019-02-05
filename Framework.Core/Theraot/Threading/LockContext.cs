@@ -68,7 +68,7 @@ namespace Theraot.Threading
                     continue;
                 }
 
-                if (slot != null && slot.CompareTo(testSlot) >= 0)
+                if (slot?.CompareTo(testSlot) >= 0)
                 {
                     continue;
                 }

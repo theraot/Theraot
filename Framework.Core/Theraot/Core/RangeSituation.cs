@@ -1,4 +1,8 @@
 ﻿#if FAT
+
+#pragma warning disable CA1008 // Enums should have zero value
+#pragma warning disable CA1714 // Flags enums should have plural names
+
 using System;
 
 namespace Theraot.Core

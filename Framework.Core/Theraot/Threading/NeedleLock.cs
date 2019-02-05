@@ -1,4 +1,7 @@
 ﻿#if FAT
+
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+
 using System;
 using System.Threading;
 using Theraot.Collections;
@@ -86,8 +89,7 @@ namespace Theraot.Threading
 
         public override bool Equals(object obj)
         {
-            var needle = obj as NeedleLock<T>;
-            if (needle == null)
+            if (!(obj is NeedleLock<T> needle))
             {
                 return _target.Equals(obj);
             }
@@ -107,7 +109,7 @@ namespace Theraot.Threading
         public override string ToString()
         {
             var target = Value;
-            return (this as IReadOnlyNeedle<T>).IsAlive ? target.ToString() : "<Dead Needle>";
+            return target != null ? target.ToString() : "<Dead Needle>";
         }
 
         internal void Capture(LockSlot<T> slot)

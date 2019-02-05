@@ -24,16 +24,21 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(needle));
             }
+
             return needle.Value;
         }
 
         public static bool operator !=(DefaultNeedle<T> left, DefaultNeedle<T> right)
         {
+            No.Op(left);
+            No.Op(right);
             return false;
         }
 
         public static bool operator ==(DefaultNeedle<T> left, DefaultNeedle<T> right)
         {
+            No.Op(left);
+            No.Op(right);
             return true;
         }
 

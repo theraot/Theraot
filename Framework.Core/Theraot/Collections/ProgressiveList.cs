@@ -120,8 +120,8 @@ namespace Theraot.Collections
         }
 
 #if FAT
-        internal new static ProgressiveList<T> Create<TList>(Progressor<T> progressor, IEqualityComparer<T> comparer)
-                                                    where TList : IList<T>, new()
+        internal static new ProgressiveList<T> Create<TList>(Progressor<T> progressor, IEqualityComparer<T> comparer)
+            where TList : IList<T>, new()
         {
             return new ProgressiveList<T>(progressor, new TList(), comparer);
         }

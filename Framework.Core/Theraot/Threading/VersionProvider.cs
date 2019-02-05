@@ -4,9 +4,10 @@ namespace Theraot.Threading
     /// <summary>
     /// Provides a mechanism to get an object that represents a version of a mutable resource
     /// </summary>
-    public sealed partial class VersionProvider
+    public sealed class VersionProvider
     {
-        private Target _target;
+        internal VersionTarget Target { get; private set; }
+
         private TryAdvance _tryAdvance;
 
         /// <summary>
@@ -14,10 +15,8 @@ namespace Theraot.Threading
         /// </summary>
         public VersionProvider()
         {
-            _target = new Target(out _tryAdvance);
+            Target = new VersionTarget(out _tryAdvance);
         }
-
-        internal delegate bool TryAdvance(out long number);
 
         /// <summary>
         /// Advances the current up to date version
@@ -26,7 +25,7 @@ namespace Theraot.Threading
         {
             if (!_tryAdvance.Invoke(out _))
             {
-                _target = new Target(out _tryAdvance);
+                Target = new VersionTarget(out _tryAdvance);
             }
         }
 
@@ -38,9 +37,9 @@ namespace Theraot.Threading
         {
             if (!_tryAdvance.Invoke(out var number))
             {
-                _target = new Target(out _tryAdvance);
+                Target = new VersionTarget(out _tryAdvance);
             }
-            return new VersionToken(this, _target, number);
+            return new VersionToken(this, Target, number);
         }
 
         /// <summary>

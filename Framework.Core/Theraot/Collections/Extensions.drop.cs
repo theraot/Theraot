@@ -51,7 +51,6 @@ namespace Theraot.Collections
                     return true;
                 }
             }
-
         }
 
         public static bool TryTakeUntil<T>(this IProducerConsumerCollection<T> producerConsumerCollection, Predicate<T> check, ICollection<T> trail)

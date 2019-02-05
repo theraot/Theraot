@@ -9,9 +9,8 @@ using Theraot.Threading;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public sealed class FlagArray : IList<bool>, ICollection<bool>, ICloneable<FlagArray>
+    public sealed class FlagArray : IList<bool>, ICloneable<FlagArray>
     {
-        private readonly IReadOnlyCollection<bool> _asReadOnly;
         private int[] _entries;
 
         public FlagArray(FlagArray prototype)
@@ -23,7 +22,6 @@ namespace Theraot.Collections.Specialized
             Capacity = prototype.Capacity;
             _entries = ArrayReservoir<int>.GetArray(GetLength(Capacity));
             prototype._entries.CopyTo(_entries, 0);
-            _asReadOnly = Extensions.WrapAsIReadOnlyCollection(this);
         }
 
         public FlagArray(int capacity)
@@ -34,7 +32,6 @@ namespace Theraot.Collections.Specialized
             }
             Capacity = capacity;
             _entries = ArrayReservoir<int>.GetArray(GetLength(Capacity));
-            _asReadOnly = Extensions.WrapAsIReadOnlyCollection(this);
         }
 
         public FlagArray(int capacity, bool defaultValue)
@@ -305,7 +302,7 @@ namespace Theraot.Collections.Specialized
 
         private void SetBit(int index, int mask)
         {
-        again:
+again:
             var read = Volatile.Read(ref _entries[index]);
             if ((read & mask) == 0)
             {
@@ -318,7 +315,7 @@ namespace Theraot.Collections.Specialized
 
         private void UnsetBit(int index, int mask)
         {
-        again:
+again:
             var read = Volatile.Read(ref _entries[index]);
             if ((read & mask) != 0)
             {

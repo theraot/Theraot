@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Theraot.Collections;
 
@@ -104,7 +105,8 @@ namespace Theraot.Core
 
                     default:
                         // Shouldn't happen
-                        throw new ArgumentOutOfRangeException();
+                        DebugEx.Fail(string.Empty);
+                        break;
                 }
             }
             return false;
@@ -156,7 +158,8 @@ namespace Theraot.Core
 
                     default:
                         // Shouldn't happen
-                        throw new ArgumentOutOfRangeException();
+                        DebugEx.Fail(string.Empty);
+                        break;
                 }
             }
             return false;
@@ -324,7 +327,8 @@ namespace Theraot.Core
 
                     default:
                         // Shouldn't happen
-                        throw new ArgumentOutOfRangeException();
+                        DebugEx.Fail(string.Empty);
+                        break;
                 }
                 break;
             }
@@ -470,7 +474,8 @@ namespace Theraot.Core
 
                     default:
                         // Shouldn't happen
-                        throw new ArgumentOutOfRangeException();
+                        DebugEx.Fail(string.Empty);
+                        break;
                 }
                 break;
             }

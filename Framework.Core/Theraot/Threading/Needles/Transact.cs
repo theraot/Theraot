@@ -10,30 +10,30 @@ namespace Theraot.Threading.Needles
         [ThreadStatic]
         private static Transact _currentTransaction;
 
-        private readonly Transact _parentTransaction;
-        private readonly ThreadSafeDictionary<IResource, object> _readLog;
+        internal readonly Transact ParentTransaction;
+        internal readonly ThreadSafeDictionary<IResource, object> ReadLog;
         private readonly Thread _thread;
-        private readonly ThreadSafeDictionary<IResource, object> _writeLog;
-        private LockSlot<Thread> _lockSlot;
+        internal readonly ThreadSafeDictionary<IResource, object> WriteLog;
+        internal LockSlot<Thread> LockSlot;
 
         public Transact()
         {
-            _writeLog = new ThreadSafeDictionary<IResource, object>();
-            _readLog = new ThreadSafeDictionary<IResource, object>();
-            _parentTransaction = _currentTransaction;
+            WriteLog = new ThreadSafeDictionary<IResource, object>();
+            ReadLog = new ThreadSafeDictionary<IResource, object>();
+            ParentTransaction = _currentTransaction;
             _currentTransaction = this;
             _thread = Thread.CurrentThread;
         }
 
         public static Transact CurrentTransaction => _currentTransaction;
 
-        public bool IsRoot => _parentTransaction == null;
+        public bool IsRoot => ParentTransaction == null;
 
-        private static LockContext<Thread> Context { get; } = new LockContext<Thread>(512);
+        internal static LockContext<Thread> Context { get; } = new LockContext<Thread>(512);
 
-        public static Needle<T> CreateNeedle<T>(T value)
+        public static TransactNeedle<T> CreateNeedle<T>(T value)
         {
-            return new Needle<T>(value);
+            return new TransactNeedle<T>(value);
         }
 
         public bool Commit()
@@ -53,8 +53,8 @@ namespace Theraot.Threading.Needles
                 }
                 try
                 {
-                    ThreadingHelper.SpinWaitUntil(() => Context.ClaimSlot(out _lockSlot));
-                    _lockSlot.Value = Thread.CurrentThread;
+                    ThreadingHelper.SpinWaitUntil(() => Context.ClaimSlot(out LockSlot));
+                    LockSlot.Value = Thread.CurrentThread;
                     if (!Capture())
                     {
                         //Nothing to commit
@@ -67,7 +67,7 @@ namespace Theraot.Threading.Needles
                         return false;
                     }
                     var written = false;
-                    foreach (var resource in _writeLog)
+                    foreach (var resource in WriteLog)
                     {
                         if (resource.Key.Commit())
                         {
@@ -88,10 +88,10 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    if (_lockSlot != null)
+                    if (LockSlot != null)
                     {
-                        _lockSlot.Close();
-                        _lockSlot = null;
+                        LockSlot.Close();
+                        LockSlot = null;
                     }
                 }
             }
@@ -116,7 +116,7 @@ namespace Theraot.Threading.Needles
         private bool Capture()
         {
             var result = false;
-            foreach (var resource1 in _writeLog)
+            foreach (var resource1 in WriteLog)
             {
                 resource1.Key.Capture();
                 result = true;
@@ -127,7 +127,7 @@ namespace Theraot.Threading.Needles
                 return result;
             }
 
-            foreach (var resource2 in _readLog)
+            foreach (var resource2 in ReadLog)
             {
                 resource2.Key.Capture();
             }
@@ -137,7 +137,7 @@ namespace Theraot.Threading.Needles
         private bool CheckCapture()
         {
             // Keep foreach loop
-            foreach (var resource in _readLog)
+            foreach (var resource in ReadLog)
             {
                 if (!resource.Key.CheckCapture())
                 {
@@ -150,7 +150,7 @@ namespace Theraot.Threading.Needles
         private bool CheckValue()
         {
             // Keep foreach loop
-            foreach (var resource in _readLog)
+            foreach (var resource in ReadLog)
             {
                 if (!resource.Key.CheckValue())
                 {
@@ -162,7 +162,7 @@ namespace Theraot.Threading.Needles
 
         private void Release(bool dispose)
         {
-            for (var currentTransaction = _currentTransaction; currentTransaction != null && currentTransaction != this; currentTransaction = currentTransaction._parentTransaction)
+            for (var currentTransaction = _currentTransaction; currentTransaction != null && currentTransaction != this; currentTransaction = currentTransaction.ParentTransaction)
             {
                 if (dispose)
                 {
@@ -176,22 +176,22 @@ namespace Theraot.Threading.Needles
             Release();
             if (dispose)
             {
-                _currentTransaction = _parentTransaction;
+                _currentTransaction = ParentTransaction;
             }
         }
 
         private void Release()
         {
-            foreach (var resource in _readLog)
+            foreach (var resource in ReadLog)
             {
                 resource.Key.Release();
             }
-            foreach (var resource in _writeLog)
+            foreach (var resource in WriteLog)
             {
                 resource.Key.Release();
             }
-            _readLog.Clear();
-            _writeLog.Clear();
+            ReadLog.Clear();
+            WriteLog.Clear();
         }
     }
 }

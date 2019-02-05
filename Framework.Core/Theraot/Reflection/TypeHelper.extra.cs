@@ -15,7 +15,7 @@ namespace Theraot.Reflection
             foreach (var deconstruct in deconstructs)
             {
                 // If the method is not called Deconstruct, skip it
-                if (deconstruct.Name != "Deconstruct")
+                if (!string.Equals(deconstruct.Name, "Deconstruct", StringComparison.Ordinal))
                 {
                     continue;
                 }
