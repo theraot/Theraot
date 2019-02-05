@@ -112,9 +112,9 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var pair in _wrapped)
+            foreach (var needle in _wrapped)
             {
-                if (pair.TryGetValue(out var result))
+                if (needle.TryGetValue(out var result))
                 {
                     yield return result;
                 }
@@ -136,6 +136,20 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             return false;
+        }
+
+        public IEnumerable<T> ClearEnumerable()
+        {
+            var displaced = _wrapped.ClearEnumerable();
+            foreach (var needle in displaced)
+            {
+                if (needle.TryGetValue(out var result))
+                {
+                    yield return result;
+                }
+
+                needle.Free();
+            }
         }
 
         ~WeakCollection()
@@ -187,11 +201,6 @@ namespace Theraot.Collections.ThreadSafe
         protected bool Contains(Predicate<TNeedle> needleCheck)
         {
             return _wrapped.Where(needleCheck).Any();
-        }
-
-        protected IEnumerable<TNeedle> GetNeedleEnumerable()
-        {
-            return _wrapped;
         }
 
         protected IEnumerable<T> RemoveWhereEnumerable(Predicate<TNeedle> needleCheck)
