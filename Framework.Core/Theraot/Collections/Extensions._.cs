@@ -1,6 +1,6 @@
 ﻿// Needed for NET40
 
-#pragma warning disable RCS1224 // Make method an extension method.
+#pragma warning disable CC0031 // Check for null before calling a delegate
 
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,6 @@ using System.Runtime.CompilerServices;
 #if FAT
 using System.Collections;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 
 #endif
 
@@ -1486,83 +1485,6 @@ namespace Theraot.Collections
             return copy;
         }
 
-        public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (onEmpty == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (source is ICollection<T> sourceCollection)
-            {
-                if (sourceCollection.Count == 0)
-                {
-                    onEmpty();
-                    return Enumerable.Empty<T>();
-                }
-            }
-            return NullOrEmptyCheckedExtracted(source, onEmpty);
-        }
-
-        public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onNotEmpty)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (onEmpty == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (onNotEmpty == null)
-            {
-                throw new ArgumentException("onNotEmpty");
-            }
-            if (source is ICollection<T> sourceCollection)
-            {
-                if (sourceCollection.Count == 0)
-                {
-                    onEmpty();
-                    return Enumerable.Empty<T>();
-                }
-                onNotEmpty();
-            }
-            return NullOrEmptyCheckedExtracted(source, onEmpty, onNotEmpty);
-        }
-
-        public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onUnknownSize, Action<int> onKnownSize)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (onEmpty == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (onUnknownSize == null)
-            {
-                throw new ArgumentNullException(nameof(onUnknownSize));
-            }
-            if (onKnownSize == null)
-            {
-                throw new ArgumentException("onKnownSize");
-            }
-            if (source is ICollection<T> sourceCollection)
-            {
-                if (sourceCollection.Count == 0)
-                {
-                    onEmpty();
-                    return Enumerable.Empty<T>();
-                }
-                onKnownSize(sourceCollection.Count);
-            }
-            return NullOrEmptyCheckedExtracted(source, onEmpty, onUnknownSize);
-        }
-
         public static bool Exists<T>(this IEnumerable<T> source, T value)
         {
             if (source == null)
@@ -2177,7 +2099,7 @@ namespace Theraot.Collections
             {
                 return value;
             }
-            var newValue = create == null ? default : create();
+            var newValue = create != null ? create() : default;
             dictionary.Add(key, newValue);
             return newValue;
         }
@@ -2596,12 +2518,15 @@ namespace Theraot.Collections
             }
         }
 
-        // Name needs to be different so it doesn't conflict with Enumerable.Select
         public static TOutput[] Map<TInput, TOutput>(this ICollection<TInput> source, Func<TInput, TOutput> select)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
+            }
+            if (select == null)
+            {
+                throw new ArgumentNullException(nameof(select));
             }
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -2613,86 +2538,6 @@ namespace Theraot.Collections
                 result[count++] = select(t);
             }
             return result;
-        }
-
-        public static IEnumerable<T> NullOrEmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
-        {
-            if (onEmpty == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (source == null)
-            {
-                onEmpty();
-                return Enumerable.Empty<T>();
-            }
-            if (source is ICollection<T> sourceCollection)
-            {
-                if (sourceCollection.Count == 0)
-                {
-                    onEmpty();
-                    return Enumerable.Empty<T>();
-                }
-            }
-            return NullOrEmptyCheckedExtracted(source, onEmpty);
-        }
-
-        public static IEnumerable<T> NullOrEmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onNotEmpty)
-        {
-            if (onEmpty == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (source == null)
-            {
-                onEmpty();
-                return Enumerable.Empty<T>();
-            }
-            if (onNotEmpty == null)
-            {
-                throw new ArgumentException("onNotEmpty");
-            }
-            if (source is ICollection<T> sourceCollection)
-            {
-                if (sourceCollection.Count == 0)
-                {
-                    onEmpty();
-                    return Enumerable.Empty<T>();
-                }
-                onNotEmpty();
-            }
-            return NullOrEmptyCheckedExtracted(source, onEmpty, onNotEmpty);
-        }
-
-        public static IEnumerable<T> NullOrEmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onUnknownSize, Action<int> onKnownSize)
-        {
-            if (onEmpty == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (source == null)
-            {
-                onEmpty();
-                return Enumerable.Empty<T>();
-            }
-            if (onUnknownSize == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (onKnownSize == null)
-            {
-                throw new ArgumentException("onEmpty");
-            }
-            if (source is ICollection<T> sourceCollection)
-            {
-                if (sourceCollection.Count == 0)
-                {
-                    onEmpty();
-                    return Enumerable.Empty<T>();
-                }
-                onKnownSize(sourceCollection.Count);
-            }
-            return NullOrEmptyCheckedExtracted(source, onEmpty, onUnknownSize);
         }
 
         public static IEnumerable<TPackage> Pack<T, TPackage>(this IEnumerable<T> source, int size)
@@ -2721,12 +2566,14 @@ namespace Theraot.Collections
                 {
                     currentPackage[index] = item;
                     index++;
-                    if (index == size)
+                    if (index != size)
                     {
-                        yield return currentPackage;
-                        currentPackage = new T[size];
-                        index = 0;
+                        continue;
                     }
+
+                    yield return currentPackage;
+                    currentPackage = new T[size];
+                    index = 0;
                 }
                 if (index > 0)
                 {
@@ -2880,11 +2727,13 @@ namespace Theraot.Collections
             {
                 while (enumerator.MoveNext())
                 {
-                    if (predicate(enumerator.Current))
+                    if (!predicate(enumerator.Current))
                     {
-                        found = enumerator.Current;
-                        return true;
+                        continue;
                     }
+
+                    found = enumerator.Current;
+                    return true;
                 }
                 found = default;
                 return false;
@@ -2984,11 +2833,13 @@ namespace Theraot.Collections
             {
                 while (enumerator.MoveNext())
                 {
-                    if (predicate(enumerator.Current))
+                    if (!predicate(enumerator.Current))
                     {
-                        foundItem = enumerator.Current;
-                        found = true;
+                        continue;
                     }
+
+                    foundItem = enumerator.Current;
+                    found = true;
                 }
                 return found;
             }
@@ -3040,11 +2891,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (whereNot == null)
-            {
-                return WhereExtracted(source, predicate);
-            }
-            return WhereExtracted(source, predicate, whereNot);
+            return whereNot == null ? WhereExtracted(source, predicate) : WhereExtracted(source, predicate, whereNot);
         }
 
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, Func<T, bool> predicate, Action<T> whereNot)
@@ -3057,11 +2904,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (whereNot == null)
-            {
-                return WhereExtracted(source, predicate);
-            }
-            return WhereExtracted(source, predicate, whereNot);
+            return whereNot == null ? WhereExtracted(source, predicate) : WhereExtracted(source, predicate, whereNot);
         }
 
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, Func<T, int, bool> predicate, Action whereNot)
@@ -3074,11 +2917,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (whereNot == null)
-            {
-                return WhereExtracted(source, predicate);
-            }
-            return WhereExtracted(source, predicate, whereNot);
+            return whereNot == null ? WhereExtracted(source, predicate) : WhereExtracted(source, predicate, whereNot);
         }
 
         public static IEnumerable<T> Where<T>(this IEnumerable<T> source, Func<T, int, bool> predicate, Action<T> whereNot)
@@ -3091,11 +2930,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (whereNot == null)
-            {
-                return WhereExtracted(source, predicate);
-            }
-            return WhereExtracted(source, predicate, whereNot);
+            return whereNot == null ? WhereExtracted(source, predicate) : WhereExtracted(source, predicate, whereNot);
         }
 
         public static IEnumerable<T> WhereType<T>(IEnumerable enumerable)
@@ -3135,57 +2970,6 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> NullOrEmptyCheckedExtracted<T>(IEnumerable<T> source, Action onEmpty)
-        {
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
-                {
-                    yield return enumerator.Current;
-                }
-                else
-                {
-                    onEmpty();
-                    yield break;
-                }
-                while (enumerator.MoveNext())
-                {
-                    yield return enumerator.Current;
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-        }
-
-        private static IEnumerable<T> NullOrEmptyCheckedExtracted<T>(IEnumerable<T> source, Action onEmpty, Action onNotEmpty)
-        {
-            var enumerator = source.GetEnumerator();
-            try
-            {
-                if (enumerator.MoveNext())
-                {
-                    onNotEmpty();
-                    yield return enumerator.Current;
-                }
-                else
-                {
-                    onEmpty();
-                    yield break;
-                }
-                while (enumerator.MoveNext())
-                {
-                    yield return enumerator.Current;
-                }
-            }
-            finally
-            {
-                enumerator.Dispose();
-            }
-        }
-
         private static IEnumerable<TPackage> PackExtracted<T, TPackage>(IEnumerable<T> source, int size)
             where TPackage : ICollection<T>, new()
         {
@@ -3195,12 +2979,14 @@ namespace Theraot.Collections
             {
                 currentPackage.Add(item);
                 count++;
-                if (count == size)
+                if (count != size)
                 {
-                    yield return currentPackage;
-                    currentPackage = new TPackage();
-                    count = 0;
+                    continue;
                 }
+
+                yield return currentPackage;
+                currentPackage = new TPackage();
+                count = 0;
             }
             if (count > 0)
             {
