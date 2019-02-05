@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -9,7 +10,9 @@ namespace Theraot.Core
     public class ReverseStringBuilder : IEnumerable<char>
     {
         private readonly int _capacity;
+
         private char[] _buffer;
+
         private int _start;
 
         public ReverseStringBuilder(int capacity)
@@ -22,21 +25,6 @@ namespace Theraot.Core
             _buffer = ArrayReservoir<char>.GetArray(capacity);
             _capacity = capacity;
             _start = capacity;
-        }
-
-        public int Length => _capacity - _start;
-
-        public IEnumerator<char> GetEnumerator()
-        {
-            for (var position = _capacity - 1; position >= 0; position--)
-            {
-                yield return _buffer[position];
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         ~ReverseStringBuilder()
@@ -55,6 +43,16 @@ namespace Theraot.Core
 
             ArrayReservoir<char>.DonateArray(buffer);
             _buffer = null;
+        }
+
+        public int Length => _capacity - _start;
+
+        public IEnumerator<char> GetEnumerator()
+        {
+            for (var position = _capacity - 1; position >= 0; position--)
+            {
+                yield return _buffer[position];
+            }
         }
 
         public void Prepend(char character)
@@ -99,6 +97,11 @@ namespace Theraot.Core
             }
 
             return new string(_buffer, _capacity - backIndex, length);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

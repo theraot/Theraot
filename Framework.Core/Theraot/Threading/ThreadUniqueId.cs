@@ -15,6 +15,7 @@ namespace Theraot.Threading
                 {
                     return _currentThreadId.Value;
                 }
+
                 var result = RuntimeUniqueIdProvider.GetNextId();
                 _currentThreadId = result;
                 return result;

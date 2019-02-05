@@ -68,11 +68,7 @@ namespace Theraot.Threading.Needles
             {
                 return right is null;
             }
-            if (right is null)
-            {
-                return false;
-            }
-            return left._target.Equals(right._target);
+            return !(right is null) && left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)
@@ -82,11 +78,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(ReadOnlyNeedle<T> other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-            return other._target.Equals(_target);
+            return !(other is null) && other._target.Equals(_target);
         }
 
         public override int GetHashCode()

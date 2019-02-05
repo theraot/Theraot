@@ -49,15 +49,19 @@ namespace Theraot.Collections.Specialized
         ~FlagArray()
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (!GCMonitor.FinalizingForUnload)
+            if (GCMonitor.FinalizingForUnload)
             {
-                var entries = _entries;
-                if (entries != null)
-                {
-                    ArrayReservoir<int>.DonateArray(entries);
-                    _entries = null;
-                }
+                return;
             }
+
+            var entries = _entries;
+            if (entries == null)
+            {
+                return;
+            }
+
+            ArrayReservoir<int>.DonateArray(entries);
+            _entries = null;
         }
 
         public int Capacity { get; }

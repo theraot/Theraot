@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 using Theraot.Threading.Needles;
@@ -28,88 +29,14 @@ namespace Theraot.Threading
             Id = RuntimeUniqueIdProvider.GetNextId();
         }
 
-        internal UniqueId Id { get; }
-
         /// <summary>
         ///     Gets a value indicating whether or not the current thread did enter.
         /// </summary>
         public bool IsTaken => _guard?.Contains(Id) == true;
 
+        internal UniqueId Id { get; }
+
         private ThreadSafeQueue<Action> WorkQueue => TypeHelper.LazyCreate(ref _workQueue, () => new ThreadSafeQueue<Action>());
-
-        public IDisposable TryEnter(out bool didEnter)
-        {
-            didEnter = Enter(Id);
-            return didEnter ? DisposableAkin.Create(() => Leave(Id)) : NoOpDisposable.Instance;
-        }
-
-        private static IPromise AddExecution(Action action, ThreadSafeQueue<Action> queue)
-        {
-            var promised = new Promise(false);
-            var result = new ReadOnlyPromise(promised);
-            queue.Add
-            (
-                () =>
-                {
-                    try
-                    {
-                        action.Invoke();
-                        promised.SetCompleted();
-                    }
-                    catch (Exception exception)
-                    {
-                        promised.SetError(exception);
-                    }
-                }
-            );
-            return result;
-        }
-
-        private static IPromise<T> AddExecution<T>(Func<T> action, ThreadSafeQueue<Action> queue)
-        {
-            var promised = new PromiseNeedle<T>(false);
-            var result = new ReadOnlyPromiseNeedle<T>(promised);
-            queue.Add
-            (
-                () =>
-                {
-                    try
-                    {
-                        promised.Value = action.Invoke();
-                    }
-                    catch (Exception exception)
-                    {
-                        promised.SetError(exception);
-                    }
-                }
-            );
-            return result;
-        }
-
-        private static void ExecutePending(ThreadSafeQueue<Action> queue, UniqueId id)
-        {
-            var didEnter = false;
-            try
-            {
-                didEnter = Enter(id);
-                if (!didEnter)
-                {
-                    return;
-                }
-
-                while (queue.TryTake(out var action))
-                {
-                    action.Invoke();
-                }
-            }
-            finally
-            {
-                if (didEnter)
-                {
-                    Leave(id);
-                }
-            }
-        }
 
         /// <summary>
         ///     Executes an operation-
@@ -138,6 +65,12 @@ namespace Theraot.Threading
             return result;
         }
 
+        public IDisposable TryEnter(out bool didEnter)
+        {
+            didEnter = Enter(Id);
+            return didEnter ? DisposableAkin.Create(() => Leave(Id)) : NoOpDisposable.Instance;
+        }
+
         internal static bool Enter(UniqueId id)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
@@ -149,7 +82,10 @@ namespace Theraot.Threading
             var guard = _guard;
             if (guard == null)
             {
-                _guard = new HashSet<UniqueId> {id};
+                _guard = new HashSet<UniqueId>
+                         {
+                             id
+                         };
                 return true;
             }
 
@@ -167,6 +103,76 @@ namespace Theraot.Threading
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             var guard = _guard;
             guard?.Remove(id);
+        }
+
+        private static IPromise AddExecution(Action action, ThreadSafeQueue<Action> queue)
+        {
+            var promised = new Promise(false);
+            var result = new ReadOnlyPromise(promised);
+            queue.Add
+            (
+                () =>
+                {
+                    try
+                    {
+                        action.Invoke();
+                        promised.SetCompleted();
+                    }
+                    catch (Exception exception)
+                    {
+                        promised.SetError(exception);
+                    }
+                }
+
+            );
+            return result;
+        }
+
+        private static IPromise<T> AddExecution<T>(Func<T> action, ThreadSafeQueue<Action> queue)
+        {
+            var promised = new PromiseNeedle<T>(false);
+            var result = new ReadOnlyPromiseNeedle<T>(promised);
+            queue.Add
+            (
+                () =>
+                {
+                    try
+                    {
+                        promised.Value = action.Invoke();
+                    }
+                    catch (Exception exception)
+                    {
+                        promised.SetError(exception);
+                    }
+                }
+
+            );
+            return result;
+        }
+
+        private static void ExecutePending(ThreadSafeQueue<Action> queue, UniqueId id)
+        {
+            var didEnter = false;
+            try
+            {
+                didEnter = Enter(id);
+                if (!didEnter)
+                {
+                    return;
+                }
+
+                while (queue.TryTake(out var action))
+                {
+                    action.Invoke();
+                }
+            }
+            finally
+            {
+                if (didEnter)
+                {
+                    Leave(id);
+                }
+            }
         }
     }
 }

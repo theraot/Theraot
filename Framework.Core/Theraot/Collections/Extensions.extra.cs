@@ -46,6 +46,7 @@ namespace Theraot.Collections
                     }
                 }
                 // Infinite Loop - This method creates an endless IEnumerable<T>
+                // ReSharper disable once IteratorNeverReturns
             }
         }
     }

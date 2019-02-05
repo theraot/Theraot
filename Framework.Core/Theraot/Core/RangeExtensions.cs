@@ -63,11 +63,7 @@ namespace Theraot.Core
                 {
                     return RangeSituation.BeforeSeparated;
                 }
-                if (ai > 0)
-                {
-                    return RangeSituation.BeforeOverlapped;
-                }
-                return RangeSituation.BeforeTouching;
+                return ai > 0 ? RangeSituation.BeforeOverlapped : RangeSituation.BeforeTouching;
             }
             var ia = comparer.Compare(x.Minimum, y.Maximum);
             if (ia == 0)
@@ -85,11 +81,7 @@ namespace Theraot.Core
             {
                 return RangeSituation.AfterOverlapped;
             }
-            if (ia > 0)
-            {
-                return RangeSituation.AfterSeparated;
-            }
-            return RangeSituation.AfterTouching;
+            return ia > 0 ? RangeSituation.AfterSeparated : RangeSituation.AfterTouching;
         }
 
         public static int CompareTo<T>(this Range<T> x, T y, IComparer<T> comparer)
@@ -109,11 +101,7 @@ namespace Theraot.Core
             {
                 a = x.ClosedMaximum ? 1 : -1;
             }
-            if (a < 0)
-            {
-                return 1;
-            }
-            return 0;
+            return a < 0 ? 1 : 0;
         }
 
         public static bool IsEmpty<T>(this Range<T> x, IComparer<T> comparer)

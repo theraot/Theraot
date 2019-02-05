@@ -474,7 +474,7 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void SetValue(this PropertyInfo info, object obj, object value)
         {
-            //Added in .NET 4.5
+            // Added in .NET 4.5
 #if NET45
             info.SetValue(obj, value);
 #else

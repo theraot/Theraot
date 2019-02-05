@@ -8,6 +8,7 @@ namespace Theraot.Collections.ThreadSafe
     public static class NeedleReservoir
     {
         [ThreadStatic]
+        // ReSharper disable once StyleCop.SA1401
         internal static int InternalRecycling;
 
         public static bool Recycling => InternalRecycling > 0;

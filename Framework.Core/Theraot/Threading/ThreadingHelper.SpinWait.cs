@@ -665,20 +665,23 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            result = tmpB + value;
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, int milliseconds, CancellationToken cancellationToken)
@@ -693,22 +696,25 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            result = tmpB + value;
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, TimeSpan timeout)
@@ -725,20 +731,23 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            result = tmpB + value;
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, TimeSpan timeout, CancellationToken cancellationToken)
@@ -755,64 +764,73 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            result = tmpB + value;
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            result = tmpB + value;
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            result = tmpB + value;
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, int milliseconds)
@@ -827,24 +845,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, int milliseconds, CancellationToken cancellationToken)
@@ -859,26 +881,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, TimeSpan timeout)
@@ -895,24 +921,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
@@ -929,76 +959,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, int milliseconds)
@@ -1013,24 +1055,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, int milliseconds, CancellationToken cancellationToken)
@@ -1045,26 +1091,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, TimeSpan timeout)
@@ -1081,24 +1131,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, TimeSpan timeout, CancellationToken cancellationToken)
@@ -1115,76 +1169,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var lastValue = Volatile.Read(ref check);
+                result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, int milliseconds)
@@ -1199,24 +1265,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, int milliseconds, CancellationToken cancellationToken)
@@ -1231,26 +1301,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, TimeSpan timeout)
@@ -1267,24 +1341,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
@@ -1301,76 +1379,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, int milliseconds)
@@ -1385,24 +1475,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, int milliseconds, CancellationToken cancellationToken)
@@ -1417,26 +1511,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, TimeSpan timeout)
@@ -1453,24 +1551,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
@@ -1487,76 +1589,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSet(ref int check, int value, int milliseconds, CancellationToken cancellationToken)
@@ -1571,21 +1685,24 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSet(ref int check, int value, TimeSpan timeout)
@@ -1602,19 +1719,22 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSet(ref int check, int value, TimeSpan timeout, CancellationToken cancellationToken)
@@ -1631,61 +1751,70 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSet(ref int check, int value, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSet(ref int check, int value, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Volatile.Read(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var tmpA = Volatile.Read(ref check);
+                var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, int milliseconds)
@@ -1700,24 +1829,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, int milliseconds, CancellationToken cancellationToken)
@@ -1732,26 +1865,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, TimeSpan timeout)
@@ -1768,24 +1905,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, TimeSpan timeout, CancellationToken cancellationToken)
@@ -1802,76 +1943,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < minValue || lastValue > maxValue || lastValue + value < minValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, int milliseconds)
@@ -1886,24 +2039,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            var result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                var result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, int milliseconds, CancellationToken cancellationToken)
@@ -1918,26 +2075,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            var result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                var result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, TimeSpan timeout)
@@ -1954,24 +2115,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            var result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                var result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, TimeSpan timeout, CancellationToken cancellationToken)
@@ -1988,76 +2153,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            var result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                var result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            var result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var lastValue = Volatile.Read(ref check);
+                var result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            var result = lastValue + value;
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                var result = lastValue + value;
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, int milliseconds)
@@ -2072,24 +2249,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, int milliseconds, CancellationToken cancellationToken)
@@ -2104,26 +2285,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, TimeSpan timeout)
@@ -2140,24 +2325,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, TimeSpan timeout, CancellationToken cancellationToken)
@@ -2174,76 +2363,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue > maxValue || lastValue > maxValue - value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue > maxValue || lastValue > maxValue - value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int milliseconds)
@@ -2258,24 +2459,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int milliseconds, CancellationToken cancellationToken)
@@ -2290,26 +2495,30 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout)
@@ -2326,24 +2535,28 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout, CancellationToken cancellationToken)
@@ -2360,76 +2573,88 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue < 0 || lastValue < -value)
+            while (true)
             {
-                return false;
-            }
-            var result = lastValue + value;
-            var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue < 0 || lastValue < -value)
+                {
+                    return false;
+                }
+
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, int milliseconds, CancellationToken cancellationToken)
@@ -2445,19 +2670,22 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, TimeSpan timeout)
@@ -2474,17 +2702,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
@@ -2501,55 +2732,64 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, int milliseconds)
@@ -2564,23 +2804,27 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmpB == comparand)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, int milliseconds, CancellationToken cancellationToken)
@@ -2595,25 +2839,29 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmpB == comparand)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout)
@@ -2630,23 +2878,27 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmpB == comparand)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout, CancellationToken cancellationToken)
@@ -2663,73 +2915,85 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmpB == comparand)
-            {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmpB == comparand)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Volatile.Read(ref check);
-            if (lastValue == unless)
+            while (true)
             {
-                return false;
-            }
-            var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmpB == comparand)
-            {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var lastValue = Volatile.Read(ref check);
+                if (lastValue == unless)
+                {
+                    return false;
+                }
+
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(ref int check, int comparand, int milliseconds)
@@ -2745,17 +3009,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (Volatile.Read(ref check) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (Volatile.Read(ref check) == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(ref int check, int comparand, int milliseconds, CancellationToken cancellationToken)
@@ -2771,19 +3038,22 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(ref int check, int comparand, TimeSpan timeout)
@@ -2800,17 +3070,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (Volatile.Read(ref check) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (Volatile.Read(ref check) == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(ref int check, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
@@ -2827,55 +3100,64 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) == comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(ref int check, int comparand, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            if (Volatile.Read(ref check) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                if (Volatile.Read(ref check) == comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(ref int check, int comparand, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) == comparand)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) == comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(Func<bool> verification, int milliseconds)
@@ -2891,17 +3173,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (verification.Invoke())
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (verification.Invoke())
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(Func<bool> verification, int milliseconds, CancellationToken cancellationToken)
@@ -2917,19 +3202,22 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (verification.Invoke())
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (verification.Invoke())
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(Func<bool> verification, TimeSpan timeout, CancellationToken cancellationToken)
@@ -2946,55 +3234,64 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (verification.Invoke())
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (verification.Invoke())
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(Func<bool> verification, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            if (verification.Invoke())
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                if (verification.Invoke())
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitUntil(Func<bool> verification, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (verification.Invoke())
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (verification.Invoke())
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhile(ref int check, int comparand, int milliseconds)
@@ -3010,17 +3307,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (Volatile.Read(ref check) != comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (Volatile.Read(ref check) != comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhile(ref int check, int comparand, int milliseconds, CancellationToken cancellationToken)
@@ -3036,19 +3336,22 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) != comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) != comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhile(ref int check, int comparand, TimeSpan timeout)
@@ -3065,17 +3368,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (Volatile.Read(ref check) != comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (Volatile.Read(ref check) != comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhile(ref int check, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
@@ -3092,55 +3398,64 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) != comparand)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) != comparand)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhile(ref int check, int comparand, IComparable<TimeSpan> timeout)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            if (Volatile.Read(ref check) != comparand)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                if (Volatile.Read(ref check) != comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhile(ref int check, int comparand, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) != comparand)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) != comparand)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhileNull<T>(ref T check, int milliseconds)
@@ -3157,17 +3472,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (Volatile.Read(ref check) != null)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (Volatile.Read(ref check) != null)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhileNull<T>(ref T check, int milliseconds, CancellationToken cancellationToken)
@@ -3184,19 +3502,22 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) != null)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) != null)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhileNull<T>(ref T check, TimeSpan timeout)
@@ -3214,17 +3535,20 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            if (Volatile.Read(ref check) != null)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                if (Volatile.Read(ref check) != null)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhileNull<T>(ref T check, TimeSpan timeout, CancellationToken cancellationToken)
@@ -3242,19 +3566,22 @@ namespace Theraot.Threading
             }
             var spinWait = new SpinWait();
             var start = TicksNow();
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) != null)
+            while (true)
             {
-                return true;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) != null)
+                {
+                    return true;
+                }
+
+                if (Milliseconds(TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhileNull<T>(ref T check, IComparable<TimeSpan> timeout)
@@ -3262,17 +3589,20 @@ namespace Theraot.Threading
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            if (Volatile.Read(ref check) != null)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                if (Volatile.Read(ref check) != null)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static bool SpinWaitWhileNull<T>(ref T check, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
@@ -3280,19 +3610,22 @@ namespace Theraot.Threading
         {
             var spinWait = new SpinWait();
             var start = DateTime.Now;
-        retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Volatile.Read(ref check) != null)
+            while (true)
             {
-                return true;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (Volatile.Read(ref check) != null)
+                {
+                    return true;
+                }
+
+                if (timeout.CompareTo(DateTime.Now.Subtract(start)) <= 0)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 #endif
     }

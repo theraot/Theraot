@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
 using System.Runtime.ConstrainedExecution;
 
 #endif
@@ -14,12 +14,12 @@ namespace Theraot.Threading
     [DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        private const int _statusNotReady = -2;
-        private const int _statusPending = -1;
-        private const int _statusReady = 0;
-        private static int _status = _statusNotReady;
+        private const int StatusNotReady = -2;
+        private const int StatusPending = -1;
+        private const int StatusReady = 0;
+        private static int _status = StatusNotReady;
 
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
         private const int _statusFinished = 1;
 
         static GCMonitor()
@@ -55,9 +55,10 @@ namespace Theraot.Threading
                     throw;
                 }
             }
+
             remove
             {
-                if (Volatile.Read(ref _status) != _statusReady)
+                if (Volatile.Read(ref _status) != StatusReady)
                 {
                     return;
                 }
@@ -79,32 +80,31 @@ namespace Theraot.Threading
         }
 
         public static bool FinalizingForUnload =>
-            // If you need to get rid of this, just set this property to return false
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
                 AppDomain.CurrentDomain.IsFinalizingForUnload();
 #else
-            false;
+                false;
 #endif
 
         private static void Initialize()
         {
-            var check = Interlocked.CompareExchange(ref _status, _statusPending, _statusNotReady);
+            var check = Interlocked.CompareExchange(ref _status, StatusPending, StatusNotReady);
             switch (check)
             {
-                case _statusNotReady:
+                case StatusNotReady:
                     GC.KeepAlive(new GCProbe());
-                    Volatile.Write(ref _status, _statusReady);
+                    Volatile.Write(ref _status, StatusReady);
                     break;
 
-                case _statusPending:
-                    ThreadingHelper.SpinWaitUntil(ref _status, _statusReady);
+                case StatusPending:
+                    ThreadingHelper.SpinWaitUntil(ref _status, StatusReady);
                     break;
             }
         }
 
         [DebuggerNonUserCode]
         private sealed class GCProbe
-#if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
             : CriticalFinalizerObject
 #endif
         {
@@ -119,7 +119,7 @@ namespace Theraot.Threading
                     try
                     {
                         var check = Volatile.Read(ref _status);
-                        if (check == _statusReady)
+                        if (check == StatusReady)
                         {
                             GC.ReRegisterForFinalize(this);
                             Internal.Invoke();

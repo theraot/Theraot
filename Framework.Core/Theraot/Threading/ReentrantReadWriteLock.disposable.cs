@@ -45,23 +45,25 @@ namespace Theraot.Threading
             }
             else
             {
-                if (whenNotDisposed != null)
+                if (whenNotDisposed == null)
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+                    return;
+                }
+
+                if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+                {
+                    try
                     {
-                        try
-                        {
-                            whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref _disposeStatus);
-                        }
+                        whenNotDisposed.Invoke();
                     }
-                    else
+                    finally
                     {
-                        whenDisposed?.Invoke();
+                        Interlocked.Decrement(ref _disposeStatus);
                     }
+                }
+                else
+                {
+                    whenDisposed?.Invoke();
                 }
             }
         }
@@ -71,64 +73,58 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (whenDisposed == null)
-                {
-                    return default;
-                }
-                return whenDisposed.Invoke();
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
                 return default;
             }
-            if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+
+            if (!ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
-                try
-                {
-                    return whenNotDisposed.Invoke();
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _disposeStatus);
-                }
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
-            if (whenDisposed == null)
+
+            try
             {
-                return default;
+                return whenNotDisposed.Invoke();
             }
-            return whenDisposed.Invoke();
+            finally
+            {
+                Interlocked.Decrement(ref _disposeStatus);
+            }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
-            if (TakeDisposalExecution())
+            if (!TakeDisposalExecution())
             {
-                try
+                return;
+            }
+
+            try
+            {
+                if (!disposeManagedResources)
                 {
-                    if (disposeManagedResources)
-                    {
-                        _freeToRead.Dispose();
-                        _freeToWrite.Dispose();
-                        _currentReadingCount.Dispose();
-                    }
+                    return;
                 }
-                finally
-                {
-                    _freeToRead = null;
-                    _freeToWrite = null;
-                    _currentReadingCount = null;
-                }
+
+                _freeToRead.Dispose();
+                _freeToWrite.Dispose();
+                _currentReadingCount.Dispose();
+            }
+            finally
+            {
+                _freeToRead = null;
+                _freeToWrite = null;
+                _currentReadingCount = null;
             }
         }
 
         private bool TakeDisposalExecution()
         {
-            if (_disposeStatus == -1)
-            {
-                return false;
-            }
-            return ThreadingHelper.SpinWaitSetUnless(ref _disposeStatus, -1, 0, -1);
+            return _disposeStatus != -1 && ThreadingHelper.SpinWaitSetUnless(ref _disposeStatus, -1, 0, -1);
         }
     }
 }

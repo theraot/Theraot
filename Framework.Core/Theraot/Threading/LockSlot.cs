@@ -53,11 +53,7 @@ namespace Theraot.Threading
             {
                 return right is null;
             }
-            if (right is null)
-            {
-                return false;
-            }
-            return left.Equals(right);
+            return !(right is null) && left.Equals(right);
         }
 
         public static bool operator >(LockSlot<T> left, LockSlot<T> right)
@@ -71,11 +67,13 @@ namespace Theraot.Threading
 
         public void Close()
         {
-            if (Interlocked.CompareExchange(ref _free, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _free, 1, 0) != 0)
             {
-                Value = default;
-                _context.Close(this);
+                return;
             }
+
+            Value = default;
+            _context.Close(this);
         }
 
         public int CompareTo(LockSlot<T> other)

@@ -56,20 +56,12 @@ namespace Theraot.Threading
 
             public int CompareTo(Target other)
             {
-                if (other is null)
-                {
-                    return 1;
-                }
-                return CompareToExtracted(other);
+                return other is null ? 1 : CompareToExtracted(other);
             }
 
             public bool Equals(Target other)
             {
-                if (other is null)
-                {
-                    return false;
-                }
-                return EqualsExtracted(other);
+                return !(other is null) && EqualsExtracted(other);
             }
 
             public override bool Equals(object obj)

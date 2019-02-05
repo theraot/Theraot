@@ -30,6 +30,7 @@ namespace TestRunner.System.Threading
                         Console.WriteLine(result);
                         return result;
                     }
+
                 )
             ).ToArray();
             GC.KeepAlive(await TaskEx.WhenAll(tasks).ConfigureAwait(false));

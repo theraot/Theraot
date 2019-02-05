@@ -2,6 +2,7 @@
 
 using System;
 using System.Threading;
+
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading
@@ -9,6 +10,7 @@ namespace Theraot.Threading
     internal sealed class Timer : IDisposable
     {
         private static readonly Pool<Timer> _pool = new Pool<Timer>(64, time => time.Stop());
+
         private readonly System.Threading.Timer _timer;
 
         private Action _callback;
@@ -17,12 +19,6 @@ namespace Theraot.Threading
         {
             _callback = callback;
             _timer = new System.Threading.Timer(Callback, null, dueTime, period);
-        }
-
-        void IDisposable.Dispose()
-        {
-            _timer.Dispose();
-            _callback = null;
         }
 
         public static void Donate(Timer timer)
@@ -65,6 +61,12 @@ namespace Theraot.Threading
             }
 
             timer.Change(Timeout.Infinite, Timeout.Infinite);
+            _callback = null;
+        }
+
+        void IDisposable.Dispose()
+        {
+            _timer.Dispose();
             _callback = null;
         }
 

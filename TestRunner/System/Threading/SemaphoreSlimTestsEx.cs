@@ -29,6 +29,7 @@ namespace TestRunner.System.Threading
                     Thread.Sleep(5000);
                     semaphore[1].Release();
                 }
+
             );
             thread.Start();
             semaphore[0].Wait();
@@ -104,14 +105,17 @@ namespace TestRunner.System.Threading
                                         logCount.Add(-1);
                                         log.Add("b");
                                         Thread.Sleep(1000 + padding);
+
                                         // Calling release should give increasing results per chunk
                                         log.Add("c");
                                         var count = semaphore[0].Release();
                                         logCount.Add(count);
                                         log.Add("d");
                                     }
+
                                 ).Unwrap();
                             }
+
                         ).ToArray();
                     Thread.Sleep(TimeSpan.FromMilliseconds(500));
                     log.Add("x");
@@ -135,6 +139,7 @@ namespace TestRunner.System.Threading
 
             var str = sb.ToString();
             Console.WriteLine(str);
+
             // Make sure that threads have not sneaked in the ordering
             // If this has happen, it would have been a false failure
             // So, we will retry until it does not happen
@@ -146,6 +151,7 @@ namespace TestRunner.System.Threading
 
             var regexSuccess = $"a{{{maxTasks}}}x(b{{0,{maxCount}}}(cd)+)+z";
             Assert.IsTrue(new Regex(regexSuccess).IsMatch(str));
+
             // The results of release increase *per chunk of c*.
             var last = -1;
             var first = true;

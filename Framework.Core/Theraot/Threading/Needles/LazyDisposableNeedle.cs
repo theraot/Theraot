@@ -59,23 +59,25 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (whenNotDisposed != null)
+                if (whenNotDisposed == null)
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+                    return;
+                }
+
+                if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+                {
+                    try
                     {
-                        try
-                        {
-                            whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            System.Threading.Interlocked.Decrement(ref _status);
-                        }
+                        whenNotDisposed.Invoke();
                     }
-                    else
+                    finally
                     {
-                        whenDisposed?.Invoke();
+                        System.Threading.Interlocked.Decrement(ref _status);
                     }
+                }
+                else
+                {
+                    whenDisposed?.Invoke();
                 }
             }
         }
@@ -85,32 +87,26 @@ namespace Theraot.Threading.Needles
         {
             if (_status == -1)
             {
-                if (whenDisposed == null)
-                {
-                    return default;
-                }
-                return whenDisposed.Invoke();
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
                 return default;
             }
-            if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+
+            if (!ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
             {
-                try
-                {
-                    return whenNotDisposed.Invoke();
-                }
-                finally
-                {
-                    System.Threading.Interlocked.Decrement(ref _status);
-                }
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
-            if (whenDisposed == null)
+
+            try
             {
-                return default;
+                return whenNotDisposed.Invoke();
             }
-            return whenDisposed.Invoke();
+            finally
+            {
+                System.Threading.Interlocked.Decrement(ref _status);
+            }
         }
 
         public override void Initialize()
@@ -137,7 +133,7 @@ namespace Theraot.Threading.Needles
             catch (Exception exception)
             {
                 // Fields may be partially collected
-                Theraot.No.Op(exception);
+                No.Op(exception);
             }
         }
 
@@ -173,11 +169,7 @@ namespace Theraot.Threading.Needles
 
         private bool TakeDisposalExecution()
         {
-            if (_status == -1)
-            {
-                return false;
-            }
-            return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
+            return _status != -1 && ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

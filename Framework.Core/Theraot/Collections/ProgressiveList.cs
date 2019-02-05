@@ -99,6 +99,7 @@ namespace Theraot.Collections
                     found = true;
                     return false;
                 }
+
             ).Consume();
             if (found)
             {

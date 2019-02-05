@@ -34,30 +34,18 @@ namespace Theraot.Core
         private static ICloner<T> GetConstructorCloner(Type type)
         {
             var constructorInfo = type.GetConstructor(new[] { type });
-            if (constructorInfo == null)
-            {
-                return null;
-            }
-            return ConstructorCloner.GetInstance(constructorInfo);
+            return constructorInfo == null ? null : ConstructorCloner.GetInstance(constructorInfo);
         }
 
         private static ICloner<T> GetDeconstructCloner(Type type)
         {
             var pair = TypeHelper.GetConstructorDeconstructPair(type);
-            if (pair == null)
-            {
-                return null;
-            }
-            return DeconstructCloner.GetInstance(pair.Item1, pair.Item2);
+            return pair == null ? null : DeconstructCloner.GetInstance(pair.Item1, pair.Item2);
         }
 
         private static ICloner<T> GetGenericCloner(Type type)
         {
-            if (type.IsImplementationOf(typeof(ICloneable<T>)))
-            {
-                return GenericCloner.GetInstance();
-            }
-            return null;
+            return type.IsImplementationOf(typeof(ICloneable<T>)) ? GenericCloner.GetInstance() : null;
         }
 
         private static ICloner<T> GetMockCloner(Type type)
@@ -74,31 +62,19 @@ namespace Theraot.Core
 
         private static ICloner<T> GetObjectCloner(Type type)
         {
-            if (type.IsImplementationOf(typeof(ICloneable)))
-            {
-                return Cloner.GetInstance();
-            }
-            return null;
+            return type.IsImplementationOf(typeof(ICloneable)) ? Cloner.GetInstance() : null;
         }
 
         private static ICloner<T> GetSerializerCloner(Type type)
         {
-            if (type.IsSerializable)
-            {
-                return SerializerCloner.GetInstance();
-            }
-            return null;
+            return type.IsSerializable ? SerializerCloner.GetInstance() : null;
         }
 
 #endif
 
         private static ICloner<T> GetStructCloner(Type type)
         {
-            if (type.IsValueTypeRecursive())
-            {
-                return StructCloner.GetInstance();
-            }
-            return null;
+            return type.IsValueTypeRecursive() ? StructCloner.GetInstance() : null;
         }
 
 #if NET20 || NET30 || NET35 || NET40 || NET45 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2
@@ -121,6 +97,7 @@ namespace Theraot.Core
             {
                 // Only called with ICloneable target
                 // No need to check for null - let it throw
+                // ReSharper disable once PossibleNullReferenceException
                 return (T)(target as ICloneable).Clone();
             }
         }
@@ -193,6 +170,7 @@ namespace Theraot.Core
             {
                 // Only called with ICloneable<T> target
                 // No need to check for null - let it throw
+                // ReSharper disable once PossibleNullReferenceException
                 return (target as ICloneable<T>).Clone();
             }
         }

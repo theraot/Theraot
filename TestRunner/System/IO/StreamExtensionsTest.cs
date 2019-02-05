@@ -13,12 +13,12 @@ namespace TestRunner.System.IO
         [Test]
         public static async Task ReadAsyncReads()
         {
-            using (var stream = new MemoryStream(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0}))
+            using (var stream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 }))
             {
                 var buffer = new byte[10];
                 var x = await stream.ReadAsync(buffer, 0, 10).ConfigureAwait(false);
                 Assert.AreEqual(10, x);
-                Assert.CollectionEquals(buffer, new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0});
+                Assert.CollectionEquals(buffer, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 });
             }
         }
 

@@ -4,14 +4,12 @@
 // ReSharper disable UnusedParameter.Global
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot
 {
     public static class No
     {
         [Conditional("THERAOT_NEVER")]
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "arg")]
         public static void Op<T>(T arg)
         {
             // Empty

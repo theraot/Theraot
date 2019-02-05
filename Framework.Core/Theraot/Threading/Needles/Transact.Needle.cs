@@ -78,7 +78,7 @@ namespace Theraot.Threading.Needles
                     catch (Exception exception)
                     {
                         // Fields may be partially collected.
-                        Theraot.No.Op(exception);
+                        No.Op(exception);
                     }
                 }
             }
@@ -163,55 +163,61 @@ namespace Theraot.Threading.Needles
             {
                 Volatile.Write(ref _inUse, 1);
                 var transaction = CurrentTransaction;
-                if (transaction._readLog.TryGetValue(this, out var value))
+                if (!transaction._readLog.TryGetValue(this, out var value))
                 {
-                    var original = RetrieveValue(transaction._parentTransaction);
-                    var found = (T)value;
-                    return _comparer.Equals(original, found);
+                    return false;
                 }
-                return false;
+
+                var original = RetrieveValue(transaction._parentTransaction);
+                var found = (T)value;
+                return _comparer.Equals(original, found);
             }
 
             bool IResource.Commit()
             {
                 var transaction = CurrentTransaction;
-                if (_needleLock.Value == Thread.CurrentThread)
+                if (_needleLock.Value != Thread.CurrentThread)
                 {
-                    Volatile.Write(ref _inUse, 1);
-                    if (transaction._writeLog.TryGetValue(this, out var value))
-                    {
-                        StoreValue(transaction._parentTransaction, (T)value);
-                    }
-                    return true;
+                    return false;
                 }
-                return false;
+
+                Volatile.Write(ref _inUse, 1);
+                if (transaction._writeLog.TryGetValue(this, out var value))
+                {
+                    StoreValue(transaction._parentTransaction, (T)value);
+                }
+                return true;
             }
 
             [System.Diagnostics.DebuggerNonUserCode]
             private void Dispose(bool disposeManagedResources)
             {
-                if (TakeDisposalExecution())
+                if (!TakeDisposalExecution())
                 {
-                    if (disposeManagedResources)
-                    {
-                        OnDispose();
-                    }
+                    return;
+                }
+
+                if (disposeManagedResources)
+                {
+                    OnDispose();
                 }
             }
 
             private void OnDispose()
             {
                 var transaction = CurrentTransaction;
-                if (transaction != null)
+                if (transaction == null)
                 {
-                    if (transaction._lockSlot != null)
-                    {
-                        _needleLock.Release(transaction._lockSlot);
-                    }
-                    _needleLock.Release();
-                    transaction._readLog.Remove(this);
-                    transaction._writeLog.Remove(this);
+                    return;
                 }
+
+                if (transaction._lockSlot != null)
+                {
+                    _needleLock.Release(transaction._lockSlot);
+                }
+                _needleLock.Release();
+                transaction._readLog.Remove(this);
+                transaction._writeLog.Remove(this);
             }
 
             void IResource.Release()

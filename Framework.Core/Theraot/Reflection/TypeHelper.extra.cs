@@ -32,11 +32,13 @@ namespace Theraot.Reflection
                 {
                     ref var current = ref constructors[index];
                     var constructorParameters = current.GetParameters();
-                    if (constructorParameters.Length == methodParameters.Length)
+                    if (constructorParameters.Length != methodParameters.Length)
                     {
-                        next[nextIndex] = current;
-                        nextIndex++;
+                        continue;
                     }
+
+                    next[nextIndex] = current;
+                    nextIndex++;
                 }
                 // If no constructor matches the parameters, skip it
                 if (nextIndex == 0)
@@ -64,11 +66,13 @@ namespace Theraot.Reflection
                         var constructorParameters = candidates[index].GetParameters();
                         var constructorParameter = constructorParameters[parameterIndex];
                         var constructorParameterType = constructorParameter.ParameterType;
-                        if (!constructorParameterType.IsByRef && constructorParameterType.MakeByRefType() == methodParameter.ParameterType)
+                        if (constructorParameterType.IsByRef || constructorParameterType.MakeByRefType() != methodParameter.ParameterType)
                         {
-                            next[nextIndex] = constructors[index];
-                            nextIndex++;
+                            continue;
                         }
+
+                        next[nextIndex] = constructors[index];
+                        nextIndex++;
                     }
                 }
                 if (nextIndex > 0)

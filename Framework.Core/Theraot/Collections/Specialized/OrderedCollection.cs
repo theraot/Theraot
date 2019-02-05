@@ -69,22 +69,24 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(T item)
         {
-            if (_data.Remove(item))
+            if (!_data.Remove(item))
             {
-                Count--;
-                return true;
+                return false;
             }
-            return false;
+
+            Count--;
+            return true;
         }
 
         public bool Remove(T item, IEqualityComparer<T> comparer)
         {
-            if (Extensions.Remove(this, item, comparer))
+            if (!Extensions.Remove(this, item, comparer))
             {
-                Count--;
-                return true;
+                return false;
             }
-            return false;
+
+            Count--;
+            return true;
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

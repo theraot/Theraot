@@ -389,11 +389,9 @@ namespace Theraot.Collections.Specialized
             }
             try
             {
-                if (compare < 0)
-                {
-                    return GetOrAddExtracted(ref node._left, key, factory, comparer, created, out isNew);
-                }
-                return GetOrAddExtracted(ref node._right, key, factory, comparer, created, out isNew);
+                return compare < 0
+                           ? GetOrAddExtracted(ref node._left, key, factory, comparer, created, out isNew)
+                           : GetOrAddExtracted(ref node._right, key, factory, comparer, created, out isNew);
             }
             finally
             {

@@ -16,6 +16,10 @@ namespace Theraot.Threading.Needles
             _promised = promised;
         }
 
+        public bool IsAlive => _promised.IsAlive;
+
+        public T Value => _promised.Value;
+
         T INeedle<T>.Value
         {
             get => _promised.Value;
@@ -23,18 +27,14 @@ namespace Theraot.Threading.Needles
             set => throw new NotSupportedException();
         }
 
-        public bool TryGetValue(out T value)
+        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            return _promised.TryGetValue(out value);
-        }
+            if (left is null)
+            {
+                return right is null;
+            }
 
-        public bool IsAlive => _promised.IsAlive;
-
-        public T Value => _promised.Value;
-
-        public bool Equals(ReadOnlyPromiseNeedle<T> other)
-        {
-            return !(other is null) && _promised.Equals(other._promised);
+            return !(right is null) && left._promised.Equals(right._promised);
         }
 
         public static explicit operator T(ReadOnlyPromiseNeedle<T> needle)
@@ -62,14 +62,9 @@ namespace Theraot.Threading.Needles
             return !left._promised.Equals(right._promised);
         }
 
-        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
+        public bool Equals(ReadOnlyPromiseNeedle<T> other)
         {
-            if (left is null)
-            {
-                return right is null;
-            }
-
-            return !(right is null) && left._promised.Equals(right._promised);
+            return !(other is null) && _promised.Equals(other._promised);
         }
 
         public override bool Equals(object obj)
@@ -90,6 +85,11 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return $"{{Promise: {_promised}}}";
+        }
+
+        public bool TryGetValue(out T value)
+        {
+            return _promised.TryGetValue(out value);
         }
     }
 }

@@ -77,11 +77,7 @@ namespace Theraot.Core
             var rightBody = y.GetMethodInfo().GetMethodBody();
             if (leftBody == null)
             {
-                if (rightBody == null)
-                {
-                    return true;
-                }
-                return false;
+                return rightBody == null;
             }
             if (rightBody == null)
             {

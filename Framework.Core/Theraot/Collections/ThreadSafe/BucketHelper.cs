@@ -22,11 +22,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
-            if (bucket.Insert(index, item, out var previous))
-            {
-                return item;
-            }
-            return previous;
+            return bucket.Insert(index, item, out var previous) ? item : previous;
         }
 
         public static T GetOrInsert<T>(this IBucket<T> bucket, int index, Func<T> itemFactory)
@@ -40,11 +36,7 @@ namespace Theraot.Collections.ThreadSafe
                 return stored;
             }
             var created = itemFactory.Invoke();
-            if (bucket.Insert(index, created, out stored))
-            {
-                return created;
-            }
-            return stored;
+            return bucket.Insert(index, created, out stored) ? created : stored;
         }
 
         /// <summary>

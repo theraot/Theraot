@@ -1,4 +1,6 @@
 ﻿#pragma warning disable CC0037 // Remove commented code.
+// ReSharper disable StyleCop.SA1512
+// ReSharper disable StyleCop.SA1515
 
 using System;
 using System.Collections;

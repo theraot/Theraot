@@ -23,7 +23,7 @@ namespace Theraot.Threading.Needles
                 catch (Exception exception)
                 {
                     // Fields may be partially collected.
-                    Theraot.No.Op(exception);
+                    No.Op(exception);
                 }
             }
         }
@@ -44,12 +44,14 @@ namespace Theraot.Threading.Needles
         [System.Diagnostics.DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
-            if (TakeDisposalExecution())
+            if (!TakeDisposalExecution())
             {
-                if (disposeManagedResources)
-                {
-                    Release(true);
-                }
+                return;
+            }
+
+            if (disposeManagedResources)
+            {
+                Release(true);
             }
         }
 

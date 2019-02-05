@@ -12,11 +12,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterExtracted();
+            return action == null ? source : AfterExtracted();
 
             IEnumerable<T> AfterExtracted()
             {
@@ -34,11 +30,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterCountedExtracted();
+            return action == null ? source : AfterCountedExtracted();
 
             IEnumerable<T> AfterCountedExtracted()
             {
@@ -58,11 +50,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterEachExtracted();
+            return action == null ? source : AfterEachExtracted();
 
             IEnumerable<T> AfterEachExtracted()
             {
@@ -80,11 +68,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterEachExtracted();
+            return action == null ? source : AfterEachExtracted();
 
             IEnumerable<T> AfterEachExtracted()
             {
@@ -102,11 +86,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterEachCountedExtracted();
+            return action == null ? source : AfterEachCountedExtracted();
 
             IEnumerable<T> AfterEachCountedExtracted()
             {
@@ -126,11 +106,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterEachCountedExtracted();
+            return action == null ? source : AfterEachCountedExtracted();
 
             IEnumerable<T> AfterEachCountedExtracted()
             {
@@ -150,11 +126,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterLastExtracted();
+            return action == null ? source : AfterLastExtracted();
 
             IEnumerable<T> AfterLastExtracted()
             {
@@ -184,11 +156,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterLastExtracted();
+            return action == null ? source : AfterLastExtracted();
 
             IEnumerable<T> AfterLastExtracted()
             {
@@ -220,11 +188,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterLastCountedExtracted();
+            return action == null ? source : AfterLastCountedExtracted();
 
             IEnumerable<T> AfterLastCountedExtracted()
             {
@@ -258,11 +222,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return AfterLastCountedExtracted();
+            return action == null ? source : AfterLastCountedExtracted();
 
             IEnumerable<T> AfterLastCountedExtracted()
             {
@@ -294,11 +254,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return BeforeExtracted();
+            return action == null ? source : BeforeExtracted();
 
             IEnumerable<T> BeforeExtracted()
             {
@@ -316,11 +272,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return BeforeEachExtracted();
+            return action == null ? source : BeforeEachExtracted();
 
             IEnumerable<T> BeforeEachExtracted()
             {
@@ -338,11 +290,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return BeforeEachExtracted();
+            return action == null ? source : BeforeEachExtracted();
 
             IEnumerable<T> BeforeEachExtracted()
             {
@@ -360,11 +308,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return BeforeEachCountedExtracted();
+            return action == null ? source : BeforeEachCountedExtracted();
 
             IEnumerable<T> BeforeEachCountedExtracted()
             {
@@ -384,11 +328,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return BeforeEachCountedExtracted();
+            return action == null ? source : BeforeEachCountedExtracted();
 
             IEnumerable<T> BeforeEachCountedExtracted()
             {
@@ -408,11 +348,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return BeforeFirstExtracted();
+            return action == null ? source : BeforeFirstExtracted();
 
             IEnumerable<T> BeforeFirstExtracted()
             {
@@ -446,11 +382,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (action == null)
-            {
-                return source;
-            }
-            return BeforeFirstExtracted();
+            return action == null ? source : BeforeFirstExtracted();
 
             IEnumerable<T> BeforeFirstExtracted()
             {

@@ -81,6 +81,7 @@ namespace TestRunner.System.Collections.Concurrent
                                 No.Op(exception);
                             }
                         }
+
                     );
                     thread.Start();
 

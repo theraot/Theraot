@@ -59,7 +59,7 @@ namespace Theraot.Core
         }
 
         [CLSCompliant(false)]
-        public static void GetDoubleParts(double dbl, out int sign, out int exp, out ulong man, out bool fFinite)
+        public static void GetDoubleParts(double dbl, out int sign, out int exp, out ulong man, out bool finite)
         {
             DoubleUlong du;
             du.Uu = 0;
@@ -73,7 +73,7 @@ namespace Theraot.Core
                 case 0:
                 {
                     // Denormalized number.
-                    fFinite = true;
+                    finite = true;
                     if (man != 0)
                     {
                         exp = -1074;
@@ -81,13 +81,14 @@ namespace Theraot.Core
 
                     break;
                 }
+
                 case 0x7FF:
                     // NaN or Infinite.
-                    fFinite = false;
+                    finite = false;
                     exp = int.MaxValue;
                     break;
                 default:
-                    fFinite = true;
+                    finite = true;
                     man |= 0x0010000000000000;
                     exp -= 1075;
                     break;

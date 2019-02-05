@@ -1,4 +1,4 @@
-﻿//Needed for NET20 (Linq)
+﻿// Needed for NET20 (Linq)
 
 #pragma warning disable RCS1231 // Make parameter ref read-only.
 

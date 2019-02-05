@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
@@ -12,8 +13,11 @@ namespace Theraot.Collections.Specialized
     public sealed class ConditionalExtendedList<T> : IList<T>
     {
         private readonly IList<T> _append;
+
         private readonly Func<bool> _enumerateAppend;
+
         private readonly Func<bool> _enumerateTarget;
+
         private readonly IList<T> _target;
 
         public ConditionalExtendedList(IEnumerable<T> target, IEnumerable<T> append, Func<bool> enumerateTarget, Func<bool> enumerateAppend)
@@ -23,6 +27,10 @@ namespace Theraot.Collections.Specialized
             _enumerateTarget = enumerateTarget ?? (target == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
             _enumerateAppend = enumerateAppend ?? (append == null ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }
+
+        public int Count => _target.Count + _append.Count;
+
+        bool ICollection<T>.IsReadOnly => true;
 
         public T this[int index]
         {
@@ -48,24 +56,10 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public int Count => _target.Count + _append.Count;
-
-        bool ICollection<T>.IsReadOnly => true;
-
         T IList<T>.this[int index]
         {
             get => this[index];
             set => throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
         }
 
         public bool Contains(T item)
@@ -106,11 +100,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
             if (_enumerateTarget())
@@ -126,11 +115,9 @@ namespace Theraot.Collections.Specialized
                 yield break;
             }
 
+            foreach (var item in _append)
             {
-                foreach (var item in _append)
-                {
-                    yield return item;
-                }
+                yield return item;
             }
         }
 
@@ -160,6 +147,21 @@ namespace Theraot.Collections.Specialized
             }
 
             return -1;
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         void IList<T>.Insert(int index, T item)

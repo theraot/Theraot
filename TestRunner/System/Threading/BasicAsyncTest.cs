@@ -22,7 +22,8 @@ namespace TestRunner.System.Threading
         private static Task<int> SlowOperationAsync()
         {
             Thread.Sleep(1);
-            // FromResult does not exist in .NET 4.0 - TaskEx offer a consistent interface from .NET 2.0 to .NET 4.5
+
+            // FromResult does not exist in .NET 4.0 - TaskEx offer a consistent API
             return TaskEx.FromResult(7);
         }
     }

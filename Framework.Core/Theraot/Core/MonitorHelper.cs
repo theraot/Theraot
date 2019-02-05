@@ -46,12 +46,13 @@ namespace Theraot.Core
 
         public static bool TryEnter(object obj, int millisecondsTimeout)
         {
-            if (millisecondsTimeout == -1)
+            if (millisecondsTimeout != -1)
             {
-                Monitor.Enter(obj);
-                return true;
+                return Monitor.TryEnter(obj, millisecondsTimeout);
             }
-            return Monitor.TryEnter(obj, millisecondsTimeout);
+
+            Monitor.Enter(obj);
+            return true;
         }
 
         public static void TryEnter(object obj, int millisecondsTimeout, ref bool taken)
@@ -89,19 +90,22 @@ namespace Theraot.Core
             }
             var spinWait = new SpinWait();
             var start = ThreadingHelper.TicksNow();
-            retry:
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (TryEnter(obj))
+            while (true)
             {
-                return true;
-            }
-            if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (TryEnter(obj))
+                {
+                    return true;
+                }
+
+                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= millisecondsTimeout)
+                {
+                    return false;
+                }
+
                 spinWait.SpinOnce();
-                goto retry;
             }
-            return false;
         }
 
         public static void TryEnter(object obj, int millisecondsTimeout, ref bool taken, CancellationToken cancellationToken)
@@ -117,12 +121,14 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
-            if (milliseconds == -1)
+
+            if (milliseconds != -1)
             {
-                Enter(obj, cancellationToken);
-                return true;
+                return TryEnter(obj, (int)milliseconds, cancellationToken);
             }
-            return TryEnter(obj, (int)milliseconds, cancellationToken);
+
+            Enter(obj, cancellationToken);
+            return true;
         }
 
         public static void TryEnter(object obj, TimeSpan timeout, ref bool taken, CancellationToken cancellationToken)

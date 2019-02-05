@@ -73,11 +73,7 @@ namespace Theraot.Core
             {
                 return 2;
             }
-            if (fromNumber >= 2147483629)
-            {
-                return 2147483629;
-            }
-            return ToPrimeInternal(fromNumber);
+            return fromNumber >= 2147483629 ? 2147483629 : ToPrimeInternal(fromNumber);
         }
 
         [DebuggerNonUserCode]
@@ -86,11 +82,7 @@ namespace Theraot.Core
             if (fromNumber < _smallPrimes[_smallPrimes.Length - 1])
             {
                 var index = Array.BinarySearch(_smallPrimes, fromNumber);
-                if (index < 0)
-                {
-                    return _smallPrimes[-index - 1];
-                }
-                return fromNumber;
+                return index < 0 ? _smallPrimes[-index - 1] : fromNumber;
             }
             if (fromNumber % 2 == 0)
             {

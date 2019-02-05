@@ -81,11 +81,7 @@ namespace Theraot.Threading
             {
                 return right is null;
             }
-            if (right is null)
-            {
-                return false;
-            }
-            return left._target.Equals(right._target);
+            return !(right is null) && left._target.Equals(right._target);
         }
 
         public override bool Equals(object obj)
@@ -100,11 +96,7 @@ namespace Theraot.Threading
 
         public bool Equals(NeedleLock<T> other)
         {
-            if (other is null)
-            {
-                return false;
-            }
-            return _target.Equals(other._target);
+            return !(other is null) && _target.Equals(other._target);
         }
 
         public override int GetHashCode()
@@ -115,11 +107,7 @@ namespace Theraot.Threading
         public override string ToString()
         {
             var target = Value;
-            if ((this as IReadOnlyNeedle<T>).IsAlive)
-            {
-                return target.ToString();
-            }
-            return "<Dead Needle>";
+            return (this as IReadOnlyNeedle<T>).IsAlive ? target.ToString() : "<Dead Needle>";
         }
 
         internal void Capture(LockSlot<T> slot)

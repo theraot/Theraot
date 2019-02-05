@@ -67,7 +67,7 @@ namespace Theraot.Core
 
             private static bool FallacyFunc(T obj)
             {
-                Theraot.No.Op(obj);
+                No.Op(obj);
                 return false;
             }
         }
@@ -83,7 +83,7 @@ namespace Theraot.Core
 
             private static bool TautologyFunc(T obj)
             {
-                Theraot.No.Op(obj);
+                No.Op(obj);
                 return true;
             }
         }

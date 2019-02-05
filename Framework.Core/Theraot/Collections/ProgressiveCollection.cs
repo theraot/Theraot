@@ -12,6 +12,7 @@ namespace Theraot.Collections
     public class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
+
         private readonly IDisposable _subscription;
 
         public ProgressiveCollection(IEnumerable<T> enumerable)
@@ -35,22 +36,32 @@ namespace Theraot.Collections
             Comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
+        ~ProgressiveCollection()
+        {
+            Close();
+        }
+
         public IReadOnlyCollection<T> Cache { get; }
+
+        public int Count
+        {
+            get
+            {
+                ConsumeAll();
+                return _cache.Count;
+            }
+        }
+
+        bool ICollection<T>.IsReadOnly => true;
 
         protected IEqualityComparer<T> Comparer { get; }
 
         private Progressor<T> Progressor { get; }
 
-        bool ICollection<T>.IsReadOnly => true;
-
-        void ICollection<T>.Add(T item)
+        public void Close()
         {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
+            _subscription?.Dispose();
+            Progressor?.Close();
         }
 
         public bool Contains(T item)
@@ -69,18 +80,17 @@ namespace Theraot.Collections
             _cache.CopyTo(array, arrayIndex);
         }
 
-        bool ICollection<T>.Remove(T item)
+        public void CopyTo(T[] array)
         {
-            throw new NotSupportedException();
+            Progressor.Consume();
+            _cache.CopyTo(array, 0);
         }
 
-        public int Count
+        public void CopyTo(T[] array, int arrayIndex, int countLimit)
         {
-            get
-            {
-                ConsumeAll();
-                return _cache.Count;
-            }
+            Extensions.CanCopyTo(array, arrayIndex, countLimit);
+            Progressor.While(() => _cache.Count < countLimit).Consume();
+            _cache.CopyTo(array, arrayIndex, countLimit);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -103,35 +113,6 @@ namespace Theraot.Collections
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        ~ProgressiveCollection()
-        {
-            Close();
-        }
-
-        public void Close()
-        {
-            _subscription?.Dispose();
-            Progressor?.Close();
-        }
-
-        public void CopyTo(T[] array)
-        {
-            Progressor.Consume();
-            _cache.CopyTo(array, 0);
-        }
-
-        public void CopyTo(T[] array, int arrayIndex, int countLimit)
-        {
-            Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Progressor.While(() => _cache.Count < countLimit).Consume();
-            _cache.CopyTo(array, arrayIndex, countLimit);
-        }
-
         public IEnumerable<T> Where(Predicate<T> check)
         {
             foreach (var item in _cache)
@@ -143,6 +124,26 @@ namespace Theraot.Collections
             {
                 yield return p;
             }
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         internal static ProgressiveCollection<T> Create<TCollection>(Progressor<T> progressor, IEqualityComparer<T> comparer)

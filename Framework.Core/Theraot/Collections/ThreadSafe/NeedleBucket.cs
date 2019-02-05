@@ -358,13 +358,14 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
             TNeedle found = null;
-            if (_entries.RemoveAt(index, ReplacementCheck))
+            if (!_entries.RemoveAt(index, ReplacementCheck))
             {
-                // Donate it
-                Reservoir.DonateNeedle(found);
-                return true;
+                return false;
             }
-            return false;
+
+            // Donate it
+            Reservoir.DonateNeedle(found);
+            return true;
             bool ReplacementCheck(TNeedle needle)
             {
                 found = needle;

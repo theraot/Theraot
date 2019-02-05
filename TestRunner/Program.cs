@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Theraot.Collections;
 using Theraot.Reflection;
 
@@ -50,21 +51,7 @@ namespace TestRunner
             var current = exception;
             for (; current != null; current = current.InnerException)
             {
-                report.Append
-                (
-                    StringEx.Join
-                    (
-                        "\r\n\r\n",
-                        "== Exception Type ==",
-                        current.GetType().Name,
-                        "== Exception Message ==",
-                        current.Message,
-                        "== Source ==",
-                        current.Source,
-                        "== Stacktrace ==",
-                        current.StackTrace
-                    )
-                );
+                report.Append(StringEx.Join("\r\n\r\n", "== Exception Type ==", current.GetType().Name, "== Exception Message ==", current.Message, "== Source ==", current.Source, "== Stacktrace ==", current.StackTrace));
                 report.Append("\r\n\r\n");
             }
 
@@ -73,10 +60,7 @@ namespace TestRunner
 
         public static void Main()
         {
-            var ignoredCategories = new[]
-            {
-                "Performance"
-            };
+            var ignoredCategories = new[] { "Performance" };
             var tests = GetAllTests(ignoredCategories);
             var stopwatch = new Stopwatch();
             Console.WriteLine();
@@ -127,23 +111,21 @@ namespace TestRunner
 
         private static IEnumerable<Test> GetAllTests(string[] ignoredCategories)
         {
-            return TypeDiscoverer.GetAllTypes()
-                .Where(type => type.HasAttribute<TestFixtureAttribute>())
-                .Select(type => new TestFixture(type))
-                .Where(testFixture => testFixture.TestFixtureAttribute != null && !testFixture.Categories.Overlaps(ignoredCategories))
-                .SelectMany(testFixture => testFixture.Type.GetMethods())
-                .Select(method => new TestMethod(method))
-                .Where(testMethod => testMethod.TestAttribute != null && !testMethod.Categories.Overlaps(ignoredCategories))
-                .Select(testMethod => new Test(testMethod));
+            return TypeDiscoverer.GetAllTypes().Where(type => type.HasAttribute<TestFixtureAttribute>()).Select(type => new TestFixture(type)).Where(testFixture => testFixture.TestFixtureAttribute != null && !testFixture.Categories.Overlaps(ignoredCategories)).SelectMany(testFixture => testFixture.Type.GetMethods()).Select(method => new TestMethod(method)).Where(testMethod => testMethod.TestAttribute != null && !testMethod.Categories.Overlaps(ignoredCategories)).Select(testMethod => new Test(testMethod));
         }
 
         private sealed class Test : IDisposable
         {
             private readonly bool _isolatedThread;
+
             private readonly ParameterInfo[] _parameterInfos;
+
             private readonly Type[] _preferredGenerators;
+
             private readonly int _repeat;
+
             private Delegate _delegate;
+
             private object _instance;
 
             public Test(TestMethod testMethod)
@@ -186,7 +168,7 @@ namespace TestRunner
                 {
                     var parameterInfo = parameterInfos[index];
                     var preferredGenerator = parameterInfo.GetAttributes<UseGeneratorAttribute>(false).FirstOrDefault();
-                    var generators = preferredGenerator == null ? preferredGenerators : new[] {preferredGenerator.GeneratorType};
+                    var generators = preferredGenerator == null ? preferredGenerators : new[] { preferredGenerator.GeneratorType };
                     parameters[index] = DataGenerator.Get(parameterInfo.ParameterType, generators);
                 }
 
@@ -226,6 +208,7 @@ namespace TestRunner
                                 capturedException = exception;
                             }
                         }
+
                     );
                     thread.Start();
                     thread.Join();
@@ -269,7 +252,9 @@ namespace TestRunner
             }
 
             public IEnumerable<string> Categories { get; }
+
             public TestFixtureAttribute TestFixtureAttribute { get; }
+
             public Type Type { get; }
         }
 
@@ -290,8 +275,11 @@ namespace TestRunner
             }
 
             public IEnumerable<string> Categories { get; }
+
             public MethodInfo Method { get; }
+
             public Type[] PreferredGenerators { get; }
+
             public TestAttribute TestAttribute { get; }
         }
     }

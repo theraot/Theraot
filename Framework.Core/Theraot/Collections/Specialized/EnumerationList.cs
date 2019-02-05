@@ -15,9 +15,13 @@ namespace Theraot.Collections.Specialized
     public class EnumerationList<T> : IList<T>, IReadOnlyList<T>
     {
         private readonly Func<T, bool> _contains;
+
         private readonly Func<int> _count;
+
         private readonly Func<IEnumerator<T>> _getEnumerator;
+
         private readonly Func<int, T> _index;
+
         private readonly Func<T, int> _indexOf;
 
         public EnumerationList(IEnumerable<T> wrapped)
@@ -98,20 +102,12 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<T>.IsReadOnly => true;
 
+        public T this[int index] => _index(index);
+
         T IList<T>.this[int index]
         {
             get => this[index];
             set => throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
         }
 
         public bool Contains(T item)
@@ -130,14 +126,24 @@ namespace Theraot.Collections.Specialized
             return _getEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public int IndexOf(T item)
         {
             return _indexOf(item);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         void IList<T>.Insert(int index, T item)
@@ -154,7 +160,5 @@ namespace Theraot.Collections.Specialized
         {
             throw new NotSupportedException();
         }
-
-        public T this[int index] => _index(index);
     }
 }

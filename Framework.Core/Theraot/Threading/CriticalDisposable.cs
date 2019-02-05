@@ -34,12 +34,13 @@ namespace Theraot.Threading
                        FuncHelper.GetFallacyFunc(),
                        () =>
                        {
-                           if (condition.Invoke())
+                           if (!condition.Invoke())
                            {
-                               Dispose();
-                               return true;
+                               return false;
                            }
-                           return false;
+
+                           Dispose();
+                           return true;
                        }
                    );
         }

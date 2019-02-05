@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
@@ -19,7 +20,9 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : WeakNeedle<T>, new()
     {
         private readonly IEqualityComparer<T> _comparer;
+
         private readonly ThreadSafeCollection<TNeedle> _wrapped;
+
         private WeakNeedle<EventHandler> _eventHandler;
 
         public WeakCollection()
@@ -54,6 +57,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        ~WeakCollection()
+        {
+            UnRegisterForAutoRemoveDeadItemsExtracted();
+        }
+
         public bool AutoRemoveDeadItems
         {
             get => _eventHandler.IsAlive;
@@ -83,9 +91,9 @@ namespace Theraot.Collections.ThreadSafe
         public void Add(T item)
         {
             var needle = new TNeedle
-            {
-                Value = item
-            };
+                         {
+                             Value = item
+                         };
             _wrapped.Add(needle);
         }
 
@@ -98,9 +106,34 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public IEnumerable<T> ClearEnumerable()
+        {
+            var displaced = _wrapped.ClearEnumerable();
+            foreach (var needle in displaced)
+            {
+                if (needle.TryGetValue(out var result))
+                {
+                    yield return result;
+                }
+
+                needle.Free();
+            }
+        }
+
         public bool Contains(T item)
         {
             var check = Check(item);
+            return _wrapped.Where(check).Any();
+        }
+
+        public bool Contains(Predicate<T> itemCheck)
+        {
+            if (itemCheck == null)
+            {
+                throw new ArgumentNullException(nameof(itemCheck));
+            }
+
+            var check = Check(itemCheck);
             return _wrapped.Where(check).Any();
         }
 
@@ -121,11 +154,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public bool Remove(T item)
         {
             var check = Check(item);
@@ -136,36 +164,6 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             return false;
-        }
-
-        public IEnumerable<T> ClearEnumerable()
-        {
-            var displaced = _wrapped.ClearEnumerable();
-            foreach (var needle in displaced)
-            {
-                if (needle.TryGetValue(out var result))
-                {
-                    yield return result;
-                }
-
-                needle.Free();
-            }
-        }
-
-        ~WeakCollection()
-        {
-            UnRegisterForAutoRemoveDeadItemsExtracted();
-        }
-
-        public bool Contains(Predicate<T> itemCheck)
-        {
-            if (itemCheck == null)
-            {
-                throw new ArgumentNullException(nameof(itemCheck));
-            }
-
-            var check = Check(itemCheck);
-            return _wrapped.Where(check).Any();
         }
 
         public int RemoveDeadItems()
@@ -191,6 +189,11 @@ namespace Theraot.Collections.ThreadSafe
 
                 removed.Free();
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         protected void Add(TNeedle needle)

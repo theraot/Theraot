@@ -39,16 +39,19 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(producerConsumerCollection));
             }
-        back:
-            if (producerConsumerCollection.TryTake(out item))
+
+            while (true)
             {
+                if (!producerConsumerCollection.TryTake(out item))
+                {
+                    return false;
+                }
                 if (check(item))
                 {
                     return true;
                 }
-                goto back;
             }
-            return false;
+
         }
 
         public static bool TryTakeUntil<T>(this IProducerConsumerCollection<T> producerConsumerCollection, Predicate<T> check, ICollection<T> trail)
@@ -65,17 +68,21 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(trail));
             }
-        back:
-            if (producerConsumerCollection.TryTake(out var item))
+
+            while (true)
             {
+                if (!producerConsumerCollection.TryTake(out var item))
+                {
+                    return false;
+                }
+
                 if (check(item))
                 {
                     return true;
                 }
+
                 trail.Add(item);
-                goto back;
             }
-            return false;
         }
     }
 }

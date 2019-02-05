@@ -11,7 +11,9 @@ namespace Theraot.Threading.Needles
         where T : class
     {
         private readonly int _hashCode;
+
         private readonly bool _trackResurrection;
+
         private WeakReference<T> _handle;
 
         public WeakNeedle()
@@ -47,26 +49,13 @@ namespace Theraot.Threading.Needles
             _trackResurrection = trackResurrection;
         }
 
-        public virtual bool TrackResurrection => _trackResurrection;
-
         public Exception Exception { get; private set; }
+
+        public bool IsAlive => Exception != null && _handle.TryGetTarget(out _);
 
         public bool IsFaulted => Exception != null;
 
-        bool IPromise.IsCompleted => true;
-
-        public virtual bool TryGetValue(out T value)
-        {
-            value = null;
-            return Exception == null && _handle.TryGetTarget(out value);
-        }
-
-        public bool Equals(WeakNeedle<T> other)
-        {
-            return !(other is null) && EqualsExtractedExtracted(this, other);
-        }
-
-        public bool IsAlive => Exception != null && _handle.TryGetTarget(out _);
+        public virtual bool TrackResurrection => _trackResurrection;
 
         public virtual T Value
         {
@@ -79,12 +68,20 @@ namespace Theraot.Threading.Needles
 
                 return null;
             }
+
             set => SetTargetValue(value);
         }
 
-        public void Free()
+        bool IPromise.IsCompleted => true;
+
+        public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            SetTargetValue(null);
+            if (left is null)
+            {
+                return right is null;
+            }
+
+            return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
         public static explicit operator T(WeakNeedle<T> needle)
@@ -112,14 +109,9 @@ namespace Theraot.Threading.Needles
             return right is null || !EqualsExtractedExtracted(left, right);
         }
 
-        public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
+        public bool Equals(WeakNeedle<T> other)
         {
-            if (left is null)
-            {
-                return right is null;
-            }
-
-            return !(right is null) && EqualsExtractedExtracted(left, right);
+            return !(other is null) && EqualsExtractedExtracted(this, other);
         }
 
         public sealed override bool Equals(object obj)
@@ -138,6 +130,11 @@ namespace Theraot.Threading.Needles
             return false;
         }
 
+        public void Free()
+        {
+            SetTargetValue(null);
+        }
+
         public sealed override int GetHashCode()
         {
             return _hashCode;
@@ -151,6 +148,12 @@ namespace Theraot.Threading.Needles
             }
 
             return _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
+        }
+
+        public virtual bool TryGetValue(out T value)
+        {
+            value = null;
+            return Exception == null && _handle.TryGetTarget(out value);
         }
 
         protected void SetTargetError(Exception error)

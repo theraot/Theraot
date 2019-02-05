@@ -96,6 +96,7 @@ namespace TestRunner.System.Threading
 
                     Volatile.Write(ref control[2], 1);
                 }
+
             );
             thread.Start();
             ThreadingHelper.SpinWaitUntil(ref control[0], 1);
@@ -151,7 +152,7 @@ namespace TestRunner.System.Threading
         [Test]
         public static void TaskThreadIsBackgroundWhileLooping()
         {
-            var signal = new[] {0};
+            var signal = new[] { 0 };
             Thread thread = null;
             TaskEx.Run
             (
@@ -164,6 +165,7 @@ namespace TestRunner.System.Threading
                         spinWait.SpinOnce();
                     }
                 }
+
             );
             ThreadingHelper.SpinWaitWhileNull(ref thread);
             Assert.IsTrue((thread.ThreadState & ThreadState.Background) != 0);
@@ -185,6 +187,7 @@ namespace TestRunner.System.Threading
                         thread = Thread.CurrentThread;
                         manualResetEvent[0].WaitOne();
                     }
+
                 );
                 ThreadingHelper.SpinWaitWhileNull(ref thread);
                 Assert.IsTrue((thread.ThreadState & ThreadState.Background) != 0);
@@ -196,7 +199,7 @@ namespace TestRunner.System.Threading
         [Test]
         public static void ThreadIsRunningWhileLooping()
         {
-            var signal = new[] {0};
+            var signal = new[] { 0 };
             var thread = new Thread
             (
                 () =>
@@ -207,6 +210,7 @@ namespace TestRunner.System.Threading
                         spinWait.SpinOnce();
                     }
                 }
+
             );
             thread.Start();
             Assert.AreEqual(ThreadState.Running, thread.ThreadState);

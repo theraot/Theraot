@@ -118,10 +118,12 @@ namespace System.Threading.Tasks
                 taskCompleteSource.TrySetCanceled();
                 return taskCompleteSource.Task;
             }
+
             if (token.CanBeCanceled)
             {
                 token.Register(() => taskCompleteSource.TrySetCanceled());
             }
+
             return taskCompleteSource.Task;
 #endif
         }

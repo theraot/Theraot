@@ -23,7 +23,7 @@ namespace Theraot.Threading
                 catch (Exception exception)
                 {
                     // Catch them all - fields may be partially collected.
-                    Theraot.No.Op(exception);
+                    No.Op(exception);
                 }
             }
         }
@@ -56,23 +56,25 @@ namespace Theraot.Threading
             }
             else
             {
-                if (whenNotDisposed != null)
+                if (whenNotDisposed == null)
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+                    return;
+                }
+
+                if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+                {
+                    try
                     {
-                        try
-                        {
-                            whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            System.Threading.Interlocked.Decrement(ref _disposeStatus);
-                        }
+                        whenNotDisposed.Invoke();
                     }
-                    else
+                    finally
                     {
-                        whenDisposed?.Invoke();
+                        System.Threading.Interlocked.Decrement(ref _disposeStatus);
                     }
+                }
+                else
+                {
+                    whenDisposed?.Invoke();
                 }
             }
         }
@@ -82,48 +84,44 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                if (whenDisposed == null)
-                {
-                    return default;
-                }
-                return whenDisposed.Invoke();
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
             if (whenNotDisposed == null)
             {
                 return default;
             }
-            if (ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
+
+            if (!ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
-                try
-                {
-                    return whenNotDisposed.Invoke();
-                }
-                finally
-                {
-                    System.Threading.Interlocked.Decrement(ref _disposeStatus);
-                }
+                return whenDisposed == null ? default : whenDisposed.Invoke();
             }
-            if (whenDisposed == null)
+
+            try
             {
-                return default;
+                return whenNotDisposed.Invoke();
             }
-            return whenDisposed.Invoke();
+            finally
+            {
+                System.Threading.Interlocked.Decrement(ref _disposeStatus);
+            }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
-            Theraot.No.Op(disposeManagedResources);
-            if (TakeDisposalExecution())
+            No.Op(disposeManagedResources);
+            if (!TakeDisposalExecution())
             {
-                try
-                {
-                    _release();
-                }
-                finally
-                {
-                    _release = null;
-                }
+                return;
+            }
+
+            try
+            {
+                _release();
+            }
+            finally
+            {
+                _release = null;
             }
         }
 

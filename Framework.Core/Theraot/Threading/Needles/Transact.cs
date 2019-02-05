@@ -38,66 +38,67 @@ namespace Theraot.Threading.Needles
 
         public bool Commit()
         {
-            if (_currentTransaction == this)
+            if (_currentTransaction != this)
             {
-                ThreadingHelper.MemoryBarrier();
+                throw new InvalidOperationException("Cannot commit a non-current transaction.");
+            }
+
+            ThreadingHelper.MemoryBarrier();
+            try
+            {
+                if (!CheckValue())
+                {
+                    //the resources has been modified by another thread
+                    return false;
+                }
                 try
                 {
-                    if (!CheckValue())
+                    ThreadingHelper.SpinWaitUntil(() => Context.ClaimSlot(out _lockSlot));
+                    _lockSlot.Value = Thread.CurrentThread;
+                    if (!Capture())
                     {
-                        //the resources has been modified by another thread
-                        return false;
-                    }
-                    try
-                    {
-                        ThreadingHelper.SpinWaitUntil(() => Context.ClaimSlot(out _lockSlot));
-                        _lockSlot.Value = Thread.CurrentThread;
-                        if (!Capture())
-                        {
-                            //Nothing to commit
-                            return true;
-                        }
-                        ThreadingHelper.MemoryBarrier();
-                        if (!CheckCapture() || !CheckValue())
-                        {
-                            //the resources has been claimed by another thread
-                            return false;
-                        }
-                        var written = false;
-                        foreach (var resource in _writeLog)
-                        {
-                            if (resource.Key.Commit())
-                            {
-                                written = true;
-                            }
-                            else
-                            {
-                                //unexpected
-                                if (written)
-                                {
-                                    // TODO - the transaction was partially written, this should not be possible.
-                                    System.Diagnostics.Debug.Fail("unexpected - partially commited transaction");
-                                }
-                                return false;
-                            }
-                        }
+                        //Nothing to commit
                         return true;
                     }
-                    finally
+                    ThreadingHelper.MemoryBarrier();
+                    if (!CheckCapture() || !CheckValue())
                     {
-                        if (_lockSlot != null)
+                        //the resources has been claimed by another thread
+                        return false;
+                    }
+                    var written = false;
+                    foreach (var resource in _writeLog)
+                    {
+                        if (resource.Key.Commit())
                         {
-                            _lockSlot.Close();
-                            _lockSlot = null;
+                            written = true;
+                        }
+                        else
+                        {
+                            //unexpected
+                            if (written)
+                            {
+                                // TODO - the transaction was partially written, this should not be possible.
+                                System.Diagnostics.Debug.Fail("unexpected - partially committed transaction");
+                            }
+                            return false;
                         }
                     }
+                    return true;
                 }
                 finally
                 {
-                    Release(false);
+                    if (_lockSlot != null)
+                    {
+                        _lockSlot.Close();
+                        _lockSlot = null;
+                    }
                 }
             }
-            throw new InvalidOperationException("Cannot commit a non-current transaction.");
+            finally
+            {
+                Release(false);
+            }
         }
 
         public void Rollback()
@@ -120,12 +121,15 @@ namespace Theraot.Threading.Needles
                 resource1.Key.Capture();
                 result = true;
             }
-            if (result)
+
+            if (!result)
             {
-                foreach (var resource2 in _readLog)
-                {
-                    resource2.Key.Capture();
-                }
+                return result;
+            }
+
+            foreach (var resource2 in _readLog)
+            {
+                resource2.Key.Capture();
             }
             return result;
         }

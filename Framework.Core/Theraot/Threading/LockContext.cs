@@ -67,21 +67,20 @@ namespace Theraot.Threading
                 {
                     continue;
                 }
-                if (slot == null || slot.CompareTo(testSlot) < 0)
+
+                if (slot != null && slot.CompareTo(testSlot) >= 0)
                 {
-                    slot = testSlot;
-                    resultLock = flag;
+                    continue;
                 }
+
+                slot = testSlot;
+                resultLock = flag;
             }
             if (Interlocked.CompareExchange(ref owner, resultLock, -1) != -1)
             {
                 return Read(ref owner, out slot);
             }
-            if (slot == null)
-            {
-                return false;
-            }
-            return true;
+            return slot != null;
         }
 
         private bool Read(ref int owner, out LockSlot<T> slot)
@@ -103,12 +102,13 @@ namespace Theraot.Threading
 
         private bool TryClaimFreeSlot(out LockSlot<T> slot)
         {
-            if (_closedSlots.TryTake(out slot))
+            if (!_closedSlots.TryTake(out slot))
             {
-                slot.Open(_version.AdvanceNewToken());
-                return true;
+                return false;
             }
-            return false;
+
+            slot.Open(_version.AdvanceNewToken());
+            return true;
         }
     }
 }

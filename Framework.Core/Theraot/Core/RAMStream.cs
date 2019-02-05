@@ -249,29 +249,31 @@ namespace Theraot.Core
                     }
                 }
                 var index = _position - pair.Key;
-                if (pair.Value.Length > index)
+                if (pair.Value.Length <= index)
                 {
-                    // The position is in the middle of the pair
-                    var source = pair.Value;
-                    var diff = pair.Value.Length - index;
-                    contribution = diff > count ? count : diff;
-                    if (contribution == 0)
-                    {
-                        break;
-                    }
-                    intContribution = (int)contribution;
-                    Array.Copy(buffer, offset, source, (int)index, intContribution);
-                    offset += intContribution;
-                    count -= intContribution;
-                    _position += intContribution;
-                    if (_position > _length)
-                    {
-                        _length = _position;
-                    }
-                    if (count == 0)
-                    {
-                        break;
-                    }
+                    continue;
+                }
+
+                // The position is in the middle of the pair
+                var source = pair.Value;
+                var diff = pair.Value.Length - index;
+                contribution = diff > count ? count : diff;
+                if (contribution == 0)
+                {
+                    break;
+                }
+                intContribution = (int)contribution;
+                Array.Copy(buffer, offset, source, (int)index, intContribution);
+                offset += intContribution;
+                count -= intContribution;
+                _position += intContribution;
+                if (_position > _length)
+                {
+                    _length = _position;
+                }
+                if (count == 0)
+                {
+                    break;
                 }
             }
             while (count > 0)
