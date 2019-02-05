@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 #pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable RCS1224 // Make method an extension method.
 
 using System;
 using System.Collections.Generic;
@@ -2933,11 +2934,6 @@ namespace Theraot.Collections
             return whereNot == null ? WhereExtracted(source, predicate) : WhereExtracted(source, predicate, whereNot);
         }
 
-        public static IEnumerable<T> WhereType<T>(IEnumerable enumerable)
-        {
-            return new EnumerableFromDelegate<T>(enumerable.GetEnumerator);
-        }
-
         public static IEnumerable<TResult> ZipMany<T, TResult>(this IEnumerable<IEnumerable<T>> source, Func<IEnumerable<T>, TResult> func)
         {
             if (source == null)
@@ -2998,7 +2994,7 @@ namespace Theraot.Collections
         {
             var low = indexStart;
             var high = indexEnd;
-            var pivot = list[low + (high - low) / 2];
+            var pivot = list[low + ((high - low) / 2)];
             while (low <= high)
             {
                 while (low < indexEnd && comparer.Compare(list[low], pivot) < 0)
