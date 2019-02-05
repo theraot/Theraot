@@ -11,9 +11,9 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     [DebuggerDisplay("IsValueCreated={IsValueCreated}")]
-    public sealed class TrackingThreadLocal<T> : IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
+    public sealed class TrackingThreadLocal<T> : IThreadLocal<T>, ICacheNeedle<T>, IObserver<T>
     {
-        private const int _maxProbingHint = 4;
+        private const int MaxProbingHint = 4;
 
         private int _disposing;
         private ThreadSafeDictionary<UniqueId, INeedle<T>> _slots;
@@ -22,13 +22,17 @@ namespace Theraot.Threading
         public TrackingThreadLocal(Func<T> valueFactory)
         {
             _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
-            _slots = new ThreadSafeDictionary<UniqueId, INeedle<T>>(_maxProbingHint);
+            _slots = new ThreadSafeDictionary<UniqueId, INeedle<T>>(MaxProbingHint);
         }
 
         public bool TryGetValue(out T value)
         {
             return TryGetValue(ThreadUniqueId.CurrentThreadId, out value);
         }
+
+        bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
+
+        bool IPromise.IsCompleted => IsValueCreated;
 
         void IObserver<T>.OnCompleted()
         {
@@ -84,21 +88,6 @@ namespace Theraot.Threading
 
             _slots = null;
             _valueFactory = null;
-        }
-
-        Exception IPromise.Exception => null;
-
-        bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
-
-        bool IPromise.IsCanceled => false;
-
-        bool IPromise.IsCompleted => IsValueCreated;
-
-        bool IPromise.IsFaulted => false;
-
-        void IWaitablePromise.Wait()
-        {
-            GC.KeepAlive(Value);
         }
 
         public void EraseValue()

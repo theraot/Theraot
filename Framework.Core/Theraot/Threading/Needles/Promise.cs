@@ -6,12 +6,17 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
+using Theraot.Collections.ThreadSafe;
+
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
     public class Promise : IWaitablePromise
     {
         private readonly int _hashCode;
+
+        private readonly StrongDelegateCollection _onCompleted;
+
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Promise(bool done)
@@ -22,6 +27,8 @@ namespace Theraot.Threading.Needles
             {
                 _waitHandle = new ManualResetEventSlim(false);
             }
+
+            _onCompleted = new StrongDelegateCollection(true);
         }
 
         public Promise(Exception exception)
@@ -29,13 +36,15 @@ namespace Theraot.Threading.Needles
             Exception = exception;
             _hashCode = exception.GetHashCode();
             _waitHandle = new ManualResetEventSlim(true);
+            _onCompleted = new StrongDelegateCollection(true);
         }
 
-        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
+        ~Promise()
+        {
+            ReleaseWaitHandle(false);
+        }
 
         public Exception Exception { get; private set; }
-
-        bool IPromise.IsCanceled => false;
 
         public bool IsCompleted
         {
@@ -48,29 +57,7 @@ namespace Theraot.Threading.Needles
 
         public bool IsFaulted => Exception != null;
 
-        public virtual void Wait()
-        {
-            var waitHandle = _waitHandle.Value;
-            if (waitHandle == null)
-            {
-                return;
-            }
-
-            try
-            {
-                waitHandle.Wait();
-            }
-            catch (ObjectDisposedException exception)
-            {
-                // Came late to the party, initialization was done
-                No.Op(exception);
-            }
-        }
-
-        ~Promise()
-        {
-            ReleaseWaitHandle(false);
-        }
+        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
 
         public virtual void Free()
         {
@@ -127,6 +114,11 @@ namespace Theraot.Threading.Needles
             return _hashCode;
         }
 
+        public void OnCompleted(Action continuation)
+        {
+            _onCompleted.Add(continuation);
+        }
+
         public void SetCompleted()
         {
             Exception = null;
@@ -141,11 +133,26 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return IsCompleted
-                ? Exception == null
-                    ? "[Done]"
-                    : Exception.ToString()
-                : "[Not Created]";
+            return IsCompleted ? Exception == null ? "[Done]" : Exception.ToString() : "[Not Created]";
+        }
+
+        public virtual void Wait()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle == null)
+            {
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait();
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
+            }
         }
 
         public virtual void Wait(CancellationToken cancellationToken)
@@ -256,6 +263,7 @@ namespace Theraot.Threading.Needles
                 waitHandle.Dispose();
             }
 
+            _onCompleted.InvokeWithException(null);
             _waitHandle.Value = null;
         }
     }

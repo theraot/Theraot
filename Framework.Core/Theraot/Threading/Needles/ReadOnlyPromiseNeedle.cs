@@ -6,12 +6,12 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public class ReadOnlyPromiseNeedle<T> : ReadOnlyPromise, IWaitablePromise<T>, ICacheNeedle<T>, IEquatable<ReadOnlyPromiseNeedle<T>>
+    public class ReadOnlyPromiseNeedle<T> : ReadOnlyPromise, ICacheNeedle<T>, IEquatable<ReadOnlyPromiseNeedle<T>>
     {
         private readonly ICacheNeedle<T> _promised;
 
-        public ReadOnlyPromiseNeedle(ICacheNeedle<T> promised, bool allowWait)
-            : base(promised, allowWait)
+        public ReadOnlyPromiseNeedle(PromiseNeedle<T> promised)
+            : base(promised)
         {
             _promised = promised;
         }
@@ -28,14 +28,14 @@ namespace Theraot.Threading.Needles
             return _promised.TryGetValue(out value);
         }
 
+        public bool IsAlive => _promised.IsAlive;
+
+        public T Value => _promised.Value;
+
         public bool Equals(ReadOnlyPromiseNeedle<T> other)
         {
             return !(other is null) && _promised.Equals(other._promised);
         }
-
-        public bool IsAlive => _promised.IsAlive;
-
-        public T Value => _promised.Value;
 
         public static explicit operator T(ReadOnlyPromiseNeedle<T> needle)
         {

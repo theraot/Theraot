@@ -12,7 +12,7 @@ namespace Theraot.Threading
 {
     [DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     [DebuggerNonUserCode]
-    public sealed class NoTrackingThreadLocal<T> : IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
+    public sealed class NoTrackingThreadLocal<T> : IThreadLocal<T>, ICacheNeedle<T>, IObserver<T>
     {
         private int _disposing;
         private LocalDataStoreSlot _slot;
@@ -30,15 +30,44 @@ namespace Theraot.Threading
             _slot = Thread.AllocateDataSlot();
         }
 
-        Exception IPromise.Exception => null;
+        internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default;
 
         bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
 
-        bool IPromise.IsCanceled => false;
-
         bool IPromise.IsCompleted => IsValueCreated;
 
-        bool IPromise.IsFaulted => false;
+        public bool TryGetValue(out T value)
+        {
+            var bundle = Thread.GetData(_slot);
+            if (!(bundle is INeedle<T> container))
+            {
+                value = default;
+                return false;
+            }
+
+            value = container.Value;
+            return true;
+        }
+
+        void IObserver<T>.OnCompleted()
+        {
+            GC.KeepAlive(Value);
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            if (Volatile.Read(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
+            }
+
+            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
 
         public bool IsValueCreated
         {
@@ -48,6 +77,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
+
                 return Thread.GetData(_slot) is ReadOnlyStructNeedle<T>;
             }
         }
@@ -60,6 +90,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
+
                 var bundle = Thread.GetData(_slot);
                 if (bundle is INeedle<T> needle)
                 {
@@ -79,6 +110,7 @@ namespace Theraot.Threading
                     {
                         Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
                     }
+
                     throw;
                 }
             }
@@ -88,6 +120,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
+
                 Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(value));
             }
         }
@@ -95,8 +128,6 @@ namespace Theraot.Threading
         T IThreadLocal<T>.ValueForDebugDisplay => ValueForDebugDisplay;
 
         IList<T> IThreadLocal<T>.Values => throw new InvalidOperationException();
-
-        internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default;
 
         [DebuggerNonUserCode]
         public void Dispose()
@@ -116,48 +147,13 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
             }
+
             Thread.SetData(_slot, null);
-        }
-
-        void IObserver<T>.OnCompleted()
-        {
-            GC.KeepAlive(Value);
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            if (Volatile.Read(ref _disposing) == 1)
-            {
-                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
-            }
-            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
         }
 
         public override string ToString()
         {
             return Value.ToString();
-        }
-
-        public bool TryGetValue(out T value)
-        {
-            var bundle = Thread.GetData(_slot);
-            if (!(bundle is INeedle<T> container))
-            {
-                value = default;
-                return false;
-            }
-            value = container.Value;
-            return true;
-        }
-
-        void IWaitablePromise.Wait()
-        {
-            GC.KeepAlive(Value);
         }
     }
 }

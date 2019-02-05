@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public class PromiseNeedle<T> : Promise, IWaitablePromise<T>, IRecyclableNeedle<T>, ICacheNeedle<T>
+    public class PromiseNeedle<T> : Promise, IRecyclableNeedle<T>, ICacheNeedle<T>
     {
         private readonly int _hashCode;
         private T _target;

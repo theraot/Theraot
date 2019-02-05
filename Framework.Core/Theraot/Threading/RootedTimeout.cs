@@ -12,12 +12,12 @@ namespace Theraot.Threading
 {
     public class RootedTimeout : IPromise
     {
-        private const int _canceled = 4;
-        private const int _canceling = 3;
-        private const int _changing = 6;
-        private const int _created = 0;
-        private const int _executed = 2;
-        private const int _executing = 1;
+        private const int Canceled = 4;
+        private const int Canceling = 3;
+        private const int Changing = 6;
+        private const int Created = 0;
+        private const int Executed = 2;
+        private const int Executing = 1;
         private static int _lastRootIndex = -1;
         private static readonly Bucket<RootedTimeout> _root = new Bucket<RootedTimeout>();
         private readonly int _hashcode;
@@ -33,13 +33,9 @@ namespace Theraot.Threading
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
 
-        public bool IsCanceled => Volatile.Read(ref _status) == _canceled;
+        public bool IsCanceled => Volatile.Read(ref _status) == Canceled;
 
-        public bool IsCompleted => Volatile.Read(ref _status) == _executed;
-
-        Exception IPromise.Exception => null;
-
-        bool IPromise.IsFaulted => false;
+        public bool IsCompleted => Volatile.Read(ref _status) == Executed;
 
         ~RootedTimeout()
         {
@@ -90,7 +86,7 @@ namespace Theraot.Threading
             var timeout = new RootedTimeout();
             if (token.IsCancellationRequested)
             {
-                timeout._status = _canceled;
+                timeout._status = Canceled;
                 return timeout;
             }
 
@@ -123,13 +119,13 @@ namespace Theraot.Threading
 
         public void Cancel()
         {
-            if (Interlocked.CompareExchange(ref _status, _canceling, _created) != _created)
+            if (Interlocked.CompareExchange(ref _status, Canceling, Created) != Created)
             {
                 return;
             }
 
             Close();
-            Volatile.Write(ref _status, _canceled);
+            Volatile.Write(ref _status, Canceled);
         }
 
         public bool Change(long dueTime)
@@ -139,7 +135,7 @@ namespace Theraot.Threading
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
 
-            if (Interlocked.CompareExchange(ref _status, _changing, _created) != _created)
+            if (Interlocked.CompareExchange(ref _status, Changing, Created) != Created)
             {
                 return false;
             }
@@ -161,7 +157,7 @@ namespace Theraot.Threading
                 wrapped.Change(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
             }
 
-            Volatile.Write(ref _status, _created);
+            Volatile.Write(ref _status, Created);
             return true;
         }
 
@@ -238,8 +234,8 @@ namespace Theraot.Threading
 
         private void Finish()
         {
-            ThreadingHelper.SpinWaitWhile(ref _status, _changing);
-            if (Interlocked.CompareExchange(ref _status, _executing, _created) != _created)
+            ThreadingHelper.SpinWaitWhile(ref _status, Changing);
+            if (Interlocked.CompareExchange(ref _status, Executing, Created) != Created)
             {
                 return;
             }
@@ -252,7 +248,7 @@ namespace Theraot.Threading
 
             callback.Invoke();
             Close();
-            Volatile.Write(ref _status, _executed);
+            Volatile.Write(ref _status, Executed);
         }
     }
 }

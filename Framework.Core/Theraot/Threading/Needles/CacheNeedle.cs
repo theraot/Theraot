@@ -1,14 +1,14 @@
 ﻿#if FAT
 using System;
+using System.Diagnostics;
 using System.Threading;
-
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [System.Diagnostics.DebuggerNonUserCode]
-    public class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>, IEquatable<CacheNeedle<T>>, IWaitablePromise<T>
+    [DebuggerNonUserCode]
+    public class CacheNeedle<T> : WeakNeedle<T>, IEquatable<CacheNeedle<T>>
         where T : class
     {
         [NonSerialized]
@@ -52,6 +52,7 @@ namespace Theraot.Threading.Needles
                     }
                 };
             }
+
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
@@ -71,13 +72,9 @@ namespace Theraot.Threading.Needles
 
         public T CachedTarget => base.Value;
 
-        Exception IPromise.Exception => Exception;
-
-        bool IPromise.IsCanceled => false;
+        protected INeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
 
         public bool IsCompleted => !_waitHandle.IsAlive;
-
-        bool IPromise.IsFaulted => IsFaulted;
 
         public override T Value
         {
@@ -93,11 +90,15 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected INeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
-
         public bool Equals(CacheNeedle<T> other)
         {
             return other != null && base.Equals(other);
+        }
+
+        public override bool TryGetValue(out T value)
+        {
+            value = default;
+            return IsCompleted && base.TryGetValue(out value);
         }
 
         public virtual void Initialize()
@@ -110,30 +111,27 @@ namespace Theraot.Threading.Needles
             Volatile.Write(ref _valueFactory, null);
         }
 
-        public override bool TryGetValue(out T value)
-        {
-            value = default;
-            return IsCompleted && base.TryGetValue(out value);
-        }
-
         public void Wait()
         {
             if (_initializerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
+
             var waitHandle = _waitHandle.Value;
-            if (waitHandle != null)
+            if (waitHandle == null)
             {
-                try
-                {
-                    waitHandle.Wait();
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    // Came late to the party, initialization was done
-                    Theraot.No.Op(exception);
-                }
+                return;
+            }
+
+            try
+            {
+                waitHandle.Wait();
+            }
+            catch (ObjectDisposedException exception)
+            {
+                // Came late to the party, initialization was done
+                No.Op(exception);
             }
         }
 
@@ -143,6 +141,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(beforeInitialize));
             }
+
             if (Volatile.Read(ref _valueFactory) == null)
             {
                 // If unable to initialize do nothing
@@ -153,6 +152,7 @@ namespace Theraot.Threading.Needles
                 // _target can still be set by SetTargetValue or the Value property
                 return;
             }
+
             try
             {
                 beforeInitialize.Invoke();
@@ -165,7 +165,7 @@ namespace Theraot.Threading.Needles
 
         private void InitializeExtracted()
         {
-        back:
+            back:
             var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
             if (valueFactory == null)
             {
@@ -175,6 +175,7 @@ namespace Theraot.Threading.Needles
                 {
                     throw new InvalidOperationException();
                 }
+
                 var waitHandle = _waitHandle.Value;
                 // While _waitHandle.Value is not null it means that we have to wait initialization to complete
                 if (waitHandle != null)
@@ -189,12 +190,13 @@ namespace Theraot.Threading.Needles
                             // There was an error in the initialization, go back
                             goto back;
                         }
+
                         ReleaseWaitHandle();
                     }
                     catch (ObjectDisposedException exception)
                     {
                         // Came late to the party, initialization is done
-                        Theraot.No.Op(exception);
+                        No.Op(exception);
                     }
                 }
             }
@@ -239,6 +241,7 @@ namespace Theraot.Threading.Needles
                 // let it throw
                 waitHandle.Dispose();
             }
+
             _waitHandle.Value = null;
         }
     }

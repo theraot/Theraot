@@ -8,41 +8,23 @@ namespace Theraot.Threading.Needles
     [DebuggerNonUserCode]
     public class ReadOnlyPromise : IWaitablePromise
     {
-        private readonly IPromise _promised;
-        private readonly Action _wait;
+        private readonly IWaitablePromise _promised;
 
-        public ReadOnlyPromise(IPromise promised, bool allowWait)
+        public ReadOnlyPromise(IWaitablePromise promised)
         {
             _promised = promised;
-            if (allowWait)
-            {
-                if (_promised is IWaitablePromise promise)
-                {
-                    _wait = promise.Wait;
-                }
-                else
-                {
-                    _wait = () => ThreadingHelper.SpinWaitUntil(() => _promised.IsCompleted);
-                }
-            }
-            else
-            {
-                _wait =
-                    () => throw new InvalidOperationException();
-            }
         }
-
-        public Exception Exception => _promised.Exception;
-
-        public bool IsCanceled => _promised.IsCanceled;
 
         public bool IsCompleted => _promised.IsCompleted;
 
-        public bool IsFaulted => _promised.IsFaulted;
+        public void OnCompleted(Action continuation)
+        {
+            _promised.OnCompleted(continuation);
+        }
 
         public void Wait()
         {
-            _wait();
+            _promised.Wait();
         }
 
         public override int GetHashCode()

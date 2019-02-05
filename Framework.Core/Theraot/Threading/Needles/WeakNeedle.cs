@@ -51,11 +51,9 @@ namespace Theraot.Threading.Needles
 
         public Exception Exception { get; private set; }
 
-        bool IPromise.IsCanceled => false;
+        public bool IsFaulted => Exception != null;
 
         bool IPromise.IsCompleted => true;
-
-        public bool IsFaulted => Exception != null;
 
         public virtual bool TryGetValue(out T value)
         {

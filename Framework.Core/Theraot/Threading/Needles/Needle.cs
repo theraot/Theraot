@@ -1,6 +1,7 @@
 ﻿#if FAT
 using System;
 using System.Diagnostics;
+using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading.Needles
 {
@@ -8,12 +9,14 @@ namespace Theraot.Threading.Needles
     public class Needle<T> : IEquatable<Needle<T>>, IRecyclableNeedle<T>, IPromise<T>
     {
         private readonly int _hashCode;
+        private readonly StrongDelegateCollection _onCompleted;
         private INeedle<T> _target; // Can be null - set in SetTargetValue and SetTargetError
 
         public Needle()
         {
             _target = null;
             _hashCode = base.GetHashCode();
+            _onCompleted = new StrongDelegateCollection(true);
         }
 
         public Needle(T target)
@@ -28,6 +31,8 @@ namespace Theraot.Threading.Needles
                 _target = new StructNeedle<T>(target);
                 _hashCode = target.GetHashCode();
             }
+
+            _onCompleted = new StrongDelegateCollection(true);
         }
 
         public Exception Exception
@@ -39,9 +44,31 @@ namespace Theraot.Threading.Needles
                 {
                     return needle.Exception;
                 }
+
                 return null;
             }
         }
+
+        public bool IsFaulted => _target is ExceptionStructNeedle<T>;
+
+        public bool Equals(Needle<T> other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            var leftTarget = _target;
+            var rightTarget = other._target;
+            if (leftTarget == null)
+            {
+                return rightTarget == null;
+            }
+
+            return rightTarget != null && leftTarget.Equals(rightTarget);
+        }
+
+        bool IPromise.IsCompleted => IsAlive;
 
         public bool IsAlive
         {
@@ -52,16 +79,16 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        bool IPromise.IsCanceled => false;
-
-        bool IPromise.IsCompleted => IsAlive;
-        public bool IsFaulted => _target is ExceptionStructNeedle<T>;
-
         public virtual T Value
         {
             get => _target.Value;
 
             set => SetTargetValue(value);
+        }
+
+        public virtual void Free()
+        {
+            _target = null;
         }
 
         public static explicit operator T(Needle<T> needle)
@@ -70,6 +97,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException(nameof(needle));
             }
+
             return needle.Value;
         }
 
@@ -84,20 +112,24 @@ namespace Theraot.Threading.Needles
             {
                 return !(right is null);
             }
+
             if (right is null)
             {
                 return true;
             }
+
             var leftTarget = left._target;
             var rightTarget = right._target;
             if (leftTarget == null)
             {
                 return rightTarget != null;
             }
+
             if (rightTarget == null)
             {
                 return true;
             }
+
             return !leftTarget.Equals(rightTarget);
         }
 
@@ -107,21 +139,20 @@ namespace Theraot.Threading.Needles
             {
                 return right is null;
             }
+
             if (right is null)
             {
                 return false;
             }
+
             var leftTarget = left._target;
             var rightTarget = right._target;
             if (leftTarget == null)
             {
                 return rightTarget == null;
             }
-            if (rightTarget == null)
-            {
-                return false;
-            }
-            return leftTarget.Equals(rightTarget);
+
+            return rightTarget != null && leftTarget.Equals(rightTarget);
         }
 
         public override bool Equals(object obj)
@@ -130,40 +161,14 @@ namespace Theraot.Threading.Needles
             {
                 return this == needle;
             }
+
             var target = _target;
             if (_target == null)
             {
                 return obj == null;
             }
-            if (obj == null)
-            {
-                return false;
-            }
-            return target.Equals(obj);
-        }
 
-        public bool Equals(Needle<T> other)
-        {
-            if (other is null)
-            {
-                return false;
-            }
-            var leftTarget = _target;
-            var rightTarget = other._target;
-            if (leftTarget == null)
-            {
-                return rightTarget == null;
-            }
-            if (rightTarget == null)
-            {
-                return false;
-            }
-            return leftTarget.Equals(rightTarget);
-        }
-
-        public virtual void Free()
-        {
-            _target = null;
+            return obj != null && target.Equals(obj);
         }
 
         public override int GetHashCode()
@@ -174,11 +179,7 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             var target = Value;
-            if (IsAlive)
-            {
-                return target.ToString();
-            }
-            return "<Dead Needle>";
+            return IsAlive ? target.ToString() : "<Dead Needle>";
         }
 
         protected void SetTargetError(Exception error)
@@ -201,7 +202,14 @@ namespace Theraot.Threading.Needles
                     // preventing return
                 }
             }
+
+            _onCompleted.InvokeWithException(null);
             _target = new StructNeedle<T>(value);
+        }
+
+        public virtual void OnCompleted(Action continuation)
+        {
+            _onCompleted.Add(continuation);
         }
     }
 }
