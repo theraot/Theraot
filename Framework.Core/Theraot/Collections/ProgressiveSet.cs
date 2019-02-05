@@ -119,7 +119,7 @@ namespace Theraot.Collections
         }
 
 #if FAT
-        internal new static ProgressiveSet<T> Create<TSet>(Progressor<T> progressor, IEqualityComparer<T> comparer)
+        internal static new ProgressiveSet<T> Create<TSet>(Progressor<T> progressor, IEqualityComparer<T> comparer)
             where TSet : ISet<T>, new()
         {
             return new ProgressiveSet<T>(progressor, new TSet(), comparer);

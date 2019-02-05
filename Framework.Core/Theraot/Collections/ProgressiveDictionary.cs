@@ -1,6 +1,8 @@
 ﻿#if FAT
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Theraot.Collections.Specialized;
@@ -9,13 +11,16 @@ using Theraot.Reflection;
 namespace Theraot.Collections
 {
     [Serializable]
-    [System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public class ProgressiveDictionary<TKey, TValue> : ProgressiveCollection<KeyValuePair<TKey, TValue>>, IDictionary<TKey, TValue>
     {
         private readonly IDictionary<TKey, TValue> _cache;
+
         private readonly IEqualityComparer<TKey> _keyComparer;
+
         [NonSerialized]
         private KeyCollection<TKey, TValue> _keyCollection;
+
         [NonSerialized]
         private ValueCollection<TKey, TValue> _valueCollection;
 
@@ -50,22 +55,15 @@ namespace Theraot.Collections
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
         }
 
+        public IReadOnlyCollection<TKey> Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
+
+        public IReadOnlyCollection<TValue> Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
+
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
 
-        public IReadOnlyCollection<TKey> Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
-
         ICollection<TValue> IDictionary<TKey, TValue>.Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
-
-        public IReadOnlyCollection<TValue> Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
-
-        TValue IDictionary<TKey, TValue>.this[TKey key]
-        {
-            get => this[key];
-
-            set => throw new NotSupportedException();
-        }
 
         public TValue this[TKey key]
         {
@@ -81,8 +79,10 @@ namespace Theraot.Collections
                     {
                         return found.Value;
                     }
+
                     throw;
                 }
+
                 bool Check(KeyValuePair<TKey, TValue> pair)
                 {
                     return _keyComparer.Equals(key, pair.Key);
@@ -90,25 +90,17 @@ namespace Theraot.Collections
             }
         }
 
+        TValue IDictionary<TKey, TValue>.this[TKey key]
+        {
+            get => this[key];
+
+            set => throw new NotSupportedException();
+        }
+
         public static ProgressiveDictionary<TKey, TValue> Create<TDictionary>(Progressor<KeyValuePair<TKey, TValue>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
             where TDictionary : IDictionary<TKey, TValue>, new()
         {
             return new ProgressiveDictionary<TKey, TValue>(progressor, new TDictionary(), keyComparer, valueComparer);
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
-        {
-            throw new NotSupportedException();
         }
 
         public bool ContainsKey(TKey key)
@@ -119,11 +111,6 @@ namespace Theraot.Collections
             {
                 return _keyComparer.Equals(key, pair.Key);
             }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         public bool IsProperSubsetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
@@ -151,16 +138,6 @@ namespace Theraot.Collections
             return Extensions.Overlaps(this, other);
         }
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            throw new NotSupportedException();
-        }
-
-        bool IDictionary<TKey, TValue>.Remove(TKey key)
-        {
-            throw new NotSupportedException();
-        }
-
         public bool SetEquals(IEnumerable<KeyValuePair<TKey, TValue>> other)
         {
             return Extensions.SetEquals(this, other);
@@ -178,6 +155,36 @@ namespace Theraot.Collections
                 value = default;
                 return false;
             }
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotSupportedException();
+        }
+
+        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        {
+            throw new NotSupportedException();
         }
     }
 }

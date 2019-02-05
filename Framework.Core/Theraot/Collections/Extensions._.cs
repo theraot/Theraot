@@ -10,12 +10,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-#if FAT
-using System.Collections;
-using Theraot.Collections.Specialized;
-
-#endif
-
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]

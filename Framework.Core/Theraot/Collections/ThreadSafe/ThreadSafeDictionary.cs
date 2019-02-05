@@ -1285,7 +1285,6 @@ namespace Theraot.Collections.ThreadSafe
                 hashCode = -hashCode;
             }
 
-            // unchecked(-int.MinValue == int.MinValue) == true
             if (hashCode < 0)
             {
                 hashCode = 0;
