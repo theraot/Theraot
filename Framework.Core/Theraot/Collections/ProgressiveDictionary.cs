@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Theraot.Collections.Specialized;
+using Theraot.Reflection;
+
 namespace Theraot.Collections
 {
     [Serializable]
@@ -11,8 +14,10 @@ namespace Theraot.Collections
     {
         private readonly IDictionary<TKey, TValue> _cache;
         private readonly IEqualityComparer<TKey> _keyComparer;
-        private readonly ProgressiveSet<TKey> _keysReadonly;
-        private readonly ProgressiveSet<TValue> _valuesReadonly;
+        [NonSerialized]
+        private KeyCollection<TKey, TValue> _keyCollection;
+        [NonSerialized]
+        private ValueCollection<TKey, TValue> _valueCollection;
 
         public ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> enumerable)
             : this(Progressor<KeyValuePair<TKey, TValue>>.CreateFromIEnumerable(enumerable), new Dictionary<TKey, TValue>(), null, null)
@@ -43,19 +48,17 @@ namespace Theraot.Collections
         {
             _cache = (IDictionary<TKey, TValue>)Cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _valuesReadonly = new ProgressiveSet<TValue>(this.ConvertProgressive(input => input.Value), valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(this.ConvertProgressive(input => input.Key), keyComparer);
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys => _keysReadonly;
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
 
-        public IReadOnlyCollection<TKey> Keys => _keysReadonly;
+        public IReadOnlyCollection<TKey> Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
 
-        ICollection<TValue> IDictionary<TKey, TValue>.Values => _valuesReadonly;
+        ICollection<TValue> IDictionary<TKey, TValue>.Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
 
-        public IReadOnlyCollection<TValue> Values => _valuesReadonly;
+        public IReadOnlyCollection<TValue> Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
         {
@@ -110,11 +113,8 @@ namespace Theraot.Collections
 
         public bool ContainsKey(TKey key)
         {
-            if (_cache.ContainsKey(key))
-            {
-                return true;
-            }
-            return ProgressorWhere(Check).Any();
+            return _cache.ContainsKey(key) || ProgressorWhere(Check).Any();
+
             bool Check(KeyValuePair<TKey, TValue> pair)
             {
                 return _keyComparer.Equals(key, pair.Key);
