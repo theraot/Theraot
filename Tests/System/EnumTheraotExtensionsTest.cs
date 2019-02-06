@@ -1,6 +1,4 @@
-﻿#if LESSTHAN_NET40
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 
 namespace Tests.System
@@ -23,29 +21,27 @@ namespace Tests.System
 
 
         [Test]
-        public ThrowsOnNullEnum()
+        public void ThrowsOnNullEnum()
         {
-            Assert.Throws<ArgumentNullException>(() => EnumTheraotExtensions.HasFlag((Enum)null, WithZero.One));
+            Assert.Throws<ArgumentNullException>(() => ((Enum)null).HasFlag(WithZero.One));
         }
 
         [Test]
-        public ThrowsOnNullValue()
+        public void ThrowsOnNullValue()
         {
-            Assert.Throws<ArgumentNullException>(() => EnumTheraotExtensions.HasFlag(WithZero.One, (Enum)null));
+            Assert.Throws<ArgumentNullException>(() => WithZero.One.HasFlag((Enum)null));
         }
 
         [Test]
-        public HasFlagWithEnumHavingZeroValue()
+        public void HasFlagWithEnumHavingZeroValue()
         {
             Assert.IsTrue(WithZero.One.HasFlag(WithZero.Zero));
         }
 
         [Test]
-        public HasFlagWithEnumNotHavingZeroValue()
+        public void HasFlagWithEnumNotHavingZeroValue()
         {
             Assert.IsTrue(WithoutZero.Two.HasFlag((WithoutZero)0));
         }
     }
 }
-
-#endif
