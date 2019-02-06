@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
+#if FAT
+using System.Linq;
+#endif
+
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
@@ -42,10 +46,7 @@ namespace Theraot.Collections.ThreadSafe
 #if FAT
         public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
         {
-            foreach (var value in _bucketCore.EnumerateRange(indexFrom, indexTo))
-            {
-                yield return value == BucketHelper.Null ? default : (T)value;
-            }
+            return _bucketCore.EnumerateRange(indexFrom, indexTo).Select(value => value == BucketHelper.Null ? default : (T)value);
         }
 #endif
 

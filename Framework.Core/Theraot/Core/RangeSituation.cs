@@ -58,7 +58,7 @@ namespace Theraot.Core
         x =         |---|
         y =  |---|
         */
-        AfterSeparated = 256,
+        AfterSeparated = 256
         /*Before = BeforeSeparated | BeforeOverlapped | BeforeTouching,
         After = AfterSeparated | AfterOverlapped | AfterTouching,
         BeforeNotSeparated = BeforeOverlapped | BeforeTouching,

@@ -1161,14 +1161,7 @@ namespace Theraot.Collections
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
-            foreach (var item in items)
-            {
-                if (localCollection.Contains(item, comparer))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return items.Any(item => localCollection.Contains(item, comparer));
         }
 
         public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Func<T, int, bool> filter)
@@ -1404,7 +1397,19 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(filter));
             }
-            return ConvertProgressiveFiltered(source, converter, filter);
+            return ConvertProgressiveFilteredIterator();
+            IEnumerable<TOutput> ConvertProgressiveFilteredIterator()
+            {
+                var index = 0;
+                foreach (var item in source)
+                {
+                    if (filter(item, index))
+                    {
+                        yield return converter(item);
+                    }
+                    index++;
+                }
+            }
         }
 
         public static IEnumerable<KeyValuePair<int, TOutput>> ConvertProgressiveIndexed<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
@@ -1487,14 +1492,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            foreach (var local in source)
-            {
-                if (comparer.Equals(local, value))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return source.Any(local => comparer.Equals(local, value));
         }
 
         public static bool Exists<T>(this IEnumerable<T> source, T value, IEqualityComparer<T> comparer)
@@ -1504,14 +1502,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
             comparer = comparer ?? EqualityComparer<T>.Default;
-            foreach (var local in source)
-            {
-                if (comparer.Equals(local, value))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return source.Any(local => comparer.Equals(local, value));
         }
 
         public static bool Exists<T>(this IEnumerable<T> source, Predicate<T> predicate)
@@ -1524,14 +1515,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    return true;
-                }
-            }
-            return false;
+
+            return source.Any(item => predicate(item));
         }
 
         public static T Find<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate)
@@ -1930,15 +1915,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
-            var result = new List<T>();
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    result.Add(item);
-                }
-            }
-            return result;
+
+            return source.Where(item => predicate(item)).ToList();
         }
 
         public static TList FindWhere<T, TList>(this IEnumerable<T> source, Predicate<T> predicate)
@@ -3017,6 +2995,7 @@ namespace Theraot.Collections
             }
             if (low < indexEnd)
             {
+                // ReSharper disable once TailRecursiveCall
                 SortExtracted(list, low, indexEnd, comparer);
             }
         }
@@ -3051,13 +3030,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<T> WhereExtracted<T>(IEnumerable<T> source, Func<T, bool> predicate)
         {
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    yield return item;
-                }
-            }
+            return source.Where(predicate);
         }
 
         private static IEnumerable<T> WhereExtracted<T>(IEnumerable<T> source, Func<T, int, bool> predicate, Action whereNot)

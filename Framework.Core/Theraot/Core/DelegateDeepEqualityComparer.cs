@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Theraot.Core
@@ -22,11 +23,8 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            if (obj == null) // obj can be null
-            {
-                return 0; // TODO: Test coverage?
-            }
-            var methodBody = obj.GetMethodInfo().GetMethodBody();
+            // ReSharper disable once ConstantConditionalAccessQualifier
+            var methodBody = obj?.GetMethodInfo().GetMethodBody();
             if (methodBody == null)
             {
                 return 0;
@@ -89,14 +87,8 @@ namespace Theraot.Core
             {
                 return false;
             }
-            for (var index = 0; index < leftBodyCode.Length; index++)
-            {
-                if (leftBodyCode[index] != rightBodyCode[index])
-                {
-                    return false;
-                }
-            }
-            return true;
+
+            return !leftBodyCode.Where((t, index) => t != rightBodyCode[index]).Any();
         }
     }
 }

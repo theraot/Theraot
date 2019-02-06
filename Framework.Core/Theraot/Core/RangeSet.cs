@@ -479,11 +479,8 @@ namespace Theraot.Core
                 }
                 break;
             }
-            foreach (var tuple in replacements)
+            foreach (var (index, before, after) in replacements)
             {
-                var index = tuple.Item1;
-                var before = tuple.Item2;
-                var after = tuple.Item3;
                 if (after.HasValue && !after.Value.IsEmpty(comparer))
                 {
                     ranges[index] = after.Value;
