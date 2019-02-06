@@ -13,5 +13,7 @@ namespace TestRunner
         public static readonly ISet<string> HashSetExAsISet = new HashSetEx<string>();
         public static readonly IReadOnlyList<string> ListExAsReadOnlyList = new ListEx<string>();
         public static readonly IReadOnlyList<string> ReadOnlyCollectionExAsIReadOnlyList = new ReadOnlyCollectionEx<string>(ArrayEx.Empty<string>());
+        public static readonly IReadOnlyCollection<int> ListExAsReadOnlyAsIReadOnlyCollection = (new ListEx<int>()).AsReadOnly();
+        public static readonly IReadOnlyList<int> ListExAsReadOnlyAsIReadOnlyList = (new ListEx<int>()).AsReadOnly();
     }
 }
