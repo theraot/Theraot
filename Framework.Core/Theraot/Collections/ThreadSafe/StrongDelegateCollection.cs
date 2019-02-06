@@ -84,11 +84,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if ((options & DelegateCollectionInvokeOptions.RemoveDelegates) != DelegateCollectionInvokeOptions.None)
             {
-                _invoke(args);
+                _invokeAndClear(args);
             }
             else
             {
-                _invokeAndClear(args);
+                _invoke(args);
             }
         }
 
@@ -96,11 +96,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             if ((options & DelegateCollectionInvokeOptions.RemoveDelegates) != DelegateCollectionInvokeOptions.None)
             {
-                _invokeWithException(onException, args);
+                _invokeAndClearWithException(onException, args);
             }
             else
             {
-                _invokeAndClearWithException(onException, args);
+                _invokeWithException(onException, args);
             }
         }
 

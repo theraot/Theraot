@@ -101,15 +101,7 @@ namespace System.Runtime.CompilerServices
                 eventArgs = new ContractFailedEventArgs(failureKind, displayMessage, conditionText, innerException);
                 _contractFailedEvent.Invoke
                 (
-                    exception =>
-                    {
-#if LESSTHAN_NET40
-                        eventArgs.ThrownDuringHandler = exception;
-#else
-                        Theraot.No.Op(exception);
-#endif
-                        eventArgs.SetUnwind();
-                    },
+                    OnException,
                     null,
                     eventArgs
                 );
@@ -131,6 +123,16 @@ namespace System.Runtime.CompilerServices
             }
 
             resultFailureMessage = returnValue;
+
+            void OnException(Exception exception)
+            {
+#if LESSTHAN_NET40
+                eventArgs.ThrownDuringHandler = exception;
+#else
+                Theraot.No.Op(exception);
+#endif
+                eventArgs.SetUnwind();
+            }
         }
 
         [DebuggerNonUserCode]
