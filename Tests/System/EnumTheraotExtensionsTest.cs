@@ -23,7 +23,7 @@ namespace Tests.System
         [Test]
         public void ThrowsOnNullEnum()
         {
-            Assert.Throws<ArgumentNullException>(() => ((Enum)null).HasFlag(WithZero.One));
+            Assert.Throws<NullReferenceException>(() => ((Enum)null).HasFlag(WithZero.One));
         }
 
         [Test]

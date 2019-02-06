@@ -10,7 +10,7 @@ namespace System
         {
             if (value == null)
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new NullReferenceException();
             }
 
             if (flag == null)
