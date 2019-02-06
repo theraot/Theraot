@@ -21,7 +21,7 @@ namespace System.IO
             //Added in .NET 4.0
             if (input == null)
             {
-                throw new ArgumentNullException(nameof(input));
+                throw new NullReferenceException();
             }
 
             if (output == null)
@@ -44,7 +44,7 @@ namespace System.IO
             //Added in .NET 4.0
             if (input == null)
             {
-                throw new ArgumentNullException(nameof(input));
+                throw new NullReferenceException();
             }
 
             if (output == null)
@@ -70,23 +70,83 @@ namespace System.IO
 #endif
     class StreamTheraotExtensions
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task CopyToAsync(this Stream source, Stream destination)
         {
-            return source.CopyToAsync(destination, ArrayReservoir.MaxCapacity);
+            if (source == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+            if (!source.CanRead)
+            {
+                throw new NotSupportedException("Source stream does not support read.");
+            }
+            if (!destination.CanWrite)
+            {
+                throw new NotSupportedException("Destination stream does not support write.");
+            }
+            return CopyToPrivateAsync(source, destination, ArrayReservoir.MaxCapacity, CancellationToken.None);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task CopyToAsync(this Stream source, Stream destination, int bufferSize)
         {
-            return source.CopyToAsync(destination, bufferSize, CancellationToken.None);
+            if (source == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+            if (bufferSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            }
+            if (!source.CanRead)
+            {
+                throw new NotSupportedException("Source stream does not support read.");
+            }
+            if (!destination.CanWrite)
+            {
+                throw new NotSupportedException("Destination stream does not support write.");
+            }
+            return CopyToPrivateAsync(source, destination, bufferSize, CancellationToken.None);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task CopyToAsync(this Stream source, Stream destination, CancellationToken cancellationToken)
         {
-            return source.CopyToAsync(destination, ArrayReservoir.MaxCapacity, cancellationToken);
+            if (source == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+            if (!source.CanRead)
+            {
+                throw new NotSupportedException("Source stream does not support read.");
+            }
+            if (!destination.CanWrite)
+            {
+                throw new NotSupportedException("Destination stream does not support write.");
+            }
+            return CopyToPrivateAsync(source, destination, ArrayReservoir.MaxCapacity, cancellationToken);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task CopyToAsync(this Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
+            if (source == null)
+            {
+                throw new NullReferenceException();
+            }
             if (destination == null)
             {
                 throw new ArgumentNullException(nameof(destination));
@@ -106,13 +166,23 @@ namespace System.IO
             return CopyToPrivateAsync(source, destination, bufferSize, cancellationToken);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FlushAsync(this Stream stream)
         {
+            if (stream == null)
+            {
+                throw new NullReferenceException();
+            }
             return TaskEx.Run(() => stream.Flush());
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FlushAsync(this Stream stream, CancellationToken token)
         {
+            if (stream == null)
+            {
+                throw new NullReferenceException();
+            }
             token.ThrowIfCancellationRequested();
             return TaskEx.Run(() => stream.Flush(), token);
         }
@@ -120,6 +190,10 @@ namespace System.IO
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
+            if (stream == null)
+            {
+                throw new NullReferenceException();
+            }
             cancellationToken.ThrowIfCancellationRequested();
             return Task.Factory.FromAsync
             (
@@ -132,6 +206,10 @@ namespace System.IO
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<int> ReadAsync(this Stream stream, byte[] buffer, int offset, int count)
         {
+            if (stream == null)
+            {
+                throw new NullReferenceException();
+            }
             return Task.Factory.FromAsync
             (
                 BeginRead,
@@ -143,6 +221,10 @@ namespace System.IO
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
+            if (stream == null)
+            {
+                throw new NullReferenceException();
+            }
             cancellationToken.ThrowIfCancellationRequested();
             return Task.Factory.FromAsync
             (
@@ -155,6 +237,10 @@ namespace System.IO
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WriteAsync(this Stream stream, byte[] buffer, int offset, int count)
         {
+            if (stream == null)
+            {
+                throw new NullReferenceException();
+            }
             return Task.Factory.FromAsync
             (
                 BeginWrite,

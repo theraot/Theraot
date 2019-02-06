@@ -9,6 +9,10 @@ namespace System.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static object GetValue(this PropertyInfo info, object obj)
         {
+            if (info == null)
+            {
+                throw new NullReferenceException();
+            }
             return info.GetValue(obj, null);
         }
     }

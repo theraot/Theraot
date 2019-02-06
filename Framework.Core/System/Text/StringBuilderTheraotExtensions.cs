@@ -9,6 +9,10 @@ namespace System.Text
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void Clear(this StringBuilder stringBuilder)
         {
+            if (stringBuilder == null)
+            {
+                throw new NullReferenceException();
+            }
             stringBuilder.Length = 0;
         }
     }

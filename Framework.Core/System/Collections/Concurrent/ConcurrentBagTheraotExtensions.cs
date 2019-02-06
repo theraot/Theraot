@@ -9,6 +9,10 @@ namespace System.Collections.Concurrent
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void Clear<T>(this ConcurrentBag<T> concurrentBag)
         {
+            if (concurrentBag == null)
+            {
+                throw new NullReferenceException();
+            }
             while (concurrentBag.TryTake(out _))
             {
                 // Empty

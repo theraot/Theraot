@@ -1,11 +1,13 @@
 ﻿#if LESSTHAN_NET40
 
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace System
 {
     public static class EnumTheraotExtensions
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool HasFlag(this Enum value, Enum flag)
         {
             if (value == null)

@@ -1,4 +1,5 @@
 ﻿#if NET40
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Theraot.Threading;
 
@@ -6,31 +7,34 @@ namespace System.Threading
 {
     public static class SemaphoreSlimTheraotExtensions
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WaitAsync(this SemaphoreSlim semaphore)
         {
             if (semaphore == null)
             {
-                throw new ArgumentNullException(nameof(semaphore));
+                throw new NullReferenceException();
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             return WaitPrivateAsync(semaphore);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WaitAsync(this SemaphoreSlim semaphore, CancellationToken cancellationToken)
         {
             if (semaphore == null)
             {
-                throw new ArgumentNullException(nameof(semaphore));
+                throw new NullReferenceException();
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             return WaitPrivateAsync(semaphore, cancellationToken);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, int millisecondsTimeout)
         {
             if (semaphore == null)
             {
-                throw new ArgumentNullException(nameof(semaphore));
+                throw new NullReferenceException();
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             if (millisecondsTimeout < -1)
@@ -40,11 +44,12 @@ namespace System.Threading
             return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore) : WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout)
         {
             if (semaphore == null)
             {
-                throw new ArgumentNullException(nameof(semaphore));
+                throw new NullReferenceException();
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             var millisecondsTimeout = (int)timeout.TotalMilliseconds;
@@ -55,11 +60,12 @@ namespace System.Threading
             return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore) : WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, TimeSpan timeout, CancellationToken cancellationToken)
         {
             if (semaphore == null)
             {
-                throw new ArgumentNullException(nameof(semaphore));
+                throw new NullReferenceException();
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             var millisecondsTimeout = (int)timeout.TotalMilliseconds;
@@ -70,11 +76,12 @@ namespace System.Threading
             return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore, cancellationToken) : WaitPrivateAsync(semaphore, (int)timeout.TotalMilliseconds, cancellationToken);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<bool> WaitAsync(this SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
         {
             if (semaphore == null)
             {
-                throw new ArgumentNullException(nameof(semaphore));
+                throw new NullReferenceException();
             }
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             if (millisecondsTimeout < -1)

@@ -9,6 +9,10 @@ namespace System.Diagnostics
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void Restart(this Stopwatch stopwatch)
         {
+            if (stopwatch == null)
+            {
+                throw new NullReferenceException();
+            }
             stopwatch.Reset();
             stopwatch.Start();
         }

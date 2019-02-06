@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET45
 
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 namespace System.Reflection
 {
@@ -11,8 +12,13 @@ namespace System.Reflection
         /// </summary>
         /// <param name="methodInfo">The MethodInfo for the target method.</param>
         /// <param name="delegateType">Delegate type with a matching signature.</param>
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
+            if (methodInfo == null)
+            {
+                throw new NullReferenceException();
+            }
             if (methodInfo is DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType);
@@ -27,8 +33,13 @@ namespace System.Reflection
         /// <param name="methodInfo">The MethodInfo for the target method.</param>
         /// <param name="delegateType">Delegate type with a matching signature.</param>
         /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
+            if (methodInfo == null)
+            {
+                throw new NullReferenceException();
+            }
             if (methodInfo is DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType, target);

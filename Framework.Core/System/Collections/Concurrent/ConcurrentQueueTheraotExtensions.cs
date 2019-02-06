@@ -8,6 +8,10 @@ namespace System.Collections.Concurrent
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void Clear<T>(this ConcurrentQueue<T> concurrentQueue)
         {
+            if (concurrentQueue == null)
+            {
+                throw new NullReferenceException();
+            }
             while (concurrentQueue.TryDequeue(out _))
             {
                 // Empty

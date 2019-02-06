@@ -12,6 +12,10 @@ namespace System.Threading
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CancelAfter(this CancellationTokenSource cancellationTokenSource, int millisecondsDelay)
         {
+            if (cancellationTokenSource == null)
+            {
+                throw new NullReferenceException();
+            }
             GC.KeepAlive(cancellationTokenSource.Token);
             RootedTimeout.Launch
             (
@@ -33,6 +37,10 @@ namespace System.Threading
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CancelAfter(this CancellationTokenSource cancellationTokenSource, TimeSpan delay)
         {
+            if (cancellationTokenSource == null)
+            {
+                throw new NullReferenceException();
+            }
             GC.KeepAlive(cancellationTokenSource.Token);
             RootedTimeout.Launch
             (

@@ -31,12 +31,11 @@ namespace System.Threading.Tasks
         ///     The instance to be awaited.
         /// </returns>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConfiguredTaskAwaitable<TResult> ConfigureAwait<TResult>(this Task<TResult> task,
-            bool continueOnCapturedContext)
+        public static ConfiguredTaskAwaitable<TResult> ConfigureAwait<TResult>(this Task<TResult> task, bool continueOnCapturedContext)
         {
             if (task == null)
             {
-                throw new ArgumentNullException(nameof(task));
+                throw new NullReferenceException();
             }
 
             return new ConfiguredTaskAwaitable<TResult>(task, continueOnCapturedContext);
@@ -58,7 +57,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException(nameof(task));
+                throw new NullReferenceException();
             }
 
             return new ConfiguredTaskAwaitable(task, continueOnCapturedContext);
@@ -76,7 +75,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException(nameof(task));
+                throw new NullReferenceException();
             }
 
             return new TaskAwaiter(task);
@@ -95,7 +94,7 @@ namespace System.Threading.Tasks
         {
             if (task == null)
             {
-                throw new ArgumentNullException(nameof(task));
+                throw new NullReferenceException();
             }
 
             return new TaskAwaiter<TResult>(task);
@@ -109,152 +108,349 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
             if (continuationAction == null)
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            var source = new TaskCompletionSource<VoidStruct>(state);
-            var condition = RemoveConditions(ref continuationOptions);
-            if (cancellationToken.CanBeCanceled)
-            {
-                cancellationToken.Register(() => source.TrySetCanceled());
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return source.Task;
-                }
-            }
-
-            task.ContinueWith
-            (
-                t =>
-                {
-                    if (ValidateConditions(t, condition))
-                    {
-                        try
-                        {
-                            continuationAction(t, state);
-                            source.TrySetResult(default);
-                        }
-                        catch (Exception exception)
-                        {
-                            source.TrySetException(exception);
-                        }
-                    }
-                    else
-                    {
-                        source.TrySetCanceled();
-                    }
-                },
-                cancellationToken,
-                continuationOptions,
-                scheduler
-            );
-            return source.Task;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, scheduler, cancellationToken);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state, TaskScheduler scheduler)
         {
-            return ContinueWith(task, continuationAction, state, CancellationToken.None, TaskContinuationOptions.None, scheduler);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state, CancellationToken cancellationToken)
-        {
-            return ContinueWith(task, continuationAction, state, cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
-        {
-            return ContinueWith(task, continuationAction, state, CancellationToken.None, continuationOptions, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state)
-        {
-            return ContinueWith(task, continuationAction, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
-        {
-            if (continuationFunction == null)
+            if (task == null)
             {
-                throw new ArgumentNullException(nameof(continuationFunction));
+                throw new NullReferenceException();
             }
 
-            var source = new TaskCompletionSource<TResult>(state);
-            var condition = RemoveConditions(ref continuationOptions);
-            if (cancellationToken.CanBeCanceled)
-            {
-                cancellationToken.Register(() => source.TrySetCanceled());
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return source.Task;
-                }
-            }
-
-            task.ContinueWith
-            (
-                t =>
-                {
-                    if (ValidateConditions(t, condition))
-                    {
-                        try
-                        {
-                            source.TrySetResult(continuationFunction(t, state));
-                        }
-                        catch (Exception exception)
-                        {
-                            source.TrySetException(exception);
-                        }
-                    }
-                    else
-                    {
-                        source.TrySetCanceled();
-                    }
-                },
-                cancellationToken,
-                continuationOptions,
-                scheduler
-            );
-            return source.Task;
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
-        {
-            return ContinueWith(task, continuationFunction, state, CancellationToken.None, TaskContinuationOptions.None, scheduler);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
-        {
-            return ContinueWith(task, continuationFunction, state, cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
-        {
-            return ContinueWith(task, continuationFunction, state, CancellationToken.None, continuationOptions, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state)
-        {
-            return ContinueWith(task, continuationFunction, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
-        {
             if (continuationAction == null)
             {
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, scheduler, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state, CancellationToken cancellationToken)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith(this Task task, Action<Task, object> continuationAction, object state)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, scheduler, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, scheduler, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task task, Func<Task, object, TResult> continuationFunction, object state)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, scheduler, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, scheduler, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationAction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationAction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, scheduler, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, scheduler, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state)
+        {
+            if (task == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException(nameof(continuationFunction));
+            }
+
+            var continuationOptions = TaskContinuationOptions.None;
+            var cancellationToken = CancellationToken.None;
+            return ContinueWithExtracted(task, continuationFunction, state, ref continuationOptions, TaskScheduler.Current, cancellationToken);
+        }
+
+        private static Task ContinueWithExtracted(Task task, Action<Task, object> continuationAction, object state, ref TaskContinuationOptions continuationOptions, TaskScheduler scheduler, CancellationToken cancellationToken)
+        {
             var source = new TaskCompletionSource<VoidStruct>(state);
             var condition = RemoveConditions(ref continuationOptions);
             if (cancellationToken.CanBeCanceled)
@@ -294,38 +490,49 @@ namespace System.Threading.Tasks
             return source.Task;
         }
 
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
+        private static Task ContinueWithExtracted<TResult>(Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, ref TaskContinuationOptions continuationOptions, TaskScheduler scheduler, CancellationToken cancellationToken)
         {
-            return ContinueWith(task, continuationAction, state, CancellationToken.None, TaskContinuationOptions.None, scheduler);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken)
-        {
-            return ContinueWith(task, continuationAction, state, cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
-        {
-            return ContinueWith(task, continuationAction, state, CancellationToken.None, continuationOptions, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task ContinueWith<TResult>(this Task<TResult> task, Action<Task<TResult>, object> continuationAction, object state)
-        {
-            return ContinueWith(task, continuationAction, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
-        {
-            if (continuationFunction == null)
+            var source = new TaskCompletionSource<VoidStruct>(state);
+            var condition = RemoveConditions(ref continuationOptions);
+            if (cancellationToken.CanBeCanceled)
             {
-                throw new ArgumentNullException(nameof(continuationFunction));
+                cancellationToken.Register(() => source.TrySetCanceled());
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return source.Task;
+                }
             }
 
+            task.ContinueWith
+            (
+                t =>
+                {
+                    if (ValidateConditions(t, condition))
+                    {
+                        try
+                        {
+                            continuationAction(t, state);
+                            source.TrySetResult(default);
+                        }
+                        catch (Exception exception)
+                        {
+                            source.TrySetException(exception);
+                        }
+                    }
+                    else
+                    {
+                        source.TrySetCanceled();
+                    }
+                },
+                cancellationToken,
+                continuationOptions,
+                scheduler
+            );
+            return source.Task;
+        }
+
+        private static Task<TResult> ContinueWithExtracted<TResult>(Task task, Func<Task, object, TResult> continuationFunction, object state, ref TaskContinuationOptions continuationOptions, TaskScheduler scheduler, CancellationToken cancellationToken)
+        {
             var source = new TaskCompletionSource<TResult>(state);
             var condition = RemoveConditions(ref continuationOptions);
             if (cancellationToken.CanBeCanceled)
@@ -364,28 +571,44 @@ namespace System.Threading.Tasks
             return source.Task;
         }
 
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
+        private static Task<TResult> ContinueWithExtracted<TResult>(Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, ref TaskContinuationOptions continuationOptions, TaskScheduler scheduler, CancellationToken cancellationToken)
         {
-            return ContinueWith(task, continuationFunction, state, CancellationToken.None, TaskContinuationOptions.None, scheduler);
-        }
+            var source = new TaskCompletionSource<TResult>(state);
+            var condition = RemoveConditions(ref continuationOptions);
+            if (cancellationToken.CanBeCanceled)
+            {
+                cancellationToken.Register(() => source.TrySetCanceled());
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return source.Task;
+                }
+            }
 
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
-        {
-            return ContinueWith(task, continuationFunction, state, cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
-        {
-            return ContinueWith(task, continuationFunction, state, CancellationToken.None, continuationOptions, TaskScheduler.Current);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> ContinueWith<TResult>(this Task<TResult> task, Func<Task<TResult>, object, TResult> continuationFunction, object state)
-        {
-            return ContinueWith(task, continuationFunction, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
+            task.ContinueWith
+            (
+                t =>
+                {
+                    if (ValidateConditions(t, condition))
+                    {
+                        try
+                        {
+                            source.TrySetResult(continuationFunction(t, state));
+                        }
+                        catch (Exception exception)
+                        {
+                            source.TrySetException(exception);
+                        }
+                    }
+                    else
+                    {
+                        source.TrySetCanceled();
+                    }
+                },
+                cancellationToken,
+                continuationOptions,
+                scheduler
+            );
+            return source.Task;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
