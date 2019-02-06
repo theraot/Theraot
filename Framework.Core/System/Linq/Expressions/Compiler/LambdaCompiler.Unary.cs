@@ -15,7 +15,7 @@ namespace System.Linq.Expressions.Compiler
     {
         private void EmitConstantOne(Type type)
         {
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Int64:
                 case TypeCode.UInt64:

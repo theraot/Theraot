@@ -127,7 +127,7 @@ namespace System.Linq.Expressions
                 return new TypedParameterExpression(type, name);
             }
 
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean: return new PrimitiveParameterExpression<bool>(name);
                 case TypeCode.Byte: return new PrimitiveParameterExpression<byte>(name);

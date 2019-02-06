@@ -39,7 +39,7 @@ namespace System.Linq.Expressions.Compiler
         private static bool CanOptimizeSwitchType(Type valueType)
         {
             // enums & char are allowed
-            switch (valueType.GetTypeCode())
+            switch (Type.GetTypeCode(valueType))
             {
                 case TypeCode.Byte:
                 case TypeCode.SByte:
@@ -910,7 +910,7 @@ namespace System.Linq.Expressions.Compiler
                 Default = @default;
                 var type = node.SwitchValue.Type;
                 IsUnsigned = type.IsUnsigned();
-                var code = type.GetTypeCode();
+                var code = Type.GetTypeCode(type);
                 Is64BitSwitch = code == TypeCode.UInt64 || code == TypeCode.Int64;
             }
         }

@@ -34,7 +34,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (liftedToNull)
             {
-                switch (type.GetNonNullable().GetTypeCode())
+                switch (Type.GetTypeCode(type.GetNonNullable()))
                 {
                     case TypeCode.Boolean: return ExclusiveOrInstruction.Create(type);
                     case TypeCode.SByte: return _sByteLiftedToNull ?? (_sByteLiftedToNull = new NotEqualSByteLiftedToNull());
@@ -48,12 +48,12 @@ namespace System.Linq.Expressions.Interpreter
                     case TypeCode.UInt64: return _uInt64LiftedToNull ?? (_uInt64LiftedToNull = new NotEqualUInt64LiftedToNull());
                     case TypeCode.Single: return _singleLiftedToNull ?? (_singleLiftedToNull = new NotEqualSingleLiftedToNull());
                     default:
-                        Debug.Assert(type.GetNonNullable().GetTypeCode() == TypeCode.Double);
+                        Debug.Assert(Type.GetTypeCode(type.GetNonNullable()) == TypeCode.Double);
                         return _doubleLiftedToNull ?? (_doubleLiftedToNull = new NotEqualDoubleLiftedToNull());
                 }
             }
 
-            switch (type.GetNonNullable().GetTypeCode())
+            switch (Type.GetTypeCode(type.GetNonNullable()))
             {
                 case TypeCode.Boolean: return _boolean ?? (_boolean = new NotEqualBoolean());
                 case TypeCode.SByte: return _sByte ?? (_sByte = new NotEqualSByte());

@@ -127,7 +127,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             object result;
 
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
                     result = Utils.BoxedFalse;

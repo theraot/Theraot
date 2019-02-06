@@ -24,7 +24,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            switch (type.GetNonNullable().GetTypeCode())
+            switch (Type.GetTypeCode(type.GetNonNullable()))
             {
                 case TypeCode.SByte: return _sByte ?? (_sByte = new RightShiftSByte());
                 case TypeCode.Int16: return _int16 ?? (_int16 = new RightShiftInt16());

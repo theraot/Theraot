@@ -128,7 +128,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(!resultType.IsNullable());
 
-            switch (resultType.GetTypeCode())
+            switch (Type.GetTypeCode(resultType))
             {
                 case TypeCode.Byte:
                     IL.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_U1 : OpCodes.Conv_U1);
@@ -477,7 +477,7 @@ namespace System.Linq.Expressions.Compiler
             switch (op)
             {
                 case ExpressionType.NotEqual:
-                    if (leftType.GetTypeCode() == TypeCode.Boolean)
+                    if (Type.GetTypeCode(leftType) == TypeCode.Boolean)
                     {
                         goto case ExpressionType.ExclusiveOr;
                     }

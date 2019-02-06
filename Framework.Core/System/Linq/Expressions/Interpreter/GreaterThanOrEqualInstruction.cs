@@ -30,7 +30,7 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!type.IsEnum);
             if (liftedToNull)
             {
-                switch (type.GetNonNullable().GetTypeCode())
+                switch (Type.GetTypeCode(type.GetNonNullable()))
                 {
                     case TypeCode.SByte: return _liftedToNullSByte ?? (_liftedToNullSByte = new GreaterThanOrEqualSByte(null));
                     case TypeCode.Int16: return _liftedToNullInt16 ?? (_liftedToNullInt16 = new GreaterThanOrEqualInt16(null));
@@ -48,7 +48,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            switch (type.GetNonNullable().GetTypeCode())
+            switch (Type.GetTypeCode(type.GetNonNullable()))
             {
                 case TypeCode.SByte: return _sByte ?? (_sByte = new GreaterThanOrEqualSByte(Utils.BoxedFalse));
                 case TypeCode.Int16: return _int16 ?? (_int16 = new GreaterThanOrEqualInt16(Utils.BoxedFalse));

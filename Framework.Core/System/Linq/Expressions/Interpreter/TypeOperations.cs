@@ -27,7 +27,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type t)
         {
             Debug.Assert(!t.IsEnum);
-            switch (t.GetTypeCode())
+            switch (Type.GetTypeCode(t))
             {
                 case TypeCode.Boolean: return _boolean ?? (_boolean = new CastInstructionT<bool>());
                 case TypeCode.Byte: return _byte ?? (_byte = new CastInstructionT<byte>());
@@ -155,7 +155,7 @@ namespace System.Linq.Expressions.Interpreter
             // this will cause an InvalidCastException, which is what this operation should
             // throw in this case.
 
-            switch (_t.GetTypeCode())
+            switch (Type.GetTypeCode(_t))
             {
                 case TypeCode.Int32:
                     frame.Push(Enum.ToObject(_t, (int)from));
@@ -197,7 +197,7 @@ namespace System.Linq.Expressions.Interpreter
                 default:
                     // Only remaining possible type.
                     // Disallowed in C#, but allowed in CIL
-                    Debug.Assert(_t.GetTypeCode() == TypeCode.Boolean);
+                    Debug.Assert(Type.GetTypeCode(_t) == TypeCode.Boolean);
                     frame.Push(Enum.ToObject(_t, (bool)from));
                     break;
             }

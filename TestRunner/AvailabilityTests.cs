@@ -211,6 +211,7 @@ namespace TestRunner
             No.Op(typeof(SemaphoreSlim));
             No.Op(typeof(BindingFlags));
             No.Op(typeof(WaitCallback));
+            No.Op(typeof(TypeCode));
         }
 
         public static void StringMethodAvailability()
@@ -243,6 +244,12 @@ namespace TestRunner
             No.Op<Func<byte[], int, int, Task>>(stream.WriteAsync);
             No.Op<Func<byte[], int, int, CancellationToken, Task>>(stream.WriteAsync);
             No.Op(stream);
+        }
+
+        public static void TypeMethodAvailability()
+        {
+            No.Op<Func<Type, TypeCode>>(TypeEx.GetTypeCode);
+            No.Op(TypeEx.EmptyTypes);
         }
     }
 }

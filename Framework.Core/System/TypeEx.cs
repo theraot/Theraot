@@ -1,17 +1,22 @@
-﻿#if LESSTHAN_NET40 || LESSTHAN_NETSTANDARD15
-
+﻿using System.Runtime.CompilerServices;
+#if LESSTHAN_NETSTANDARD15
 using System.Reflection;
+
+#endif
 
 namespace System
 {
-    public static class TypeTheraotExtensions
+    public static partial class TypeEx
     {
-        public static TypeCode GetTypeCode(this Type type)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static TypeCode GetTypeCode(Type type)
         {
+#if LESSTHAN_NETSTANDARD15
             if (type == null)
             {
                 return TypeCode.Empty;
             }
+
             while (true)
             {
                 var info = type.GetTypeInfo();
@@ -41,8 +46,18 @@ namespace System
                 : type == typeof(DateTime) ? TypeCode.DateTime
                 : type == typeof(string) ? TypeCode.String
                 : TypeCode.Object;
+#else
+            return Type.GetTypeCode(type);
+#endif
         }
     }
-}
 
+    public static partial class TypeEx
+    {
+#if LESSTHAN_NETSTANDARD13
+        public static readonly Type[] EmptyTypes = new Type[0];
+#else
+        public static readonly Type[] EmptyTypes = Type.EmptyTypes;
 #endif
+    }
+}

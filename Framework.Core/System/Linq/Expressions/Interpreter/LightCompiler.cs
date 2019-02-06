@@ -1118,8 +1118,8 @@ namespace System.Linq.Expressions.Interpreter
                     nonNullableTo = Enum.GetUnderlyingType(nonNullableTo);
                 }
 
-                var from = nonNullableFrom.GetTypeCode();
-                var to = nonNullableTo.GetTypeCode();
+                var from = Type.GetTypeCode(nonNullableFrom);
+                var to = Type.GetTypeCode(nonNullableTo);
 
                 if (from == to)
                 {
@@ -2443,7 +2443,7 @@ namespace System.Linq.Expressions.Interpreter
                     return;
                 }
 
-                var switchType = node.SwitchValue.Type.GetTypeCode();
+                var switchType = Type.GetTypeCode(node.SwitchValue.Type);
 
                 if (node.Comparison == null)
                 {

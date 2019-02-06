@@ -89,7 +89,7 @@ namespace System.Linq.Expressions.Compiler
             // Primitive value types are okay because they are all read-only,
             // but we can't rely on this for non-primitive types. So we have
             // to either throw NotSupported or use ref locals.
-            return instance?.Type.IsValueType == true && instance.Type.GetTypeCode() == TypeCode.Object;
+            return instance?.Type.IsValueType == true && Type.GetTypeCode(instance.Type) == TypeCode.Object;
         }
 
         private static void RequireNoRefArgs(MethodBase method)

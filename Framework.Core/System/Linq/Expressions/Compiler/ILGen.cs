@@ -141,7 +141,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitDefault(this ILGenerator il, Type type, ILocalCache locals)
         {
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.DateTime:
                     il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DateTimeMinValue);
@@ -307,7 +307,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                switch (type.GetTypeCode())
+                switch (Type.GetTypeCode(type))
                 {
                     case TypeCode.Boolean:
                     case TypeCode.SByte:
@@ -358,7 +358,7 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitLoadValueIndirect(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Byte:
                     il.Emit(OpCodes.Ldind_I1);
@@ -511,7 +511,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(type != null);
 
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
                 case TypeCode.SByte:
@@ -560,7 +560,7 @@ namespace System.Linq.Expressions.Compiler
         internal static void EmitStoreValueIndirect(this ILGenerator il, Type type)
         {
             Debug.Assert(type != null);
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
                 case TypeCode.Byte:
@@ -690,7 +690,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool CanEmitILConstant(Type type)
         {
-            switch (type.GetNonNullable().GetTypeCode())
+            switch (Type.GetTypeCode(type.GetNonNullable()))
             {
                 case TypeCode.Boolean:
                 case TypeCode.SByte:
@@ -906,8 +906,8 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitNumericConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
-            var tc = typeTo.GetTypeCode();
-            var tf = typeFrom.GetTypeCode();
+            var tc = Type.GetTypeCode(typeTo);
+            var tf = Type.GetTypeCode(typeFrom);
             if (tc == tf)
             {
                 // Between enums of same underlying type, or between such an enum and the underlying type itself.
@@ -1234,7 +1234,7 @@ namespace System.Linq.Expressions.Compiler
                 return true;
             }
 
-            switch (type.GetTypeCode())
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
                     il.EmitPrimitive((bool)value);

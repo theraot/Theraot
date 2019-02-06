@@ -15,12 +15,10 @@ namespace System
         public static T[] Empty<T>()
         {
             var type = typeof(T);
-#if TARGETS_NET || TARGETS_NETCORE
             if (type == typeof(Type))
             {
-                return (T[])(object)Type.EmptyTypes;
+                return (T[])(object)TypeEx.EmptyTypes;
             }
-#endif
             if (_emptyArrays.TryGetValue(type, out var array))
             {
                 return (T[])array;
