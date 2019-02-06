@@ -26,7 +26,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public override void InvokeWithException(Action<Exception> onException, object sender, TCancelEventArgs eventArgs)
+        public override void Invoke(Action<Exception> onException, object sender, TCancelEventArgs eventArgs)
         {
             foreach (var handler in EventHandlers)
             {
@@ -73,7 +73,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public override void InvokeWithException(Action<Exception> onException, object sender, TCancelEventArgs eventArgs)
+        public override void Invoke(Action<Exception> onException, object sender, TCancelEventArgs eventArgs)
         {
             foreach (var handler in EventHandlers)
             {

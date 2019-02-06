@@ -206,7 +206,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            _onCompleted.InvokeWithException(null);
+            _onCompleted.Invoke(null, DelegateCollectionInvokeOptions.RemoveDelegates);
             _target = new StructNeedle<T>(value);
         }
 

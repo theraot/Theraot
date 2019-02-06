@@ -12,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
 
         void Invoke(object sender, TEventArgs eventArgs);
 
-        void InvokeWithException(Action<Exception> onException, object sender, TEventArgs eventArgs);
+        void Invoke(Action<Exception> onException, object sender, TEventArgs eventArgs);
 
         void Remove(EventHandler<TEventArgs> value);
 

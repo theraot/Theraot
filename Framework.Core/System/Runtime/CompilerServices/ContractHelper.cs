@@ -99,7 +99,7 @@ namespace System.Runtime.CompilerServices
             {
                 displayMessage = GetDisplayMessage(failureKind, userMessage, conditionText);
                 eventArgs = new ContractFailedEventArgs(failureKind, displayMessage, conditionText, innerException);
-                _contractFailedEvent.InvokeWithException
+                _contractFailedEvent.Invoke
                 (
                     exception =>
                     {

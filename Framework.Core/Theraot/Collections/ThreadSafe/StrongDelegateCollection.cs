@@ -80,24 +80,28 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Remove(item);
         }
 
-        public void Invoke(params object[] args)
+        public void Invoke(DelegateCollectionInvokeOptions options, params object[] args)
         {
-            _invoke(args);
+            if ((options & DelegateCollectionInvokeOptions.RemoveDelegates) != DelegateCollectionInvokeOptions.None)
+            {
+                _invoke(args);
+            }
+            else
+            {
+                _invokeAndClear(args);
+            }
         }
 
-        public void InvokeAndClear(params object[] args)
+        public void Invoke(Action<Exception> onException, DelegateCollectionInvokeOptions options, params object[] args)
         {
-            _invokeAndClear(args);
-        }
-
-        public void InvokeWithException(Action<Exception> onException, params object[] args)
-        {
-            _invokeWithException(onException, args);
-        }
-
-        public void InvokeAndClearWithException(Action<Exception> onException, params object[] args)
-        {
-            _invokeAndClearWithException(onException, args);
+            if ((options & DelegateCollectionInvokeOptions.RemoveDelegates) != DelegateCollectionInvokeOptions.None)
+            {
+                _invokeWithException(onException, args);
+            }
+            else
+            {
+                _invokeAndClearWithException(onException, args);
+            }
         }
 
         private void InvokeExtracted(object[] args)

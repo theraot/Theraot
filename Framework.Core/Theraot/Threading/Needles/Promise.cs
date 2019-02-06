@@ -263,7 +263,7 @@ namespace Theraot.Threading.Needles
                 waitHandle.Dispose();
             }
 
-            _onCompleted.InvokeWithException(null);
+            _onCompleted.Invoke(null, DelegateCollectionInvokeOptions.RemoveDelegates);
             _waitHandle.Value = null;
         }
     }
