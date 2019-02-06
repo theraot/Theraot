@@ -8,8 +8,6 @@ namespace System
     {
         public static bool HasFlag(this Enum value, Enum flag)
         {
-            //Added in .NET 4.0
-            var type = value.GetType();
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
@@ -20,6 +18,8 @@ namespace System
                 throw new ArgumentNullException(nameof(flag));
             }
 
+            var type = value.GetType();
+
             if (flag.GetType() != type)
             {
                 throw new ArgumentException("Enum types don't match");
@@ -28,28 +28,36 @@ namespace System
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Byte:
-                    return (Convert.ToByte(value, CultureInfo.InvariantCulture) & Convert.ToByte(flag, CultureInfo.InvariantCulture)) != 0;
+                    var byteFlag = Convert.ToByte(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToByte(value, CultureInfo.InvariantCulture) & byteFlag) == byteFlag;
 
                 case TypeCode.Int16:
-                    return (Convert.ToInt16(value, CultureInfo.InvariantCulture) & Convert.ToInt16(flag, CultureInfo.InvariantCulture)) != 0;
+                    var int16Flag = Convert.ToInt16(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToInt16(value, CultureInfo.InvariantCulture) & int16Flag) == int16Flag;
 
                 case TypeCode.Int32:
-                    return (Convert.ToInt32(value, CultureInfo.InvariantCulture) & Convert.ToInt32(flag, CultureInfo.InvariantCulture)) != 0;
+                    var int32Flag = Convert.ToInt32(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToInt32(value, CultureInfo.InvariantCulture) & int32Flag) == int32Flag;
 
                 case TypeCode.Int64:
-                    return (Convert.ToInt64(value, CultureInfo.InvariantCulture) & Convert.ToInt64(flag, CultureInfo.InvariantCulture)) != 0;
+                    var int64Flag = Convert.ToInt64(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToInt64(value, CultureInfo.InvariantCulture) & int64Flag) == int64Flag;
 
                 case TypeCode.SByte:
-                    return (Convert.ToSByte(value, CultureInfo.InvariantCulture) & Convert.ToSByte(flag, CultureInfo.InvariantCulture)) != 0;
+                    var sbyteFlag = Convert.ToSByte(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToSByte(value, CultureInfo.InvariantCulture) & sbyteFlag) == sbyteFlag;
 
                 case TypeCode.UInt16:
-                    return (Convert.ToUInt16(value, CultureInfo.InvariantCulture) & Convert.ToUInt16(flag, CultureInfo.InvariantCulture)) != 0;
+                    var uint16Flag = Convert.ToUInt16(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToUInt16(value, CultureInfo.InvariantCulture) & uint16Flag) == uint16Flag;
 
                 case TypeCode.UInt32:
-                    return (Convert.ToUInt32(value, CultureInfo.InvariantCulture) & Convert.ToUInt32(flag, CultureInfo.InvariantCulture)) != 0;
+                    var uint32Flag = Convert.ToUInt32(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToUInt32(value, CultureInfo.InvariantCulture) & uint32Flag) == uint32Flag;
 
                 case TypeCode.UInt64:
-                    return (Convert.ToUInt64(value, CultureInfo.InvariantCulture) & Convert.ToUInt64(flag, CultureInfo.InvariantCulture)) != 0;
+                    var uint64Flag = Convert.ToUInt64(flag, CultureInfo.InvariantCulture);
+                    return (Convert.ToUInt64(value, CultureInfo.InvariantCulture) & uint64Flag) == uint64Flag;
 
                 default:
                     throw new InvalidOperationException("The underlying type of the Enum is not a recognized primitive integer type.");
