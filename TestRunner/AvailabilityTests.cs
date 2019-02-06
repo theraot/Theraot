@@ -251,5 +251,12 @@ namespace TestRunner
             No.Op<Func<Type, TypeCode>>(TypeEx.GetTypeCode);
             No.Op(TypeEx.EmptyTypes);
         }
+
+        public static void ToStringMethodAvailability()
+        {
+            No.Op<Func<IFormatProvider, string>>(provider => default(bool).ToString(provider));
+            No.Op<Func<IFormatProvider, string>>(provider => default(char).ToString(provider));
+            No.Op<Func<IFormatProvider, string>>(default(string).ToString);
+        }
     }
 }
