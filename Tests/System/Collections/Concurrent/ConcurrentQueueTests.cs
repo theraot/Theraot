@@ -27,6 +27,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Threading;
+using Tests.Helpers;
 
 namespace MonoTests.System.Collections.Concurrent
 {
