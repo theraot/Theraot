@@ -127,7 +127,7 @@ namespace MonoTests.System.Threading
                 var fail = false;
                 var wrapper = new SpinLockWrapper();
 
-                ParallelTestHelper.ParallelStressTest(wrapper, delegate
+                ParallelTestHelper.ParallelStressTest(delegate
                 {
                     var taken = false;
                     wrapper.Lock.Enter(ref taken);

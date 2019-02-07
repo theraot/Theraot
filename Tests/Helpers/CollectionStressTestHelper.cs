@@ -43,7 +43,7 @@ namespace Tests.Helpers
                 const int Count = 10;
                 const int Threads = 5;
 
-                ParallelTestHelper.ParallelStressTest(coll, (q) =>
+                ParallelTestHelper.ParallelStressTest( () =>
                 {
                     var t = Interlocked.Increment(ref amount);
                     for (var i = 0; i < Count; i++)
@@ -86,7 +86,7 @@ namespace Tests.Helpers
 
                 Assert.AreEqual((Count + Delta) * Threads, coll.Count, "#0");
 
-                ParallelTestHelper.ParallelStressTest(coll, (q) =>
+                ParallelTestHelper.ParallelStressTest(() =>
                 {
                     var s = true;
                     for (var i = 0; i < Count; i++)

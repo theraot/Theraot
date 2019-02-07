@@ -127,7 +127,7 @@ namespace MonoTests.System.Collections.Concurrent
                 var threadCounter = 0;
                 var success = true;
 
-                ParallelTestHelper.ParallelStressTest(queue, (q) =>
+                ParallelTestHelper.ParallelStressTest(() =>
                 {
                     var threadId = Interlocked.Increment(ref threadCounter);
                     object temp;

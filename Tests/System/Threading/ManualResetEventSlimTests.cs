@@ -308,7 +308,7 @@ namespace MonoTests.System.Threading
             var count = 0;
             var s = false;
 
-            ParallelTestHelper.ParallelStressTest(_mre, m =>
+            ParallelTestHelper.ParallelStressTest(() =>
             {
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {
@@ -317,17 +317,17 @@ namespace MonoTests.System.Threading
                     {
                         if (i % 2 == 0)
                         {
-                            m.Reset();
+                            _mre.Reset();
                         }
                         else
                         {
-                            m.Set();
+                            _mre.Set();
                         }
                     }
                 }
                 else
                 {
-                    m.Wait();
+                    _mre.Wait();
                     s = true;
                 }
             }, 2);

@@ -35,7 +35,7 @@ namespace Tests.Helpers
     {
         private const int DefaultRepetitionCount = 50;
 
-        public static void ParallelStressTest<TSource>(TSource obj, Action<TSource> action, int threadCount)
+        public static void ParallelStressTest(ThreadStart action, int threadCount)
         {
             if (action == null)
             {
@@ -44,7 +44,7 @@ namespace Tests.Helpers
             var threads = new Thread[threadCount];
             for (var threadIndex = 0; threadIndex < threadCount; threadIndex++)
             {
-                threads[threadIndex] = new Thread(() => action(obj));
+                threads[threadIndex] = new Thread(action);
                 threads[threadIndex].Start();
             }
 

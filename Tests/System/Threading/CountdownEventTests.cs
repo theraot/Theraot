@@ -137,16 +137,16 @@ namespace MonoTests.System.Threading
             var count = 0;
             ParallelTestHelper.ParallelStressTest
             (
-                evt, e =>
+                () =>
                 {
                     var num = Interlocked.Increment(ref count);
                     if (num % 2 == 0)
                     {
-                        e.AddCount();
+                        evt.AddCount();
                     }
                     else
                     {
-                        e.Signal();
+                        evt.Signal();
                     }
                 }, 7
             );
@@ -469,19 +469,19 @@ namespace MonoTests.System.Threading
 
             ParallelTestHelper.ParallelStressTest
             (
-                evt, e =>
+                () =>
                 {
                     if (Interlocked.Increment(ref count) % 2 == 0)
                     {
                         Thread.Sleep(100);
-                        while (!e.IsSet)
+                        while (!evt.IsSet)
                         {
-                            e.Signal();
+                            evt.Signal();
                         }
                     }
                     else
                     {
-                        e.Wait();
+                        evt.Wait();
                         s = true;
                     }
                 }, 3

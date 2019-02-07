@@ -59,7 +59,7 @@ namespace MonoTests.System.Collections.Concurrent
                 Setup();
                 var index = 0;
 
-                ParallelTestHelper.ParallelStressTest(_map, delegate
+                ParallelTestHelper.ParallelStressTest( delegate
                 {
                     var own = Interlocked.Increment(ref index);
 
@@ -275,7 +275,6 @@ namespace MonoTests.System.Collections.Concurrent
 
                 ParallelTestHelper.ParallelStressTest
                 (
-                    _map,
                     delegate
                     {
                         var own = Interlocked.Increment(ref index);
