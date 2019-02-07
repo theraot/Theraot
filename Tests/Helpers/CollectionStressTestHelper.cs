@@ -134,7 +134,7 @@ namespace Tests.Helpers
                         range = range.Reverse();
                     }
 
-                    var expected = range.Aggregate(string.Empty, (acc, v) => acc + v.ToString());
+                    var expected = range.Aggregate(string.Empty, (acc, v) => acc + v);
 
                     if (order == CheckOrderingType.DoNotCare)
                     {
