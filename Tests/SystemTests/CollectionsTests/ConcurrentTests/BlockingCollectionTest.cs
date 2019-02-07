@@ -2,9 +2,10 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using NUnit.Framework;
 using Theraot;
 
-namespace TestRunner.System.Collections.Concurrent
+namespace SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
     public static class BlockingCollectionTest
@@ -46,9 +47,10 @@ namespace TestRunner.System.Collections.Concurrent
             {
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
-                a.TryTake(out _, 200);
+                a.TryTake(out _, 1000);
                 stopWatch.Stop();
-                Assert.IsTrue(stopWatch.ElapsedMilliseconds >= 200);
+                var elapsedMilliseconds = stopWatch.ElapsedMilliseconds;
+                Assert.IsTrue(elapsedMilliseconds >= 1000, $"{elapsedMilliseconds}");
             }
         }
 
