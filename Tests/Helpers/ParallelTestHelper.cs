@@ -29,7 +29,7 @@ extern alias nunitlinq;
 using System;
 using System.Threading;
 
-namespace MonoTests
+namespace Tests.Helpers
 {
     public static class ParallelTestHelper
     {
