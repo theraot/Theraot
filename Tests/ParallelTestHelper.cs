@@ -27,78 +27,46 @@ extern alias nunitlinq;
 //
 
 using System;
-using System.Collections.Concurrent;
 using System.Threading;
 
 namespace MonoTests
 {
     public static class ParallelTestHelper
     {
-        private const int _numRun = 50;
+        private const int DefaultRepetitionCount = 50;
 
-        public static void ParallelAdder(IProducerConsumerCollection<int> collection, int numThread)
-        {
-            var startIndex = -10;
-            ParallelStressTest(collection, c =>
-            {
-                var start = Interlocked.Add(ref startIndex, 10);
-                for (var i = start; i < start + 10; i++)
-                {
-                    c.TryAdd(i);
-                }
-            }, numThread);
-        }
-
-        public static void ParallelRemover(IProducerConsumerCollection<int> collection, int numThread, int times)
-        {
-            var t = -1;
-            ParallelStressTest(collection, c =>
-            {
-                var num = Interlocked.Increment(ref t);
-                if (num < times)
-                {
-                    c.TryTake(out _);
-                }
-            }, numThread);
-        }
-
-        public static void ParallelStressTest<TSource>(TSource obj, Action<TSource> action)
-        {
-            ParallelStressTest(obj, action, Environment.ProcessorCount + 2);
-        }
-
-        public static void ParallelStressTest<TSource>(TSource obj, Action<TSource> action, int numThread)
+        public static void ParallelStressTest<TSource>(TSource obj, Action<TSource> action, int threadCount)
         {
             if (action == null)
             {
                 return;
             }
-            var threads = new Thread[numThread];
-            for (var i = 0; i < numThread; i++)
+            var threads = new Thread[threadCount];
+            for (var threadIndex = 0; threadIndex < threadCount; threadIndex++)
             {
-                threads[i] = new Thread(() => action(obj));
-                threads[i].Start();
+                threads[threadIndex] = new Thread(() => action(obj));
+                threads[threadIndex].Start();
             }
 
             // Wait for the completion
-            for (var i = 0; i < numThread; i++)
+            for (var threadIndex = 0; threadIndex < threadCount; threadIndex++)
             {
-                threads[i].Join();
+                threads[threadIndex].Join();
             }
         }
 
         public static void Repeat(Action action)
         {
-            Repeat(action, _numRun);
+            Repeat(action, DefaultRepetitionCount);
         }
 
-        public static void Repeat(Action action, int numRun)
+        public static void Repeat(Action action, int repetitionCount)
         {
             if (action == null)
             {
                 return;
             }
-            for (var i = 0; i < numRun; i++)
+            for (var repetitionIndex = 0; repetitionIndex < repetitionCount; repetitionIndex++)
             {
                 action();
             }
