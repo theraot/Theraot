@@ -35,103 +35,116 @@ namespace Tests.Helpers
 {
     public static class CollectionStressTestHelper
     {
-        public static void AddStressTest(IProducerConsumerCollection<int> coll)
+        public static void AddStressTest(IProducerConsumerCollection<int> collection)
         {
-            ParallelTestHelper.Repeat(delegate
-            {
-                var amount = -1;
-                const int Count = 10;
-                const int Threads = 5;
-
-                ParallelTestHelper.ParallelStressTest( () =>
+            ParallelTestHelper.Repeat
+            (
+                () =>
                 {
-                    var t = Interlocked.Increment(ref amount);
-                    for (var i = 0; i < Count; i++)
+                    var amount = -1;
+                    const int ItemsCount = 10;
+                    const int ThreadCount = 5;
+
+                    ParallelTestHelper.ParallelStressTest
+                    (
+                        () =>
+                        {
+                            var t = Interlocked.Increment(ref amount);
+                            for (var i = ItemsCount - 1; i >= 0; i--)
+                            {
+                                collection.TryAdd(t);
+                            }
+                        },
+                        ThreadCount
+                    );
+
+                    Assert.AreEqual(ThreadCount * ItemsCount, collection.Count, "#-1");
+                    var values = new int[ThreadCount];
+                    while (collection.TryTake(out var temp))
                     {
-                        coll.TryAdd(t);
+                        values[temp]++;
                     }
-                }, Threads);
 
-                Assert.AreEqual(Threads * Count, coll.Count, "#-1");
-                var values = new int[Threads];
-                int temp;
-                while (coll.TryTake(out temp))
-                {
-                    values[temp]++;
+                    for (var i = 0; i < ThreadCount; i++)
+                    {
+                        Assert.AreEqual(ItemsCount, values[i], "#" + i);
+                    }
                 }
-
-                for (var i = 0; i < Threads; i++)
-                {
-                    Assert.AreEqual(Count, values[i], "#" + i.ToString());
-                }
-            });
+            );
         }
 
-        public static void RemoveStressTest(IProducerConsumerCollection<int> coll, CheckOrderingType order)
+        public static void RemoveStressTest(IProducerConsumerCollection<int> collection, CheckOrderingType order)
         {
-            ParallelTestHelper.Repeat(delegate
-            {
-                const int Count = 10;
-                const int Threads = 5;
-                const int Delta = 5;
-
-                for (var i = 0; i < (Count + Delta) * Threads; i++)
+            ParallelTestHelper.Repeat
+            (
+                () =>
                 {
-                    while (!coll.TryAdd(i))
+                    const int Count = 10;
+                    const int Threads = 5;
+                    const int Delta = 5;
+
+                    for (var i = 0; i < (Count + Delta) * Threads; i++)
                     {
-                    }
-                }
-
-                var state = true;
-
-                Assert.AreEqual((Count + Delta) * Threads, coll.Count, "#0");
-
-                ParallelTestHelper.ParallelStressTest(() =>
-                {
-                    var s = true;
-                    for (var i = 0; i < Count; i++)
-                    {
-                        s &= coll.TryTake(out _);
-                        // try again in case it was a transient failure
-                        if (!s && coll.TryTake(out _))
+                        while (!collection.TryAdd(i))
                         {
-                            s = true;
+                            // Empty
                         }
                     }
 
-                    state &= s;
-                }, Threads);
+                    var state = true;
 
-                Assert.IsTrue(state, "#1");
-                Assert.AreEqual(Delta * Threads, coll.Count, "#2");
+                    Assert.AreEqual((Count + Delta) * Threads, collection.Count, "#0");
 
-                var actual = string.Empty;
-                int temp;
-                var builder = new StringBuilder();
-                builder.Append(actual);
-                while (coll.TryTake(out temp))
-                {
-                    builder.Append(temp.ToString());
-                }
-                actual = builder.ToString();
+                    ParallelTestHelper.ParallelStressTest
+                    (
+                        () =>
+                        {
+                            var check = true;
+                            for (var i = 0; i < Count; i++)
+                            {
+                                check &= collection.TryTake(out _);
+                                // try again in case it was a transient failure
+                                if (!check && collection.TryTake(out _))
+                                {
+                                    check = true;
+                                }
+                            }
 
-                var range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : Count * Threads, Delta * Threads);
-                if (order == CheckOrderingType.Reversed)
-                {
-                    range = range.Reverse();
-                }
+                            state &= check;
+                        },
+                        Threads
+                    );
 
-                var expected = range.Aggregate(string.Empty, (acc, v) => acc + v.ToString());
+                    Assert.IsTrue(state, "#1");
+                    Assert.AreEqual(Delta * Threads, collection.Count, "#2");
 
-                if (order == CheckOrderingType.DoNotCare)
-                {
-                    Assert.That(actual, new CollectionEquivalentConstraint(expected), "#3");
-                }
-                else
-                {
-                    Assert.AreEqual(expected, actual, "#3");
-                }
-            }, 10);
+                    var actual = string.Empty;
+                    var builder = new StringBuilder();
+                    builder.Append(actual);
+                    while (collection.TryTake(out var temp))
+                    {
+                        builder.Append(temp.ToString());
+                    }
+
+                    actual = builder.ToString();
+
+                    var range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : Count * Threads, Delta * Threads);
+                    if (order == CheckOrderingType.Reversed)
+                    {
+                        range = range.Reverse();
+                    }
+
+                    var expected = range.Aggregate(string.Empty, (acc, v) => acc + v.ToString());
+
+                    if (order == CheckOrderingType.DoNotCare)
+                    {
+                        Assert.That(actual, new CollectionEquivalentConstraint(expected), "#3");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(expected, actual, "#3");
+                    }
+                }, 10);
         }
     }
 }
