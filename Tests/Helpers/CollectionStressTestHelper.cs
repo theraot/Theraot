@@ -30,17 +30,9 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Tests.Helpers;
 
 namespace Tests.Helpers
 {
-    public enum CheckOrderingType
-    {
-        InOrder,
-        Reversed,
-        DontCare
-    }
-
     public static class CollectionStressTestHelper
     {
         public static void AddStressTest(IProducerConsumerCollection<int> coll)
@@ -131,7 +123,7 @@ namespace Tests.Helpers
 
                 var expected = range.Aggregate(string.Empty, (acc, v) => acc + v.ToString());
 
-                if (order == CheckOrderingType.DontCare)
+                if (order == CheckOrderingType.DoNotCare)
                 {
                     Assert.That(actual, new CollectionEquivalentConstraint(expected), "#3");
                 }
