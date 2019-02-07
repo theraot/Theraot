@@ -280,7 +280,11 @@ namespace System.Linq.Expressions
             var expressionList = VisitExpressionList(na.Expressions);
             if (expressionList != na.Expressions)
             {
-                return na.NodeType == ExpressionType.NewArrayInit ? Expression.NewArrayInit(na.Type.GetElementType(), expressionList) : Expression.NewArrayBounds(na.Type.GetElementType(), expressionList);
+                return na.NodeType == ExpressionType.NewArrayInit
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    ? Expression.NewArrayInit(na.Type.GetElementType(), expressionList)
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    : Expression.NewArrayBounds(na.Type.GetElementType(), expressionList);
             }
 
             return na;
