@@ -23,7 +23,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/theraot/Theraot/</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <CodeAnalysisRuleSet>rules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>../rules.ruleset</CodeAnalysisRuleSet>
     <AssemblyVersion>3.0.1.0</AssemblyVersion>
     <FileVersion>3.0.1.0</FileVersion>
   </PropertyGroup>
