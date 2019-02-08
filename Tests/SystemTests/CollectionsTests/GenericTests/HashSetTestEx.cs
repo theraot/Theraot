@@ -6,7 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace MonoTests.System.Collections.Generic
+namespace SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
     internal class HashSetTestEx
