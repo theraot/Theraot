@@ -2,6 +2,8 @@
 extern alias nunitlinq;
 #endif
 
+#pragma warning disable RECS0030 // Suggests using the class declaring a static function when calling it
+
 //
 // HashSetTest.cs
 //
@@ -35,8 +37,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Tests.Helpers;
 
-namespace MonoTests.System.Collections.Generic
+namespace SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
     public class HashSetTest
@@ -140,14 +143,17 @@ namespace MonoTests.System.Collections.Generic
         [Test]
         public void TestModifySetWhileForeach()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                var set = new HashSet<int>(new[] {1, 2, 3, 4});
-                foreach (var item in set)
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
                 {
-                    set.Add(item + 2);
+                    var set = new HashSet<int>(new[] {1, 2, 3, 4});
+                    foreach (var item in set)
+                    {
+                        set.Add(item + 2);
+                    }
                 }
-            });
+            );
         }
 
         [Test]
@@ -409,10 +415,8 @@ namespace MonoTests.System.Collections.Generic
         [Test]
         public void TestCopyToEmpty()
         {
-            var set = new HashSet<int>();
-
             var res = new int[0];
-            set.CopyTo(res, 0);
+            new HashSet<int>().CopyTo(res, 0);
         }
 
         [Test]
@@ -460,6 +464,7 @@ namespace MonoTests.System.Collections.Generic
             Assert.AreNotEqual(comparer.GetHashCode(set2), comparer.GetHashCode(set4));
 
             Assert.IsTrue(comparer.Equals(null, null));
+            // ReSharper disable once AssignNullToNotNullAttribute
             Assert.AreEqual(0, comparer.GetHashCode(null));
             Assert.IsFalse(comparer.Equals(set1, null));
         }
@@ -485,56 +490,37 @@ namespace MonoTests.System.Collections.Generic
             Assert.AreEqual(0, source.Count());
         }
 
-        private delegate void D();
-
-        private bool Throws(D d)
-        {
-            if (d == null)
-            {
-                return false;
-            }
-            try
-            {
-                d();
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Theraot.No.Op(ex);
-                return true;
-            }
-        }
-
         [Test]
-        // based on #491858, #517415
         public void Enumerator_Current()
         {
-            using (var e1 = new HashSet<int>.Enumerator()) // TODO: Review
+            using (var e1 = new HashSet<int>.Enumerator())
             {
-                Assert.IsFalse(Throws(() => GC.KeepAlive(e1.Current)));
-
-                var d = new HashSet<int>();
-                var e2 = d.GetEnumerator();
-                Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
-                e2.MoveNext();
-                Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
-                e2.Dispose();
-                Assert.IsFalse(Throws(() => GC.KeepAlive(e2.Current)));
-
-                var e3 = ((IEnumerable<int>)d).GetEnumerator();
-                Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
-                e3.MoveNext();
-                Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
-                e3.Dispose();
-                Assert.IsFalse(Throws(() => GC.KeepAlive(e3.Current)));
-
-                var e4 = ((IEnumerable)d).GetEnumerator();
-                Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
-                e4.MoveNext();
-                Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
-                ((IDisposable)e4).Dispose();
-                Assert.IsTrue(Throws(() => GC.KeepAlive(e4.Current)));
+                AssertEx.AreEqual(default, e1.Current);
             }
+
+            var d = new HashSet<int>();
+            var e2 = d.GetEnumerator();
+            AssertEx.AreEqual(default, e2.Current);
+            Assert.IsFalse(e2.MoveNext());
+            AssertEx.AreEqual(default, e2.Current);
+            e2.Dispose();
+            AssertEx.AreEqual(default, e2.Current);
+
+            var e3 = ((IEnumerable<int>)d).GetEnumerator();
+            AssertEx.AreEqual(default, e3.Current);
+            Assert.IsFalse(e3.MoveNext());
+            AssertEx.AreEqual(default, e3.Current);
+            e3.Dispose();
+            AssertEx.AreEqual(default, e3.Current);
+
+            var e4 = ((IEnumerable)d).GetEnumerator();
+            // ReSharper disable once AccessToDisposedClosure
+            AssertEx.Throws<InvalidOperationException>(() => e4.Current);
+            e4.MoveNext();
+            // ReSharper disable once AccessToDisposedClosure
+            AssertEx.Throws<InvalidOperationException>(() => e4.Current);
+            ((IDisposable)e4).Dispose();
+            AssertEx.Throws<InvalidOperationException>(() => e4.Current);
         }
 
         [Test]
@@ -574,12 +560,12 @@ namespace MonoTests.System.Collections.Generic
 
             public int GetHashCode(string obj)
             {
-                if (obj != null)
+                if (obj == null)
                 {
-                    return obj.GetHashCode();
+                    throw new ArgumentNullException(); // Important aspect for test (same as what StringComparer.Ordinal does, and different from GenericEqualityComparer<string>)
                 }
 
-                throw new ArgumentNullException();  // Important aspect for test (same as what StringComparer.Ordinal does, and different from GenericEqualityComparer<string>)
+                return obj.GetHashCode();
             }
         }
 
