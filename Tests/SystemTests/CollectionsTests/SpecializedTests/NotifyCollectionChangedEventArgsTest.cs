@@ -21,18 +21,144 @@
 //	Brian O'Keefe (zer0keefie@gmail.com)
 //
 
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using NUnit.Framework;
 using Tests.Helpers;
+using Theraot;
 
-namespace MonoTests.System.Collections.Specialized
+namespace SystemTests.CollectionsTests.SpecializedTests
 {
     [TestFixture]
     public class NotifyCollectionChangedEventArgsTest
     {
+        [Test]
+        public void NotifyCollectionChangedEventArgsConstructor10Test()
+        {
+            var changed = new object();
+            const int NewIndex = 2;
+            const int OldIndex = 5;
+
+            // Trying with Replace
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, NewIndex, OldIndex);
+
+            CollectionChangedEventValidators.ValidateMoveOperation(args, new[] {changed}, NewIndex, OldIndex, "#J01");
+
+            // Trying with newIndex < 0.
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, -5, OldIndex));
+                Assert.Fail("The newIndex argument cannot be less than 0.");
+            }
+            catch (ArgumentException ex)
+            {
+                GC.KeepAlive(ex);
+            }
+
+            // Trying with Reset
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changed, NewIndex, OldIndex));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
+            }
+            catch (ArgumentException ex)
+            {
+                No.Op(ex);
+            }
+
+            // Trying with Replace
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changed, NewIndex, OldIndex));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
+            }
+            catch (ArgumentException ex)
+            {
+                No.Op(ex);
+            }
+
+            // Trying with Add
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changed, NewIndex, OldIndex));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
+            }
+            catch (ArgumentException ex)
+            {
+                No.Op(ex);
+            }
+
+            // Trying with Remove
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changed, NewIndex, OldIndex));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
+            }
+            catch (ArgumentException ex)
+            {
+                No.Op(ex);
+            }
+        }
+
+        [Test]
+        public void NotifyCollectionChangedEventArgsConstructor11Test()
+        {
+            var newItem = new object();
+            var oldItem = new object();
+            const int StartIndex = 5;
+
+            // Trying with Replace
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, StartIndex);
+
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] {oldItem}, new[] {newItem}, StartIndex, "#K01");
+
+            // Trying with Reset
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItem, oldItem, StartIndex));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
+            }
+            catch (ArgumentException ex)
+            {
+                No.Op(ex);
+            }
+
+            // Trying with Move
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItem, oldItem, StartIndex));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
+            }
+            catch (ArgumentException ex)
+            {
+                GC.KeepAlive(ex);
+            }
+
+            // Trying with Add
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, oldItem, StartIndex));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
+            }
+            catch (ArgumentException ex)
+            {
+                No.Op(ex);
+            }
+
+            // Trying with Remove
+            try
+            {
+                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItem, oldItem));
+                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
+            }
+            catch (ArgumentException ex)
+            {
+                No.Op(ex);
+            }
+        }
+
         [Test]
         public void NotifyCollectionChangedEventArgsConstructor1Test()
         {
@@ -55,7 +181,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Remove
@@ -66,7 +192,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -77,7 +203,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Replace
@@ -88,7 +214,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
@@ -120,7 +246,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Remove
@@ -141,7 +267,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -152,7 +278,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Replace
@@ -163,7 +289,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Add some items, and repeat
@@ -200,12 +326,12 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem);
 
-            CollectionChangedEventValidators.ValidateAddOperation(args, new[] { changedItem }, "#C01");
+            CollectionChangedEventValidators.ValidateAddOperation(args, new[] {changedItem}, "#C01");
 
             // Trying with Remove
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItem);
 
-            CollectionChangedEventValidators.ValidateRemoveOperation(args, new[] { changedItem }, "#C02");
+            CollectionChangedEventValidators.ValidateRemoveOperation(args, new[] {changedItem}, "#C02");
 
             // Trying with Reset
 
@@ -220,7 +346,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -231,7 +357,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Replace
@@ -242,7 +368,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
@@ -289,22 +415,24 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with null arguments.
             try
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems));
                 Assert.Fail("The newItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null));
                 Assert.Fail("The oldItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Reset
@@ -315,7 +443,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -326,7 +454,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Add
@@ -337,7 +465,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Remove
@@ -348,7 +476,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
@@ -398,7 +526,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
@@ -408,7 +536,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Remove
@@ -423,7 +551,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
@@ -433,7 +561,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentNullException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Reset
@@ -446,7 +574,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
@@ -456,7 +584,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
@@ -466,7 +594,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -477,7 +605,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Replace
@@ -488,7 +616,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
@@ -501,12 +629,12 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem, StartingIndex);
 
-            CollectionChangedEventValidators.ValidateAddOperation(args, new[] { changedItem }, StartingIndex, "#F01");
+            CollectionChangedEventValidators.ValidateAddOperation(args, new[] {changedItem}, StartingIndex, "#F01");
 
             // Trying with Remove
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItem, StartingIndex);
 
-            CollectionChangedEventValidators.ValidateRemoveOperation(args, new[] { changedItem }, StartingIndex, "#F02");
+            CollectionChangedEventValidators.ValidateRemoveOperation(args, new[] {changedItem}, StartingIndex, "#F02");
 
             // Trying with Reset
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, (object)null, -1);
@@ -520,7 +648,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
@@ -530,7 +658,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
@@ -540,7 +668,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -551,7 +679,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Replace
@@ -562,7 +690,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
@@ -574,14 +702,14 @@ namespace MonoTests.System.Collections.Specialized
 
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem);
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { oldItem }, new[] { newItem }, "#G01");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] {oldItem}, new[] {newItem}, "#G01");
 
             // Trying null items
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItem);
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { oldItem }, new object[] { null }, "#G02");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] {oldItem}, new object[] {null}, "#G02");
 
             args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, null);
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { null }, new[] { newItem }, "#G03");
+            CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] {null}, new[] {newItem}, "#G03");
 
             // Trying with Reset
             try
@@ -591,7 +719,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -602,7 +730,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Add
@@ -613,7 +741,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Remove
@@ -624,7 +752,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
@@ -663,22 +791,24 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with null arguments.
             try
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems, StartIndex));
                 Assert.Fail("The newItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             try
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null, StartIndex));
                 Assert.Fail("The oldItems argument cannot be null.");
             }
             catch (ArgumentNullException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Reset
@@ -689,7 +819,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Move
@@ -700,7 +830,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Add
@@ -711,7 +841,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Remove
@@ -722,7 +852,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
 
@@ -756,7 +886,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Reset
@@ -767,7 +897,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Replace
@@ -778,7 +908,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Add
@@ -789,7 +919,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
 
             // Trying with Remove
@@ -800,132 +930,7 @@ namespace MonoTests.System.Collections.Specialized
             }
             catch (ArgumentException ex)
             {
-                Theraot.No.Op(ex);
-            }
-        }
-
-        [Test]
-        public void NotifyCollectionChangedEventArgsConstructor10Test()
-        {
-            var changed = new object();
-            const int NewIndex = 2;
-            const int OldIndex = 5;
-
-            // Trying with Replace
-            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, NewIndex, OldIndex);
-
-            CollectionChangedEventValidators.ValidateMoveOperation(args, new[] { changed }, NewIndex, OldIndex, "#J01");
-
-            // Trying with newIndex < 0.
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, -5, OldIndex));
-                Assert.Fail("The newIndex argument cannot be less than 0.");
-            }
-            catch (ArgumentException ex)
-            {
-                GC.KeepAlive(ex);
-            }
-
-            // Trying with Reset
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, changed, NewIndex, OldIndex));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            // Trying with Replace
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, changed, NewIndex, OldIndex));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Replace.");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            // Trying with Add
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changed, NewIndex, OldIndex));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            // Trying with Remove
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changed, NewIndex, OldIndex));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-        }
-
-        [Test]
-        public void NotifyCollectionChangedEventArgsConstructor11Test()
-        {
-            var newItem = new object();
-            var oldItem = new object();
-            const int StartIndex = 5;
-
-            // Trying with Replace
-            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, StartIndex);
-
-            CollectionChangedEventValidators.ValidateReplaceOperation(args, new[] { oldItem }, new[] { newItem }, StartIndex, "#K01");
-
-            // Trying with Reset
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, newItem, oldItem, StartIndex));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset.");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            // Trying with Move
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, newItem, oldItem, StartIndex));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Move.");
-            }
-            catch (ArgumentException ex)
-            {
-                GC.KeepAlive(ex);
-            }
-
-            // Trying with Add
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newItem, oldItem, StartIndex));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add.");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            // Trying with Remove
-            try
-            {
-                GC.KeepAlive(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, newItem, oldItem));
-                Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove.");
-            }
-            catch (ArgumentException ex)
-            {
-                Theraot.No.Op(ex);
+                No.Op(ex);
             }
         }
     }
