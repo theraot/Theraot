@@ -54,7 +54,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullExpression()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.MemberInit(null, new MemberBinding[0]));
+            Assert.Throws<ArgumentNullException>(() => Expression.MemberInit(null));
         }
 
         [Test]
@@ -71,8 +71,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>(() => {
                 Expression.MemberInit(
-                    Expression.New(typeof(Foo)),
-                    new MemberBinding[] { Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant()) });
+                    Expression.New(typeof(Foo)), Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant())
+                );
             });
         }
 
@@ -80,10 +80,8 @@ namespace MonoTests.System.Linq.Expressions
         public void InitFields()
         {
             var m = Expression.MemberInit(
-                Expression.New(typeof(Foo)),
-                new MemberBinding[] {
-                    Expression.Bind (typeof (Foo).GetField ("Bar"), "bar".ToConstant ()),
-                    Expression.Bind (typeof (Foo).GetField ("Baz"), "baz".ToConstant ()) });
+                Expression.New(typeof(Foo)), Expression.Bind (typeof (Foo).GetField ("Bar"), "bar".ToConstant ()), Expression.Bind (typeof (Foo).GetField ("Baz"), "baz".ToConstant ())
+            );
 
             Assert.AreEqual(typeof(Foo), m.Type);
             Assert.AreEqual(ExpressionType.MemberInit, m.NodeType);

@@ -483,7 +483,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNull(node.Method);
 
-            var eq = Expression.Lambda<Func<DateTime?, bool>>(node, new[] { param }).Compile();
+            var eq = Expression.Lambda<Func<DateTime?, bool>>(node, param).Compile();
 
             Assert.AreEqual(true, eq(null));
             Assert.AreEqual(false, eq(DateTime.Now));

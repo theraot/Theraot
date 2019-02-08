@@ -43,7 +43,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullType()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayInit(null, new Expression[0]));
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayInit(null));
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace MonoTests.System.Linq.Expressions
         [Category("NotDotNet")]
         public void NewVoid()
         {
-            Assert.Throws<ArgumentException>(() => Expression.NewArrayInit(typeof(void), new Expression[0]));
+            Assert.Throws<ArgumentException>(() => Expression.NewArrayInit(typeof(void)));
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfInt()
         {
-            AssertCreatedArrayIsEqual(new[] { 1, 2, 3, 4 });
+            AssertCreatedArrayIsEqual(1, 2, 3, 4);
         }
 
         private enum Months { Jan, Feb, Mar, Apr };
@@ -107,7 +107,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfEnums()
         {
-            AssertCreatedArrayIsEqual(new[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
+            AssertCreatedArrayIsEqual(Months.Jan, Months.Feb, Months.Mar, Months.Apr);
         }
 
         private class Foo
@@ -118,7 +118,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfClasses()
         {
-            AssertCreatedArrayIsEqual(new[] { new Foo(), new Foo(), new Foo(), new Foo() });
+            AssertCreatedArrayIsEqual(new Foo(), new Foo(), new Foo(), new Foo());
         }
 
         private struct Bar
@@ -134,7 +134,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileInitArrayOfStructs()
         {
-            AssertCreatedArrayIsEqual(new[] { new Bar(1), new Bar(2), new Bar(3), new Bar(4) });
+            AssertCreatedArrayIsEqual(new Bar(1), new Bar(2), new Bar(3), new Bar(4));
         }
     }
 }

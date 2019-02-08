@@ -43,7 +43,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodNull()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(null, new Expression[] { }));
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(null));
         }
 
         [Test]
@@ -55,19 +55,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodNameDoesntMatchAdd()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Baz"), new Expression[] { }));
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Baz")));
         }
 
         [Test]
         public void AddMethodIsNotAnInstanceMethod()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Bar).GetMethod("Add"), new Expression[] { }));
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Bar).GetMethod("Add")));
         }
 
         [Test]
         public void MethodArgumentCountDoesnMatchParameterLength()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { }));
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add")));
         }
 
         [Test]
@@ -79,13 +79,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodArgumentDoesntMatchParameterType()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { Expression.Constant(1) }));
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), Expression.Constant(1)));
         }
 
         [Test]
         public void ElementInitToString()
         {
-            var elementInit = Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { Expression.Constant("") });
+            var elementInit = Expression.ElementInit(typeof(Foo).GetMethod("Add"), Expression.Constant(""));
 
             Assert.AreEqual("Void Add(System.String)(\"\")", elementInit.ToString());
         }

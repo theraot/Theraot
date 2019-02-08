@@ -1039,7 +1039,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WaitAny_Empty()
         {
-            Assert.AreEqual(-1, Task.WaitAny(new Task[0]));
+            Assert.AreEqual(-1, Task.WaitAny());
         }
 
         [Test]
@@ -1093,7 +1093,7 @@ namespace MonoTests.System.Threading.Tasks
                     src.Cancel();
                     src.Token.ThrowIfCancellationRequested();
                 }, src.Token);
-                Assert.AreEqual(0, Task.WaitAny(new[] { t }));
+                Assert.AreEqual(0, Task.WaitAny(t));
             }
         }
 
@@ -1703,7 +1703,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var delay1 = TaskEx.Delay(50);
             var delay2 = TaskEx.Delay(25);
-            Assert.IsTrue(TaskEx.WhenAny(new[] { delay1, delay2 }).Wait(1000));
+            Assert.IsTrue(TaskEx.WhenAny(delay1, delay2).Wait(1000));
             Assert.AreEqual(TaskStatus.RanToCompletion, delay2.Status);
         }
 
@@ -2330,7 +2330,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                TaskEx.WhenAny(new Task[0]);
+                TaskEx.WhenAny();
                 Assert.Fail("#3");
             }
             catch (ArgumentException ex)

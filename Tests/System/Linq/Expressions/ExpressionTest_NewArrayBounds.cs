@@ -43,7 +43,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ArgTypeNull()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(null, new Expression[0]));
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(null));
         }
 
         [Test]

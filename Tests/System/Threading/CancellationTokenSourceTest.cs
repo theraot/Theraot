@@ -329,7 +329,7 @@ namespace MonoTests.System.Threading
 
                 try
                 {
-                    CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken[0]);
+                    CancellationTokenSource.CreateLinkedTokenSource();
                     Assert.Fail("#2");
                 }
                 catch (ArgumentException ex)

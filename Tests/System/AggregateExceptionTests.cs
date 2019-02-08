@@ -74,7 +74,7 @@ namespace MonoTests.System
         public void InitializationWithNullInnerValuesTest()
         {
             Assert.Throws<ArgumentException>(() =>
-                GC.KeepAlive(new AggregateException(new[] {new Exception(), null, new ApplicationException()})));
+                GC.KeepAlive(new AggregateException(new Exception(), null, new ApplicationException())));
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace MonoTests.System
         [Test]
         public void GetBaseWithInner()
         {
-            var ae = new AggregateException("x", new Exception[] { new ArgumentException(), new ArgumentNullException() });
+            var ae = new AggregateException("x", new ArgumentException(), new ArgumentNullException());
             Assert.AreEqual(ae, ae.GetBaseException(), "#1");
 
             var expected = new ArgumentException();

@@ -226,7 +226,7 @@ namespace Tests.Theraot.Threading
                 }
                 else
                 {
-                    Assert.AreEqual(string.Join(Path.DirectorySeparatorChar.ToString(), new[] { Start, combination }), result);
+                    Assert.AreEqual(StringEx.Join(Path.DirectorySeparatorChar.ToString(), Start, combination), result);
                 }
             }
         }

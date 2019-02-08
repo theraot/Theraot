@@ -232,7 +232,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
             var pexpr = Expression.Lambda<Func<T, T, bool>>(
-                p, new[] { pa, pb });
+                p, pa, pb
+            );
 
             var compiled = pexpr.Compile();
             Assert.AreEqual(r, compiled(a, b), string.Format("{0} ({1},{2}) == {3}", node, a, b, r));

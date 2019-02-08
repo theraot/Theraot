@@ -69,19 +69,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetFuncTypeTest()
         {
-            var func = Expression.GetFuncType(new[] { typeof(int) });
+            var func = Expression.GetFuncType(typeof(int));
             Assert.AreEqual(typeof(Func<int>), func);
 
-            func = Expression.GetFuncType(new[] { typeof(int), typeof(int) });
+            func = Expression.GetFuncType(typeof(int), typeof(int));
             Assert.AreEqual(typeof(Func<int, int>), func);
 
-            func = Expression.GetFuncType(new[] { typeof(int), typeof(int), typeof(int) });
+            func = Expression.GetFuncType(typeof(int), typeof(int), typeof(int));
             Assert.AreEqual(typeof(Func<int, int, int>), func);
 
-            func = Expression.GetFuncType(new[] { typeof(int), typeof(int), typeof(int), typeof(int) });
+            func = Expression.GetFuncType(typeof(int), typeof(int), typeof(int), typeof(int));
             Assert.AreEqual(typeof(Func<int, int, int, int>), func);
 
-            func = Expression.GetFuncType(new[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(int) });
+            func = Expression.GetFuncType(typeof(int), typeof(int), typeof(int), typeof(int), typeof(int));
             Assert.AreEqual(typeof(Func<int, int, int, int, int>), func);
         }
 
@@ -100,19 +100,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetActionTypeTest()
         {
-            var action = Expression.GetActionType(new Type[0]);
+            var action = Expression.GetActionType();
             Assert.AreEqual(typeof(Action), action);
 
-            action = Expression.GetActionType(new[] { typeof(int) });
+            action = Expression.GetActionType(typeof(int));
             Assert.AreEqual(typeof(Action<int>), action);
 
-            action = Expression.GetActionType(new[] { typeof(int), typeof(int) });
+            action = Expression.GetActionType(typeof(int), typeof(int));
             Assert.AreEqual(typeof(Action<int, int>), action);
 
-            action = Expression.GetActionType(new[] { typeof(int), typeof(int), typeof(int) });
+            action = Expression.GetActionType(typeof(int), typeof(int), typeof(int));
             Assert.AreEqual(typeof(Action<int, int, int>), action);
 
-            action = Expression.GetActionType(new[] { typeof(int), typeof(int), typeof(int), typeof(int) });
+            action = Expression.GetActionType(typeof(int), typeof(int), typeof(int), typeof(int));
             Assert.AreEqual(typeof(Action<int, int, int, int>), action);
         }
 
@@ -196,8 +196,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var f = Expression.Lambda<Func<string, Func<string>>>(
                 Expression.Lambda<Func<string>>(
-                    p,
-                    new ParameterExpression[0]),
+                    p),
                 p).Compile();
 
             var f2 = f("x");
@@ -216,11 +215,10 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.Lambda<Func<string, Func<string>>>(
                         Expression.Lambda<Func<string>>(
                             Expression.Call(
-                                typeof(string).GetMethod("Concat", new[] { typeof(string), typeof(string) }),
-                                new Expression[] { p1, p2 }),
-                            new ParameterExpression[0]),
-                        new[] { p2 }),
-                    new[] { p1 });
+                                typeof(string).GetMethod("Concat", new[] { typeof(string), typeof(string) }), p1, p2
+                            )), p2
+                    ), p1
+                );
 
             var f = e.Compile();
             var f2 = f("Hello ");

@@ -71,7 +71,7 @@ namespace MonoTests.System.Linq.Expressions
 
 			var lambda = Expression.Lambda<Func<string, Expression<Func<string>>>> (
 				Expression.Quote (
-					Expression.Lambda<Func<string>> (s, new ParameterExpression [0])),
+					Expression.Lambda<Func<string>> (s)),
 				s);
 
 			var fs = lambda.Compile () ("bingo").Compile ();

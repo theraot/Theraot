@@ -212,8 +212,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             var n = Expression.New(
                 typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string), typeof(string), typeof(string) }),
-                new[] { "FooValue".ToConstant(), "BarValue".ToConstant(), "BazValue".ToConstant() },
-                new MemberInfo[] { typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue"), typeof(FakeAnonymousType).GetProperty("BazValue") });
+                new[] { "FooValue".ToConstant(), "BarValue".ToConstant(), "BazValue".ToConstant() }, typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue"), typeof(FakeAnonymousType).GetProperty("BazValue")
+            );
 
             Assert.IsNotNull(n.Constructor);
             Assert.IsNotNull(n.Arguments);
@@ -240,12 +240,8 @@ namespace MonoTests.System.Linq.Expressions
             {
                 Expression.New(
                     typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                    new[] {"FooValue".ToConstant()},
-                    new MemberInfo[]
-                    {
-                        typeof(FakeAnonymousType).GetProperty("FooValue"),
-                        typeof(FakeAnonymousType).GetProperty("BarValue")
-                    });
+                    new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue")
+                );
             });
         }
 
@@ -256,8 +252,8 @@ namespace MonoTests.System.Linq.Expressions
             {
                 Expression.New(
                     typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                    new[] {"FooValue".ToConstant()},
-                    new MemberInfo[] {typeof(FakeAnonymousType).GetProperty("GazonkValue")});
+                    new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty("GazonkValue")
+                );
             });
         }
 
@@ -268,8 +264,8 @@ namespace MonoTests.System.Linq.Expressions
             {
                 Expression.New(
                     typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                    new[] {"FooValue".ToConstant()},
-                    new MemberInfo[] {typeof(FakeAnonymousType).GetProperty("Tzap")});
+                    new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty("Tzap")
+                );
             });
         }
 

@@ -48,13 +48,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullExpression()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(null, new Expression[0]));
+            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(null));
         }
 
         [Test]
         public void NullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), new[] { null as Expression }));
+            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), null as Expression));
         }
 
         [Test]
