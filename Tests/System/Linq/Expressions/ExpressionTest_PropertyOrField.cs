@@ -35,19 +35,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.PropertyOrField(null, "NoPropertyOrField"); });
+            Assert.Throws<ArgumentNullException>(() => Expression.PropertyOrField(null, "NoPropertyOrField"));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.PropertyOrField(Expression.Constant(new MemberClass()), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.PropertyOrField(Expression.Constant(new MemberClass()), null));
         }
 
         [Test]
         public void NoPropertyOrField()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.PropertyOrField(Expression.Constant(new MemberClass()), "NoPropertyOrField"); });
+            Assert.Throws<ArgumentException>(() => Expression.PropertyOrField(Expression.Constant(new MemberClass()), "NoPropertyOrField"));
         }
 
         [Test]

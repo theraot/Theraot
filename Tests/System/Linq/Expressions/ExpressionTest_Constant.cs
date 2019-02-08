@@ -35,13 +35,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg2NotNullable()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Constant(null, typeof(int)); });
+            Assert.Throws<ArgumentException>(() => Expression.Constant(null, typeof(int)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Constant(1, null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Constant(1, null));
         }
 
         [Test]
@@ -149,7 +149,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void VoidConstant()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Constant(null, typeof(void)); });
+            Assert.Throws<ArgumentException>(() => Expression.Constant(null, typeof(void)));
         }
 
         private static T Check<T>(T val)

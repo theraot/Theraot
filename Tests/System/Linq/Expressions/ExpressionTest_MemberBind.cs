@@ -75,37 +75,37 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullMethod()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.MemberBind(null, new MemberBinding[0]); });
+            Assert.Throws<ArgumentNullException>(() => Expression.MemberBind(null, new MemberBinding[0]));
         }
 
         [Test]
         public void NullMember()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.MemberBind(null as MemberInfo, new MemberBinding[0]); });
+            Assert.Throws<ArgumentNullException>(() => Expression.MemberBind(null as MemberInfo, new MemberBinding[0]));
         }
 
         [Test]
         public void NullBindings()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.MemberBind(typeof(Foo).GetField("Bar"), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.MemberBind(typeof(Foo).GetField("Bar"), null));
         }
 
         [Test]
         public void MemberNotFieldOrProp()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.MemberBind(typeof(Gazonk).GetMethod("Bang") as MemberInfo, new MemberBinding[0]); });
+            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetMethod("Bang") as MemberInfo, new MemberBinding[0]));
         }
 
         [Test]
         public void MemberTypeMismatch()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.MemberBind(typeof(Gazonk).GetField("Klang"), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant())); });
+            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetField("Klang"), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant())));
         }
 
         [Test]
         public void MethodNotPropertyAccessor()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.MemberBind(typeof(Gazonk).GetMethod("Bang"), new MemberBinding[0]); });
+            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetMethod("Bang"), new MemberBinding[0]));
         }
 
         [Test]

@@ -36,31 +36,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Power(null, Expression.Constant(1.0)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Power(null, Expression.Constant(1.0)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Power(Expression.Constant(1.0), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Power(Expression.Constant(1.0), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Power(Expression.Constant(1), Expression.Constant(2.0)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Power(Expression.Constant(1), Expression.Constant(2.0)));
         }
 
         [Test]
         public void ArgTypesInt()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Power(Expression.Constant(1), Expression.Constant(2)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Power(Expression.Constant(1), Expression.Constant(2)));
         }
 
         [Test]
         public void ArgTypesFloat()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Power(Expression.Constant((float)1), Expression.Constant((float)2)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Power(Expression.Constant((float)1), Expression.Constant((float)2)));
         }
 
         [Test]

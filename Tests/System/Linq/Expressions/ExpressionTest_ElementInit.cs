@@ -43,43 +43,43 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ElementInit(null, new Expression[] { }); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(null, new Expression[] { }));
         }
 
         [Test]
         public void ArgNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ElementInit(typeof(Foo).GetMethod("Add"), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), null));
         }
 
         [Test]
         public void MethodNameDoesntMatchAdd()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ElementInit(typeof(Foo).GetMethod("Baz"), new Expression[] { }); });
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Baz"), new Expression[] { }));
         }
 
         [Test]
         public void AddMethodIsNotAnInstanceMethod()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ElementInit(typeof(Bar).GetMethod("Add"), new Expression[] { }); });
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Bar).GetMethod("Add"), new Expression[] { }));
         }
 
         [Test]
         public void MethodArgumentCountDoesnMatchParameterLength()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { }); });
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { }));
         }
 
         [Test]
         public void MethodHasNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { null }); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { null }));
         }
 
         [Test]
         public void MethodArgumentDoesntMatchParameterType()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { Expression.Constant(1) }); });
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { Expression.Constant(1) }));
         }
 
         [Test]

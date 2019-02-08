@@ -43,13 +43,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullType()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.New(null as Type); });
+            Assert.Throws<ArgumentNullException>(() => Expression.New(null as Type));
         }
 
         [Test]
         public void NullConstructor()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.New(null as ConstructorInfo); });
+            Assert.Throws<ArgumentNullException>(() => Expression.New(null as ConstructorInfo));
         }
 
         public class Foo
@@ -73,32 +73,32 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NoParameterlessConstructor()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.New(typeof(Foo)); });
+            Assert.Throws<ArgumentException>(() => Expression.New(typeof(Foo)));
         }
 
         [Test]
         public void ConstructorHasTooMuchParameters()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) })); });
+            Assert.Throws<ArgumentException>(() => Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) })));
         }
 
         [Test]
         [Category("NotDotNet")]
         public void NewVoid()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.New(typeof(void)); });
+            Assert.Throws<ArgumentException>(() => Expression.New(typeof(void)));
         }
 
         [Test]
         public void HasNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) }), null as Expression); });
+            Assert.Throws<ArgumentNullException>(() => Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) }), null as Expression));
         }
 
         [Test]
         public void HasWrongArgument()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) }), Expression.Constant(12)); });
+            Assert.Throws<ArgumentException>(() => Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) }), Expression.Constant(12)));
         }
 
         [Test]

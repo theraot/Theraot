@@ -43,19 +43,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullExpression()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Convert(null, typeof(int)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Convert(null, typeof(int)));
         }
 
         [Test]
         public void NullType()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Convert(1.ToConstant(), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Convert(1.ToConstant(), null));
         }
 
         [Test]
         public void ConvertIntToString()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(1.ToConstant(), typeof(string)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Convert(1.ToConstant(), typeof(string)));
         }
 
         private interface IFoo
@@ -136,7 +136,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ConvertBazToFoo()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(Expression.Parameter(typeof(Baz), ""), typeof(Foo)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Convert(Expression.Parameter(typeof(Baz), ""), typeof(Foo)));
         }
 
         private struct EineStrukt
@@ -147,13 +147,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ConvertStructToFoo()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(Expression.Parameter(typeof(EineStrukt), ""), typeof(Foo)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Convert(Expression.Parameter(typeof(EineStrukt), ""), typeof(Foo)));
         }
 
         [Test]
         public void ConvertInt32ToBool()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Convert(Expression.Parameter(typeof(int), ""), typeof(bool)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Convert(Expression.Parameter(typeof(int), ""), typeof(bool)));
         }
 
         [Test]

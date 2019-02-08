@@ -43,19 +43,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.TypeAs(null, typeof(int)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.TypeAs(null, typeof(int)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.TypeAs(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.TypeAs(Expression.Constant(1), null));
         }
 
         [Test]
         public void Arg2NotReferenceNorNullable()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.TypeAs(Expression.Constant(1), typeof(int)); });
+            Assert.Throws<ArgumentException>(() => Expression.TypeAs(Expression.Constant(1), typeof(int)));
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void TypeAsVoid()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.TypeAs("yoyo".ToConstant(), typeof(void)); });
+            Assert.Throws<ArgumentException>(() => Expression.TypeAs("yoyo".ToConstant(), typeof(void)));
         }
     }
 }

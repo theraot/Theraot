@@ -227,7 +227,7 @@ namespace MonoTests.System.Collections.Generic
         public void SymmetricExceptWith_Null()
         {
             var set = new SortedSet<int>();
-            Assert.Throws<ArgumentNullException>(() => { set.SymmetricExceptWith(null); });
+            Assert.Throws<ArgumentNullException>(() => set.SymmetricExceptWith(null));
         }
 
         [Test]
@@ -296,7 +296,7 @@ namespace MonoTests.System.Collections.Generic
         public void UnionWith_Null()
         {
             var set = new SortedSet<int>();
-            Assert.Throws<ArgumentNullException>(() => { set.UnionWith(null); });
+            Assert.Throws<ArgumentNullException>(() => set.UnionWith(null));
         }
 
         [Test]

@@ -43,31 +43,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Negate(null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Negate(null));
         }
 
         [Test]
         public void MethodArgNotStatic()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic")); });
+            Assert.Throws<ArgumentException>(() => Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic")));
         }
 
         [Test]
         public void MethodArgParameterCount()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount")); });
+            Assert.Throws<ArgumentException>(() => Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount")));
         }
 
         [Test]
         public void MethodArgReturnsVoid()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid")); });
+            Assert.Throws<ArgumentException>(() => Expression.Negate(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid")));
         }
 
         [Test]
         public void NegateBool()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Negate(true.ToConstant()); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Negate(true.ToConstant()));
         }
 
         [Test]
@@ -187,7 +187,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedToNullableNegateFromNullable()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Negate(Expression.Parameter(typeof(SlotToNullable?), "s")); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Negate(Expression.Parameter(typeof(SlotToNullable?), "s")));
         }
 
         [Test]

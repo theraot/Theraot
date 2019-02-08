@@ -43,31 +43,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.UnaryPlus(null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.UnaryPlus(null));
         }
 
         [Test]
         public void MethodArgNotStatic()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic")); });
+            Assert.Throws<ArgumentException>(() => Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic")));
         }
 
         [Test]
         public void MethodArgParameterCount()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount")); });
+            Assert.Throws<ArgumentException>(() => Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount")));
         }
 
         [Test]
         public void MethodArgReturnsVoid()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid")); });
+            Assert.Throws<ArgumentException>(() => Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid")));
         }
 
         [Test]
         public void PlusBool()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.UnaryPlus(true.ToConstant()); });
+            Assert.Throws<InvalidOperationException>(() => Expression.UnaryPlus(true.ToConstant()));
         }
 
         [Test]

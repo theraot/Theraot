@@ -36,13 +36,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.TypeIs(null, typeof(int)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.TypeIs(null, typeof(int)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.TypeIs(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.TypeIs(Expression.Constant(1), null));
         }
 
         [Test]

@@ -87,7 +87,7 @@ namespace MonoTests.System
         [Test]
         public void Handle_Invalid()
         {
-            Assert.Throws<ArgumentNullException>(() => { _e.Handle(null); });
+            Assert.Throws<ArgumentNullException>(() => _e.Handle(null));
         }
 
         [Test]

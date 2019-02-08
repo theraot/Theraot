@@ -42,31 +42,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Condition(null, Expression.Constant(1), Expression.Constant(0)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Condition(null, Expression.Constant(1), Expression.Constant(0)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), null, Expression.Constant(0)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), null, Expression.Constant(0)));
         }
 
         [Test]
         public void Arg3Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Condition(Expression.Equal(Expression.Constant(42), Expression.Constant(42)), Expression.Constant(1), null));
         }
 
         [Test]
         public void TestNotBool()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Condition(Expression.Constant(42), Expression.Constant(1), Expression.Constant(0)); });
+            Assert.Throws<ArgumentException>(() => Expression.Condition(Expression.Constant(42), Expression.Constant(1), Expression.Constant(0)));
         }
 
         [Test]
         public void TrueBlockTypeNotFalseBlockType()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Condition(Expression.Constant(42), Expression.Constant(1.1), Expression.Constant(0)); });
+            Assert.Throws<ArgumentException>(() => Expression.Condition(Expression.Constant(42), Expression.Constant(1.1), Expression.Constant(0)));
         }
 
         [Test]

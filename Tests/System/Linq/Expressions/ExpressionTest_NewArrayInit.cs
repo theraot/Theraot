@@ -43,32 +43,32 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullType()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayInit(null, new Expression[0]); });
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayInit(null, new Expression[0]));
         }
 
         [Test]
         public void NullInitializers()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayInit(typeof(int), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayInit(typeof(int), null));
         }
 
         [Test]
         public void InitializersContainNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayInit(typeof(int), 1.ToConstant(), null, 3.ToConstant()); });
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayInit(typeof(int), 1.ToConstant(), null, 3.ToConstant()));
         }
 
         [Test]
         public void WrongInitializer()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.NewArrayInit(typeof(int), 1.ToConstant(), "2".ToConstant(), 3.ToConstant()); });
+            Assert.Throws<InvalidOperationException>(() => Expression.NewArrayInit(typeof(int), 1.ToConstant(), "2".ToConstant(), 3.ToConstant()));
         }
 
         [Test]
         [Category("NotDotNet")]
         public void NewVoid()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.NewArrayInit(typeof(void), new Expression[0]); });
+            Assert.Throws<ArgumentException>(() => Expression.NewArrayInit(typeof(void), new Expression[0]));
         }
 
         [Test]

@@ -43,13 +43,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayLength(null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ArrayLength(null));
         }
 
         [Test]
         public void Arg1NotArray()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ArrayLength(Expression.Constant("This is not an array!")); });
+            Assert.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant("This is not an array!")));
         }
 
         [Test]

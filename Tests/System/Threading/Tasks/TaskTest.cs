@@ -382,7 +382,7 @@ namespace MonoTests.System.Threading.Tasks
                 () =>
                 {
                     var result = false;
-                    var t = Task.Factory.StartNew(() => { throw new Exception("foo"); });
+                    var t = Task.Factory.StartNew(() => throw new Exception("foo"));
                     var cont = t.ContinueWith(obj => result = true, TaskContinuationOptions.OnlyOnFaulted);
                     Assert.IsTrue(cont.Wait(1000), "#0");
                     Assert.IsNotNull(t.Exception, "#1");
@@ -690,7 +690,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var t = new Task
             (
-                () => { throw new TaskCanceledException(); }
+                () => throw new TaskCanceledException()
             );
             t.RunSynchronously();
             Assert.IsTrue(t.IsFaulted);
@@ -709,10 +709,7 @@ namespace MonoTests.System.Threading.Tasks
                 args.SetObserved();
             };
             var inner = new ApplicationException();
-            var t = new Thread(() =>
-            {
-                Task.Factory.StartNew(() => { throw inner; });
-            });
+            var t = new Thread(() => Task.Factory.StartNew(() => throw inner));
             t.Start();
             t.Join();
             Thread.Sleep(1000);
@@ -905,7 +902,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             InitWithDelegate
             (
-                () => { throw new ApplicationException(); }
+                () => throw new ApplicationException()
             );
 
             try
@@ -1074,7 +1071,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 var tasks = new[] {
                     Task.Factory.StartNew (()=>mre.Wait (5000)),
-                    Task.Factory.StartNew (()=>{throw new ApplicationException();})
+                    Task.Factory.StartNew (()=> throw new ApplicationException())
                 };
 
                 Assert.AreEqual(1, Task.WaitAny(tasks, 3000), "#1");
@@ -1303,7 +1300,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     var task = new Task
                     (
-                        () => { throw new InvalidOperationException(); },
+                        () => throw new InvalidOperationException(),
                         TaskCreationOptions.AttachedToParent
                     );
                     task.RunSynchronously();
@@ -1330,7 +1327,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     var task = new Task
                     (
-                        () => { throw new InvalidOperationException(); },
+                        () => throw new InvalidOperationException(),
                         TaskCreationOptions.AttachedToParent
                     );
                     task.RunSynchronously();
@@ -1354,7 +1351,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     innerTask = new Task
                     (
-                        () => { throw new InvalidOperationException(); },
+                        () => throw new InvalidOperationException(),
                         TaskCreationOptions.AttachedToParent
                     );
                     innerTask.RunSynchronously();
@@ -1386,7 +1383,7 @@ namespace MonoTests.System.Threading.Tasks
                         {
                             var child2 = new Task
                             (
-                                () => { throw new InvalidOperationException(); },
+                                () => throw new InvalidOperationException(),
                                 TaskCreationOptions.AttachedToParent
                             );
                             child2.RunSynchronously();
@@ -1527,7 +1524,7 @@ namespace MonoTests.System.Threading.Tasks
             Task inner = null;
             var child = Task.Factory.StartNew(() =>
             {
-                inner = TaskEx.Run(() => { throw new ApplicationException(); }).ContinueWith(task =>
+                inner = TaskEx.Run(() => throw new ApplicationException()).ContinueWith(task =>
                  {
                  }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
             });
@@ -1763,7 +1760,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var t = new Task
             (
-                () => { throw new Exception("Foo"); }
+                () => throw new Exception("Foo")
             );
             var t2 = TaskEx.Run
             (
@@ -1843,7 +1840,7 @@ namespace MonoTests.System.Threading.Tasks
         public void RunSynchronously_SchedulerException()
         {
             var scheduler = new MockScheduler();
-            scheduler.TryExecuteTaskInlineHandler += (task, b) => { throw new ApplicationException(); };
+            scheduler.TryExecuteTaskInlineHandler += (task, b) => throw new ApplicationException();
             var t = new Task(ActionHelper.GetNoopAction());
             try
             {

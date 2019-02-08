@@ -410,7 +410,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void NonGenericEnumerable1()
         {
-            Assert.Throws<ArgumentException>(() => { new MyEnum().AsQueryable(); });
+            Assert.Throws<ArgumentException>(() => new MyEnum().AsQueryable());
         }
 
         [Test]

@@ -37,37 +37,37 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.OrElse(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.OrElse(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.OrElse(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.OrElse(Expression.Constant(1), null));
         }
 
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
         public void Double()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(1.0), Expression.Constant(2.0)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(1.0), Expression.Constant(2.0)));
         }
 
         [Test]
         public void Integer()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(1), Expression.Constant(2)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(1), Expression.Constant(2)));
         }
 
         [Test]
         public void MismatchedTypes()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(true)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(true)));
         }
 
         [Test]

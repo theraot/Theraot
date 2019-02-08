@@ -46,25 +46,25 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Call((Type)null, "TestMethod", null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Call((Type)null, "TestMethod", null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Call(typeof(MemberClass), null, null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Call(typeof(MemberClass), null, null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg4WrongType()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Call(typeof(MemberClass), "StaticMethod", null, Expression.Constant(true)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Call(typeof(MemberClass), "StaticMethod", null, Expression.Constant(true)));
         }
 
         [Test]
         public void InstanceMethod()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Call(typeof(MemberClass), "TestMethod", null, Expression.Constant(1)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Call(typeof(MemberClass), "TestMethod", null, Expression.Constant(1)));
         }
 
         [Test]
@@ -82,14 +82,14 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ArgMethodNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Call(Expression.Constant(new object()), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Call(Expression.Constant(new object()), null));
         }
 
         [Test]
         [Category("NotDotNet")]
         public void ArgInstanceNullForNonStaticMethod() // Passing on .NET 2.0, .3.0, .4.0 and .4.5 Failing on .NET 3.5
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Call(null, typeof(object).GetMethod("ToString")); });
+            Assert.Throws<ArgumentException>(() => Expression.Call(null, typeof(object).GetMethod("ToString")));
         }
 
         [Test]
@@ -99,16 +99,13 @@ namespace MonoTests.System.Linq.Expressions
             // ensure that String.Intern won't be removed by the linker
             string s = String.Intern (String.Empty);
 #endif
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression.Call(Expression.Constant(1), typeof(string).GetMethod("Intern"));
-            });
+            Assert.Throws<ArgumentException>(() => Expression.Call(Expression.Constant(1), typeof(string).GetMethod("Intern")));
         }
 
         [Test]
         public void MethodArgumentCountDoesnMatchParameterLength()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Call(Expression.Constant(new object()), typeof(object).GetMethod("ToString"), Expression.Constant(new object())); });
+            Assert.Throws<ArgumentException>(() => Expression.Call(Expression.Constant(new object()), typeof(object).GetMethod("ToString"), Expression.Constant(new object())));
         }
 
         public class Foo
@@ -122,13 +119,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodHasNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), null as Expression); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), null as Expression));
         }
 
         [Test]
         public void MethodArgumentDoesntMatchParameterType()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), Expression.Constant(42)); });
+            Assert.Throws<ArgumentException>(() => Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), Expression.Constant(42)));
         }
 
         [Test]
@@ -193,7 +190,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CheckTypeArgsIsNotUsedForParameterLookup()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Call(GetType(), "EineMethod", new[] { typeof(string), typeof(int) }, "foo".ToConstant(), 2.ToConstant()); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Call(GetType(), "EineMethod", new[] { typeof(string), typeof(int) }, "foo".ToConstant(), 2.ToConstant()));
         }
 
         public static void EineGenericMethod<TX, TY>(string foo, int bar)

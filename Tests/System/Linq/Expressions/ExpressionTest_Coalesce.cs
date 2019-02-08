@@ -37,13 +37,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Coalesce(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Coalesce(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Coalesce(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Coalesce(Expression.Constant(1), null));
         }
 
         [Test]

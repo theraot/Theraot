@@ -44,7 +44,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetFuncTypeArgNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.GetFuncType(null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.GetFuncType(null));
         }
 
         private static Type[] GetTestTypeArray(int length)
@@ -57,13 +57,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetFuncTypeArgEmpty()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.GetFuncType(ArrayEx.Empty<Type>());});
+            Assert.Throws<ArgumentException>(() => Expression.GetFuncType(ArrayEx.Empty<Type>()));
         }
 
         [Test]
         public void GetFuncTypeArgTooBig()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.GetFuncType(GetTestTypeArray(64)); });
+            Assert.Throws<ArgumentException>(() => Expression.GetFuncType(GetTestTypeArray(64)));
         }
 
         [Test]
@@ -88,13 +88,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetActionTypeArgNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.GetActionType(null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.GetActionType(null));
         }
 
         [Test]
         public void GetActionTypeArgTooBig()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.GetActionType(GetTestTypeArray(45)); });
+            Assert.Throws<ArgumentException>(() => Expression.GetActionType(GetTestTypeArray(45)));
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ParameterNullType()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Parameter(null, "foo"); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Parameter(null, "foo"));
         }
 
         [Test]
@@ -151,7 +151,7 @@ namespace MonoTests.System.Linq.Expressions
         [Category("NotDotNet")]
         public void VoidParameter()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Parameter(typeof(void), "hello"); });
+            Assert.Throws<ArgumentException>(() => Expression.Parameter(typeof(void), "hello"));
         }
 
         private static int _buffer;

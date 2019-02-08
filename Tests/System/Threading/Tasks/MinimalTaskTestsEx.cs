@@ -12,7 +12,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WrapAggregateExceptionCorrectly()
         {
-            var x = new Task(() => { throw new AggregateException(new CustomException()); });
+            var x = new Task(() => throw new AggregateException(new CustomException()));
             try
             {
                 x.Start();
@@ -33,7 +33,7 @@ namespace MonoTests.System.Threading.Tasks
             (
                 () =>
                 {
-                    Task.Factory.StartNew(() => { throw new CustomException(); }, TaskCreationOptions.AttachedToParent);
+                    Task.Factory.StartNew(() => throw new CustomException(), TaskCreationOptions.AttachedToParent);
                     throw new OtherException();
                 }
             );
@@ -59,7 +59,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WrapCustomExceptionCorrectly()
         {
-            var x = new Task(() => { throw new CustomException(); });
+            var x = new Task(() => throw new CustomException());
             try
             {
                 x.Start();
@@ -76,7 +76,7 @@ namespace MonoTests.System.Threading.Tasks
         public void WrapObjectDisposedExceptionCorrectly()
         {
             const string ObjectName = "AAAAAAAAAAAAAAAA";
-            var x = new Task(() => { throw new ObjectDisposedException(ObjectName); });
+            var x = new Task(() => throw new ObjectDisposedException(ObjectName));
             try
             {
                 x.Start();

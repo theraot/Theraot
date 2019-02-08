@@ -160,7 +160,7 @@ namespace MonoTests.System.Threading.Tasks
                 () =>
                 {
                     var result = false;
-                    var t = Task.Factory.StartNew(() => { throw new Exception("foo"); });
+                    var t = Task.Factory.StartNew(() => throw new Exception("foo"));
                     var cont = t.ContinueWith(_ => result = true, TaskContinuationOptions.OnlyOnFaulted);
                     Assert.IsTrue(cont.Wait(1000), "#0");
                     Assert.IsNotNull(t.Exception, "#1");
@@ -353,7 +353,7 @@ namespace MonoTests.System.Threading.Tasks
                     {
                         var task = new Task
                         (
-                            () => { throw new InvalidOperationException(); },
+                            () => throw new InvalidOperationException(),
                             TaskCreationOptions.AttachedToParent
                         );
                         task.RunSynchronously();
@@ -374,7 +374,7 @@ namespace MonoTests.System.Threading.Tasks
                 (
                     () =>
                     {
-                        var task = new Task(() => { throw new InvalidOperationException(); }, TaskCreationOptions.AttachedToParent);
+                        var task = new Task(() => throw new InvalidOperationException(), TaskCreationOptions.AttachedToParent);
                         task.RunSynchronously();
                     }
                 );
@@ -397,7 +397,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     var child1 = new Task(() =>
                     {
-                        var child2 = new Task(() => { throw new InvalidOperationException(); },
+                        var child2 = new Task(() => throw new InvalidOperationException(),
                             TaskCreationOptions.AttachedToParent);
                         child2.RunSynchronously();
                     }, TaskCreationOptions.AttachedToParent);
@@ -554,10 +554,7 @@ namespace MonoTests.System.Threading.Tasks
         public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;
-            var child = Task.Factory.StartNew(() =>
-            {
-                inner = TaskEx.Run(() => { throw new ApplicationException(); }).ContinueWith(_ => { }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
-            });
+            var child = Task.Factory.StartNew(() => inner = TaskEx.Run(() => throw new ApplicationException()).ContinueWith(_ => { }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously));
 
             var counter = 0;
             var t = child.ContinueWith(t2 => ++counter, TaskContinuationOptions.ExecuteSynchronously);

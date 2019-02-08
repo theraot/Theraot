@@ -36,31 +36,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Property(null, "NoProperty"); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Property(null, "NoProperty"));
         }
 
         [Test]
         public void Arg2Null1()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Property(Expression.Constant(new MemberClass()), (string)null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Property(Expression.Constant(new MemberClass()), (string)null));
         }
 
         [Test]
         public void Arg2Null2()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Property(Expression.Constant(new MemberClass()), (PropertyInfo)null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Property(Expression.Constant(new MemberClass()), (PropertyInfo)null));
         }
 
         [Test]
         public void Arg2Null3()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Property(Expression.Constant(new MemberClass()), (MethodInfo)null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Property(Expression.Constant(new MemberClass()), (MethodInfo)null));
         }
 
         [Test]
         public void NoProperty()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Property(Expression.Constant(new MemberClass()), "NoProperty"); });
+            Assert.Throws<ArgumentException>(() => Expression.Property(Expression.Constant(new MemberClass()), "NoProperty"));
         }
 
         [Test]

@@ -36,31 +36,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ExclusiveOr(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ExclusiveOr(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ExclusiveOr(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ExclusiveOr(Expression.Constant(1), null));
         }
 
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.ExclusiveOr(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
+            Assert.Throws<InvalidOperationException>(() => Expression.ExclusiveOr(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.ExclusiveOr(Expression.Constant(1), Expression.Constant(true)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.ExclusiveOr(Expression.Constant(1), Expression.Constant(true)));
         }
 
         [Test]
         public void Double()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.ExclusiveOr(Expression.Constant(1.0), Expression.Constant(2.0)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.ExclusiveOr(Expression.Constant(1.0), Expression.Constant(2.0)));
         }
 
         [Test]

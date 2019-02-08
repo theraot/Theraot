@@ -37,37 +37,37 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.RightShift(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.RightShift(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.RightShift(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.RightShift(Expression.Constant(1), null));
         }
 
         [Test]
         public void Arg2WrongType()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.RightShift(Expression.Constant(1), Expression.Constant(2.0)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.RightShift(Expression.Constant(1), Expression.Constant(2.0)));
         }
 
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.RightShift(Expression.Constant(new NoOpClass()), Expression.Constant(1)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.RightShift(Expression.Constant(new NoOpClass()), Expression.Constant(1)));
         }
 
         [Test]
         public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.RightShift(Expression.Constant(true), Expression.Constant(1)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.RightShift(Expression.Constant(true), Expression.Constant(1)));
         }
 
         [Test]
         public void Double()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.RightShift(Expression.Constant(2.0), Expression.Constant(1)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.RightShift(Expression.Constant(2.0), Expression.Constant(1)));
         }
 
         [Test]

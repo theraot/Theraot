@@ -37,7 +37,7 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Arg1Null ()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Quote(null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Quote(null));
         }
 
 		[Test]
@@ -45,7 +45,7 @@ namespace MonoTests.System.Linq.Expressions
 		public void QuoteConstant ()
 		{
             // Failing in .NET35
-            Assert.Throws<ArgumentException>(() => { Expression.Quote(Expression.Constant(1)); });
+            Assert.Throws<ArgumentException>(() => Expression.Quote(Expression.Constant(1)));
         }
 
 		[Test]

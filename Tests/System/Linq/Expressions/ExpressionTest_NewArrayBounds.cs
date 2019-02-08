@@ -43,26 +43,26 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ArgTypeNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayBounds(null, new Expression[0]); });
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(null, new Expression[0]));
         }
 
         [Test]
         public void ArgBoundsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.NewArrayBounds(typeof(int), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(typeof(int), null));
         }
 
         [Test]
         public void ArgBoundsContainsExpressionTypeNotInteger()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.NewArrayBounds(typeof(int), 1.ToConstant(), "2".ToConstant()); });
+            Assert.Throws<ArgumentException>(() => Expression.NewArrayBounds(typeof(int), 1.ToConstant(), "2".ToConstant()));
         }
 
         [Test]
         [Category("NotDotNet")]
         public void NewVoid()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.NewArrayBounds(typeof(void), 1.ToConstant()); });
+            Assert.Throws<ArgumentException>(() => Expression.NewArrayBounds(typeof(void), 1.ToConstant()));
         }
 
         [Test]

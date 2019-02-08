@@ -48,31 +48,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullExpression()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Invoke(null, new Expression[0]); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(null, new Expression[0]));
         }
 
         [Test]
         public void NullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Invoke(CreateInvokable<Action<int>>(), new[] { null as Expression }); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), new[] { null as Expression }));
         }
 
         [Test]
         public void NonInvokableExpressionType()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Invoke(CreateInvokable<int>(), null); });
+            Assert.Throws<ArgumentException>(() => Expression.Invoke(CreateInvokable<int>(), null));
         }
 
         [Test]
         public void ArgumentCountDoesntMatchParametersLength()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Invoke(CreateInvokable<Action<int>>(), 1.ToConstant(), 2.ToConstant()); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), 1.ToConstant(), 2.ToConstant()));
         }
 
         [Test]
         public void ArgumentNotAssignableToParameterType()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Invoke(CreateInvokable<Action<int>>(), "".ToConstant()); });
+            Assert.Throws<ArgumentException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), "".ToConstant()));
         }
 
         [Test]

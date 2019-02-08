@@ -36,25 +36,25 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Field(null, "NoField"); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Field(null, "NoField"));
         }
 
         [Test]
         public void Arg2Null1()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Field(Expression.Constant(new MemberClass()), (string)null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Field(Expression.Constant(new MemberClass()), (string)null));
         }
 
         [Test]
         public void Arg2Null2()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Field(Expression.Constant(new MemberClass()), (FieldInfo)null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Field(Expression.Constant(new MemberClass()), (FieldInfo)null));
         }
 
         [Test]
         public void NoField()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Field(Expression.Constant(new MemberClass()), "NoField"); });
+            Assert.Throws<ArgumentException>(() => Expression.Field(Expression.Constant(new MemberClass()), "NoField"));
         }
 
         [Test]

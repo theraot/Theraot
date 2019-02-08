@@ -54,7 +54,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullExpression()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.MemberInit(null, new MemberBinding[0]); });
+            Assert.Throws<ArgumentNullException>(() => Expression.MemberInit(null, new MemberBinding[0]));
         }
 
         [Test]

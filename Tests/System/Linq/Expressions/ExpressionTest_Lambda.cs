@@ -107,7 +107,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Lambda<Func<int, int>>(Expression.Constant(1), new ParameterExpression[] { null }); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Lambda<Func<int, int>>(Expression.Constant(1), new ParameterExpression[] { null }));
         }
 
         [Test]

@@ -65,9 +65,9 @@ namespace MonoTests.System.Threading
         {
             using (var cts = new CancellationTokenSource())
             {
-                cts.Token.Register(() => { throw new ApplicationException("1"); });
-                cts.Token.Register(() => { throw new ApplicationException("2"); });
-                cts.Token.Register(() => { throw new ApplicationException("3"); });
+                cts.Token.Register(() => throw new ApplicationException("1"));
+                cts.Token.Register(() => throw new ApplicationException("2"));
+                cts.Token.Register(() => throw new ApplicationException("3"));
 
                 try
                 {
@@ -91,9 +91,9 @@ namespace MonoTests.System.Threading
                 var c = cts.Token;
                 c.Register(cts.Cancel);
 
-                c.Register(() => { throw new ApplicationException(); });
+                c.Register(() => throw new ApplicationException());
 
-                c.Register(() => { throw new NotSupportedException(); });
+                c.Register(() => throw new NotSupportedException());
 
                 try
                 {
@@ -112,9 +112,9 @@ namespace MonoTests.System.Threading
         {
             using (var cts = new CancellationTokenSource())
             {
-                cts.Token.Register(() => { throw new ApplicationException("1"); });
-                cts.Token.Register(() => { throw new ApplicationException("2"); });
-                cts.Token.Register(() => { throw new ApplicationException("3"); });
+                cts.Token.Register(() => throw new ApplicationException("1"));
+                cts.Token.Register(() => throw new ApplicationException("2"));
+                cts.Token.Register(() => throw new ApplicationException("3"));
 
                 try
                 {
@@ -130,7 +130,7 @@ namespace MonoTests.System.Threading
 
                 try
                 {
-                    cts.Token.Register(() => { throw new ApplicationException("1"); });
+                    cts.Token.Register(() => throw new ApplicationException("1"));
                     Assert.Fail("#11");
                 }
                 catch (ApplicationException ex)
@@ -147,9 +147,9 @@ namespace MonoTests.System.Threading
         {
             using (var cts = new CancellationTokenSource())
             {
-                cts.Token.Register(() => { throw new ApplicationException("1"); });
-                cts.Token.Register(() => { throw new ApplicationException("2"); });
-                cts.Token.Register(() => { throw new ApplicationException("3"); });
+                cts.Token.Register(() => throw new ApplicationException("1"));
+                cts.Token.Register(() => throw new ApplicationException("2"));
+                cts.Token.Register(() => throw new ApplicationException("3"));
 
                 try
                 {
@@ -197,7 +197,7 @@ namespace MonoTests.System.Threading
         {
             using (var cts = new CancellationTokenSource())
             {
-                cts.Token.Register(() => { throw new ApplicationException(); });
+                cts.Token.Register(() => throw new ApplicationException());
                 try
                 {
                     cts.Cancel();
@@ -467,10 +467,10 @@ namespace MonoTests.System.Threading
         public void RegisterThenDispose()
         {
             var cts1 = new CancellationTokenSource();
-            var reg1 = cts1.Token.Register(() => { throw new ApplicationException(); });
+            var reg1 = cts1.Token.Register(() => throw new ApplicationException());
 
             var cts2 = new CancellationTokenSource();
-            cts2.Token.Register(() => { throw new ApplicationException(); });
+            cts2.Token.Register(() => throw new ApplicationException());
 
             Assert.AreNotEqual(cts1, cts2, "#1");
             Assert.AreNotSame(cts1, cts2, "#2");

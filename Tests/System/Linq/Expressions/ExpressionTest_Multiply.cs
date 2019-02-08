@@ -36,31 +36,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Multiply(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Multiply(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Multiply(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Multiply(Expression.Constant(1), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Multiply(Expression.Constant(1), Expression.Constant(2.0)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Multiply(Expression.Constant(1), Expression.Constant(2.0)));
         }
 
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Multiply(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Multiply(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
         public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.Multiply(Expression.Constant(true), Expression.Constant(false)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.Multiply(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]

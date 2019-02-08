@@ -43,19 +43,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.LessThan(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.LessThan(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.LessThan(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.LessThan(Expression.Constant(1), null));
         }
 
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.LessThan(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())); });
+            Assert.Throws<InvalidOperationException>(() => Expression.LessThan(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -81,13 +81,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MismatchedTypes()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.LessThan(Expression.Constant(new OpClass()), Expression.Constant(true)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.LessThan(Expression.Constant(new OpClass()), Expression.Constant(true)));
         }
 
         [Test]
         public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.LessThan(Expression.Constant(true), Expression.Constant(false)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.LessThan(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]

@@ -36,13 +36,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Bind(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Bind(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.Bind(MemberClass.GetRwFieldInfo(), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.Bind(MemberClass.GetRwFieldInfo(), null));
         }
 
         [Test]
@@ -70,13 +70,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Event()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Bind(MemberClass.GetEventInfo(), Expression.Constant(1)); });
+            Assert.Throws<ArgumentException>(() => Expression.Bind(MemberClass.GetEventInfo(), Expression.Constant(1)));
         }
 
         [Test]
         public void PropertyRo()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.Bind(MemberClass.GetRoPropertyInfo(), Expression.Constant(1)); });
+            Assert.Throws<ArgumentException>(() => Expression.Bind(MemberClass.GetRoPropertyInfo(), Expression.Constant(1)));
         }
 
         [Test]

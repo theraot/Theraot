@@ -36,37 +36,37 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null1()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression)null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression)null));
         }
 
         [Test]
         public void Arg2Null2()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), (IEnumerable<Expression>)null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), (IEnumerable<Expression>)null));
         }
 
         [Test]
         public void Arg2Null3()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression[])null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression[])null));
         }
 
         [Test]
         public void Arg2WrongType1()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ArrayIndex(Expression.Constant(new int[1]), Expression.Constant(true)); });
+            Assert.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), Expression.Constant(true)));
         }
 
         [Test]
         public void Arg1NotArray()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ArrayIndex(Expression.Constant("This is not an array!"), Expression.Constant(1)); });
+            Assert.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant("This is not an array!"), Expression.Constant(1)));
         }
 
         [Test]

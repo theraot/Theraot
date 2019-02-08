@@ -44,13 +44,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MemberNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ListBind(null as MemberInfo, new List<ElementInit>()); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ListBind(null as MemberInfo, new List<ElementInit>()));
         }
 
         [Test]
         public void PropertyAccessorNull()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ListBind(null, new List<ElementInit>()); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ListBind(null, new List<ElementInit>()));
         }
 
         [Test]
@@ -69,19 +69,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MemberTypeImplementIEnumerable()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ListBind(typeof(Foo).GetMember("Baz")[0], new List<ElementInit>()); });
+            Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetMember("Baz")[0], new List<ElementInit>()));
         }
 
         [Test]
         public void MethodeGetImplementIEnumerable2()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ListBind(typeof(Foo).GetProperty("BarBar").GetGetMethod(), new List<ElementInit>()); });
+            Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetProperty("BarBar").GetGetMethod(), new List<ElementInit>()));
         }
 
         [Test]
         public void MethodMustBeAnAccessor()
         {
-            Assert.Throws<ArgumentException>(() => { Expression.ListBind(typeof(Foo).GetMethod("Test"), new List<ElementInit>()); });
+            Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetMethod("Test"), new List<ElementInit>()));
         }
 
         [Test]

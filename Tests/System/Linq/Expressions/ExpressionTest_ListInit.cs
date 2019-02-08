@@ -71,31 +71,31 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullExpression()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ListInit(null, new List<ElementInit>()); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(null, new List<ElementInit>()));
         }
 
         [Test]
         public void NullElementInitializer()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ListInit(CreateNewList(), new ElementInit[] { null }); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new ElementInit[] { null }));
         }
 
         [Test]
         public void NullExpressionInitializer()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.ListInit(CreateNewList(), new Expression[] { null }); });
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new Expression[] { null }));
         }
 
         [Test]
         public void ExpressionTypeDoesntImplementIEnumerable()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.ListInit(Expression.New(typeof(Foo)), "foo".ToConstant()); });
+            Assert.Throws<InvalidOperationException>(() => Expression.ListInit(Expression.New(typeof(Foo)), "foo".ToConstant()));
         }
 
         [Test]
         public void ExpressionTypeDoesnHaveAddMethod()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.ListInit(Expression.New(typeof(Bar)), "foo".ToConstant()); });
+            Assert.Throws<InvalidOperationException>(() => Expression.ListInit(Expression.New(typeof(Bar)), "foo".ToConstant()));
         }
 
         [Test]

@@ -38,19 +38,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.NotEqual(null, Expression.Constant(1)); });
+            Assert.Throws<ArgumentNullException>(() => Expression.NotEqual(null, Expression.Constant(1)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => { Expression.NotEqual(Expression.Constant(1), null); });
+            Assert.Throws<ArgumentNullException>(() => Expression.NotEqual(Expression.Constant(1), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.NotEqual(Expression.Constant(1), Expression.Constant(2.0)); });
+            Assert.Throws<InvalidOperationException>(() => Expression.NotEqual(Expression.Constant(1), Expression.Constant(2.0)));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => { Expression.NotEqual(Expression.Constant(new D()), Expression.Constant(new D())); });
+            Assert.Throws<InvalidOperationException>(() => Expression.NotEqual(Expression.Constant(new D()), Expression.Constant(new D())));
         }
 
         [Test]
