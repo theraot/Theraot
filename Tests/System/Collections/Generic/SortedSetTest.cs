@@ -520,7 +520,7 @@ namespace MonoTests.System.Collections.Generic
             Assert.AreEqual(0, view.Max);
         }
 
-        private void DoTest(SortedSet<int> s1, SortedSet<int> s2, bool o, bool se, bool psb, bool psu)
+        private static void DoTest(SortedSet<int> s1, SortedSet<int> s2, bool o, bool se, bool psb, bool psu)
         {
             o |= s1.Count != 0 && s2.Count != 0 && (se || psb || psu);
 
@@ -528,7 +528,7 @@ namespace MonoTests.System.Collections.Generic
             DoTestE(s2, s1, o, se, psu, psb);
         }
 
-        private void DoTestE(SortedSet<int> s1, IEnumerable<int> s2, bool o, bool se, bool psb, bool psu)
+        private static void DoTestE(SortedSet<int> s1, IEnumerable<int> s2, bool o, bool se, bool psb, bool psu)
         {
             var sb = false;
             var su = false;
