@@ -67,7 +67,7 @@ namespace MonoTests.System
             var ex = _e.Flatten();
 
             Assert.AreEqual(3, ex.InnerExceptions.Count, "#1");
-            Assert.AreEqual(3, ex.InnerExceptions.Count((exception) => !(exception is AggregateException)), "#2");
+            Assert.AreEqual(3, ex.InnerExceptions.Count(exception => !(exception is AggregateException)), "#2");
         }
 
         [Test]

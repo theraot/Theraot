@@ -725,7 +725,7 @@ namespace MonoTests.System.Threading
                 var cReadCount = -1;
                 var rReadCount = -1;
 
-                var t = new Thread((_) =>
+                var t = new Thread(_ =>
                 {
                     rLock = v.IsReadLockHeld;
                     cReadCount = v.CurrentReadCount;
@@ -762,7 +762,7 @@ namespace MonoTests.System.Threading
                 var rCount = -1;
                 var rUCount = -1;
 
-                var t = new Thread((_) =>
+                var t = new Thread(_ =>
                 {
                     upLock = v.IsUpgradeableReadLockHeld;
                     rLock = v.IsReadLockHeld;
@@ -797,7 +797,7 @@ namespace MonoTests.System.Threading
                 var wLock = false;
                 var rWrite = -1;
 
-                var t = new Thread((_) =>
+                var t = new Thread(_ =>
                 {
                     wLock = v.IsWriteLockHeld;
                     rWrite = v.RecursiveWriteCount;

@@ -75,8 +75,8 @@ namespace MonoTests.System.Linq
         [Test]
         public void All()
         {
-            Assert.AreEqual(_src.All((n) => n < 11), _array.All((n) => n < 11));
-            Assert.AreEqual(_src.All((n) => n < 10), _array.All((n) => n < 10));
+            Assert.AreEqual(_src.All(n => n < 11), _array.All(n => n < 11));
+            Assert.AreEqual(_src.All(n => n < 10), _array.All(n => n < 10));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void Average()
         {
-            Assert.AreEqual(_src.Average((n) => 11), _array.Average((n) => 11));
+            Assert.AreEqual(_src.Average(n => 11), _array.Average(n => 11));
         }
 
         [Test]
@@ -155,14 +155,14 @@ namespace MonoTests.System.Linq
         [Test]
         public void FirstOrDefault()
         {
-            Assert.AreEqual(_src.FirstOrDefault((n) => n > 5), _array.FirstOrDefault((n) => n > 5));
-            Assert.AreEqual(_src.FirstOrDefault((n) => n > 10), _array.FirstOrDefault((n) => n > 10));
+            Assert.AreEqual(_src.FirstOrDefault(n => n > 5), _array.FirstOrDefault(n => n > 5));
+            Assert.AreEqual(_src.FirstOrDefault(n => n > 10), _array.FirstOrDefault(n => n > 10));
         }
 
         [Test]
         public void GroupBy()
         {
-            var grouping = _src.GroupBy((n) => n > 5);
+            var grouping = _src.GroupBy(n => n > 5);
             Assert.AreEqual(grouping.Count(), 2);
             foreach (var group in grouping)
             {
@@ -181,7 +181,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void Last()
         {
-            Assert.AreEqual(_src.Last((n) => n > 1), _array.Last((n) => n > 1));
+            Assert.AreEqual(_src.Last(n => n > 1), _array.Last(n => n > 1));
         }
 
         [Test]
@@ -217,16 +217,16 @@ namespace MonoTests.System.Linq
         [Test]
         public void OrderBy()
         {
-            var arr1 = _array.OrderBy((n) => n * -1).ToArray();
-            var arr2 = _src.OrderBy((n) => n * -1).ToArray();
+            var arr1 = _array.OrderBy(n => n * -1).ToArray();
+            var arr2 = _src.OrderBy(n => n * -1).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void OrderByDescending()
         {
-            var arr1 = _array.OrderBy((n) => n).ToArray();
-            var arr2 = _src.OrderBy((n) => n).ToArray();
+            var arr1 = _array.OrderBy(n => n).ToArray();
+            var arr2 = _src.OrderBy(n => n).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
@@ -241,16 +241,16 @@ namespace MonoTests.System.Linq
         [Test]
         public void Select()
         {
-            var arr1 = _array.Select((n) => n - 1).ToArray();
-            var arr2 = _src.Select((n) => n - 1).ToArray();
+            var arr1 = _array.Select(n => n - 1).ToArray();
+            var arr2 = _src.Select(n => n - 1).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void SelectMany()
         {
-            var arr1 = _array.SelectMany((n) => new[] { n, n, n }).ToArray();
-            var arr2 = _src.SelectMany((n) => new[] { n, n, n }).ToArray();
+            var arr1 = _array.SelectMany(n => new[] { n, n, n }).ToArray();
+            var arr2 = _src.SelectMany(n => new[] { n, n, n }).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
@@ -284,7 +284,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void SkipWhile()
         {
-            var arr1 = _src.SkipWhile((n) => n < 6).ToArray();
+            var arr1 = _src.SkipWhile(n => n < 6).ToArray();
             var arr2 = _src.Skip(5).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
@@ -292,8 +292,8 @@ namespace MonoTests.System.Linq
         [Test]
         public void Sum()
         {
-            Assert.AreEqual(_src.Sum((n) => n), _array.Sum((n) => n));
-            Assert.AreEqual(_src.Sum((n) => n + 1), _array.Sum((n) => n + 1));
+            Assert.AreEqual(_src.Sum(n => n), _array.Sum(n => n));
+            Assert.AreEqual(_src.Sum(n => n + 1), _array.Sum(n => n + 1));
         }
 
         [Test]
@@ -326,8 +326,8 @@ namespace MonoTests.System.Linq
         [Test]
         public void Where()
         {
-            var oddArray1 = _array.Where((n) => (n % 2) == 1).ToArray();
-            var oddArray2 = _src.Where((n) => (n % 2) == 1).ToArray();
+            var oddArray1 = _array.Where(n => (n % 2) == 1).ToArray();
+            var oddArray2 = _src.Where(n => (n % 2) == 1).ToArray();
             Assert.AreEqual(oddArray1, oddArray2);
         }
 
