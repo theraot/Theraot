@@ -246,6 +246,13 @@ namespace TestRunner
             No.Op(stream);
         }
 
+        public static void MethodInfoMethodAvailability()
+        {
+            const MethodInfo methodInfo = null;
+            No.Op<Func<Type, Delegate>>(methodInfo.CreateDelegate);
+            No.Op<Func<Type, object, Delegate>>(methodInfo.CreateDelegate);
+        }
+
         public static void TypeMethodAvailability()
         {
             No.Op<Func<Type, TypeCode>>(TypeEx.GetTypeCode);
