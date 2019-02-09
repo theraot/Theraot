@@ -213,6 +213,7 @@ namespace TestRunner
             No.Op(typeof(WaitCallback));
             No.Op(typeof(TypeCode));
             No.Op(typeof(Converter<int, int>));
+            No.Op(typeof(Queryable));
         }
 
         public static void StringMethodAvailability()
