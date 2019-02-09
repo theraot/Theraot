@@ -3,7 +3,6 @@
 using NUnit.Framework;
 using System;
 using System.Runtime.InteropServices;
-using Theraot.Core;
 
 namespace Tests.System
 {
