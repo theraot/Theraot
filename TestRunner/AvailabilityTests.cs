@@ -257,6 +257,40 @@ namespace TestRunner
         {
             No.Op<Func<Type, TypeCode>>(TypeEx.GetTypeCode);
             No.Op(TypeEx.EmptyTypes);
+            const Type type = null;
+            No.Op<Func<Type[], ConstructorInfo>>(type.GetConstructor);
+            No.Op<Func<ConstructorInfo[]>>(type.GetConstructors);
+            No.Op<Func<BindingFlags, ConstructorInfo[]>>(type.GetConstructors);
+            No.Op<Func<MemberInfo[]>>(type.GetDefaultMembers);
+            No.Op<Func<string, EventInfo>>(type.GetEvent);
+            No.Op<Func<string, BindingFlags, EventInfo>>(type.GetEvent);
+            No.Op<Func<EventInfo[]>>(type.GetEvents);
+            No.Op<Func<BindingFlags, EventInfo[]>>(type.GetEvents);
+            No.Op<Func<string, FieldInfo>>(type.GetField);
+            No.Op<Func<string, BindingFlags, FieldInfo>>(type.GetField);
+            No.Op<Func<FieldInfo[]>>(type.GetFields);
+            No.Op<Func<BindingFlags, FieldInfo[]>>(type.GetFields);
+            No.Op<Func<Type[]>>(type.GetGenericArguments);
+            No.Op<Func<Type[]>>(type.GetInterfaces);
+            No.Op<Func<string, MemberInfo[]>>(type.GetMember);
+            No.Op<Func<string, BindingFlags, MemberInfo[]>>(type.GetMember);
+            No.Op<Func<MemberInfo[]>>(type.GetMembers);
+            No.Op<Func<BindingFlags, MemberInfo[]>>(type.GetMembers);
+            No.Op<Func<string, Type[], MethodInfo>>(type.GetMethod);
+            No.Op<Func<string, MethodInfo>>(type.GetMethod);
+            No.Op<Func<string, BindingFlags, MethodInfo>>(type.GetMethod);
+            No.Op<Func<MethodInfo[]>>(type.GetMethods);
+            No.Op<Func<BindingFlags, MethodInfo[]>>(type.GetMethods);
+            No.Op<Func<string, BindingFlags, Type>>(type.GetNestedType);
+            No.Op<Func<BindingFlags, Type[]>>(type.GetNestedTypes);
+            No.Op<Func<PropertyInfo[]>>(type.GetProperties);
+            No.Op<Func<BindingFlags, PropertyInfo[]>>(type.GetProperties);
+            No.Op<Func<string, Type, PropertyInfo>>(type.GetProperty);
+            No.Op<Func<string, Type, Type[], PropertyInfo>>(type.GetProperty);
+            No.Op<Func<string, PropertyInfo>>(type.GetProperty);
+            No.Op<Func<string, BindingFlags, PropertyInfo>>(type.GetProperty);
+            No.Op<Func<Type, bool>>(type.IsAssignableFrom);
+            No.Op<Func<object, bool>>(type.IsInstanceOfType);
         }
 
         public static void ToStringMethodAvailability()
