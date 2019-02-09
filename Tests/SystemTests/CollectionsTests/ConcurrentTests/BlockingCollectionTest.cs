@@ -5,7 +5,7 @@ using System.Threading;
 using NUnit.Framework;
 using Theraot;
 
-namespace SystemTests.CollectionsTests.ConcurrentTests
+namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
     public static class BlockingCollectionTest

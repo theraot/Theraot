@@ -29,7 +29,7 @@
 using System.Collections;
 using NUnit.Framework;
 
-namespace SystemTests.CollectionsTests
+namespace Tests.SystemTests.CollectionsTests
 {
     [TestFixture]
     public class StructuralComparisonsTest

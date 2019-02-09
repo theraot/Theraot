@@ -35,7 +35,7 @@ using NUnit.Framework;
 using Tests.Helpers;
 using Theraot;
 
-namespace SystemTests.CollectionsTests.ObjectModelTests
+namespace Tests.SystemTests.CollectionsTests.ObjectModelTests
 {
     [TestFixture]
     public class ObservableCollectionTest

@@ -39,7 +39,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tests.Helpers;
 
-namespace SystemTests.CollectionsTests.ConcurrentTests
+namespace Tests.SystemTests.CollectionsTests.GenericTests
 {
     [TestFixture]
     public class HashSetTest
