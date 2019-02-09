@@ -26,10 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System.Collections;
+using NUnit.Framework;
 
-namespace MonoTests.System.Collections
+namespace SystemTests.CollectionsTests
 {
     [TestFixture]
     public class StructuralComparisonsTest
@@ -37,8 +37,8 @@ namespace MonoTests.System.Collections
         [Test]
         public void EqualsTest()
         {
-            var a1 = new[] { 9, 1, 3, 4 };
-            var a2 = new[] { 9, 1, 3, 4 };
+            var a1 = new[] {9, 1, 3, 4};
+            var a2 = new[] {9, 1, 3, 4};
 
             Assert.IsTrue(StructuralComparisons.StructuralEqualityComparer.Equals(a1, a2), "#1");
             Assert.IsFalse(StructuralComparisons.StructuralEqualityComparer.Equals(null, a2), "#2");
