@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NETSTANDARD13
+﻿#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
 
 // ReSharper disable LoopCanBeConvertedToQuery
 
