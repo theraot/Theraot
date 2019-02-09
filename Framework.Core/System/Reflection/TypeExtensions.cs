@@ -161,16 +161,11 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static EventInfo[] GetEvents(this Type type, string name, BindingFlags bindingAttr)
+        public static EventInfo[] GetEvents(this Type type, BindingFlags bindingAttr)
         {
             var result = new List<EventInfo>();
             foreach (var eventInfo in type.GetTypeInfo().DeclaredEvents)
             {
-                if (!string.Equals(eventInfo.Name, name, (bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.Default ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
                 if (eventInfo.AddMethod.IsPublic)
                 {
                     if ((bindingAttr & BindingFlags.Public) == BindingFlags.Default)
@@ -655,16 +650,11 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Type[] GetNestedTypes(this Type type, string name, BindingFlags bindingAttr)
+        public static Type[] GetNestedTypes(this Type type, BindingFlags bindingAttr)
         {
             var result = new List<Type>();
             foreach (var nestedType in type.GetTypeInfo().DeclaredNestedTypes)
             {
-                if (!string.Equals(nestedType.Name, name, (bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.Default ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
                 if (nestedType.IsPublic)
                 {
                     if ((bindingAttr & BindingFlags.Public) == BindingFlags.Default)
