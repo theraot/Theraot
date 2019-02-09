@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-namespace MonoTests.System.Collections
+namespace Tests.SystemTests.CollectionsTests
 {
     [TestFixture]
     public class StructuralComparisonsTestEx
