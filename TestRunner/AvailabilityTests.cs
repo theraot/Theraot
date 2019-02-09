@@ -212,6 +212,7 @@ namespace TestRunner
             No.Op(typeof(BindingFlags));
             No.Op(typeof(WaitCallback));
             No.Op(typeof(TypeCode));
+            No.Op(typeof(Converter<int, int>));
         }
 
         public static void StringMethodAvailability()
