@@ -761,7 +761,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="System\Diagnostics\Contracts\" />
   </ItemGroup>
   <ItemGroup Condition="('$(TargetFramework)' != 'net20') AND ('$(TargetFramework)' != 'netstandard1.0') AND ('$(TargetFramework)' != 'netstandard1.1') AND ('$(TargetFramework)' != 'netstandard1.2') AND ('$(TargetFramework)' != 'netstandard1.3') ">
     <PackageReference Include="NUnit" Version="3.11.0" />
