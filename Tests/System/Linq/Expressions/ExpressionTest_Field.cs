@@ -23,16 +23,38 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestField
     {
+        public static string Foo = "foo";
+
+        public class Bar
+        {
+            public string Baz;
+
+            public Bar()
+            {
+                Baz = "baz";
+            }
+        }
+
+        public struct Gazonk
+        {
+            public string Tzap;
+
+            public Gazonk(string tzap)
+            {
+                Tzap = tzap;
+            }
+        }
+
         [Test]
         public void Arg1Null()
         {
@@ -52,9 +74,50 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoField()
+        public void CompileInstanceField()
         {
-            Assert.Throws<ArgumentException>(() => Expression.Field(Expression.Constant(new MemberClass()), "NoField"));
+            var p = Expression.Parameter(typeof(Bar), "bar");
+            var baz = Expression.Lambda<Func<Bar, string>>
+            (
+                Expression.Field
+                (
+                    p, typeof(Bar).GetField
+                    (
+                        "Baz", BindingFlags.Public | BindingFlags.Instance
+                    )
+                ), p
+            ).Compile();
+
+            Assert.AreEqual("baz", baz(new Bar()));
+        }
+
+        [Test]
+        public void CompileStaticField()
+        {
+            var foo = Expression.Lambda<Func<string>>
+            (
+                Expression.Field
+                (
+                    null, GetType().GetField
+                    (
+                        "Foo", BindingFlags.Static | BindingFlags.Public
+                    )
+                )
+            ).Compile();
+
+            Assert.AreEqual("foo", foo());
+        }
+
+        [Test]
+        public void CompileStructInstanceField()
+        {
+            var p = Expression.Parameter(typeof(Gazonk), "gazonk");
+            var gazonker = Expression.Lambda<Func<Gazonk, string>>
+            (
+                Expression.Field(p, typeof(Gazonk).GetField("Tzap")), p
+            ).Compile();
+
+            Assert.AreEqual("bang", gazonker(new Gazonk("bang")));
         }
 
         [Test]
@@ -67,14 +130,23 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void NoField()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.Field(Expression.Constant(new MemberClass()), "NoField"));
+        }
+
+        [Test]
         public void StaticField1()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                // This will fail because access to a static field should be created using a FieldInfo and 
-                // not an instance plus the field name.
-                Expression.Field(Expression.Constant(new MemberClass()), "StaticField");
-            });
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // This will fail because access to a static field should be created using a FieldInfo and 
+                    // not an instance plus the field name.
+                    Expression.Field(Expression.Constant(new MemberClass()), "StaticField");
+                }
+            );
         }
 
         [Test]
@@ -90,65 +162,17 @@ namespace MonoTests.System.Linq.Expressions
         [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351
         public void StaticFieldWithInstanceArgument()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression.Field(
-                    Expression.Parameter(GetType(), "t"),
-                    GetType().GetField("Foo"));
-            });
-        }
-
-        public static string Foo = "foo";
-
-        [Test]
-        public void CompileStaticField()
-        {
-            var foo = Expression.Lambda<Func<string>>(
-                Expression.Field(null, GetType().GetField(
-                    "Foo", BindingFlags.Static | BindingFlags.Public))).Compile();
-
-            Assert.AreEqual("foo", foo());
-        }
-
-        public class Bar
-        {
-            public string Baz;
-
-            public Bar()
-            {
-                Baz = "baz";
-            }
-        }
-
-        [Test]
-        public void CompileInstanceField()
-        {
-            var p = Expression.Parameter(typeof(Bar), "bar");
-            var baz = Expression.Lambda<Func<Bar, string>>(
-                Expression.Field(p, typeof(Bar).GetField(
-                    "Baz", BindingFlags.Public | BindingFlags.Instance)), p).Compile();
-
-            Assert.AreEqual("baz", baz(new Bar()));
-        }
-
-        public struct Gazonk
-        {
-            public string Tzap;
-
-            public Gazonk(string tzap)
-            {
-                Tzap = tzap;
-            }
-        }
-
-        [Test]
-        public void CompileStructInstanceField()
-        {
-            var p = Expression.Parameter(typeof(Gazonk), "gazonk");
-            var gazonker = Expression.Lambda<Func<Gazonk, string>>(
-                Expression.Field(p, typeof(Gazonk).GetField("Tzap")), p).Compile();
-
-            Assert.AreEqual("bang", gazonker(new Gazonk("bang")));
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression.Field
+                    (
+                        Expression.Parameter(GetType(), "t"),
+                        GetType().GetField("Foo")
+                    );
+                }
+            );
         }
     }
 }

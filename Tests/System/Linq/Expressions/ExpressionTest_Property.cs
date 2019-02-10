@@ -23,16 +23,35 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestProperty
     {
+        public class Foo
+        {
+            public string Prop { get; set; }
+
+            public static string StatProp => "StaticFoo";
+        }
+
+        public struct Bar
+        {
+            public string Prop { get; set; }
+
+            public Bar(string slot)
+            {
+                Prop = slot;
+            }
+        }
+
+        public static int StaticProperty => 42;
+
         [Test]
         public void Arg1Null()
         {
@@ -55,12 +74,6 @@ namespace MonoTests.System.Linq.Expressions
         public void Arg2Null3()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.Property(Expression.Constant(new MemberClass()), (MethodInfo)null));
-        }
-
-        [Test]
-        public void NoProperty()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.Property(Expression.Constant(new MemberClass()), "NoProperty"));
         }
 
         [Test]
@@ -94,12 +107,23 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void NoProperty()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.Property(Expression.Constant(new MemberClass()), "NoProperty"));
+        }
+
+        [Test]
         public void StaticProperty1()
         {
-            Assert.Throws<ArgumentException>(() => { // This will fail because access to a static field should be created using a PropertyInfo and
-                // not an instance plus the field name.
-                Expression.Property(Expression.Constant(new MemberClass()), "StaticProperty");
-            });
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // This will fail because access to a static field should be created using a PropertyInfo and
+                    // not an instance plus the field name.
+                    Expression.Property(Expression.Constant(new MemberClass()), "StaticProperty");
+                }
+            );
         }
 
         [Test]
@@ -123,65 +147,62 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(MemberClass.GetStaticPropertyInfo(), expr.Member, "Property#17");
         }
 
-        public class Foo
+        [Test]
+        [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351
+        public void StaticPropertyWithInstanceArgument()
         {
-            public string Prop { get; set; }
-
-            public static string StatProp => "StaticFoo";
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression.Property
+                    (
+                        Expression.Parameter(GetType(), "t"),
+                        GetType().GetProperty("StaticProperty")
+                    );
+                }
+            );
         }
 
         [Test]
         public void TestCompileGetInstanceProperty()
         {
             var p = Expression.Parameter(typeof(Foo), "foo");
-            var fooer = Expression.Lambda<Func<Foo, string>>(
-                Expression.Property(p, typeof(Foo).GetProperty("Prop")), p).Compile();
+            var fooer = Expression.Lambda<Func<Foo, string>>
+            (
+                Expression.Property(p, typeof(Foo).GetProperty("Prop")), p
+            ).Compile();
 
-            Assert.AreEqual("foo", fooer(new Foo { Prop = "foo" }));
-        }
-
-        [Test]
-        public void TestCompileGetStaticProperty()
-        {
-            var sf = Expression.Lambda<Func<string>>(
-                Expression.Property(null, typeof(Foo).GetProperty(
-                "StatProp", BindingFlags.Public | BindingFlags.Static))).Compile();
-
-            Assert.AreEqual("StaticFoo", sf());
-        }
-
-        public struct Bar
-        {
-            public string Prop { get; set; }
-
-            public Bar(string slot)
-            {
-                Prop = slot;
-            }
+            Assert.AreEqual("foo", fooer(new Foo {Prop = "foo"}));
         }
 
         [Test]
         public void TestCompileGetInstancePropertyOnStruct()
         {
             var p = Expression.Parameter(typeof(Bar), "bar");
-            var barer = Expression.Lambda<Func<Bar, string>>(
-                Expression.Property(p, typeof(Bar).GetProperty("Prop")), p).Compile();
+            var barer = Expression.Lambda<Func<Bar, string>>
+            (
+                Expression.Property(p, typeof(Bar).GetProperty("Prop")), p
+            ).Compile();
 
             Assert.AreEqual("bar", barer(new Bar("bar")));
         }
 
-        public static int StaticProperty => 42;
-
         [Test]
-        [Category("NotDotNet")] // http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=339351
-        public void StaticPropertyWithInstanceArgument()
+        public void TestCompileGetStaticProperty()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression.Property(
-                    Expression.Parameter(GetType(), "t"),
-                    GetType().GetProperty("StaticProperty"));
-            });
+            var sf = Expression.Lambda<Func<string>>
+            (
+                Expression.Property
+                (
+                    null, typeof(Foo).GetProperty
+                    (
+                        "StatProp", BindingFlags.Public | BindingFlags.Static
+                    )
+                )
+            ).Compile();
+
+            Assert.AreEqual("StaticFoo", sf());
         }
     }
 }

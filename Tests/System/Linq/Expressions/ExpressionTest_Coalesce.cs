@@ -24,16 +24,31 @@ extern alias nunitlinq;
 //		Federico Di Gregorio <fog@initd.org>
 //		Jb Evain <jbevain@novell.com>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestCoalesce
     {
+        private struct Slot
+        {
+            private readonly int _value;
+
+            public Slot(int v)
+            {
+                _value = v;
+            }
+
+            public static implicit operator int(Slot s)
+            {
+                return s._value;
+            }
+        }
+
         [Test]
         public void Arg1Null()
         {
@@ -47,57 +62,14 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NonNullLeftParameter()
-        {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                // This throws because they are both doubles, which are never
-                Expression.Coalesce(Expression.Constant(1.0), Expression.Constant(2.0));
-            });
-        }
-
-        [Test]
-        public void Incompatible_Arguments()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                // The artuments are not compatible
-                Expression.Coalesce(Expression.Parameter(typeof(int?), "a"),
-                    Expression.Parameter(typeof(bool), "b"));
-            });
-        }
-
-        [Test]
-        public void IsCoalesceStringLifted()
-        {
-            var coalesce = Expression.Coalesce(
-                Expression.Parameter(typeof(string), "a"),
-                Expression.Parameter(typeof(string), "b"));
-
-            Assert.AreEqual("(a ?? b)", coalesce.ToString());
-
-            Assert.IsFalse(coalesce.IsLifted);
-            Assert.IsFalse(coalesce.IsLiftedToNull);
-        }
-
-        [Test]
-        public void IsCoalesceNullableIntLifted()
-        {
-            var coalesce = Expression.Coalesce(
-                Expression.Parameter(typeof(int?), "a"),
-                Expression.Parameter(typeof(int?), "b"));
-
-            Assert.IsFalse(coalesce.IsLifted);
-            Assert.IsFalse(coalesce.IsLiftedToNull);
-        }
-
-        [Test]
         public void CoalesceNullableInt()
         {
             var a = Expression.Parameter(typeof(int?), "a");
             var b = Expression.Parameter(typeof(int?), "b");
-            var coalesce = Expression.Lambda<Func<int?, int?, int?>>(
-                Expression.Coalesce(a, b), a, b).Compile();
+            var coalesce = Expression.Lambda<Func<int?, int?, int?>>
+            (
+                Expression.Coalesce(a, b), a, b
+            ).Compile();
 
             Assert.AreEqual((int?)1, coalesce(1, 2));
             Assert.AreEqual(null, coalesce(null, null));
@@ -106,17 +78,30 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void CoalesceString()
+        // #12987
+        [Category("MobileNotWorking")]
+        public void CoalesceNullableSlotIntoInteger()
         {
-            var a = Expression.Parameter(typeof(string), "a");
-            var b = Expression.Parameter(typeof(string), "b");
-            var coalesce = Expression.Lambda<Func<string, string, string>>(
-                Expression.Coalesce(a, b), a, b).Compile();
+            var s = Expression.Parameter(typeof(Slot?), "s");
 
-            Assert.AreEqual("foo", coalesce("foo", "bar"));
-            Assert.AreEqual(null, coalesce(null, null));
-            Assert.AreEqual("bar", coalesce(null, "bar"));
-            Assert.AreEqual("foo", coalesce("foo", null));
+            var method = typeof(Slot).GetMethod("op_Implicit");
+
+            var coalesce = Expression.Lambda<Func<Slot?, int>>
+            (
+                Expression.Coalesce
+                (
+                    s,
+                    Expression.Constant(-3),
+                    Expression.Lambda
+                    (
+                        Expression.Convert(s, typeof(int), method),
+                        s
+                    )
+                ), s
+            ).Compile();
+
+            Assert.AreEqual(-3, coalesce(null));
+            Assert.AreEqual(42, coalesce(new Slot(42)));
         }
 
         [Test]
@@ -137,118 +122,190 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void CoalesceString()
+        {
+            var a = Expression.Parameter(typeof(string), "a");
+            var b = Expression.Parameter(typeof(string), "b");
+            var coalesce = Expression.Lambda<Func<string, string, string>>
+            (
+                Expression.Coalesce(a, b), a, b
+            ).Compile();
+
+            Assert.AreEqual("foo", coalesce("foo", "bar"));
+            Assert.AreEqual(null, coalesce(null, null));
+            Assert.AreEqual("bar", coalesce(null, "bar"));
+            Assert.AreEqual("foo", coalesce("foo", null));
+        }
+
+        [Test]
         [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=349822
         public void CoalesceUserDefinedConversion()
         {
             var s = Expression.Parameter(typeof(string), "s");
 
-            var coalesce = Expression.Lambda<Func<string, int>>(
-                Expression.Coalesce(
+            var coalesce = Expression.Lambda<Func<string, int>>
+            (
+                Expression.Coalesce
+                (
                     s,
                     Expression.Constant(42),
-                    Expression.Lambda<Func<string, int>>(
-                        Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s)), s).Compile();
+                    Expression.Lambda<Func<string, int>>
+                    (
+                        Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s
+                    )
+                ), s
+            ).Compile();
 
             Assert.AreEqual(12, coalesce("12"));
             Assert.AreEqual(42, coalesce(null));
         }
 
-        private struct Slot
+        [Test]
+        public void CoalesceVoidUserDefinedConversion()
         {
-            private readonly int _value;
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var s = Expression.Parameter(typeof(string), "s");
 
-            public Slot(int v)
-            {
-                _value = v;
-            }
-
-            public static implicit operator int(Slot s)
-            {
-                return s._value;
-            }
+                    Expression.Coalesce
+                    (
+                        s,
+                        42.ToConstant(),
+                        Expression.Lambda<Action<string>>
+                        (
+                            Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s
+                        )
+                    );
+                }
+            );
         }
 
         [Test]
-        // #12987
-        [Category("MobileNotWorking")]
-        public void CoalesceNullableSlotIntoInteger()
+        public void Incompatible_Arguments()
         {
-            var s = Expression.Parameter(typeof(Slot?), "s");
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // The artuments are not compatible
+                    Expression.Coalesce
+                    (
+                        Expression.Parameter(typeof(int?), "a"),
+                        Expression.Parameter(typeof(bool), "b")
+                    );
+                }
+            );
+        }
 
-            var method = typeof(Slot).GetMethod("op_Implicit");
+        [Test]
+        public void IsCoalesceNullableIntLifted()
+        {
+            var coalesce = Expression.Coalesce
+            (
+                Expression.Parameter(typeof(int?), "a"),
+                Expression.Parameter(typeof(int?), "b")
+            );
 
-            var coalesce = Expression.Lambda<Func<Slot?, int>>(
-                Expression.Coalesce(
-                    s,
-                    Expression.Constant(-3),
-                    Expression.Lambda(
-                        Expression.Convert(s, typeof(int), method),
-                        s)), s).Compile();
+            Assert.IsFalse(coalesce.IsLifted);
+            Assert.IsFalse(coalesce.IsLiftedToNull);
+        }
 
-            Assert.AreEqual(-3, coalesce(null));
-            Assert.AreEqual(42, coalesce(new Slot(42)));
+        [Test]
+        public void IsCoalesceStringLifted()
+        {
+            var coalesce = Expression.Coalesce
+            (
+                Expression.Parameter(typeof(string), "a"),
+                Expression.Parameter(typeof(string), "b")
+            );
+
+            Assert.AreEqual("(a ?? b)", coalesce.ToString());
+
+            Assert.IsFalse(coalesce.IsLifted);
+            Assert.IsFalse(coalesce.IsLiftedToNull);
+        }
+
+        [Test]
+        public void NonNullLeftParameter()
+        {
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    // This throws because they are both doubles, which are never
+                    Expression.Coalesce(Expression.Constant(1.0), Expression.Constant(2.0));
+                }
+            );
         }
 
         [Test]
         public void WrongCoalesceConversionParameterCount()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var s = Expression.Parameter(typeof(string), "s");
-                var p = Expression.Parameter(typeof(string), "foo");
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var s = Expression.Parameter(typeof(string), "s");
+                    var p = Expression.Parameter(typeof(string), "foo");
 
-                Expression.Coalesce(
-                    s,
-                    42.ToConstant(),
-                    Expression.Lambda<Func<string, string, int>>(
-                        Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s, p));
-            });
+                    Expression.Coalesce
+                    (
+                        s,
+                        42.ToConstant(),
+                        Expression.Lambda<Func<string, string, int>>
+                        (
+                            Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s, p
+                        )
+                    );
+                }
+            );
         }
 
         [Test]
         public void WrongCoalesceConversionParameterType()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                var s = Expression.Parameter(typeof(string), "s");
-                var i = Expression.Parameter(typeof(int), "i");
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    var s = Expression.Parameter(typeof(string), "s");
+                    var i = Expression.Parameter(typeof(int), "i");
 
-                Expression.Coalesce(
-                    s,
-                    42.ToConstant(),
-                    Expression.Lambda<Func<int, int>>(
-                        i, i));
-            });
+                    Expression.Coalesce
+                    (
+                        s,
+                        42.ToConstant(),
+                        Expression.Lambda<Func<int, int>>
+                        (
+                            i, i
+                        )
+                    );
+                }
+            );
         }
 
         [Test]
         public void WrongCoalesceConversionReturnType()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                var s = Expression.Parameter(typeof(string), "s");
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    var s = Expression.Parameter(typeof(string), "s");
 
-                Expression.Coalesce(
-                    s,
-                    42.ToConstant(),
-                    Expression.Lambda<Func<string, string>>(
-                        s, s));
-            });
-        }
-
-        [Test]
-        public void CoalesceVoidUserDefinedConversion()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var s = Expression.Parameter(typeof(string), "s");
-
-                Expression.Coalesce(
-                    s,
-                    42.ToConstant(),
-                    Expression.Lambda<Action<string>>(
-                        Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s));
-            });
+                    Expression.Coalesce
+                    (
+                        s,
+                        42.ToConstant(),
+                        Expression.Lambda<Func<string, string>>
+                        (
+                            s, s
+                        )
+                    );
+                }
+            );
         }
     }
 }

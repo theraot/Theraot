@@ -30,20 +30,113 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestNegate
     {
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int value)
+            {
+                Value = value;
+            }
+
+            public static Slot operator -(Slot s)
+            {
+                return new Slot(-s.Value);
+            }
+        }
+
+        private struct SlotToNullable
+        {
+            public readonly int Value;
+
+            public SlotToNullable(int value)
+            {
+                Value = value;
+            }
+
+            public static SlotToNullable? operator -(SlotToNullable s)
+            {
+                return new SlotToNullable(-s.Value);
+            }
+        }
+
+        private struct SlotFromNullable
+        {
+            public readonly int Value;
+
+            public SlotFromNullable(int value)
+            {
+                Value = value;
+            }
+
+            public static SlotFromNullable operator -(SlotFromNullable? s)
+            {
+                if (s.HasValue)
+                {
+                    return new SlotFromNullable(-s.Value.Value);
+                }
+
+                return new SlotFromNullable(-1);
+            }
+        }
+
+        private struct SlotFromNullableToNullable
+        {
+            public readonly int Value;
+
+            public SlotFromNullableToNullable(int value)
+            {
+                Value = value;
+            }
+
+            public static SlotFromNullableToNullable? operator -(SlotFromNullableToNullable? s)
+            {
+                if (s.HasValue)
+                {
+                    return new SlotFromNullableToNullable(-s.Value.Value);
+                }
+
+                return null;
+            }
+        }
+
         [Test]
         public void Arg1Null()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.Negate(null));
+        }
+
+        [Test]
+        public void CompiledNegateNullableInt32()
+        {
+            var p = Expression.Parameter(typeof(int?), "i");
+            var negate = Expression.Lambda<Func<int?, int?>>(Expression.Negate(p), p).Compile();
+
+            Assert.AreEqual(null, negate(null));
+            Assert.AreEqual((int?)-2, negate(2));
+            Assert.AreEqual((int?)0, negate(0));
+            Assert.AreEqual((int?)3, negate(-3));
+        }
+
+        [Test]
+        public void CompileNegateInt32()
+        {
+            var p = Expression.Parameter(typeof(int), "i");
+            var negate = Expression.Lambda<Func<int, int>>(Expression.Negate(p), p).Compile();
+
+            Assert.AreEqual(-2, negate(2));
+            Assert.AreEqual(0, negate(0));
+            Assert.AreEqual(3, negate(-3));
         }
 
         [Test]
@@ -71,6 +164,53 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void NegateDecimal()
+        {
+            var d = Expression.Parameter(typeof(decimal), "l");
+
+            var meth = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
+
+            var node = Expression.Negate(d);
+            Assert.IsFalse(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(decimal), node.Type);
+            Assert.AreEqual(meth, node.Method);
+
+            var neg = Expression.Lambda<Func<decimal, decimal>>(node, d).Compile();
+
+            Assert.AreEqual(-2m, neg(2m));
+        }
+
+        [Test]
+        public void NegateLiftedDecimal()
+        {
+            var d = Expression.Parameter(typeof(decimal?), "l");
+
+            var meth = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
+
+            var node = Expression.Negate(d);
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsTrue(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(decimal?), node.Type);
+            Assert.AreEqual(meth, node.Method);
+
+            var neg = Expression.Lambda<Func<decimal?, decimal?>>(node, d).Compile();
+
+            Assert.AreEqual(-2m, neg(2m));
+            Assert.AreEqual(null, neg(null));
+        }
+
+        [Test]
+        public void NegateNullableInt32()
+        {
+            var n = Expression.Negate(Expression.Parameter(typeof(int?), ""));
+            Assert.AreEqual(typeof(int?), n.Type);
+            Assert.IsTrue(n.IsLifted);
+            Assert.IsTrue(n.IsLiftedToNull);
+            Assert.IsNull(n.Method);
+        }
+
+        [Test]
         public void Number()
         {
             var up = Expression.Negate(Expression.Constant(1));
@@ -91,54 +231,6 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NegateNullableInt32()
-        {
-            var n = Expression.Negate(Expression.Parameter(typeof(int?), ""));
-            Assert.AreEqual(typeof(int?), n.Type);
-            Assert.IsTrue(n.IsLifted);
-            Assert.IsTrue(n.IsLiftedToNull);
-            Assert.IsNull(n.Method);
-        }
-
-        [Test]
-        public void CompileNegateInt32()
-        {
-            var p = Expression.Parameter(typeof(int), "i");
-            var negate = Expression.Lambda<Func<int, int>>(Expression.Negate(p), p).Compile();
-
-            Assert.AreEqual(-2, negate(2));
-            Assert.AreEqual(0, negate(0));
-            Assert.AreEqual(3, negate(-3));
-        }
-
-        [Test]
-        public void CompiledNegateNullableInt32()
-        {
-            var p = Expression.Parameter(typeof(int?), "i");
-            var negate = Expression.Lambda<Func<int?, int?>>(Expression.Negate(p), p).Compile();
-
-            Assert.AreEqual(null, negate(null));
-            Assert.AreEqual((int?)-2, negate(2));
-            Assert.AreEqual((int?)0, negate(0));
-            Assert.AreEqual((int?)3, negate(-3));
-        }
-
-        private struct Slot
-        {
-            public readonly int Value;
-
-            public Slot(int value)
-            {
-                Value = value;
-            }
-
-            public static Slot operator -(Slot s)
-            {
-                return new Slot(-s.Value);
-            }
-        }
-
-        [Test]
         public void UserDefinedNegate()
         {
             var s = Expression.Parameter(typeof(Slot), "s");
@@ -151,6 +243,41 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual(new Slot(-2), negate(new Slot(2)));
             Assert.AreEqual(new Slot(42), negate(new Slot(-42)));
+        }
+
+        [Test]
+        public void UserDefinedNegateFromNullable()
+        {
+            var s = Expression.Parameter(typeof(SlotFromNullable?), "s");
+            var node = Expression.Negate(s);
+            Assert.IsFalse(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(SlotFromNullable), node.Type);
+
+            var negate = Expression.Lambda<Func<SlotFromNullable?, SlotFromNullable>>(node, s).Compile();
+
+            Assert.AreEqual(new SlotFromNullable(-2), negate(new SlotFromNullable(2)));
+            Assert.AreEqual(new SlotFromNullable(42), negate(new SlotFromNullable(-42)));
+            Assert.AreEqual(new SlotFromNullable(-1), negate(null));
+        }
+
+        [Test]
+        public void UserDefinedNegateFromNullableNotNullable()
+        {
+            var s = Expression.Parameter(typeof(SlotFromNullableToNullable?), "s");
+            var node = Expression.Negate(s);
+            Assert.IsFalse(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(SlotFromNullableToNullable?), node.Type);
+
+            var negate = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?>>
+            (
+                node, s
+            ).Compile();
+
+            Assert.AreEqual(new SlotFromNullableToNullable(-2), negate(new SlotFromNullableToNullable(2)));
+            Assert.AreEqual(new SlotFromNullableToNullable(42), negate(new SlotFromNullableToNullable(-42)));
+            Assert.AreEqual(null, negate(null));
         }
 
         [Test]
@@ -167,21 +294,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(null, negate(null));
             Assert.AreEqual(new Slot(42), negate(new Slot(-42)));
             Assert.AreEqual(new Slot(-2), negate(new Slot(2)));
-        }
-
-        private struct SlotToNullable
-        {
-            public readonly int Value;
-
-            public SlotToNullable(int value)
-            {
-                Value = value;
-            }
-
-            public static SlotToNullable? operator -(SlotToNullable s)
-            {
-                return new SlotToNullable(-s.Value);
-            }
         }
 
         [Test]
@@ -203,114 +315,6 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual((SlotToNullable?)new SlotToNullable(42), negate(new SlotToNullable(-42)));
             Assert.AreEqual((SlotToNullable?)new SlotToNullable(-2), negate(new SlotToNullable(2)));
-        }
-
-        private struct SlotFromNullable
-        {
-            public readonly int Value;
-
-            public SlotFromNullable(int value)
-            {
-                Value = value;
-            }
-
-            public static SlotFromNullable operator -(SlotFromNullable? s)
-            {
-                if (s.HasValue)
-                {
-                    return new SlotFromNullable(-s.Value.Value);
-                }
-                return new SlotFromNullable(-1);
-            }
-        }
-
-        [Test]
-        public void UserDefinedNegateFromNullable()
-        {
-            var s = Expression.Parameter(typeof(SlotFromNullable?), "s");
-            var node = Expression.Negate(s);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(SlotFromNullable), node.Type);
-
-            var negate = Expression.Lambda<Func<SlotFromNullable?, SlotFromNullable>>(node, s).Compile();
-
-            Assert.AreEqual(new SlotFromNullable(-2), negate(new SlotFromNullable(2)));
-            Assert.AreEqual(new SlotFromNullable(42), negate(new SlotFromNullable(-42)));
-            Assert.AreEqual(new SlotFromNullable(-1), negate(null));
-        }
-
-        private struct SlotFromNullableToNullable
-        {
-            public readonly int Value;
-
-            public SlotFromNullableToNullable(int value)
-            {
-                Value = value;
-            }
-
-            public static SlotFromNullableToNullable? operator -(SlotFromNullableToNullable? s)
-            {
-                if (s.HasValue)
-                {
-                    return new SlotFromNullableToNullable(-s.Value.Value);
-                }
-                return null;
-            }
-        }
-
-        [Test]
-        public void UserDefinedNegateFromNullableNotNullable()
-        {
-            var s = Expression.Parameter(typeof(SlotFromNullableToNullable?), "s");
-            var node = Expression.Negate(s);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(SlotFromNullableToNullable?), node.Type);
-
-            var negate = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?>>(
-                node, s).Compile();
-
-            Assert.AreEqual(new SlotFromNullableToNullable(-2), negate(new SlotFromNullableToNullable(2)));
-            Assert.AreEqual(new SlotFromNullableToNullable(42), negate(new SlotFromNullableToNullable(-42)));
-            Assert.AreEqual(null, negate(null));
-        }
-
-        [Test]
-        public void NegateDecimal()
-        {
-            var d = Expression.Parameter(typeof(decimal), "l");
-
-            var meth = typeof(decimal).GetMethod("op_UnaryNegation", new[] { typeof(decimal) });
-
-            var node = Expression.Negate(d);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(decimal), node.Type);
-            Assert.AreEqual(meth, node.Method);
-
-            var neg = Expression.Lambda<Func<decimal, decimal>>(node, d).Compile();
-
-            Assert.AreEqual(-2m, neg(2m));
-        }
-
-        [Test]
-        public void NegateLiftedDecimal()
-        {
-            var d = Expression.Parameter(typeof(decimal?), "l");
-
-            var meth = typeof(decimal).GetMethod("op_UnaryNegation", new[] { typeof(decimal) });
-
-            var node = Expression.Negate(d);
-            Assert.IsTrue(node.IsLifted);
-            Assert.IsTrue(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(decimal?), node.Type);
-            Assert.AreEqual(meth, node.Method);
-
-            var neg = Expression.Lambda<Func<decimal?, decimal?>>(node, d).Compile();
-
-            Assert.AreEqual(-2m, neg(2m));
-            Assert.AreEqual(null, neg(null));
         }
     }
 }

@@ -25,165 +25,19 @@ extern alias nunitlinq;
 //    Jb Evain (jbevain@novell.com)
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestEqual
     {
-        [Test]
-        public void Arg1Null()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.Equal(null, Expression.Constant(1)));
-        }
-
-        [Test]
-        public void Arg2Null()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.Equal(Expression.Constant(1), null));
-        }
-
-        [Test]
-        public void ArgTypesDifferent()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.Equal(Expression.Constant(1), Expression.Constant(2.0)));
-        }
-
-        [Test]
-        public void ReferenceCompare()
-        {
-            Expression.Equal(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
-        }
-
         public struct D
         {
             // Empty
-        }
-
-        [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.Equal(Expression.Constant(new D()), Expression.Constant(new D())));
-        }
-
-        [Test]
-        public void Numeric()
-        {
-            var expr = Expression.Equal(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
-            Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.IsNull(expr.Method);
-        }
-
-        [Test]
-        public void PrimitiveNonNumeric()
-        {
-            var expr = Expression.Equal(Expression.Constant('a'), Expression.Constant('b'));
-            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
-            Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.IsNull(expr.Method);
-
-            var eq = Expression.Lambda<Func<bool>>(expr).Compile();
-            Assert.IsFalse(eq());
-        }
-
-        [Test]
-        public void Nullable_LiftToNull_SetToFalse()
-        {
-            int? a = 1;
-            int? b = 2;
-
-            var expr = Expression.Equal(Expression.Constant(a, typeof(int?)),
-                                  Expression.Constant(b, typeof(int?)),
-                                  false, null);
-            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
-            Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.AreEqual(true, expr.IsLifted);
-            Assert.AreEqual(false, expr.IsLiftedToNull);
-            Assert.IsNull(expr.Method);
-        }
-
-        [Test]
-        public void Nullable_LiftToNull_SetToTrue()
-        {
-            int? a = 1;
-            int? b = 2;
-
-            var expr = Expression.Equal(Expression.Constant(a, typeof(int?)),
-                                  Expression.Constant(b, typeof(int?)),
-                                  true, null);
-            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
-            Assert.AreEqual(typeof(bool?), expr.Type);
-            Assert.AreEqual(true, expr.IsLifted);
-            Assert.AreEqual(true, expr.IsLiftedToNull);
-            Assert.IsNull(expr.Method);
-        }
-
-        [Test]
-        public void Nullable_Mixed()
-        {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                int? a = 1;
-                const int B = 2;
-
-                Expression.Equal(Expression.Constant(a, typeof(int?)),
-                    Expression.Constant(B, typeof(int)));
-            });
-        }
-
-        [Test]
-        public void UserDefinedClass()
-        {
-            // We can use the simplest version of GetMethod because we already know only one
-            // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Equality");
-
-            var expr = Expression.Equal(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
-            Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_Equality", expr.Method.Name);
-        }
-
-        [Test]
-        public void NullableInt32Equal()
-        {
-            var l = Expression.Parameter(typeof(int?), "l");
-            var r = Expression.Parameter(typeof(int?), "r");
-
-            var eq = Expression.Lambda<Func<int?, int?, bool>>(
-                Expression.Equal(l, r), l, r).Compile();
-
-            Assert.IsTrue(eq(null, null));
-            Assert.IsFalse(eq(null, 1));
-            Assert.IsFalse(eq(1, null));
-            Assert.IsFalse(eq(1, 2));
-            Assert.IsTrue(eq(1, 1));
-            Assert.IsFalse(eq(null, 0));
-            Assert.IsFalse(eq(0, null));
-        }
-
-        [Test]
-        public void NullableInt32EqualLiftedToNull()
-        {
-            var l = Expression.Parameter(typeof(int?), "l");
-            var r = Expression.Parameter(typeof(int?), "r");
-
-            var eq = Expression.Lambda<Func<int?, int?, bool?>>(
-                Expression.Equal(l, r, true, null), l, r).Compile();
-
-            Assert.AreEqual(null, eq(null, null));
-            Assert.AreEqual(null, eq(null, 1));
-            Assert.AreEqual(null, eq(1, null));
-            Assert.AreEqual((bool?)false, eq(1, 2));
-            Assert.AreEqual((bool?)true, eq(1, 1));
-            Assert.AreEqual(null, eq(null, 0));
-            Assert.AreEqual(null, eq(0, null));
         }
 
         private struct Slot
@@ -222,68 +76,6 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        [Test]
-        public void UserDefinedEqual()
-        {
-            var l = Expression.Parameter(typeof(Slot), "l");
-            var r = Expression.Parameter(typeof(Slot), "r");
-
-            var node = Expression.Equal(l, r);
-
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(bool), node.Type);
-            Assert.IsNotNull(node.Method);
-
-            var eq = Expression.Lambda<Func<Slot, Slot, bool>>(node, l, r).Compile();
-
-            Assert.AreEqual(true, eq(new Slot(21), new Slot(21)));
-            Assert.AreEqual(false, eq(new Slot(1), new Slot(-1)));
-        }
-
-        [Test]
-        public void UserDefinedEqualLifted()
-        {
-            var l = Expression.Parameter(typeof(Slot?), "l");
-            var r = Expression.Parameter(typeof(Slot?), "r");
-
-            var node = Expression.Equal(l, r);
-
-            Assert.IsTrue(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(bool), node.Type);
-            Assert.IsNotNull(node.Method);
-
-            var eq = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
-
-            Assert.AreEqual(true, eq(null, null));
-            Assert.AreEqual(false, eq(new Slot(2), null));
-            Assert.AreEqual(false, eq(null, new Slot(2)));
-            Assert.AreEqual(true, eq(new Slot(21), new Slot(21)));
-        }
-
-        [Test]
-        public void UserDefinedEqualLiftedToNull()
-        {
-            var l = Expression.Parameter(typeof(Slot?), "l");
-            var r = Expression.Parameter(typeof(Slot?), "r");
-
-            var node = Expression.Equal(l, r, true, null);
-
-            Assert.IsTrue(node.IsLifted);
-            Assert.IsTrue(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(bool?), node.Type);
-            Assert.IsNotNull(node.Method);
-
-            var eq = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
-
-            Assert.AreEqual(null, eq(null, null));
-            Assert.AreEqual(null, eq(new Slot(2), null));
-            Assert.AreEqual(null, eq(null, new Slot(2)));
-            Assert.AreEqual((bool?)true, eq(new Slot(21), new Slot(21)));
-            Assert.AreEqual((bool?)false, eq(new Slot(21), new Slot(-21)));
-        }
-
         private struct SlotToNullable
         {
             public readonly int Value;
@@ -320,34 +112,129 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        [Test]
-        public void UserDefinedToNullableEqualFromNullable()
+        public enum Foo
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                Expression.Equal(
-                    Expression.Parameter(typeof(SlotToNullable?), "l"),
-                    Expression.Parameter(typeof(SlotToNullable?), "r"));
-            });
+            Bar,
+            Baz
         }
 
         [Test]
-        public void UserDefinedToNullableEqual()
+        public void Arg1Null()
         {
-            var l = Expression.Parameter(typeof(SlotToNullable), "l");
-            var r = Expression.Parameter(typeof(SlotToNullable), "r");
+            Assert.Throws<ArgumentNullException>(() => Expression.Equal(null, Expression.Constant(1)));
+        }
 
-            var node = Expression.Equal(l, r, false, null);
+        [Test]
+        public void Arg2Null()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.Equal(Expression.Constant(1), null));
+        }
 
+        [Test]
+        public void ArgTypesDifferent()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.Equal(Expression.Constant(1), Expression.Constant(2.0)));
+        }
+
+        [Test]
+        public void EnumEqual()
+        {
+            var l = Expression.Parameter(typeof(Foo), "l");
+            var r = Expression.Parameter(typeof(Foo), "r");
+
+            var node = Expression.Equal(l, r);
             Assert.IsFalse(node.IsLifted);
             Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(bool?), node.Type);
-            Assert.IsNotNull(node.Method);
+            Assert.AreEqual(typeof(bool), node.Type);
+            Assert.IsNull(node.Method);
 
-            var eq = Expression.Lambda<Func<SlotToNullable, SlotToNullable, bool?>>(node, l, r).Compile();
+            var eq = Expression.Lambda<Func<Foo, Foo, bool>>(node, l, r).Compile();
 
-            Assert.AreEqual((bool?)true, eq(new SlotToNullable(2), new SlotToNullable(2)));
-            Assert.AreEqual((bool?)false, eq(new SlotToNullable(2), new SlotToNullable(-2)));
+            Assert.AreEqual(true, eq(Foo.Bar, Foo.Bar));
+            Assert.AreEqual(false, eq(Foo.Bar, Foo.Baz));
+        }
+
+        [Test]
+        public void LiftedEnumEqual()
+        {
+            var l = Expression.Parameter(typeof(Foo?), "l");
+            var r = Expression.Parameter(typeof(Foo?), "r");
+
+            var node = Expression.Equal(l, r);
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool), node.Type);
+            Assert.IsNull(node.Method);
+
+            var eq = Expression.Lambda<Func<Foo?, Foo?, bool>>(node, l, r).Compile();
+
+            Assert.AreEqual(true, eq(Foo.Bar, Foo.Bar));
+            Assert.AreEqual(false, eq(Foo.Bar, Foo.Baz));
+            Assert.AreEqual(false, eq(Foo.Bar, null));
+            Assert.AreEqual(true, eq(null, null));
+        }
+
+        [Test]
+        public void NoOperatorClass()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.Equal(Expression.Constant(new D()), Expression.Constant(new D())));
+        }
+
+        [Test]
+        public void Nullable_LiftToNull_SetToFalse()
+        {
+            int? a = 1;
+            int? b = 2;
+
+            var expr = Expression.Equal
+            (
+                Expression.Constant(a, typeof(int?)),
+                Expression.Constant(b, typeof(int?)),
+                false, null
+            );
+            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.AreEqual(true, expr.IsLifted);
+            Assert.AreEqual(false, expr.IsLiftedToNull);
+            Assert.IsNull(expr.Method);
+        }
+
+        [Test]
+        public void Nullable_LiftToNull_SetToTrue()
+        {
+            int? a = 1;
+            int? b = 2;
+
+            var expr = Expression.Equal
+            (
+                Expression.Constant(a, typeof(int?)),
+                Expression.Constant(b, typeof(int?)),
+                true, null
+            );
+            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
+            Assert.AreEqual(typeof(bool?), expr.Type);
+            Assert.AreEqual(true, expr.IsLifted);
+            Assert.AreEqual(true, expr.IsLiftedToNull);
+            Assert.IsNull(expr.Method);
+        }
+
+        [Test]
+        public void Nullable_Mixed()
+        {
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    int? a = 1;
+                    const int B = 2;
+
+                    Expression.Equal
+                    (
+                        Expression.Constant(a, typeof(int?)),
+                        Expression.Constant(B, typeof(int))
+                    );
+                }
+            );
         }
 
         /*struct SlotFromNullableToNullable {
@@ -427,48 +314,44 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(true, eq(false, false));
         }
 
-        public enum Foo
+        [Test]
+        public void NullableInt32Equal()
         {
-            Bar,
-            Baz,
+            var l = Expression.Parameter(typeof(int?), "l");
+            var r = Expression.Parameter(typeof(int?), "r");
+
+            var eq = Expression.Lambda<Func<int?, int?, bool>>
+            (
+                Expression.Equal(l, r), l, r
+            ).Compile();
+
+            Assert.IsTrue(eq(null, null));
+            Assert.IsFalse(eq(null, 1));
+            Assert.IsFalse(eq(1, null));
+            Assert.IsFalse(eq(1, 2));
+            Assert.IsTrue(eq(1, 1));
+            Assert.IsFalse(eq(null, 0));
+            Assert.IsFalse(eq(0, null));
         }
 
         [Test]
-        public void EnumEqual()
+        public void NullableInt32EqualLiftedToNull()
         {
-            var l = Expression.Parameter(typeof(Foo), "l");
-            var r = Expression.Parameter(typeof(Foo), "r");
+            var l = Expression.Parameter(typeof(int?), "l");
+            var r = Expression.Parameter(typeof(int?), "r");
 
-            var node = Expression.Equal(l, r);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(bool), node.Type);
-            Assert.IsNull(node.Method);
+            var eq = Expression.Lambda<Func<int?, int?, bool?>>
+            (
+                Expression.Equal(l, r, true, null), l, r
+            ).Compile();
 
-            var eq = Expression.Lambda<Func<Foo, Foo, bool>>(node, l, r).Compile();
-
-            Assert.AreEqual(true, eq(Foo.Bar, Foo.Bar));
-            Assert.AreEqual(false, eq(Foo.Bar, Foo.Baz));
-        }
-
-        [Test]
-        public void LiftedEnumEqual()
-        {
-            var l = Expression.Parameter(typeof(Foo?), "l");
-            var r = Expression.Parameter(typeof(Foo?), "r");
-
-            var node = Expression.Equal(l, r);
-            Assert.IsTrue(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(bool), node.Type);
-            Assert.IsNull(node.Method);
-
-            var eq = Expression.Lambda<Func<Foo?, Foo?, bool>>(node, l, r).Compile();
-
-            Assert.AreEqual(true, eq(Foo.Bar, Foo.Bar));
-            Assert.AreEqual(false, eq(Foo.Bar, Foo.Baz));
-            Assert.AreEqual(false, eq(Foo.Bar, null));
-            Assert.AreEqual(true, eq(null, null));
+            Assert.AreEqual(null, eq(null, null));
+            Assert.AreEqual(null, eq(null, 1));
+            Assert.AreEqual(null, eq(1, null));
+            Assert.AreEqual((bool?)false, eq(1, 2));
+            Assert.AreEqual((bool?)true, eq(1, 1));
+            Assert.AreEqual(null, eq(null, 0));
+            Assert.AreEqual(null, eq(0, null));
         }
 
         [Test]
@@ -487,6 +370,144 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual(true, eq(null));
             Assert.AreEqual(false, eq(DateTime.Now));
+        }
+
+        [Test]
+        public void Numeric()
+        {
+            var expr = Expression.Equal(Expression.Constant(1), Expression.Constant(2));
+            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.IsNull(expr.Method);
+        }
+
+        [Test]
+        public void PrimitiveNonNumeric()
+        {
+            var expr = Expression.Equal(Expression.Constant('a'), Expression.Constant('b'));
+            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.IsNull(expr.Method);
+
+            var eq = Expression.Lambda<Func<bool>>(expr).Compile();
+            Assert.IsFalse(eq());
+        }
+
+        [Test]
+        public void ReferenceCompare()
+        {
+            Expression.Equal(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+        }
+
+        [Test]
+        public void UserDefinedClass()
+        {
+            // We can use the simplest version of GetMethod because we already know only one
+            // exists in the very simple class we're using for the tests.
+            var mi = typeof(OpClass).GetMethod("op_Equality");
+
+            var expr = Expression.Equal(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.AreEqual(mi, expr.Method);
+            Assert.AreEqual("op_Equality", expr.Method.Name);
+        }
+
+        [Test]
+        public void UserDefinedEqual()
+        {
+            var l = Expression.Parameter(typeof(Slot), "l");
+            var r = Expression.Parameter(typeof(Slot), "r");
+
+            var node = Expression.Equal(l, r);
+
+            Assert.IsFalse(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool), node.Type);
+            Assert.IsNotNull(node.Method);
+
+            var eq = Expression.Lambda<Func<Slot, Slot, bool>>(node, l, r).Compile();
+
+            Assert.AreEqual(true, eq(new Slot(21), new Slot(21)));
+            Assert.AreEqual(false, eq(new Slot(1), new Slot(-1)));
+        }
+
+        [Test]
+        public void UserDefinedEqualLifted()
+        {
+            var l = Expression.Parameter(typeof(Slot?), "l");
+            var r = Expression.Parameter(typeof(Slot?), "r");
+
+            var node = Expression.Equal(l, r);
+
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool), node.Type);
+            Assert.IsNotNull(node.Method);
+
+            var eq = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
+
+            Assert.AreEqual(true, eq(null, null));
+            Assert.AreEqual(false, eq(new Slot(2), null));
+            Assert.AreEqual(false, eq(null, new Slot(2)));
+            Assert.AreEqual(true, eq(new Slot(21), new Slot(21)));
+        }
+
+        [Test]
+        public void UserDefinedEqualLiftedToNull()
+        {
+            var l = Expression.Parameter(typeof(Slot?), "l");
+            var r = Expression.Parameter(typeof(Slot?), "r");
+
+            var node = Expression.Equal(l, r, true, null);
+
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsTrue(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool?), node.Type);
+            Assert.IsNotNull(node.Method);
+
+            var eq = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
+
+            Assert.AreEqual(null, eq(null, null));
+            Assert.AreEqual(null, eq(new Slot(2), null));
+            Assert.AreEqual(null, eq(null, new Slot(2)));
+            Assert.AreEqual((bool?)true, eq(new Slot(21), new Slot(21)));
+            Assert.AreEqual((bool?)false, eq(new Slot(21), new Slot(-21)));
+        }
+
+        [Test]
+        public void UserDefinedToNullableEqual()
+        {
+            var l = Expression.Parameter(typeof(SlotToNullable), "l");
+            var r = Expression.Parameter(typeof(SlotToNullable), "r");
+
+            var node = Expression.Equal(l, r, false, null);
+
+            Assert.IsFalse(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool?), node.Type);
+            Assert.IsNotNull(node.Method);
+
+            var eq = Expression.Lambda<Func<SlotToNullable, SlotToNullable, bool?>>(node, l, r).Compile();
+
+            Assert.AreEqual((bool?)true, eq(new SlotToNullable(2), new SlotToNullable(2)));
+            Assert.AreEqual((bool?)false, eq(new SlotToNullable(2), new SlotToNullable(-2)));
+        }
+
+        [Test]
+        public void UserDefinedToNullableEqualFromNullable()
+        {
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    Expression.Equal
+                    (
+                        Expression.Parameter(typeof(SlotToNullable?), "l"),
+                        Expression.Parameter(typeof(SlotToNullable?), "r")
+                    );
+                }
+            );
         }
     }
 }

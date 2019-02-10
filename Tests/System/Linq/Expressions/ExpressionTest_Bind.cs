@@ -23,16 +23,23 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestBind
     {
+        private struct Slot
+        {
+            public int Integer { get; set; }
+
+            public short Short { get; set; }
+        }
+
         [Test]
         public void Arg1Null()
         {
@@ -46,37 +53,28 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void Method1()
+        public void BindValueTypes()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                // This tests the MethodInfo version of Bind(): should raise an exception
-                // because the method is not an accessor.
-                Expression.Bind(MemberClass.GetMethodInfo(), Expression.Constant(1));
-            });
-        }
+            var i = Expression.Parameter(typeof(int), "i");
+            var s = Expression.Parameter(typeof(short), "s");
 
-        [Test]
-        public void Method2()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                // This tests the MemberInfo version of Bind(): should raise an exception
-                // because the argument is not a field or property accessor.
-                Expression.Bind((MemberInfo)MemberClass.GetMethodInfo(), Expression.Constant(1));
-            });
+            var gslot = Expression.Lambda<Func<int, short, Slot>>
+            (
+                Expression.MemberInit
+                (
+                    Expression.New(typeof(Slot)),
+                    Expression.Bind(typeof(Slot).GetProperty("Integer"), i),
+                    Expression.Bind(typeof(Slot).GetProperty("Short"), s)
+                ), i, s
+            ).Compile();
+
+            Assert.AreEqual(new Slot {Integer = 42, Short = -1}, gslot(42, -1));
         }
 
         [Test]
         public void Event()
         {
             Assert.Throws<ArgumentException>(() => Expression.Bind(MemberClass.GetEventInfo(), Expression.Constant(1)));
-        }
-
-        [Test]
-        public void PropertyRo()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.Bind(MemberClass.GetRoPropertyInfo(), Expression.Constant(1)));
         }
 
         [Test]
@@ -104,19 +102,31 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void PropertyRw()
+        public void Method1()
         {
-            var expr = Expression.Bind(MemberClass.GetRwPropertyInfo(), Expression.Constant(1));
-            Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#07");
-            Assert.AreEqual("TestProperty2 = 1", expr.ToString(), "Bind#08");
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // This tests the MethodInfo version of Bind(): should raise an exception
+                    // because the method is not an accessor.
+                    Expression.Bind(MemberClass.GetMethodInfo(), Expression.Constant(1));
+                }
+            );
         }
 
         [Test]
-        public void PropertyStatic()
+        public void Method2()
         {
-            var expr = Expression.Bind(MemberClass.GetStaticPropertyInfo(), Expression.Constant(1));
-            Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#09");
-            Assert.AreEqual("StaticProperty = 1", expr.ToString(), "Bind#10");
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // This tests the MemberInfo version of Bind(): should raise an exception
+                    // because the argument is not a field or property accessor.
+                    Expression.Bind((MemberInfo)MemberClass.GetMethodInfo(), Expression.Constant(1));
+                }
+            );
         }
 
         [Test]
@@ -141,26 +151,26 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(MemberClass.GetStaticPropertyInfo(), expr.Member, "Bind#16");
         }
 
-        private struct Slot
+        [Test]
+        public void PropertyRo()
         {
-            public int Integer { get; set; }
-
-            public short Short { get; set; }
+            Assert.Throws<ArgumentException>(() => Expression.Bind(MemberClass.GetRoPropertyInfo(), Expression.Constant(1)));
         }
 
         [Test]
-        public void BindValueTypes()
+        public void PropertyRw()
         {
-            var i = Expression.Parameter(typeof(int), "i");
-            var s = Expression.Parameter(typeof(short), "s");
+            var expr = Expression.Bind(MemberClass.GetRwPropertyInfo(), Expression.Constant(1));
+            Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#07");
+            Assert.AreEqual("TestProperty2 = 1", expr.ToString(), "Bind#08");
+        }
 
-            var gslot = Expression.Lambda<Func<int, short, Slot>>(
-                Expression.MemberInit(
-                    Expression.New(typeof(Slot)),
-                    Expression.Bind(typeof(Slot).GetProperty("Integer"), i),
-                    Expression.Bind(typeof(Slot).GetProperty("Short"), s)), i, s).Compile();
-
-            Assert.AreEqual(new Slot { Integer = 42, Short = -1 }, gslot(42, -1));
+        [Test]
+        public void PropertyStatic()
+        {
+            var expr = Expression.Bind(MemberClass.GetStaticPropertyInfo(), Expression.Constant(1));
+            Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#09");
+            Assert.AreEqual("StaticProperty = 1", expr.ToString(), "Bind#10");
         }
     }
 }

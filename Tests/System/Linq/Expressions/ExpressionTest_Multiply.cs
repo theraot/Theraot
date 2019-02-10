@@ -23,10 +23,10 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -52,25 +52,38 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.Multiply(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
-
-        [Test]
         public void Boolean()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.Multiply(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]
-        public void Numeric()
+        public void Compile()
         {
-            var expr = Expression.Multiply(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.Multiply, expr.NodeType, "Multiply#01");
-            Assert.AreEqual(typeof(int), expr.Type, "Multiply#02");
-            Assert.IsNull(expr.Method, "Multiply#03");
-            Assert.AreEqual("(1 * 2)", expr.ToString(), "Multiply#04");
+            var left = Expression.Parameter(typeof(int), "l");
+            var right = Expression.Parameter(typeof(int), "r");
+            var l = Expression.Lambda<Func<int, int, int>>
+            (
+                Expression.Multiply(left, right), left, right
+            );
+
+            var be = l.Body as BinaryExpression;
+            Assert.IsNotNull(be);
+            Assert.AreEqual(typeof(int), be.Type);
+            Assert.IsFalse(be.IsLifted);
+            Assert.IsFalse(be.IsLiftedToNull);
+
+            var c = l.Compile();
+
+            Assert.AreEqual(36, c(6, 6));
+            Assert.AreEqual(-1, c(-1, 1));
+            Assert.AreEqual(-3, c(1, -3));
+        }
+
+        [Test]
+        public void NoOperatorClass()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.Multiply(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -87,6 +100,16 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void Numeric()
+        {
+            var expr = Expression.Multiply(Expression.Constant(1), Expression.Constant(2));
+            Assert.AreEqual(ExpressionType.Multiply, expr.NodeType, "Multiply#01");
+            Assert.AreEqual(typeof(int), expr.Type, "Multiply#02");
+            Assert.IsNull(expr.Method, "Multiply#03");
+            Assert.AreEqual("(1 * 2)", expr.ToString(), "Multiply#04");
+        }
+
+        [Test]
         public void UserDefinedClass()
         {
             // We can use the simplest version of GetMethod because we already know only one
@@ -98,29 +121,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(OpClass), expr.Type, "Multiply#10");
             Assert.AreEqual(mi, expr.Method, "Multiply#11");
             Assert.AreEqual("op_Multiply", expr.Method.Name, "Multiply#12");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) * value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "Multiply#13");
-        }
-
-        [Test]
-        public void Compile()
-        {
-            var left = Expression.Parameter(typeof(int), "l");
-            var right = Expression.Parameter(typeof(int), "r");
-            var l = Expression.Lambda<Func<int, int, int>>(
-                Expression.Multiply(left, right), left, right);
-
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(int), be.Type);
-            Assert.IsFalse(be.IsLifted);
-            Assert.IsFalse(be.IsLiftedToNull);
-
-            var c = l.Compile();
-
-            Assert.AreEqual(36, c(6, 6));
-            Assert.AreEqual(-1, c(-1, 1));
-            Assert.AreEqual(-3, c(1, -3));
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpClass) * value(MonoTests.System.Linq.Expressions.OpClass))",
+                expr.ToString(), "Multiply#13"
+            );
         }
     }
 }

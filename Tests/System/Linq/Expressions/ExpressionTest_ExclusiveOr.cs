@@ -23,10 +23,10 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -46,15 +46,19 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.ExclusiveOr(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
-
-        [Test]
         public void ArgTypesDifferent()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.ExclusiveOr(Expression.Constant(1), Expression.Constant(true)));
+        }
+
+        [Test]
+        public void Boolean()
+        {
+            var expr = Expression.ExclusiveOr(Expression.Constant(true), Expression.Constant(false));
+            Assert.AreEqual(ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#05");
+            Assert.AreEqual(typeof(bool), expr.Type, "ExclusiveOr#06");
+            Assert.IsNull(expr.Method, "ExclusiveOr#07");
+            Assert.AreEqual("(True ^ False)", expr.ToString(), "ExclusiveOr#08");
         }
 
         [Test]
@@ -74,13 +78,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void Boolean()
+        public void NoOperatorClass()
         {
-            var expr = Expression.ExclusiveOr(Expression.Constant(true), Expression.Constant(false));
-            Assert.AreEqual(ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#05");
-            Assert.AreEqual(typeof(bool), expr.Type, "ExclusiveOr#06");
-            Assert.IsNull(expr.Method, "ExclusiveOr#07");
-            Assert.AreEqual("(True ^ False)", expr.ToString(), "ExclusiveOr#08");
+            Assert.Throws<InvalidOperationException>(() => Expression.ExclusiveOr(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -95,8 +95,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(OpClass), expr.Type, "ExclusiveOr#10");
             Assert.AreEqual(mi, expr.Method, "ExclusiveOr#11");
             Assert.AreEqual("op_ExclusiveOr", expr.Method.Name, "ExclusiveOr#12");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) ^ value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "ExclusiveOr#13");
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpClass) ^ value(MonoTests.System.Linq.Expressions.OpClass))",
+                expr.ToString(), "ExclusiveOr#13"
+            );
         }
     }
 }

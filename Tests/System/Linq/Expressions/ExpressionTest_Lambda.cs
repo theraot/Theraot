@@ -25,26 +25,16 @@ extern alias nunitlinq;
 //   Jb Evain (jbevain@novell.com)
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestLambda
     {
-        [Test]
-        public void NonDelegateTypeInCtor()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                // The first parameter must be a delegate type
-                Expression.Lambda(typeof(string), Expression.Constant(1));
-            });
-        }
-
         private delegate object DelegateObjectEmtpy();
 
         private delegate object DelegateObjectINT(int a);
@@ -53,61 +43,29 @@ namespace MonoTests.System.Linq.Expressions
 
         private delegate object DelegateObjectObject(object s);
 
-        [Test]
-        public void InvalidConversion()
+        public static void Foo()
         {
-            Assert.Throws<ArgumentException>(() => { // float to object, invalid
-                Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1.0));
-            });
+            // Empty
         }
 
-        [Test]
-        public void InvalidConversion2()
+        public static int CallDelegate(Func<int, int> e)
         {
-            Assert.Throws<ArgumentException>(() => { // float to object, invalid
-                Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1));
-            });
+            if (e == null)
+            {
+                return 0;
+            }
+
+            return e(42);
         }
 
-        [Test]
-        public void InvalidArgCount()
+        public static int CallFunc(Func<int, int> e, int i)
         {
-            Assert.Throws<ArgumentException>(() => { // missing a parameter
-                Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"));
-             });
-        }
+            if (e == null)
+            {
+                return 0;
+            }
 
-        [Test]
-        public void InvalidArgCount2()
-        {
-            Assert.Throws<ArgumentException>(() => { // extra parameter
-                var p = Expression.Parameter(typeof(int), "AAA");
-                Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant("foo"), p);
-            });
-        }
-
-        [Test]
-        public void InvalidArgType()
-        {
-            Assert.Throws<ArgumentException>(() => { // invalid argument type
-                var p = Expression.Parameter(typeof(string), "AAA");
-                Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"), p);
-            });
-        }
-
-        [Test]
-        public void InvalidArgType2()
-        {
-            Assert.Throws<ArgumentException>(() => { // invalid argument type
-                var p = Expression.Parameter(typeof(string), "AAA");
-                Expression.Lambda(typeof(DelegateObjectObject), Expression.Constant("foo"), p);
-            });
-        }
-
-        [Test]
-        public void NullParameter()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.Lambda<Func<int, int>>(Expression.Constant(1), new ParameterExpression[] { null }));
+            return e(i);
         }
 
         [Test]
@@ -124,38 +82,6 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void ParameterOutOfScope()
-        {
-            Assert.Throws<InvalidOperationException>(() => {
-                 var a = Expression.Parameter(typeof(int), "a");
-                var secondA = Expression.Parameter(typeof(int), "a");
-
-                // Here we have the same name for the parameter expression, but
-                // we pass a different object to the Lambda expression, so they are
-                // different, this should throw
-                var l = Expression.Lambda<Func<int, int>>(a, secondA);
-                l.Compile();
-            });
-        }
-
-        [Test]
-        public void ParameterRefTest()
-        {
-            var a = Expression.Parameter(typeof(int), "a");
-            var b = Expression.Parameter(typeof(int), "b");
-
-            var l = Expression.Lambda<Func<int, int, int>>(
-                Expression.Add(a, b), a, b);
-
-            Assert.AreEqual(typeof(Func<int, int, int>), l.Type);
-            Assert.AreEqual("(a, b) => (a + b)", l.ToString());
-
-            var xx = l.Compile();
-            var res = xx(10, 20);
-            Assert.AreEqual(res, 30);
-        }
-
-        [Test]
         public void Compile()
         {
             var l = Expression.Lambda<Func<int>>(Expression.Constant(1));
@@ -167,22 +93,124 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void ReturnValueCheck()
+        public void InvalidArgCount()
         {
-            Assert.Throws<ArgumentException>(() => {
-                var p1 = Expression.Parameter(typeof(int?), "va");
-                var p2 = Expression.Parameter(typeof(int?), "vb");
-                Expression add = Expression.Add(p1, p2);
-
-                // This should throw, since the add.Type is "int?" and the return
-                // type we have here is int.
-                Expression.Lambda<Func<int?, int?, int>>(add, p1, p2);
-            });
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // missing a parameter
+                    Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"));
+                }
+            );
         }
 
-        public static void Foo()
+        [Test]
+        public void InvalidArgCount2()
         {
-            // Empty
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // extra parameter
+                    var p = Expression.Parameter(typeof(int), "AAA");
+                    Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant("foo"), p);
+                }
+            );
+        }
+
+        [Test]
+        public void InvalidArgType()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // invalid argument type
+                    var p = Expression.Parameter(typeof(string), "AAA");
+                    Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"), p);
+                }
+            );
+        }
+
+        [Test]
+        public void InvalidArgType2()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // invalid argument type
+                    var p = Expression.Parameter(typeof(string), "AAA");
+                    Expression.Lambda(typeof(DelegateObjectObject), Expression.Constant("foo"), p);
+                }
+            );
+        }
+
+        [Test]
+        public void InvalidConversion()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // float to object, invalid
+                    Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1.0));
+                }
+            );
+        }
+
+        [Test]
+        public void InvalidConversion2()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // float to object, invalid
+                    Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1));
+                }
+            );
+        }
+
+        [Test]
+        public void LambdaPassedAsDelegate()
+        {
+            var pi = Expression.Parameter(typeof(int), "i");
+            var identity = Expression.Lambda<Func<int, int>>(pi, pi);
+
+            var l = Expression.Lambda<Func<int>>
+            (
+                Expression.Call
+                (
+                    GetType().GetMethod("CallDelegate"),
+                    identity
+                )
+            ).Compile();
+
+            Assert.AreEqual(42, l());
+        }
+
+        [Test]
+        public void LambdaPassedAsDelegateUsingParentParameter()
+        {
+            var a = Expression.Parameter(typeof(int), "a");
+            var b = Expression.Parameter(typeof(int), "b");
+
+            var l = Expression.Lambda<Func<int, int>>
+            (
+                Expression.Call
+                (
+                    GetType().GetMethod("CallDelegate"),
+                    Expression.Lambda<Func<int, int>>
+                    (
+                        Expression.Multiply(a, b), b
+                    )
+                ),
+                a
+            ).Compile();
+
+            Assert.AreEqual(84, l(2));
         }
 
         [Test]
@@ -198,62 +226,6 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void UnTypedLambdaReturnsExpressionOfDelegateType()
-        {
-            var l = Expression.Lambda("foo".ToConstant());
-
-            Assert.IsTrue(l is Expression<Func<string>>);
-        }
-
-        public static int CallDelegate(Func<int, int> e)
-        {
-            if (e == null)
-            {
-                return 0;
-            }
-            return e(42);
-        }
-
-        [Test]
-        public void LambdaPassedAsDelegate()
-        {
-            var pi = Expression.Parameter(typeof(int), "i");
-            var identity = Expression.Lambda<Func<int, int>>(pi, pi);
-
-            var l = Expression.Lambda<Func<int>>(
-                Expression.Call(
-                    GetType().GetMethod("CallDelegate"),
-                    identity)).Compile();
-
-            Assert.AreEqual(42, l());
-        }
-
-        [Test]
-        public void LambdaPassedAsDelegateUsingParentParameter()
-        {
-            var a = Expression.Parameter(typeof(int), "a");
-            var b = Expression.Parameter(typeof(int), "b");
-
-            var l = Expression.Lambda<Func<int, int>>(
-                Expression.Call(
-                    GetType().GetMethod("CallDelegate"),
-                    Expression.Lambda<Func<int, int>>(
-                            Expression.Multiply(a, b), b)),
-                a).Compile();
-
-            Assert.AreEqual(84, l(2));
-        }
-
-        public static int CallFunc(Func<int, int> e, int i)
-        {
-            if (e == null)
-            {
-                return 0;
-            }
-            return e(i);
-        }
-
-        [Test]
         public void NestedParentParameterUse()
         {
             var a = Expression.Parameter(typeof(int), null);
@@ -261,26 +233,123 @@ namespace MonoTests.System.Linq.Expressions
             var c = Expression.Parameter(typeof(int), null);
             var d = Expression.Parameter(typeof(int), null);
 
-            var l = Expression.Lambda<Func<int, int>>(
-                Expression.Call(
+            var l = Expression.Lambda<Func<int, int>>
+            (
+                Expression.Call
+                (
                     GetType().GetMethod("CallFunc"),
-                    Expression.Lambda<Func<int, int>>(
-                        Expression.Call(
+                    Expression.Lambda<Func<int, int>>
+                    (
+                        Expression.Call
+                        (
                             GetType().GetMethod("CallFunc"),
-                            Expression.Lambda<Func<int, int>>(
-                                Expression.Call(
+                            Expression.Lambda<Func<int, int>>
+                            (
+                                Expression.Call
+                                (
                                     GetType().GetMethod("CallFunc"),
-                                    Expression.Lambda<Func<int, int>>(
+                                    Expression.Lambda<Func<int, int>>
+                                    (
                                         Expression.Add(c, d),
-                                        d),
-                                    Expression.Add(b, c)),
-                                c),
-                            Expression.Add(a, b)),
-                        b),
-                    a),
-                a).Compile();
+                                        d
+                                    ),
+                                    Expression.Add(b, c)
+                                ),
+                                c
+                            ),
+                            Expression.Add(a, b)
+                        ),
+                        b
+                    ),
+                    a
+                ),
+                a
+            ).Compile();
 
             Assert.AreEqual(5, l(1));
+        }
+
+        [Test]
+        public void NonDelegateTypeInCtor()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    // The first parameter must be a delegate type
+                    Expression.Lambda(typeof(string), Expression.Constant(1));
+                }
+            );
+        }
+
+        [Test]
+        public void NullParameter()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.Lambda<Func<int, int>>(Expression.Constant(1), new ParameterExpression[] {null}));
+        }
+
+        [Test]
+        public void ParameterOutOfScope()
+        {
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    var a = Expression.Parameter(typeof(int), "a");
+                    var secondA = Expression.Parameter(typeof(int), "a");
+
+                    // Here we have the same name for the parameter expression, but
+                    // we pass a different object to the Lambda expression, so they are
+                    // different, this should throw
+                    var l = Expression.Lambda<Func<int, int>>(a, secondA);
+                    l.Compile();
+                }
+            );
+        }
+
+        [Test]
+        public void ParameterRefTest()
+        {
+            var a = Expression.Parameter(typeof(int), "a");
+            var b = Expression.Parameter(typeof(int), "b");
+
+            var l = Expression.Lambda<Func<int, int, int>>
+            (
+                Expression.Add(a, b), a, b
+            );
+
+            Assert.AreEqual(typeof(Func<int, int, int>), l.Type);
+            Assert.AreEqual("(a, b) => (a + b)", l.ToString());
+
+            var xx = l.Compile();
+            var res = xx(10, 20);
+            Assert.AreEqual(res, 30);
+        }
+
+        [Test]
+        public void ReturnValueCheck()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var p1 = Expression.Parameter(typeof(int?), "va");
+                    var p2 = Expression.Parameter(typeof(int?), "vb");
+                    Expression add = Expression.Add(p1, p2);
+
+                    // This should throw, since the add.Type is "int?" and the return
+                    // type we have here is int.
+                    Expression.Lambda<Func<int?, int?, int>>(add, p1, p2);
+                }
+            );
+        }
+
+        [Test]
+        public void UnTypedLambdaReturnsExpressionOfDelegateType()
+        {
+            var l = Expression.Lambda("foo".ToConstant());
+
+            Assert.IsTrue(l is Expression<Func<string>>);
         }
     }
 }

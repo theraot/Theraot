@@ -30,16 +30,42 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestGreaterThan
     {
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int val)
+            {
+                Value = val;
+            }
+
+            public static bool operator >(Slot a, Slot b)
+            {
+                return a.Value > b.Value;
+            }
+
+            public static bool operator <(Slot a, Slot b)
+            {
+                return a.Value < b.Value;
+            }
+        }
+
+        private enum Foo
+        {
+            Bar,
+            Baz
+        }
+
         [Test]
         public void Arg1Null()
         {
@@ -53,9 +79,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
+        public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.GreaterThan(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
+            Assert.Throws<InvalidOperationException>(() => Expression.GreaterThan(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]
@@ -66,6 +92,22 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), expr.Type);
             Assert.IsNull(expr.Method);
             Assert.AreEqual("(2 > 1)", expr.ToString());
+        }
+
+        [Test]
+        public void EnumGreaterThan()
+        {
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    Expression.GreaterThan
+                    (
+                        Foo.Bar.ToConstant(),
+                        Foo.Baz.ToConstant()
+                    );
+                }
+            );
         }
 
         [Test]
@@ -85,50 +127,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void Boolean()
+        public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.GreaterThan(Expression.Constant(true), Expression.Constant(false)));
-        }
-
-        [Test]
-        public void StringS()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.GreaterThan(Expression.Constant(""), Expression.Constant("")));
-        }
-
-        [Test]
-        public void UserDefinedClass()
-        {
-            var mi = typeof(OpClass).GetMethod("op_GreaterThan");
-
-            Assert.IsNotNull(mi);
-
-            var expr = Expression.GreaterThan(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.GreaterThan, expr.NodeType);
-            Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_GreaterThan", expr.Method.Name);
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) > value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
-        }
-
-        [Test]
-        public void TestCompiled()
-        {
-            var a = Expression.Parameter(typeof(int), "a");
-            var b = Expression.Parameter(typeof(int), "b");
-
-            var p = Expression.GreaterThan(a, b);
-
-            var pexpr = Expression.Lambda<Func<int, int, bool>>(
-                p, a, b
-            );
-
-            var compiled = pexpr.Compile();
-            Assert.AreEqual(true, compiled(10, 1), "tc1");
-            Assert.AreEqual(true, compiled(1, 0), "tc2");
-            Assert.AreEqual(true, compiled(int.MinValue + 1, int.MinValue), "tc3");
-            Assert.AreEqual(false, compiled(-1, 0), "tc4");
-            Assert.AreEqual(false, compiled(0, int.MaxValue), "tc5");
+            Assert.Throws<InvalidOperationException>(() => Expression.GreaterThan(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -137,8 +138,10 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var gt = Expression.Lambda<Func<int?, int?, bool>>(
-                Expression.GreaterThan(l, r), l, r).Compile();
+            var gt = Expression.Lambda<Func<int?, int?, bool>>
+            (
+                Expression.GreaterThan(l, r), l, r
+            ).Compile();
 
             Assert.IsFalse(gt(null, null));
             Assert.IsFalse(gt(null, 1));
@@ -156,8 +159,10 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var gt = Expression.Lambda<Func<int?, int?, bool?>>(
-                Expression.GreaterThan(l, r, true, null), l, r).Compile();
+            var gt = Expression.Lambda<Func<int?, int?, bool?>>
+            (
+                Expression.GreaterThan(l, r, true, null), l, r
+            ).Compile();
 
             Assert.AreEqual(null, gt(null, null));
             Assert.AreEqual(null, gt(null, 1));
@@ -169,24 +174,46 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual((bool?)false, gt(1, 1));
         }
 
-        private struct Slot
+        [Test]
+        public void StringS()
         {
-            public readonly int Value;
+            Assert.Throws<InvalidOperationException>(() => Expression.GreaterThan(Expression.Constant(""), Expression.Constant("")));
+        }
 
-            public Slot(int val)
-            {
-                Value = val;
-            }
+        [Test]
+        public void TestCompiled()
+        {
+            var a = Expression.Parameter(typeof(int), "a");
+            var b = Expression.Parameter(typeof(int), "b");
 
-            public static bool operator >(Slot a, Slot b)
-            {
-                return a.Value > b.Value;
-            }
+            var p = Expression.GreaterThan(a, b);
 
-            public static bool operator <(Slot a, Slot b)
-            {
-                return a.Value < b.Value;
-            }
+            var pexpr = Expression.Lambda<Func<int, int, bool>>
+            (
+                p, a, b
+            );
+
+            var compiled = pexpr.Compile();
+            Assert.AreEqual(true, compiled(10, 1), "tc1");
+            Assert.AreEqual(true, compiled(1, 0), "tc2");
+            Assert.AreEqual(true, compiled(int.MinValue + 1, int.MinValue), "tc3");
+            Assert.AreEqual(false, compiled(-1, 0), "tc4");
+            Assert.AreEqual(false, compiled(0, int.MaxValue), "tc5");
+        }
+
+        [Test]
+        public void UserDefinedClass()
+        {
+            var mi = typeof(OpClass).GetMethod("op_GreaterThan");
+
+            Assert.IsNotNull(mi);
+
+            var expr = Expression.GreaterThan(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.GreaterThan, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.AreEqual(mi, expr.Method);
+            Assert.AreEqual("op_GreaterThan", expr.Method.Name);
+            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) > value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
         }
 
         [Test]
@@ -231,23 +258,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(null, gte(null, new Slot(1)));
             Assert.AreEqual(null, gte(new Slot(1), null));
             Assert.AreEqual(null, gte(null, null));
-        }
-
-        private enum Foo
-        {
-            Bar,
-            Baz
-        }
-
-        [Test]
-        public void EnumGreaterThan()
-        {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                Expression.GreaterThan(
-                    Foo.Bar.ToConstant(),
-                    Foo.Baz.ToConstant());
-            });
         }
     }
 }

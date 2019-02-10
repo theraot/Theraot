@@ -30,40 +30,100 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestListBind
     {
-        [Test]
-        public void MemberNull()
+        public class Foo
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ListBind(null as MemberInfo, new List<ElementInit>()));
-        }
+            public int Baz;
+            public string Str;
 
-        [Test]
-        public void PropertyAccessorNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ListBind(null, new List<ElementInit>()));
+            public List<string> List { get; } = new List<string>();
+
+            public string[] Bar { get; set; }
+
+            public int BarBar => 0;
+
+            public string[] Test()
+            {
+                return null;
+            }
         }
 
         [Test]
         public void ArgNull()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                var list = new List<ElementInit>
+            Assert.Throws<ArgumentNullException>
+            (
+                () =>
                 {
-                    null
-                };
-                Expression.ListBind(typeof(Foo).GetProperty("Bar").GetSetMethod(), list);
-            });
+                    var list = new List<ElementInit>
+                    {
+                        null
+                    };
+                    Expression.ListBind(typeof(Foo).GetProperty("Bar").GetSetMethod(), list);
+                }
+            );
+        }
+
+        [Test]
+        public void CompiledListBinding()
+        {
+            var add = typeof(List<string>).GetMethod("Add");
+
+            var lb = Expression.Lambda<Func<Foo>>
+            (
+                Expression.MemberInit
+                (
+                    Expression.New(typeof(Foo)),
+                    Expression.ListBind
+                    (
+                        typeof(Foo).GetProperty("List"),
+                        Expression.ElementInit(add, Expression.Constant("foo")),
+                        Expression.ElementInit(add, Expression.Constant("bar")),
+                        Expression.ElementInit(add, Expression.Constant("baz"))
+                    )
+                )
+            ).Compile();
+
+            var foo = lb();
+
+            Assert.IsNotNull(foo);
+            Assert.AreEqual(3, foo.List.Count);
+            Assert.AreEqual("foo", foo.List[0]);
+            Assert.AreEqual("bar", foo.List[1]);
+            Assert.AreEqual("baz", foo.List[2]);
+        }
+
+        [Test]
+        public void ListBindToString()
+        {
+            var add = typeof(List<string>).GetMethod("Add");
+
+            var list = new List<ElementInit>
+            {
+                Expression.ElementInit(add, Expression.Constant("foo")),
+                Expression.ElementInit(add, Expression.Constant("bar")),
+                Expression.ElementInit(add, Expression.Constant("baz"))
+            };
+
+            var binding = Expression.ListBind(typeof(Foo).GetProperty("List"), list);
+
+            Assert.AreEqual("List = {Void Add(System.String)(\"foo\"), Void Add(System.String)(\"bar\"), Void Add(System.String)(\"baz\")}", binding.ToString());
+        }
+
+        [Test]
+        public void MemberNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.ListBind(null as MemberInfo, new List<ElementInit>()));
         }
 
         [Test]
@@ -85,60 +145,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void ListBindToString()
+        public void PropertyAccessorNull()
         {
-            var add = typeof(List<string>).GetMethod("Add");
-
-            var list = new List<ElementInit> {
-                Expression.ElementInit (add, Expression.Constant ("foo")),
-                Expression.ElementInit (add, Expression.Constant ("bar")),
-                Expression.ElementInit (add, Expression.Constant ("baz")),
-            };
-
-            var binding = Expression.ListBind(typeof(Foo).GetProperty("List"), list);
-
-            Assert.AreEqual("List = {Void Add(System.String)(\"foo\"), Void Add(System.String)(\"bar\"), Void Add(System.String)(\"baz\")}", binding.ToString());
-        }
-
-        [Test]
-        public void CompiledListBinding()
-        {
-            var add = typeof(List<string>).GetMethod("Add");
-
-            var lb = Expression.Lambda<Func<Foo>>(
-                Expression.MemberInit(
-                    Expression.New(typeof(Foo)),
-                    Expression.ListBind(
-                        typeof(Foo).GetProperty("List"),
-                        Expression.ElementInit(add, Expression.Constant("foo")),
-                        Expression.ElementInit(add, Expression.Constant("bar")),
-                        Expression.ElementInit(add, Expression.Constant("baz"))))).Compile();
-
-            var foo = lb();
-
-            Assert.IsNotNull(foo);
-            Assert.AreEqual(3, foo.List.Count);
-            Assert.AreEqual("foo", foo.List[0]);
-            Assert.AreEqual("bar", foo.List[1]);
-            Assert.AreEqual("baz", foo.List[2]);
-        }
-
-        public class Foo
-        {
-            public string Str;
-
-            public int Baz;
-
-            public List<string> List { get; } = new List<string>();
-
-            public string[] Bar { get; set; }
-
-            public int BarBar => 0;
-
-            public string[] Test()
-            {
-                return null;
-            }
+            Assert.Throws<ArgumentNullException>(() => Expression.ListBind(null, new List<ElementInit>()));
         }
     }
 }

@@ -30,10 +30,10 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -45,22 +45,11 @@ namespace MonoTests.System.Linq.Expressions
             return Expression.Parameter(typeof(T), "invokable");
         }
 
-        [Test]
-        public void NullExpression()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(null));
-        }
+        private delegate string StringAction(string s);
 
-        [Test]
-        public void NullArgument()
+        private static string Identity(string s)
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), null as Expression));
-        }
-
-        [Test]
-        public void NonInvokableExpressionType()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.Invoke(CreateInvokable<int>(), null));
+            return s;
         }
 
         [Test]
@@ -108,24 +97,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("Invoke(i => i, 1)", invoke.ToString());
         }
 
-        private delegate string StringAction(string s);
-
-        private static string Identity(string s)
-        {
-            return s;
-        }
-
-        [Test]
-        public void TestCompileInvokePrivateDelegate()
-        {
-            var action = Expression.Parameter(typeof(StringAction), "action");
-            var str = Expression.Parameter(typeof(string), "str");
-            var invoker = Expression.Lambda<Func<StringAction, string, string>>(
-                Expression.Invoke(action, str), action, str).Compile();
-
-            Assert.AreEqual("foo", invoker(Identity, "foo"));
-        }
-
         [Test]
         public void InvokeWithExpressionLambdaAsArguments()
         {
@@ -133,17 +104,57 @@ namespace MonoTests.System.Linq.Expressions
 
             Func<string, Expression<Func<string, string>>, string> caller = (s, f) => f.Compile().Invoke(s);
 
-            var invoke = Expression.Lambda<Func<string>>(
-                Expression.Invoke(
+            var invoke = Expression.Lambda<Func<string>>
+            (
+                Expression.Invoke
+                (
                     Expression.Constant(caller),
                     Expression.Constant("KABOOM!"),
-                    Expression.Lambda<Func<string, string>>(
-                        Expression.Call(p, typeof(string).GetMethod("ToLowerInvariant")), p)));
+                    Expression.Lambda<Func<string, string>>
+                    (
+                        Expression.Call(p, typeof(string).GetMethod("ToLowerInvariant")), p
+                    )
+                )
+            );
 
-            Assert.AreEqual(ExpressionType.Quote,
-                (invoke.Body as InvocationExpression).Arguments[1].NodeType);
+            Assert.AreEqual
+            (
+                ExpressionType.Quote,
+                (invoke.Body as InvocationExpression).Arguments[1].NodeType
+            );
 
             Assert.AreEqual("kaboom!", invoke.Compile().DynamicInvoke());
+        }
+
+        [Test]
+        public void NonInvokableExpressionType()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.Invoke(CreateInvokable<int>(), null));
+        }
+
+        [Test]
+        public void NullArgument()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), null as Expression));
+        }
+
+        [Test]
+        public void NullExpression()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.Invoke(null));
+        }
+
+        [Test]
+        public void TestCompileInvokePrivateDelegate()
+        {
+            var action = Expression.Parameter(typeof(StringAction), "action");
+            var str = Expression.Parameter(typeof(string), "str");
+            var invoker = Expression.Lambda<Func<StringAction, string, string>>
+            (
+                Expression.Invoke(action, str), action, str
+            ).Compile();
+
+            Assert.AreEqual("foo", invoker(Identity, "foo"));
         }
     }
 }

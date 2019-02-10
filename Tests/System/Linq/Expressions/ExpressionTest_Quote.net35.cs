@@ -32,51 +32,61 @@ using NUnit.Framework;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-	public class ExpressionTestQuote
-	{
-		[Test]
-		public void Arg1Null ()
+    public class ExpressionTestQuote
+    {
+        [Test]
+        public void Arg1Null()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.Quote(null));
         }
 
-		[Test]
-		[Category("NotDotNet")]
-		public void QuoteConstant ()
-		{
+        [Test]
+        public void CompiledQuote()
+        {
+            var quote42 = Expression.Lambda<Func<Expression<Func<int>>>>
+            (
+                Expression.Quote
+                (
+                    Expression.Lambda<Func<int>>
+                    (
+                        42.ToConstant()
+                    )
+                )
+            ).Compile();
+
+            var get42 = quote42().Compile();
+
+            Assert.AreEqual(42, get42());
+        }
+
+        [Test]
+        [Category("NotWorkingInterpreter")]
+        public void ParameterInQuotedExpression() // #550722
+        {
+            // Expression<Func<string, Expression<Func<string>>>> e = (string s) => () => s;
+
+            var s = Expression.Parameter(typeof(string), "s");
+
+            var lambda = Expression.Lambda<Func<string, Expression<Func<string>>>>
+            (
+                Expression.Quote
+                (
+                    Expression.Lambda<Func<string>>(s)
+                ),
+                s
+            );
+
+            var fs = lambda.Compile()("bingo").Compile();
+
+            Assert.AreEqual("bingo", fs());
+        }
+
+        [Test]
+        [Category("NotDotNet")]
+        public void QuoteConstant()
+        {
             // Failing in .NET35
             Assert.Throws<ArgumentException>(() => Expression.Quote(Expression.Constant(1)));
         }
-
-		[Test]
-		public void CompiledQuote ()
-		{
-			var quote42 = Expression.Lambda<Func<Expression<Func<int>>>> (
-				Expression.Quote (
-					Expression.Lambda<Func<int>> (
-						42.ToConstant ()))).Compile ();
-
-			var get42 = quote42 ().Compile ();
-
-			Assert.AreEqual (42, get42 ());
-		}
-
-		[Test]
-		[Category ("NotWorkingInterpreter")]
-		public void ParameterInQuotedExpression () // #550722
-		{
-			// Expression<Func<string, Expression<Func<string>>>> e = (string s) => () => s;
-
-			var s = Expression.Parameter (typeof (string), "s");
-
-			var lambda = Expression.Lambda<Func<string, Expression<Func<string>>>> (
-				Expression.Quote (
-					Expression.Lambda<Func<string>> (s)),
-				s);
-
-			var fs = lambda.Compile () ("bingo").Compile ();
-
-			Assert.AreEqual ("bingo", fs ());
-		}
-	}
+    }
 }

@@ -30,16 +30,36 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
+using System.Linq.Expressions;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestLessThanOrEqual
     {
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int val)
+            {
+                Value = val;
+            }
+
+            public static bool operator >=(Slot a, Slot b)
+            {
+                return a.Value >= b.Value;
+            }
+
+            public static bool operator <=(Slot a, Slot b)
+            {
+                return a.Value <= b.Value;
+            }
+        }
+
         [Test]
         public void Arg1Null()
         {
@@ -53,9 +73,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
+        public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.LessThanOrEqual(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
+            Assert.Throws<InvalidOperationException>(() => Expression.LessThanOrEqual(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]
@@ -85,24 +105,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void Boolean()
+        public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.LessThanOrEqual(Expression.Constant(true), Expression.Constant(false)));
-        }
-
-        [Test]
-        public void UserDefinedClass()
-        {
-            var mi = typeof(OpClass).GetMethod("op_LessThanOrEqual");
-
-            Assert.IsNotNull(mi);
-
-            var expr = Expression.LessThanOrEqual(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.LessThanOrEqual, expr.NodeType);
-            Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_LessThanOrEqual", expr.Method.Name);
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) <= value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
+            Assert.Throws<InvalidOperationException>(() => Expression.LessThanOrEqual(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -111,8 +116,10 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var lte = Expression.Lambda<Func<int?, int?, bool>>(
-                Expression.LessThanOrEqual(l, r), l, r).Compile();
+            var lte = Expression.Lambda<Func<int?, int?, bool>>
+            (
+                Expression.LessThanOrEqual(l, r), l, r
+            ).Compile();
 
             Assert.IsFalse(lte(null, null));
             Assert.IsFalse(lte(null, 1));
@@ -130,8 +137,10 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var lte = Expression.Lambda<Func<int?, int?, bool?>>(
-                Expression.LessThanOrEqual(l, r, true, null), l, r).Compile();
+            var lte = Expression.Lambda<Func<int?, int?, bool?>>
+            (
+                Expression.LessThanOrEqual(l, r, true, null), l, r
+            ).Compile();
 
             Assert.AreEqual(null, lte(null, null));
             Assert.AreEqual(null, lte(null, 1));
@@ -143,24 +152,19 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual((bool?)true, lte(1, 1));
         }
 
-        private struct Slot
+        [Test]
+        public void UserDefinedClass()
         {
-            public readonly int Value;
+            var mi = typeof(OpClass).GetMethod("op_LessThanOrEqual");
 
-            public Slot(int val)
-            {
-                Value = val;
-            }
+            Assert.IsNotNull(mi);
 
-            public static bool operator >=(Slot a, Slot b)
-            {
-                return a.Value >= b.Value;
-            }
-
-            public static bool operator <=(Slot a, Slot b)
-            {
-                return a.Value <= b.Value;
-            }
+            var expr = Expression.LessThanOrEqual(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.LessThanOrEqual, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.AreEqual(mi, expr.Method);
+            Assert.AreEqual("op_LessThanOrEqual", expr.Method.Name);
+            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) <= value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
         }
 
         [Test]

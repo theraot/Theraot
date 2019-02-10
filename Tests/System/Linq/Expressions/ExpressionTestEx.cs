@@ -15,8 +15,10 @@ namespace Tests.System.Linq.Expressions
         public static void TestLamdaCompilation()
         {
             var paramExpr = Expression.Parameter(typeof(int), "arg");
-            var lambdaExpr = Expression.Lambda(
-                Expression.Add(
+            var lambdaExpr = Expression.Lambda
+            (
+                Expression.Add
+                (
                     paramExpr,
                     Expression.Constant(1)
                 ),
@@ -26,18 +28,103 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationWithDelegateType()
+        public static void TestLamdaCompilationGenericDelegateType()
         {
             var paramExpr = Expression.Parameter(typeof(int), "arg");
-            var lambdaExpr = Expression.Lambda(
-                typeof(Func<int, int>),
-                Expression.Add(
+            var lambdaExpr = Expression.Lambda<Func<int, int>>
+            (
+                Expression.Add
+                (
                     paramExpr,
                     Expression.Constant(1)
                 ),
                 paramExpr
             );
             Assert.AreEqual(2, lambdaExpr.Compile().DynamicInvoke(1));
+        }
+
+        [Test]
+        public static void TestLamdaCompilationGenericDelegateTypeInvalid()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var paramExpr = Expression.Parameter(typeof(int), "arg");
+                    var lambdaExpr = Expression.Lambda<string>
+                    (
+                        Expression.Add
+                        (
+                            paramExpr,
+                            Expression.Constant(1)
+                        ),
+                        paramExpr
+                    );
+                    GC.KeepAlive(lambdaExpr);
+                }
+            );
+        }
+
+        [Test]
+        public static void TestLamdaCompilationGenericDelegateTypeWrong()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var paramExpr = Expression.Parameter(typeof(int), "arg");
+                    var lambdaExpr = Expression.Lambda<Func<string, string>>
+                    (
+                        Expression.Add
+                        (
+                            paramExpr,
+                            Expression.Constant(1)
+                        ),
+                        paramExpr
+                    );
+                    GC.KeepAlive(lambdaExpr);
+                }
+            );
+        }
+
+        [Test]
+        public static void TestLamdaCompilationWithDelegateType()
+        {
+            var paramExpr = Expression.Parameter(typeof(int), "arg");
+            var lambdaExpr = Expression.Lambda
+            (
+                typeof(Func<int, int>),
+                Expression.Add
+                (
+                    paramExpr,
+                    Expression.Constant(1)
+                ),
+                paramExpr
+            );
+            Assert.AreEqual(2, lambdaExpr.Compile().DynamicInvoke(1));
+        }
+
+        [Test]
+        public static void TestLamdaCompilationWithDelegateTypeInvalid()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var paramExpr = Expression.Parameter(typeof(int), "arg");
+                    var lambdaExpr = Expression.Lambda
+                    (
+                        typeof(string),
+                        Expression.Add
+                        (
+                            paramExpr,
+                            Expression.Constant(1)
+                        ),
+                        paramExpr
+                    );
+                    GC.KeepAlive(lambdaExpr);
+                }
+            );
         }
 
         [Test]
@@ -48,9 +135,11 @@ namespace Tests.System.Linq.Expressions
                 () =>
                 {
                     var paramExpr = Expression.Parameter(typeof(int), "arg");
-                    var lambdaExpr = Expression.Lambda(
+                    var lambdaExpr = Expression.Lambda
+                    (
                         null,
-                        Expression.Add(
+                        Expression.Add
+                        (
                             paramExpr,
                             Expression.Constant(1)
                         ),
@@ -69,84 +158,11 @@ namespace Tests.System.Linq.Expressions
                 () =>
                 {
                     var paramExpr = Expression.Parameter(typeof(int), "arg");
-                    var lambdaExpr = Expression.Lambda(
+                    var lambdaExpr = Expression.Lambda
+                    (
                         typeof(Func<string, string>),
-                        Expression.Add(
-                            paramExpr,
-                            Expression.Constant(1)
-                        ),
-                        paramExpr
-                    );
-                    GC.KeepAlive(lambdaExpr);
-                }
-            );
-        }
-
-        [Test]
-        public static void TestLamdaCompilationWithDelegateTypeInvalid()
-        {
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                {
-                    var paramExpr = Expression.Parameter(typeof(int), "arg");
-                    var lambdaExpr = Expression.Lambda(
-                        typeof(string),
-                        Expression.Add(
-                            paramExpr,
-                            Expression.Constant(1)
-                        ),
-                        paramExpr
-                    );
-                    GC.KeepAlive(lambdaExpr);
-                }
-            );
-        }
-
-        [Test]
-        public static void TestLamdaCompilationGenericDelegateType()
-        {
-            var paramExpr = Expression.Parameter(typeof(int), "arg");
-            var lambdaExpr = Expression.Lambda<Func<int, int>>(
-                Expression.Add(
-                    paramExpr,
-                    Expression.Constant(1)
-                ),
-                paramExpr
-            );
-            Assert.AreEqual(2, lambdaExpr.Compile().DynamicInvoke(1));
-        }
-
-        [Test]
-        public static void TestLamdaCompilationGenericDelegateTypeWrong()
-        {
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                {
-                    var paramExpr = Expression.Parameter(typeof(int), "arg");
-                    var lambdaExpr = Expression.Lambda<Func<string, string>>(
-                        Expression.Add(
-                            paramExpr,
-                            Expression.Constant(1)
-                        ),
-                        paramExpr
-                    );
-                    GC.KeepAlive(lambdaExpr);
-                }
-            );
-        }
-
-        [Test]
-        public static void TestLamdaCompilationGenericDelegateTypeInvalid()
-        {
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                {
-                    var paramExpr = Expression.Parameter(typeof(int), "arg");
-                    var lambdaExpr = Expression.Lambda<string>(
-                        Expression.Add(
+                        Expression.Add
+                        (
                             paramExpr,
                             Expression.Constant(1)
                         ),

@@ -24,179 +24,17 @@ extern alias nunitlinq;
 //		Federico Di Gregorio <fog@initd.org>
 //		Jb Evain <jbevain@novell.com>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Theraot;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestAndAlso
     {
-        [Test]
-        public void Arg1Null()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.AndAlso(null, Expression.Constant(1)));
-        }
-
-        [Test]
-        public void Arg2Null()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.AndAlso(Expression.Constant(1), null));
-        }
-
-        [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
-
-        [Test]
-        public void Double()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(1.0), Expression.Constant(2.0)));
-        }
-
-        [Test]
-        public void Integer()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(1), Expression.Constant(2)));
-        }
-
-        [Test]
-        public void MismatchedTypes()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(true)));
-        }
-
-        [Test]
-        public void Boolean()
-        {
-            var expr = Expression.AndAlso(Expression.Constant(true), Expression.Constant(false));
-            Assert.AreEqual(ExpressionType.AndAlso, expr.NodeType, "AndAlso#01");
-            Assert.AreEqual(typeof(bool), expr.Type, "AndAlso#02");
-            Assert.IsNull(expr.Method, "AndAlso#03");
-        }
-
-        [Test]
-        public void UserDefinedClass()
-        {
-            // We can use the simplest version of GetMethod because we already know only one
-            // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_BitwiseAnd");
-
-            var expr = Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.AndAlso, expr.NodeType, "AndAlso#05");
-            Assert.AreEqual(typeof(OpClass), expr.Type, "AndAlso#06");
-            Assert.AreEqual(mi, expr.Method, "AndAlso#07");
-            Assert.AreEqual("op_BitwiseAnd", expr.Method.Name, "AndAlso#08");
-        }
-
-        [Test]
-        public void AndAlsoTest()
-        {
-            var a = Expression.Parameter(typeof(bool), "a");
-            var b = Expression.Parameter(typeof(bool), "b");
-            var l = Expression.Lambda<Func<bool, bool, bool>>(
-                Expression.AndAlso(a, b), a, b);
-
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(bool), be.Type);
-            Assert.IsFalse(be.IsLifted);
-            Assert.IsFalse(be.IsLiftedToNull);
-
-            var c = l.Compile();
-
-            Assert.AreEqual(true, c(true, true), "a1");
-            Assert.AreEqual(false, c(true, false), "a2");
-            Assert.AreEqual(false, c(false, true), "a3");
-            Assert.AreEqual(false, c(false, false), "a4");
-        }
-
-        [Test]
-        public void AndAlsoLifted()
-        {
-            var b = Expression.AndAlso(
-                Expression.Constant(null, typeof(bool?)),
-                Expression.Constant(null, typeof(bool?)));
-
-            Assert.AreEqual(typeof(bool?), b.Type);
-            Assert.IsTrue(b.IsLifted);
-            Assert.IsTrue(b.IsLiftedToNull);
-        }
-
-        [Test]
-        public void AndAlsoNotLifted()
-        {
-            var b = Expression.AndAlso(
-                Expression.Constant(true, typeof(bool)),
-                Expression.Constant(true, typeof(bool)));
-
-            Assert.AreEqual(typeof(bool), b.Type);
-            Assert.IsFalse(b.IsLifted);
-            Assert.IsFalse(b.IsLiftedToNull);
-        }
-
-        [Test]
-        public void AndAlsoTestNullable()
-        {
-            var a = Expression.Parameter(typeof(bool?), "a");
-            var b = Expression.Parameter(typeof(bool?), "b");
-            var l = Expression.Lambda<Func<bool?, bool?, bool?>>(
-                Expression.AndAlso(a, b), a, b);
-
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(bool?), be.Type);
-            Assert.IsTrue(be.IsLifted);
-            Assert.IsTrue(be.IsLiftedToNull);
-
-            var c = l.Compile();
-
-            Assert.AreEqual(true, c(true, true), "a1");
-            Assert.AreEqual(false, c(true, false), "a2");
-            Assert.AreEqual(false, c(false, true), "a3");
-            Assert.AreEqual(false, c(false, false), "a4");
-
-            Assert.AreEqual(null, c(true, null), "a5");
-            Assert.AreEqual(false, c(false, null), "a6");
-            Assert.AreEqual(false, c(null, false), "a7");
-            Assert.AreEqual(null, c(true, null), "a8");
-            Assert.AreEqual(null, c(null, null), "a9");
-        }
-
-        [Test]
-        public void AndAlsoBoolItem()
-        {
-            var i = Expression.Parameter(typeof(Item<bool>), "i");
-            var and = Expression.Lambda<Func<Item<bool>, bool>>(
-                Expression.AndAlso(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<bool>(false, true);
-            Assert.AreEqual(false, and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
-        }
-
-        [Test]
-        public void AndAlsoNullableBoolItem()
-        {
-            var i = Expression.Parameter(typeof(Item<bool?>), "i");
-            var and = Expression.Lambda<Func<Item<bool?>, bool?>>(
-                Expression.AndAlso(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<bool?>(false, true);
-            Assert.AreEqual((bool?)false, and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
-        }
-
         private struct Slot
         {
             public readonly int Value;
@@ -227,6 +65,253 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
+        private struct Incomplete
+        {
+            public readonly int Value;
+
+            public Incomplete(int val)
+            {
+                Value = val;
+            }
+
+            public static Incomplete operator &(Incomplete a, Incomplete b)
+            {
+                return new Incomplete(a.Value & b.Value);
+            }
+        }
+
+        private class A // Should not be static, inheritance is needed for testing
+        {
+            public static bool operator true(A x)
+            {
+                No.Op(x);
+                return true;
+            }
+
+            public static bool operator false(A x)
+            {
+                No.Op(x);
+                return false;
+            }
+        }
+
+        private class B : A
+        {
+            public static B operator &(B x, B y)
+            {
+                No.Op(x);
+                No.Op(y);
+                return new B();
+            }
+
+            public static bool op_True<T>(B x)
+            {
+                No.Op(x);
+                No.Op(typeof(T));
+                return true;
+            }
+
+            public static bool op_False(B x)
+            {
+                No.Op(x);
+                return false;
+            }
+        }
+
+        [Test]
+        public void AndAlsoBoolItem()
+        {
+            var i = Expression.Parameter(typeof(Item<bool>), "i");
+            var and = Expression.Lambda<Func<Item<bool>, bool>>
+            (
+                Expression.AndAlso
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
+
+            var item = new Item<bool>(false, true);
+            Assert.AreEqual(false, and(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
+        }
+
+        [Test]
+        public void AndAlsoLifted()
+        {
+            var b = Expression.AndAlso
+            (
+                Expression.Constant(null, typeof(bool?)),
+                Expression.Constant(null, typeof(bool?))
+            );
+
+            Assert.AreEqual(typeof(bool?), b.Type);
+            Assert.IsTrue(b.IsLifted);
+            Assert.IsTrue(b.IsLiftedToNull);
+        }
+
+        [Test]
+        public void AndAlsoNotLifted()
+        {
+            var b = Expression.AndAlso
+            (
+                Expression.Constant(true, typeof(bool)),
+                Expression.Constant(true, typeof(bool))
+            );
+
+            Assert.AreEqual(typeof(bool), b.Type);
+            Assert.IsFalse(b.IsLifted);
+            Assert.IsFalse(b.IsLiftedToNull);
+        }
+
+        [Test]
+        public void AndAlsoNullableBoolItem()
+        {
+            var i = Expression.Parameter(typeof(Item<bool?>), "i");
+            var and = Expression.Lambda<Func<Item<bool?>, bool?>>
+            (
+                Expression.AndAlso
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
+
+            var item = new Item<bool?>(false, true);
+            Assert.AreEqual((bool?)false, and(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
+        }
+
+        [Test]
+        public void AndAlsoTest()
+        {
+            var a = Expression.Parameter(typeof(bool), "a");
+            var b = Expression.Parameter(typeof(bool), "b");
+            var l = Expression.Lambda<Func<bool, bool, bool>>
+            (
+                Expression.AndAlso(a, b), a, b
+            );
+
+            var be = l.Body as BinaryExpression;
+            Assert.IsNotNull(be);
+            Assert.AreEqual(typeof(bool), be.Type);
+            Assert.IsFalse(be.IsLifted);
+            Assert.IsFalse(be.IsLiftedToNull);
+
+            var c = l.Compile();
+
+            Assert.AreEqual(true, c(true, true), "a1");
+            Assert.AreEqual(false, c(true, false), "a2");
+            Assert.AreEqual(false, c(false, true), "a3");
+            Assert.AreEqual(false, c(false, false), "a4");
+        }
+
+        [Test]
+        public void AndAlsoTestNullable()
+        {
+            var a = Expression.Parameter(typeof(bool?), "a");
+            var b = Expression.Parameter(typeof(bool?), "b");
+            var l = Expression.Lambda<Func<bool?, bool?, bool?>>
+            (
+                Expression.AndAlso(a, b), a, b
+            );
+
+            var be = l.Body as BinaryExpression;
+            Assert.IsNotNull(be);
+            Assert.AreEqual(typeof(bool?), be.Type);
+            Assert.IsTrue(be.IsLifted);
+            Assert.IsTrue(be.IsLiftedToNull);
+
+            var c = l.Compile();
+
+            Assert.AreEqual(true, c(true, true), "a1");
+            Assert.AreEqual(false, c(true, false), "a2");
+            Assert.AreEqual(false, c(false, true), "a3");
+            Assert.AreEqual(false, c(false, false), "a4");
+
+            Assert.AreEqual(null, c(true, null), "a5");
+            Assert.AreEqual(false, c(false, null), "a6");
+            Assert.AreEqual(false, c(null, false), "a7");
+            Assert.AreEqual(null, c(true, null), "a8");
+            Assert.AreEqual(null, c(null, null), "a9");
+        }
+
+        [Test]
+        public void Arg1Null()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.AndAlso(null, Expression.Constant(1)));
+        }
+
+        [Test]
+        public void Arg2Null()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.AndAlso(Expression.Constant(1), null));
+        }
+
+        [Test]
+        public void Boolean()
+        {
+            var expr = Expression.AndAlso(Expression.Constant(true), Expression.Constant(false));
+            Assert.AreEqual(ExpressionType.AndAlso, expr.NodeType, "AndAlso#01");
+            Assert.AreEqual(typeof(bool), expr.Type, "AndAlso#02");
+            Assert.IsNull(expr.Method, "AndAlso#03");
+        }
+
+        [Test] // from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350487
+        public void Connect350487()
+        {
+            var p = Expression.Parameter(typeof(B), "b");
+            var l = Expression.Lambda<Func<B, A>>
+            (
+                Expression.AndAlso(p, p), p
+            ).Compile();
+
+            Assert.IsNotNull(l(null));
+        }
+
+        [Test]
+        public void Double()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(1.0), Expression.Constant(2.0)));
+        }
+
+        [Test]
+        public void IncompleteUserDefinedAndAlso()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var l = Expression.Parameter(typeof(Incomplete), "l");
+                    var r = Expression.Parameter(typeof(Incomplete), "r");
+
+                    var method = typeof(Incomplete).GetMethod("op_BitwiseAnd");
+
+                    Expression.AndAlso(l, r, method);
+                }
+            );
+        }
+
+        [Test]
+        public void Integer()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(1), Expression.Constant(2)));
+        }
+
+        [Test]
+        public void MismatchedTypes()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(true)));
+        }
+
+        [Test]
+        public void NoOperatorClass()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.AndAlso(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
+        }
+
         [Test]
         public void UserDefinedAndAlso()
         {
@@ -245,37 +330,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(new Slot(64), andalso(new Slot(64), new Slot(64)));
             Assert.AreEqual(new Slot(0), andalso(new Slot(32), new Slot(64)));
             Assert.AreEqual(new Slot(0), andalso(new Slot(64), new Slot(32)));
-        }
-
-        [Test]
-        public void UserDefinedAndAlsoShortCircuit()
-        {
-            var i = Expression.Parameter(typeof(Item<Slot>), "i");
-            var and = Expression.Lambda<Func<Item<Slot>, Slot>>(
-                Expression.AndAlso(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<Slot>(new Slot(0), new Slot(1));
-            Assert.AreEqual(new Slot(0), and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
-        }
-
-        [Test]
-        [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350228
-        public void UserDefinedLiftedAndAlsoShortCircuit()
-        {
-            var i = Expression.Parameter(typeof(Item<Slot?>), "i");
-            var and = Expression.Lambda<Func<Item<Slot?>, Slot?>>(
-                Expression.AndAlso(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<Slot?>(null, new Slot(1));
-            Assert.AreEqual(null, and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
         }
 
         [Test]
@@ -301,81 +355,57 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(null, andalso(null, null));
         }
 
-        private struct Incomplete
+        [Test]
+        public void UserDefinedAndAlsoShortCircuit()
         {
-            public readonly int Value;
+            var i = Expression.Parameter(typeof(Item<Slot>), "i");
+            var and = Expression.Lambda<Func<Item<Slot>, Slot>>
+            (
+                Expression.AndAlso
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
 
-            public Incomplete(int val)
-            {
-                Value = val;
-            }
-
-            public static Incomplete operator &(Incomplete a, Incomplete b)
-            {
-                return new Incomplete(a.Value & b.Value);
-            }
+            var item = new Item<Slot>(new Slot(0), new Slot(1));
+            Assert.AreEqual(new Slot(0), and(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
         }
 
         [Test]
-        public void IncompleteUserDefinedAndAlso()
+        public void UserDefinedClass()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var l = Expression.Parameter(typeof(Incomplete), "l");
-                var r = Expression.Parameter(typeof(Incomplete), "r");
+            // We can use the simplest version of GetMethod because we already know only one
+            // exists in the very simple class we're using for the tests.
+            var mi = typeof(OpClass).GetMethod("op_BitwiseAnd");
 
-                var method = typeof(Incomplete).GetMethod("op_BitwiseAnd");
-
-                Expression.AndAlso(l, r, method);
-            });
+            var expr = Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.AndAlso, expr.NodeType, "AndAlso#05");
+            Assert.AreEqual(typeof(OpClass), expr.Type, "AndAlso#06");
+            Assert.AreEqual(mi, expr.Method, "AndAlso#07");
+            Assert.AreEqual("op_BitwiseAnd", expr.Method.Name, "AndAlso#08");
         }
 
-        private class A // Should not be static, inheritance is needed for testing
+        [Test]
+        [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350228
+        public void UserDefinedLiftedAndAlsoShortCircuit()
         {
-            public static bool operator true(A x)
-            {
-                Theraot.No.Op(x);
-                return true;
-            }
+            var i = Expression.Parameter(typeof(Item<Slot?>), "i");
+            var and = Expression.Lambda<Func<Item<Slot?>, Slot?>>
+            (
+                Expression.AndAlso
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
 
-            public static bool operator false(A x)
-            {
-                Theraot.No.Op(x);
-                return false;
-            }
-        }
-
-        private class B : A
-        {
-            public static B operator &(B x, B y)
-            {
-                Theraot.No.Op(x);
-                Theraot.No.Op(y);
-                return new B();
-            }
-
-            public static bool op_True<T>(B x)
-            {
-                Theraot.No.Op(x);
-                Theraot.No.Op(typeof(T));
-                return true;
-            }
-
-            public static bool op_False(B x)
-            {
-                Theraot.No.Op(x);
-                return false;
-            }
-        }
-
-        [Test] // from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350487
-        public void Connect350487()
-        {
-            var p = Expression.Parameter(typeof(B), "b");
-            var l = Expression.Lambda<Func<B, A>>(
-                Expression.AndAlso(p, p), p).Compile();
-
-            Assert.IsNotNull(l(null));
+            var item = new Item<Slot?>(null, new Slot(1));
+            Assert.AreEqual(null, and(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
         }
     }
 }

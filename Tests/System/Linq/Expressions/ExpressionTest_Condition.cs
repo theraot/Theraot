@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 extern alias nunitlinq;
 #endif
 
@@ -30,9 +30,9 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -58,15 +58,36 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void TestNotBool()
+        public void CompileConditional()
         {
-            Assert.Throws<ArgumentException>(() => Expression.Condition(Expression.Constant(42), Expression.Constant(1), Expression.Constant(0)));
+            var parameters = new[] {Expression.Parameter(typeof(int), "number")};
+
+            var l = Expression.Lambda<Func<int, string>>
+            (
+                Expression.Condition
+                (
+                    Expression.GreaterThanOrEqual
+                    (
+                        parameters[0],
+                        Expression.Constant(0)
+                    ),
+                    Expression.Constant("+"),
+                    Expression.Constant("-")
+                ),
+                parameters
+            );
+
+            var gt = l.Compile();
+
+            Assert.AreEqual("+", gt(1));
+            Assert.AreEqual("+", gt(0));
+            Assert.AreEqual("-", gt(-1));
         }
 
         [Test]
-        public void TrueBlockTypeNotFalseBlockType()
+        public void TestNotBool()
         {
-            Assert.Throws<ArgumentException>(() => Expression.Condition(Expression.Constant(42), Expression.Constant(1.1), Expression.Constant(0)));
+            Assert.Throws<ArgumentException>(() => Expression.Condition(Expression.Constant(42), Expression.Constant(1), Expression.Constant(0)));
         }
 
         [Test]
@@ -78,24 +99,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void CompileConditional()
+        public void TrueBlockTypeNotFalseBlockType()
         {
-            var parameters = new[] { Expression.Parameter(typeof(int), "number") };
-
-            var l = Expression.Lambda<Func<int, string>>(
-                        Expression.Condition(
-                            Expression.GreaterThanOrEqual(
-                                parameters[0],
-                                Expression.Constant(0)),
-                            Expression.Constant("+"),
-                            Expression.Constant("-")),
-                        parameters);
-
-            var gt = l.Compile();
-
-            Assert.AreEqual("+", gt(1));
-            Assert.AreEqual("+", gt(0));
-            Assert.AreEqual("-", gt(-1));
+            Assert.Throws<ArgumentException>(() => Expression.Condition(Expression.Constant(42), Expression.Constant(1.1), Expression.Constant(0)));
         }
     }
 }

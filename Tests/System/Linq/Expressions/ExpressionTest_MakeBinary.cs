@@ -23,10 +23,12 @@ extern alias nunitlinq;
 // Authors:
 //   Miguel de Icaza <miguel@novell.com>
 //
-using NUnit.Framework;
+
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
+using Theraot;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -35,8 +37,8 @@ namespace MonoTests.System.Linq.Expressions
     {
         public static int GoodMethod(string a, double d)
         {
-            Theraot.No.Op(a);
-            Theraot.No.Op(d);
+            No.Op(a);
+            No.Op(d);
             return 1;
         }
 
@@ -47,22 +49,24 @@ namespace MonoTests.System.Linq.Expressions
 
         public static int BadMethodSig_2(int a)
         {
-            Theraot.No.Op(a);
+            No.Op(a);
             return 1;
         }
 
         public static int BadMethodSig_3(int a, int b, int c)
         {
-            Theraot.No.Op(a);
-            Theraot.No.Op(b);
-            Theraot.No.Op(c);
+            No.Op(a);
+            No.Op(b);
+            No.Op(c);
             return 1;
         }
 
         private static MethodInfo Gm(string n)
         {
-            var methods = typeof(ExpressionTestMakeBinary).GetMethods(
-                BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            var methods = typeof(ExpressionTestMakeBinary).GetMethods
+            (
+                BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public
+            );
 
             foreach (var m in methods)
             {
@@ -73,52 +77,6 @@ namespace MonoTests.System.Linq.Expressions
             }
 
             throw new Exception(string.Format("Method {0} not found", n));
-        }
-
-        [Test]
-        public void MethodChecks()
-        {
-            Expression left = Expression.Constant("");
-            Expression right = Expression.Constant(1.0);
-
-            var r = Expression.Add(left, right, Gm("GoodMethod"));
-            Assert.AreEqual(r.Type, typeof(int));
-        }
-
-        [Test]
-        public void MethodCheck_BadArgs()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression left = Expression.Constant("");
-                Expression right = Expression.Constant(1.0);
-
-                Expression.Add(left, right, Gm("BadMethodSig_1"));
-            });
-        }
-
-        [Test]
-        public void MethodCheck_BadArgs2()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression left = Expression.Constant("");
-                Expression right = Expression.Constant(1.0);
-
-                Expression.Add(left, right, Gm("BadMethodSig_2"));
-            });
-        }
-
-        [Test]
-        public void MethodCheck_BadArgs3()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression left = Expression.Constant("");
-                Expression right = Expression.Constant(1.0);
-
-                Expression.Add(left, right, Gm("BadMethodSig_3"));
-            });
         }
 
         private static void PassInt(ExpressionType nt)
@@ -146,63 +104,9 @@ namespace MonoTests.System.Linq.Expressions
             {
                 return;
             }
+
             // If we get here, there was an error
             Assert.Fail("FailInt failed while creating an {0}", nt);
-        }
-
-        //
-        // Checks that we complain on the proper ExpressionTypes
-        //
-        [Test]
-        public void TestBinaryCtor()
-        {
-            PassInt(ExpressionType.Add);
-            PassInt(ExpressionType.AddChecked);
-            PassInt(ExpressionType.And);
-            PassInt(ExpressionType.Divide);
-            PassInt(ExpressionType.Equal);
-            PassInt(ExpressionType.ExclusiveOr);
-            PassInt(ExpressionType.GreaterThan);
-            PassInt(ExpressionType.GreaterThanOrEqual);
-            PassInt(ExpressionType.LeftShift);
-            PassInt(ExpressionType.LessThan);
-            PassInt(ExpressionType.LessThanOrEqual);
-            PassInt(ExpressionType.Multiply);
-            PassInt(ExpressionType.MultiplyChecked);
-            PassInt(ExpressionType.NotEqual);
-            PassInt(ExpressionType.Or);
-            PassInt(ExpressionType.Modulo);
-            PassInt(ExpressionType.RightShift);
-            PassInt(ExpressionType.Subtract);
-            PassInt(ExpressionType.SubtractChecked);
-
-            FailInt(ExpressionType.AndAlso);
-            FailInt(ExpressionType.OrElse);
-            FailInt(ExpressionType.Power);
-            FailInt(ExpressionType.ArrayLength);
-            FailInt(ExpressionType.ArrayIndex);
-            FailInt(ExpressionType.Call);
-            FailInt(ExpressionType.Coalesce);
-            FailInt(ExpressionType.Conditional);
-            FailInt(ExpressionType.Constant);
-            FailInt(ExpressionType.Convert);
-            FailInt(ExpressionType.ConvertChecked);
-            FailInt(ExpressionType.Invoke);
-            FailInt(ExpressionType.Lambda);
-            FailInt(ExpressionType.ListInit);
-            FailInt(ExpressionType.MemberAccess);
-            FailInt(ExpressionType.MemberInit);
-            FailInt(ExpressionType.Negate);
-            FailInt(ExpressionType.UnaryPlus);
-            FailInt(ExpressionType.NegateChecked);
-            FailInt(ExpressionType.New);
-            FailInt(ExpressionType.NewArrayInit);
-            FailInt(ExpressionType.NewArrayBounds);
-            FailInt(ExpressionType.Not);
-            FailInt(ExpressionType.Parameter);
-            FailInt(ExpressionType.Quote);
-            FailInt(ExpressionType.TypeAs);
-            FailInt(ExpressionType.TypeIs);
         }
 
         public T CodeGen<T>(Func<Expression, Expression, Expression> bin, T v1, T v2)
@@ -211,18 +115,9 @@ namespace MonoTests.System.Linq.Expressions
             {
                 throw new ArgumentNullException("bin");
             }
+
             var lambda = Expression.Lambda<Func<T>>(bin(v1.ToConstant(), v2.ToConstant())).Compile();
             return lambda();
-        }
-
-        [Test]
-        public void TestOperations()
-        {
-            Assert.AreEqual(30, CodeGen(Expression.Add, 10, 20));
-            Assert.AreEqual(-12, CodeGen(Expression.Subtract, 11, 23));
-            Assert.AreEqual(253, CodeGen(Expression.Multiply, 11, 23));
-            Assert.AreEqual(33, CodeGen(Expression.Divide, 100, 3));
-            Assert.AreEqual(100.0 / 3, CodeGen<double>(Expression.Divide, 100, 3));
         }
 
         private void CTest<T>(ExpressionType node, bool r, T a, T b)
@@ -231,7 +126,8 @@ namespace MonoTests.System.Linq.Expressions
             var pb = Expression.Parameter(typeof(T), "b");
 
             var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
-            var pexpr = Expression.Lambda<Func<T, T, bool>>(
+            var pexpr = Expression.Lambda<Func<T, T, bool>>
+            (
                 p, pa, pb
             );
 
@@ -313,15 +209,137 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MakeArrayIndex()
         {
-            var array = Expression.Constant(new[] { 1, 2 }, typeof(int[]));
+            var array = Expression.Constant(new[] {1, 2}, typeof(int[]));
             var index = Expression.Constant(1);
 
-            var arrayIndex = Expression.MakeBinary(
+            var arrayIndex = Expression.MakeBinary
+            (
                 ExpressionType.ArrayIndex,
                 array,
-                index);
+                index
+            );
 
             Assert.AreEqual(ExpressionType.ArrayIndex, arrayIndex.NodeType);
+        }
+
+        [Test]
+        public void MethodCheck_BadArgs()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression left = Expression.Constant("");
+                    Expression right = Expression.Constant(1.0);
+
+                    Expression.Add(left, right, Gm("BadMethodSig_1"));
+                }
+            );
+        }
+
+        [Test]
+        public void MethodCheck_BadArgs2()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression left = Expression.Constant("");
+                    Expression right = Expression.Constant(1.0);
+
+                    Expression.Add(left, right, Gm("BadMethodSig_2"));
+                }
+            );
+        }
+
+        [Test]
+        public void MethodCheck_BadArgs3()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression left = Expression.Constant("");
+                    Expression right = Expression.Constant(1.0);
+
+                    Expression.Add(left, right, Gm("BadMethodSig_3"));
+                }
+            );
+        }
+
+        [Test]
+        public void MethodChecks()
+        {
+            Expression left = Expression.Constant("");
+            Expression right = Expression.Constant(1.0);
+
+            var r = Expression.Add(left, right, Gm("GoodMethod"));
+            Assert.AreEqual(r.Type, typeof(int));
+        }
+
+        //
+        // Checks that we complain on the proper ExpressionTypes
+        //
+        [Test]
+        public void TestBinaryCtor()
+        {
+            PassInt(ExpressionType.Add);
+            PassInt(ExpressionType.AddChecked);
+            PassInt(ExpressionType.And);
+            PassInt(ExpressionType.Divide);
+            PassInt(ExpressionType.Equal);
+            PassInt(ExpressionType.ExclusiveOr);
+            PassInt(ExpressionType.GreaterThan);
+            PassInt(ExpressionType.GreaterThanOrEqual);
+            PassInt(ExpressionType.LeftShift);
+            PassInt(ExpressionType.LessThan);
+            PassInt(ExpressionType.LessThanOrEqual);
+            PassInt(ExpressionType.Multiply);
+            PassInt(ExpressionType.MultiplyChecked);
+            PassInt(ExpressionType.NotEqual);
+            PassInt(ExpressionType.Or);
+            PassInt(ExpressionType.Modulo);
+            PassInt(ExpressionType.RightShift);
+            PassInt(ExpressionType.Subtract);
+            PassInt(ExpressionType.SubtractChecked);
+
+            FailInt(ExpressionType.AndAlso);
+            FailInt(ExpressionType.OrElse);
+            FailInt(ExpressionType.Power);
+            FailInt(ExpressionType.ArrayLength);
+            FailInt(ExpressionType.ArrayIndex);
+            FailInt(ExpressionType.Call);
+            FailInt(ExpressionType.Coalesce);
+            FailInt(ExpressionType.Conditional);
+            FailInt(ExpressionType.Constant);
+            FailInt(ExpressionType.Convert);
+            FailInt(ExpressionType.ConvertChecked);
+            FailInt(ExpressionType.Invoke);
+            FailInt(ExpressionType.Lambda);
+            FailInt(ExpressionType.ListInit);
+            FailInt(ExpressionType.MemberAccess);
+            FailInt(ExpressionType.MemberInit);
+            FailInt(ExpressionType.Negate);
+            FailInt(ExpressionType.UnaryPlus);
+            FailInt(ExpressionType.NegateChecked);
+            FailInt(ExpressionType.New);
+            FailInt(ExpressionType.NewArrayInit);
+            FailInt(ExpressionType.NewArrayBounds);
+            FailInt(ExpressionType.Not);
+            FailInt(ExpressionType.Parameter);
+            FailInt(ExpressionType.Quote);
+            FailInt(ExpressionType.TypeAs);
+            FailInt(ExpressionType.TypeIs);
+        }
+
+        [Test]
+        public void TestOperations()
+        {
+            Assert.AreEqual(30, CodeGen(Expression.Add, 10, 20));
+            Assert.AreEqual(-12, CodeGen(Expression.Subtract, 11, 23));
+            Assert.AreEqual(253, CodeGen(Expression.Multiply, 11, 23));
+            Assert.AreEqual(33, CodeGen(Expression.Divide, 100, 3));
+            Assert.AreEqual(100.0 / 3, CodeGen<double>(Expression.Divide, 100, 3));
         }
     }
 }

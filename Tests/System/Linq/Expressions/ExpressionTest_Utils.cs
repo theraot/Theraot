@@ -31,10 +31,11 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
+using Theraot;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -142,12 +143,12 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void WrongUnaryReturnVoid(OpClass a)
         {
-            Theraot.No.Op(a);
+            No.Op(a);
         }
 
         public static OpClass WrongUnaryParameterCount(OpClass a, OpClass b)
         {
-            Theraot.No.Op(b);
+            No.Op(b);
             return a;
         }
 
@@ -172,7 +173,7 @@ namespace MonoTests.System.Linq.Expressions
         public override bool Equals(object obj)
         {
             // Keep cast
-            return (object)this == obj;
+            return this == obj;
         }
 
         public override int GetHashCode()
@@ -188,16 +189,25 @@ namespace MonoTests.System.Linq.Expressions
 
     public class MemberClass
     {
-        public int TestField1; // Used by Reflection
+        public delegate int Delegate(int i);
+
+        public static int StaticField;
         public readonly int TestField2 = 1; // Used by Reflection
+        public int TestField1; // Used by Reflection
 
         public int TestProperty1 => TestField1;
 
         public int TestProperty2
         {
-            get { return TestField1; }
+            get => TestField1;
 
-            set { TestField1 = value; }
+            set => TestField1 = value;
+        }
+
+        public static int StaticProperty
+        {
+            get => StaticField;
+            set => StaticField = value;
         }
 
         public int TestMethod(int i)
@@ -210,8 +220,6 @@ namespace MonoTests.System.Linq.Expressions
             return arg;
         }
 
-        public delegate int Delegate(int i);
-
 #pragma warning disable 67
         public event Delegate OnTest;
 #pragma warning restore 67
@@ -219,14 +227,6 @@ namespace MonoTests.System.Linq.Expressions
         public void DoNothing()
         {
             // Empty
-        }
-
-        public static int StaticField;
-
-        public static int StaticProperty
-        {
-            get { return StaticField; }
-            set { StaticField = value; }
         }
 
         public static int StaticMethod(int i)
@@ -317,6 +317,7 @@ namespace MonoTests.System.Linq.Expressions
                 Assert.Fail();
                 return; // OK
             }
+
             try
             {
                 action();
@@ -336,6 +337,14 @@ namespace MonoTests.System.Linq.Expressions
     {
         private readonly T _left;
 
+        private readonly T _right;
+
+        public Item(T left, T right)
+        {
+            _left = left;
+            _right = right;
+        }
+
         public T Left
         {
             get
@@ -347,8 +356,6 @@ namespace MonoTests.System.Linq.Expressions
 
         public bool LeftCalled { get; private set; }
 
-        private readonly T _right;
-
         public T Right
         {
             get
@@ -359,11 +366,5 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         public bool RightCalled { get; private set; }
-
-        public Item(T left, T right)
-        {
-            _left = left;
-            _right = right;
-        }
     }
 }
