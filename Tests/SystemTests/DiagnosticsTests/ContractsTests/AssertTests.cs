@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics.Contracts;
-using System.Diagnostics.Contracts.Tests;
 using System.Security.Permissions;
 using NUnit.Framework;
+using Tests.Helpers;
 
 namespace Tests.SystemTests.DiagnosticsTests.ContractsTests
 {
