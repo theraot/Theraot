@@ -50,7 +50,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                 a.TryTake(out _, 1000);
                 stopWatch.Stop();
                 var elapsedMilliseconds = stopWatch.ElapsedMilliseconds;
-                Assert.IsTrue(elapsedMilliseconds >= 1000, $"{elapsedMilliseconds}");
+                Assert.IsTrue(elapsedMilliseconds + 16 > 1000, $"{elapsedMilliseconds}");
             }
         }
 

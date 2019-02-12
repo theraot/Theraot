@@ -1699,6 +1699,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")]
         public void Delay_TimeManagement()
         {
             var delay1 = TaskEx.Delay(50);
