@@ -35,8 +35,9 @@ namespace MonoTests.System.Linq.Expressions
     {
         private struct Slot
         {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public int Integer { get; set; }
-
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public short Short { get; set; }
         }
 
@@ -49,7 +50,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Bind(MemberClass.GetRwFieldInfo(), null));
+            Assert.Throws<ArgumentNullException>(() => Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.TestField2)), null));
         }
 
         [Test]
@@ -58,17 +59,15 @@ namespace MonoTests.System.Linq.Expressions
             var i = Expression.Parameter(typeof(int), "i");
             var s = Expression.Parameter(typeof(short), "s");
 
-            var gslot = Expression.Lambda<Func<int, short, Slot>>
+            var memberInitExpression = Expression.MemberInit
             (
-                Expression.MemberInit
-                (
-                    Expression.New(typeof(Slot)),
-                    Expression.Bind(typeof(Slot).GetProperty("Integer"), i),
-                    Expression.Bind(typeof(Slot).GetProperty("Short"), s)
-                ), i, s
-            ).Compile();
+                Expression.New(typeof(Slot)),
+                Expression.Bind(typeof(Slot).GetProperty("Integer"), i),
+                Expression.Bind(typeof(Slot).GetProperty("Short"), s)
+            );
+            var getSlot = Expression.Lambda<Func<int, short, Slot>>(memberInitExpression, i, s).Compile();
 
-            Assert.AreEqual(new Slot {Integer = 42, Short = -1}, gslot(42, -1));
+            Assert.AreEqual(new Slot {Integer = 42, Short = -1}, getSlot(42, -1));
         }
 
         [Test]
@@ -80,17 +79,17 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void FieldRo()
         {
-            var expr = Expression.Bind(MemberClass.GetRoFieldInfo(), Expression.Constant(1));
+            var expr = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.TestField1)), Expression.Constant(1));
             Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#01");
-            Assert.AreEqual("TestField1 = 1", expr.ToString(), "Bind#02");
+            Assert.AreEqual($"{nameof(MemberClass.TestField1)} = 1", expr.ToString(), "Bind#02");
         }
 
         [Test]
         public void FieldRw()
         {
-            var expr = Expression.Bind(MemberClass.GetRwFieldInfo(), Expression.Constant(1));
+            var expr = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.TestField2)), Expression.Constant(1));
             Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#03");
-            Assert.AreEqual("TestField2 = 1", expr.ToString(), "Bind#04");
+            Assert.AreEqual($"{nameof(MemberClass.TestField2)} = 1", expr.ToString(), "Bind#04");
         }
 
         [Test]
@@ -110,7 +109,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     // This tests the MethodInfo version of Bind(): should raise an exception
                     // because the method is not an accessor.
-                    Expression.Bind(MemberClass.GetMethodInfo(), Expression.Constant(1));
+                    Expression.Bind(typeof(MemberClass).GetMethod(nameof(MemberClass.TestMethod)), Expression.Constant(1));
                 }
             );
         }
@@ -124,7 +123,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     // This tests the MemberInfo version of Bind(): should raise an exception
                     // because the argument is not a field or property accessor.
-                    Expression.Bind((MemberInfo)MemberClass.GetMethodInfo(), Expression.Constant(1));
+                    Expression.Bind((MemberInfo)typeof(MemberClass).GetMethod(nameof(MemberClass.TestMethod)), Expression.Constant(1));
                 }
             );
         }
@@ -154,7 +153,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void PropertyRo()
         {
-            Assert.Throws<ArgumentException>(() => Expression.Bind(MemberClass.GetRoPropertyInfo(), Expression.Constant(1)));
+            Assert.Throws<ArgumentException>(() => Expression.Bind(typeof(MemberClass).GetProperty(nameof(MemberClass.TestProperty1)), Expression.Constant(1)));
         }
 
         [Test]

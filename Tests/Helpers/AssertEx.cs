@@ -28,6 +28,14 @@ namespace Tests.Helpers
 
         [DebuggerNonUserCode]
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void Throws<TException, T>(Func<T> code)
+            where TException : Exception
+        {
+            Assert.Throws<TException>(() => code());
+        }
+
+        [DebuggerNonUserCode]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void CollectionEquals<T>(IEnumerable<T> expected, IEnumerable<T> actual)
         {
             var expectedCollection = expected.AsICollection();

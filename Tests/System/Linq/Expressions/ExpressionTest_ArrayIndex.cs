@@ -33,17 +33,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestArrayIndex
     {
-        private static Func<T[], int, T> CreateArrayAccess<T>()
-        {
-            var a = Expression.Parameter(typeof(T[]), "a");
-            var i = Expression.Parameter(typeof(int), "i");
-
-            return Expression.Lambda<Func<T[], int, T>>
-            (
-                Expression.ArrayIndex(a, i), a, i
-            ).Compile();
-        }
-
         private enum Months
         {
             Jan,
@@ -52,9 +41,12 @@ namespace MonoTests.System.Linq.Expressions
             Apr
         }
 
-        private class Foo
+        private static Func<T[], int, T> CreateArrayAccess<T>()
         {
-            // Empty
+            var a = Expression.Parameter(typeof(T[]), "a");
+            var i = Expression.Parameter(typeof(int), "i");
+
+            return Expression.Lambda<Func<T[], int, T>>(Expression.ArrayIndex(a, i), a, i).Compile();
         }
 
         private struct Bar
@@ -65,6 +57,11 @@ namespace MonoTests.System.Linq.Expressions
             {
                 Value = value;
             }
+        }
+
+        private class Foo
+        {
+            // Empty
         }
 
         [Test]
@@ -208,7 +205,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.ArrayIndex, expr.NodeType, "ArrayIndex#05");
             Assert.AreEqual(typeof(NoOpClass), expr.Type, "ArrayIndex#06");
             Assert.IsNull(expr.Method, "ArrayIndex#07");
-            Assert.AreEqual("value(MonoTests.System.Linq.Expressions.NoOpClass[])[0]", expr.ToString(), "ArrayIndex#08");
+            Assert.AreEqual($"value({typeof(NoOpClass).FullName}[])[0]", expr.ToString(), "ArrayIndex#08");
         }
 
         [Test]
@@ -232,7 +229,7 @@ namespace MonoTests.System.Linq.Expressions
             var expr = Expression.ArrayIndex(Expression.Constant(array), indexes);
             Assert.AreEqual(ExpressionType.Call, expr.NodeType, "ArrayIndex#13");
             Assert.AreEqual(typeof(NoOpClass), expr.Type, "ArrayIndex#14");
-            Assert.AreEqual("value(MonoTests.System.Linq.Expressions.NoOpClass[,]).Get(1, 0)", expr.ToString(), "ArrayIndex#16");
+            Assert.AreEqual($"value({typeof(NoOpClass).FullName}[,]).Get(1, 0)", expr.ToString(), "ArrayIndex#16");
         }
     }
 }

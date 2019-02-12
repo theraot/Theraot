@@ -58,7 +58,8 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(object[]), "ary");
             var len = Expression.Lambda<Func<object[], int>>
             (
-                Expression.ArrayLength(p), p
+                Expression.ArrayLength(p),
+                p
             ).Compile();
 
             Assert.AreEqual(0, len(new object[0]));
@@ -71,7 +72,8 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(string[]), "ary");
             var len = Expression.Lambda<Func<string[], int>>
             (
-                Expression.ArrayLength(p), p
+                Expression.ArrayLength(p),
+                p
             ).Compile();
 
             Assert.AreEqual(0, len(new string[0]));

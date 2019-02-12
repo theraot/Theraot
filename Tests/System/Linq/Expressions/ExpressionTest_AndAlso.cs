@@ -2,6 +2,9 @@
 extern alias nunitlinq;
 #endif
 
+#pragma warning disable IDE1006 // Estilos de nombres
+#pragma warning disable RECS0014 // If all fields, properties and methods members are static, the class can be made static.
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -26,15 +29,34 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using Theraot;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestAndAlso
     {
+        private struct Incomplete
+        {
+            public readonly int Value;
+
+            public Incomplete(int val)
+            {
+                Value = val;
+            }
+
+            public static Incomplete operator &(Incomplete a, Incomplete b)
+            {
+                return new Incomplete(a.Value & b.Value);
+            }
+        }
+
         private struct Slot
         {
             public readonly int Value;
@@ -65,21 +87,6 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        private struct Incomplete
-        {
-            public readonly int Value;
-
-            public Incomplete(int val)
-            {
-                Value = val;
-            }
-
-            public static Incomplete operator &(Incomplete a, Incomplete b)
-            {
-                return new Incomplete(a.Value & b.Value);
-            }
-        }
-
         private class A // Should not be static, inheritance is needed for testing
         {
             public static bool operator true(A x)
@@ -104,6 +111,7 @@ namespace MonoTests.System.Linq.Expressions
                 return new B();
             }
 
+            // ReSharper disable once UnusedMember.Local
             public static bool op_True<T>(B x)
             {
                 No.Op(x);
@@ -111,6 +119,7 @@ namespace MonoTests.System.Linq.Expressions
                 return true;
             }
 
+            // ReSharper disable once UnusedMember.Local
             public static bool op_False(B x)
             {
                 No.Op(x);
@@ -126,9 +135,10 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.AndAlso
                 (
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")
-                ), i
+                    Expression.Property(i, nameof(Item<bool>.Left)),
+                    Expression.Property(i, nameof(Item<bool>.Right))
+                ),
+                i
             ).Compile();
 
             var item = new Item<bool>(false, true);
@@ -173,9 +183,10 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.AndAlso
                 (
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")
-                ), i
+                    Expression.Property(i, nameof(Item<bool>.Left)),
+                    Expression.Property(i, nameof(Item<bool>.Right))
+                ),
+                i
             ).Compile();
 
             var item = new Item<bool?>(false, true);
@@ -189,10 +200,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(bool), "a");
             var b = Expression.Parameter(typeof(bool), "b");
-            var l = Expression.Lambda<Func<bool, bool, bool>>
-            (
-                Expression.AndAlso(a, b), a, b
-            );
+            var l = Expression.Lambda<Func<bool, bool, bool>>(Expression.AndAlso(a, b), a, b);
 
             var be = l.Body as BinaryExpression;
             Assert.IsNotNull(be);
@@ -213,10 +221,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(bool?), "a");
             var b = Expression.Parameter(typeof(bool?), "b");
-            var l = Expression.Lambda<Func<bool?, bool?, bool?>>
-            (
-                Expression.AndAlso(a, b), a, b
-            );
+            var l = Expression.Lambda<Func<bool?, bool?, bool?>>(Expression.AndAlso(a, b), a, b);
 
             var be = l.Body as BinaryExpression;
             Assert.IsNotNull(be);
@@ -259,13 +264,14 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsNull(expr.Method, "AndAlso#03");
         }
 
-        [Test] // from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350487
+        [Test]
         public void Connect350487()
         {
             var p = Expression.Parameter(typeof(B), "b");
             var l = Expression.Lambda<Func<B, A>>
             (
-                Expression.AndAlso(p, p), p
+                Expression.AndAlso(p, p),
+                p
             ).Compile();
 
             Assert.IsNotNull(l(null));
@@ -325,11 +331,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(node.IsLiftedToNull);
             Assert.AreEqual(method, node.Method);
 
-            var andalso = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
+            var andAlso = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
 
-            Assert.AreEqual(new Slot(64), andalso(new Slot(64), new Slot(64)));
-            Assert.AreEqual(new Slot(0), andalso(new Slot(32), new Slot(64)));
-            Assert.AreEqual(new Slot(0), andalso(new Slot(64), new Slot(32)));
+            Assert.AreEqual(new Slot(64), andAlso(new Slot(64), new Slot(64)));
+            Assert.AreEqual(new Slot(0), andAlso(new Slot(32), new Slot(64)));
+            Assert.AreEqual(new Slot(0), andAlso(new Slot(64), new Slot(32)));
         }
 
         [Test]
@@ -345,14 +351,14 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsTrue(node.IsLiftedToNull);
             Assert.AreEqual(method, node.Method);
 
-            var andalso = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, l, r).Compile();
+            var andAlso = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, l, r).Compile();
 
-            Assert.AreEqual(new Slot(64), andalso(new Slot(64), new Slot(64)));
-            Assert.AreEqual(new Slot(0), andalso(new Slot(32), new Slot(64)));
-            Assert.AreEqual(new Slot(0), andalso(new Slot(64), new Slot(32)));
-            Assert.AreEqual(null, andalso(null, new Slot(32)));
-            Assert.AreEqual(null, andalso(new Slot(64), null));
-            Assert.AreEqual(null, andalso(null, null));
+            Assert.AreEqual(new Slot(64), andAlso(new Slot(64), new Slot(64)));
+            Assert.AreEqual(new Slot(0), andAlso(new Slot(32), new Slot(64)));
+            Assert.AreEqual(new Slot(0), andAlso(new Slot(64), new Slot(32)));
+            Assert.AreEqual(null, andAlso(null, new Slot(32)));
+            Assert.AreEqual(null, andAlso(new Slot(64), null));
+            Assert.AreEqual(null, andAlso(null, null));
         }
 
         [Test]
@@ -363,9 +369,10 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.AndAlso
                 (
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")
-                ), i
+                    Expression.Property(i, nameof(Item<bool>.Left)),
+                    Expression.Property(i, nameof(Item<bool>.Right))
+                ),
+                i
             ).Compile();
 
             var item = new Item<Slot>(new Slot(0), new Slot(1));
@@ -389,7 +396,6 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350228
         public void UserDefinedLiftedAndAlsoShortCircuit()
         {
             var i = Expression.Parameter(typeof(Item<Slot?>), "i");
@@ -397,9 +403,10 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.AndAlso
                 (
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")
-                ), i
+                    Expression.Property(i, nameof(Item<bool>.Left)),
+                    Expression.Property(i, nameof(Item<bool>.Right))
+                ),
+                i
             ).Compile();
 
             var item = new Item<Slot?>(null, new Slot(1));

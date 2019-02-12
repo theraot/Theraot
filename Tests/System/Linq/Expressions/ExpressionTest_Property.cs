@@ -88,7 +88,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void InstanceProperty2()
         {
-            var expr = Expression.Property(Expression.Constant(new MemberClass()), MemberClass.GetRoPropertyInfo());
+            var expr = Expression.Property(Expression.Constant(new MemberClass()), typeof(MemberClass).GetProperty(nameof(MemberClass.TestProperty1)));
             Assert.AreEqual(ExpressionType.MemberAccess, expr.NodeType, "Property#04");
             Assert.AreEqual(typeof(int), expr.Type, "Property#05");
             Assert.AreEqual("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "Property#06");
@@ -103,7 +103,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.MemberAccess, expr.NodeType, "Property#07");
             Assert.AreEqual(typeof(int), expr.Type, "Property#08");
             Assert.AreEqual("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "Property#09");
-            Assert.AreEqual(MemberClass.GetRoPropertyInfo(), expr.Member, "Property#10");
+            Assert.AreEqual(typeof(MemberClass).GetProperty(nameof(MemberClass.TestProperty1)), expr.Member, "Property#10");
         }
 
         [Test]

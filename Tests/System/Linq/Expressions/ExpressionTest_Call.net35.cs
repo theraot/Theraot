@@ -141,7 +141,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg4WrongType()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.Call(typeof(MemberClass), "StaticMethod", null, Expression.Constant(true)));
+            Assert.Throws<InvalidOperationException>(() => Expression.Call(typeof(MemberClass), nameof(StaticMethod), null, Expression.Constant(true)));
         }
 
         [Test]
@@ -549,7 +549,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void InstanceTypeDoesntMatchMethodDeclaringType()
+        public void InstanceTypeDoesNotMatchMethodDeclaringType()
         {
 #if MOBILE
             // ensure that String.Intern won't be removed by the linker
@@ -559,13 +559,13 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void MethodArgumentCountDoesnMatchParameterLength()
+        public void MethodArgumentCountDoesNotMatchParameterLength()
         {
             Assert.Throws<ArgumentException>(() => Expression.Call(Expression.Constant(new object()), typeof(object).GetMethod("ToString"), Expression.Constant(new object())));
         }
 
         [Test]
-        public void MethodArgumentDoesntMatchParameterType()
+        public void MethodArgumentDoesNotMatchParameterType()
         {
             Assert.Throws<ArgumentException>(() => Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), Expression.Constant(42)));
         }

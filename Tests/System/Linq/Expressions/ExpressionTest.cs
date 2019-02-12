@@ -35,19 +35,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework;
+using Tests.Helpers;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTest
     {
-        private static Type[] GetTestTypeArray(int length)
-        {
-            return Enumerable.Range(0, length - 1)
-                .Select(i => typeof(int))
-                .ToArray();
-        }
-
         private static int _buffer;
 
         public static int Identity(int i)
@@ -56,43 +50,58 @@ namespace MonoTests.System.Linq.Expressions
             return i;
         }
 
+        private static Type[] GetTestTypeArray(int length)
+        {
+            return Enumerable.Range(0, length - 1)
+                .Select(_ => typeof(int))
+                .ToArray();
+        }
+
         [Test]
         public void CompileActionDiscardingRetValue()
         {
-            var p = Expression.Parameter(typeof(int), "i");
-            var identity = GetType().GetMethod("Identity", BindingFlags.Static | BindingFlags.Public);
+            const string Name = "i";
+            const int Value = 42;
+
+            var parameter = Expression.Parameter(typeof(int), Name);
+            var identity = GetType().GetMethod(nameof(Identity), BindingFlags.Static | BindingFlags.Public);
             Assert.IsNotNull(identity);
 
-            var lambda = Expression.Lambda<Action<int>>(Expression.Call(identity, p), p);
+            var lambda = Expression.Lambda<Action<int>>(Expression.Call(identity, parameter), parameter);
 
             var method = lambda.Compile();
 
             _buffer = 0;
 
-            method(42);
-            Assert.AreEqual(42, _buffer);
+            method(Value);
+            Assert.AreEqual(Value, _buffer);
         }
 
         [Test]
         public void ExpressionDelegateTarget()
         {
-            var p = Expression.Parameter(typeof(string), "str");
-            var identity = Expression.Lambda<Func<string, string>>(p, p).Compile();
+            const string Name = "str";
 
-            Assert.AreEqual(typeof(Func<string, string>), identity.GetType());
-            Assert.IsNotNull(identity.Target);
+            var parameter = Expression.Parameter(typeof(string), Name);
+            var method = Expression.Lambda<Func<string, string>>(parameter, parameter).Compile();
+
+            Assert.AreEqual(typeof(Func<string, string>), method.GetType());
+            Assert.IsNotNull(method.Target);
         }
 
         [Test]
         public void GetActionTypeArgNull()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.GetActionType(null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.GetActionType(null));
         }
 
         [Test]
         public void GetActionTypeArgTooBig()
         {
-            Assert.Throws<ArgumentException>(() => Expression.GetActionType(GetTestTypeArray(45)));
+            const int Value = 45; // > 16
+
+            AssertEx.Throws<ArgumentException>(() => Expression.GetActionType(GetTestTypeArray(Value)));
         }
 
         [Test]
@@ -117,19 +126,22 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetFuncTypeArgEmpty()
         {
-            Assert.Throws<ArgumentException>(() => Expression.GetFuncType(ArrayEx.Empty<Type>()));
+            AssertEx.Throws<ArgumentException>(() => Expression.GetFuncType(ArrayEx.Empty<Type>()));
         }
 
         [Test]
         public void GetFuncTypeArgNull()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.GetFuncType(null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.GetFuncType(null));
         }
 
         [Test]
         public void GetFuncTypeArgTooBig()
         {
-            Assert.Throws<ArgumentException>(() => Expression.GetFuncType(GetTestTypeArray(64)));
+            const int Value = 64; // > 17
+
+            AssertEx.Throws<ArgumentException>(() => Expression.GetFuncType(GetTestTypeArray(Value)));
         }
 
         [Test]
@@ -154,80 +166,97 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void HoistedParameter()
         {
-            var i = Expression.Parameter(typeof(int), "i");
+            const string Name = "i";
+            const int Value = 42;
 
-            var l = Expression.Lambda<Func<int, string>>
+            var parameter = Expression.Parameter(typeof(int), Name);
+
+            var method = Expression.Lambda<Func<int, string>>
             (
                 Expression.Invoke
                 (
                     Expression.Lambda<Func<string>>
                     (
-                        Expression.Call(i, typeof(int).GetMethod("ToString", ArrayEx.Empty<Type>()))
+                        Expression.Call(parameter, typeof(int).GetMethod(nameof(int.ToString), ArrayEx.Empty<Type>()))
                     )
-                ), i
+                ),
+                parameter
             ).Compile();
 
-            Assert.AreEqual("42", l(42));
+            Assert.AreEqual($"{Value}", method(Value));
         }
 
         [Test]
         public void Parameter()
         {
-            var p = Expression.Parameter(typeof(string), "foo");
-            Assert.AreEqual("foo", p.Name);
-            Assert.AreEqual(typeof(string), p.Type);
-            Assert.AreEqual("foo", p.ToString());
+            const string Name = "foo";
+
+            var parameter = Expression.Parameter(typeof(string), Name);
+            Assert.AreEqual(Name, parameter.Name);
+            Assert.AreEqual(typeof(string), parameter.Type);
+            Assert.AreEqual(Name, parameter.ToString());
         }
 
         [Test]
         public void ParameterEmptyName()
         {
-            var p = Expression.Parameter(typeof(string), "");
-            Assert.AreEqual("", p.Name);
-            Assert.AreEqual(typeof(string), p.Type);
+            const string Name = ""; // ""
+
+            var parameter = Expression.Parameter(typeof(string), Name);
+            Assert.AreEqual(Name, parameter.Name);
+            Assert.AreEqual(typeof(string), parameter.Type);
         }
 
         [Test]
         public void ParameterNullName()
         {
-            var p = Expression.Parameter(typeof(string), null);
-            Assert.AreEqual(null, p.Name);
-            Assert.AreEqual(typeof(string), p.Type);
+            const string Name = null; // null
+
+            var parameter = Expression.Parameter(typeof(string), Name);
+            Assert.AreEqual(Name, parameter.Name);
+            Assert.AreEqual(typeof(string), parameter.Type);
         }
 
         [Test]
         public void ParameterNullType()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Parameter(null, "foo"));
+            const string Name = "foo";
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.Parameter(null, Name));
         }
 
         [Test]
         public void SimpleHoistedParameter()
         {
-            var p = Expression.Parameter(typeof(string), "s");
+            const string Name = "s";
+            const string Value = "x";
 
-            var f = Expression.Lambda<Func<string, Func<string>>>
+            var parameter = Expression.Parameter(typeof(string), Name);
+
+            var method = Expression.Lambda<Func<string, Func<string>>>
             (
-                Expression.Lambda<Func<string>>
-                (
-                    p
-                ),
-                p
+                Expression.Lambda<Func<string>>(parameter),
+                parameter
             ).Compile();
 
-            var f2 = f("x");
-
-            Assert.AreEqual("x", f2());
+            var func = method(Value);
+            
+            Assert.AreEqual(Value, func());
         }
 
         [Test]
         public void TwoHoistingLevels()
         {
-            var p1 = Expression.Parameter(typeof(string), "x");
-            var p2 = Expression.Parameter(typeof(string), "y");
+            const string NameLeft = "x";
+            const string NameRight = "y";
+            const string ValueLeft = "Hello ";
+            const string ValueRight = "World !";
+            const string Result = ValueLeft + ValueRight;
 
-            var e =
-                Expression.Lambda<Func<string, Func<string, Func<string>>>>
+            var parameterLeft = Expression.Parameter(typeof(string), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(string), NameRight);
+
+            var lambda = Expression.Lambda<Func<string, Func<string, Func<string>>>>
                 (
                     Expression.Lambda<Func<string, Func<string>>>
                     (
@@ -235,24 +264,29 @@ namespace MonoTests.System.Linq.Expressions
                         (
                             Expression.Call
                             (
-                                typeof(string).GetMethod("Concat", new[] {typeof(string), typeof(string)}), p1, p2
+                                typeof(string).GetMethod(nameof(string.Concat), new[] {typeof(string), typeof(string)}),
+                                parameterLeft,
+                                parameterRight
                             )
-                        ), p2
-                    ), p1
+                        ),
+                        parameterRight
+                    ),
+                    parameterLeft
                 );
 
-            var f = e.Compile();
-            var f2 = f("Hello ");
-            var f3 = f2("World !");
+            var method = lambda.Compile();
+            var func = method(ValueLeft);
+            var innerFunc = func(ValueRight);
 
-            Assert.AreEqual("Hello World !", f3());
+            Assert.AreEqual(Result, innerFunc());
         }
 
         [Test]
-        [Category("NotDotNet")]
         public void VoidParameter()
         {
-            Assert.Throws<ArgumentException>(() => Expression.Parameter(typeof(void), "hello"));
+            const string Name = "hello";
+
+            AssertEx.Throws<ArgumentException>(() => Expression.Parameter(typeof(void), Name));
         }
     }
 }

@@ -26,8 +26,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -37,18 +41,26 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndBoolItem()
         {
-            var i = Expression.Parameter(typeof(Item<bool>), "i");
-            var and = Expression.Lambda<Func<Item<bool>, bool>>
+            const string Name = "i";
+            const string NameLeft = nameof(Item<bool>.Left);
+            const string NameRight = nameof(Item<bool>.Right);
+            const bool ValueLeft = false;
+            const bool ValueRight = true;
+            const bool Return = ValueLeft & ValueRight;
+
+            var parameter = Expression.Parameter(typeof(Item<bool>), Name);
+            var method = Expression.Lambda<Func<Item<bool>, bool>>
             (
                 Expression.And
                 (
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")
-                ), i
+                    Expression.Property(parameter, NameLeft),
+                    Expression.Property(parameter, NameRight)
+                ),
+                parameter
             ).Compile();
 
-            var item = new Item<bool>(false, true);
-            Assert.AreEqual(false, and(item));
+            var item = new Item<bool>(ValueLeft, ValueRight);
+            Assert.AreEqual(Return, method(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsTrue(item.RightCalled);
         }
@@ -58,10 +70,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(bool?), "a");
             var b = Expression.Parameter(typeof(bool?), "b");
-            var l = Expression.Lambda<Func<bool?, bool?, bool?>>
-            (
-                Expression.And(a, b), a, b
-            );
+            var l = Expression.Lambda<Func<bool?, bool?, bool?>>(Expression.And(a, b), a, b);
 
             var be = l.Body as BinaryExpression;
             Assert.IsNotNull(be);
@@ -79,7 +88,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(null, c(true, null), "a5");
             Assert.AreEqual(false, c(false, null), "a6");
             Assert.AreEqual(false, c(null, false), "a7");
-            Assert.AreEqual(null, c(true, null), "a8");
+            Assert.AreEqual(null, c(null, true), "a8");
             Assert.AreEqual(null, c(null, null), "a9");
         }
 
@@ -88,10 +97,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(bool), "a");
             var b = Expression.Parameter(typeof(bool), "b");
-            var l = Expression.Lambda<Func<bool, bool, bool>>
-            (
-                Expression.And(a, b), a, b
-            );
+            var l = Expression.Lambda<Func<bool, bool, bool>>(Expression.And(a, b), a, b);
 
             var be = l.Body as BinaryExpression;
             Assert.IsNotNull(be);
@@ -112,10 +118,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(int?), "a");
             var b = Expression.Parameter(typeof(int?), "b");
-            var c = Expression.Lambda<Func<int?, int?, int?>>
-            (
-                Expression.And(a, b), a, b
-            ).Compile();
+            var c = Expression.Lambda<Func<int?, int?, int?>>(Expression.And(a, b), a, b).Compile();
 
             Assert.AreEqual((int?)1, c(1, 1), "a1");
             Assert.AreEqual((int?)0, c(1, 0), "a2");
@@ -134,10 +137,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(int), "a");
             var b = Expression.Parameter(typeof(int), "b");
-            var and = Expression.Lambda<Func<int, int, int>>
-            (
-                Expression.And(a, b), a, b
-            ).Compile();
+            var and = Expression.Lambda<Func<int, int, int>>(Expression.And(a, b), a, b).Compile();
 
             Assert.AreEqual(0, and(0, 0), "t1");
             Assert.AreEqual(0, and(0, 1), "t2");
@@ -169,7 +169,8 @@ namespace MonoTests.System.Linq.Expressions
                 (
                     Expression.Property(i, "Left"),
                     Expression.Property(i, "Right")
-                ), i
+                ),
+                i
             ).Compile();
 
             var item = new Item<bool?>(false, true);
@@ -242,7 +243,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("op_BitwiseAnd", expr.Method.Name, "And#12");
             Assert.AreEqual
             (
-                "(value(MonoTests.System.Linq.Expressions.OpClass) & value(MonoTests.System.Linq.Expressions.OpClass))",
+                $"(value({typeof(OpClass).FullName}) & value({typeof(OpClass).FullName}))",
                 expr.ToString(), "And#13"
             );
         }

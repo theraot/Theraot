@@ -25,140 +25,128 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+using Tests.Helpers;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestAddChecked
     {
-        //
-        // This method makes sure that compiling an AddChecked on two values
-        // throws an OverflowException, if it doesnt, it fails
-        //
-        private static void MustOverflow<T>(T v1, T v2)
+        private static void InvalidOperation<T>(T v1, T v2)
         {
-            var l = Expression.Lambda<Func<T>>
+            // SubtractChecked is not defined for small types (byte, sbyte)
+            Assert.Throws<InvalidOperationException>
             (
-                Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
-            );
-            var del = l.Compile();
-            T res;
-            try
-            {
-                res = del();
-            }
-            catch (OverflowException)
-            {
-                // OK
-                return;
-            }
-
-            throw new Exception
-            (
-                string.Format
+                () => Expression.Lambda<Func<T>>
                 (
-                    "AddChecked on {2} should have thrown an exception with values {0} {1}, result was: {3}",
-                    v1, v2, v1.GetType(), res
+                    Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
                 )
             );
         }
 
-        //
-        // This routine should execute the code, but not throw an
-        // overflow exception
-        //
         private static void MustNotOverflow<T>(T v1, T v2)
         {
-            var l = Expression.Lambda<Func<T>>
+            // This routine should execute the code, but not throw an
+            // overflow exception
+            var lambda = Expression.Lambda<Func<T>>
             (
                 Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
             );
-            var del = l.Compile();
-            del();
+            var method = lambda.Compile();
+            method();
         }
 
-        //
-        // SubtractChecked is not defined for small types (byte, sbyte)
-        //
-        private static void InvalidOperation<T>(T v1, T v2)
+        private static void MustOverflow<T>(T v1, T v2)
         {
-            try
-            {
-                Expression.Lambda<Func<T>>
-                (
-                    Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
-                );
-            }
-            catch (InvalidOperationException)
-            {
-                // OK
-                return;
-            }
-
-            throw new Exception(string.Format("AddChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
+            // This method makes sure that compiling an AddChecked on two values
+            // throws an OverflowException, if it does not, it fails
+            var lambda = Expression.Lambda<Func<T>>
+            (
+                Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
+            );
+            var method = lambda.Compile();
+            AssertEx.Throws<OverflowException, T>(method);
         }
 
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.AddChecked(null, Expression.Constant(1)));
+            const int Value = 1;
+
+            Assert.Throws<ArgumentNullException>(() => Expression.AddChecked(null, Expression.Constant(Value)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.AddChecked(Expression.Constant(1), null));
+            const int Value = 1;
+
+            Assert.Throws<ArgumentNullException>(() => Expression.AddChecked(Expression.Constant(Value), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(1), Expression.Constant(2.0)));
+            const int ValueLeft = 1;
+            const double ValueRight = 2.0;
+
+            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
         public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(true), Expression.Constant(false)));
+            const bool ValueLeft = true;
+            const bool ValueRight = false;
+
+            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
+            var valueLeft = new NoOpClass();
+            var valueRight = new NoOpClass();
+
+            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
         public void Nullable()
         {
-            int? a = 1;
-            int? b = 2;
+            int? valueLeft = 1;
+            int? valueRight = 2;
 
-            var expr = Expression.AddChecked(Expression.Constant(a), Expression.Constant(b));
-            Assert.AreEqual(ExpressionType.AddChecked, expr.NodeType, "AddChecked#04");
-            Assert.AreEqual(typeof(int), expr.Type, "AddChecked#05");
-            Assert.IsNull(expr.Method, null, "AddChecked#06");
-            Assert.AreEqual("(1 + 2)", expr.ToString(), "AddChecked#16");
+            var additionExpression = Expression.AddChecked(Expression.Constant(valueLeft), Expression.Constant(valueRight));
+            Assert.AreEqual(ExpressionType.AddChecked, additionExpression.NodeType, "AddChecked#04");
+            Assert.AreEqual(typeof(int), additionExpression.Type, "AddChecked#05");
+            Assert.IsNull(additionExpression.Method, null, "AddChecked#06");
+            Assert.AreEqual($"({valueLeft} + {valueRight})", additionExpression.ToString(), "AddChecked#16");
         }
 
         [Test]
         public void Numeric()
         {
-            var expr = Expression.AddChecked(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.AddChecked, expr.NodeType, "AddChecked#01");
-            Assert.AreEqual(typeof(int), expr.Type, "AddChecked#02");
-            Assert.IsNull(expr.Method, "AddChecked#03");
-            Assert.AreEqual("(1 + 2)", expr.ToString(), "AddChecked#15");
+            const int ValueLeft = 1;
+            const int ValueRight = 2;
+
+            var additionExpression = Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            Assert.AreEqual(ExpressionType.AddChecked, additionExpression.NodeType, "AddChecked#01");
+            Assert.AreEqual(typeof(int), additionExpression.Type, "AddChecked#02");
+            Assert.IsNull(additionExpression.Method, "AddChecked#03");
+            Assert.AreEqual($"({ValueLeft} + {ValueRight})", additionExpression.ToString(), "AddChecked#15");
         }
 
-        //
-        // These should not overflow
-        //
         [Test]
         public void TestNoOverflow()
         {
+            // These should not overflow
             // Simple stuff
             MustNotOverflow(10, 20);
 
@@ -173,7 +161,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void TestOverflows()
         {
-            // These should overflow, check the various types and codepaths
+            // These should overflow, check the various types and code paths
             // in BinaryExpression:
             MustOverflow(int.MaxValue, 1);
             MustOverflow(int.MinValue, -11);
@@ -190,17 +178,18 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Addition");
+            var additionOperator = typeof(OpClass).GetMethod("op_Addition");
 
-            var expr = Expression.AddChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.AddChecked, expr.NodeType, "AddChecked#07");
-            Assert.AreEqual(typeof(OpClass), expr.Type, "AddChecked#08");
-            Assert.AreEqual(mi, expr.Method, "AddChecked#09");
-            Assert.AreEqual("op_Addition", expr.Method.Name, "AddChecked#10");
+            var additionExpression = Expression.AddChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.AddChecked, additionExpression.NodeType, "AddChecked#07");
+            Assert.AreEqual(typeof(OpClass), additionExpression.Type, "AddChecked#08");
+            Assert.AreEqual(additionOperator, additionExpression.Method, "AddChecked#09");
+            Assert.AreEqual("op_Addition", additionExpression.Method.Name, "AddChecked#10");
             Assert.AreEqual
             (
-                "(value(MonoTests.System.Linq.Expressions.OpClass) + value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "AddChecked#17"
+                $"(value({typeof(OpClass).FullName}) + value({typeof(OpClass).FullName}))",
+                additionExpression.ToString(),
+                "AddChecked#17"
             );
         }
 
@@ -209,17 +198,18 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpStruct).GetMethod("op_Addition");
+            var additionOperator = typeof(OpStruct).GetMethod("op_Addition");
 
-            var expr = Expression.AddChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
-            Assert.AreEqual(ExpressionType.AddChecked, expr.NodeType, "AddChecked#11");
-            Assert.AreEqual(typeof(OpStruct), expr.Type, "AddChecked#12");
-            Assert.AreEqual(mi, expr.Method, "AddChecked#13");
-            Assert.AreEqual("op_Addition", expr.Method.Name, "AddChecked#14");
+            var additionExpression = Expression.AddChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
+            Assert.AreEqual(ExpressionType.AddChecked, additionExpression.NodeType, "AddChecked#11");
+            Assert.AreEqual(typeof(OpStruct), additionExpression.Type, "AddChecked#12");
+            Assert.AreEqual(additionOperator, additionExpression.Method, "AddChecked#13");
+            Assert.AreEqual("op_Addition", additionExpression.Method.Name, "AddChecked#14");
             Assert.AreEqual
             (
-                "(value(MonoTests.System.Linq.Expressions.OpStruct) + value(MonoTests.System.Linq.Expressions.OpStruct))",
-                expr.ToString(), "AddChecked#18"
+                $"(value({typeof(OpStruct).FullName}) + value({typeof(OpStruct).FullName}))",
+                additionExpression.ToString(),
+                "AddChecked#18"
             );
         }
     }

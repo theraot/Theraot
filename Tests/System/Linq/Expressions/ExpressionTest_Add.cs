@@ -26,9 +26,15 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using Theraot;
 using NUnit.Framework;
+using Tests.Helpers;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -47,310 +53,353 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public Slot(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static Slot operator +(Slot a, Slot b)
             {
-                return new Slot(a.Value + b.Value);
+                return new Slot(a._value + b._value);
             }
         }
 
         private struct SlotToNullable
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public SlotToNullable(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static SlotToNullable? operator +(SlotToNullable a, SlotToNullable b)
             {
-                return new SlotToNullable(a.Value + b.Value);
+                return new SlotToNullable(a._value + b._value);
+            }
+        }
+
+        private struct SlotFromNullableToNullable
+        {
+            private readonly int _value;
+
+            public SlotFromNullableToNullable(int value)
+            {
+                _value = value;
+            }
+
+            public static SlotFromNullableToNullable? operator +(SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
+            {
+                return a.HasValue && b.HasValue ? (SlotFromNullableToNullable?)new SlotFromNullableToNullable(a.Value._value + b.Value._value) : null;
             }
         }
 
         [Test]
         public void AddDecimals()
         {
-            var l = Expression.Parameter(typeof(decimal), "l");
-            var r = Expression.Parameter(typeof(decimal), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
+            const decimal Value = 1m;
+            const decimal Result = Value + Value;
 
-            var meth = typeof(decimal).GetMethod("op_Addition", new[] {typeof(decimal), typeof(decimal)});
+            var parameterLeft = Expression.Parameter(typeof(decimal), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(decimal), NameRight);
 
-            var node = Expression.Add(l, r);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(decimal), node.Type);
-            Assert.AreEqual(meth, node.Method);
+            var additionOperator = typeof(decimal).GetMethod("op_Addition", new[] {typeof(decimal), typeof(decimal)});
 
-            var add = Expression.Lambda<Func<decimal, decimal, decimal>>(node, l, r).Compile();
+            var additionExpression = Expression.Add(parameterLeft, parameterRight);
+            Assert.IsFalse(additionExpression.IsLifted);
+            Assert.IsFalse(additionExpression.IsLiftedToNull);
+            Assert.AreEqual(typeof(decimal), additionExpression.Type);
+            Assert.AreEqual(additionOperator, additionExpression.Method);
 
-            Assert.AreEqual(2m, add(1m, 1m));
+            var method = Expression.Lambda<Func<decimal, decimal, decimal>>(additionExpression, parameterLeft, parameterRight).Compile();
+
+            Assert.AreEqual(Result, method(Value, Value));
         }
 
         [Test]
         public void AddLifted()
         {
-            var b = Expression.Add
+            var additionExpression = Expression.Add
             (
                 Expression.Constant(null, typeof(int?)),
                 Expression.Constant(null, typeof(int?))
             );
 
-            Assert.AreEqual(typeof(int?), b.Type);
-            Assert.IsTrue(b.IsLifted);
-            Assert.IsTrue(b.IsLiftedToNull);
+            Assert.AreEqual(typeof(int?), additionExpression.Type);
+            Assert.IsTrue(additionExpression.IsLifted);
+            Assert.IsTrue(additionExpression.IsLiftedToNull);
         }
 
         [Test]
         public void AddLiftedDecimals()
         {
-            var l = Expression.Parameter(typeof(decimal?), "l");
-            var r = Expression.Parameter(typeof(decimal?), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
+            const decimal Value = 1m;
+            const decimal Result = Value + Value;
 
-            var meth = typeof(decimal).GetMethod("op_Addition", new[] {typeof(decimal), typeof(decimal)});
+            var parameterLeft = Expression.Parameter(typeof(decimal?), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(decimal?), NameRight);
 
-            var node = Expression.Add(l, r);
-            Assert.IsTrue(node.IsLifted);
-            Assert.IsTrue(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(decimal?), node.Type);
-            Assert.AreEqual(meth, node.Method);
+            var additionOperator = typeof(decimal).GetMethod("op_Addition", new[] {typeof(decimal), typeof(decimal)});
 
-            var add = Expression.Lambda<Func<decimal?, decimal?, decimal?>>(node, l, r).Compile();
+            var additionExpression = Expression.Add(parameterLeft, parameterRight);
+            Assert.IsTrue(additionExpression.IsLifted);
+            Assert.IsTrue(additionExpression.IsLiftedToNull);
+            Assert.AreEqual(typeof(decimal?), additionExpression.Type);
+            Assert.AreEqual(additionOperator, additionExpression.Method);
 
-            Assert.AreEqual(2m, add(1m, 1m));
-            Assert.AreEqual(null, add(1m, null));
+            var add = Expression.Lambda<Func<decimal?, decimal?, decimal?>>(additionExpression, parameterLeft, parameterRight).Compile();
+
+            Assert.AreEqual(Result, add(Value, Value));
+            Assert.AreEqual(null, add(Value, null));
             Assert.AreEqual(null, add(null, null));
         }
 
         [Test]
         public void AddNotLifted()
         {
-            var b = Expression.Add
+            var additionExpression = Expression.Add
             (
                 Expression.Constant(1, typeof(int)),
                 Expression.Constant(1, typeof(int))
             );
 
-            Assert.AreEqual(typeof(int), b.Type);
-            Assert.IsFalse(b.IsLifted);
-            Assert.IsFalse(b.IsLiftedToNull);
+            Assert.AreEqual(typeof(int), additionExpression.Type);
+            Assert.IsFalse(additionExpression.IsLifted);
+            Assert.IsFalse(additionExpression.IsLiftedToNull);
         }
-
-        /*struct SlotFromNullableToNullable {
-			public int Value;
-
-			public SlotFromNullableToNullable (int value)
-			{
-				this.Value = value;
-			}
-
-			public static SlotFromNullableToNullable? operator + (SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
-			{
-				if (a.HasValue && b.HasValue)
-					return (SlotFromNullableToNullable?) new SlotFromNullableToNullable (
-						a.Value.Value + b.Value.Value);
-				else
-					return null;
-			}
-		}
-
-		[Test]
-		public void UserDefinedFromNullableToNullableAdd ()
-		{
-			var l = Expression.Parameter (typeof (SlotFromNullableToNullable?), "l");
-			var r = Expression.Parameter (typeof (SlotFromNullableToNullable?), "r");
-
-			var node = Expression.Add (l, r);
-
-			Assert.IsFalse (node.IsLifted);
-			Assert.IsFalse (node.IsLiftedToNull);
-			Assert.AreEqual (typeof (SlotFromNullableToNullable?), node.Type);
-			Assert.IsNotNull (node.Method);
-
-			var add = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?, SlotFromNullableToNullable?>> (node, l, r).Compile ();
-
-			Assert.AreEqual ((SlotFromNullableToNullable?) null, add (null, null));
-			Assert.AreEqual ((SlotFromNullableToNullable?) null, add (new SlotFromNullableToNullable (2), null));
-			Assert.AreEqual ((SlotFromNullableToNullable?) null, add (null, new SlotFromNullableToNullable (2)));
-			Assert.AreEqual ((SlotFromNullableToNullable?) new SlotFromNullableToNullable (4), add (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (2)));
-			Assert.AreEqual ((SlotFromNullableToNullable?) new SlotFromNullableToNullable (0), add (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (-2)));
-		}*/
 
         [Test]
         public void AddStrings()
         {
-            var l = Expression.Parameter(typeof(string), "l");
-            var r = Expression.Parameter(typeof(string), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
+            const string ValueLeft = "foo";
+            const string ValueRight = "bar";
+            const string Result = ValueLeft + ValueRight;
 
-            var meth = typeof(string).GetMethod("Concat", new[] {typeof(object), typeof(object)});
+            var parameterLeft = Expression.Parameter(typeof(string), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(string), NameRight);
 
-            var node = Expression.Add(l, r, meth);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(string), node.Type);
-            Assert.AreEqual(meth, node.Method);
+            var additionOperator = typeof(string).GetMethod(nameof(string.Concat), new[] {typeof(object), typeof(object)});
 
-            var concat = Expression.Lambda<Func<string, string, string>>(node, l, r).Compile();
+            var additionExpression = Expression.Add(parameterLeft, parameterRight, additionOperator);
+            Assert.IsFalse(additionExpression.IsLifted);
+            Assert.IsFalse(additionExpression.IsLiftedToNull);
+            Assert.AreEqual(typeof(string), additionExpression.Type);
+            Assert.AreEqual(additionOperator, additionExpression.Method);
 
-            Assert.AreEqual(string.Empty, concat(null, null));
-            Assert.AreEqual("foobar", concat("foo", "bar"));
+            var method = Expression.Lambda<Func<string, string, string>>(additionExpression, parameterLeft, parameterRight).Compile();
+
+            Assert.AreEqual(string.Empty, method(null, null));
+            Assert.AreEqual(Result, method(ValueLeft, ValueRight));
         }
 
         [Test]
         public void AddTestNullable()
         {
-            var a = Expression.Parameter(typeof(int?), "a");
-            var b = Expression.Parameter(typeof(int?), "b");
-            var l = Expression.Lambda<Func<int?, int?, int?>>
-            (
-                Expression.Add(a, b), a, b
-            );
+            const string NameLeft = "a";
+            const string NameRight = "b";
+            const int ValueLeft = 1;
+            const int ValueRight = 2;
+            const decimal Result = ValueLeft + ValueRight;
 
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(int?), be.Type);
-            Assert.IsTrue(be.IsLifted);
-            Assert.IsTrue(be.IsLiftedToNull);
+            var parameterLeft = Expression.Parameter(typeof(int?), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(int?), NameRight);
+            var lambda = Expression.Lambda<Func<int?, int?, int?>>(Expression.Add(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
-            var c = l.Compile();
+            var binaryExpression = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(binaryExpression);
+            Assert.AreEqual(typeof(int?), binaryExpression.Type);
+            Assert.IsTrue(binaryExpression.IsLifted);
+            Assert.IsTrue(binaryExpression.IsLiftedToNull);
 
-            Assert.AreEqual(null, c(1, null), "a1");
-            Assert.AreEqual(null, c(null, null), "a2");
-            Assert.AreEqual(null, c(null, 2), "a3");
-            Assert.AreEqual(3, c(1, 2), "a4");
+            var method = lambda.Compile();
+
+            Assert.AreEqual(null, method(ValueLeft, null), "a1");
+            Assert.AreEqual(null, method(null, null), "a2");
+            Assert.AreEqual(null, method(null, ValueRight), "a3");
+            Assert.AreEqual(Result, method(ValueLeft, ValueRight), "a4");
         }
 
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Add(null, Expression.Constant(1)));
+            const int Value = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.Add(null, Expression.Constant(Value)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Add(Expression.Constant(1), null));
+            const int Value = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.Add(Expression.Constant(Value), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(1), Expression.Constant(2.0)));
+            const int ValueLeft = 1;
+            const double ValueRight = 2.0;
+
+            AssertEx.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
         public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(true), Expression.Constant(false)));
+            const bool ValueLeft = true;
+            const bool ValueRight = false;
+
+            AssertEx.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
         public void CompileAdd()
         {
-            var left = Expression.Parameter(typeof(int), "l");
-            var right = Expression.Parameter(typeof(int), "r");
-            var l = Expression.Lambda<Func<int, int, int>>
-            (
-                Expression.Add(left, right), left, right
-            );
+            const string NameLeft = "l";
+            const string NameRight = "r";
 
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(int), be.Type);
-            Assert.IsFalse(be.IsLifted);
-            Assert.IsFalse(be.IsLiftedToNull);
+            const int ValueALeft = 6;
+            const int ValueARight = 6;
+            const int ValueBLeft = -1;
+            const int ValueBRight = 1;
+            const int ValueCLeft = 1;
+            const int ValueCRight = -3;
 
-            var add = l.Compile();
+            const int ResultA = ValueALeft + ValueARight;
+            const int ResultB = ValueBLeft + ValueBRight;
+            const int ResultC = ValueCLeft + ValueCRight;
 
-            Assert.AreEqual(12, add(6, 6));
-            Assert.AreEqual(0, add(-1, 1));
-            Assert.AreEqual(-2, add(1, -3));
+            var left = Expression.Parameter(typeof(int), NameLeft);
+            var right = Expression.Parameter(typeof(int), NameRight);
+            var lambda = Expression.Lambda<Func<int, int, int>>(Expression.Add(left, right), left, right);
+
+            var binaryExpression = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(binaryExpression);
+            Assert.AreEqual(typeof(int), binaryExpression.Type);
+            Assert.IsFalse(binaryExpression.IsLifted);
+            Assert.IsFalse(binaryExpression.IsLiftedToNull);
+
+            var method = lambda.Compile();
+
+            Assert.AreEqual(ResultA, method(ValueALeft, ValueARight));
+            Assert.AreEqual(ResultB, method(ValueBLeft, ValueBRight));
+            Assert.AreEqual(ResultC, method(ValueCLeft, ValueCRight));
         }
 
         [Test]
         public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
         public void Nullable()
         {
-            int? a = 1;
-            int? b = 2;
+            int? valueLeft = 1;
+            int? valueRight = 2;
 
-            var expr = Expression.Add
+            var additionExpression = Expression.Add
             (
-                Expression.Constant(a, typeof(int?)),
-                Expression.Constant(b, typeof(int?))
+                Expression.Constant(valueLeft, typeof(int?)),
+                Expression.Constant(valueRight, typeof(int?))
             );
-            Assert.AreEqual(ExpressionType.Add, expr.NodeType, "Add#05");
-            Assert.AreEqual(typeof(int?), expr.Type, "Add#06");
-            Assert.IsNull(expr.Method, "Add#07");
-            Assert.AreEqual("(1 + 2)", expr.ToString(), "Add#08");
+            Assert.AreEqual(ExpressionType.Add, additionExpression.NodeType, "Add#05");
+            Assert.AreEqual(typeof(int?), additionExpression.Type, "Add#06");
+            Assert.IsNull(additionExpression.Method, "Add#07");
+            Assert.AreEqual($"({valueLeft} + {valueRight})", additionExpression.ToString(), "Add#08");
         }
 
         [Test]
         public void Numeric()
         {
-            var expr = Expression.Add(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.Add, expr.NodeType, "Add#01");
-            Assert.AreEqual(typeof(int), expr.Type, "Add#02");
-            Assert.IsNull(expr.Method, "Add#03");
-            Assert.AreEqual("(1 + 2)", expr.ToString(), "Add#04");
+            const int ValueLeft = 1;
+            const int ValueRight = 2;
+
+            var additionExpression = Expression.Add(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            Assert.AreEqual(ExpressionType.Add, additionExpression.NodeType, "Add#01");
+            Assert.AreEqual(typeof(int), additionExpression.Type, "Add#02");
+            Assert.IsNull(additionExpression.Method, "Add#03");
+            Assert.AreEqual($"({ValueLeft} + {ValueRight})", additionExpression.ToString(), "Add#04");
         }
 
         [Test]
         public void TestMethodAddition()
         {
-            var expr = Expression.Add(Expression.Constant(1), Expression.Constant(2), typeof(S).GetMethod("MyAdder"));
-            var l = Expression.Lambda<Func<int>>(expr);
+            const int ValueLeft = 1;
+            const int ValueRight = 2;
+            var result = S.MyAdder(ValueLeft, ValueRight);
 
-            var compiled = l.Compile();
-            Assert.AreEqual(1000, compiled());
+            var expression = Expression.Add
+            (
+                Expression.Constant(ValueLeft),
+                Expression.Constant(ValueRight),
+                typeof(S).GetMethod(nameof(S.MyAdder))
+            );
+            var lambda = Expression.Lambda<Func<int>>(expression);
+
+            var method = lambda.Compile();
+            Assert.AreEqual(result, method());
         }
 
         [Test]
         public void UserDefinedAdd()
         {
-            var l = Expression.Parameter(typeof(Slot), "l");
-            var r = Expression.Parameter(typeof(Slot), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
 
-            var node = Expression.Add(l, r);
+            const int ValueALeft = 21;
+            const int ValueARight = 21;
+            const int ValueBLeft = 1;
+            const int ValueBRight = -1;
 
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(Slot), node.Type);
+            const int ResultA = ValueALeft + ValueARight;
+            const int ResultB = ValueBLeft + ValueBRight;
 
-            var add = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
+            var parameterLeft = Expression.Parameter(typeof(Slot), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(Slot), NameRight);
 
-            Assert.AreEqual(new Slot(42), add(new Slot(21), new Slot(21)));
-            Assert.AreEqual(new Slot(0), add(new Slot(1), new Slot(-1)));
+            var additionExpression = Expression.Add(parameterLeft, parameterRight);
+
+            Assert.IsFalse(additionExpression.IsLifted);
+            Assert.IsFalse(additionExpression.IsLiftedToNull);
+            Assert.AreEqual(typeof(Slot), additionExpression.Type);
+
+            var method = Expression.Lambda<Func<Slot, Slot, Slot>>(additionExpression, parameterLeft, parameterRight).Compile();
+
+            Assert.AreEqual(new Slot(ResultA), method(new Slot(ValueALeft), new Slot(ValueARight)));
+            Assert.AreEqual(new Slot(ResultB), method(new Slot(ValueBLeft), new Slot(ValueBRight)));
         }
 
         [Test]
         public void UserDefinedAddLifted()
         {
-            var l = Expression.Parameter(typeof(Slot?), "l");
-            var r = Expression.Parameter(typeof(Slot?), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
 
-            var node = Expression.Add(l, r);
+            var parameterLeft = Expression.Parameter(typeof(Slot?), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(Slot?), NameRight);
 
-            Assert.IsTrue(node.IsLifted);
-            Assert.IsTrue(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(Slot?), node.Type);
+            var additionExpression = Expression.Add(parameterLeft, parameterRight);
 
-            var add = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, l, r).Compile();
+            Assert.IsTrue(additionExpression.IsLifted);
+            Assert.IsTrue(additionExpression.IsLiftedToNull);
+            Assert.AreEqual(typeof(Slot?), additionExpression.Type);
 
-            Assert.AreEqual(null, add(null, null));
-            Assert.AreEqual((Slot?)new Slot(42), add(new Slot(21), new Slot(21)));
+            var method = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(additionExpression, parameterLeft, parameterRight).Compile();
+
+            Assert.AreEqual(null, method(null, null));
+            Assert.AreEqual((Slot?)new Slot(42), method(new Slot(21), new Slot(21)));
         }
 
         [Test]
@@ -358,66 +407,100 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Addition");
+            var additionOperator = typeof(OpClass).GetMethod("op_Addition");
 
             var left = new OpClass();
-            var expr = Expression.Add(Expression.Constant(left), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.Add, expr.NodeType, "Add#09");
-            Assert.AreEqual(typeof(OpClass), expr.Type, "Add#10");
-            Assert.AreEqual(mi, expr.Method, "Add#11");
-            Assert.AreEqual("op_Addition", expr.Method.Name, "Add#12");
+            var additionExpression = Expression.Add(Expression.Constant(left), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.Add, additionExpression.NodeType, "Add#09");
+            Assert.AreEqual(typeof(OpClass), additionExpression.Type, "Add#10");
+            Assert.AreEqual(additionOperator, additionExpression.Method, "Add#11");
+            // ReSharper disable once PossibleNullReferenceException
+            Assert.AreEqual("op_Addition", additionExpression.Method.Name, "Add#12");
             Assert.AreEqual
             (
-                "(value(MonoTests.System.Linq.Expressions.OpClass) + value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "Add#13"
+                $"(value({typeof(OpClass).FullName}) + value({typeof(OpClass).FullName}))",
+                additionExpression.ToString(),
+                "Add#13"
             );
 
-            Expression.Lambda<Func<OpClass>>(expr);
+            var lambda = Expression.Lambda<Func<OpClass>>(additionExpression);
 
-#if false
-	//
-	// We do not have support for objects that are not really
-	// constants, like this case.   Need to figure out what to do
-	// with those
-	//
-
-			Func<OpClass> compiled = l.Compile ();
+			var compiled = lambda.Compile();
 			Assert.AreEqual (left, compiled  ());
-#endif
+        }
+
+        [Test]
+        public void UserDefinedFromNullableToNullableAdd()
+        {
+            const string NameLeft = "l";
+            const string NameRight = "r";
+
+            const int ValueA = 2;
+            const int ValueB = -2;
+
+            const int ResultA = ValueA + ValueA;
+            const int ResultB = ValueA + ValueB;
+            
+            var parameterLeft = Expression.Parameter(typeof(SlotFromNullableToNullable?), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(SlotFromNullableToNullable?), NameRight);
+
+            var additionExpression = Expression.Add(parameterLeft, parameterRight);
+
+            Assert.IsFalse(additionExpression.IsLifted);
+            Assert.IsFalse(additionExpression.IsLiftedToNull);
+            Assert.AreEqual(typeof(SlotFromNullableToNullable?), additionExpression.Type);
+            Assert.IsNotNull(additionExpression.Method);
+
+            var method = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?, SlotFromNullableToNullable?>>(additionExpression, parameterLeft, parameterRight).Compile();
+
+            AssertEx.AreEqual(null, method(null, null));
+            AssertEx.AreEqual(null, method(new SlotFromNullableToNullable(ValueA), null));
+            AssertEx.AreEqual(null, method(null, new SlotFromNullableToNullable(ValueA)));
+            AssertEx.AreEqual(new SlotFromNullableToNullable(ResultA), method(new SlotFromNullableToNullable(ValueA), new SlotFromNullableToNullable(ValueA)));
+            AssertEx.AreEqual(new SlotFromNullableToNullable(ResultB), method(new SlotFromNullableToNullable(ValueA), new SlotFromNullableToNullable(ValueB)));
         }
 
         [Test]
         public void UserDefinedToNullableAdd()
         {
-            var l = Expression.Parameter(typeof(SlotToNullable), "l");
-            var r = Expression.Parameter(typeof(SlotToNullable), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
 
-            var node = Expression.Add(l, r);
+            const int ValueA = 2;
+            const int ValueB = -2;
 
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(SlotToNullable?), node.Type);
-            Assert.IsNotNull(node.Method);
+            const int ResultA = ValueA + ValueA;
+            const int ResultB = ValueA + ValueB;
 
-            var add = Expression.Lambda<Func<SlotToNullable, SlotToNullable, SlotToNullable?>>(node, l, r).Compile();
+            var parameterLeft = Expression.Parameter(typeof(SlotToNullable), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(SlotToNullable), NameRight);
 
-            Assert.AreEqual((SlotToNullable?)new SlotToNullable(4), add(new SlotToNullable(2), new SlotToNullable(2)));
-            Assert.AreEqual((SlotToNullable?)new SlotToNullable(0), add(new SlotToNullable(2), new SlotToNullable(-2)));
+            var additionExpression = Expression.Add(parameterLeft, parameterRight);
+
+            Assert.IsFalse(additionExpression.IsLifted);
+            Assert.IsFalse(additionExpression.IsLiftedToNull);
+            Assert.AreEqual(typeof(SlotToNullable?), additionExpression.Type);
+            Assert.IsNotNull(additionExpression.Method);
+
+            var method = Expression.Lambda<Func<SlotToNullable, SlotToNullable, SlotToNullable?>>(additionExpression, parameterLeft, parameterRight).Compile();
+
+            Assert.AreEqual((SlotToNullable?)new SlotToNullable(ResultA), method(new SlotToNullable(ValueA), new SlotToNullable(ValueA)));
+            Assert.AreEqual((SlotToNullable?)new SlotToNullable(ResultB), method(new SlotToNullable(ValueA), new SlotToNullable(ValueB)));
         }
 
         [Test]
         public void UserDefinedToNullableAddFromNullable()
         {
-            Assert.Throws<InvalidOperationException>
+            const string NameLeft = "l";
+            const string NameRight = "r";
+
+            AssertEx.Throws<InvalidOperationException>
             (
-                () =>
-                {
-                    Expression.Add
-                    (
-                        Expression.Parameter(typeof(SlotToNullable?), "l"),
-                        Expression.Parameter(typeof(SlotToNullable?), "r")
-                    );
-                }
+                () => Expression.Add
+                (
+                    Expression.Parameter(typeof(SlotToNullable?), NameLeft),
+                    Expression.Parameter(typeof(SlotToNullable?), NameRight)
+                )
             );
         }
     }

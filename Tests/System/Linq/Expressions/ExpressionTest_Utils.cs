@@ -43,81 +43,101 @@ namespace MonoTests.System.Linq.Expressions
     {
         public static OpClass operator +(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator -(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator *(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator /(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator %(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator &(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator |(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator ^(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator >>(OpClass a, int b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator <<(OpClass a, int b)
         {
+            No.Op(b);
             return a;
         }
 
         public static bool operator true(OpClass a)
         {
+            No.Op(a);
             return false;
         }
 
         public static bool operator false(OpClass a)
         {
+            No.Op(a);
             return false;
         }
 
         public static bool operator >(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
         public static bool operator <(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
         public static bool operator >=(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
         public static bool operator <=(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
@@ -167,13 +187,11 @@ namespace MonoTests.System.Linq.Expressions
             return !ReferenceEquals(a, b);
         }
 
-        //
-        // Required when you have == or !=
-        //
         public override bool Equals(object obj)
         {
+            // Required when you have == or !=
             // Keep cast
-            return this == obj;
+            return this == (OpClass)obj;
         }
 
         public override int GetHashCode()
@@ -220,9 +238,7 @@ namespace MonoTests.System.Linq.Expressions
             return arg;
         }
 
-#pragma warning disable 67
         public event Delegate OnTest;
-#pragma warning restore 67
 
         public void DoNothing()
         {
@@ -239,44 +255,24 @@ namespace MonoTests.System.Linq.Expressions
             return arg;
         }
 
-        public static MethodInfo GetMethodInfo()
-        {
-            return typeof(MemberClass).GetMethod("TestMethod");
-        }
-
-        public static FieldInfo GetRoFieldInfo()
-        {
-            return typeof(MemberClass).GetField("TestField1");
-        }
-
-        public static FieldInfo GetRwFieldInfo()
-        {
-            return typeof(MemberClass).GetField("TestField2");
-        }
-
-        public static PropertyInfo GetRoPropertyInfo()
-        {
-            return typeof(MemberClass).GetProperty("TestProperty1");
-        }
-
         public static PropertyInfo GetRwPropertyInfo()
         {
-            return typeof(MemberClass).GetProperty("TestProperty2");
+            return typeof(MemberClass).GetProperty(nameof(TestProperty2));
         }
 
         public static EventInfo GetEventInfo()
         {
-            return typeof(MemberClass).GetEvent("OnTest");
+            return typeof(MemberClass).GetEvent(nameof(OnTest));
         }
 
         public static FieldInfo GetStaticFieldInfo()
         {
-            return typeof(MemberClass).GetField("StaticField");
+            return typeof(MemberClass).GetField(nameof(StaticField));
         }
 
         public static PropertyInfo GetStaticPropertyInfo()
         {
-            return typeof(MemberClass).GetProperty("StaticProperty");
+            return typeof(MemberClass).GetProperty(nameof(StaticProperty));
         }
     }
 
@@ -284,21 +280,25 @@ namespace MonoTests.System.Linq.Expressions
     {
         public static OpStruct operator +(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpStruct operator -(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpStruct operator *(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpStruct operator &(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
     }
