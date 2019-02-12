@@ -5,7 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Theraot;
 using Theraot.Collections;
+using Theraot.Reflection;
 
 namespace Tests.Helpers
 {
@@ -63,7 +65,21 @@ namespace Tests.Helpers
         public static void AsyncThrows<TException>(Func<Task> func)
             where TException : Exception
         {
-            Assert.Throws<TException>(func.Invoke().Wait);
+            try
+            {
+                func.Invoke().Wait();
+            }
+            catch (AggregateException exception)
+            {
+                Assert.IsTrue(exception.InnerException?.GetType().IsSameOrSubclassOf(typeof(TException)));
+                return;
+            }
+            catch (Exception exception)
+            {
+                Assert.IsTrue(exception.GetType().IsSameOrSubclassOf(typeof(TException)));
+                return;
+            }
+            Assert.Fail();
         }
     }
 }
