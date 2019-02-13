@@ -240,7 +240,7 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             var func = method(Value);
-            
+
             Assert.AreEqual(Value, func());
         }
 

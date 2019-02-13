@@ -440,7 +440,7 @@ namespace MonoTests.System.Linq.Expressions
 
             const int ResultA = ValueA + ValueA;
             const int ResultB = ValueA + ValueB;
-            
+
             var parameterLeft = Expression.Parameter(typeof(SlotFromNullableToNullable?), NameLeft);
             var parameterRight = Expression.Parameter(typeof(SlotFromNullableToNullable?), NameRight);
 
