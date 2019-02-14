@@ -260,22 +260,22 @@ namespace MonoTests.System.Linq.Expressions
             var parameterRight = Expression.Parameter(typeof(string), NameRight);
 
             var lambda = Expression.Lambda<Func<string, Func<string, Func<string>>>>
+            (
+                Expression.Lambda<Func<string, Func<string>>>
                 (
-                    Expression.Lambda<Func<string, Func<string>>>
+                    Expression.Lambda<Func<string>>
                     (
-                        Expression.Lambda<Func<string>>
+                        Expression.Call
                         (
-                            Expression.Call
-                            (
-                                typeof(string).GetMethod(nameof(string.Concat), new[] {typeof(string), typeof(string)}),
-                                parameterLeft,
-                                parameterRight
-                            )
-                        ),
-                        parameterRight
+                            typeof(string).GetMethod(nameof(string.Concat), new[] {typeof(string), typeof(string)}),
+                            parameterLeft,
+                            parameterRight
+                        )
                     ),
-                    parameterLeft
-                );
+                    parameterRight
+                ),
+                parameterLeft
+            );
 
             var compiled = lambda.Compile();
             var func = compiled(ValueLeft);

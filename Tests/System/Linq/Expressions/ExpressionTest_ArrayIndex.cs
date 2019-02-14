@@ -23,10 +23,10 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NUnit.Framework;
-using System;
 
 namespace MonoTests.System.Linq.Expressions
 {

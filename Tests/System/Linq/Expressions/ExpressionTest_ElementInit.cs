@@ -32,8 +32,8 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using Theraot;
 using NUnit.Framework;
+using Theraot;
 
 #if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;

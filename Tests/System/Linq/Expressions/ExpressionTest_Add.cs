@@ -26,9 +26,9 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using Theraot;
 using NUnit.Framework;
 using Tests.Helpers;
+using Theraot;
 
 #if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
@@ -449,8 +449,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var lambda = Expression.Lambda<Func<OpClass>>(binaryExpression);
 
-			var compiled = lambda.Compile();
-			Assert.AreEqual (result, compiled());
+            var compiled = lambda.Compile();
+            Assert.AreEqual(result, compiled());
         }
 
         [Test]

@@ -37,6 +37,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public int Integer { get; set; }
+
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public short Short { get; set; }
         }

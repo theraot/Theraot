@@ -32,8 +32,8 @@ extern alias nunitlinq;
 //
 
 using System;
-using NUnit.Framework;
 using System.Linq.Expressions;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
