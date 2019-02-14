@@ -32,8 +32,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -65,43 +69,43 @@ namespace MonoTests.System.Linq.Expressions
         public void CompiledNotNullableBool()
         {
             var p = Expression.Parameter(typeof(bool?), "i");
-            var not = Expression.Lambda<Func<bool?, bool?>>(Expression.Not(p), p).Compile();
+            var compiled = Expression.Lambda<Func<bool?, bool?>>(Expression.Not(p), p).Compile();
 
-            Assert.AreEqual(null, not(null));
-            Assert.AreEqual((bool?)false, not(true));
-            Assert.AreEqual((bool?)true, not(false));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual((bool?)false, compiled(true));
+            Assert.AreEqual((bool?)true, compiled(false));
         }
 
         [Test]
         public void CompiledNotNullableInt32()
         {
             var p = Expression.Parameter(typeof(int?), "i");
-            var not = Expression.Lambda<Func<int?, int?>>(Expression.Not(p), p).Compile();
+            var compiled = Expression.Lambda<Func<int?, int?>>(Expression.Not(p), p).Compile();
 
-            Assert.AreEqual(null, not(null));
-            Assert.AreEqual((int?)-4, not(3));
-            Assert.AreEqual((int?)2, not(-3));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual((int?)-4, compiled(3));
+            Assert.AreEqual((int?)2, compiled(-3));
         }
 
         [Test]
         public void CompileNotBool()
         {
             var p = Expression.Parameter(typeof(bool), "i");
-            var not = Expression.Lambda<Func<bool, bool>>(Expression.Not(p), p).Compile();
+            var compiled = Expression.Lambda<Func<bool, bool>>(Expression.Not(p), p).Compile();
 
-            Assert.AreEqual(false, not(true));
-            Assert.AreEqual(true, not(false));
+            Assert.AreEqual(false, compiled(true));
+            Assert.AreEqual(true, compiled(false));
         }
 
         [Test]
         public void CompileNotInt32()
         {
             var p = Expression.Parameter(typeof(int), "i");
-            var not = Expression.Lambda<Func<int, int>>(Expression.Not(p), p).Compile();
+            var compiled = Expression.Lambda<Func<int, int>>(Expression.Not(p), p).Compile();
 
-            Assert.AreEqual(-2, not(1));
-            Assert.AreEqual(-4, not(3));
-            Assert.AreEqual(2, not(-3));
+            Assert.AreEqual(-2, compiled(1));
+            Assert.AreEqual(-4, compiled(3));
+            Assert.AreEqual(2, compiled(-3));
         }
 
         [Test]
@@ -172,11 +176,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool?), node.Type);
             Assert.AreEqual(typeof(Slot).GetMethod("op_LogicalNot"), node.Method);
 
-            var not = Expression.Lambda<Func<Slot?, bool?>>(node, s).Compile();
+            var compiled = Expression.Lambda<Func<Slot?, bool?>>(node, s).Compile();
 
-            Assert.AreEqual(null, not(null));
-            Assert.AreEqual(true, not(new Slot(1)));
-            Assert.AreEqual(false, not(new Slot(0)));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual(true, compiled(new Slot(1)));
+            Assert.AreEqual(false, compiled(new Slot(0)));
         }
     }
 }

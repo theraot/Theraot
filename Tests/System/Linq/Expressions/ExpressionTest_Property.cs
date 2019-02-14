@@ -168,30 +168,30 @@ namespace MonoTests.System.Linq.Expressions
         public void TestCompileGetInstanceProperty()
         {
             var p = Expression.Parameter(typeof(Foo), "foo");
-            var fooer = Expression.Lambda<Func<Foo, string>>
+            var compiled = Expression.Lambda<Func<Foo, string>>
             (
                 Expression.Property(p, typeof(Foo).GetProperty("Prop")), p
             ).Compile();
 
-            Assert.AreEqual("foo", fooer(new Foo {Prop = "foo"}));
+            Assert.AreEqual("foo", compiled(new Foo {Prop = "foo"}));
         }
 
         [Test]
         public void TestCompileGetInstancePropertyOnStruct()
         {
             var p = Expression.Parameter(typeof(Bar), "bar");
-            var barer = Expression.Lambda<Func<Bar, string>>
+            var compiled = Expression.Lambda<Func<Bar, string>>
             (
                 Expression.Property(p, typeof(Bar).GetProperty("Prop")), p
             ).Compile();
 
-            Assert.AreEqual("bar", barer(new Bar("bar")));
+            Assert.AreEqual("bar", compiled(new Bar("bar")));
         }
 
         [Test]
         public void TestCompileGetStaticProperty()
         {
-            var sf = Expression.Lambda<Func<string>>
+            var compiled = Expression.Lambda<Func<string>>
             (
                 Expression.Property
                 (
@@ -202,7 +202,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            Assert.AreEqual("StaticFoo", sf());
+            Assert.AreEqual("StaticFoo", compiled());
         }
     }
 }

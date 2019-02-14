@@ -26,8 +26,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -188,7 +192,7 @@ namespace MonoTests.System.Linq.Expressions
         public void OrElseBoolItem()
         {
             var i = Expression.Parameter(typeof(Item<bool>), "i");
-            var and = Expression.Lambda<Func<Item<bool>, bool>>
+            var compiled = Expression.Lambda<Func<Item<bool>, bool>>
             (
                 Expression.OrElse
                 (
@@ -198,7 +202,7 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             var item = new Item<bool>(true, false);
-            Assert.AreEqual(true, and(item));
+            Assert.AreEqual(true, compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
         }
@@ -235,7 +239,7 @@ namespace MonoTests.System.Linq.Expressions
         public void OrElseNullableBoolItem()
         {
             var i = Expression.Parameter(typeof(Item<bool?>), "i");
-            var and = Expression.Lambda<Func<Item<bool?>, bool?>>
+            var compiled = Expression.Lambda<Func<Item<bool?>, bool?>>
             (
                 Expression.OrElse
                 (
@@ -245,7 +249,7 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             var item = new Item<bool?>(true, false);
-            Assert.AreEqual((bool?)true, and(item));
+            Assert.AreEqual((bool?)true, compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
         }
@@ -255,23 +259,23 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(bool), "a");
             var b = Expression.Parameter(typeof(bool), "b");
-            var l = Expression.Lambda<Func<bool, bool, bool>>
+            var lambda = Expression.Lambda<Func<bool, bool, bool>>
             (
                 Expression.OrElse(a, b), a, b
             );
 
-            var be = l.Body as BinaryExpression;
+            var be = lambda.Body as BinaryExpression;
             Assert.IsNotNull(be);
             Assert.AreEqual(typeof(bool), be.Type);
             Assert.IsFalse(be.IsLifted);
             Assert.IsFalse(be.IsLiftedToNull);
 
-            var c = l.Compile();
+            var compiled = lambda.Compile();
 
-            Assert.AreEqual(true, c(true, true), "o1");
-            Assert.AreEqual(true, c(true, false), "o2");
-            Assert.AreEqual(true, c(false, true), "o3");
-            Assert.AreEqual(false, c(false, false), "o4");
+            Assert.AreEqual(true, compiled(true, true), "o1");
+            Assert.AreEqual(true, compiled(true, false), "o2");
+            Assert.AreEqual(true, compiled(false, true), "o3");
+            Assert.AreEqual(false, compiled(false, false), "o4");
         }
 
         [Test]
@@ -279,29 +283,29 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(bool?), "a");
             var b = Expression.Parameter(typeof(bool?), "b");
-            var l = Expression.Lambda<Func<bool?, bool?, bool?>>
+            var lambda = Expression.Lambda<Func<bool?, bool?, bool?>>
             (
                 Expression.OrElse(a, b), a, b
             );
 
-            var be = l.Body as BinaryExpression;
+            var be = lambda.Body as BinaryExpression;
             Assert.IsNotNull(be);
             Assert.AreEqual(typeof(bool?), be.Type);
             Assert.IsTrue(be.IsLifted);
             Assert.IsTrue(be.IsLiftedToNull);
 
-            var c = l.Compile();
+            var compiled = lambda.Compile();
 
-            Assert.AreEqual(true, c(true, true), "o1");
-            Assert.AreEqual(true, c(true, false), "o2");
-            Assert.AreEqual(true, c(false, true), "o3");
-            Assert.AreEqual(false, c(false, false), "o4");
+            Assert.AreEqual(true, compiled(true, true), "o1");
+            Assert.AreEqual(true, compiled(true, false), "o2");
+            Assert.AreEqual(true, compiled(false, true), "o3");
+            Assert.AreEqual(false, compiled(false, false), "o4");
 
-            Assert.AreEqual(true, c(true, null), "o5");
-            Assert.AreEqual(null, c(false, null), "o6");
-            Assert.AreEqual(null, c(null, false), "o7");
-            Assert.AreEqual(true, c(true, null), "o8");
-            Assert.AreEqual(null, c(null, null), "o9");
+            Assert.AreEqual(true, compiled(true, null), "o5");
+            Assert.AreEqual(null, compiled(false, null), "o6");
+            Assert.AreEqual(null, compiled(null, false), "o7");
+            Assert.AreEqual(true, compiled(true, null), "o8");
+            Assert.AreEqual(null, compiled(null, null), "o9");
         }
 
         [Test]
@@ -323,7 +327,7 @@ namespace MonoTests.System.Linq.Expressions
         public void UserDefinedLiftedOrElseShortCircuit()
         {
             var i = Expression.Parameter(typeof(Item<Slot?>), "i");
-            var orelse = Expression.Lambda<Func<Item<Slot?>, Slot?>>
+            var compiled = Expression.Lambda<Func<Item<Slot?>, Slot?>>
             (
                 Expression.OrElse
                 (
@@ -333,7 +337,7 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             var item = new Item<Slot?>(new Slot(1), null);
-            Assert.AreEqual((Slot?)new Slot(1), orelse(item));
+            Assert.AreEqual((Slot?)new Slot(1), compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
         }
@@ -351,17 +355,17 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(node.IsLiftedToNull);
             Assert.AreEqual(method, node.Method);
 
-            var orelse = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
 
-            Assert.AreEqual(new Slot(64), orelse(new Slot(64), new Slot(64)));
-            Assert.AreEqual(new Slot(32), orelse(new Slot(32), new Slot(64)));
+            Assert.AreEqual(new Slot(64), compiled(new Slot(64), new Slot(64)));
+            Assert.AreEqual(new Slot(32), compiled(new Slot(32), new Slot(64)));
         }
 
         [Test]
         public void UserDefinedOrElseShortCircuit()
         {
             var i = Expression.Parameter(typeof(Item<Slot>), "i");
-            var orelse = Expression.Lambda<Func<Item<Slot>, Slot>>
+            var compiled = Expression.Lambda<Func<Item<Slot>, Slot>>
             (
                 Expression.OrElse
                 (
@@ -371,7 +375,7 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             var item = new Item<Slot>(new Slot(1), new Slot(0));
-            Assert.AreEqual(new Slot(1), orelse(item));
+            Assert.AreEqual(new Slot(1), compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
         }

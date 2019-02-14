@@ -65,9 +65,9 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.Bind(typeof(Slot).GetProperty("Integer"), i),
                 Expression.Bind(typeof(Slot).GetProperty("Short"), s)
             );
-            var getSlot = Expression.Lambda<Func<int, short, Slot>>(memberInitExpression, i, s).Compile();
+            var compiled = Expression.Lambda<Func<int, short, Slot>>(memberInitExpression, i, s).Compile();
 
-            Assert.AreEqual(new Slot {Integer = 42, Short = -1}, getSlot(42, -1));
+            Assert.AreEqual(new Slot {Integer = 42, Short = -1}, compiled(42, -1));
         }
 
         [Test]

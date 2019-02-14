@@ -32,8 +32,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -120,23 +124,23 @@ namespace MonoTests.System.Linq.Expressions
         public void CompiledNegateNullableInt32()
         {
             var p = Expression.Parameter(typeof(int?), "i");
-            var negate = Expression.Lambda<Func<int?, int?>>(Expression.Negate(p), p).Compile();
+            var compiled = Expression.Lambda<Func<int?, int?>>(Expression.Negate(p), p).Compile();
 
-            Assert.AreEqual(null, negate(null));
-            Assert.AreEqual((int?)-2, negate(2));
-            Assert.AreEqual((int?)0, negate(0));
-            Assert.AreEqual((int?)3, negate(-3));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual((int?)-2, compiled(2));
+            Assert.AreEqual((int?)0, compiled(0));
+            Assert.AreEqual((int?)3, compiled(-3));
         }
 
         [Test]
         public void CompileNegateInt32()
         {
             var p = Expression.Parameter(typeof(int), "i");
-            var negate = Expression.Lambda<Func<int, int>>(Expression.Negate(p), p).Compile();
+            var compiled = Expression.Lambda<Func<int, int>>(Expression.Negate(p), p).Compile();
 
-            Assert.AreEqual(-2, negate(2));
-            Assert.AreEqual(0, negate(0));
-            Assert.AreEqual(3, negate(-3));
+            Assert.AreEqual(-2, compiled(2));
+            Assert.AreEqual(0, compiled(0));
+            Assert.AreEqual(3, compiled(-3));
         }
 
         [Test]
@@ -176,9 +180,9 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(decimal), node.Type);
             Assert.AreEqual(meth, node.Method);
 
-            var neg = Expression.Lambda<Func<decimal, decimal>>(node, d).Compile();
+            var compiled = Expression.Lambda<Func<decimal, decimal>>(node, d).Compile();
 
-            Assert.AreEqual(-2m, neg(2m));
+            Assert.AreEqual(-2m, compiled(2m));
         }
 
         [Test]
@@ -194,10 +198,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(decimal?), node.Type);
             Assert.AreEqual(meth, node.Method);
 
-            var neg = Expression.Lambda<Func<decimal?, decimal?>>(node, d).Compile();
+            var compiled = Expression.Lambda<Func<decimal?, decimal?>>(node, d).Compile();
 
-            Assert.AreEqual(-2m, neg(2m));
-            Assert.AreEqual(null, neg(null));
+            Assert.AreEqual(-2m, compiled(2m));
+            Assert.AreEqual(null, compiled(null));
         }
 
         [Test]
@@ -239,10 +243,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(node.IsLiftedToNull);
             Assert.AreEqual(typeof(Slot), node.Type);
 
-            var negate = Expression.Lambda<Func<Slot, Slot>>(node, s).Compile();
+            var compiled = Expression.Lambda<Func<Slot, Slot>>(node, s).Compile();
 
-            Assert.AreEqual(new Slot(-2), negate(new Slot(2)));
-            Assert.AreEqual(new Slot(42), negate(new Slot(-42)));
+            Assert.AreEqual(new Slot(-2), compiled(new Slot(2)));
+            Assert.AreEqual(new Slot(42), compiled(new Slot(-42)));
         }
 
         [Test]
@@ -254,11 +258,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(node.IsLiftedToNull);
             Assert.AreEqual(typeof(SlotFromNullable), node.Type);
 
-            var negate = Expression.Lambda<Func<SlotFromNullable?, SlotFromNullable>>(node, s).Compile();
+            var compiled = Expression.Lambda<Func<SlotFromNullable?, SlotFromNullable>>(node, s).Compile();
 
-            Assert.AreEqual(new SlotFromNullable(-2), negate(new SlotFromNullable(2)));
-            Assert.AreEqual(new SlotFromNullable(42), negate(new SlotFromNullable(-42)));
-            Assert.AreEqual(new SlotFromNullable(-1), negate(null));
+            Assert.AreEqual(new SlotFromNullable(-2), compiled(new SlotFromNullable(2)));
+            Assert.AreEqual(new SlotFromNullable(42), compiled(new SlotFromNullable(-42)));
+            Assert.AreEqual(new SlotFromNullable(-1), compiled(null));
         }
 
         [Test]
@@ -270,14 +274,14 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(node.IsLiftedToNull);
             Assert.AreEqual(typeof(SlotFromNullableToNullable?), node.Type);
 
-            var negate = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?>>
+            var compiled = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?>>
             (
                 node, s
             ).Compile();
 
-            Assert.AreEqual(new SlotFromNullableToNullable(-2), negate(new SlotFromNullableToNullable(2)));
-            Assert.AreEqual(new SlotFromNullableToNullable(42), negate(new SlotFromNullableToNullable(-42)));
-            Assert.AreEqual(null, negate(null));
+            Assert.AreEqual(new SlotFromNullableToNullable(-2), compiled(new SlotFromNullableToNullable(2)));
+            Assert.AreEqual(new SlotFromNullableToNullable(42), compiled(new SlotFromNullableToNullable(-42)));
+            Assert.AreEqual(null, compiled(null));
         }
 
         [Test]
@@ -289,11 +293,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsTrue(node.IsLiftedToNull);
             Assert.AreEqual(typeof(Slot?), node.Type);
 
-            var negate = Expression.Lambda<Func<Slot?, Slot?>>(node, s).Compile();
+            var compiled = Expression.Lambda<Func<Slot?, Slot?>>(node, s).Compile();
 
-            Assert.AreEqual(null, negate(null));
-            Assert.AreEqual(new Slot(42), negate(new Slot(-42)));
-            Assert.AreEqual(new Slot(-2), negate(new Slot(2)));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual(new Slot(42), compiled(new Slot(-42)));
+            Assert.AreEqual(new Slot(-2), compiled(new Slot(2)));
         }
 
         [Test]
@@ -311,10 +315,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(node.IsLiftedToNull);
             Assert.AreEqual(typeof(SlotToNullable?), node.Type);
 
-            var negate = Expression.Lambda<Func<SlotToNullable, SlotToNullable?>>(node, s).Compile();
+            var compiled = Expression.Lambda<Func<SlotToNullable, SlotToNullable?>>(node, s).Compile();
 
-            Assert.AreEqual((SlotToNullable?)new SlotToNullable(42), negate(new SlotToNullable(-42)));
-            Assert.AreEqual((SlotToNullable?)new SlotToNullable(-2), negate(new SlotToNullable(2)));
+            Assert.AreEqual((SlotToNullable?)new SlotToNullable(42), compiled(new SlotToNullable(-42)));
+            Assert.AreEqual((SlotToNullable?)new SlotToNullable(-2), compiled(new SlotToNullable(2)));
         }
     }
 }

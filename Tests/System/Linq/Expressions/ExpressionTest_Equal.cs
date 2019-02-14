@@ -27,8 +27,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -148,10 +152,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNull(node.Method);
 
-            var eq = Expression.Lambda<Func<Foo, Foo, bool>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Foo, Foo, bool>>(node, l, r).Compile();
 
-            Assert.AreEqual(true, eq(Foo.Bar, Foo.Bar));
-            Assert.AreEqual(false, eq(Foo.Bar, Foo.Baz));
+            Assert.AreEqual(true, compiled(Foo.Bar, Foo.Bar));
+            Assert.AreEqual(false, compiled(Foo.Bar, Foo.Baz));
         }
 
         [Test]
@@ -166,12 +170,12 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNull(node.Method);
 
-            var eq = Expression.Lambda<Func<Foo?, Foo?, bool>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Foo?, Foo?, bool>>(node, l, r).Compile();
 
-            Assert.AreEqual(true, eq(Foo.Bar, Foo.Bar));
-            Assert.AreEqual(false, eq(Foo.Bar, Foo.Baz));
-            Assert.AreEqual(false, eq(Foo.Bar, null));
-            Assert.AreEqual(true, eq(null, null));
+            Assert.AreEqual(true, compiled(Foo.Bar, Foo.Bar));
+            Assert.AreEqual(false, compiled(Foo.Bar, Foo.Baz));
+            Assert.AreEqual(false, compiled(Foo.Bar, null));
+            Assert.AreEqual(true, compiled(null, null));
         }
 
         [Test]
@@ -307,11 +311,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNull(node.Method);
 
-            var eq = Expression.Lambda<Func<bool?, bool?, bool>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<bool?, bool?, bool>>(node, l, r).Compile();
 
-            Assert.AreEqual(false, eq(true, null));
-            Assert.AreEqual(true, eq(null, null));
-            Assert.AreEqual(true, eq(false, false));
+            Assert.AreEqual(false, compiled(true, null));
+            Assert.AreEqual(true, compiled(null, null));
+            Assert.AreEqual(true, compiled(false, false));
         }
 
         [Test]
@@ -320,18 +324,18 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var eq = Expression.Lambda<Func<int?, int?, bool>>
+            var compiled = Expression.Lambda<Func<int?, int?, bool>>
             (
                 Expression.Equal(l, r), l, r
             ).Compile();
 
-            Assert.IsTrue(eq(null, null));
-            Assert.IsFalse(eq(null, 1));
-            Assert.IsFalse(eq(1, null));
-            Assert.IsFalse(eq(1, 2));
-            Assert.IsTrue(eq(1, 1));
-            Assert.IsFalse(eq(null, 0));
-            Assert.IsFalse(eq(0, null));
+            Assert.IsTrue(compiled(null, null));
+            Assert.IsFalse(compiled(null, 1));
+            Assert.IsFalse(compiled(1, null));
+            Assert.IsFalse(compiled(1, 2));
+            Assert.IsTrue(compiled(1, 1));
+            Assert.IsFalse(compiled(null, 0));
+            Assert.IsFalse(compiled(0, null));
         }
 
         [Test]
@@ -340,18 +344,18 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var eq = Expression.Lambda<Func<int?, int?, bool?>>
+            var compiled = Expression.Lambda<Func<int?, int?, bool?>>
             (
                 Expression.Equal(l, r, true, null), l, r
             ).Compile();
 
-            Assert.AreEqual(null, eq(null, null));
-            Assert.AreEqual(null, eq(null, 1));
-            Assert.AreEqual(null, eq(1, null));
-            Assert.AreEqual((bool?)false, eq(1, 2));
-            Assert.AreEqual((bool?)true, eq(1, 1));
-            Assert.AreEqual(null, eq(null, 0));
-            Assert.AreEqual(null, eq(0, null));
+            Assert.AreEqual(null, compiled(null, null));
+            Assert.AreEqual(null, compiled(null, 1));
+            Assert.AreEqual(null, compiled(1, null));
+            Assert.AreEqual((bool?)false, compiled(1, 2));
+            Assert.AreEqual((bool?)true, compiled(1, 1));
+            Assert.AreEqual(null, compiled(null, 0));
+            Assert.AreEqual(null, compiled(0, null));
         }
 
         [Test]
@@ -366,10 +370,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNull(node.Method);
 
-            var eq = Expression.Lambda<Func<DateTime?, bool>>(node, param).Compile();
+            var compiled = Expression.Lambda<Func<DateTime?, bool>>(node, param).Compile();
 
-            Assert.AreEqual(true, eq(null));
-            Assert.AreEqual(false, eq(DateTime.Now));
+            Assert.AreEqual(true, compiled(null));
+            Assert.AreEqual(false, compiled(DateTime.Now));
         }
 
         [Test]
@@ -389,8 +393,8 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), expr.Type);
             Assert.IsNull(expr.Method);
 
-            var eq = Expression.Lambda<Func<bool>>(expr).Compile();
-            Assert.IsFalse(eq());
+            var compiled = Expression.Lambda<Func<bool>>(expr).Compile();
+            Assert.IsFalse(compiled());
         }
 
         [Test]
@@ -426,10 +430,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var eq = Expression.Lambda<Func<Slot, Slot, bool>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot, Slot, bool>>(node, l, r).Compile();
 
-            Assert.AreEqual(true, eq(new Slot(21), new Slot(21)));
-            Assert.AreEqual(false, eq(new Slot(1), new Slot(-1)));
+            Assert.AreEqual(true, compiled(new Slot(21), new Slot(21)));
+            Assert.AreEqual(false, compiled(new Slot(1), new Slot(-1)));
         }
 
         [Test]
@@ -445,12 +449,12 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var eq = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
 
-            Assert.AreEqual(true, eq(null, null));
-            Assert.AreEqual(false, eq(new Slot(2), null));
-            Assert.AreEqual(false, eq(null, new Slot(2)));
-            Assert.AreEqual(true, eq(new Slot(21), new Slot(21)));
+            Assert.AreEqual(true, compiled(null, null));
+            Assert.AreEqual(false, compiled(new Slot(2), null));
+            Assert.AreEqual(false, compiled(null, new Slot(2)));
+            Assert.AreEqual(true, compiled(new Slot(21), new Slot(21)));
         }
 
         [Test]
@@ -466,13 +470,13 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool?), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var eq = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
 
-            Assert.AreEqual(null, eq(null, null));
-            Assert.AreEqual(null, eq(new Slot(2), null));
-            Assert.AreEqual(null, eq(null, new Slot(2)));
-            Assert.AreEqual((bool?)true, eq(new Slot(21), new Slot(21)));
-            Assert.AreEqual((bool?)false, eq(new Slot(21), new Slot(-21)));
+            Assert.AreEqual(null, compiled(null, null));
+            Assert.AreEqual(null, compiled(new Slot(2), null));
+            Assert.AreEqual(null, compiled(null, new Slot(2)));
+            Assert.AreEqual((bool?)true, compiled(new Slot(21), new Slot(21)));
+            Assert.AreEqual((bool?)false, compiled(new Slot(21), new Slot(-21)));
         }
 
         [Test]
@@ -488,10 +492,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool?), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var eq = Expression.Lambda<Func<SlotToNullable, SlotToNullable, bool?>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<SlotToNullable, SlotToNullable, bool?>>(node, l, r).Compile();
 
-            Assert.AreEqual((bool?)true, eq(new SlotToNullable(2), new SlotToNullable(2)));
-            Assert.AreEqual((bool?)false, eq(new SlotToNullable(2), new SlotToNullable(-2)));
+            Assert.AreEqual((bool?)true, compiled(new SlotToNullable(2), new SlotToNullable(2)));
+            Assert.AreEqual((bool?)false, compiled(new SlotToNullable(2), new SlotToNullable(-2)));
         }
 
         [Test]

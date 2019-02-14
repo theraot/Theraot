@@ -34,9 +34,9 @@ namespace MonoTests.System.Linq.Expressions
     {
         private static T Check<T>(T val)
         {
-            var l = Expression.Lambda<Func<T>>(Expression.Constant(val));
-            var fi = l.Compile();
-            return fi();
+            var lambda = Expression.Lambda<Func<T>>(Expression.Constant(val));
+            var compiled = lambda.Compile();
+            return compiled();
         }
 
         private delegate void Foo();
@@ -152,9 +152,9 @@ namespace MonoTests.System.Linq.Expressions
         {
             var date = new DateTime(1983, 2, 6);
 
-            var lambda = Expression.Lambda<Func<DateTime>>(Expression.Constant(date)).Compile();
+            var compiled = Expression.Lambda<Func<DateTime>>(Expression.Constant(date)).Compile();
 
-            Assert.AreEqual(date, lambda());
+            Assert.AreEqual(date, compiled());
         }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
@@ -162,54 +162,54 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void EmitDbNullConstant()
         {
-            var lambda = Expression.Lambda<Func<DBNull>>(Expression.Constant(DBNull.Value)).Compile();
+            var compiled = Expression.Lambda<Func<DBNull>>(Expression.Constant(DBNull.Value)).Compile();
 
-            Assert.AreEqual(DBNull.Value, lambda());
+            Assert.AreEqual(DBNull.Value, compiled());
         }
 #endif
 
         [Test]
         public void EmitNullableEnum()
         {
-            var e = Expression.Lambda<Func<Chose?>>
+            var compiled = Expression.Lambda<Func<Chose?>>
             (
                 Expression.Constant((Chose?)Chose.Moche, typeof(Chose?))
             ).Compile();
 
-            Assert.AreEqual((Chose?)Chose.Moche, e());
+            Assert.AreEqual((Chose?)Chose.Moche, compiled());
         }
 
         [Test]
         public void EmitNullableInt()
         {
-            var i = Expression.Lambda<Func<int?>>
+            var compiled = Expression.Lambda<Func<int?>>
             (
                 Expression.Constant((int?)42, typeof(int?))
             ).Compile();
 
-            Assert.AreEqual((int?)42, i());
+            Assert.AreEqual((int?)42, compiled());
         }
 
         [Test]
         public void EmitNullNullableType()
         {
-            var n = Expression.Lambda<Func<int?>>
+            var compiled = Expression.Lambda<Func<int?>>
             (
                 Expression.Constant(null, typeof(int?))
             ).Compile();
 
-            Assert.IsNull(n());
+            Assert.IsNull(compiled());
         }
 
         [Test]
         public void EmitNullString()
         {
-            var n = Expression.Lambda<Func<string>>
+            var compiled = Expression.Lambda<Func<string>>
             (
                 Expression.Constant(null, typeof(string))
             ).Compile();
 
-            Assert.IsNull(n());
+            Assert.IsNull(compiled());
         }
 
         [Test]

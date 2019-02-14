@@ -25,8 +25,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -39,15 +43,15 @@ namespace MonoTests.System.Linq.Expressions
         //
         private static void MustOverflow<T>(T v1, T v2)
         {
-            var l = Expression.Lambda<Func<T>>
+            var lambda = Expression.Lambda<Func<T>>
             (
                 Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
             );
-            var del = l.Compile();
+            var compiled = lambda.Compile();
             T res;
             try
             {
-                res = del();
+                res = compiled();
             }
             catch (OverflowException)
             {
@@ -71,12 +75,12 @@ namespace MonoTests.System.Linq.Expressions
         //
         private static void MustNotOverflow<T>(T v1, T v2)
         {
-            var l = Expression.Lambda<Func<T>>
+            var lambda = Expression.Lambda<Func<T>>
             (
                 Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
             );
-            var del = l.Compile();
-            del();
+            var compiled = lambda.Compile();
+            compiled();
         }
 
         //

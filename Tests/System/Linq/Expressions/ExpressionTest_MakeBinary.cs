@@ -116,8 +116,8 @@ namespace MonoTests.System.Linq.Expressions
                 throw new ArgumentNullException("bin");
             }
 
-            var lambda = Expression.Lambda<Func<T>>(bin(v1.ToConstant(), v2.ToConstant())).Compile();
-            return lambda();
+            var compiled = Expression.Lambda<Func<T>>(bin(v1.ToConstant(), v2.ToConstant())).Compile();
+            return compiled();
         }
 
         private void CTest<T>(ExpressionType node, bool r, T a, T b)
@@ -126,12 +126,12 @@ namespace MonoTests.System.Linq.Expressions
             var pb = Expression.Parameter(typeof(T), "b");
 
             var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
-            var pexpr = Expression.Lambda<Func<T, T, bool>>
+            var lambda = Expression.Lambda<Func<T, T, bool>>
             (
                 p, pa, pb
             );
 
-            var compiled = pexpr.Compile();
+            var compiled = lambda.Compile();
             Assert.AreEqual(r, compiled(a, b), string.Format("{0} ({1},{2}) == {3}", node, a, b, r));
         }
 

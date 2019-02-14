@@ -25,8 +25,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -62,22 +66,22 @@ namespace MonoTests.System.Linq.Expressions
         {
             var left = Expression.Parameter(typeof(int), "l");
             var right = Expression.Parameter(typeof(int), "r");
-            var l = Expression.Lambda<Func<int, int, int>>
+            var lambda = Expression.Lambda<Func<int, int, int>>
             (
                 Expression.Multiply(left, right), left, right
             );
 
-            var be = l.Body as BinaryExpression;
+            var be = lambda.Body as BinaryExpression;
             Assert.IsNotNull(be);
             Assert.AreEqual(typeof(int), be.Type);
             Assert.IsFalse(be.IsLifted);
             Assert.IsFalse(be.IsLiftedToNull);
 
-            var c = l.Compile();
+            var compiled = lambda.Compile();
 
-            Assert.AreEqual(36, c(6, 6));
-            Assert.AreEqual(-1, c(-1, 1));
-            Assert.AreEqual(-3, c(1, -3));
+            Assert.AreEqual(36, compiled(6, 6));
+            Assert.AreEqual(-1, compiled(-1, 1));
+            Assert.AreEqual(-3, compiled(1, -3));
         }
 
         [Test]

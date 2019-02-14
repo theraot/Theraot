@@ -74,7 +74,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompiledMemberBinding()
         {
-            var getfoo = Expression.Lambda<Func<Foo>>
+            var compiled = Expression.Lambda<Func<Foo>>
             (
                 Expression.MemberInit
                 (
@@ -96,7 +96,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            var foo = getfoo();
+            var foo = compiled();
 
             Assert.IsNotNull(foo);
             Assert.AreEqual("tzap", foo.Gazoo.Tzap);

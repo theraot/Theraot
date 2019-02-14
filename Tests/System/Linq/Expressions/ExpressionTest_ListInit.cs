@@ -34,9 +34,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
 using Theraot;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -76,7 +80,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var add = typeof(ArrayList).GetMethod("Add");
 
-            var c = Expression.Lambda<Func<ArrayList>>
+            var compiled = Expression.Lambda<Func<ArrayList>>
             (
                 Expression.ListInit
                 (
@@ -86,7 +90,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            var list = c();
+            var list = compiled();
 
             Assert.IsNotNull(list);
             Assert.AreEqual(2, list.Count);
@@ -99,7 +103,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var add = typeof(List<string>).GetMethod("Add");
 
-            var c = Expression.Lambda<Func<List<string>>>
+            var compiled = Expression.Lambda<Func<List<string>>>
             (
                 Expression.ListInit
                 (
@@ -109,7 +113,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            var list = c();
+            var list = compiled();
 
             Assert.IsNotNull(list);
             Assert.AreEqual(2, list.Count);

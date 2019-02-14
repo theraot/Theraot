@@ -32,8 +32,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -50,11 +54,11 @@ namespace MonoTests.System.Linq.Expressions
         public void CompilePlusInt32()
         {
             var p = Expression.Parameter(typeof(int), "i");
-            var plus = Expression.Lambda<Func<int, int>>(Expression.UnaryPlus(p), p).Compile();
+            var compiled = Expression.Lambda<Func<int, int>>(Expression.UnaryPlus(p), p).Compile();
 
-            Assert.AreEqual(-2, plus(-2));
-            Assert.AreEqual(0, plus(0));
-            Assert.AreEqual(3, plus(3));
+            Assert.AreEqual(-2, compiled(-2));
+            Assert.AreEqual(0, compiled(0));
+            Assert.AreEqual(3, compiled(3));
         }
 
         [Test]

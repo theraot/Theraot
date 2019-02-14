@@ -84,16 +84,16 @@ namespace MonoTests.System.Linq.Expressions
             var a = Expression.Parameter(typeof(double?), "a");
             var b = Expression.Parameter(typeof(double?), "b");
 
-            var power = Expression.Lambda<Func<double?, double?, double?>>
+            var compiled = Expression.Lambda<Func<double?, double?, double?>>
             (
                 Expression.Power(a, b), a, b
             ).Compile();
 
-            Assert.AreEqual((double?)1, power(1, 10));
-            Assert.AreEqual((double?)16, power(2, 4));
-            Assert.AreEqual(null, power(1, null));
-            Assert.AreEqual(null, power(null, 1));
-            Assert.AreEqual(null, power(null, null));
+            Assert.AreEqual((double?)1, compiled(1, 10));
+            Assert.AreEqual((double?)16, compiled(2, 4));
+            Assert.AreEqual(null, compiled(1, null));
+            Assert.AreEqual(null, compiled(null, 1));
+            Assert.AreEqual(null, compiled(null, null));
         }
 
         [Test]
@@ -102,13 +102,13 @@ namespace MonoTests.System.Linq.Expressions
             var a = Expression.Parameter(typeof(double), "a");
             var b = Expression.Parameter(typeof(double), "b");
 
-            var power = Expression.Lambda<Func<double, double, double>>
+            var compiled = Expression.Lambda<Func<double, double, double>>
             (
                 Expression.Power(a, b), a, b
             ).Compile();
 
-            Assert.AreEqual(1, power(1, 10));
-            Assert.AreEqual(16, power(2, 4));
+            Assert.AreEqual(1, compiled(1, 10));
+            Assert.AreEqual(16, compiled(2, 4));
         }
     }
 }

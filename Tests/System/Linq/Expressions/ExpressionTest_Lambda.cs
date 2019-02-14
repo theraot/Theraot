@@ -27,8 +27,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -84,12 +88,12 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Compile()
         {
-            var l = Expression.Lambda<Func<int>>(Expression.Constant(1));
-            Assert.AreEqual(typeof(Func<int>), l.Type);
-            Assert.AreEqual("() => 1", l.ToString());
+            var lambda = Expression.Lambda<Func<int>>(Expression.Constant(1));
+            Assert.AreEqual(typeof(Func<int>), lambda.Type);
+            Assert.AreEqual("() => 1", lambda.ToString());
 
-            var fi = l.Compile();
-            fi();
+            var compiled = lambda.Compile();
+            compiled();
         }
 
         [Test]
@@ -179,7 +183,7 @@ namespace MonoTests.System.Linq.Expressions
             var pi = Expression.Parameter(typeof(int), "i");
             var identity = Expression.Lambda<Func<int, int>>(pi, pi);
 
-            var l = Expression.Lambda<Func<int>>
+            var compiled = Expression.Lambda<Func<int>>
             (
                 Expression.Call
                 (
@@ -188,7 +192,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            Assert.AreEqual(42, l());
+            Assert.AreEqual(42, compiled());
         }
 
         [Test]
@@ -197,7 +201,7 @@ namespace MonoTests.System.Linq.Expressions
             var a = Expression.Parameter(typeof(int), "a");
             var b = Expression.Parameter(typeof(int), "b");
 
-            var l = Expression.Lambda<Func<int, int>>
+            var compiled = Expression.Lambda<Func<int, int>>
             (
                 Expression.Call
                 (
@@ -210,7 +214,7 @@ namespace MonoTests.System.Linq.Expressions
                 a
             ).Compile();
 
-            Assert.AreEqual(84, l(2));
+            Assert.AreEqual(84, compiled(2));
         }
 
         [Test]
@@ -233,7 +237,7 @@ namespace MonoTests.System.Linq.Expressions
             var c = Expression.Parameter(typeof(int), null);
             var d = Expression.Parameter(typeof(int), null);
 
-            var l = Expression.Lambda<Func<int, int>>
+            var compiled = Expression.Lambda<Func<int, int>>
             (
                 Expression.Call
                 (
@@ -266,7 +270,7 @@ namespace MonoTests.System.Linq.Expressions
                 a
             ).Compile();
 
-            Assert.AreEqual(5, l(1));
+            Assert.AreEqual(5, compiled(1));
         }
 
         [Test]
@@ -301,8 +305,8 @@ namespace MonoTests.System.Linq.Expressions
                     // Here we have the same name for the parameter expression, but
                     // we pass a different object to the Lambda expression, so they are
                     // different, this should throw
-                    var l = Expression.Lambda<Func<int, int>>(a, secondA);
-                    l.Compile();
+                    var lambda = Expression.Lambda<Func<int, int>>(a, secondA);
+                    lambda.Compile();
                 }
             );
         }
@@ -313,16 +317,16 @@ namespace MonoTests.System.Linq.Expressions
             var a = Expression.Parameter(typeof(int), "a");
             var b = Expression.Parameter(typeof(int), "b");
 
-            var l = Expression.Lambda<Func<int, int, int>>
+            var lambda = Expression.Lambda<Func<int, int, int>>
             (
                 Expression.Add(a, b), a, b
             );
 
-            Assert.AreEqual(typeof(Func<int, int, int>), l.Type);
-            Assert.AreEqual("(a, b) => (a + b)", l.ToString());
+            Assert.AreEqual(typeof(Func<int, int, int>), lambda.Type);
+            Assert.AreEqual("(a, b) => (a + b)", lambda.ToString());
 
-            var xx = l.Compile();
-            var res = xx(10, 20);
+            var compiled = lambda.Compile();
+            var res = compiled(10, 20);
             Assert.AreEqual(res, 30);
         }
 

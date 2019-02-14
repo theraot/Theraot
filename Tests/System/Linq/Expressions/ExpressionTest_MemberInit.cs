@@ -31,9 +31,13 @@ extern alias nunitlinq;
 //
 
 using System;
-using System.Reflection;
 using System.Linq.Expressions;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -61,7 +65,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompiledInit()
         {
-            var i = Expression.Lambda<Func<Thing>>
+            var compiled = Expression.Lambda<Func<Thing>>
             (
                 Expression.MemberInit
                 (
@@ -71,7 +75,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            var thing = i();
+            var thing = compiled();
             Assert.IsNotNull(thing);
             Assert.AreEqual("foo", thing.Value);
             Assert.AreEqual("bar", thing.Bar);

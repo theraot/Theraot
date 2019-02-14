@@ -200,13 +200,13 @@ namespace MonoTests.System.Linq.Expressions
         public void CallMethodOnStruct()
         {
             var param = Expression.Parameter(typeof(EineStrukt), "s");
-            var foo = Expression.Lambda<Func<EineStrukt, string>>
+            var compiled = Expression.Lambda<Func<EineStrukt, string>>
             (
                 Expression.Call(param, typeof(EineStrukt).GetMethod("GetValue")), param
             ).Compile();
 
             var s = new EineStrukt("foo");
-            Assert.AreEqual("foo", foo(s));
+            Assert.AreEqual("foo", compiled(s));
         }
 
         [Test]
@@ -216,7 +216,7 @@ namespace MonoTests.System.Linq.Expressions
             var value = Expression.Parameter(typeof(int?), "value");
             var defaultParameter = Expression.Parameter(typeof(int), "default");
 
-            var getter = Expression.Lambda<Func<int?, int, int>>
+            var compiled = Expression.Lambda<Func<int?, int, int>>
             (
                 Expression.Call
                 (
@@ -229,8 +229,8 @@ namespace MonoTests.System.Linq.Expressions
                 defaultParameter
             ).Compile();
 
-            Assert.AreEqual(2, getter(null, 2));
-            Assert.AreEqual(4, getter(4, 2));
+            Assert.AreEqual(2, compiled(null, 2));
+            Assert.AreEqual(4, compiled(4, 2));
         }
 
         [Test]
@@ -329,12 +329,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             var p = Expression.Parameter(typeof(int), "i");
 
-            var c = Expression.Lambda<Func<int, int>>
+            var compiled = Expression.Lambda<Func<int, int>>
             (
                 Expression.Call(GetType().GetMethod("DoSomethingWith"), p), p
             ).Compile();
 
-            Assert.AreEqual(42, c(38));
+            Assert.AreEqual(42, compiled(38));
         }
 
         [Test]
@@ -344,12 +344,12 @@ namespace MonoTests.System.Linq.Expressions
             var i = Expression.Parameter(typeof(int), "i");
             var s = Expression.Parameter(typeof(string), "s");
 
-            var lamda = Expression.Lambda<Func<int, string, string>>
+            var compiled = Expression.Lambda<Func<int, string, string>>
             (
                 Expression.Call(GetType().GetMethod("DoAnotherThing"), i, s), i, s
             ).Compile();
 
-            Assert.AreEqual("foo42", lamda(42, "foo"));
+            Assert.AreEqual("foo42", compiled(42, "foo"));
         }
 
         [Test]
@@ -369,7 +369,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CallToStringOnEnum() // #625367
         {
-            var lambda = Expression.Lambda<Func<string>>
+            var compiled = Expression.Lambda<Func<string>>
             (
                 Expression.Call
                 (
@@ -378,7 +378,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            Assert.AreEqual("Boolean", lambda());
+            Assert.AreEqual("Boolean", compiled());
         }
 
         [Test]
@@ -408,10 +408,10 @@ namespace MonoTests.System.Linq.Expressions
                 p
             );
 
-            var ts = lambda.Compile();
+            var compiled = lambda.Compile();
 
-            Assert.AreEqual("foo", ts("foo"));
-            Assert.AreEqual("bar", ts("bar"));
+            Assert.AreEqual("foo", compiled("foo"));
+            Assert.AreEqual("bar", compiled("bar"));
         }
 
         [Test]
@@ -420,17 +420,17 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(object), "o");
             var lambda = Expression.Lambda<Func<object, object>>(Expression.Call(GetType().GetMethod("Identity"), p), p);
 
-            var i = lambda.Compile();
+            var compiled = lambda.Compile();
 
-            Assert.AreEqual(2, i(2));
-            Assert.AreEqual("Foo", i("Foo"));
+            Assert.AreEqual(2, compiled(2));
+            Assert.AreEqual("Foo", compiled("Foo"));
         }
 
         [Test]
         [Category("NotWorkingInterpreter")]
         public void Connect282702()
         {
-            var lambda = Expression.Lambda<Func<Func<int>>>
+            var compiled = Expression.Lambda<Func<Func<int>>>
             (
                 Expression.Convert
                 (
@@ -445,7 +445,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            Assert.AreEqual(42, lambda().Invoke());
+            Assert.AreEqual(42, compiled().Invoke());
         }
 
         [Test]
@@ -455,7 +455,7 @@ namespace MonoTests.System.Linq.Expressions
             // test from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=282729
 
             var p = Expression.Parameter(typeof(int), "p");
-            var lambda = Expression.Lambda<Func<int, int>>
+            var compiled = Expression.Lambda<Func<int, int>>
             (
                 Expression.Call
                 (
@@ -473,7 +473,7 @@ namespace MonoTests.System.Linq.Expressions
                 p
             ).Compile();
 
-            Assert.AreEqual(0, lambda(0));
+            Assert.AreEqual(0, compiled(0));
             Assert.IsTrue(_foutCalled);
         }
 
@@ -485,7 +485,7 @@ namespace MonoTests.System.Linq.Expressions
             // test from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=290278
 
             var p = Expression.Parameter(typeof(int[,]), "p");
-            var lambda = Expression.Lambda<Func<int[,], int>>
+            var compiled = Expression.Lambda<Func<int[,], int>>
             (
                 Expression.Call
                 (
@@ -497,7 +497,7 @@ namespace MonoTests.System.Linq.Expressions
 
             int[,] data = {{1}};
 
-            Assert.AreEqual(3, lambda(data));
+            Assert.AreEqual(3, compiled(data));
             Assert.AreEqual(2, data[0, 0]);
         }
 
@@ -509,7 +509,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var strings = new string[1];
 
-            var lambda = Expression.Lambda<Action>
+            var compiled = Expression.Lambda<Action>
             (
                 Expression.Call
                 (
@@ -521,7 +521,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            lambda();
+            compiled();
         }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
@@ -529,7 +529,7 @@ namespace MonoTests.System.Linq.Expressions
         [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=319190
         public void Connect319190()
         {
-            var lambda = Expression.Lambda<Func<bool>>
+            var compiled = Expression.Lambda<Func<bool>>
             (
                 Expression.TypeIs
                 (
@@ -538,7 +538,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            Assert.IsTrue(lambda());
+            Assert.IsTrue(compiled());
         }
 #endif
 

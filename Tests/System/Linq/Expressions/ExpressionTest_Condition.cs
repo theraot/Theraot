@@ -62,7 +62,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var parameters = new[] {Expression.Parameter(typeof(int), "number")};
 
-            var l = Expression.Lambda<Func<int, string>>
+            var lambda = Expression.Lambda<Func<int, string>>
             (
                 Expression.Condition
                 (
@@ -77,11 +77,11 @@ namespace MonoTests.System.Linq.Expressions
                 parameters
             );
 
-            var gt = l.Compile();
+            var compiled = lambda.Compile();
 
-            Assert.AreEqual("+", gt(1));
-            Assert.AreEqual("+", gt(0));
-            Assert.AreEqual("-", gt(-1));
+            Assert.AreEqual("+", compiled(1));
+            Assert.AreEqual("+", compiled(0));
+            Assert.AreEqual("-", compiled(-1));
         }
 
         [Test]

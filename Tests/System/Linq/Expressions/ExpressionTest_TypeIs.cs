@@ -25,8 +25,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -121,7 +125,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void VoidIsObject()
         {
-            var vio = Expression.Lambda<Func<bool>>
+            var compiled = Expression.Lambda<Func<bool>>
             (
                 Expression.TypeIs
                 (
@@ -130,7 +134,7 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            Assert.IsFalse(vio());
+            Assert.IsFalse(compiled());
         }
     }
 }

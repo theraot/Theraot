@@ -56,28 +56,28 @@ namespace MonoTests.System.Linq.Expressions
         public void CompileObjectArrayLength()
         {
             var p = Expression.Parameter(typeof(object[]), "ary");
-            var len = Expression.Lambda<Func<object[], int>>
+            var compiled = Expression.Lambda<Func<object[], int>>
             (
                 Expression.ArrayLength(p),
                 p
             ).Compile();
 
-            Assert.AreEqual(0, len(new object[0]));
-            Assert.AreEqual(2, len(new object[] {"jb", "evain"}));
+            Assert.AreEqual(0, compiled(new object[0]));
+            Assert.AreEqual(2, compiled(new object[] {"jb", "evain"}));
         }
 
         [Test]
         public void CompileStringArrayLength()
         {
             var p = Expression.Parameter(typeof(string[]), "ary");
-            var len = Expression.Lambda<Func<string[], int>>
+            var compiled = Expression.Lambda<Func<string[], int>>
             (
                 Expression.ArrayLength(p),
                 p
             ).Compile();
 
-            Assert.AreEqual(0, len(new string[0]));
-            Assert.AreEqual(2, len(new[] {"jb", "evain"}));
+            Assert.AreEqual(0, compiled(new string[0]));
+            Assert.AreEqual(2, compiled(new[] {"jb", "evain"}));
         }
 
         [Test]

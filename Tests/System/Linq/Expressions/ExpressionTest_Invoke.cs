@@ -32,8 +32,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -149,12 +153,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             var action = Expression.Parameter(typeof(StringAction), "action");
             var str = Expression.Parameter(typeof(string), "str");
-            var invoker = Expression.Lambda<Func<StringAction, string, string>>
+            var compiled = Expression.Lambda<Func<StringAction, string, string>>
             (
                 Expression.Invoke(action, str), action, str
             ).Compile();
 
-            Assert.AreEqual("foo", invoker(Identity, "foo"));
+            Assert.AreEqual("foo", compiled(Identity, "foo"));
         }
     }
 }

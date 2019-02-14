@@ -26,8 +26,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -66,15 +70,15 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(int?), "a");
             var b = Expression.Parameter(typeof(int?), "b");
-            var coalesce = Expression.Lambda<Func<int?, int?, int?>>
+            var compiled = Expression.Lambda<Func<int?, int?, int?>>
             (
                 Expression.Coalesce(a, b), a, b
             ).Compile();
 
-            Assert.AreEqual((int?)1, coalesce(1, 2));
-            Assert.AreEqual(null, coalesce(null, null));
-            Assert.AreEqual((int?)2, coalesce(null, 2));
-            Assert.AreEqual((int?)2, coalesce(2, null));
+            Assert.AreEqual((int?)1, compiled(1, 2));
+            Assert.AreEqual(null, compiled(null, null));
+            Assert.AreEqual((int?)2, compiled(null, 2));
+            Assert.AreEqual((int?)2, compiled(2, null));
         }
 
         [Test]
@@ -86,7 +90,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var method = typeof(Slot).GetMethod("op_Implicit");
 
-            var coalesce = Expression.Lambda<Func<Slot?, int>>
+            var compiled = Expression.Lambda<Func<Slot?, int>>
             (
                 Expression.Coalesce
                 (
@@ -100,8 +104,8 @@ namespace MonoTests.System.Linq.Expressions
                 ), s
             ).Compile();
 
-            Assert.AreEqual(-3, coalesce(null));
-            Assert.AreEqual(42, coalesce(new Slot(42)));
+            Assert.AreEqual(-3, compiled(null));
+            Assert.AreEqual(42, compiled(new Slot(42)));
         }
 
         [Test]
@@ -115,10 +119,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(node.IsLifted);
             Assert.IsFalse(node.IsLiftedToNull);
 
-            var coalesce = Expression.Lambda<Func<int?, int>>(node, a).Compile();
+            var compiled = Expression.Lambda<Func<int?, int>>(node, a).Compile();
 
-            Assert.AreEqual(5, coalesce(5));
-            Assert.AreEqual(99, coalesce(null));
+            Assert.AreEqual(5, compiled(5));
+            Assert.AreEqual(99, compiled(null));
         }
 
         [Test]
@@ -126,15 +130,15 @@ namespace MonoTests.System.Linq.Expressions
         {
             var a = Expression.Parameter(typeof(string), "a");
             var b = Expression.Parameter(typeof(string), "b");
-            var coalesce = Expression.Lambda<Func<string, string, string>>
+            var compiled = Expression.Lambda<Func<string, string, string>>
             (
                 Expression.Coalesce(a, b), a, b
             ).Compile();
 
-            Assert.AreEqual("foo", coalesce("foo", "bar"));
-            Assert.AreEqual(null, coalesce(null, null));
-            Assert.AreEqual("bar", coalesce(null, "bar"));
-            Assert.AreEqual("foo", coalesce("foo", null));
+            Assert.AreEqual("foo", compiled("foo", "bar"));
+            Assert.AreEqual(null, compiled(null, null));
+            Assert.AreEqual("bar", compiled(null, "bar"));
+            Assert.AreEqual("foo", compiled("foo", null));
         }
 
         [Test]
@@ -143,7 +147,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var s = Expression.Parameter(typeof(string), "s");
 
-            var coalesce = Expression.Lambda<Func<string, int>>
+            var compiled = Expression.Lambda<Func<string, int>>
             (
                 Expression.Coalesce
                 (
@@ -156,8 +160,8 @@ namespace MonoTests.System.Linq.Expressions
                 ), s
             ).Compile();
 
-            Assert.AreEqual(12, coalesce("12"));
-            Assert.AreEqual(42, coalesce(null));
+            Assert.AreEqual(12, compiled("12"));
+            Assert.AreEqual(42, compiled(null));
         }
 
         [Test]

@@ -145,6 +145,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileNewClass()
         {
+            // TODO: split
             var p = Expression.Parameter(typeof(string), "p");
             var n = Expression.New(typeof(Gazonk).GetConstructor(new[] {typeof(string)}), p);
             var fgaz = Expression.Lambda<Func<string, Gazonk>>(n, p).Compile();
@@ -169,12 +170,12 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileNewClassEmptyConstructor()
         {
-            var create = Expression.Lambda<Func<EineKlass>>
+            var compiled = Expression.Lambda<Func<EineKlass>>
             (
                 Expression.New(typeof(EineKlass))
             ).Compile();
 
-            var k = create();
+            var k = compiled();
             Assert.IsNull(k.Left);
             Assert.IsNull(k.Right);
         }
@@ -185,12 +186,12 @@ namespace MonoTests.System.Linq.Expressions
             var pl = Expression.Parameter(typeof(string), "left");
             var pr = Expression.Parameter(typeof(string), "right");
 
-            var create = Expression.Lambda<Func<string, string, EineKlass>>
+            var compiled = Expression.Lambda<Func<string, string, EineKlass>>
             (
                 Expression.New(typeof(EineKlass).GetConstructor(new[] {typeof(string), typeof(string)}), pl, pr), pl, pr
             ).Compile();
 
-            var k = create("foo", "bar");
+            var k = compiled("foo", "bar");
 
             Assert.AreEqual("foo", k.Left);
             Assert.AreEqual("bar", k.Right);
@@ -199,12 +200,12 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileNewStruct()
         {
-            var create = Expression.Lambda<Func<EineStrukt>>
+            var compiled = Expression.Lambda<Func<EineStrukt>>
             (
                 Expression.New(typeof(EineStrukt))
             ).Compile();
 
-            var s = create();
+            var s = compiled();
             Assert.AreEqual(0, s.Left);
             Assert.AreEqual(0, s.Right);
         }
@@ -215,12 +216,12 @@ namespace MonoTests.System.Linq.Expressions
             var pl = Expression.Parameter(typeof(int), "left");
             var pr = Expression.Parameter(typeof(int), "right");
 
-            var create = Expression.Lambda<Func<int, int, EineStrukt>>
+            var compiled = Expression.Lambda<Func<int, int, EineStrukt>>
             (
                 Expression.New(typeof(EineStrukt).GetConstructor(new[] {typeof(int), typeof(int)}), pl, pr), pl, pr
             ).Compile();
 
-            var s = create(42, 12);
+            var s = compiled(42, 12);
 
             Assert.AreEqual(42, s.Left);
             Assert.AreEqual(12, s.Right);

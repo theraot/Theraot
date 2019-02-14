@@ -69,11 +69,11 @@ namespace MonoTests.System.Linq.Expressions
 
             var lambda = Expression.Lambda<Action<int>>(Expression.Call(identity, parameter), parameter);
 
-            var method = lambda.Compile();
+            var compiled = lambda.Compile();
 
             _buffer = 0;
 
-            method(Value);
+            compiled(Value);
             Assert.AreEqual(Value, _buffer);
         }
 
@@ -83,10 +83,10 @@ namespace MonoTests.System.Linq.Expressions
             const string Name = "str";
 
             var parameter = Expression.Parameter(typeof(string), Name);
-            var method = Expression.Lambda<Func<string, string>>(parameter, parameter).Compile();
+            var compiled = Expression.Lambda<Func<string, string>>(parameter, parameter).Compile();
 
-            Assert.AreEqual(typeof(Func<string, string>), method.GetType());
-            Assert.IsNotNull(method.Target);
+            Assert.AreEqual(typeof(Func<string, string>), compiled.GetType());
+            Assert.IsNotNull(compiled.Target);
         }
 
         [Test]
@@ -171,7 +171,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var parameter = Expression.Parameter(typeof(int), Name);
 
-            var method = Expression.Lambda<Func<int, string>>
+            var compiled = Expression.Lambda<Func<int, string>>
             (
                 Expression.Invoke
                 (
@@ -183,17 +183,18 @@ namespace MonoTests.System.Linq.Expressions
                 parameter
             ).Compile();
 
-            Assert.AreEqual($"{Value}", method(Value));
+            Assert.AreEqual($"{Value}", compiled(Value));
         }
 
         [Test]
         public void Parameter()
         {
             const string Name = "foo";
+            var type = typeof(string);
 
-            var parameter = Expression.Parameter(typeof(string), Name);
+            var parameter = Expression.Parameter(type, Name);
             Assert.AreEqual(Name, parameter.Name);
-            Assert.AreEqual(typeof(string), parameter.Type);
+            Assert.AreEqual(type, parameter.Type);
             Assert.AreEqual(Name, parameter.ToString());
         }
 
@@ -201,20 +202,22 @@ namespace MonoTests.System.Linq.Expressions
         public void ParameterEmptyName()
         {
             const string Name = ""; // ""
+            var type = typeof(string);
 
-            var parameter = Expression.Parameter(typeof(string), Name);
+            var parameter = Expression.Parameter(type, Name);
             Assert.AreEqual(Name, parameter.Name);
-            Assert.AreEqual(typeof(string), parameter.Type);
+            Assert.AreEqual(type, parameter.Type);
         }
 
         [Test]
         public void ParameterNullName()
         {
             const string Name = null; // null
+            var type = typeof(string);
 
-            var parameter = Expression.Parameter(typeof(string), Name);
+            var parameter = Expression.Parameter(type, Name);
             Assert.AreEqual(Name, parameter.Name);
-            Assert.AreEqual(typeof(string), parameter.Type);
+            Assert.AreEqual(type, parameter.Type);
         }
 
         [Test]
@@ -233,13 +236,13 @@ namespace MonoTests.System.Linq.Expressions
 
             var parameter = Expression.Parameter(typeof(string), Name);
 
-            var method = Expression.Lambda<Func<string, Func<string>>>
+            var compiled = Expression.Lambda<Func<string, Func<string>>>
             (
                 Expression.Lambda<Func<string>>(parameter),
                 parameter
             ).Compile();
 
-            var func = method(Value);
+            var func = compiled(Value);
 
             Assert.AreEqual(Value, func());
         }
@@ -274,8 +277,8 @@ namespace MonoTests.System.Linq.Expressions
                     parameterLeft
                 );
 
-            var method = lambda.Compile();
-            var func = method(ValueLeft);
+            var compiled = lambda.Compile();
+            var func = compiled(ValueLeft);
             var innerFunc = func(ValueRight);
 
             Assert.AreEqual(Result, innerFunc());

@@ -43,7 +43,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompiledQuote()
         {
-            var quote42 = Expression.Lambda<Func<Expression<Func<int>>>>
+            var compiled = Expression.Lambda<Func<Expression<Func<int>>>>
             (
                 Expression.Quote
                 (
@@ -54,9 +54,9 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            var get42 = quote42().Compile();
+            var compiledCompiled = compiled().Compile();
 
-            Assert.AreEqual(42, get42());
+            Assert.AreEqual(42, compiledCompiled());
         }
 
         [Test]
@@ -76,9 +76,9 @@ namespace MonoTests.System.Linq.Expressions
                 s
             );
 
-            var fs = lambda.Compile()("bingo").Compile();
+            var compiled = lambda.Compile()("bingo").Compile();
 
-            Assert.AreEqual("bingo", fs());
+            Assert.AreEqual("bingo", compiled());
         }
 
         [Test]

@@ -32,8 +32,12 @@ extern alias nunitlinq;
 
 using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -150,7 +154,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var p = Expression.Parameter(typeof(sbyte?), "a");
 
-            var test = Expression.Lambda<Func<sbyte?, long?>>
+            var compiled = Expression.Lambda<Func<sbyte?, long?>>
             (
                 Expression.Convert
                 (
@@ -163,43 +167,43 @@ namespace MonoTests.System.Linq.Expressions
                 ), p
             ).Compile();
 
-            Assert.AreEqual((long?)3, test((sbyte?)3));
-            Assert.AreEqual(null, test(null));
+            Assert.AreEqual((long?)3, compiled((sbyte?)3));
+            Assert.AreEqual(null, compiled(null));
         }
 
         [Test]
         public void CompileConvertClassWithExplicitOp()
         {
             var p = Expression.Parameter(typeof(Klang), "klang");
-            var c = Expression.Lambda<Func<Klang, int>>
+            var compiled = Expression.Lambda<Func<Klang, int>>
             (
                 Expression.Convert(p, typeof(int)), p
             ).Compile();
 
-            Assert.AreEqual(42, c(new Klang(42)));
+            Assert.AreEqual(42, compiled(new Klang(42)));
         }
 
         [Test]
         public void CompileConvertStructWithImplicitOp()
         {
             var p = Expression.Parameter(typeof(Kling), "kling");
-            var c = Expression.Lambda<Func<Kling, int>>
+            var compiled = Expression.Lambda<Func<Kling, int>>
             (
                 Expression.Convert(p, typeof(int)), p
             ).Compile();
 
-            Assert.AreEqual(42, c(new Kling(42)));
+            Assert.AreEqual(42, compiled(new Kling(42)));
         }
 
         [Test]
         public void CompiledBoxing()
         {
-            var b = Expression.Lambda<Func<object>>
+            var compiled = Expression.Lambda<Func<object>>
             (
                 Expression.Convert(42.ToConstant(), typeof(object))
             ).Compile();
 
-            Assert.AreEqual(42, b());
+            Assert.AreEqual(42, compiled());
         }
 
         [Test]
@@ -207,14 +211,14 @@ namespace MonoTests.System.Linq.Expressions
         {
             var p = Expression.Parameter(typeof(IFoo), "foo");
 
-            var c = Expression.Lambda<Func<IFoo, Bar>>
+            var compiled = Expression.Lambda<Func<IFoo, Bar>>
             (
                 Expression.Convert(p, typeof(Bar)), p
             ).Compile();
 
             IFoo foo = new Bar();
 
-            var b = c(foo);
+            var b = compiled(foo);
 
             Assert.AreEqual(b, foo);
         }
@@ -223,13 +227,13 @@ namespace MonoTests.System.Linq.Expressions
         public void CompiledConvertNullableToNullable()
         {
             var p = Expression.Parameter(typeof(int?), "i");
-            var c = Expression.Lambda<Func<int?, short?>>
+            var compiled = Expression.Lambda<Func<int?, short?>>
             (
                 Expression.Convert(p, typeof(short?)), p
             ).Compile();
 
-            Assert.AreEqual(null, c(null));
-            Assert.AreEqual((short?)12, c(12));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual((short?)12, compiled(12));
         }
 
         [Test]
@@ -238,7 +242,7 @@ namespace MonoTests.System.Linq.Expressions
             var k = new Klang(42);
 
             var p = Expression.Parameter(typeof(Klang), "klang");
-            var c = Expression.Lambda<Func<Klang, Klang>>
+            var compiled = Expression.Lambda<Func<Klang, Klang>>
             (
                 Expression.Convert
                 (
@@ -247,33 +251,33 @@ namespace MonoTests.System.Linq.Expressions
                 p
             ).Compile();
 
-            Assert.AreEqual(k, c(k));
+            Assert.AreEqual(k, compiled(k));
         }
 
         [Test]
         public void CompiledNullableBoxing()
         {
             var p = Expression.Parameter(typeof(int?), "i");
-            var c = Expression.Lambda<Func<int?, object>>
+            var compiled = Expression.Lambda<Func<int?, object>>
             (
                 Expression.Convert(p, typeof(object)), p
             ).Compile();
 
-            Assert.AreEqual(null, c(null));
-            Assert.AreEqual((int?)42, c(42));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual((int?)42, compiled(42));
         }
 
         [Test]
         public void CompiledNullableUnboxing()
         {
             var p = Expression.Parameter(typeof(object), "o");
-            var c = Expression.Lambda<Func<object, int?>>
+            var compiled = Expression.Lambda<Func<object, int?>>
             (
                 Expression.Convert(p, typeof(int?)), p
             ).Compile();
 
-            Assert.AreEqual(null, c(null));
-            Assert.AreEqual((int?)42, c((int?)42));
+            Assert.AreEqual(null, compiled(null));
+            Assert.AreEqual((int?)42, compiled((int?)42));
         }
 
         [Test]
@@ -281,40 +285,40 @@ namespace MonoTests.System.Linq.Expressions
         {
             var p = Expression.Parameter(typeof(object), "o");
 
-            var u = Expression.Lambda<Func<object, int>>
+            var compiled = Expression.Lambda<Func<object, int>>
             (
                 Expression.Convert(p, typeof(int)), p
             ).Compile();
 
-            Assert.AreEqual(42, u(42));
+            Assert.AreEqual(42, compiled(42));
         }
 
         [Test]
         public void CompileNotNullableToNullable()
         {
             var p = Expression.Parameter(typeof(int), "i");
-            var c = Expression.Lambda<Func<int, int?>>
+            var compiled = Expression.Lambda<Func<int, int?>>
             (
                 Expression.Convert(p, typeof(int?)), p
             ).Compile();
 
-            Assert.AreEqual((int?)0, c(0));
-            Assert.AreEqual((int?)42, c(42));
+            Assert.AreEqual((int?)0, compiled(0));
+            Assert.AreEqual((int?)42, compiled(42));
         }
 
         [Test]
         public void CompileNullableToNotNullable()
         {
             var p = Expression.Parameter(typeof(int?), "i");
-            var c = Expression.Lambda<Func<int?, int>>
+            var compiled = Expression.Lambda<Func<int?, int>>
             (
                 Expression.Convert(p, typeof(int)), p
             ).Compile();
 
-            Assert.AreEqual(0, c(0));
-            Assert.AreEqual(42, c(42));
+            Assert.AreEqual(0, compiled(0));
+            Assert.AreEqual(42, compiled(42));
 
-            Action a = () => c(null);
+            Action a = () => compiled(null);
 
             a.AssertThrows(typeof(InvalidOperationException));
         }
@@ -447,7 +451,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(short), node.Type);
             Assert.AreEqual(method, node.Method);
 
-            var conv = Expression.Lambda<Func<ImplicitToShort?, int?>>
+            var compiled = Expression.Lambda<Func<ImplicitToShort?, int?>>
             (
                 Expression.Convert
                 (
@@ -456,9 +460,9 @@ namespace MonoTests.System.Linq.Expressions
                 ), a
             ).Compile();
 
-            Assert.AreEqual((int?)42, conv(new ImplicitToShort(42)));
+            Assert.AreEqual((int?)42, compiled(new ImplicitToShort(42)));
 
-            Action convnull = () => Assert.AreEqual(null, conv(null));
+            Action convnull = () => Assert.AreEqual(null, compiled(null));
 
             convnull.AssertThrows(typeof(InvalidOperationException));
         }
@@ -529,9 +533,9 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(decimal), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var convert = Expression.Lambda<Func<long, decimal>>(node, p).Compile();
+            var compiled = Expression.Lambda<Func<long, decimal>>(node, p).Compile();
 
-            Assert.AreEqual(42, convert(42));
+            Assert.AreEqual(42, compiled(42));
         }
 
         [Test]
@@ -543,10 +547,10 @@ namespace MonoTests.System.Linq.Expressions
 
             var node = Expression.Convert(i, typeof(int), method);
             node = Expression.Convert(node, typeof(long?));
-            var conv = Expression.Lambda<Func<ImplicitToInt?, long?>>(node, i).Compile();
+            var compiled = Expression.Lambda<Func<ImplicitToInt?, long?>>(node, i).Compile();
 
-            Assert.AreEqual((long?)42, conv(new ImplicitToInt(42)));
-            Action convnull = () => Assert.AreEqual(null, conv(null));
+            Assert.AreEqual((long?)42, compiled(new ImplicitToInt(42)));
+            Action convnull = () => Assert.AreEqual(null, compiled(null));
             convnull.AssertThrows(typeof(InvalidOperationException));
         }
 
@@ -598,10 +602,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(decimal?), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var convert = Expression.Lambda<Func<ulong?, decimal?>>(node, p).Compile();
+            var compiled = Expression.Lambda<Func<ulong?, decimal?>>(node, p).Compile();
 
-            Assert.AreEqual(42, convert(42));
-            Assert.AreEqual(null, convert(null));
+            Assert.AreEqual(42, compiled(42));
+            Assert.AreEqual(null, compiled(null));
         }
 
         [Test]
@@ -644,9 +648,9 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(short?), node.Type);
             Assert.AreEqual(method, node.Method);
 
-            var convert = Expression.Lambda<Func<ImplicitToShort?, short?>>(node, i).Compile();
+            var compiled = Expression.Lambda<Func<ImplicitToShort?, short?>>(node, i).Compile();
 
-            Assert.AreEqual((short?)42, convert(new ImplicitToShort(42)));
+            Assert.AreEqual((short?)42, compiled(new ImplicitToShort(42)));
         }
 
         [Test]

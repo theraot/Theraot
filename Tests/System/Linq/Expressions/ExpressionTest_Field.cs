@@ -77,7 +77,7 @@ namespace MonoTests.System.Linq.Expressions
         public void CompileInstanceField()
         {
             var p = Expression.Parameter(typeof(Bar), "bar");
-            var baz = Expression.Lambda<Func<Bar, string>>
+            var compiled = Expression.Lambda<Func<Bar, string>>
             (
                 Expression.Field
                 (
@@ -88,13 +88,13 @@ namespace MonoTests.System.Linq.Expressions
                 ), p
             ).Compile();
 
-            Assert.AreEqual("baz", baz(new Bar()));
+            Assert.AreEqual("baz", compiled(new Bar()));
         }
 
         [Test]
         public void CompileStaticField()
         {
-            var foo = Expression.Lambda<Func<string>>
+            var compiled = Expression.Lambda<Func<string>>
             (
                 Expression.Field
                 (
@@ -105,19 +105,19 @@ namespace MonoTests.System.Linq.Expressions
                 )
             ).Compile();
 
-            Assert.AreEqual("foo", foo());
+            Assert.AreEqual("foo", compiled());
         }
 
         [Test]
         public void CompileStructInstanceField()
         {
             var p = Expression.Parameter(typeof(Gazonk), "gazonk");
-            var gazonker = Expression.Lambda<Func<Gazonk, string>>
+            var compiled = Expression.Lambda<Func<Gazonk, string>>
             (
                 Expression.Field(p, typeof(Gazonk).GetField("Tzap")), p
             ).Compile();
 
-            Assert.AreEqual("bang", gazonker(new Gazonk("bang")));
+            Assert.AreEqual("bang", compiled(new Gazonk("bang")));
         }
 
         [Test]
