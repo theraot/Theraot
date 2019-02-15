@@ -28,6 +28,7 @@ extern alias nunitlinq;
 //		Jb Evain <jbevain@novell.com>
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Theraot;
 using NUnit.Framework;
@@ -183,7 +184,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndAlsoNotLifted()
         {
-            var type = typeof(bool?);
+            var type = typeof(bool);
 
             var binaryExpression = Expression.AndAlso
             (
@@ -377,13 +378,15 @@ namespace MonoTests.System.Linq.Expressions
             const string NameLeft = "l";
             const string NameRight = "r";
 
-            const int ValueA = 64;
-            const int ValueB = 32;
+            var input = new[]
+            {
+                (Left: 64, Right: 64),
+                (Left: 64, Right: 32),
+                (Left: 32, Right: 64),
+                (Left: 32, Right: 32)
+            };
 
-            const int ResultA = ValueA & ValueA;
-            const int ResultB = ValueA & ValueB;
-            const int ResultC = ValueB & ValueA;
-            const int ResultD = ValueB & ValueB;
+            var instances = input.Select(value => (value.Left, value.Right, Result: value.Left & value.Right));
 
             var parameterLeft = Expression.Parameter(typeof(Slot), NameLeft);
             var parameterRight = Expression.Parameter(typeof(Slot), NameRight);
@@ -397,10 +400,10 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<Slot, Slot, Slot>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(new Slot(ResultA), compiled(new Slot(ValueA), new Slot(ValueA)));
-            Assert.AreEqual(new Slot(ResultB), compiled(new Slot(ValueA), new Slot(ValueB)));
-            Assert.AreEqual(new Slot(ResultC), compiled(new Slot(ValueB), new Slot(ValueA)));
-            Assert.AreEqual(new Slot(ResultD), compiled(new Slot(ValueB), new Slot(ValueB)));
+            foreach (var (left, right, result) in instances)
+            {
+                Assert.AreEqual(new Slot(result), compiled(new Slot(left), new Slot(right)));
+            }
         }
 
         [Test]
@@ -409,13 +412,18 @@ namespace MonoTests.System.Linq.Expressions
             const string NameLeft = "l";
             const string NameRight = "r";
 
-            const int ValueA = 64;
-            const int ValueB = 32;
+            var input = new (int? Left, int? Right)[]
+            {
+                (Left: 64, Right: 64),
+                (Left: 64, Right: 32),
+                (Left: 32, Right: 64),
+                (Left: 32, Right: 32),
+                (Left: null, Right: 64),
+                (Left: 64, Right: null),
+                (Left: null, Right: null)
+            };
 
-            const int ResultA = ValueA & ValueA;
-            const int ResultB = ValueA & ValueB;
-            const int ResultC = ValueB & ValueA;
-            const int ResultD = ValueB & ValueB;
+            var instances = input.Select(value => (value.Left, value.Right, Result: value.Left & value.Right));
 
             var parameterLeft = Expression.Parameter(typeof(Slot?), NameLeft);
             var parameterRight = Expression.Parameter(typeof(Slot?), NameRight);
@@ -429,13 +437,18 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(new Slot(ResultA), compiled(new Slot(ValueA), new Slot(ValueA)));
-            Assert.AreEqual(new Slot(ResultB), compiled(new Slot(ValueA), new Slot(ValueB)));
-            Assert.AreEqual(new Slot(ResultC), compiled(new Slot(ValueB), new Slot(ValueA)));
-            Assert.AreEqual(new Slot(ResultD), compiled(new Slot(ValueB), new Slot(ValueB)));
-            Assert.AreEqual(null, compiled(null, new Slot(ValueA)));
-            Assert.AreEqual(null, compiled(new Slot(ValueB), null));
-            Assert.AreEqual(null, compiled(null, null));
+            foreach (var (left, right, result) in instances)
+            {
+                Assert.AreEqual
+                (
+                    result == null ? default(Slot?) : new Slot(result.Value),
+                    compiled
+                    (
+                        left == null ? default(Slot?) : new Slot(left.Value),
+                        right == null ? default(Slot?) : new Slot(right.Value)
+                    )
+                );
+            }
         }
 
         [Test]

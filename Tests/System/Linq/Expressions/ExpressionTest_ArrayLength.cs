@@ -34,6 +34,7 @@ extern alias nunitlinq;
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
+using Tests.Helpers;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -45,13 +46,14 @@ namespace MonoTests.System.Linq.Expressions
         {
             const string Value = "This is not an array!";
 
-            Assert.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant(Value)));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant(Value)));
         }
 
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayLength(null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayLength(null));
         }
 
         [Test]
@@ -135,15 +137,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Rank2String()
         {
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                {
-                    string[,] array = {{ }, { }};
+            string[,] array = {{ }, { }};
 
-                    Expression.ArrayLength(Expression.Constant(array));
-                }
-            );
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant(array)));
         }
     }
 }

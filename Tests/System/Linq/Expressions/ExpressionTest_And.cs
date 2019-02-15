@@ -27,6 +27,7 @@ extern alias nunitlinq;
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
+using Tests.Helpers;
 
 #if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
@@ -225,7 +226,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Value = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.And(null, Expression.Constant(Value)));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.And(null, Expression.Constant(Value)));
         }
 
         [Test]
@@ -233,7 +235,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Value = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.And(Expression.Constant(Value), null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.And(Expression.Constant(Value), null));
         }
 
         [Test]
@@ -242,7 +245,7 @@ namespace MonoTests.System.Linq.Expressions
             const int ValueLeft = 1;
             const bool ValueRight = true;
 
-            Assert.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
@@ -264,7 +267,7 @@ namespace MonoTests.System.Linq.Expressions
             const double ValueLeft = 1.0;
             const double ValueRight = 2.0;
 
-            Assert.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
@@ -286,7 +289,7 @@ namespace MonoTests.System.Linq.Expressions
             var valueLeft = new NoOpClass();
             var valueRight = new NoOpClass();
 
-            Assert.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]

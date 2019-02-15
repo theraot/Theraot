@@ -25,15 +25,12 @@ extern alias nunitlinq;
 //		Jb Evain <jbevain@novell.com>
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NUnit.Framework;
 using Tests.Helpers;
 using Theraot;
-
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
-using System.Reflection;
-
-#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -190,7 +187,7 @@ namespace MonoTests.System.Linq.Expressions
             const string ValueRight = "bar";
             const string Result = ValueLeft + ValueRight;
             var type = typeof(string);
-            var method = type.GetMethod(nameof(string.Concat), new[] {typeof(object), typeof(object)});
+            var method = new Func<object, object, string>(string.Concat).GetMethodInfo();
 
             var parameterLeft = Expression.Parameter(type, NameLeft);
             var parameterRight = Expression.Parameter(type, NameRight);
@@ -277,16 +274,14 @@ namespace MonoTests.System.Linq.Expressions
             const string NameLeft = "l";
             const string NameRight = "r";
 
-            const int ValueALeft = 6;
-            const int ValueARight = 6;
-            const int ValueBLeft = -1;
-            const int ValueBRight = 1;
-            const int ValueCLeft = 1;
-            const int ValueCRight = -3;
+            var input = new[]
+            {
+                (Left: 6, Right: 6),
+                (Left: -1, Right: 1),
+                (Left: 1, Right: -3)
+            };
 
-            const int ResultA = ValueALeft + ValueARight;
-            const int ResultB = ValueBLeft + ValueBRight;
-            const int ResultC = ValueCLeft + ValueCRight;
+            var instances = input.Select(value => (value.Left, value.Right, Result: value.Left + value.Right));
 
             var type = typeof(int);
 
@@ -302,9 +297,10 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = lambda.Compile();
 
-            Assert.AreEqual(ResultA, compiled(ValueALeft, ValueARight));
-            Assert.AreEqual(ResultB, compiled(ValueBLeft, ValueBRight));
-            Assert.AreEqual(ResultC, compiled(ValueCLeft, ValueCRight));
+            foreach (var (left, right, result) in instances)
+            {
+                Assert.AreEqual(result, compiled(left, right));
+            }
         }
 
         [Test]
@@ -356,7 +352,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.Constant(ValueLeft),
                 Expression.Constant(ValueRight),
-                typeof(S).GetMethod(nameof(S.MyAdder))
+                new Func<int, int, int>(S.MyAdder).GetMethodInfo()
             );
             var lambda = Expression.Lambda<Func<int>>(binaryExpression);
 
@@ -370,13 +366,13 @@ namespace MonoTests.System.Linq.Expressions
             const string NameLeft = "l";
             const string NameRight = "r";
 
-            const int ValueALeft = 21;
-            const int ValueARight = 21;
-            const int ValueBLeft = 1;
-            const int ValueBRight = -1;
+            var input = new[]
+            {
+                (Left: 21, Right: 21),
+                (Left: 1, Right: -1)
+            };
 
-            const int ResultA = ValueALeft + ValueARight;
-            const int ResultB = ValueBLeft + ValueBRight;
+            var instances = input.Select(value => (value.Left, value.Right, Result: value.Left + value.Right));
 
             var type = typeof(Slot);
 
@@ -391,8 +387,10 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<Slot, Slot, Slot>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(new Slot(ResultA), compiled(new Slot(ValueALeft), new Slot(ValueARight)));
-            Assert.AreEqual(new Slot(ResultB), compiled(new Slot(ValueBLeft), new Slot(ValueBRight)));
+            foreach (var (left, right, result) in instances)
+            {
+                Assert.AreEqual(new Slot(result), compiled(new Slot(left), new Slot(right)));
+            }
         }
 
         [Test]
@@ -459,11 +457,16 @@ namespace MonoTests.System.Linq.Expressions
             const string NameLeft = "l";
             const string NameRight = "r";
 
-            const int ValueA = 2;
-            const int ValueB = -2;
+            var input = new (int? Left, int? Right)[]
+            {
+                (Left: null, Right: null),
+                (Left: 2, Right: null),
+                (Left: null, Right: 2),
+                (Left: 2, Right: 2),
+                (Left: 2, Right: -2),
+            };
 
-            const int ResultA = ValueA + ValueA;
-            const int ResultB = ValueA + ValueB;
+            var instances = input.Select(value => (value.Left, value.Right, Result: value.Left + value.Right));
 
             var type = typeof(SlotFromNullableToNullable?);
 
@@ -479,11 +482,18 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?, SlotFromNullableToNullable?>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
-            AssertEx.AreEqual(null, compiled(null, null));
-            AssertEx.AreEqual(null, compiled(new SlotFromNullableToNullable(ValueA), null));
-            AssertEx.AreEqual(null, compiled(null, new SlotFromNullableToNullable(ValueA)));
-            AssertEx.AreEqual(new SlotFromNullableToNullable(ResultA), compiled(new SlotFromNullableToNullable(ValueA), new SlotFromNullableToNullable(ValueA)));
-            AssertEx.AreEqual(new SlotFromNullableToNullable(ResultB), compiled(new SlotFromNullableToNullable(ValueA), new SlotFromNullableToNullable(ValueB)));
+            foreach (var (left, right, result) in instances)
+            {
+                Assert.AreEqual
+                (
+                    result == null ? default(SlotFromNullableToNullable?) : new SlotFromNullableToNullable(result.Value),
+                    compiled
+                    (
+                        left == null ? default(SlotFromNullableToNullable?) : new SlotFromNullableToNullable(left.Value),
+                        right == null ? default(SlotFromNullableToNullable?) : new SlotFromNullableToNullable(right.Value)
+                    )
+                );
+            }
         }
 
         [Test]
@@ -492,11 +502,13 @@ namespace MonoTests.System.Linq.Expressions
             const string NameLeft = "l";
             const string NameRight = "r";
 
-            const int ValueA = 2;
-            const int ValueB = -2;
+            var input = new[]
+            {
+                (Left: 2, Right: 2),
+                (Left: 2, Right: -2)
+            };
 
-            const int ResultA = ValueA + ValueA;
-            const int ResultB = ValueA + ValueB;
+            var instances = input.Select(value => (value.Left, value.Right, Result: value.Left + value.Right));
 
             var parameterLeft = Expression.Parameter(typeof(SlotToNullable), NameLeft);
             var parameterRight = Expression.Parameter(typeof(SlotToNullable), NameRight);
@@ -510,8 +522,14 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<SlotToNullable, SlotToNullable, SlotToNullable?>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual((SlotToNullable?)new SlotToNullable(ResultA), compiled(new SlotToNullable(ValueA), new SlotToNullable(ValueA)));
-            Assert.AreEqual((SlotToNullable?)new SlotToNullable(ResultB), compiled(new SlotToNullable(ValueA), new SlotToNullable(ValueB)));
+            foreach (var (left, right, result) in instances)
+            {
+                Assert.AreEqual
+                (
+                    (SlotToNullable?)new SlotToNullable(result),
+                    compiled(new SlotToNullable(left), new SlotToNullable(right))
+                );
+            }
         }
 
         [Test]

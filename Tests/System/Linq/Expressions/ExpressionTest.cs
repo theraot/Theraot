@@ -64,7 +64,7 @@ namespace MonoTests.System.Linq.Expressions
             const int Value = 42;
 
             var parameter = Expression.Parameter(typeof(int), Name);
-            var identity = GetType().GetMethod(nameof(Identity), BindingFlags.Static | BindingFlags.Public);
+            var identity = new Func<int, int>(Identity).GetMethodInfo();
             Assert.IsNotNull(identity);
 
             var lambda = Expression.Lambda<Action<int>>(Expression.Call(identity, parameter), parameter);
@@ -107,20 +107,23 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetActionTypeTest()
         {
-            var action = Expression.GetActionType();
-            Assert.AreEqual(typeof(Action), action);
+            // Note: Testing with Action<int, int, int, int, int> on a .NET 3.5 build running on .NET 4.0 runtime fails
+            //       On a .NET 4.0 runtime Expression.GetActionType will return the type from mscorlib..
+            //       But give it is a .NET 3.5 build, it would be comparing against the type in Theraot.Core
+            var instances = new[]
+            {
+                typeof(Action),
+                typeof(Action<int>),
+                typeof(Action<int, int>),
+                typeof(Action<int, int, int>),
+                typeof(Action<int, int, int, int>)
+            };
 
-            action = Expression.GetActionType(typeof(int));
-            Assert.AreEqual(typeof(Action<int>), action);
-
-            action = Expression.GetActionType(typeof(int), typeof(int));
-            Assert.AreEqual(typeof(Action<int, int>), action);
-
-            action = Expression.GetActionType(typeof(int), typeof(int), typeof(int));
-            Assert.AreEqual(typeof(Action<int, int, int>), action);
-
-            action = Expression.GetActionType(typeof(int), typeof(int), typeof(int), typeof(int));
-            Assert.AreEqual(typeof(Action<int, int, int, int>), action);
+            foreach (var instance in instances)
+            {
+                var action = Expression.GetActionType(instance.GetGenericArguments());
+                Assert.AreEqual(instance, action, instance.Name);
+            }
         }
 
         [Test]
@@ -147,20 +150,23 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetFuncTypeTest()
         {
-            var func = Expression.GetFuncType(typeof(int));
-            Assert.AreEqual(typeof(Func<int>), func);
+            // Note: Testing with Func<int, int, int, int, int, int> on a .NET 3.5 build running on .NET 4.0 runtime fails
+            //       On a .NET 4.0 runtime Expression.GetFuncType will return the type from mscorlib..
+            //       But give it is a .NET 3.5 build, it would be comparing against the type in Theraot.Core
+            var instances = new[]
+            {
+                typeof(Func<int>),
+                typeof(Func<int, int>),
+                typeof(Func<int, int, int>),
+                typeof(Func<int, int, int, int>),
+                typeof(Func<int, int, int, int, int>)
+            };
 
-            func = Expression.GetFuncType(typeof(int), typeof(int));
-            Assert.AreEqual(typeof(Func<int, int>), func);
-
-            func = Expression.GetFuncType(typeof(int), typeof(int), typeof(int));
-            Assert.AreEqual(typeof(Func<int, int, int>), func);
-
-            func = Expression.GetFuncType(typeof(int), typeof(int), typeof(int), typeof(int));
-            Assert.AreEqual(typeof(Func<int, int, int, int>), func);
-
-            func = Expression.GetFuncType(typeof(int), typeof(int), typeof(int), typeof(int), typeof(int));
-            Assert.AreEqual(typeof(Func<int, int, int, int, int>), func);
+            foreach (var instance in instances)
+            {
+                var func = Expression.GetFuncType(instance.GetGenericArguments());
+                Assert.AreEqual(instance, func, instance.Name);
+            }
         }
 
         [Test]
@@ -177,7 +183,7 @@ namespace MonoTests.System.Linq.Expressions
                 (
                     Expression.Lambda<Func<string>>
                     (
-                        Expression.Call(parameter, typeof(int).GetMethod(nameof(int.ToString), ArrayEx.Empty<Type>()))
+                        Expression.Call(parameter,  new Func<string>(default(int).ToString).GetMethodInfo())
                     )
                 ),
                 parameter
@@ -267,7 +273,7 @@ namespace MonoTests.System.Linq.Expressions
                     (
                         Expression.Call
                         (
-                            typeof(string).GetMethod(nameof(string.Concat), new[] {typeof(string), typeof(string)}),
+                            new Func<string, string, string>(string.Concat).GetMethodInfo(),
                             parameterLeft,
                             parameterRight
                         )

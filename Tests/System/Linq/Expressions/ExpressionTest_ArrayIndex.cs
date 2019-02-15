@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NUnit.Framework;
+using Tests.Helpers;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -73,7 +74,7 @@ namespace MonoTests.System.Linq.Expressions
             const string Value = "This is not an array!";
             const int Index = 1;
 
-            Assert.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(Value), Expression.Constant(Index)));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(Value), Expression.Constant(Index)));
         }
 
         [Test]
@@ -81,7 +82,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Index = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(null, Expression.Constant(Index)));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(null, Expression.Constant(Index)));
         }
 
         [Test]
@@ -89,7 +91,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Size = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression)null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression)null));
         }
 
         [Test]
@@ -97,7 +100,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Size = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (IEnumerable<Expression>)null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (IEnumerable<Expression>)null));
         }
 
         [Test]
@@ -105,7 +109,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Size = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression[])null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression[])null));
         }
 
         [Test]
@@ -115,15 +120,9 @@ namespace MonoTests.System.Linq.Expressions
             const int IndexA = 1;
             const int IndexB = 1;
 
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                {
-                    Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
 
-                    Expression.ArrayIndex(Expression.Constant(new int[Size]), indexes);
-                }
-            );
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), indexes));
         }
 
         [Test]
@@ -132,7 +131,7 @@ namespace MonoTests.System.Linq.Expressions
             const int size = 1;
             const bool Index = true;
 
-            Assert.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), Expression.Constant(Index)));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), Expression.Constant(Index)));
         }
 
         [Test]
@@ -143,15 +142,9 @@ namespace MonoTests.System.Linq.Expressions
             const int IndexA = 1;
             const long IndexB = 1L;
 
-            Assert.Throws<ArgumentException>
-            (
-                () =>
-                {
-                    Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
 
-                    Expression.ArrayIndex(Expression.Constant(new int[SizeA, SizeB]), indexes);
-                }
-            );
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[SizeA, SizeB]), indexes));
         }
 
         [Test]
@@ -212,6 +205,10 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(array[3], compiled(array, 3));
             Assert.AreEqual(array[1], compiled(array, 1));
             Assert.AreEqual(array[2], compiled(array, 2));
+            Assert.AreEqual(array[0].Value, compiled(array, 0).Value);
+            Assert.AreEqual(array[3].Value, compiled(array, 3).Value);
+            Assert.AreEqual(array[1].Value, compiled(array, 1).Value);
+            Assert.AreEqual(array[2].Value, compiled(array, 2).Value);
         }
 
         [Test]

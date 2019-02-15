@@ -41,7 +41,7 @@ namespace MonoTests.System.Linq.Expressions
         private static void InvalidOperation<T>(T v1, T v2)
         {
             // SubtractChecked is not defined for small types (byte, sbyte)
-            Assert.Throws<InvalidOperationException>
+            AssertEx.Throws<InvalidOperationException>
             (
                 () => Expression.Lambda<Func<T>>
                 (
@@ -79,7 +79,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Value = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.AddChecked(null, Expression.Constant(Value)));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.AddChecked(null, Expression.Constant(Value)));
         }
 
         [Test]
@@ -87,7 +88,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             const int Value = 1;
 
-            Assert.Throws<ArgumentNullException>(() => Expression.AddChecked(Expression.Constant(Value), null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.AddChecked(Expression.Constant(Value), null));
         }
 
         [Test]
@@ -96,7 +98,7 @@ namespace MonoTests.System.Linq.Expressions
             const int ValueLeft = 1;
             const double ValueRight = 2.0;
 
-            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
@@ -105,7 +107,7 @@ namespace MonoTests.System.Linq.Expressions
             const bool ValueLeft = true;
             const bool ValueRight = false;
 
-            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
         }
 
         [Test]
@@ -114,7 +116,7 @@ namespace MonoTests.System.Linq.Expressions
             var valueLeft = new NoOpClass();
             var valueRight = new NoOpClass();
 
-            Assert.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
