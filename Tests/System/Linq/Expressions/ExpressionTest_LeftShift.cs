@@ -134,13 +134,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_LeftShift");
+            var method = typeof(OpClass).GetMethod("op_LeftShift");
 
             var expr = Expression.LeftShift(Expression.Constant(new OpClass()), Expression.Constant(1));
             Assert.AreEqual(ExpressionType.LeftShift, expr.NodeType, "LeftShift#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "LeftShift#10");
-            Assert.AreEqual(mi, expr.Method, "LeftShift#11");
-            Assert.AreEqual("op_LeftShift", expr.Method.Name, "LeftShift#12");
+            Assert.AreEqual(method, expr.Method, "LeftShift#11");
             Assert.AreEqual
             (
                 "(value(MonoTests.System.Linq.Expressions.OpClass) << 1)",

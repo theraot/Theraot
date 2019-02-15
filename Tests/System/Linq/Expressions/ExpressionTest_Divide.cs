@@ -95,13 +95,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Division");
+            var method = typeof(OpClass).GetMethod("op_Division");
 
             var expr = Expression.Divide(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Divide, expr.NodeType, "Divide#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Divide#10");
-            Assert.AreEqual(mi, expr.Method, "Divide#11");
-            Assert.AreEqual("op_Division", expr.Method.Name, "Divide#12");
+            Assert.AreEqual(method, expr.Method, "Divide#11");
             Assert.AreEqual
             (
                 "(value(MonoTests.System.Linq.Expressions.OpClass) / value(MonoTests.System.Linq.Expressions.OpClass))",

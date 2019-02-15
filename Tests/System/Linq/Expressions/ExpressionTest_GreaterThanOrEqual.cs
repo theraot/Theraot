@@ -159,15 +159,14 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedClass()
         {
-            var mi = typeof(OpClass).GetMethod("op_GreaterThanOrEqual");
+            var method = typeof(OpClass).GetMethod("op_GreaterThanOrEqual");
 
-            Assert.IsNotNull(mi);
+            Assert.IsNotNull(method);
 
             var expr = Expression.GreaterThanOrEqual(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.GreaterThanOrEqual, expr.NodeType);
             Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_GreaterThanOrEqual", expr.Method.Name);
+            Assert.AreEqual(method, expr.Method);
             Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) >= value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
         }
 

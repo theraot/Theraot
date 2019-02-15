@@ -43,7 +43,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1NotArray()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant("This is not an array!")));
+            const string Value = "This is not an array!";
+
+            Assert.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant(Value)));
         }
 
         [Test]
@@ -53,31 +55,69 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void CompileObjectArrayLength()
+        public void CompileObjectArrayLengthA()
         {
-            var p = Expression.Parameter(typeof(object[]), "ary");
+            const int Size = 0;
+            const string Name = "ary";
+
+            var parameter = Expression.Parameter(typeof(object[]), Name);
             var compiled = Expression.Lambda<Func<object[], int>>
             (
-                Expression.ArrayLength(p),
-                p
+                Expression.ArrayLength(parameter),
+                parameter
             ).Compile();
 
-            Assert.AreEqual(0, compiled(new object[0]));
-            Assert.AreEqual(2, compiled(new object[] {"jb", "evain"}));
+            Assert.AreEqual(Size, compiled(new object[Size]));
         }
 
         [Test]
-        public void CompileStringArrayLength()
+        public void CompileObjectArrayLengthB()
         {
-            var p = Expression.Parameter(typeof(string[]), "ary");
-            var compiled = Expression.Lambda<Func<string[], int>>
+            const string ValueA = "jb";
+            const string ValueB = "evain";
+            const string Name = "ary";
+
+            var parameter = Expression.Parameter(typeof(object[]), Name);
+            var compiled = Expression.Lambda<Func<object[], int>>
             (
-                Expression.ArrayLength(p),
-                p
+                Expression.ArrayLength(parameter),
+                parameter
             ).Compile();
 
-            Assert.AreEqual(0, compiled(new string[0]));
-            Assert.AreEqual(2, compiled(new[] {"jb", "evain"}));
+            Assert.AreEqual(2, compiled(new object[] {ValueA, ValueB}));
+        }
+
+        [Test]
+        public void CompileStringArrayLengthA()
+        {
+            const int Size = 0;
+            const string Name = "ary";
+
+            var parameter = Expression.Parameter(typeof(string[]), Name);
+            var compiled = Expression.Lambda<Func<string[], int>>
+            (
+                Expression.ArrayLength(parameter),
+                parameter
+            ).Compile();
+
+            Assert.AreEqual(Size, compiled(new string[Size]));
+        }
+
+        [Test]
+        public void CompileStringArrayLengthB()
+        {
+            const string ValueA = "jb";
+            const string ValueB = "evain";
+            const string Name = "ary";
+
+            var parameter = Expression.Parameter(typeof(string[]), Name);
+            var compiled = Expression.Lambda<Func<string[], int>>
+            (
+                Expression.ArrayLength(parameter),
+                parameter
+            ).Compile();
+
+            Assert.AreEqual(2, compiled(new[] {ValueA, ValueB}));
         }
 
         [Test]
@@ -85,11 +125,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             string[] array = {"a", "b", "c"};
 
-            var expr = Expression.ArrayLength(Expression.Constant(array));
-            Assert.AreEqual(ExpressionType.ArrayLength, expr.NodeType, "ArrayLength#01");
-            Assert.AreEqual(typeof(int), expr.Type, "ArrayLength#02");
-            Assert.IsNull(expr.Method, "ArrayLength#03");
-            Assert.AreEqual("ArrayLength(value(System.String[]))", expr.ToString(), "ArrayLength#04");
+            var unaryExpression = Expression.ArrayLength(Expression.Constant(array));
+            Assert.AreEqual(ExpressionType.ArrayLength, unaryExpression.NodeType, "ArrayLength#01");
+            Assert.AreEqual(typeof(int), unaryExpression.Type, "ArrayLength#02");
+            Assert.IsNull(unaryExpression.Method, "ArrayLength#03");
+            Assert.AreEqual($"ArrayLength(value({typeof(string).FullName}[]))", unaryExpression.ToString(), "ArrayLength#04");
         }
 
         [Test]

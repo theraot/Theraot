@@ -118,12 +118,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Multiply");
+            var method = typeof(OpClass).GetMethod("op_Multiply");
 
             var expr = Expression.Multiply(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Multiply, expr.NodeType, "Multiply#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Multiply#10");
-            Assert.AreEqual(mi, expr.Method, "Multiply#11");
+            Assert.AreEqual(method, expr.Method, "Multiply#11");
             Assert.AreEqual("op_Multiply", expr.Method.Name, "Multiply#12");
             Assert.AreEqual
             (

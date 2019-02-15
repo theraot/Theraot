@@ -223,13 +223,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_BitwiseOr");
+            var method = typeof(OpClass).GetMethod("op_BitwiseOr");
 
             var expr = Expression.Or(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Or, expr.NodeType, "Or#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Or#10");
-            Assert.AreEqual(mi, expr.Method, "Or#11");
-            Assert.AreEqual("op_BitwiseOr", expr.Method.Name, "Or#12");
+            Assert.AreEqual(method, expr.Method, "Or#11");
             Assert.AreEqual
             (
                 "(value(MonoTests.System.Linq.Expressions.OpClass) | value(MonoTests.System.Linq.Expressions.OpClass))",

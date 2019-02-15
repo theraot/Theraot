@@ -200,13 +200,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Subtraction");
+            var method = typeof(OpClass).GetMethod("op_Subtraction");
 
             var expr = Expression.SubtractChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.SubtractChecked, expr.NodeType, "SubtractChecked#07");
             Assert.AreEqual(typeof(OpClass), expr.Type, "SubtractChecked#08");
-            Assert.AreEqual(mi, expr.Method, "SubtractChecked#09");
-            Assert.AreEqual("op_Subtraction", expr.Method.Name, "SubtractChecked#10");
+            Assert.AreEqual(method, expr.Method, "SubtractChecked#09");
             Assert.AreEqual
             (
                 "(value(MonoTests.System.Linq.Expressions.OpClass) - value(MonoTests.System.Linq.Expressions.OpClass))",
@@ -219,13 +218,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpStruct).GetMethod("op_Subtraction");
+            var method = typeof(OpStruct).GetMethod("op_Subtraction");
 
             var expr = Expression.SubtractChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
             Assert.AreEqual(ExpressionType.SubtractChecked, expr.NodeType, "SubtractChecked#11");
             Assert.AreEqual(typeof(OpStruct), expr.Type, "SubtractChecked#12");
-            Assert.AreEqual(mi, expr.Method, "SubtractChecked#13");
-            Assert.AreEqual("op_Subtraction", expr.Method.Name, "SubtractChecked#14");
+            Assert.AreEqual(method, expr.Method, "SubtractChecked#13");
             Assert.AreEqual
             (
                 "(value(MonoTests.System.Linq.Expressions.OpStruct) - value(MonoTests.System.Linq.Expressions.OpStruct))",

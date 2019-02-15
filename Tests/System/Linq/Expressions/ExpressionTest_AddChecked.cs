@@ -186,7 +186,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.AddChecked, binaryExpression.NodeType, "AddChecked#07");
             Assert.AreEqual(type, binaryExpression.Type, "AddChecked#08");
             Assert.AreEqual(method, binaryExpression.Method, "AddChecked#09");
-            Assert.AreEqual("op_Addition", binaryExpression.Method.Name, "AddChecked#10");
             Assert.AreEqual
             (
                 $"(value({type.FullName}) + value({type.FullName}))",
@@ -208,7 +207,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.AddChecked, additionExpression.NodeType, "AddChecked#11");
             Assert.AreEqual(type, additionExpression.Type, "AddChecked#12");
             Assert.AreEqual(method, additionExpression.Method, "AddChecked#13");
-            Assert.AreEqual("op_Addition", additionExpression.Method.Name, "AddChecked#14");
             Assert.AreEqual
             (
                 $"(value({type.FullName}) + value({type.FullName}))",

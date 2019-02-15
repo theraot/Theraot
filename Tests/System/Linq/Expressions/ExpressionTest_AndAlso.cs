@@ -262,17 +262,22 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndAlsoTestNullable()
         {
-            var a = Expression.Parameter(typeof(bool?), "a");
-            var b = Expression.Parameter(typeof(bool?), "b");
-            var l = Expression.Lambda<Func<bool?, bool?, bool?>>(Expression.AndAlso(a, b), a, b);
+            const string NameLeft = "a";
+            const string NameRight = "b";
 
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(bool?), be.Type);
-            Assert.IsTrue(be.IsLifted);
-            Assert.IsTrue(be.IsLiftedToNull);
+            var type = typeof(bool?);
 
-            var compiled = l.Compile();
+            var parameterLeft = Expression.Parameter(type, NameLeft);
+            var parameterRight = Expression.Parameter(type, NameRight);
+            var lambda = Expression.Lambda<Func<bool?, bool?, bool?>>(Expression.AndAlso(parameterLeft, parameterRight), parameterLeft, parameterRight);
+
+            var binaryExpression = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(binaryExpression);
+            Assert.AreEqual(type, binaryExpression.Type);
+            Assert.IsTrue(binaryExpression.IsLifted);
+            Assert.IsTrue(binaryExpression.IsLiftedToNull);
+
+            var compiled = lambda.Compile();
 
             Assert.AreEqual(true, compiled(true, true), "a1");
             Assert.AreEqual(false, compiled(true, false), "a2");
@@ -301,20 +306,22 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Boolean()
         {
-            var expr = Expression.AndAlso(Expression.Constant(true), Expression.Constant(false));
-            Assert.AreEqual(ExpressionType.AndAlso, expr.NodeType, "AndAlso#01");
-            Assert.AreEqual(typeof(bool), expr.Type, "AndAlso#02");
-            Assert.IsNull(expr.Method, "AndAlso#03");
+            var binaryExpression = Expression.AndAlso(Expression.Constant(true), Expression.Constant(false));
+            Assert.AreEqual(ExpressionType.AndAlso, binaryExpression.NodeType, "AndAlso#01");
+            Assert.AreEqual(typeof(bool), binaryExpression.Type, "AndAlso#02");
+            Assert.IsNull(binaryExpression.Method, "AndAlso#03");
         }
 
         [Test]
         public void Connect350487()
         {
-            var p = Expression.Parameter(typeof(B), "b");
+            const string Name = "b";
+
+            var parameter = Expression.Parameter(typeof(B), Name);
             var compiled = Expression.Lambda<Func<B, A>>
             (
-                Expression.AndAlso(p, p),
-                p
+                Expression.AndAlso(parameter, parameter),
+                parameter
             ).Compile();
 
             Assert.IsNotNull(compiled(null));
@@ -329,16 +336,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void IncompleteUserDefinedAndAlso()
         {
+            const string NameLeft = "l";
+            const string NameRight = "r";
+
             Assert.Throws<ArgumentException>
             (
                 () =>
                 {
-                    var l = Expression.Parameter(typeof(Incomplete), "l");
-                    var r = Expression.Parameter(typeof(Incomplete), "r");
+                    var parameterLeft = Expression.Parameter(typeof(Incomplete), NameLeft);
+                    var parameterRight = Expression.Parameter(typeof(Incomplete), NameRight);
 
                     var method = typeof(Incomplete).GetMethod("op_BitwiseAnd");
 
-                    Expression.AndAlso(l, r, method);
+                    Expression.AndAlso(parameterLeft, parameterRight, method);
                 }
             );
         }
@@ -364,64 +374,105 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedAndAlso()
         {
-            var l = Expression.Parameter(typeof(Slot), "l");
-            var r = Expression.Parameter(typeof(Slot), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
+
+            const int ValueA = 64;
+            const int ValueB = 32;
+
+            const int ResultA = ValueA & ValueA;
+            const int ResultB = ValueA & ValueB;
+            const int ResultC = ValueB & ValueA;
+            const int ResultD = ValueB & ValueB;
+
+            var parameterLeft = Expression.Parameter(typeof(Slot), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(Slot), NameRight);
 
             var method = typeof(Slot).GetMethod("op_BitwiseAnd");
 
-            var node = Expression.AndAlso(l, r, method);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(method, node.Method);
+            var binaryExpression = Expression.AndAlso(parameterLeft, parameterRight, method);
+            Assert.IsFalse(binaryExpression.IsLifted);
+            Assert.IsFalse(binaryExpression.IsLiftedToNull);
+            Assert.AreEqual(method, binaryExpression.Method);
 
-            var compiled = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot, Slot, Slot>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(new Slot(64), compiled(new Slot(64), new Slot(64)));
-            Assert.AreEqual(new Slot(0), compiled(new Slot(32), new Slot(64)));
-            Assert.AreEqual(new Slot(0), compiled(new Slot(64), new Slot(32)));
+            Assert.AreEqual(new Slot(ResultA), compiled(new Slot(ValueA), new Slot(ValueA)));
+            Assert.AreEqual(new Slot(ResultB), compiled(new Slot(ValueA), new Slot(ValueB)));
+            Assert.AreEqual(new Slot(ResultC), compiled(new Slot(ValueB), new Slot(ValueA)));
+            Assert.AreEqual(new Slot(ResultD), compiled(new Slot(ValueB), new Slot(ValueB)));
         }
 
         [Test]
         public void UserDefinedAndAlsoLiftedToNull()
         {
-            var l = Expression.Parameter(typeof(Slot?), "l");
-            var r = Expression.Parameter(typeof(Slot?), "r");
+            const string NameLeft = "l";
+            const string NameRight = "r";
+
+            const int ValueA = 64;
+            const int ValueB = 32;
+
+            const int ResultA = ValueA & ValueA;
+            const int ResultB = ValueA & ValueB;
+            const int ResultC = ValueB & ValueA;
+            const int ResultD = ValueB & ValueB;
+
+            var parameterLeft = Expression.Parameter(typeof(Slot?), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(Slot?), NameRight);
 
             var method = typeof(Slot).GetMethod("op_BitwiseAnd");
 
-            var node = Expression.AndAlso(l, r, method);
+            var node = Expression.AndAlso(parameterLeft, parameterRight, method);
             Assert.IsTrue(node.IsLifted);
             Assert.IsTrue(node.IsLiftedToNull);
             Assert.AreEqual(method, node.Method);
 
-            var compiled = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(node, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(new Slot(64), compiled(new Slot(64), new Slot(64)));
-            Assert.AreEqual(new Slot(0), compiled(new Slot(32), new Slot(64)));
-            Assert.AreEqual(new Slot(0), compiled(new Slot(64), new Slot(32)));
-            Assert.AreEqual(null, compiled(null, new Slot(32)));
-            Assert.AreEqual(null, compiled(new Slot(64), null));
+            Assert.AreEqual(new Slot(ResultA), compiled(new Slot(ValueA), new Slot(ValueA)));
+            Assert.AreEqual(new Slot(ResultB), compiled(new Slot(ValueA), new Slot(ValueB)));
+            Assert.AreEqual(new Slot(ResultC), compiled(new Slot(ValueB), new Slot(ValueA)));
+            Assert.AreEqual(new Slot(ResultD), compiled(new Slot(ValueB), new Slot(ValueB)));
+            Assert.AreEqual(null, compiled(null, new Slot(ValueA)));
+            Assert.AreEqual(null, compiled(new Slot(ValueB), null));
             Assert.AreEqual(null, compiled(null, null));
         }
 
         [Test]
         public void UserDefinedAndAlsoShortCircuit()
         {
-            var i = Expression.Parameter(typeof(Item<Slot>), "i");
+            const string Name = "i";
+
+            var parameter = Expression.Parameter(typeof(Item<Slot>), Name);
             var compiled = Expression.Lambda<Func<Item<Slot>, Slot>>
             (
                 Expression.AndAlso
                 (
-                    Expression.Property(i, nameof(Item<bool>.Left)),
-                    Expression.Property(i, nameof(Item<bool>.Right))
+                    Expression.Property(parameter, nameof(Item<bool>.Left)),
+                    Expression.Property(parameter, nameof(Item<bool>.Right))
                 ),
-                i
+                parameter
             ).Compile();
 
-            var item = new Item<Slot>(new Slot(0), new Slot(1));
-            Assert.AreEqual(new Slot(0), compiled(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
+            var itemA = new Item<Slot>(new Slot(0), new Slot(0));
+            Assert.AreEqual(new Slot(0), compiled(itemA));
+            Assert.IsTrue(itemA.LeftCalled);
+            Assert.IsFalse(itemA.RightCalled);
+
+            var itemB = new Item<Slot>(new Slot(0), new Slot(1));
+            Assert.AreEqual(new Slot(0), compiled(itemB));
+            Assert.IsTrue(itemB.LeftCalled);
+            Assert.IsFalse(itemB.RightCalled);
+
+            var itemC = new Item<Slot>(new Slot(1), new Slot(0));
+            Assert.AreEqual(new Slot(0), compiled(itemC));
+            Assert.IsTrue(itemC.LeftCalled);
+            Assert.IsTrue(itemC.RightCalled);
+
+            var itemD = new Item<Slot>(new Slot(1), new Slot(1));
+            Assert.AreEqual(new Slot(1), compiled(itemD));
+            Assert.IsTrue(itemD.LeftCalled);
+            Assert.IsTrue(itemD.RightCalled);
         }
 
         [Test]
@@ -429,30 +480,32 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_BitwiseAnd");
+            var method = typeof(OpClass).GetMethod("op_BitwiseAnd");
 
-            var expr = Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.AndAlso, expr.NodeType, "AndAlso#05");
-            Assert.AreEqual(typeof(OpClass), expr.Type, "AndAlso#06");
-            Assert.AreEqual(mi, expr.Method, "AndAlso#07");
-            Assert.AreEqual("op_BitwiseAnd", expr.Method.Name, "AndAlso#08");
+            var binaryExpression = Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.AndAlso, binaryExpression.NodeType, "AndAlso#05");
+            Assert.AreEqual(typeof(OpClass), binaryExpression.Type, "AndAlso#06");
+            Assert.AreEqual(method, binaryExpression.Method, "AndAlso#07");
         }
 
         [Test]
         public void UserDefinedLiftedAndAlsoShortCircuit()
         {
-            var i = Expression.Parameter(typeof(Item<Slot?>), "i");
+            const string Name = "i";
+            const int Value = 1;
+
+            var parameter = Expression.Parameter(typeof(Item<Slot?>), Name);
             var compiled = Expression.Lambda<Func<Item<Slot?>, Slot?>>
             (
                 Expression.AndAlso
                 (
-                    Expression.Property(i, nameof(Item<bool>.Left)),
-                    Expression.Property(i, nameof(Item<bool>.Right))
+                    Expression.Property(parameter, nameof(Item<bool>.Left)),
+                    Expression.Property(parameter, nameof(Item<bool>.Right))
                 ),
-                i
+                parameter
             ).Compile();
 
-            var item = new Item<Slot?>(null, new Slot(1));
+            var item = new Item<Slot?>(null, new Slot(Value));
             Assert.AreEqual(null, compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);

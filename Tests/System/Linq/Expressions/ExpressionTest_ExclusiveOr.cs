@@ -92,13 +92,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_ExclusiveOr");
+            var method = typeof(OpClass).GetMethod("op_ExclusiveOr");
 
             var expr = Expression.ExclusiveOr(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "ExclusiveOr#10");
-            Assert.AreEqual(mi, expr.Method, "ExclusiveOr#11");
-            Assert.AreEqual("op_ExclusiveOr", expr.Method.Name, "ExclusiveOr#12");
+            Assert.AreEqual(method, expr.Method, "ExclusiveOr#11");
             Assert.AreEqual
             (
                 "(value(MonoTests.System.Linq.Expressions.OpClass) ^ value(MonoTests.System.Linq.Expressions.OpClass))",

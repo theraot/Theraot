@@ -172,13 +172,13 @@ namespace MonoTests.System.Linq.Expressions
         {
             var d = Expression.Parameter(typeof(decimal), "l");
 
-            var meth = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
+            var method = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
 
             var node = Expression.Negate(d);
             Assert.IsFalse(node.IsLifted);
             Assert.IsFalse(node.IsLiftedToNull);
             Assert.AreEqual(typeof(decimal), node.Type);
-            Assert.AreEqual(meth, node.Method);
+            Assert.AreEqual(method, node.Method);
 
             var compiled = Expression.Lambda<Func<decimal, decimal>>(node, d).Compile();
 
@@ -190,13 +190,13 @@ namespace MonoTests.System.Linq.Expressions
         {
             var d = Expression.Parameter(typeof(decimal?), "l");
 
-            var meth = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
+            var method = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
 
             var node = Expression.Negate(d);
             Assert.IsTrue(node.IsLifted);
             Assert.IsTrue(node.IsLiftedToNull);
             Assert.AreEqual(typeof(decimal?), node.Type);
-            Assert.AreEqual(meth, node.Method);
+            Assert.AreEqual(method, node.Method);
 
             var compiled = Expression.Lambda<Func<decimal?, decimal?>>(node, d).Compile();
 
@@ -224,13 +224,12 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedClass()
         {
-            var mi = typeof(OpClass).GetMethod("op_UnaryNegation");
+            var method = typeof(OpClass).GetMethod("op_UnaryNegation");
 
             var expr = Expression.Negate(Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Negate, expr.NodeType);
             Assert.AreEqual(typeof(OpClass), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_UnaryNegation", expr.Method.Name);
+            Assert.AreEqual(method, expr.Method);
             Assert.AreEqual("-value(MonoTests.System.Linq.Expressions.OpClass)", expr.ToString());
         }
 

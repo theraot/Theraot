@@ -408,13 +408,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Equality");
+            var method = typeof(OpClass).GetMethod("op_Equality");
 
             var expr = Expression.Equal(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Equal, expr.NodeType);
             Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_Equality", expr.Method.Name);
+            Assert.AreEqual(method, expr.Method);
         }
 
         [Test]

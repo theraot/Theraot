@@ -105,13 +105,12 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedClass()
         {
-            var mi = typeof(OpClass).GetMethod("op_UnaryPlus");
+            var method = typeof(OpClass).GetMethod("op_UnaryPlus");
 
             var expr = Expression.UnaryPlus(Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.UnaryPlus, expr.NodeType);
             Assert.AreEqual(typeof(OpClass), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_UnaryPlus", expr.Method.Name);
+            Assert.AreEqual(method, expr.Method);
             Assert.AreEqual("+value(MonoTests.System.Linq.Expressions.OpClass)", expr.ToString());
         }
     }

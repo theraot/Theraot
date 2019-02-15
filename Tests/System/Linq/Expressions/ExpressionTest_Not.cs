@@ -156,25 +156,25 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedClass()
         {
-            var mi = typeof(OpClass).GetMethod("op_LogicalNot");
+            var method = typeof(OpClass).GetMethod("op_LogicalNot");
 
             var expr = Expression.Not(Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Not, expr.NodeType);
             Assert.AreEqual(typeof(OpClass), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_LogicalNot", expr.Method.Name);
+            Assert.AreEqual(method, expr.Method);
             Assert.AreEqual("Not(value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
         }
 
         [Test]
         public void UserDefinedNotNullable()
         {
+            var method = typeof(Slot).GetMethod("op_LogicalNot");
             var s = Expression.Parameter(typeof(Slot?), "s");
             var node = Expression.Not(s);
             Assert.IsTrue(node.IsLifted);
             Assert.IsTrue(node.IsLiftedToNull);
             Assert.AreEqual(typeof(bool?), node.Type);
-            Assert.AreEqual(typeof(Slot).GetMethod("op_LogicalNot"), node.Method);
+            Assert.AreEqual(method, node.Method);
 
             var compiled = Expression.Lambda<Func<Slot?, bool?>>(node, s).Compile();
 

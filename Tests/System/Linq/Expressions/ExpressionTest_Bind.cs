@@ -45,7 +45,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Bind(null, Expression.Constant(1)));
+            const int Value = 1;
+
+            Assert.Throws<ArgumentNullException>(() => Expression.Bind(null, Expression.Constant(Value)));
         }
 
         [Test]
@@ -57,16 +59,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void BindValueTypes()
         {
-            var i = Expression.Parameter(typeof(int), "i");
-            var s = Expression.Parameter(typeof(short), "s");
+            const string NameLeft = "i";
+            const string NameRight = "s";
+
+            var parameterLeft = Expression.Parameter(typeof(int), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(short), NameRight);
 
             var memberInitExpression = Expression.MemberInit
             (
                 Expression.New(typeof(Slot)),
-                Expression.Bind(typeof(Slot).GetProperty("Integer"), i),
-                Expression.Bind(typeof(Slot).GetProperty("Short"), s)
+                Expression.Bind(typeof(Slot).GetProperty("Integer"), parameterLeft),
+                Expression.Bind(typeof(Slot).GetProperty("Short"), parameterRight)
             );
-            var compiled = Expression.Lambda<Func<int, short, Slot>>(memberInitExpression, i, s).Compile();
+            var compiled = Expression.Lambda<Func<int, short, Slot>>(memberInitExpression, parameterLeft, parameterRight).Compile();
 
             Assert.AreEqual(new Slot {Integer = 42, Short = -1}, compiled(42, -1));
         }

@@ -302,7 +302,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.And, binaryExpression.NodeType, "And#09");
             Assert.AreEqual(type, binaryExpression.Type, "And#10");
             Assert.AreEqual(method, binaryExpression.Method, "And#11");
-            Assert.AreEqual("op_BitwiseAnd", binaryExpression.Method.Name, "And#12");
             Assert.AreEqual
             (
                 $"(value({type.FullName}) & value({type.FullName}))",
