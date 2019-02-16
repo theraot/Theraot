@@ -184,7 +184,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var method = type.GetMethod("op_Addition");
 
-            var binaryExpression = Expression.AddChecked(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+            var binaryExpression = Expression.AddChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.AddChecked, binaryExpression.NodeType, "AddChecked#07");
             Assert.AreEqual(type, binaryExpression.Type, "AddChecked#08");
             Assert.AreEqual(method, binaryExpression.Method, "AddChecked#09");
