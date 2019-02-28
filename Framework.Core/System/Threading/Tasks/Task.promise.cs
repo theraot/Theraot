@@ -137,6 +137,9 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
+                    RecordInternalCancellationRequest();
+                    Volatile.Write(ref _status, (int)TaskStatus.Canceled);
+
                     // Regular path for an uncanceled cancellationToken
                     var registration = cancellationToken.Register(_taskCancelCallback, this);
                     _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
