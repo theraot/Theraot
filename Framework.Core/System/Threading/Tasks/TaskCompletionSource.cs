@@ -363,9 +363,25 @@ namespace System.Threading.Tasks
 
             return value;
         }
-
-        // Enables a token to be stored into the canceled task
-        internal bool TrySetCanceled(CancellationToken tokenToRecord)
+        
+        /// <summary>
+        ///     Attempts to transition the underlying
+        ///     <see cref="T:System.Threading.Tasks.Task{TResult}" /> into the
+        ///     <see cref="TaskStatus.Canceled">Canceled</see>
+        ///     state.
+        ///     Enables a token to be stored into the canceled task
+        /// </summary>
+        /// <returns>True if the operation was successful; otherwise, false.</returns>
+        /// <remarks>
+        ///     This operation will return false if the
+        ///     <see cref="T:System.Threading.Tasks.Task{TResult}" /> is already in one
+        ///     of the three final states:
+        ///     <see cref="TaskStatus.RanToCompletion">RanToCompletion</see>,
+        ///     <see cref="TaskStatus.Faulted">Faulted</see>, or
+        ///     <see cref="TaskStatus.Canceled">Canceled</see>.
+        /// </remarks>
+        /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task" /> was disposed.</exception>
+        public bool TrySetCanceled(CancellationToken tokenToRecord)
         {
             var value = _task.Value.TrySetCanceled(tokenToRecord);
             if (!value && !_task.Value.IsCompleted)

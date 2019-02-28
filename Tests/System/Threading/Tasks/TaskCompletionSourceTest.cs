@@ -145,6 +145,21 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
+
+#if !LESSTHAN_NETSTANDARD13
+        [Test]
+        public void SetCanceledWithTokenTest()
+        {
+            var tokenSource = new CancellationTokenSource();
+            
+            Assert.IsNotNull(_completionSource.Task, "#1");
+            Assert.IsTrue(_completionSource.TrySetCanceled(tokenSource.Token), "#2");
+            Assert.AreEqual(TaskStatus.Canceled, _completionSource.Task.Status, "#3");
+            Assert.IsFalse(_completionSource.TrySetResult(42), "#4");
+            Assert.AreEqual(TaskStatus.Canceled, _completionSource.Task.Status, "#5");
+        }
+#endif
+
         [Test]
         [Ignore("#4550, Mono GC is lame")]
         public void SetExceptionAndUnobservedEvent() // TODO: Review

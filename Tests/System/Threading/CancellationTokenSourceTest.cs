@@ -678,6 +678,15 @@ namespace MonoTests.System.Threading
                 }
             }
         }
+        
+        [Test]
+        public void EmptyConstructorState()
+        {
+            using (var cts = new CancellationTokenSource())
+            {
+                Assert.IsFalse(cts.IsCancellationRequested);
+            }
+        }
     }
 
 #if !NET40
