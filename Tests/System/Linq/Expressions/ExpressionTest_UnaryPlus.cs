@@ -30,10 +30,14 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -44,6 +48,17 @@ namespace MonoTests.System.Linq.Expressions
         public void Arg1Null()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.UnaryPlus(null));
+        }
+
+        [Test]
+        public void CompilePlusInt32()
+        {
+            var p = Expression.Parameter(typeof(int), "i");
+            var compiled = Expression.Lambda<Func<int, int>>(Expression.UnaryPlus(p), p).Compile();
+
+            Assert.AreEqual(-2, compiled(-2));
+            Assert.AreEqual(0, compiled(0));
+            Assert.AreEqual(3, compiled(3));
         }
 
         [Test]
@@ -65,12 +80,6 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void PlusBool()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.UnaryPlus(true.ToConstant()));
-        }
-
-        [Test]
         public void Number()
         {
             var up = Expression.UnaryPlus(1.ToConstant());
@@ -78,16 +87,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void UserDefinedClass()
+        public void PlusBool()
         {
-            var mi = typeof(OpClass).GetMethod("op_UnaryPlus");
-
-            var expr = Expression.UnaryPlus(Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.UnaryPlus, expr.NodeType);
-            Assert.AreEqual(typeof(OpClass), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_UnaryPlus", expr.Method.Name);
-            Assert.AreEqual("+value(MonoTests.System.Linq.Expressions.OpClass)", expr.ToString());
+            Assert.Throws<InvalidOperationException>(() => Expression.UnaryPlus(true.ToConstant()));
         }
 
         [Test]
@@ -101,14 +103,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void CompilePlusInt32()
+        public void UserDefinedClass()
         {
-            var p = Expression.Parameter(typeof(int), "i");
-            var plus = Expression.Lambda<Func<int, int>>(Expression.UnaryPlus(p), p).Compile();
+            var method = typeof(OpClass).GetMethod("op_UnaryPlus");
 
-            Assert.AreEqual(-2, plus(-2));
-            Assert.AreEqual(0, plus(0));
-            Assert.AreEqual(3, plus(3));
+            var expr = Expression.UnaryPlus(Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.UnaryPlus, expr.NodeType);
+            Assert.AreEqual(typeof(OpClass), expr.Type);
+            Assert.AreEqual(method, expr.Method);
+            Assert.AreEqual("+value(MonoTests.System.Linq.Expressions.OpClass)", expr.ToString());
         }
     }
 }

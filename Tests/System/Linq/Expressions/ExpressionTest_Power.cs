@@ -24,9 +24,9 @@ extern alias nunitlinq;
 //		Federico Di Gregorio <fog@initd.org>
 //		Miguel de Icaza <miguel@novell.com>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -52,18 +52,6 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void ArgTypesInt()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.Power(Expression.Constant(1), Expression.Constant(2)));
-        }
-
-        [Test]
-        public void ArgTypesFloat()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.Power(Expression.Constant((float)1), Expression.Constant((float)2)));
-        }
-
-        [Test]
         public void ArgTypesDouble()
         {
             var p = Expression.Power(Expression.Constant(1.0), Expression.Constant(2.0));
@@ -79,16 +67,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void TestCompile()
+        public void ArgTypesFloat()
         {
-            var a = Expression.Parameter(typeof(double), "a");
-            var b = Expression.Parameter(typeof(double), "b");
+            Assert.Throws<InvalidOperationException>(() => Expression.Power(Expression.Constant((float)1), Expression.Constant((float)2)));
+        }
 
-            var power = Expression.Lambda<Func<double, double, double>>(
-                Expression.Power(a, b), a, b).Compile();
-
-            Assert.AreEqual(1, power(1, 10));
-            Assert.AreEqual(16, power(2, 4));
+        [Test]
+        public void ArgTypesInt()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.Power(Expression.Constant(1), Expression.Constant(2)));
         }
 
         [Test]
@@ -97,14 +84,31 @@ namespace MonoTests.System.Linq.Expressions
             var a = Expression.Parameter(typeof(double?), "a");
             var b = Expression.Parameter(typeof(double?), "b");
 
-            var power = Expression.Lambda<Func<double?, double?, double?>>(
-                Expression.Power(a, b), a, b).Compile();
+            var compiled = Expression.Lambda<Func<double?, double?, double?>>
+            (
+                Expression.Power(a, b), a, b
+            ).Compile();
 
-            Assert.AreEqual((double?)1, power(1, 10));
-            Assert.AreEqual((double?)16, power(2, 4));
-            Assert.AreEqual(null, power(1, null));
-            Assert.AreEqual(null, power(null, 1));
-            Assert.AreEqual(null, power(null, null));
+            Assert.AreEqual((double?)1, compiled(1, 10));
+            Assert.AreEqual((double?)16, compiled(2, 4));
+            Assert.AreEqual(null, compiled(1, null));
+            Assert.AreEqual(null, compiled(null, 1));
+            Assert.AreEqual(null, compiled(null, null));
+        }
+
+        [Test]
+        public void TestCompile()
+        {
+            var a = Expression.Parameter(typeof(double), "a");
+            var b = Expression.Parameter(typeof(double), "b");
+
+            var compiled = Expression.Lambda<Func<double, double, double>>
+            (
+                Expression.Power(a, b), a, b
+            ).Compile();
+
+            Assert.AreEqual(1, compiled(1, 10));
+            Assert.AreEqual(16, compiled(2, 4));
         }
     }
 }

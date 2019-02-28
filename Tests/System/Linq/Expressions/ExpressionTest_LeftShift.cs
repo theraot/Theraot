@@ -24,10 +24,14 @@ extern alias nunitlinq;
 //		Federico Di Gregorio <fog@initd.org>
 //		Jb Evain <jbevain@novell.com>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -53,15 +57,24 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.LeftShift(Expression.Constant(new NoOpClass()), Expression.Constant(1)));
-        }
-
-        [Test]
         public void Boolean()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.LeftShift(Expression.Constant(true), Expression.Constant(1)));
+        }
+
+        [Test]
+        public void CompileLeftShift()
+        {
+            var l = Expression.Parameter(typeof(int), "l");
+            var r = Expression.Parameter(typeof(int), "r");
+
+            var compiled = Expression.Lambda<Func<int, int, int>>
+            (
+                Expression.LeftShift(l, r), l, r
+            ).Compile();
+
+            Assert.AreEqual(12, compiled(6, 1));
+            Assert.AreEqual(96, compiled(12, 3));
         }
 
         [Test]
@@ -78,6 +91,29 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(int), expr.Type, "LeftShift#02");
             Assert.IsNull(expr.Method, "LeftShift#03");
             Assert.AreEqual("(2 << 1)", expr.ToString(), "LeftShift#04");
+        }
+
+        [Test]
+        public void LeftShiftNullableLongAndInt()
+        {
+            var l = Expression.Parameter(typeof(long?), "l");
+            var r = Expression.Parameter(typeof(int), "r");
+
+            var node = Expression.LeftShift(l, r);
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsTrue(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(long?), node.Type);
+
+            var compiled = Expression.Lambda<Func<long?, int, long?>>(node, l, r).Compile();
+
+            Assert.AreEqual(null, compiled(null, 2));
+            Assert.AreEqual(2048, compiled(1024, 1));
+        }
+
+        [Test]
+        public void NoOperatorClass()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.LeftShift(Expression.Constant(new NoOpClass()), Expression.Constant(1)));
         }
 
         [Test]
@@ -98,45 +134,17 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_LeftShift");
+            var method = typeof(OpClass).GetMethod("op_LeftShift");
 
             var expr = Expression.LeftShift(Expression.Constant(new OpClass()), Expression.Constant(1));
             Assert.AreEqual(ExpressionType.LeftShift, expr.NodeType, "LeftShift#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "LeftShift#10");
-            Assert.AreEqual(mi, expr.Method, "LeftShift#11");
-            Assert.AreEqual("op_LeftShift", expr.Method.Name, "LeftShift#12");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) << 1)",
-                expr.ToString(), "LeftShift#13");
-        }
-
-        [Test]
-        public void CompileLeftShift()
-        {
-            var l = Expression.Parameter(typeof(int), "l");
-            var r = Expression.Parameter(typeof(int), "r");
-
-            var ls = Expression.Lambda<Func<int, int, int>>(
-                Expression.LeftShift(l, r), l, r).Compile();
-
-            Assert.AreEqual(12, ls(6, 1));
-            Assert.AreEqual(96, ls(12, 3));
-        }
-
-        [Test]
-        public void LeftShiftNullableLongAndInt()
-        {
-            var l = Expression.Parameter(typeof(long?), "l");
-            var r = Expression.Parameter(typeof(int), "r");
-
-            var node = Expression.LeftShift(l, r);
-            Assert.IsTrue(node.IsLifted);
-            Assert.IsTrue(node.IsLiftedToNull);
-            Assert.AreEqual(typeof(long?), node.Type);
-
-            var ls = Expression.Lambda<Func<long?, int, long?>>(node, l, r).Compile();
-
-            Assert.AreEqual(null, ls(null, 2));
-            Assert.AreEqual(2048, ls(1024, 1));
+            Assert.AreEqual(method, expr.Method, "LeftShift#11");
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpClass) << 1)",
+                expr.ToString(), "LeftShift#13"
+            );
         }
     }
 }

@@ -24,10 +24,14 @@ extern alias nunitlinq;
 //		Federico Di Gregorio <fog@initd.org>
 //		Jb Evain <jbevain@novell.com>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -53,15 +57,24 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.RightShift(Expression.Constant(new NoOpClass()), Expression.Constant(1)));
-        }
-
-        [Test]
         public void Boolean()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.RightShift(Expression.Constant(true), Expression.Constant(1)));
+        }
+
+        [Test]
+        public void CompileRightShift()
+        {
+            var l = Expression.Parameter(typeof(int), "l");
+            var r = Expression.Parameter(typeof(int), "r");
+
+            var compiled = Expression.Lambda<Func<int, int, int>>
+            (
+                Expression.RightShift(l, r), l, r
+            ).Compile();
+
+            Assert.AreEqual(3, compiled(6, 1));
+            Assert.AreEqual(1, compiled(12, 3));
         }
 
         [Test]
@@ -81,6 +94,12 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void NoOperatorClass()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.RightShift(Expression.Constant(new NoOpClass()), Expression.Constant(1)));
+        }
+
+        [Test]
         public void Nullable()
         {
             int? a = 1;
@@ -94,35 +113,6 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void UserDefinedClass()
-        {
-            // We can use the simplest version of GetMethod because we already know only one
-            // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_RightShift");
-
-            var expr = Expression.RightShift(Expression.Constant(new OpClass()), Expression.Constant(1));
-            Assert.AreEqual(ExpressionType.RightShift, expr.NodeType, "RightShift#09");
-            Assert.AreEqual(typeof(OpClass), expr.Type, "RightShift#10");
-            Assert.AreEqual(mi, expr.Method, "RightShift#11");
-            Assert.AreEqual("op_RightShift", expr.Method.Name, "RightShift#12");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) >> 1)",
-                expr.ToString(), "RightShift#13");
-        }
-
-        [Test]
-        public void CompileRightShift()
-        {
-            var l = Expression.Parameter(typeof(int), "l");
-            var r = Expression.Parameter(typeof(int), "r");
-
-            var rs = Expression.Lambda<Func<int, int, int>>(
-                Expression.RightShift(l, r), l, r).Compile();
-
-            Assert.AreEqual(3, rs(6, 1));
-            Assert.AreEqual(1, rs(12, 3));
-        }
-
-        [Test]
         public void RightShiftNullableLongAndInt()
         {
             var l = Expression.Parameter(typeof(long?), "l");
@@ -133,10 +123,28 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsTrue(node.IsLiftedToNull);
             Assert.AreEqual(typeof(long?), node.Type);
 
-            var rs = Expression.Lambda<Func<long?, int, long?>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<long?, int, long?>>(node, l, r).Compile();
 
-            Assert.AreEqual(null, rs(null, 2));
-            Assert.AreEqual(512, rs(1024, 1));
+            Assert.AreEqual(null, compiled(null, 2));
+            Assert.AreEqual(512, compiled(1024, 1));
+        }
+
+        [Test]
+        public void UserDefinedClass()
+        {
+            // We can use the simplest version of GetMethod because we already know only one
+            // exists in the very simple class we're using for the tests.
+            var method = typeof(OpClass).GetMethod("op_RightShift");
+
+            var expr = Expression.RightShift(Expression.Constant(new OpClass()), Expression.Constant(1));
+            Assert.AreEqual(ExpressionType.RightShift, expr.NodeType, "RightShift#09");
+            Assert.AreEqual(typeof(OpClass), expr.Type, "RightShift#10");
+            Assert.AreEqual(method, expr.Method, "RightShift#11");
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpClass) >> 1)",
+                expr.ToString(), "RightShift#13"
+            );
         }
     }
 }

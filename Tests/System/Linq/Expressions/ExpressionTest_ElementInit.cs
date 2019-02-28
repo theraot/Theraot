@@ -30,71 +30,26 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+using Theraot;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestElementInit
     {
-        [Test]
-        public void MethodNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(null));
-        }
-
-        [Test]
-        public void ArgNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), null));
-        }
-
-        [Test]
-        public void MethodNameDoesntMatchAdd()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Baz")));
-        }
-
-        [Test]
-        public void AddMethodIsNotAnInstanceMethod()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Bar).GetMethod("Add")));
-        }
-
-        [Test]
-        public void MethodArgumentCountDoesnMatchParameterLength()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add")));
-        }
-
-        [Test]
-        public void MethodHasNullArgument()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { null }));
-        }
-
-        [Test]
-        public void MethodArgumentDoesntMatchParameterType()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), Expression.Constant(1)));
-        }
-
-        [Test]
-        public void ElementInitToString()
-        {
-            var elementInit = Expression.ElementInit(typeof(Foo).GetMethod("Add"), Expression.Constant(""));
-
-            Assert.AreEqual("Void Add(System.String)(\"\")", elementInit.ToString());
-        }
-
         public class Foo
         {
             public void Add(string s)
             {
-                Theraot.No.Op(s);
+                No.Op(s);
             }
 
             public void Baz()
@@ -107,6 +62,56 @@ namespace MonoTests.System.Linq.Expressions
             public static void Add()
             {
             }
+        }
+
+        [Test]
+        public void AddMethodIsNotAnInstanceMethod()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Bar).GetMethod("Add")));
+        }
+
+        [Test]
+        public void ArgNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), null));
+        }
+
+        [Test]
+        public void ElementInitToString()
+        {
+            var elementInit = Expression.ElementInit(typeof(Foo).GetMethod("Add"), Expression.Constant(""));
+
+            Assert.AreEqual("Void Add(System.String)(\"\")", elementInit.ToString());
+        }
+
+        [Test]
+        public void MethodArgumentCountDoesnMatchParameterLength()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add")));
+        }
+
+        [Test]
+        public void MethodArgumentDoesntMatchParameterType()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), Expression.Constant(1)));
+        }
+
+        [Test]
+        public void MethodHasNullArgument()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] {null}));
+        }
+
+        [Test]
+        public void MethodNameDoesntMatchAdd()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Baz")));
+        }
+
+        [Test]
+        public void MethodNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(null));
         }
     }
 }

@@ -23,10 +23,14 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -52,25 +56,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.Divide(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
-
-        [Test]
         public void Boolean()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.Divide(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]
-        public void Numeric()
+        public void NoOperatorClass()
         {
-            var expr = Expression.Divide(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.Divide, expr.NodeType, "Divide#01");
-            Assert.AreEqual(typeof(int), expr.Type, "Divide#02");
-            Assert.IsNull(expr.Method, "Divide#03");
-            Assert.AreEqual("(1 / 2)", expr.ToString(), "Divide#04");
+            Assert.Throws<InvalidOperationException>(() => Expression.Divide(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -87,19 +81,31 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void Numeric()
+        {
+            var expr = Expression.Divide(Expression.Constant(1), Expression.Constant(2));
+            Assert.AreEqual(ExpressionType.Divide, expr.NodeType, "Divide#01");
+            Assert.AreEqual(typeof(int), expr.Type, "Divide#02");
+            Assert.IsNull(expr.Method, "Divide#03");
+            Assert.AreEqual("(1 / 2)", expr.ToString(), "Divide#04");
+        }
+
+        [Test]
         public void UserDefinedClass()
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Division");
+            var method = typeof(OpClass).GetMethod("op_Division");
 
             var expr = Expression.Divide(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Divide, expr.NodeType, "Divide#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Divide#10");
-            Assert.AreEqual(mi, expr.Method, "Divide#11");
-            Assert.AreEqual("op_Division", expr.Method.Name, "Divide#12");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) / value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "Divide#13");
+            Assert.AreEqual(method, expr.Method, "Divide#11");
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpClass) / value(MonoTests.System.Linq.Expressions.OpClass))",
+                expr.ToString(), "Divide#13"
+            );
         }
     }
 }

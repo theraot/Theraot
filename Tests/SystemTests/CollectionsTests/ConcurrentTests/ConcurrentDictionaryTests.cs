@@ -35,7 +35,7 @@ using NUnit.Framework;
 using Tests.Helpers;
 using Theraot;
 
-namespace SystemTests.CollectionsTests.ConcurrentTests
+namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
     public class ConcurrentDictionaryTests

@@ -30,16 +30,40 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestLessThan
     {
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int val)
+            {
+                Value = val;
+            }
+
+            public static bool operator >(Slot a, Slot b)
+            {
+                return a.Value > b.Value;
+            }
+
+            public static bool operator <(Slot a, Slot b)
+            {
+                return a.Value < b.Value;
+            }
+        }
+
         [Test]
         public void Arg1Null()
         {
@@ -53,9 +77,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
+        public void Boolean()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.LessThan(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
+            Assert.Throws<InvalidOperationException>(() => Expression.LessThan(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]
@@ -85,24 +109,9 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void Boolean()
+        public void NoOperatorClass()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.LessThan(Expression.Constant(true), Expression.Constant(false)));
-        }
-
-        [Test]
-        public void UserDefinedClass()
-        {
-            var mi = typeof(OpClass).GetMethod("op_LessThan");
-
-            Assert.IsNotNull(mi);
-
-            var expr = Expression.LessThan(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.LessThan, expr.NodeType);
-            Assert.AreEqual(typeof(bool), expr.Type);
-            Assert.AreEqual(mi, expr.Method);
-            Assert.AreEqual("op_LessThan", expr.Method.Name);
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) < value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
+            Assert.Throws<InvalidOperationException>(() => Expression.LessThan(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -111,17 +120,19 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var lt = Expression.Lambda<Func<int?, int?, bool>>(
-                Expression.LessThan(l, r), l, r).Compile();
+            var compiled = Expression.Lambda<Func<int?, int?, bool>>
+            (
+                Expression.LessThan(l, r), l, r
+            ).Compile();
 
-            Assert.IsFalse(lt(null, null));
-            Assert.IsFalse(lt(null, 1));
-            Assert.IsFalse(lt(null, -1));
-            Assert.IsFalse(lt(1, null));
-            Assert.IsFalse(lt(-1, null));
-            Assert.IsTrue(lt(1, 2));
-            Assert.IsFalse(lt(2, 1));
-            Assert.IsFalse(lt(1, 1));
+            Assert.IsFalse(compiled(null, null));
+            Assert.IsFalse(compiled(null, 1));
+            Assert.IsFalse(compiled(null, -1));
+            Assert.IsFalse(compiled(1, null));
+            Assert.IsFalse(compiled(-1, null));
+            Assert.IsTrue(compiled(1, 2));
+            Assert.IsFalse(compiled(2, 1));
+            Assert.IsFalse(compiled(1, 1));
         }
 
         [Test]
@@ -130,37 +141,33 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Parameter(typeof(int?), "l");
             var r = Expression.Parameter(typeof(int?), "r");
 
-            var lt = Expression.Lambda<Func<int?, int?, bool?>>(
-                Expression.LessThan(l, r, true, null), l, r).Compile();
+            var compiled = Expression.Lambda<Func<int?, int?, bool?>>
+            (
+                Expression.LessThan(l, r, true, null), l, r
+            ).Compile();
 
-            Assert.AreEqual(null, lt(null, null));
-            Assert.AreEqual(null, lt(null, 1));
-            Assert.AreEqual(null, lt(null, -1));
-            Assert.AreEqual(null, lt(1, null));
-            Assert.AreEqual(null, lt(-1, null));
-            Assert.AreEqual((bool?)true, lt(1, 2));
-            Assert.AreEqual((bool?)false, lt(2, 1));
-            Assert.AreEqual((bool?)false, lt(1, 1));
+            Assert.AreEqual(null, compiled(null, null));
+            Assert.AreEqual(null, compiled(null, 1));
+            Assert.AreEqual(null, compiled(null, -1));
+            Assert.AreEqual(null, compiled(1, null));
+            Assert.AreEqual(null, compiled(-1, null));
+            Assert.AreEqual((bool?)true, compiled(1, 2));
+            Assert.AreEqual((bool?)false, compiled(2, 1));
+            Assert.AreEqual((bool?)false, compiled(1, 1));
         }
 
-        private struct Slot
+        [Test]
+        public void UserDefinedClass()
         {
-            public readonly int Value;
+            var method = typeof(OpClass).GetMethod("op_LessThan");
 
-            public Slot(int val)
-            {
-                Value = val;
-            }
+            Assert.IsNotNull(method);
 
-            public static bool operator >(Slot a, Slot b)
-            {
-                return a.Value > b.Value;
-            }
-
-            public static bool operator <(Slot a, Slot b)
-            {
-                return a.Value < b.Value;
-            }
+            var expr = Expression.LessThan(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.LessThan, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.AreEqual(method, expr.Method);
+            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) < value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
         }
 
         [Test]
@@ -175,14 +182,14 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var lte = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
 
-            Assert.AreEqual(false, lte(new Slot(1), new Slot(0)));
-            Assert.AreEqual(true, lte(new Slot(-1), new Slot(1)));
-            Assert.AreEqual(false, lte(new Slot(1), new Slot(1)));
-            Assert.AreEqual(false, lte(null, new Slot(1)));
-            Assert.AreEqual(false, lte(new Slot(1), null));
-            Assert.AreEqual(false, lte(null, null));
+            Assert.AreEqual(false, compiled(new Slot(1), new Slot(0)));
+            Assert.AreEqual(true, compiled(new Slot(-1), new Slot(1)));
+            Assert.AreEqual(false, compiled(new Slot(1), new Slot(1)));
+            Assert.AreEqual(false, compiled(null, new Slot(1)));
+            Assert.AreEqual(false, compiled(new Slot(1), null));
+            Assert.AreEqual(false, compiled(null, null));
         }
 
         [Test]
@@ -197,14 +204,14 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(bool?), node.Type);
             Assert.IsNotNull(node.Method);
 
-            var lte = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
+            var compiled = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
 
-            Assert.AreEqual(false, lte(new Slot(1), new Slot(0)));
-            Assert.AreEqual(true, lte(new Slot(-1), new Slot(1)));
-            Assert.AreEqual(false, lte(new Slot(1), new Slot(1)));
-            Assert.AreEqual(null, lte(null, new Slot(1)));
-            Assert.AreEqual(null, lte(new Slot(1), null));
-            Assert.AreEqual(null, lte(null, null));
+            Assert.AreEqual(false, compiled(new Slot(1), new Slot(0)));
+            Assert.AreEqual(true, compiled(new Slot(-1), new Slot(1)));
+            Assert.AreEqual(false, compiled(new Slot(1), new Slot(1)));
+            Assert.AreEqual(null, compiled(null, new Slot(1)));
+            Assert.AreEqual(null, compiled(new Slot(1), null));
+            Assert.AreEqual(null, compiled(null, null));
         }
     }
 }

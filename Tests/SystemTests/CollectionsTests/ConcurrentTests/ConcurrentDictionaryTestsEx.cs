@@ -13,7 +13,7 @@ using NUnit.Framework;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
-namespace SystemTests.CollectionsTests.ConcurrentTests
+namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
     public partial class ConcurrentDictionaryTestsEx

@@ -29,7 +29,7 @@ using NUnit.Framework;
 using Tests.Helpers;
 using Theraot;
 
-namespace SystemTests.CollectionsTests.SpecializedTests
+namespace Tests.SystemTests.CollectionsTests.SpecializedTests
 {
     [TestFixture]
     public class NotifyCollectionChangedEventArgsTest

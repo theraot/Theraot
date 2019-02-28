@@ -31,10 +31,11 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
+using Theraot;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -42,81 +43,101 @@ namespace MonoTests.System.Linq.Expressions
     {
         public static OpClass operator +(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator -(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator *(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator /(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator %(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator &(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator |(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator ^(OpClass a, OpClass b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator >>(OpClass a, int b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpClass operator <<(OpClass a, int b)
         {
+            No.Op(b);
             return a;
         }
 
         public static bool operator true(OpClass a)
         {
+            No.Op(a);
             return false;
         }
 
         public static bool operator false(OpClass a)
         {
+            No.Op(a);
             return false;
         }
 
         public static bool operator >(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
         public static bool operator <(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
         public static bool operator >=(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
         public static bool operator <=(OpClass a, OpClass b)
         {
+            No.Op(a);
+            No.Op(b);
             return false;
         }
 
@@ -142,12 +163,12 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void WrongUnaryReturnVoid(OpClass a)
         {
-            Theraot.No.Op(a);
+            No.Op(a);
         }
 
         public static OpClass WrongUnaryParameterCount(OpClass a, OpClass b)
         {
-            Theraot.No.Op(b);
+            No.Op(b);
             return a;
         }
 
@@ -166,13 +187,11 @@ namespace MonoTests.System.Linq.Expressions
             return !ReferenceEquals(a, b);
         }
 
-        //
-        // Required when you have == or !=
-        //
         public override bool Equals(object obj)
         {
+            // Required when you have == or !=
             // Keep cast
-            return (object)this == obj;
+            return this == (OpClass)obj;
         }
 
         public override int GetHashCode()
@@ -188,16 +207,25 @@ namespace MonoTests.System.Linq.Expressions
 
     public class MemberClass
     {
-        public int TestField1; // Used by Reflection
+        public delegate int Delegate(int i);
+
+        public static int StaticField;
         public readonly int TestField2 = 1; // Used by Reflection
+        public int TestField1; // Used by Reflection
 
         public int TestProperty1 => TestField1;
 
         public int TestProperty2
         {
-            get { return TestField1; }
+            get => TestField1;
 
-            set { TestField1 = value; }
+            set => TestField1 = value;
+        }
+
+        public static int StaticProperty
+        {
+            get => StaticField;
+            set => StaticField = value;
         }
 
         public int TestMethod(int i)
@@ -210,23 +238,11 @@ namespace MonoTests.System.Linq.Expressions
             return arg;
         }
 
-        public delegate int Delegate(int i);
-
-#pragma warning disable 67
         public event Delegate OnTest;
-#pragma warning restore 67
 
         public void DoNothing()
         {
             // Empty
-        }
-
-        public static int StaticField;
-
-        public static int StaticProperty
-        {
-            get { return StaticField; }
-            set { StaticField = value; }
         }
 
         public static int StaticMethod(int i)
@@ -239,44 +255,24 @@ namespace MonoTests.System.Linq.Expressions
             return arg;
         }
 
-        public static MethodInfo GetMethodInfo()
-        {
-            return typeof(MemberClass).GetMethod("TestMethod");
-        }
-
-        public static FieldInfo GetRoFieldInfo()
-        {
-            return typeof(MemberClass).GetField("TestField1");
-        }
-
-        public static FieldInfo GetRwFieldInfo()
-        {
-            return typeof(MemberClass).GetField("TestField2");
-        }
-
-        public static PropertyInfo GetRoPropertyInfo()
-        {
-            return typeof(MemberClass).GetProperty("TestProperty1");
-        }
-
         public static PropertyInfo GetRwPropertyInfo()
         {
-            return typeof(MemberClass).GetProperty("TestProperty2");
+            return typeof(MemberClass).GetProperty(nameof(TestProperty2));
         }
 
         public static EventInfo GetEventInfo()
         {
-            return typeof(MemberClass).GetEvent("OnTest");
+            return typeof(MemberClass).GetEvent(nameof(OnTest));
         }
 
         public static FieldInfo GetStaticFieldInfo()
         {
-            return typeof(MemberClass).GetField("StaticField");
+            return typeof(MemberClass).GetField(nameof(StaticField));
         }
 
         public static PropertyInfo GetStaticPropertyInfo()
         {
-            return typeof(MemberClass).GetProperty("StaticProperty");
+            return typeof(MemberClass).GetProperty(nameof(StaticProperty));
         }
     }
 
@@ -284,21 +280,25 @@ namespace MonoTests.System.Linq.Expressions
     {
         public static OpStruct operator +(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpStruct operator -(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpStruct operator *(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
 
         public static OpStruct operator &(OpStruct a, OpStruct b)
         {
+            No.Op(b);
             return a;
         }
     }
@@ -317,6 +317,7 @@ namespace MonoTests.System.Linq.Expressions
                 Assert.Fail();
                 return; // OK
             }
+
             try
             {
                 action();
@@ -336,6 +337,14 @@ namespace MonoTests.System.Linq.Expressions
     {
         private readonly T _left;
 
+        private readonly T _right;
+
+        public Item(T left, T right)
+        {
+            _left = left;
+            _right = right;
+        }
+
         public T Left
         {
             get
@@ -347,8 +356,6 @@ namespace MonoTests.System.Linq.Expressions
 
         public bool LeftCalled { get; private set; }
 
-        private readonly T _right;
-
         public T Right
         {
             get
@@ -359,11 +366,5 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         public bool RightCalled { get; private set; }
-
-        public Item(T left, T right)
-        {
-            _left = left;
-            _right = right;
-        }
     }
 }

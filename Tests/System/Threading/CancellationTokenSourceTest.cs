@@ -32,7 +32,6 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Tests.Helpers;
-using Theraot.Core;
 
 namespace MonoTests.System.Threading
 {

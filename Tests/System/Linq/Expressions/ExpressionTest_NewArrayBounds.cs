@@ -30,26 +30,26 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestNewArrayBounds
     {
-        [Test]
-        public void ArgTypeNull()
+        private static Func<object> CreateNewArrayFactory<T>(params int[] bounds)
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(null));
-        }
-
-        [Test]
-        public void ArgBoundsNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(typeof(int), null));
+            return Expression.Lambda<Func<object>>
+            (
+                Expression.NewArrayBounds
+                (
+                    typeof(T),
+                    (from bound in bounds select bound.ToConstant() as Expression).ToArray()
+                )
+            ).Compile();
         }
 
         [Test]
@@ -59,36 +59,29 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        [Category("NotDotNet")]
-        public void NewVoid()
+        public void ArgBoundsNull()
         {
-            Assert.Throws<ArgumentException>(() => Expression.NewArrayBounds(typeof(void), 1.ToConstant()));
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(typeof(int), null));
         }
 
         [Test]
-        public void TestArrayBounds()
+        public void ArgTypeNull()
         {
-            var ab = Expression.NewArrayBounds(typeof(int), 1.ToConstant(), 2.ToConstant());
-            Assert.AreEqual(typeof(int[,]), ab.Type);
-            Assert.AreEqual(2, ab.Expressions.Count);
-            Assert.AreEqual("new System.Int32[,](1, 2)", ab.ToString());
-        }
-
-        private static Func<object> CreateNewArrayFactory<T>(params int[] bounds)
-        {
-            return Expression.Lambda<Func<object>>(
-                Expression.NewArrayBounds(
-                    typeof(T),
-                    (from bound in bounds select bound.ToConstant() as Expression).ToArray())).Compile();
+            Assert.Throws<ArgumentNullException>(() => Expression.NewArrayBounds(null));
         }
 
         [Test]
-        public void TestArrayAssignability()
+        public void CompileNewArrayMultiDimensional()
         {
-            Expression.Lambda<Func<int[]>>(
-                Expression.NewArrayBounds(
-                    typeof(int),
-                    4.ToConstant()));
+            var factory = CreateNewArrayFactory<int>(3, 3);
+
+            var array = (int[,])factory();
+            var type = array.GetType();
+
+            Assert.IsNotNull(array);
+            Assert.IsTrue(type.IsArray);
+            Assert.AreEqual(2, type.GetArrayRank());
+            Assert.AreEqual(9, array.Length);
         }
 
         [Test]
@@ -106,17 +99,32 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void CompileNewArrayMultiDimensional()
+        [Category("NotDotNet")]
+        public void NewVoid()
         {
-            var factory = CreateNewArrayFactory<int>(3, 3);
+            Assert.Throws<ArgumentException>(() => Expression.NewArrayBounds(typeof(void), 1.ToConstant()));
+        }
 
-            var array = (int[,])factory();
-            var type = array.GetType();
+        [Test]
+        public void TestArrayAssignability()
+        {
+            Expression.Lambda<Func<int[]>>
+            (
+                Expression.NewArrayBounds
+                (
+                    typeof(int),
+                    4.ToConstant()
+                )
+            );
+        }
 
-            Assert.IsNotNull(array);
-            Assert.IsTrue(type.IsArray);
-            Assert.AreEqual(2, type.GetArrayRank());
-            Assert.AreEqual(9, array.Length);
+        [Test]
+        public void TestArrayBounds()
+        {
+            var ab = Expression.NewArrayBounds(typeof(int), 1.ToConstant(), 2.ToConstant());
+            Assert.AreEqual(typeof(int[,]), ab.Type);
+            Assert.AreEqual(2, ab.Expressions.Count);
+            Assert.AreEqual("new System.Int32[,](1, 2)", ab.ToString());
         }
     }
 }

@@ -29,7 +29,7 @@ using System.Threading;
 using NUnit.Framework;
 using Tests.Helpers;
 
-namespace SystemTests.CollectionsTests.ConcurrentTests
+namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
     public class ConcurrentQueueTests

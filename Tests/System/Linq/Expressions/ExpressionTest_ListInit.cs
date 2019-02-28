@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET35
 extern alias nunitlinq;
 #endif
+
 //
 // ExpressionTest_ListInit.cs
 //
@@ -29,12 +30,17 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NUnit.Framework;
+using Theraot;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -58,8 +64,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             public void Add(object a, object b)
             {
-                Theraot.No.Op(a);
-                Theraot.No.Op(b);
+                No.Op(a);
+                No.Op(b);
             }
         }
 
@@ -69,27 +75,50 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NullExpression()
+        [Category("NotDotNet")]
+        public void CompileArrayListOfStringsInit()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(null, new List<ElementInit>()));
+            var add = typeof(ArrayList).GetMethod("Add");
+
+            var compiled = Expression.Lambda<Func<ArrayList>>
+            (
+                Expression.ListInit
+                (
+                    Expression.New(typeof(ArrayList)),
+                    Expression.ElementInit(add, "foo".ToConstant()),
+                    Expression.ElementInit(add, "bar".ToConstant())
+                )
+            ).Compile();
+
+            var list = compiled();
+
+            Assert.IsNotNull(list);
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual("foo", list[0]);
+            Assert.AreEqual("bar", list[1]);
         }
 
         [Test]
-        public void NullElementInitializer()
+        public void CompileListOfStringsInit()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new ElementInit[] { null }));
-        }
+            var add = typeof(List<string>).GetMethod("Add");
 
-        [Test]
-        public void NullExpressionInitializer()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new Expression[] { null }));
-        }
+            var compiled = Expression.Lambda<Func<List<string>>>
+            (
+                Expression.ListInit
+                (
+                    Expression.New(typeof(List<string>)),
+                    Expression.ElementInit(add, "foo".ToConstant()),
+                    Expression.ElementInit(add, "bar".ToConstant())
+                )
+            ).Compile();
 
-        [Test]
-        public void ExpressionTypeDoesntImplementIEnumerable()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.ListInit(Expression.New(typeof(Foo)), "foo".ToConstant()));
+            var list = compiled();
+
+            Assert.IsNotNull(list);
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual("foo", list[0]);
+            Assert.AreEqual("bar", list[1]);
         }
 
         [Test]
@@ -99,11 +128,19 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void ExpressionTypeDoesntImplementIEnumerable()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.ListInit(Expression.New(typeof(Foo)), "foo".ToConstant()));
+        }
+
+        [Test]
         public void InitListOfStringWithConstants()
         {
-            var li = Expression.ListInit(
+            var li = Expression.ListInit
+            (
                 Expression.New(typeof(List<string>)),
-                "foo".ToConstant(), "bar".ToConstant());
+                "foo".ToConstant(), "bar".ToConstant()
+            );
 
             Assert.AreEqual(typeof(List<string>), li.Type);
             Assert.AreEqual(ExpressionType.ListInit, li.NodeType);
@@ -113,14 +150,20 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void InitListOfStringWithElementInitializers()
         {
-            var li = Expression.ListInit(
+            var li = Expression.ListInit
+            (
                 Expression.New(typeof(List<string>)),
-                Expression.ElementInit(
+                Expression.ElementInit
+                (
                     typeof(List<string>).GetMethod("Add"),
-                    "foo".ToConstant()),
-                Expression.ElementInit(
+                    "foo".ToConstant()
+                ),
+                Expression.ElementInit
+                (
                     typeof(List<string>).GetMethod("Add"),
-                    "bar".ToConstant()));
+                    "bar".ToConstant()
+                )
+            );
 
             Assert.AreEqual(typeof(List<string>), li.Type);
             Assert.AreEqual(ExpressionType.ListInit, li.NodeType);
@@ -128,42 +171,21 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void CompileListOfStringsInit()
+        public void NullElementInitializer()
         {
-            var add = typeof(List<string>).GetMethod("Add");
-
-            var c = Expression.Lambda<Func<List<string>>>(
-                Expression.ListInit(
-                    Expression.New(typeof(List<string>)),
-                    Expression.ElementInit(add, "foo".ToConstant()),
-                    Expression.ElementInit(add, "bar".ToConstant()))).Compile();
-
-            var list = c();
-
-            Assert.IsNotNull(list);
-            Assert.AreEqual(2, list.Count);
-            Assert.AreEqual("foo", list[0]);
-            Assert.AreEqual("bar", list[1]);
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new ElementInit[] {null}));
         }
 
         [Test]
-        [Category("NotDotNet")]
-        public void CompileArrayListOfStringsInit()
+        public void NullExpression()
         {
-            var add = typeof(ArrayList).GetMethod("Add");
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(null, new List<ElementInit>()));
+        }
 
-            var c = Expression.Lambda<Func<ArrayList>>(
-                Expression.ListInit(
-                    Expression.New(typeof(ArrayList)),
-                    Expression.ElementInit(add, "foo".ToConstant()),
-                    Expression.ElementInit(add, "bar".ToConstant()))).Compile();
-
-            var list = c();
-
-            Assert.IsNotNull(list);
-            Assert.AreEqual(2, list.Count);
-            Assert.AreEqual("foo", list[0]);
-            Assert.AreEqual("bar", list[1]);
+        [Test]
+        public void NullExpressionInitializer()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new Expression[] {null}));
         }
     }
 }

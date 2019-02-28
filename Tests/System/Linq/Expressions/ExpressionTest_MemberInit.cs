@@ -30,10 +30,14 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -51,43 +55,6 @@ namespace MonoTests.System.Linq.Expressions
             public string Tzap;
         }
 
-        [Test]
-        public void NullExpression()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.MemberInit(null));
-        }
-
-        [Test]
-        public void NullBindings()
-        {
-            Assert.Throws<ArgumentNullException>(() => { Expression.MemberInit(
-                Expression.New(typeof(Foo)),
-                null);
-             });
-        }
-
-        [Test]
-        public void MemberNotAssignableToNewType()
-        {
-            Assert.Throws<ArgumentException>(() => {
-                Expression.MemberInit(
-                    Expression.New(typeof(Foo)), Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant())
-                );
-            });
-        }
-
-        [Test]
-        public void InitFields()
-        {
-            var m = Expression.MemberInit(
-                Expression.New(typeof(Foo)), Expression.Bind (typeof (Foo).GetField ("Bar"), "bar".ToConstant ()), Expression.Bind (typeof (Foo).GetField ("Baz"), "baz".ToConstant ())
-            );
-
-            Assert.AreEqual(typeof(Foo), m.Type);
-            Assert.AreEqual(ExpressionType.MemberInit, m.NodeType);
-            Assert.AreEqual("new Foo() {Bar = \"bar\", Baz = \"baz\"}", m.ToString());
-        }
-
         public class Thing
         {
             public string Value;
@@ -98,16 +65,70 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompiledInit()
         {
-            var i = Expression.Lambda<Func<Thing>>(
-                Expression.MemberInit(
+            var compiled = Expression.Lambda<Func<Thing>>
+            (
+                Expression.MemberInit
+                (
                     Expression.New(typeof(Thing)),
                     Expression.Bind(typeof(Thing).GetField("Value"), "foo".ToConstant()),
-                    Expression.Bind(typeof(Thing).GetProperty("Bar"), "bar".ToConstant()))).Compile();
+                    Expression.Bind(typeof(Thing).GetProperty("Bar"), "bar".ToConstant())
+                )
+            ).Compile();
 
-            var thing = i();
+            var thing = compiled();
             Assert.IsNotNull(thing);
             Assert.AreEqual("foo", thing.Value);
             Assert.AreEqual("bar", thing.Bar);
+        }
+
+        [Test]
+        public void InitFields()
+        {
+            var m = Expression.MemberInit
+            (
+                Expression.New(typeof(Foo)), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant()), Expression.Bind(typeof(Foo).GetField("Baz"), "baz".ToConstant())
+            );
+
+            Assert.AreEqual(typeof(Foo), m.Type);
+            Assert.AreEqual(ExpressionType.MemberInit, m.NodeType);
+            Assert.AreEqual("new Foo() {Bar = \"bar\", Baz = \"baz\"}", m.ToString());
+        }
+
+        [Test]
+        public void MemberNotAssignableToNewType()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression.MemberInit
+                    (
+                        Expression.New(typeof(Foo)), Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant())
+                    );
+                }
+            );
+        }
+
+        [Test]
+        public void NullBindings()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () =>
+                {
+                    Expression.MemberInit
+                    (
+                        Expression.New(typeof(Foo)),
+                        null
+                    );
+                }
+            );
+        }
+
+        [Test]
+        public void NullExpression()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.MemberInit(null));
         }
     }
 }

@@ -23,9 +23,9 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -45,18 +45,18 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoPropertyOrField()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.PropertyOrField(Expression.Constant(new MemberClass()), "NoPropertyOrField"));
-        }
-
-        [Test]
         public void InstanceProperty()
         {
             var expr = Expression.PropertyOrField(Expression.Constant(new MemberClass()), "TestProperty1");
             Assert.AreEqual(ExpressionType.MemberAccess, expr.NodeType, "PropertyOrField#01");
             Assert.AreEqual(typeof(int), expr.Type, "PropertyOrField#02");
             Assert.AreEqual("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "PropertyOrField#04");
+        }
+
+        [Test]
+        public void NoPropertyOrField()
+        {
+            Assert.Throws<ArgumentException>(() => Expression.PropertyOrField(Expression.Constant(new MemberClass()), "NoPropertyOrField"));
         }
     }
 }

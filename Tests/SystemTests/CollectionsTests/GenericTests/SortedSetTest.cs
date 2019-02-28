@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
-namespace SystemTests.CollectionsTests.ConcurrentTests
+namespace Tests.SystemTests.CollectionsTests.GenericTests
 {
     [TestFixture]
     public partial class SortedSetTest

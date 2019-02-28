@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
+using System.Diagnostics.Contracts;
 using System.Security.Permissions;
+using NUnit.Framework;
 
-namespace System.Diagnostics.Contracts.Tests
+namespace Tests.Helpers
 {
     internal static class Utilities
     {
@@ -13,14 +16,15 @@ namespace System.Diagnostics.Contracts.Tests
             {
                 return;
             }
+
             try
             {
                 action();
-                NUnit.Framework.Assert.Fail("Did not throw");
+                Assert.Fail("Did not throw");
             }
             catch (Exception exc)
             {
-                NUnit.Framework.Assert.AreEqual("ContractException", exc.GetType().Name);
+                Assert.AreEqual("ContractException", exc.GetType().Name);
             }
         }
 
@@ -28,7 +32,7 @@ namespace System.Diagnostics.Contracts.Tests
         internal static IDisposable WithContractFailed(EventHandler<ContractFailedEventArgs> handler)
         {
             Contract.ContractFailed += handler;
-            return new UnregisterContractFailed { Handler = handler };
+            return new UnregisterContractFailed {Handler = handler};
         }
 
         private class UnregisterContractFailed : IDisposable

@@ -23,10 +23,14 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -52,25 +56,15 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.MultiplyChecked(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
-
-        [Test]
         public void Boolean()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.MultiplyChecked(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]
-        public void Numeric()
+        public void NoOperatorClass()
         {
-            var expr = Expression.MultiplyChecked(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.MultiplyChecked, expr.NodeType, "MultiplyChecked#01");
-            Assert.AreEqual(typeof(int), expr.Type, "MultiplyChecked#02");
-            Assert.IsNull(expr.Method, "MultiplyChecked#03");
-            Assert.AreEqual("(1 * 2)", expr.ToString(), "MultiplyChecked#15");
+            Assert.Throws<InvalidOperationException>(() => Expression.MultiplyChecked(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -87,19 +81,31 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void Numeric()
+        {
+            var expr = Expression.MultiplyChecked(Expression.Constant(1), Expression.Constant(2));
+            Assert.AreEqual(ExpressionType.MultiplyChecked, expr.NodeType, "MultiplyChecked#01");
+            Assert.AreEqual(typeof(int), expr.Type, "MultiplyChecked#02");
+            Assert.IsNull(expr.Method, "MultiplyChecked#03");
+            Assert.AreEqual("(1 * 2)", expr.ToString(), "MultiplyChecked#15");
+        }
+
+        [Test]
         public void UserDefinedClass()
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Multiply");
+            var method = typeof(OpClass).GetMethod("op_Multiply");
 
             var expr = Expression.MultiplyChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.MultiplyChecked, expr.NodeType, "MultiplyChecked#07");
             Assert.AreEqual(typeof(OpClass), expr.Type, "MultiplyChecked#08");
-            Assert.AreEqual(mi, expr.Method, "MultiplyChecked#09");
-            Assert.AreEqual("op_Multiply", expr.Method.Name, "MultiplyChecked#10");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) * value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "MultiplyChecked#17");
+            Assert.AreEqual(method, expr.Method, "MultiplyChecked#09");
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpClass) * value(MonoTests.System.Linq.Expressions.OpClass))",
+                expr.ToString(), "MultiplyChecked#17"
+            );
         }
 
         [Test]
@@ -107,15 +113,17 @@ namespace MonoTests.System.Linq.Expressions
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpStruct).GetMethod("op_Multiply");
+            var method = typeof(OpStruct).GetMethod("op_Multiply");
 
             var expr = Expression.MultiplyChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
             Assert.AreEqual(ExpressionType.MultiplyChecked, expr.NodeType, "MultiplyChecked#11");
             Assert.AreEqual(typeof(OpStruct), expr.Type, "MultiplyChecked#12");
-            Assert.AreEqual(mi, expr.Method, "MultiplyChecked#13");
-            Assert.AreEqual("op_Multiply", expr.Method.Name, "MultiplyChecked#14");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpStruct) * value(MonoTests.System.Linq.Expressions.OpStruct))",
-                expr.ToString(), "MultiplyChecked#18");
+            Assert.AreEqual(method, expr.Method, "MultiplyChecked#13");
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpStruct) * value(MonoTests.System.Linq.Expressions.OpStruct))",
+                expr.ToString(), "MultiplyChecked#18"
+            );
         }
     }
 }

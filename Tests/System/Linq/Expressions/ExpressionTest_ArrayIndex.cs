@@ -23,176 +23,34 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NUnit.Framework;
+using Tests.Helpers;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestArrayIndex
     {
-        [Test]
-        public void Arg1Null()
+        private enum Months
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(null, Expression.Constant(1)));
-        }
-
-        [Test]
-        public void Arg2Null1()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression)null));
-        }
-
-        [Test]
-        public void Arg2Null2()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), (IEnumerable<Expression>)null));
-        }
-
-        [Test]
-        public void Arg2Null3()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), (Expression[])null));
-        }
-
-        [Test]
-        public void Arg2WrongType1()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[1]), Expression.Constant(true)));
-        }
-
-        [Test]
-        public void Arg1NotArray()
-        {
-            Assert.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant("This is not an array!"), Expression.Constant(1)));
-        }
-
-        [Test]
-        public void Arg2WrongType2()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression[] indexes = {Expression.Constant(1), Expression.Constant(1L)};
-
-                Expression.ArrayIndex(Expression.Constant(new int[1, 1]), indexes);
-            });
-        }
-
-        [Test]
-        public void Arg2WrongNumber1()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression[] indexes = {Expression.Constant(1), Expression.Constant(0)};
-
-                Expression.ArrayIndex(Expression.Constant(new int[1]), indexes);
-            });
-        }
-
-        [Test]
-        public void Rank1Struct()
-        {
-            int[] array = { 42 };
-
-            var expr = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(0));
-            Assert.AreEqual(ExpressionType.ArrayIndex, expr.NodeType, "ArrayIndex#01");
-            Assert.AreEqual(typeof(int), expr.Type, "ArrayIndex#02");
-            Assert.IsNull(expr.Method, "ArrayIndex#03");
-            Assert.AreEqual("value(System.Int32[])[0]", expr.ToString(), "ArrayIndex#04");
-        }
-
-        [Test]
-        public void Rank1UserDefinedClass()
-        {
-            NoOpClass[] array = { new NoOpClass() };
-
-            var expr = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(0));
-            Assert.AreEqual(ExpressionType.ArrayIndex, expr.NodeType, "ArrayIndex#05");
-            Assert.AreEqual(typeof(NoOpClass), expr.Type, "ArrayIndex#06");
-            Assert.IsNull(expr.Method, "ArrayIndex#07");
-            Assert.AreEqual("value(MonoTests.System.Linq.Expressions.NoOpClass[])[0]", expr.ToString(), "ArrayIndex#08");
-        }
-
-        [Test]
-        public void Rank2Struct()
-        {
-            int[,] array = { { 42 }, { 42 } };
-            Expression[] indexes = { Expression.Constant(1), Expression.Constant(0) };
-
-            var expr = Expression.ArrayIndex(Expression.Constant(array), indexes);
-            Assert.AreEqual(ExpressionType.Call, expr.NodeType, "ArrayIndex#09");
-            Assert.AreEqual(typeof(int), expr.Type, "ArrayIndex#10");
-            Assert.AreEqual("value(System.Int32[,]).Get(1, 0)", expr.ToString(), "ArrayIndex#12");
-        }
-
-        [Test]
-        public void Rank2UserDefinedClass()
-        {
-            NoOpClass[,] array = { { new NoOpClass() }, { new NoOpClass() } };
-            Expression[] indexes = { Expression.Constant(1), Expression.Constant(0) };
-
-            var expr = Expression.ArrayIndex(Expression.Constant(array), indexes);
-            Assert.AreEqual(ExpressionType.Call, expr.NodeType, "ArrayIndex#13");
-            Assert.AreEqual(typeof(NoOpClass), expr.Type, "ArrayIndex#14");
-            Assert.AreEqual("value(MonoTests.System.Linq.Expressions.NoOpClass[,]).Get(1, 0)", expr.ToString(), "ArrayIndex#16");
+            Jan,
+            Feb,
+            Mar,
+            Apr
         }
 
         private static Func<T[], int, T> CreateArrayAccess<T>()
         {
-            var a = Expression.Parameter(typeof(T[]), "a");
-            var i = Expression.Parameter(typeof(int), "i");
+            const string NameArray = "a";
+            const string NameIndex = "b";
 
-            return Expression.Lambda<Func<T[], int, T>>(
-                Expression.ArrayIndex(a, i), a, i).Compile();
-        }
+            var parameterArray = Expression.Parameter(typeof(T[]), NameArray);
+            var parameterIndex = Expression.Parameter(typeof(int), NameIndex);
 
-        [Test]
-        public void CompileIntArrayAccess()
-        {
-            var array = new[] { 1, 2, 3, 4 };
-            var at = CreateArrayAccess<int>();
-
-            Assert.AreEqual(1, at(array, 0));
-            Assert.AreEqual(4, at(array, 3));
-        }
-
-        [Test]
-        public void CompileShortArrayAccess()
-        {
-            var array = new short[] { 1, 2, 3, 4 };
-            var at = CreateArrayAccess<short>();
-
-            Assert.AreEqual(array[0], at(array, 0));
-            Assert.AreEqual(array[3], at(array, 3));
-        }
-
-        private enum Months { Jan, Feb, Mar, Apr };
-
-        [Test]
-        public void CompileEnumArrayAccess()
-        {
-            var array = new[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr };
-            var at = CreateArrayAccess<Months>();
-
-            Assert.AreEqual(array[0], at(array, 0));
-            Assert.AreEqual(array[3], at(array, 3));
-        }
-
-        private class Foo
-        {
-            // Empty
-        }
-
-        [Test]
-        public void CompileClassArrayAccess()
-        {
-            var array = new[] { new Foo(), new Foo(), new Foo(), new Foo() };
-            var at = CreateArrayAccess<Foo>();
-
-            Assert.AreEqual(array[0], at(array, 0));
-            Assert.AreEqual(array[3], at(array, 3));
+            return Expression.Lambda<Func<T[], int, T>>(Expression.ArrayIndex(parameterArray, parameterIndex), parameterArray, parameterIndex).Compile();
         }
 
         private struct Bar
@@ -205,20 +63,219 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
+        private class Foo
+        {
+            // Empty
+        }
+
+        [Test]
+        public void Arg1NotArray()
+        {
+            const string Value = "This is not an array!";
+            const int Index = 1;
+
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(Value), Expression.Constant(Index)));
+        }
+
+        [Test]
+        public void Arg1Null()
+        {
+            const int Index = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(null, Expression.Constant(Index)));
+        }
+
+        [Test]
+        public void Arg2Null1()
+        {
+            const int Size = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression)null));
+        }
+
+        [Test]
+        public void Arg2Null2()
+        {
+            const int Size = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (IEnumerable<Expression>)null));
+        }
+
+        [Test]
+        public void Arg2Null3()
+        {
+            const int Size = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression[])null));
+        }
+
+        [Test]
+        public void Arg2WrongNumber1()
+        {
+            const int Size = 1;
+            const int IndexA = 1;
+            const int IndexB = 1;
+
+            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), indexes));
+        }
+
+        [Test]
+        public void Arg2WrongType1()
+        {
+            const int size = 1;
+            const bool Index = true;
+
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), Expression.Constant(Index)));
+        }
+
+        [Test]
+        public void Arg2WrongType2()
+        {
+            const int SizeA = 1;
+            const int SizeB = 1;
+            const int IndexA = 1;
+            const long IndexB = 1L;
+
+            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[SizeA, SizeB]), indexes));
+        }
+
+        [Test]
+        public void CompileClassArrayAccess()
+        {
+            var array = new[] {new Foo(), new Foo(), new Foo(), new Foo()};
+            var compiled = CreateArrayAccess<Foo>();
+
+            Assert.AreEqual(array[0], compiled(array, 0));
+            Assert.AreEqual(array[1], compiled(array, 1));
+            Assert.AreEqual(array[2], compiled(array, 2));
+            Assert.AreEqual(array[3], compiled(array, 3));
+        }
+
+        [Test]
+        public void CompileEnumArrayAccess()
+        {
+            var array = new[] {Months.Jan, Months.Feb, Months.Mar, Months.Apr};
+            var compiled = CreateArrayAccess<Months>();
+
+            Assert.AreEqual(array[0], compiled(array, 0));
+            Assert.AreEqual(array[1], compiled(array, 1));
+            Assert.AreEqual(array[2], compiled(array, 2));
+            Assert.AreEqual(array[3], compiled(array, 3));
+        }
+
+        [Test]
+        public void CompileIntArrayAccess()
+        {
+            var array = new[] {1, 2, 3, 4};
+            var compiled = CreateArrayAccess<int>();
+
+            Assert.AreEqual(array[0], compiled(array, 0));
+            Assert.AreEqual(array[1], compiled(array, 1));
+            Assert.AreEqual(array[2], compiled(array, 2));
+            Assert.AreEqual(array[3], compiled(array, 3));
+        }
+
+        [Test]
+        public void CompileShortArrayAccess()
+        {
+            var array = new short[] {1, 2, 3, 4};
+            var compiled = CreateArrayAccess<short>();
+
+            Assert.AreEqual(array[0], compiled(array, 0));
+            Assert.AreEqual(array[1], compiled(array, 1));
+            Assert.AreEqual(array[2], compiled(array, 2));
+            Assert.AreEqual(array[3], compiled(array, 3));
+        }
+
         [Test]
         public void CompileStructArrayAccess()
         {
-            var array = new[] { new Bar(0), new Bar(1), new Bar(2), new Bar(3) };
-            var at = CreateArrayAccess<Bar>();
+            var array = new[] {new Bar(0), new Bar(1), new Bar(2), new Bar(3)};
+            var compiled = CreateArrayAccess<Bar>();
 
-            Assert.AreEqual(array[0], at(array, 0));
-            Assert.AreEqual(array[3], at(array, 3));
-            Assert.AreEqual(array[1], at(array, 1));
-            Assert.AreEqual(array[2], at(array, 2));
-            Assert.AreEqual(0, at(array, 0).Value);
-            Assert.AreEqual(3, at(array, 3).Value);
-            Assert.AreEqual(1, at(array, 1).Value);
-            Assert.AreEqual(2, at(array, 2).Value);
+            Assert.AreEqual(array[0], compiled(array, 0));
+            Assert.AreEqual(array[3], compiled(array, 3));
+            Assert.AreEqual(array[1], compiled(array, 1));
+            Assert.AreEqual(array[2], compiled(array, 2));
+            Assert.AreEqual(array[0].Value, compiled(array, 0).Value);
+            Assert.AreEqual(array[3].Value, compiled(array, 3).Value);
+            Assert.AreEqual(array[1].Value, compiled(array, 1).Value);
+            Assert.AreEqual(array[2].Value, compiled(array, 2).Value);
+        }
+
+        [Test]
+        public void Rank1Struct()
+        {
+            const int Value = 42;
+            const int Index = 0;
+            var type = typeof(int);
+
+            int[] array = {Value};
+
+            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(Index));
+            Assert.AreEqual(ExpressionType.ArrayIndex, binaryExpression.NodeType, "ArrayIndex#01");
+            Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#02");
+            Assert.IsNull(binaryExpression.Method, "ArrayIndex#03");
+            Assert.AreEqual($"value({type.FullName}[])[{Index}]", binaryExpression.ToString(), "ArrayIndex#04");
+        }
+
+        [Test]
+        public void Rank1UserDefinedClass()
+        {
+            var value = new NoOpClass();
+            const int Index = 0;
+            var type = typeof(NoOpClass);
+
+            NoOpClass[] array = {value};
+
+            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(Index));
+            Assert.AreEqual(ExpressionType.ArrayIndex, binaryExpression.NodeType, "ArrayIndex#05");
+            Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#06");
+            Assert.IsNull(binaryExpression.Method, "ArrayIndex#07");
+            Assert.AreEqual($"value({type.FullName}[])[{Index}]", binaryExpression.ToString(), "ArrayIndex#08");
+        }
+
+        [Test]
+        public void Rank2Struct()
+        {
+            const int Value = 42;
+            const int IndexA = 1;
+            const int IndexB = 0;
+            var type = typeof(int);
+
+            int[,] array = {{Value}, {Value}};
+            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+
+            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), indexes);
+            Assert.AreEqual(ExpressionType.Call, binaryExpression.NodeType, "ArrayIndex#09");
+            Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#10");
+            Assert.AreEqual($"value({type.FullName}[,]).Get({IndexA}, {IndexB})", binaryExpression.ToString(), "ArrayIndex#12");
+        }
+
+        [Test]
+        public void Rank2UserDefinedClass()
+        {
+            var ValueA = new NoOpClass();
+            var ValueB = new NoOpClass();
+            const int IndexA = 1;
+            const int IndexB = 0;
+            var type = typeof(NoOpClass);
+
+            NoOpClass[,] array = {{ValueA}, {ValueB}};
+            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+
+            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), indexes);
+            Assert.AreEqual(ExpressionType.Call, binaryExpression.NodeType, "ArrayIndex#13");
+            Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#14");
+            Assert.AreEqual($"value({type.FullName}[,]).Get(1, 0)", binaryExpression.ToString(), "ArrayIndex#16");
         }
     }
 }

@@ -23,16 +23,50 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestTypeIs
     {
+        private struct Foo
+        {
+            // Empty
+        }
+
+        private class Bar
+        {
+            // Empty
+        }
+
+        private class Baz : Bar
+        {
+            // Empty
+        }
+
+        private static Func<TType, bool> CreateTypeIs<TType, TCandidate>()
+        {
+            var p = Expression.Parameter(typeof(TType), "p");
+
+            return Expression.Lambda<Func<TType, bool>>
+            (
+                Expression.TypeIs(p, typeof(TCandidate)), p
+            ).Compile();
+        }
+
+        public static void TacTac()
+        {
+            // Empty
+        }
+
         [Test]
         public void Arg1Null()
         {
@@ -43,6 +77,22 @@ namespace MonoTests.System.Linq.Expressions
         public void Arg2Null()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.TypeIs(Expression.Constant(1), null));
+        }
+
+        [Test]
+        public void CompiledTypeIs()
+        {
+            var fooIsBar = CreateTypeIs<Foo, Bar>();
+            var fooIsFoo = CreateTypeIs<Foo, Foo>();
+            var barIsBar = CreateTypeIs<Bar, Bar>();
+            var barIsFoo = CreateTypeIs<Bar, Foo>();
+            var bazIsBar = CreateTypeIs<Baz, Bar>();
+
+            Assert.IsTrue(fooIsFoo(new Foo()));
+            Assert.IsFalse(fooIsBar(new Foo()));
+            Assert.IsTrue(barIsBar(new Bar()));
+            Assert.IsFalse(barIsFoo(new Bar()));
+            Assert.IsTrue(bazIsBar(new Baz()));
         }
 
         [Test]
@@ -72,59 +122,19 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) Is OpClass)", expr.ToString(), "TypeIs#09");
         }
 
-        private struct Foo
-        {
-            // Empty
-        }
-
-        private class Bar
-        {
-            // Empty
-        }
-
-        private class Baz : Bar
-        {
-            // Empty
-        }
-
-        private static Func<TType, bool> CreateTypeIs<TType, TCandidate>()
-        {
-            var p = Expression.Parameter(typeof(TType), "p");
-
-            return Expression.Lambda<Func<TType, bool>>(
-                Expression.TypeIs(p, typeof(TCandidate)), p).Compile();
-        }
-
-        [Test]
-        public void CompiledTypeIs()
-        {
-            var fooIsBar = CreateTypeIs<Foo, Bar>();
-            var fooIsFoo = CreateTypeIs<Foo, Foo>();
-            var barIsBar = CreateTypeIs<Bar, Bar>();
-            var barIsFoo = CreateTypeIs<Bar, Foo>();
-            var bazIsBar = CreateTypeIs<Baz, Bar>();
-
-            Assert.IsTrue(fooIsFoo(new Foo()));
-            Assert.IsFalse(fooIsBar(new Foo()));
-            Assert.IsTrue(barIsBar(new Bar()));
-            Assert.IsFalse(barIsFoo(new Bar()));
-            Assert.IsTrue(bazIsBar(new Baz()));
-        }
-
-        public static void TacTac()
-        {
-            // Empty
-        }
-
         [Test]
         public void VoidIsObject()
         {
-            var vio = Expression.Lambda<Func<bool>>(
-                Expression.TypeIs(
+            var compiled = Expression.Lambda<Func<bool>>
+            (
+                Expression.TypeIs
+                (
                     Expression.Call(GetType().GetMethod("TacTac")),
-                    typeof(object))).Compile();
+                    typeof(object)
+                )
+            ).Compile();
 
-            Assert.IsFalse(vio());
+            Assert.IsFalse(compiled());
         }
     }
 }

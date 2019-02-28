@@ -24,10 +24,15 @@ extern alias nunitlinq;
 //		Federico Di Gregorio <fog@initd.org>
 //		Jb Evain <jbevain@novell.com>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+using Tests.Helpers;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -35,195 +40,276 @@ namespace MonoTests.System.Linq.Expressions
     public class ExpressionTestAnd
     {
         [Test]
-        public void Arg1Null()
+        public void AndBoolItem()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.And(null, Expression.Constant(1)));
-        }
+            const string Name = "i";
+            const string NameLeft = nameof(Item<bool>.Left);
+            const string NameRight = nameof(Item<bool>.Right);
 
-        [Test]
-        public void Arg2Null()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.And(Expression.Constant(1), null));
-        }
+            var parameter = Expression.Parameter(typeof(Item<bool>), Name);
+            var compiled = Expression.Lambda<Func<Item<bool>, bool>>
+            (
+                Expression.And
+                (
+                    Expression.Property(parameter, NameLeft),
+                    Expression.Property(parameter, NameRight)
+                ),
+                parameter
+            ).Compile();
 
-        [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
+            var itemA = new Item<bool>(true, true);
+            Assert.AreEqual(true, compiled(itemA));
+            Assert.IsTrue(itemA.LeftCalled);
+            Assert.IsTrue(itemA.RightCalled);
 
-        [Test]
-        public void ArgTypesDifferent()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(1), Expression.Constant(true)));
-        }
+            var itemB = new Item<bool>(true, false);
+            Assert.AreEqual(false, compiled(itemB));
+            Assert.IsTrue(itemB.LeftCalled);
+            Assert.IsTrue(itemB.RightCalled);
 
-        [Test]
-        public void Double()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(1.0), Expression.Constant(2.0)));
-        }
+            var itemC = new Item<bool>(false, true);
+            Assert.AreEqual(false, compiled(itemC));
+            Assert.IsTrue(itemC.LeftCalled);
+            Assert.IsTrue(itemC.RightCalled);
 
-        [Test]
-        public void Integer()
-        {
-            var expr = Expression.And(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.And, expr.NodeType, "And#01");
-            Assert.AreEqual(typeof(int), expr.Type, "And#02");
-            Assert.IsNull(expr.Method, "And#03");
-            Assert.AreEqual("(1 & 2)", expr.ToString(), "And#04");
-        }
-
-        [Test]
-        public void Boolean()
-        {
-            var expr = Expression.And(Expression.Constant(true), Expression.Constant(false));
-            Assert.AreEqual(ExpressionType.And, expr.NodeType, "And#05");
-            Assert.AreEqual(typeof(bool), expr.Type, "And#06");
-            Assert.IsNull(expr.Method, "And#07");
-            Assert.AreEqual("(True And False)", expr.ToString(), "And#08");
-        }
-
-        [Test]
-        public void UserDefinedClass()
-        {
-            // We can use the simplest version of GetMethod because we already know only one
-            // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_BitwiseAnd");
-
-            var expr = Expression.And(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.And, expr.NodeType, "And#09");
-            Assert.AreEqual(typeof(OpClass), expr.Type, "And#10");
-            Assert.AreEqual(mi, expr.Method, "And#11");
-            Assert.AreEqual("op_BitwiseAnd", expr.Method.Name, "And#12");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) & value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "And#13");
-        }
-
-        [Test]
-        public void AndBoolTest()
-        {
-            var a = Expression.Parameter(typeof(bool), "a");
-            var b = Expression.Parameter(typeof(bool), "b");
-            var l = Expression.Lambda<Func<bool, bool, bool>>(
-                Expression.And(a, b), a, b);
-
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(bool), be.Type);
-            Assert.IsFalse(be.IsLifted);
-            Assert.IsFalse(be.IsLiftedToNull);
-
-            var c = l.Compile();
-
-            Assert.AreEqual(true, c(true, true), "t1");
-            Assert.AreEqual(false, c(true, false), "t2");
-            Assert.AreEqual(false, c(false, true), "t3");
-            Assert.AreEqual(false, c(false, false), "t4");
-        }
-
-        [Test]
-        public void AndLifted()
-        {
-            var b = Expression.And(
-                Expression.Constant(null, typeof(bool?)),
-                Expression.Constant(null, typeof(bool?)));
-
-            Assert.AreEqual(typeof(bool?), b.Type);
-            Assert.IsTrue(b.IsLifted);
-            Assert.IsTrue(b.IsLiftedToNull);
+            var itemD = new Item<bool>(false, false);
+            Assert.AreEqual(false, compiled(itemD));
+            Assert.IsTrue(itemD.LeftCalled);
+            Assert.IsTrue(itemD.RightCalled);
         }
 
         [Test]
         public void AndBoolNullableTest()
         {
-            var a = Expression.Parameter(typeof(bool?), "a");
-            var b = Expression.Parameter(typeof(bool?), "b");
-            var l = Expression.Lambda<Func<bool?, bool?, bool?>>(
-                Expression.And(a, b), a, b);
+            const string NameLeft = "a";
+            const string NameRight = "b";
 
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(bool?), be.Type);
-            Assert.IsTrue(be.IsLifted);
-            Assert.IsTrue(be.IsLiftedToNull);
+            var parameterLeft = Expression.Parameter(typeof(bool?), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(bool?), NameRight);
+            var lambda = Expression.Lambda<Func<bool?, bool?, bool?>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
-            var c = l.Compile();
+            var binaryExpression = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(binaryExpression);
+            Assert.AreEqual(typeof(bool?), binaryExpression.Type);
+            Assert.IsTrue(binaryExpression.IsLifted);
+            Assert.IsTrue(binaryExpression.IsLiftedToNull);
 
-            Assert.AreEqual(true, c(true, true), "a1");
-            Assert.AreEqual(false, c(true, false), "a2");
-            Assert.AreEqual(false, c(false, true), "a3");
-            Assert.AreEqual(false, c(false, false), "a4");
+            var compiled = lambda.Compile();
 
-            Assert.AreEqual(null, c(true, null), "a5");
-            Assert.AreEqual(false, c(false, null), "a6");
-            Assert.AreEqual(false, c(null, false), "a7");
-            Assert.AreEqual(null, c(true, null), "a8");
-            Assert.AreEqual(null, c(null, null), "a9");
+            Assert.AreEqual(true, compiled(true, true), "a1");
+            Assert.AreEqual(false, compiled(true, false), "a2");
+            Assert.AreEqual(false, compiled(false, true), "a3");
+            Assert.AreEqual(false, compiled(false, false), "a4");
+
+            Assert.AreEqual(null, compiled(true, null), "a5");
+            Assert.AreEqual(false, compiled(false, null), "a6");
+            Assert.AreEqual(false, compiled(null, false), "a7");
+            Assert.AreEqual(null, compiled(null, true), "a8");
+            Assert.AreEqual(null, compiled(null, null), "a9");
         }
 
         [Test]
-        public void AndBoolItem()
+        public void AndBoolTest()
         {
-            var i = Expression.Parameter(typeof(Item<bool>), "i");
-            var and = Expression.Lambda<Func<Item<bool>, bool>>(
-                Expression.And(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
+            const string NameLeft = "a";
+            const string NameRight = "b";
 
-            var item = new Item<bool>(false, true);
-            Assert.AreEqual(false, and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsTrue(item.RightCalled);
-        }
+            var parameterLeft = Expression.Parameter(typeof(bool), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(bool), NameRight);
+            var lambda = Expression.Lambda<Func<bool, bool, bool>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
-        [Test]
-        public void AndNullableBoolItem()
-        {
-            var i = Expression.Parameter(typeof(Item<bool?>), "i");
-            var and = Expression.Lambda<Func<Item<bool?>, bool?>>(
-                Expression.And(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
+            var binaryExpression = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(binaryExpression);
+            Assert.AreEqual(typeof(bool), binaryExpression.Type);
+            Assert.IsFalse(binaryExpression.IsLifted);
+            Assert.IsFalse(binaryExpression.IsLiftedToNull);
 
-            var item = new Item<bool?>(false, true);
-            Assert.AreEqual((bool?)false, and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsTrue(item.RightCalled);
-        }
+            var compiled = lambda.Compile();
 
-        [Test]
-        public void AndIntTest()
-        {
-            var a = Expression.Parameter(typeof(int), "a");
-            var b = Expression.Parameter(typeof(int), "b");
-            var and = Expression.Lambda<Func<int, int, int>>(
-                Expression.And(a, b), a, b).Compile();
-
-            Assert.AreEqual(0, and(0, 0), "t1");
-            Assert.AreEqual(0, and(0, 1), "t2");
-            Assert.AreEqual(0, and(1, 0), "t3");
-            Assert.AreEqual(1, and(1, 1), "t4");
+            Assert.AreEqual(true, compiled(true, true), "t1");
+            Assert.AreEqual(false, compiled(true, false), "t2");
+            Assert.AreEqual(false, compiled(false, true), "t3");
+            Assert.AreEqual(false, compiled(false, false), "t4");
         }
 
         [Test]
         public void AndIntNullableTest()
         {
-            var a = Expression.Parameter(typeof(int?), "a");
-            var b = Expression.Parameter(typeof(int?), "b");
-            var c = Expression.Lambda<Func<int?, int?, int?>>(
-                Expression.And(a, b), a, b).Compile();
+            const string NameLeft = "a";
+            const string NameRight = "b";
 
-            Assert.AreEqual((int?)1, c(1, 1), "a1");
-            Assert.AreEqual((int?)0, c(1, 0), "a2");
-            Assert.AreEqual((int?)0, c(0, 1), "a3");
-            Assert.AreEqual((int?)0, c(0, 0), "a4");
+            var parameterLeft = Expression.Parameter(typeof(int?), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(int?), NameRight);
+            var compiled = Expression.Lambda<Func<int?, int?, int?>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(null, c(1, null), "a5");
-            Assert.AreEqual(null, c(0, null), "a6");
-            Assert.AreEqual(null, c(null, 0), "a7");
-            Assert.AreEqual(null, c(1, null), "a8");
-            Assert.AreEqual(null, c(null, null), "a9");
+            Assert.AreEqual((int?)1, compiled(1, 1), "a1");
+            Assert.AreEqual((int?)0, compiled(1, 0), "a2");
+            Assert.AreEqual((int?)0, compiled(0, 1), "a3");
+            Assert.AreEqual((int?)0, compiled(0, 0), "a4");
+
+            Assert.AreEqual(null, compiled(1, null), "a5");
+            Assert.AreEqual(null, compiled(0, null), "a6");
+            Assert.AreEqual(null, compiled(null, 0), "a7");
+            Assert.AreEqual(null, compiled(1, null), "a8");
+            Assert.AreEqual(null, compiled(null, null), "a9");
+        }
+
+        [Test]
+        public void AndIntTest()
+        {
+            const string NameLeft = "a";
+            const string NameRight = "b";
+
+            var parameterLeft = Expression.Parameter(typeof(int), NameLeft);
+            var parameterRight = Expression.Parameter(typeof(int), NameRight);
+            var compiled = Expression.Lambda<Func<int, int, int>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight).Compile();
+
+            Assert.AreEqual(0, compiled(0, 0), "t1");
+            Assert.AreEqual(0, compiled(0, 1), "t2");
+            Assert.AreEqual(0, compiled(1, 0), "t3");
+            Assert.AreEqual(1, compiled(1, 1), "t4");
+        }
+
+        [Test]
+        public void AndLifted()
+        {
+            var additionExpression = Expression.And
+            (
+                Expression.Constant(null, typeof(bool?)),
+                Expression.Constant(null, typeof(bool?))
+            );
+
+            Assert.AreEqual(typeof(bool?), additionExpression.Type);
+            Assert.IsTrue(additionExpression.IsLifted);
+            Assert.IsTrue(additionExpression.IsLiftedToNull);
+        }
+
+        [Test]
+        public void AndNullableBoolItem()
+        {
+            const string Name = "i";
+
+            var parameter = Expression.Parameter(typeof(Item<bool?>), Name);
+            var compiled = Expression.Lambda<Func<Item<bool?>, bool?>>
+            (
+                Expression.And
+                (
+                    Expression.Property(parameter, nameof(Item<bool?>.Left)),
+                    Expression.Property(parameter, nameof(Item<bool?>.Right))
+                ),
+                parameter
+            ).Compile();
+
+            var itemA = new Item<bool?>(true, true);
+            Assert.AreEqual((bool?)true, compiled(itemA));
+            Assert.IsTrue(itemA.LeftCalled);
+            Assert.IsTrue(itemA.RightCalled);
+
+            var itemB = new Item<bool?>(true, false);
+            Assert.AreEqual((bool?)false, compiled(itemB));
+            Assert.IsTrue(itemB.LeftCalled);
+            Assert.IsTrue(itemB.RightCalled);
+
+            var itemC = new Item<bool?>(false, true);
+            Assert.AreEqual((bool?)false, compiled(itemC));
+            Assert.IsTrue(itemC.LeftCalled);
+            Assert.IsTrue(itemC.RightCalled);
+
+            var itemD = new Item<bool?>(false, false);
+            Assert.AreEqual((bool?)false, compiled(itemD));
+            Assert.IsTrue(itemD.LeftCalled);
+            Assert.IsTrue(itemD.RightCalled);
+        }
+
+        [Test]
+        public void Arg1Null()
+        {
+            const int Value = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.And(null, Expression.Constant(Value)));
+        }
+
+        [Test]
+        public void Arg2Null()
+        {
+            const int Value = 1;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => Expression.And(Expression.Constant(Value), null));
+        }
+
+        [Test]
+        public void ArgTypesDifferent()
+        {
+            const int ValueLeft = 1;
+            const bool ValueRight = true;
+
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+        }
+
+        [Test]
+        public void Boolean()
+        {
+            const bool ValueLeft = true;
+            const bool ValueRight = false;
+
+            var binaryExpression = Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            Assert.AreEqual(ExpressionType.And, binaryExpression.NodeType, "And#05");
+            Assert.AreEqual(typeof(bool), binaryExpression.Type, "And#06");
+            Assert.IsNull(binaryExpression.Method, "And#07");
+            Assert.AreEqual($"({ValueLeft} And {ValueRight})", binaryExpression.ToString(), "And#08");
+        }
+
+        [Test]
+        public void Double()
+        {
+            const double ValueLeft = 1.0;
+            const double ValueRight = 2.0;
+
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+        }
+
+        [Test]
+        public void Integer()
+        {
+            const int ValueLeft = 1;
+            const int ValueRight = 2;
+
+            var binaryExpression = Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            Assert.AreEqual(ExpressionType.And, binaryExpression.NodeType, "And#01");
+            Assert.AreEqual(typeof(int), binaryExpression.Type, "And#02");
+            Assert.IsNull(binaryExpression.Method, "And#03");
+            Assert.AreEqual($"({ValueLeft} & {ValueRight})", binaryExpression.ToString(), "And#04");
+        }
+
+        [Test]
+        public void NoOperatorClass()
+        {
+            var valueLeft = new NoOpClass();
+            var valueRight = new NoOpClass();
+
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
+        }
+
+        [Test]
+        public void UserDefinedClass()
+        {
+            var type = typeof(OpClass);
+
+            // We can use the simplest version of GetMethod because we already know only one
+            // exists in the very simple class we're using for the tests.
+            var method = type.GetMethod("op_BitwiseAnd");
+
+            var binaryExpression = Expression.And(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.And, binaryExpression.NodeType, "And#09");
+            Assert.AreEqual(type, binaryExpression.Type, "And#10");
+            Assert.AreEqual(method, binaryExpression.Method, "And#11");
+            Assert.AreEqual
+            (
+                $"(value({type.FullName}) & value({type.FullName}))",
+                binaryExpression.ToString(), "And#13"
+            );
         }
     }
 }

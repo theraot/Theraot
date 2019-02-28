@@ -23,10 +23,14 @@ extern alias nunitlinq;
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
@@ -52,25 +56,38 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.Subtract(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
-
-        [Test]
         public void Boolean()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.Subtract(Expression.Constant(true), Expression.Constant(false)));
         }
 
         [Test]
-        public void Numeric()
+        public void CompileSubtract()
         {
-            var expr = Expression.Subtract(Expression.Constant(1), Expression.Constant(2));
-            Assert.AreEqual(ExpressionType.Subtract, expr.NodeType, "Subtract#01");
-            Assert.AreEqual(typeof(int), expr.Type, "Subtract#02");
-            Assert.IsNull(expr.Method, "Subtract#03");
-            Assert.AreEqual("(1 - 2)", expr.ToString(), "Subtract#04");
+            var left = Expression.Parameter(typeof(int), "l");
+            var right = Expression.Parameter(typeof(int), "r");
+            var lambda = Expression.Lambda<Func<int, int, int>>
+            (
+                Expression.Subtract(left, right), left, right
+            );
+
+            var be = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(be);
+            Assert.AreEqual(typeof(int), be.Type);
+            Assert.IsFalse(be.IsLifted);
+            Assert.IsFalse(be.IsLiftedToNull);
+
+            var compiled = lambda.Compile();
+
+            Assert.AreEqual(0, compiled(6, 6));
+            Assert.AreEqual(-2, compiled(-1, 1));
+            Assert.AreEqual(4, compiled(1, -3));
+        }
+
+        [Test]
+        public void NoOperatorClass()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.Subtract(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
         }
 
         [Test]
@@ -87,40 +104,31 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void Numeric()
+        {
+            var expr = Expression.Subtract(Expression.Constant(1), Expression.Constant(2));
+            Assert.AreEqual(ExpressionType.Subtract, expr.NodeType, "Subtract#01");
+            Assert.AreEqual(typeof(int), expr.Type, "Subtract#02");
+            Assert.IsNull(expr.Method, "Subtract#03");
+            Assert.AreEqual("(1 - 2)", expr.ToString(), "Subtract#04");
+        }
+
+        [Test]
         public void UserDefinedClass()
         {
             // We can use the simplest version of GetMethod because we already know only one
             // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_Subtraction");
+            var method = typeof(OpClass).GetMethod("op_Subtraction");
 
             var expr = Expression.Subtract(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Subtract, expr.NodeType, "Subtract#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Subtract#10");
-            Assert.AreEqual(mi, expr.Method, "Subtract#11");
-            Assert.AreEqual("op_Subtraction", expr.Method.Name, "Subtract#12");
-            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) - value(MonoTests.System.Linq.Expressions.OpClass))",
-                expr.ToString(), "Subtract#13");
-        }
-
-        [Test]
-        public void CompileSubtract()
-        {
-            var left = Expression.Parameter(typeof(int), "l");
-            var right = Expression.Parameter(typeof(int), "r");
-            var l = Expression.Lambda<Func<int, int, int>>(
-                Expression.Subtract(left, right), left, right);
-
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(int), be.Type);
-            Assert.IsFalse(be.IsLifted);
-            Assert.IsFalse(be.IsLiftedToNull);
-
-            var c = l.Compile();
-
-            Assert.AreEqual(0, c(6, 6));
-            Assert.AreEqual(-2, c(-1, 1));
-            Assert.AreEqual(4, c(1, -3));
+            Assert.AreEqual(method, expr.Method, "Subtract#11");
+            Assert.AreEqual
+            (
+                "(value(MonoTests.System.Linq.Expressions.OpClass) - value(MonoTests.System.Linq.Expressions.OpClass))",
+                expr.ToString(), "Subtract#13"
+            );
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System.Diagnostics.Contracts;
+using NUnit.Framework;
+using Theraot;
 
-namespace System.Diagnostics.Contracts.Tests
+namespace Tests.SystemTests.DiagnosticsTests.ContractsTests
 {
     [TestFixture]
     public static class RequireTests
@@ -8,7 +10,7 @@ namespace System.Diagnostics.Contracts.Tests
         public static void Target(string s)
         {
             Contract.Requires(s != null);
-            Theraot.No.Op(s);
+            No.Op(s);
         }
 
         [Test]

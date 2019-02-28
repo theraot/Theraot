@@ -24,75 +24,20 @@ extern alias nunitlinq;
 //		Federico Di Gregorio <fog@initd.org>
 //		Jb Evain <jbevain@novell.com>
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using NUnit.Framework;
+
+#if TARGETS_NETCORE || TARGETS_NETSTANDARD
 using System.Reflection;
+
+#endif
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestOrElse
     {
-        [Test]
-        public void Arg1Null()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.OrElse(null, Expression.Constant(1)));
-        }
-
-        [Test]
-        public void Arg2Null()
-        {
-            Assert.Throws<ArgumentNullException>(() => Expression.OrElse(Expression.Constant(1), null));
-        }
-
-        [Test]
-        public void NoOperatorClass()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
-        }
-
-        [Test]
-        public void Double()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(1.0), Expression.Constant(2.0)));
-        }
-
-        [Test]
-        public void Integer()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(1), Expression.Constant(2)));
-        }
-
-        [Test]
-        public void MismatchedTypes()
-        {
-            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(true)));
-        }
-
-        [Test]
-        public void Boolean()
-        {
-            var expr = Expression.OrElse(Expression.Constant(true), Expression.Constant(false));
-            Assert.AreEqual(ExpressionType.OrElse, expr.NodeType, "OrElse#01");
-            Assert.AreEqual(typeof(bool), expr.Type, "OrElse#02");
-            Assert.IsNull(expr.Method, "OrElse#03");
-        }
-
-        [Test]
-        public void UserDefinedClass()
-        {
-            // We can use the simplest version of GetMethod because we already know only one
-            // exists in the very simple class we're using for the tests.
-            var mi = typeof(OpClass).GetMethod("op_BitwiseOr");
-
-            var expr = Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
-            Assert.AreEqual(ExpressionType.OrElse, expr.NodeType, "OrElse#05");
-            Assert.AreEqual(typeof(OpClass), expr.Type, "OrElse#06");
-            Assert.AreEqual(mi, expr.Method, "OrElse#07");
-            Assert.AreEqual("op_BitwiseOr", expr.Method.Name, "OrElse#08");
-        }
-
         public class BrokenMethod // Should not be static, instantiation is needed for testing
         {
             public static int operator |(BrokenMethod a, BrokenMethod b)
@@ -107,130 +52,6 @@ namespace MonoTests.System.Linq.Expressions
             {
                 return null;
             }
-        }
-
-        [Test]
-        public void MethodInfoReturnType()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression.OrElse(Expression.Constant(new BrokenMethod()),
-                    Expression.Constant(new BrokenMethod()));
-            });
-        }
-
-        [Test]
-        public void MethodInfoReturnType2()
-        {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                Expression.OrElse(Expression.Constant(new BrokenMethod2()),
-                    Expression.Constant(1));
-            });
-        }
-
-        [Test]
-        public void OrElseNotLifted()
-        {
-            var b = Expression.OrElse(
-                Expression.Constant(true, typeof(bool)),
-                Expression.Constant(true, typeof(bool)));
-
-            Assert.AreEqual(typeof(bool), b.Type);
-            Assert.IsFalse(b.IsLifted);
-            Assert.IsFalse(b.IsLiftedToNull);
-        }
-
-        [Test]
-        public void OrElseTest()
-        {
-            var a = Expression.Parameter(typeof(bool), "a");
-            var b = Expression.Parameter(typeof(bool), "b");
-            var l = Expression.Lambda<Func<bool, bool, bool>>(
-                Expression.OrElse(a, b), a, b);
-
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(bool), be.Type);
-            Assert.IsFalse(be.IsLifted);
-            Assert.IsFalse(be.IsLiftedToNull);
-
-            var c = l.Compile();
-
-            Assert.AreEqual(true, c(true, true), "o1");
-            Assert.AreEqual(true, c(true, false), "o2");
-            Assert.AreEqual(true, c(false, true), "o3");
-            Assert.AreEqual(false, c(false, false), "o4");
-        }
-
-        [Test]
-        public void OrElseLifted()
-        {
-            var b = Expression.OrElse(
-                Expression.Constant(null, typeof(bool?)),
-                Expression.Constant(null, typeof(bool?)));
-
-            Assert.AreEqual(typeof(bool?), b.Type);
-            Assert.IsTrue(b.IsLifted);
-            Assert.IsTrue(b.IsLiftedToNull);
-        }
-
-        [Test]
-        public void OrElseTestNullable()
-        {
-            var a = Expression.Parameter(typeof(bool?), "a");
-            var b = Expression.Parameter(typeof(bool?), "b");
-            var l = Expression.Lambda<Func<bool?, bool?, bool?>>(
-                Expression.OrElse(a, b), a, b);
-
-            var be = l.Body as BinaryExpression;
-            Assert.IsNotNull(be);
-            Assert.AreEqual(typeof(bool?), be.Type);
-            Assert.IsTrue(be.IsLifted);
-            Assert.IsTrue(be.IsLiftedToNull);
-
-            var c = l.Compile();
-
-            Assert.AreEqual(true, c(true, true), "o1");
-            Assert.AreEqual(true, c(true, false), "o2");
-            Assert.AreEqual(true, c(false, true), "o3");
-            Assert.AreEqual(false, c(false, false), "o4");
-
-            Assert.AreEqual(true, c(true, null), "o5");
-            Assert.AreEqual(null, c(false, null), "o6");
-            Assert.AreEqual(null, c(null, false), "o7");
-            Assert.AreEqual(true, c(true, null), "o8");
-            Assert.AreEqual(null, c(null, null), "o9");
-        }
-
-        [Test]
-        public void OrElseBoolItem()
-        {
-            var i = Expression.Parameter(typeof(Item<bool>), "i");
-            var and = Expression.Lambda<Func<Item<bool>, bool>>(
-                Expression.OrElse(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<bool>(true, false);
-            Assert.AreEqual(true, and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
-        }
-
-        [Test]
-        public void OrElseNullableBoolItem()
-        {
-            var i = Expression.Parameter(typeof(Item<bool?>), "i");
-            var and = Expression.Lambda<Func<Item<bool?>, bool?>>(
-                Expression.OrElse(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<bool?>(true, false);
-            Assert.AreEqual((bool?)true, and(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
         }
 
         private struct Slot
@@ -258,56 +79,6 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        [Test]
-        public void UserDefinedOrElse()
-        {
-            var l = Expression.Parameter(typeof(Slot), "l");
-            var r = Expression.Parameter(typeof(Slot), "r");
-
-            var method = typeof(Slot).GetMethod("op_BitwiseOr");
-
-            var node = Expression.OrElse(l, r, method);
-            Assert.IsFalse(node.IsLifted);
-            Assert.IsFalse(node.IsLiftedToNull);
-            Assert.AreEqual(method, node.Method);
-
-            var orelse = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
-
-            Assert.AreEqual(new Slot(64), orelse(new Slot(64), new Slot(64)));
-            Assert.AreEqual(new Slot(32), orelse(new Slot(32), new Slot(64)));
-        }
-
-        [Test]
-        public void UserDefinedOrElseShortCircuit()
-        {
-            var i = Expression.Parameter(typeof(Item<Slot>), "i");
-            var orelse = Expression.Lambda<Func<Item<Slot>, Slot>>(
-                Expression.OrElse(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<Slot>(new Slot(1), new Slot(0));
-            Assert.AreEqual(new Slot(1), orelse(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
-        }
-
-        [Test]
-        [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350228
-        public void UserDefinedLiftedOrElseShortCircuit()
-        {
-            var i = Expression.Parameter(typeof(Item<Slot?>), "i");
-            var orelse = Expression.Lambda<Func<Item<Slot?>, Slot?>>(
-                Expression.OrElse(
-                    Expression.Property(i, "Left"),
-                    Expression.Property(i, "Right")), i).Compile();
-
-            var item = new Item<Slot?>(new Slot(1), null);
-            Assert.AreEqual((Slot?)new Slot(1), orelse(item));
-            Assert.IsTrue(item.LeftCalled);
-            Assert.IsFalse(item.RightCalled);
-        }
-
         private struct Incomplete
         {
             public readonly int Value;
@@ -324,17 +95,288 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        public void Arg1Null()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.OrElse(null, Expression.Constant(1)));
+        }
+
+        [Test]
+        public void Arg2Null()
+        {
+            Assert.Throws<ArgumentNullException>(() => Expression.OrElse(Expression.Constant(1), null));
+        }
+
+        [Test]
+        public void Boolean()
+        {
+            var expr = Expression.OrElse(Expression.Constant(true), Expression.Constant(false));
+            Assert.AreEqual(ExpressionType.OrElse, expr.NodeType, "OrElse#01");
+            Assert.AreEqual(typeof(bool), expr.Type, "OrElse#02");
+            Assert.IsNull(expr.Method, "OrElse#03");
+        }
+
+        [Test]
+        public void Double()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(1.0), Expression.Constant(2.0)));
+        }
+
+        [Test]
         public void IncompleteUserDefinedOrElse()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var l = Expression.Parameter(typeof(Incomplete), "l");
-                var r = Expression.Parameter(typeof(Incomplete), "r");
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var l = Expression.Parameter(typeof(Incomplete), "l");
+                    var r = Expression.Parameter(typeof(Incomplete), "r");
 
-                var method = typeof(Incomplete).GetMethod("op_BitwiseOr");
+                    var method = typeof(Incomplete).GetMethod("op_BitwiseOr");
 
-                Expression.OrElse(l, r, method);
-            });
+                    Expression.OrElse(l, r, method);
+                }
+            );
+        }
+
+        [Test]
+        public void Integer()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(1), Expression.Constant(2)));
+        }
+
+        [Test]
+        public void MethodInfoReturnType()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression.OrElse
+                    (
+                        Expression.Constant(new BrokenMethod()),
+                        Expression.Constant(new BrokenMethod())
+                    );
+                }
+            );
+        }
+
+        [Test]
+        public void MethodInfoReturnType2()
+        {
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    Expression.OrElse
+                    (
+                        Expression.Constant(new BrokenMethod2()),
+                        Expression.Constant(1)
+                    );
+                }
+            );
+        }
+
+        [Test]
+        public void MismatchedTypes()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(true)));
+        }
+
+        [Test]
+        public void NoOperatorClass()
+        {
+            Assert.Throws<InvalidOperationException>(() => Expression.OrElse(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass())));
+        }
+
+        [Test]
+        public void OrElseBoolItem()
+        {
+            var i = Expression.Parameter(typeof(Item<bool>), "i");
+            var compiled = Expression.Lambda<Func<Item<bool>, bool>>
+            (
+                Expression.OrElse
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
+
+            var item = new Item<bool>(true, false);
+            Assert.AreEqual(true, compiled(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
+        }
+
+        [Test]
+        public void OrElseLifted()
+        {
+            var b = Expression.OrElse
+            (
+                Expression.Constant(null, typeof(bool?)),
+                Expression.Constant(null, typeof(bool?))
+            );
+
+            Assert.AreEqual(typeof(bool?), b.Type);
+            Assert.IsTrue(b.IsLifted);
+            Assert.IsTrue(b.IsLiftedToNull);
+        }
+
+        [Test]
+        public void OrElseNotLifted()
+        {
+            var b = Expression.OrElse
+            (
+                Expression.Constant(true, typeof(bool)),
+                Expression.Constant(true, typeof(bool))
+            );
+
+            Assert.AreEqual(typeof(bool), b.Type);
+            Assert.IsFalse(b.IsLifted);
+            Assert.IsFalse(b.IsLiftedToNull);
+        }
+
+        [Test]
+        public void OrElseNullableBoolItem()
+        {
+            var i = Expression.Parameter(typeof(Item<bool?>), "i");
+            var compiled = Expression.Lambda<Func<Item<bool?>, bool?>>
+            (
+                Expression.OrElse
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
+
+            var item = new Item<bool?>(true, false);
+            Assert.AreEqual((bool?)true, compiled(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
+        }
+
+        [Test]
+        public void OrElseTest()
+        {
+            var a = Expression.Parameter(typeof(bool), "a");
+            var b = Expression.Parameter(typeof(bool), "b");
+            var lambda = Expression.Lambda<Func<bool, bool, bool>>
+            (
+                Expression.OrElse(a, b), a, b
+            );
+
+            var be = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(be);
+            Assert.AreEqual(typeof(bool), be.Type);
+            Assert.IsFalse(be.IsLifted);
+            Assert.IsFalse(be.IsLiftedToNull);
+
+            var compiled = lambda.Compile();
+
+            Assert.AreEqual(true, compiled(true, true), "o1");
+            Assert.AreEqual(true, compiled(true, false), "o2");
+            Assert.AreEqual(true, compiled(false, true), "o3");
+            Assert.AreEqual(false, compiled(false, false), "o4");
+        }
+
+        [Test]
+        public void OrElseTestNullable()
+        {
+            var a = Expression.Parameter(typeof(bool?), "a");
+            var b = Expression.Parameter(typeof(bool?), "b");
+            var lambda = Expression.Lambda<Func<bool?, bool?, bool?>>
+            (
+                Expression.OrElse(a, b), a, b
+            );
+
+            var be = lambda.Body as BinaryExpression;
+            Assert.IsNotNull(be);
+            Assert.AreEqual(typeof(bool?), be.Type);
+            Assert.IsTrue(be.IsLifted);
+            Assert.IsTrue(be.IsLiftedToNull);
+
+            var compiled = lambda.Compile();
+
+            Assert.AreEqual(true, compiled(true, true), "o1");
+            Assert.AreEqual(true, compiled(true, false), "o2");
+            Assert.AreEqual(true, compiled(false, true), "o3");
+            Assert.AreEqual(false, compiled(false, false), "o4");
+
+            Assert.AreEqual(true, compiled(true, null), "o5");
+            Assert.AreEqual(null, compiled(false, null), "o6");
+            Assert.AreEqual(null, compiled(null, false), "o7");
+            Assert.AreEqual(true, compiled(true, null), "o8");
+            Assert.AreEqual(null, compiled(null, null), "o9");
+        }
+
+        [Test]
+        public void UserDefinedClass()
+        {
+            // We can use the simplest version of GetMethod because we already know only one
+            // exists in the very simple class we're using for the tests.
+            var method = typeof(OpClass).GetMethod("op_BitwiseOr");
+
+            var expr = Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.OrElse, expr.NodeType, "OrElse#05");
+            Assert.AreEqual(typeof(OpClass), expr.Type, "OrElse#06");
+            Assert.AreEqual(method, expr.Method, "OrElse#07");
+        }
+
+        [Test]
+        [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=350228
+        public void UserDefinedLiftedOrElseShortCircuit()
+        {
+            var i = Expression.Parameter(typeof(Item<Slot?>), "i");
+            var compiled = Expression.Lambda<Func<Item<Slot?>, Slot?>>
+            (
+                Expression.OrElse
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
+
+            var item = new Item<Slot?>(new Slot(1), null);
+            Assert.AreEqual((Slot?)new Slot(1), compiled(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
+        }
+
+        [Test]
+        public void UserDefinedOrElse()
+        {
+            var l = Expression.Parameter(typeof(Slot), "l");
+            var r = Expression.Parameter(typeof(Slot), "r");
+
+            var method = typeof(Slot).GetMethod("op_BitwiseOr");
+
+            var node = Expression.OrElse(l, r, method);
+            Assert.IsFalse(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(method, node.Method);
+
+            var compiled = Expression.Lambda<Func<Slot, Slot, Slot>>(node, l, r).Compile();
+
+            Assert.AreEqual(new Slot(64), compiled(new Slot(64), new Slot(64)));
+            Assert.AreEqual(new Slot(32), compiled(new Slot(32), new Slot(64)));
+        }
+
+        [Test]
+        public void UserDefinedOrElseShortCircuit()
+        {
+            var i = Expression.Parameter(typeof(Item<Slot>), "i");
+            var compiled = Expression.Lambda<Func<Item<Slot>, Slot>>
+            (
+                Expression.OrElse
+                (
+                    Expression.Property(i, "Left"),
+                    Expression.Property(i, "Right")
+                ), i
+            ).Compile();
+
+            var item = new Item<Slot>(new Slot(1), new Slot(0));
+            Assert.AreEqual(new Slot(1), compiled(item));
+            Assert.IsTrue(item.LeftCalled);
+            Assert.IsFalse(item.RightCalled);
         }
     }
 }

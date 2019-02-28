@@ -27,16 +27,39 @@ extern alias nunitlinq;
 //    Miguel de Icaza (miguel@novell.com)
 //
 
-using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NUnit.Framework;
+using Theraot;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
     public class ExpressionTestLifting
     {
+        private static MethodInfo Gm(string n)
+        {
+            var m = typeof(ExpressionTestLifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
+
+            foreach (var mm in m)
+            {
+                if (mm.Name == n)
+                {
+                    return mm;
+                }
+            }
+
+            throw new Exception("No method found: " + n);
+        }
+
+        public static int MyCompare(OpStruct a, OpStruct b)
+        {
+            No.Op(a);
+            No.Op(b);
+            return 1;
+        }
+
         [Test]
         public void TestLiftOnEqual()
         {
@@ -62,28 +85,6 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(true, cmp.IsLifted, "IsLifted");
             Assert.AreEqual(true, cmp.IsLiftedToNull, "IsLiftedToNull");
             Assert.AreEqual(typeof(bool?), cmp.Type);
-        }
-
-        private static MethodInfo Gm(string n)
-        {
-            var m = typeof(ExpressionTestLifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
-
-            foreach (var mm in m)
-            {
-                if (mm.Name == n)
-                {
-                    return mm;
-                }
-            }
-
-            throw new Exception("No method found: " + n);
-        }
-
-        static public int MyCompare(OpStruct a, OpStruct b)
-        {
-            Theraot.No.Op(a);
-            Theraot.No.Op(b);
-            return 1;
         }
 
         [Test]

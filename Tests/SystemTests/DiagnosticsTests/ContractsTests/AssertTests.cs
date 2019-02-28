@@ -1,42 +1,29 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using NUnit.Framework;
+using System.Diagnostics.Contracts;
 using System.Security.Permissions;
+using NUnit.Framework;
+using Tests.Helpers;
 
-namespace System.Diagnostics.Contracts.Tests
+namespace Tests.SystemTests.DiagnosticsTests.ContractsTests
 {
     [TestFixture]
     public static class AssertTests
     {
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public static void AssertTrueDoesNotRaiseEvent()
-        {
-            var eventRaised = false;
-            EventHandler<ContractFailedEventArgs> handler = (s, e) =>
-            {
-                eventRaised = true;
-                e.SetHandled();
-            };
-            using (Utilities.WithContractFailed(handler))
-            {
-                Contract.Assert(true);
-                Assert.False(eventRaised, "ContractFailed event was raised");
-            }
-        }
-
-        [Test]
-        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void AssertFalseRaisesEvent()
         {
             var eventRaised = false;
-            EventHandler<ContractFailedEventArgs> handler = (s, e) =>
+
+            void Handler(object s, ContractFailedEventArgs e)
             {
                 eventRaised = true;
                 e.SetHandled();
-            };
-            using (Utilities.WithContractFailed(handler))
+            }
+
+            using (Utilities.WithContractFailed(Handler))
             {
                 Contract.Assert(false);
 #if DEBUG
@@ -52,12 +39,14 @@ namespace System.Diagnostics.Contracts.Tests
         public static void AssertFalseThrows()
         {
             var eventRaised = false;
-            EventHandler<ContractFailedEventArgs> handler = (s, e) =>
+
+            void Handler(object s, ContractFailedEventArgs e)
             {
                 eventRaised = true;
                 e.SetUnwind();
-            };
-            using (Utilities.WithContractFailed(handler))
+            }
+
+            using (Utilities.WithContractFailed(Handler))
             {
 #if DEBUG
                 Utilities.AssertThrowsContractException(() => Contract.Assert(false, "Some kind of user message"));
@@ -66,6 +55,25 @@ namespace System.Diagnostics.Contracts.Tests
                 Contract.Assert(false, "Some kind of user message");
                 Assert.False(eventRaised, "ContractFailed event was raised");
 #endif
+            }
+        }
+
+        [Test]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        public static void AssertTrueDoesNotRaiseEvent()
+        {
+            var eventRaised = false;
+
+            void Handler(object s, ContractFailedEventArgs e)
+            {
+                eventRaised = true;
+                e.SetHandled();
+            }
+
+            using (Utilities.WithContractFailed(Handler))
+            {
+                Contract.Assert(true);
+                Assert.False(eventRaised, "ContractFailed event was raised");
             }
         }
     }

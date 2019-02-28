@@ -4,22 +4,29 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using Tests.Helpers;
 
-namespace TestRunner.System.IO
+namespace Tests.SystemTests.IOTests
 {
     [TestFixture]
     public static class StreamExtensionsTest
     {
-        [Test]
-        public static async Task ReadAsyncReads()
+        private static async Task ReadAsyncReadsExtracted()
         {
-            using (var stream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 }))
+            using (var stream = new MemoryStream(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0}))
             {
                 var buffer = new byte[10];
                 var x = await stream.ReadAsync(buffer, 0, 10).ConfigureAwait(false);
                 Assert.AreEqual(10, x);
-                Assert.CollectionEquals(buffer, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 });
+                AssertEx.CollectionEquals(buffer, new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 0});
             }
+        }
+
+        [Test]
+        public static void ReadAsyncReads()
+        {
+            ReadAsyncReadsExtracted().Wait();
         }
 
         [Test]
@@ -33,7 +40,7 @@ namespace TestRunner.System.IO
                 {
                     tokenSource[0].Cancel();
                     var buffer = new byte[10];
-                    Assert.AsyncThrows<OperationCanceledException>(() => stream[0].ReadAsync(buffer, 0, 10, tokenSource[0].Token));
+                    AssertEx.AsyncThrows<OperationCanceledException>(() => stream[0].ReadAsync(buffer, 0, 10, tokenSource[0].Token));
                 }
             }
         }
@@ -49,7 +56,7 @@ namespace TestRunner.System.IO
                 {
                     tokenSource[0].Cancel();
                     var buffer = new byte[10];
-                    Assert.AsyncThrows<OperationCanceledException>(() => stream[0].ReadAsync(buffer, 0, 10, tokenSource[0].Token));
+                    AssertEx.AsyncThrows<OperationCanceledException>(() => stream[0].ReadAsync(buffer, 0, 10, tokenSource[0].Token));
                 }
             }
         }
