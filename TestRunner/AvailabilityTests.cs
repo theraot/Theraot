@@ -306,6 +306,7 @@ namespace TestRunner
         {
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
             const TaskCompletionSource<int> source = null;
+            No.Op<Func<bool>>(source.TrySetCanceled);
             No.Op<Func<CancellationToken, bool>>(source.TrySetCanceled);
 #endif
         }
