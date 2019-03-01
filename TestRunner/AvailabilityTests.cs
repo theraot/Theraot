@@ -301,5 +301,13 @@ namespace TestRunner
             No.Op<Func<IFormatProvider, string>>(provider => default(char).ToString(provider));
             No.Op<Func<IFormatProvider, string>>(default(string).ToString);
         }
+
+        public static void TaskCompletionSourceMethodAvailability()
+        {
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
+            const TaskCompletionSource<int> source = null;
+            No.Op<Func<CancellationToken, bool>>(source.TrySetCanceled);
+#endif
+        }
     }
 }
