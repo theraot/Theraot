@@ -146,7 +146,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
 
-#if !LESSTHAN_NETSTANDARD13
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
         [Test]
         public void SetCanceledWithTokenTest()
         {
