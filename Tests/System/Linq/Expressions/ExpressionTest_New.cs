@@ -70,13 +70,7 @@ namespace MonoTests.System.Linq.Expressions
 
             public override bool Equals(object obj)
             {
-                var o = obj as Gazonk;
-                if (o == null)
-                {
-                    return false;
-                }
-
-                return _value == o._value;
+                return obj is Gazonk o && _value == o._value;
             }
 
             public override int GetHashCode()
@@ -255,7 +249,7 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.New
                     (
                         typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                        new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue")
+                        new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty(nameof(FakeAnonymousType.FooValue)), typeof(FakeAnonymousType).GetProperty("BarValue")
                     );
                 }
             );
@@ -271,7 +265,7 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.New
                     (
                         typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                        new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty("GazonkValue")
+                        new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty(nameof(FakeAnonymousType.GazonkValue))
                     );
                 }
             );

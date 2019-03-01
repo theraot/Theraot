@@ -67,7 +67,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AddMethodIsNotAnInstanceMethod()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Bar).GetMethod("Add")));
+            Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Bar).GetMethod(nameof(Bar.Add))));
         }
 
         [Test]

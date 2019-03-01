@@ -57,7 +57,7 @@ namespace MonoTests.System.Linq.Expressions
             return o;
         }
 
-        public static void EineGenericMethod<TX, TY>(string foo, int bar)
+        public static void AGenericMethod<TX, TY>(string foo, int bar)
         {
             // Used via Reflection
             No.Op(foo);
@@ -190,7 +190,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Expression.Call
             (
-                GetType().GetMethod("AcceptsIEnumerable", BindingFlags.Public | BindingFlags.Static),
+                GetType().GetMethod(nameof(AcceptsIEnumerable), BindingFlags.Public | BindingFlags.Static),
                 Expression.NewArrayBounds(typeof(object), Expression.Constant(0))
             );
         }
@@ -202,7 +202,7 @@ namespace MonoTests.System.Linq.Expressions
             var param = Expression.Parameter(typeof(EineStrukt), "s");
             var compiled = Expression.Lambda<Func<EineStrukt, string>>
             (
-                Expression.Call(param, typeof(EineStrukt).GetMethod("GetValue")), param
+                Expression.Call(param, typeof(EineStrukt).GetMethod(nameof(EineStrukt.GetValue))), param
             ).Compile();
 
             var s = new EineStrukt("foo");
@@ -299,7 +299,7 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.Call
                     (
                         Expression.Constant("la la la"),
-                        GetType().GetMethod("OneStaticMethod")
+                        GetType().GetMethod(nameof(OneStaticMethod))
                     );
                 }
             );
@@ -316,7 +316,7 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.Call
                     (
                         Expression.Parameter(GetType(), "t"),
-                        GetType().GetMethod("Identity"),
+                        GetType().GetMethod(nameof(Identity)),
                         Expression.Constant(null)
                     );
                 }
@@ -331,7 +331,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<int, int>>
             (
-                Expression.Call(GetType().GetMethod("DoSomethingWith"), p), p
+                Expression.Call(GetType().GetMethod(nameof(DoSomethingWith)), p), p
             ).Compile();
 
             Assert.AreEqual(42, compiled(38));
@@ -346,7 +346,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<int, string, string>>
             (
-                Expression.Call(GetType().GetMethod("DoAnotherThing"), i, s), i, s
+                Expression.Call(GetType().GetMethod(nameof(DoAnotherThing)), i, s), i, s
             ).Compile();
 
             Assert.AreEqual("foo42", compiled(42, "foo"));
@@ -390,9 +390,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CheckTypeArgsIsUsedForGenericArguments()
         {
-            var m = Expression.Call(GetType(), "EineGenericMethod", new[] {typeof(string), typeof(int)}, "foo".ToConstant(), 2.ToConstant());
+            var m = Expression.Call(GetType(), nameof(AGenericMethod), new[] {typeof(string), typeof(int)}, "foo".ToConstant(), 2.ToConstant());
             Assert.IsNotNull(m.Method);
-            Assert.AreEqual("Void EineGenericMethod[String,Int32](System.String, Int32)", m.Method.ToString());
+            Assert.AreEqual($"Void {nameof(AGenericMethod)}[String,Int32](System.String, Int32)", m.Method.ToString());
         }
 
         [Test]
@@ -417,13 +417,15 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileSimpleStaticCall()
         {
+            const string Value = "Str";
+
             var p = Expression.Parameter(typeof(object), "o");
-            var lambda = Expression.Lambda<Func<object, object>>(Expression.Call(GetType().GetMethod("Identity"), p), p);
+            var lambda = Expression.Lambda<Func<object, object>>(Expression.Call(GetType().GetMethod(nameof(Identity)), p), p);
 
             var compiled = lambda.Compile();
 
             Assert.AreEqual(2, compiled(2));
-            Assert.AreEqual("Foo", compiled("Foo"));
+            Assert.AreEqual(Value, compiled(Value));
         }
 
         [Test]
@@ -439,7 +441,7 @@ namespace MonoTests.System.Linq.Expressions
                         typeof(Delegate).GetMethod("CreateDelegate", new[] {typeof(Type), typeof(object), typeof(MethodInfo)}),
                         Expression.Constant(typeof(Func<int>), typeof(Type)),
                         Expression.Constant(null, typeof(object)),
-                        Expression.Constant(GetType().GetMethod("Truc"))
+                        Expression.Constant(GetType().GetMethod(nameof(Truc)))
                     ),
                     typeof(Func<int>)
                 )
@@ -459,7 +461,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.Call
                 (
-                    GetType().GetMethod("FooOut"),
+                    GetType().GetMethod(nameof(FooOut)),
                     Expression.ArrayIndex
                     (
                         Expression.NewArrayBounds
@@ -489,7 +491,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.Call
                 (
-                    GetType().GetMethod("FooOut2"),
+                    GetType().GetMethod(nameof(FooOut2)),
                     Expression.ArrayIndex(p, 0.ToConstant(), 0.ToConstant())
                 ),
                 p
@@ -513,7 +515,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.Call
                 (
-                    GetType().GetMethod("FooRef"),
+                    GetType().GetMethod(nameof(FooRef)),
                     Expression.ArrayIndex
                     (
                         Expression.Constant(strings), 0.ToConstant()
@@ -567,25 +569,25 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodArgumentDoesNotMatchParameterType()
         {
-            Assert.Throws<ArgumentException>(() => Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), Expression.Constant(42)));
+            Assert.Throws<ArgumentException>(() => Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod(nameof(Foo.Bar)), Expression.Constant(42)));
         }
 
         [Test]
         public void MethodHasNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod("Bar"), null as Expression));
+            Assert.Throws<ArgumentNullException>(() => Expression.Call(Expression.New(typeof(Foo)), typeof(Foo).GetMethod(nameof(Foo.Bar)), null as Expression));
         }
 
         [Test]
         public void StaticGenericMethod()
         {
-            Expression.Call(typeof(MemberClass), "StaticGenericMethod", new[] {typeof(int)}, Expression.Constant(1));
+            Expression.Call(typeof(MemberClass), nameof(MemberClass.StaticGenericMethod), new[] {typeof(int)}, Expression.Constant(1));
         }
 
         [Test]
         public void StaticMethod()
         {
-            Expression.Call(typeof(MemberClass), "StaticMethod", null, Expression.Constant(1));
+            Expression.Call(typeof(MemberClass), nameof(MemberClass.StaticMethod), null, Expression.Constant(1));
         }
     }
 }

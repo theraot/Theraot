@@ -69,7 +69,7 @@ namespace MonoTests.System.Linq.Expressions
                     {
                         null
                     };
-                    Expression.ListBind(typeof(Foo).GetProperty("Bar").GetSetMethod(), list);
+                    Expression.ListBind(typeof(Foo).GetProperty(nameof(Foo.Bar)).GetSetMethod(), list);
                 }
             );
         }
@@ -135,13 +135,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodeGetImplementIEnumerable2()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetProperty("BarBar").GetGetMethod(), new List<ElementInit>()));
+            Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetProperty(nameof(Foo.BarBar)).GetGetMethod(), new List<ElementInit>()));
         }
 
         [Test]
         public void MethodMustBeAnAccessor()
         {
-            Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetMethod("Test"), new List<ElementInit>()));
+            Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetMethod(nameof(Foo.Test)), new List<ElementInit>()));
         }
 
         [Test]

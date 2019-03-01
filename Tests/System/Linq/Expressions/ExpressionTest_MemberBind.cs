@@ -84,12 +84,12 @@ namespace MonoTests.System.Linq.Expressions
                         typeof(Foo).GetProperty("Gazoo"),
                         Expression.Bind
                         (
-                            typeof(Gazonk).GetField("Tzap"),
+                            typeof(Gazonk).GetField(nameof(Gazonk.Tzap)),
                             "tzap".ToConstant()
                         ),
                         Expression.Bind
                         (
-                            typeof(Gazonk).GetField("Klang"),
+                            typeof(Gazonk).GetField(nameof(Gazonk.Klang)),
                             42.ToConstant()
                         )
                     )
@@ -109,11 +109,11 @@ namespace MonoTests.System.Linq.Expressions
             var mb = Expression.MemberBind
             (
                 typeof(Foo).GetField("Gaz"),
-                Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant())
+                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
             );
 
             Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
-            Assert.AreEqual("Gaz = {Tzap = \"tzap\"}", mb.ToString());
+            Assert.AreEqual($"Gaz = {{{nameof(Gazonk.Tzap)} = \"tzap\"}}", mb.ToString());
         }
 
         [Test]
@@ -121,12 +121,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             var mb = Expression.MemberBind
             (
-                typeof(Foo).GetProperty("Gazoo"),
-                Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant())
+                typeof(Foo).GetProperty(nameof(Foo.Gazoo)),
+                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
             );
 
             Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
-            Assert.AreEqual("Gazoo = {Tzap = \"tzap\"}", mb.ToString());
+            Assert.AreEqual($"Gazoo = {{{nameof(Gazonk.Tzap)} = \"tzap\"}}", mb.ToString());
         }
 
         [Test]
@@ -134,36 +134,36 @@ namespace MonoTests.System.Linq.Expressions
         {
             var mb = Expression.MemberBind
             (
-                typeof(Foo).GetProperty("Gazoo").GetSetMethod(true),
-                Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant())
+                typeof(Foo).GetProperty(nameof(Foo.Gazoo)).GetSetMethod(true),
+                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
             );
 
             Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
-            Assert.AreEqual("Gazoo = {Tzap = \"tzap\"}", mb.ToString());
+            Assert.AreEqual($"Gazoo = {{{nameof(Gazonk.Tzap)} = \"tzap\"}}", mb.ToString());
         }
 
         [Test]
         public void MemberNotFieldOrProp()
         {
-            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetMethod("Bang") as MemberInfo));
+            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetMethod(nameof(Gazonk.Bang)) as MemberInfo));
         }
 
         [Test]
         public void MemberTypeMismatch()
         {
-            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetField("Klang"), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant())));
+            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetField(nameof(Gazonk.Klang)), Expression.Bind(typeof(Foo).GetField(nameof(Foo.Bar)), "bar".ToConstant())));
         }
 
         [Test]
         public void MethodNotPropertyAccessor()
         {
-            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetMethod("Bang")));
+            Assert.Throws<ArgumentException>(() => Expression.MemberBind(typeof(Gazonk).GetMethod(nameof(Gazonk.Bang))));
         }
 
         [Test]
         public void NullBindings()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.MemberBind(typeof(Foo).GetField("Bar"), null));
+            Assert.Throws<ArgumentNullException>(() => Expression.MemberBind(typeof(Foo).GetField(nameof(Foo.Bar)), null));
         }
 
         [Test]

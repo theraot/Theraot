@@ -71,7 +71,7 @@ namespace MonoTests.System.Linq.Expressions
                 (
                     Expression.New(typeof(Thing)),
                     Expression.Bind(typeof(Thing).GetField("Value"), "foo".ToConstant()),
-                    Expression.Bind(typeof(Thing).GetProperty("Bar"), "bar".ToConstant())
+                    Expression.Bind(typeof(Thing).GetProperty(nameof(Thing.Bar)), "bar".ToConstant())
                 )
             ).Compile();
 
@@ -86,12 +86,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             var m = Expression.MemberInit
             (
-                Expression.New(typeof(Foo)), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant()), Expression.Bind(typeof(Foo).GetField("Baz"), "baz".ToConstant())
+                Expression.New(typeof(Foo)), Expression.Bind(typeof(Foo).GetField(nameof(Foo.Bar)), "bar".ToConstant()), Expression.Bind(typeof(Foo).GetField(nameof(Foo.Baz)), "baz".ToConstant())
             );
 
             Assert.AreEqual(typeof(Foo), m.Type);
             Assert.AreEqual(ExpressionType.MemberInit, m.NodeType);
-            Assert.AreEqual("new Foo() {Bar = \"bar\", Baz = \"baz\"}", m.ToString());
+            Assert.AreEqual($"new {nameof(Foo)}() {{{nameof(Foo.Bar)} = \"bar\", {nameof(Foo.Baz)} = \"baz\"}}", m.ToString());
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     Expression.MemberInit
                     (
-                        Expression.New(typeof(Foo)), Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant())
+                        Expression.New(typeof(Foo)), Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
                     );
                 }
             );

@@ -83,7 +83,7 @@ namespace MonoTests.System.Linq.Expressions
                 (
                     p, typeof(Bar).GetField
                     (
-                        "Baz", BindingFlags.Public | BindingFlags.Instance
+                        nameof(Bar.Baz), BindingFlags.Public | BindingFlags.Instance
                     )
                 ), p
             ).Compile();
@@ -114,7 +114,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(Gazonk), "gazonk");
             var compiled = Expression.Lambda<Func<Gazonk, string>>
             (
-                Expression.Field(p, typeof(Gazonk).GetField("Tzap")), p
+                Expression.Field(p, typeof(Gazonk).GetField(nameof(Gazonk.Tzap))), p
             ).Compile();
 
             Assert.AreEqual("bang", compiled(new Gazonk("bang")));
