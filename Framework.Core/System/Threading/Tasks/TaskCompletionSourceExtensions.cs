@@ -1,4 +1,4 @@
-﻿#if !LESSTHAN_NET40 && LESSTHAN_NET46
+﻿#if GREATERTHAN_NET35 && LESSTHAN_NET46
 
 using System.Diagnostics;
 using System.Reflection;
