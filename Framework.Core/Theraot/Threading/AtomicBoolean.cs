@@ -29,13 +29,13 @@ namespace Theraot.Threading
 {
     public class AtomicBoolean
     {
-        private const int Set = 1;
-        private const int Unset = 0;
+        private const int _set = 1;
+        private const int _unset = 0;
         private int _value;
 
         public bool Value
         {
-            get => _value == Set;
+            get => _value == _set;
 
             set => Exchange(value);
         }
@@ -85,8 +85,8 @@ namespace Theraot.Threading
 
         public bool CompareExchange(bool expected, bool newVal)
         {
-            var newTemp = newVal ? Set : Unset;
-            var expectedTemp = expected ? Set : Unset;
+            var newTemp = newVal ? _set : _unset;
+            var expectedTemp = expected ? _set : _unset;
 
             return Interlocked.CompareExchange(ref _value, newTemp, expectedTemp) == expectedTemp;
         }
@@ -108,8 +108,8 @@ namespace Theraot.Threading
 
         public bool Exchange(bool newVal)
         {
-            var newTemp = newVal ? Set : Unset;
-            return Interlocked.Exchange(ref _value, newTemp) == Set;
+            var newTemp = newVal ? _set : _unset;
+            return Interlocked.Exchange(ref _value, newTemp) == _set;
         }
 
         public override int GetHashCode()
@@ -129,7 +129,7 @@ namespace Theraot.Threading
 
         internal bool TryRelaxedSet()
         {
-            return _value == Unset && !Exchange(true);
+            return _value == _unset && !Exchange(true);
         }
     }
 }

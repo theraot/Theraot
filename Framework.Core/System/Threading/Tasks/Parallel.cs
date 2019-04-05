@@ -3346,14 +3346,14 @@ namespace System.Threading.Tasks
 
             // In the algorithm below, if the number of actions is greater than this, we automatically
             // use Parallel.For() to handle the actions, rather than the Task-per-Action strategy.
-            const int Small_Action_Count_Limit = 10;
+            const int small_action_count_limit = 10;
 
             // If we've gotten this far, it's time to process the actions.
 
             // This is more efficient for a large number of actions, or for enforcing MaxDegreeOfParallelism:
             if
             (
-                actionsCopy.Length > Small_Action_Count_Limit
+                actionsCopy.Length > small_action_count_limit
                 || (parallelOptions.MaxDegreeOfParallelism != -1 && parallelOptions.MaxDegreeOfParallelism < actionsCopy.Length)
             )
             {

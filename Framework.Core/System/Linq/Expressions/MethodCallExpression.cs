@@ -334,8 +334,8 @@ namespace System.Linq.Expressions
                 arguments = ArrayEx.Empty<Expression>();
             }
 
-            const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return Call(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, Flags), arguments);
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            return Call(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
         }
 
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static (Shared in Visual Basic) method by calling the appropriate factory method.</summary>
@@ -360,8 +360,8 @@ namespace System.Linq.Expressions
                 arguments = ArrayEx.Empty<Expression>();
             }
 
-            const BindingFlags Flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return Call(null, FindMethod(type, methodName, typeArguments, arguments, Flags), arguments);
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            return Call(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
 
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a method call.</summary>

@@ -47,7 +47,7 @@ namespace Theraot.Threading
             private static void RaiseCollected()
             {
                 var check = Volatile.Read(ref _status);
-                if (check != StatusReady)
+                if (check != _statusReady)
                 {
                     return;
                 }
@@ -63,7 +63,7 @@ namespace Theraot.Threading
                     No.Op(exception);
                 }
 
-                Volatile.Write(ref _status, StatusReady);
+                Volatile.Write(ref _status, _statusReady);
             }
         }
     }

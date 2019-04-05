@@ -57,12 +57,12 @@ namespace System.Runtime.CompilerServices
             // need a lock to make sure we are moving the right rule and not losing any.
             lock (_cacheLock)
             {
-                const int MaxSearch = 8;
+                const int maxSearch = 8;
                 var rules = Volatile.Read(ref _rules);
                 var count = rules.Length - i;
-                if (count > MaxSearch)
+                if (count > maxSearch)
                 {
-                    count = MaxSearch;
+                    count = maxSearch;
                 }
 
                 var oldIndex = -1;

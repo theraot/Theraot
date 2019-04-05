@@ -35,17 +35,17 @@ namespace TestRunner.System.Threading
         [Test]
         public static void NewThreadWithNullParametrizedThreadStartThrows()
         {
-            const ParameterizedThreadStart ParameterizedStart = null;
+            const ParameterizedThreadStart parameterizedStart = null;
             // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(ParameterizedStart));
+            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(parameterizedStart));
         }
 
         [Test]
         public static void NewThreadWithNullThreadStartThrows()
         {
-            const ThreadStart Start = null;
+            const ThreadStart start = null;
             // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(Start));
+            Assert.Throws<ArgumentNullException, Thread>(() => new Thread(start));
         }
 
         [Test]

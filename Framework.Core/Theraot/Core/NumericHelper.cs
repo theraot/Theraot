@@ -33,7 +33,7 @@ namespace Theraot.Core
         [CLSCompliant(false)]
         public static uint GCD(uint left, uint right)
         {
-            const int CvMax = 32;
+            const int cvMax = 32;
             if (left < right)
             {
                 Swap(ref left, ref right);
@@ -46,7 +46,7 @@ namespace Theraot.Core
                     return left;
                 }
 
-                for (var cv = CvMax;;)
+                for (var cv = cvMax;;)
                 {
                     left -= right;
                     if (left < right)
@@ -85,7 +85,7 @@ namespace Theraot.Core
         [CLSCompliant(false)]
         public static ulong GCD(ulong uu1, ulong uu2)
         {
-            const int CvMax = 32;
+            const int cvMax = 32;
             if (uu1 < uu2)
             {
                 Swap(ref uu1, ref uu2);
@@ -98,7 +98,7 @@ namespace Theraot.Core
                     return uu1;
                 }
 
-                for (var cv = CvMax;;)
+                for (var cv = cvMax;;)
                 {
                     uu1 -= uu2;
                     if (uu1 < uu2)

@@ -832,7 +832,7 @@ namespace System.Threading
         private bool DiscontinuousWait(ManualResetEventSlim currentPhaseEvent, int totalTimeout, CancellationToken token, long observedPhase)
         {
             var maxWait = 100; // 100 ms
-            const int WaitTimeCeiling = 10000; // 10 seconds
+            const int waitTimeCeiling = 10000; // 10 seconds
             while (observedPhase == CurrentPhaseNumber)
             {
                 // the next wait time, the min of the maxWait and the totalTimeout
@@ -854,7 +854,7 @@ namespace System.Threading
                 }
 
                 //if the maxWait exceeded 10 seconds then we will stop increasing the maxWait time and keep it 10 seconds, otherwise keep doubling it
-                maxWait = maxWait >= WaitTimeCeiling ? WaitTimeCeiling : Math.Min(maxWait << 1, WaitTimeCeiling);
+                maxWait = maxWait >= waitTimeCeiling ? waitTimeCeiling : Math.Min(maxWait << 1, waitTimeCeiling);
             }
 
             //if we exited the loop because the observed phase doesn't match the current phase, then we have to spin to make sure

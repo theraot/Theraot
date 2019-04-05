@@ -14,10 +14,10 @@ namespace Theraot.Threading
     [DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        private const int StatusNotReady = -2;
-        private const int StatusPending = -1;
-        private const int StatusReady = 0;
-        private static int _status = StatusNotReady;
+        private const int _statusNotReady = -2;
+        private const int _statusPending = -1;
+        private const int _statusReady = 0;
+        private static int _status = _statusNotReady;
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
         private const int _statusFinished = 1;
@@ -58,7 +58,7 @@ namespace Theraot.Threading
 
             remove
             {
-                if (Volatile.Read(ref _status) != StatusReady)
+                if (Volatile.Read(ref _status) != _statusReady)
                 {
                     return;
                 }
@@ -88,16 +88,16 @@ namespace Theraot.Threading
 
         private static void Initialize()
         {
-            var check = Interlocked.CompareExchange(ref _status, StatusPending, StatusNotReady);
+            var check = Interlocked.CompareExchange(ref _status, _statusPending, _statusNotReady);
             switch (check)
             {
-                case StatusNotReady:
+                case _statusNotReady:
                     GC.KeepAlive(new GCProbe());
-                    Volatile.Write(ref _status, StatusReady);
+                    Volatile.Write(ref _status, _statusReady);
                     break;
 
-                case StatusPending:
-                    ThreadingHelper.SpinWaitUntil(ref _status, StatusReady);
+                case _statusPending:
+                    ThreadingHelper.SpinWaitUntil(ref _status, _statusReady);
                     break;
             }
         }
@@ -119,7 +119,7 @@ namespace Theraot.Threading
                     try
                     {
                         var check = Volatile.Read(ref _status);
-                        if (check == StatusReady)
+                        if (check == _statusReady)
                         {
                             GC.ReRegisterForFinalize(this);
                             Internal.Invoke();

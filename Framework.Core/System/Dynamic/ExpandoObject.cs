@@ -529,10 +529,10 @@ namespace System.Dynamic
             private static int GetAlignedSize(int len)
             {
                 // the alignment of the array for storage of values (must be a power of two)
-                const int DataArrayAlignment = 8;
+                const int dataArrayAlignment = 8;
 
                 // round up and then mask off lower bits
-                return (len + (DataArrayAlignment - 1)) & ~(DataArrayAlignment - 1);
+                return (len + (dataArrayAlignment - 1)) & ~(dataArrayAlignment - 1);
             }
         }
 

@@ -565,8 +565,8 @@ namespace System.Numerics
         private static ReverseStringBuilder CreateBuilder(BigInteger value, NumberFormatInfo info, bool decimalFmt, int digits)
         {
             // First convert to base 10^9.
-            const uint NumericBase = 1000000000; // 10^9
-            const int NumericBaseLog10 = 9;
+            const uint numericBase = 1000000000; // 10^9
+            const int numericBaseLog10 = 9;
             var sourceLength = Length(value.InternalBits);
             int maxConvertedLength;
             try
@@ -589,8 +589,8 @@ namespace System.Numerics
                 {
                     ref var current = ref converted[convertedIndex];
                     var cipherBlock = NumericHelper.BuildUInt64(current, carry);
-                    current = (uint)(cipherBlock % NumericBase);
-                    carry = (uint)(cipherBlock / NumericBase);
+                    current = (uint)(cipherBlock % numericBase);
+                    carry = (uint)(cipherBlock / numericBase);
                 }
 
                 if (carry == 0)
@@ -598,8 +598,8 @@ namespace System.Numerics
                     continue;
                 }
 
-                converted[convertedLength++] = carry % NumericBase;
-                carry /= NumericBase;
+                converted[convertedLength++] = carry % numericBase;
+                carry /= numericBase;
                 if (carry != 0)
                 {
                     converted[convertedLength++] = carry;
@@ -610,7 +610,7 @@ namespace System.Numerics
             try
             {
                 // Each uint contributes at most 9 digits to the decimal representation.
-                stringCapacity = checked(convertedLength * NumericBaseLog10);
+                stringCapacity = checked(convertedLength * numericBaseLog10);
             }
             catch (OverflowException e)
             {
@@ -642,7 +642,7 @@ namespace System.Numerics
             for (var stringIndex = 0; stringIndex < convertedLength - 1; stringIndex++)
             {
                 var cipherBlock = converted[stringIndex];
-                for (var cch = NumericBaseLog10; --cch >= 0;)
+                for (var cch = numericBaseLog10; --cch >= 0;)
                 {
                     result.Prepend((char)('0' + (cipherBlock % 10)));
                     cipherBlock /= 10;

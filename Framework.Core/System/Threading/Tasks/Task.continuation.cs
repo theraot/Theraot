@@ -689,30 +689,30 @@ namespace System.Threading.Tasks
         internal static void CreationOptionsFromContinuationOptions(TaskContinuationOptions continuationOptions, out TaskCreationOptions creationOptions, out InternalTaskOptions internalOptions)
         {
             // This is used a couple of times below
-            const TaskContinuationOptions NotOnAnything = TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.NotOnRanToCompletion;
-            const TaskContinuationOptions CreationOptionsMask = TaskContinuationOptions.PreferFairness | TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach | TaskContinuationOptions.HideScheduler | TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.RunContinuationsAsynchronously;
+            const TaskContinuationOptions notOnAnything = TaskContinuationOptions.NotOnCanceled | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.NotOnRanToCompletion;
+            const TaskContinuationOptions creationOptionsMask = TaskContinuationOptions.PreferFairness | TaskContinuationOptions.LongRunning | TaskContinuationOptions.DenyChildAttach | TaskContinuationOptions.HideScheduler | TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.RunContinuationsAsynchronously;
             // Check that LongRunning and ExecuteSynchronously are not specified together
-            const TaskContinuationOptions IllegalMask = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.LongRunning;
+            const TaskContinuationOptions illegalMask = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.LongRunning;
 
-            if ((continuationOptions & IllegalMask) == IllegalMask)
+            if ((continuationOptions & illegalMask) == illegalMask)
             {
                 throw new ArgumentOutOfRangeException(nameof(continuationOptions), "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.");
             }
 
             // Check that no illegal options were specified
-            if ((continuationOptions & ~(CreationOptionsMask | NotOnAnything | TaskContinuationOptions.LazyCancellation | TaskContinuationOptions.ExecuteSynchronously)) != 0)
+            if ((continuationOptions & ~(creationOptionsMask | notOnAnything | TaskContinuationOptions.LazyCancellation | TaskContinuationOptions.ExecuteSynchronously)) != 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(continuationOptions));
             }
 
             // Check that we didn't specify "not on anything"
-            if ((continuationOptions & NotOnAnything) == NotOnAnything)
+            if ((continuationOptions & notOnAnything) == notOnAnything)
             {
                 throw new ArgumentOutOfRangeException(nameof(continuationOptions), "The specified TaskContinuationOptions excluded all continuation kinds.");
             }
 
             // This passes over all but LazyCancellation, which has no representation in TaskCreationOptions
-            creationOptions = (TaskCreationOptions)(continuationOptions & CreationOptionsMask);
+            creationOptions = (TaskCreationOptions)(continuationOptions & creationOptionsMask);
             // internalOptions has at least ContinuationTask ...
             internalOptions = InternalTaskOptions.ContinuationTask;
             // ... and possibly LazyCancellation

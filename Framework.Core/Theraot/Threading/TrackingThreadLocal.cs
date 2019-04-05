@@ -13,7 +13,7 @@ namespace Theraot.Threading
     [DebuggerDisplay("IsValueCreated={IsValueCreated}")]
     public sealed class TrackingThreadLocal<T> : IThreadLocal<T>, ICacheNeedle<T>, IObserver<T>
     {
-        private const int MaxProbingHint = 4;
+        private const int _maxProbingHint = 4;
 
         private int _disposing;
         private ThreadSafeDictionary<UniqueId, INeedle<T>> _slots;
@@ -22,7 +22,7 @@ namespace Theraot.Threading
         public TrackingThreadLocal(Func<T> valueFactory)
         {
             _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
-            _slots = new ThreadSafeDictionary<UniqueId, INeedle<T>>(MaxProbingHint);
+            _slots = new ThreadSafeDictionary<UniqueId, INeedle<T>>(_maxProbingHint);
         }
 
         public bool TryGetValue(out T value)
