@@ -9,7 +9,10 @@ namespace System.Threading.Tasks
     {
         public static bool TrySetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken token)
         {
-            if (taskCompletionSource == null) throw new ArgumentNullException(nameof(taskCompletionSource));
+            if (taskCompletionSource == null)
+            {
+                throw new ArgumentNullException(nameof(taskCompletionSource));
+            }
             return TrySetCanceledCachedDelegate<T>.TrySetCanceled(taskCompletionSource, token);
         }
 
