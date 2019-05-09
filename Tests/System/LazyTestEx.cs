@@ -60,6 +60,7 @@ namespace MonoTests.System
         [Test]
         public void ConstructorWithNull()
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new Lazy<int>(null)));
         }
 
@@ -97,30 +98,31 @@ namespace MonoTests.System
                 Interlocked.Increment(ref control);
                 return 5;
             });
-            using (var manual = new ManualResetEvent(false))
+            var manual = new ManualResetEvent[1];
+            using (manual[0] = new ManualResetEvent(false))
             {
                 var threadA = new Thread(() =>
                 {
-                    manual.WaitOne();
+                    manual[0].WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
                 });
                 var threadB = new Thread(() =>
                 {
-                    manual.WaitOne();
+                    manual[0].WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
                 });
                 var threadC = new Thread(() =>
                 {
-                    manual.WaitOne();
+                    manual[0].WaitOne();
                     GC.KeepAlive(needle.Value);
                     Interlocked.Increment(ref threadDone);
                 });
                 threadA.Start();
                 threadB.Start();
                 threadC.Start();
-                manual.Set();
+                manual[0].Set();
                 threadA.Join();
                 threadB.Join();
                 threadC.Join();

@@ -33,7 +33,7 @@ namespace Tests.Helpers
 {
     public static class ParallelTestHelper
     {
-        private const int DefaultRepetitionCount = 50;
+        private const int _defaultRepetitionCount = 50;
 
         public static void ParallelStressTest(ThreadStart action, int threadCount)
         {
@@ -57,7 +57,7 @@ namespace Tests.Helpers
 
         public static void Repeat(Action action)
         {
-            Repeat(action, DefaultRepetitionCount);
+            Repeat(action, _defaultRepetitionCount);
         }
 
         public static void Repeat(Action action, int repetitionCount)

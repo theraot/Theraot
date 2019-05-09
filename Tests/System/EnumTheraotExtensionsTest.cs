@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using Tests.Helpers;
 
 namespace Tests.System
 {
@@ -23,13 +24,16 @@ namespace Tests.System
         [Test]
         public void ThrowsOnNullEnum()
         {
+            // ReSharper disable once PossibleNullReferenceException
+            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<NullReferenceException>(() => ((Enum)null).HasFlag(WithZero.One));
         }
 
         [Test]
         public void ThrowsOnNullValue()
         {
-            Assert.Throws<ArgumentNullException>(() => WithZero.One.HasFlag((Enum)null));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            AssertEx.Throws<ArgumentNullException>(() => WithZero.One.HasFlag(null));
         }
 
         [Test]

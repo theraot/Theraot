@@ -42,32 +42,32 @@ namespace Tests.Helpers
                 () =>
                 {
                     var amount = -1;
-                    const int ItemsCount = 10;
-                    const int ThreadCount = 5;
+                    const int itemsCount = 10;
+                    const int threadCount = 5;
 
                     ParallelTestHelper.ParallelStressTest
                     (
                         () =>
                         {
                             var t = Interlocked.Increment(ref amount);
-                            for (var i = ItemsCount - 1; i >= 0; i--)
+                            for (var i = itemsCount - 1; i >= 0; i--)
                             {
                                 collection.TryAdd(t);
                             }
                         },
-                        ThreadCount
+                        threadCount
                     );
 
-                    Assert.AreEqual(ThreadCount * ItemsCount, collection.Count, "#-1");
-                    var values = new int[ThreadCount];
+                    Assert.AreEqual(threadCount * itemsCount, collection.Count, "#-1");
+                    var values = new int[threadCount];
                     while (collection.TryTake(out var temp))
                     {
                         values[temp]++;
                     }
 
-                    for (var i = 0; i < ThreadCount; i++)
+                    for (var i = 0; i < threadCount; i++)
                     {
-                        Assert.AreEqual(ItemsCount, values[i], "#" + i);
+                        Assert.AreEqual(itemsCount, values[i], "#" + i);
                     }
                 }
             );
@@ -79,11 +79,11 @@ namespace Tests.Helpers
             (
                 () =>
                 {
-                    const int Count = 10;
-                    const int Threads = 5;
-                    const int Delta = 5;
+                    const int count = 10;
+                    const int threads = 5;
+                    const int delta = 5;
 
-                    for (var i = 0; i < (Count + Delta) * Threads; i++)
+                    for (var i = 0; i < (count + delta) * threads; i++)
                     {
                         while (!collection.TryAdd(i))
                         {
@@ -93,14 +93,14 @@ namespace Tests.Helpers
 
                     var state = true;
 
-                    Assert.AreEqual((Count + Delta) * Threads, collection.Count, "#0");
+                    Assert.AreEqual((count + delta) * threads, collection.Count, "#0");
 
                     ParallelTestHelper.ParallelStressTest
                     (
                         () =>
                         {
                             var check = true;
-                            for (var i = 0; i < Count; i++)
+                            for (var i = 0; i < count; i++)
                             {
                                 check &= collection.TryTake(out _);
                                 // try again in case it was a transient failure
@@ -112,11 +112,11 @@ namespace Tests.Helpers
 
                             state &= check;
                         },
-                        Threads
+                        threads
                     );
 
                     Assert.IsTrue(state, "#1");
-                    Assert.AreEqual(Delta * Threads, collection.Count, "#2");
+                    Assert.AreEqual(delta * threads, collection.Count, "#2");
 
                     var actual = string.Empty;
                     var builder = new StringBuilder();
@@ -128,7 +128,7 @@ namespace Tests.Helpers
 
                     actual = builder.ToString();
 
-                    var range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : Count * Threads, Delta * Threads);
+                    var range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : count * threads, delta * threads);
                     if (order == CheckOrderingType.Reversed)
                     {
                         range = range.Reverse();

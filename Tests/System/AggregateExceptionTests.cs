@@ -47,8 +47,8 @@ namespace MonoTests.System
         [Test]
         public void SimpleInnerExceptionTestCase()
         {
-            const string Message = "Foo";
-            var inner = new ApplicationException(Message);
+            const string message = "Foo";
+            var inner = new ApplicationException(message);
             var ex = new AggregateException(inner);
 
             Assert.IsNotNull(ex.InnerException);
@@ -57,7 +57,7 @@ namespace MonoTests.System
             Assert.AreEqual(inner, ex.InnerException);
             Assert.AreEqual(1, ex.InnerExceptions.Count);
             Assert.AreEqual(inner, ex.InnerExceptions[0]);
-            Assert.AreEqual(Message, ex.InnerException.Message);
+            Assert.AreEqual(message, ex.InnerException.Message);
             Assert.AreEqual(inner, ex.GetBaseException());
         }
 
@@ -81,12 +81,14 @@ namespace MonoTests.System
         public void InitializationWithNullValuesTest()
         {
             Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((IEnumerable<Exception>)null)));
+            // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((Exception[])null)));
         }
 
         [Test]
         public void Handle_Invalid()
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(() => _e.Handle(null));
         }
 

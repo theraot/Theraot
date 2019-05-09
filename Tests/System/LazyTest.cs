@@ -41,6 +41,7 @@ namespace MonoTests.System
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 var lazy = new Lazy<int>(null);
                 GC.KeepAlive(lazy);
             });
@@ -51,6 +52,7 @@ namespace MonoTests.System
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 var lazy = new Lazy<int>(null, false);
                 GC.KeepAlive(lazy);
             });
@@ -395,13 +397,15 @@ namespace MonoTests.System
         [Test]
         public void ConcurrentInitialization()
         {
-            using (var init = new AutoResetEvent(false))
+            var init = new AutoResetEvent[1];
+            using (init[0] = new AutoResetEvent(false))
             {
-                using (var e1Set = new AutoResetEvent(false))
+                var e1Set = new AutoResetEvent[1];
+                using (e1Set[0] = new AutoResetEvent(false))
                 {
                     var lazy = new Lazy<string>(() =>
                     {
-                        init.Set();
+                        init[0].Set();
                         Thread.Sleep(10);
                         throw new ApplicationException();
                     });
@@ -416,12 +420,12 @@ namespace MonoTests.System
                         catch (Exception ex)
                         {
                             e1 = ex;
-                            e1Set.Set();
+                            e1Set[0].Set();
                         }
                     });
                     thread.Start();
 
-                    Assert.IsTrue(init.WaitOne(3000), "#1");
+                    Assert.IsTrue(init[0].WaitOne(3000), "#1");
 
                     Exception e2 = null;
                     try
@@ -443,7 +447,7 @@ namespace MonoTests.System
                         e3 = ex;
                     }
 
-                    Assert.IsTrue(e1Set.WaitOne(3000), "#2");
+                    Assert.IsTrue(e1Set[0].WaitOne(3000), "#2");
                     Assert.AreSame(e1, e2, "#3");
                     Assert.AreSame(e1, e3, "#4");
                 }
