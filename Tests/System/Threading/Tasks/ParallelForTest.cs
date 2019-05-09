@@ -260,11 +260,9 @@ namespace System.Threading.Tasks.Tests
 
         #region ParallelForeach Overloads - with partitioner and without
 
-        /// <summary>
-        /// ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,Action<TSource> body)
-        /// </summary>
         private void ParallelForEach()
         {
+            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,Action<TSource> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -278,11 +276,9 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,Action<T, ParallelLoopState> body)
-        /// </summary>
         private void ParallelForEachWithState()
         {
+            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,Action<T, ParallelLoopState> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -296,11 +292,9 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,Action<TSource, ParallelLoopState, Int64> body)
-        /// </summary>
         private void ParallelForEachWithIndexAndState()
         {
+            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,Action<TSource, ParallelLoopState, Int64> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -314,14 +308,12 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-        ///                                                             Func<TLocal> threadLocalInitlocalInit,
-        ///                                                             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-        ///                                                             Action<TLocal> threadLocalFinallylocalFinally)
-        /// </summary>
         private void ParallelForeachWithLocal()
         {
+            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
+            //                                                             Func<TLocal> threadLocalInitlocalInit,
+            //                                                             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
+            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -335,14 +327,12 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-        ///                                                             Func<TLocal> threadLocalInitlocalInit,
-        ///                                                             Func<TSource, ParallelLoopState, Int64, TLocal, TLocal> body,
-        ///                                                             Action<TLocal> threadLocalFinallylocalFinally)
-        /// </summary>
         private void ParallelForeachWithLocalAndIndex()
         {
+            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
+            //                                                             Func<TLocal> threadLocalInitlocalInit,
+            //                                                             Func<TSource, ParallelLoopState, Int64, TLocal, TLocal> body,
+            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -356,11 +346,9 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,ParallelOptions parallelOptions, Action<TSource> body)
-        /// </summary>
         private void ParallelForEachWithOptions()
         {
+            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,ParallelOptions parallelOptions, Action<TSource> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -374,11 +362,9 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source, ParallelOptions parallelOptions, Action<T, ParallelLoopState> body)
-        /// </summary>
         private void ParallelForEachWithOptionsAndState()
         {
+            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source, ParallelOptions parallelOptions, Action<T, ParallelLoopState> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -392,11 +378,9 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source, ParallelOptions parallelOptions,, Action<TSource, ParallelLoopState, Int64> body)
-        /// </summary>
         private void ParallelForEachWithOptionsAndIndexAndState()
         {
+            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source, ParallelOptions parallelOptions,, Action<TSource, ParallelLoopState, Int64> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -410,15 +394,13 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-        ///                                                             ParallelOptions parallelOptions,
-        ///                                                             Func<TLocal> threadLocalInitlocalInit,
-        ///                                                             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-        ///                                                             Action<TLocal> threadLocalFinallylocalFinally)
-        /// </summary>
         private void ParallelForEachWithOptionsAndLocal()
         {
+            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
+            //                                                             ParallelOptions parallelOptions,
+            //                                                             Func<TLocal> threadLocalInitlocalInit,
+            //                                                             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
+            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -432,15 +414,15 @@ namespace System.Threading.Tasks.Tests
             }
         }
 
-        /// <summary>
-        /// public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-        ///                                                             ParallelOptions parallelOptions,
-        ///                                                             Func<TLocal> threadLocalInitlocalInit,
-        ///                                                             Func<TSource, ParallelLoopState, Int64, TLocal, TLocal> body,
-        ///                                                             Action<TLocal> threadLocalFinallylocalFinally)
-        /// </summary>
         private void ParallelForEachWithOptionsAndLocalAndIndex()
         {
+            // <summary>
+            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
+            //                                                             ParallelOptions parallelOptions,
+            //                                                             Func<TLocal> threadLocalInitlocalInit,
+            //                                                             Func<TSource, ParallelLoopState, Int64, TLocal, TLocal> body,
+            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
+            // </summary>
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
