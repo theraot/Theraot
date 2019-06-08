@@ -48,7 +48,7 @@ namespace Theraot.Core
         ///     Gets or sets the current position withing the underlying string.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">
-        ///     The position must be greater than zero and less or equal to the length of
+        ///     The position must be greater or equal to zero and less or equal to the length of
         ///     the underlying string.
         /// </exception>
         public int Position
@@ -57,13 +57,13 @@ namespace Theraot.Core
 
             set
             {
-                if (value > 0 && value <= _length)
+                if (value >= 0 && value <= _length)
                 {
                     _position = value;
                 }
                 else
                 {
-                    throw new ArgumentOutOfRangeException(nameof(value), "The position must be greater than zero and less or equal to the length of the underlying string.");
+                    throw new ArgumentOutOfRangeException(nameof(value), "The position must be greater or equal to zero and less or equal to the length of the underlying string.");
                 }
             }
         }
