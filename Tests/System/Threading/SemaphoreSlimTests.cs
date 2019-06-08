@@ -4,8 +4,13 @@
 
 using NUnit.Framework;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading.Tasks;
+
+#if LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+
+using System.Reflection;
+
+#endif
 
 namespace System.Threading.Tests
 {
@@ -201,8 +206,7 @@ namespace System.Threading.Tests
             {
                 try
                 {
-                    bool result;
-                    result = timeout is TimeSpan ? semaphore.Wait((TimeSpan)timeout) : semaphore.Wait((int)timeout);
+                    var result = timeout is TimeSpan timeSpan ? semaphore.Wait(timeSpan) : semaphore.Wait((int)timeout);
                     Assert.AreEqual(returnValue, result);
                     if (result)
                     {
@@ -234,8 +238,7 @@ namespace System.Threading.Tests
             {
                 try
                 {
-                    bool result;
-                    result = timeout is TimeSpan ? semaphore.WaitAsync((TimeSpan)timeout).Result : semaphore.WaitAsync((int)timeout).Result;
+                    var result = timeout is TimeSpan timeSpan ? semaphore.WaitAsync(timeSpan).Result : semaphore.WaitAsync((int)timeout).Result;
                     Assert.AreEqual(returnValue, result);
                     if (result)
                     {
@@ -263,32 +266,32 @@ namespace System.Threading.Tests
                 {
                     using (var mre = new ManualResetEvent(false))
                     {
-                        var semaphorea = new[] { semaphore };
-                        var countera = new[] { counter };
-                        var mrea = new[] { mre };
+                        var semaphores = new[] { semaphore };
+                        var counters = new[] { counter };
+                        var manualResetEvents = new[] { mre };
                         var nonZeroObserved = false;
 
-                        const int AsyncActions = 20;
-                        var remAsyncActions = AsyncActions;
-                        Func<int, Task> doWorkAsync = async i =>
+                        const int asyncActions = 20;
+                        var remAsyncActions = asyncActions;
+                        Func<int, Task> doWorkAsync = async _ =>
                         {
-                            await semaphorea[0].WaitAsync();
-                            nonZeroObserved |= countera[0].Value > 0;
+                            await semaphores[0].WaitAsync();
+                            nonZeroObserved |= counters[0].Value > 0;
 
-                            countera[0].Value = countera[0].Value + 1;
-                            semaphorea[0].Release();
-                            countera[0].Value = countera[0].Value - 1;
+                            counters[0].Value = counters[0].Value + 1;
+                            semaphores[0].Release();
+                            counters[0].Value = counters[0].Value - 1;
 
                             if (Interlocked.Decrement(ref remAsyncActions) == 0)
                             {
-                                mrea[0].Set();
+                                manualResetEvents[0].Set();
                             }
                         };
 
                         semaphore.Wait();
-                        for (var i = 0; i < AsyncActions; i++)
+                        for (var i = 0; i < asyncActions; i++)
                         {
-                            doWorkAsync(i);
+                            doWorkAsync.Invoke(i);
                         }
                         semaphore.Release();
 
@@ -341,37 +344,33 @@ namespace System.Threading.Tests
         {
             if (action == SemaphoreSlimActions.Wait)
             {
-                if (param is TimeSpan)
+                if (param is TimeSpan timeSpan)
                 {
-                    return semaphore.Wait((TimeSpan)param);
+                    return semaphore.Wait(timeSpan);
                 }
-                if (param is int)
+                if (param is int milliseconds)
                 {
-                    return semaphore.Wait((int)param);
+                    return semaphore.Wait(milliseconds);
                 }
                 semaphore.Wait();
                 return null;
             }
             if (action == SemaphoreSlimActions.WaitAsync)
             {
-                if (param is TimeSpan)
+                if (param is TimeSpan timeSpan)
                 {
-                    return semaphore.WaitAsync((TimeSpan)param).Result;
+                    return semaphore.WaitAsync(timeSpan).Result;
                 }
-                if (param is int)
+                if (param is int milliseconds)
                 {
-                    return semaphore.WaitAsync((int)param).Result;
+                    return semaphore.WaitAsync(milliseconds).Result;
                 }
                 semaphore.WaitAsync().Wait();
                 return null;
             }
             if (action == SemaphoreSlimActions.Release)
             {
-                if (param != null)
-                {
-                    return semaphore.Release((int)param);
-                }
-                return semaphore.Release();
+                return param != null ? semaphore.Release((int)param) : semaphore.Release();
             }
             if (action == SemaphoreSlimActions.Dispose)
             {
@@ -382,12 +381,7 @@ namespace System.Threading.Tests
             {
                 return semaphore.CurrentCount;
             }
-            if (action == SemaphoreSlimActions.AvailableWaitHandle)
-            {
-                return semaphore.AvailableWaitHandle;
-            }
-
-            return null;
+            return action == SemaphoreSlimActions.AvailableWaitHandle ? semaphore.AvailableWaitHandle : null;
         }
 
         /// <summary>
@@ -502,13 +496,14 @@ namespace System.Threading.Tests
             public async Task<IDisposable> AcquireAsync(TimeSpan timeout, CancellationToken cancellation)
             {
                 var succeeded = await _semaphore.WaitAsync(timeout, cancellation);
-                if (!succeeded)
+                if (succeeded)
                 {
-                    cancellation.ThrowIfCancellationRequested();
-                    throw new TimeoutException($"Attempt to take lock timed out in {timeout}.");
+                    return new DisposableSemaphore(_semaphore);
                 }
 
-                return new DisposableSemaphore(_semaphore);
+                cancellation.ThrowIfCancellationRequested();
+                throw new TimeoutException($"Attempt to take lock timed out in {timeout}.");
+
             }
 
             private class DisposableSemaphore : IDisposable
