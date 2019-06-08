@@ -89,6 +89,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         // We should not rely on ConcurrentDictionary ordering
         // .NET CORE 2.0 seems to be unstable
         [Test]
+        [Category("NotWorking")]
         public void EditWhileIterating()
         {
             var dictionary = new ConcurrentDictionary<string, string>();
