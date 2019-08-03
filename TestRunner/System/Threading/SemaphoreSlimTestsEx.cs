@@ -157,7 +157,7 @@ namespace TestRunner.System.Threading
             var first = true;
             foreach (var entry in logCount)
             {
-                Console.WriteLine(entry.ToString());
+                Console.WriteLine(entry);
                 if (entry == -1)
                 {
                     first = true;

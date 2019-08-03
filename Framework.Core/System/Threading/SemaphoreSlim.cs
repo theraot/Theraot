@@ -8,7 +8,7 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    [DebuggerDisplay("Current Count = {CurrentCount}")]
+    [DebuggerDisplay("Current Count = {" + nameof(CurrentCount) + "}")]
     public class SemaphoreSlim : IDisposable
     {
         private readonly int? _maxCount;
@@ -281,7 +281,7 @@ namespace System.Threading
                     continue;
                 }
 
-                if (TryOffset(-1, out var dummy))
+                if (TryOffset(-1, out var _))
                 {
                     waiter.SetResult(true);
                 }

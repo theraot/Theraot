@@ -539,7 +539,7 @@ namespace System.Dynamic
         }
 
         [DebuggerTypeProxy(typeof(KeyCollectionDebugView))]
-        [DebuggerDisplay("Count = {Count}")]
+        [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
         private class KeyCollection : ICollection<string>
         {
             private readonly ExpandoObject _expando;
@@ -926,7 +926,7 @@ namespace System.Dynamic
         }
 
         [DebuggerTypeProxy(typeof(ValueCollectionDebugView))]
-        [DebuggerDisplay("Count = {Count}")]
+        [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
         private class ValueCollection : ICollection<object>
         {
             private readonly ExpandoObject _expando;

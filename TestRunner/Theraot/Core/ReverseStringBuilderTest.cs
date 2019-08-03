@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CA1062 // Validate arguments of public methods
+
+using System;
 using Theraot.Core;
 
 namespace TestRunner.Theraot.Core

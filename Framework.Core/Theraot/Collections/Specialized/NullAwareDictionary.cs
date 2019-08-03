@@ -15,7 +15,7 @@ namespace Theraot.Collections.Specialized
 {
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         private readonly IEqualityComparer<TValue> _valueComparer;
@@ -27,11 +27,11 @@ namespace Theraot.Collections.Specialized
         {
             _wrapped = new DictionaryEx<TKey, TValue>();
             _hasNull = false;
-            _valueForNull = new[] {default(TValue)};
+            _valueForNull = new[] { default(TValue) };
             _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<TKey>(new[] {default(TKey)}, _wrapped.Keys, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
                 Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
@@ -47,11 +47,11 @@ namespace Theraot.Collections.Specialized
         {
             _wrapped = new DictionaryEx<TKey, TValue>(comparer);
             _hasNull = false;
-            _valueForNull = new[] {default(TValue)};
+            _valueForNull = new[] { default(TValue) };
             _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<TKey>(new[] {default(TKey)}, _wrapped.Keys, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
                 Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
@@ -71,11 +71,11 @@ namespace Theraot.Collections.Specialized
             }
 
             _hasNull = false;
-            _valueForNull = new[] {default(TValue)};
+            _valueForNull = new[] { default(TValue) };
             _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<TKey>(new[] {default(TKey)}, _wrapped.Keys, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey) }, _wrapped.Keys, () => _hasNull, null);
                 Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
@@ -281,7 +281,7 @@ namespace Theraot.Collections.Specialized
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new[] {new KeyValuePair<TKey, TValue>(default, _valueForNull[0])}, result);
+                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new[] { new KeyValuePair<TKey, TValue>(default, _valueForNull[0]) }, result);
             }
 
             dictionary = result.ToArray();
@@ -290,7 +290,7 @@ namespace Theraot.Collections.Specialized
         private void ClearForNull()
         {
             _hasNull = false;
-            _valueForNull = new[] {default(TValue)};
+            _valueForNull = new[] { default(TValue) };
         }
 
         private void SetForNull(TValue value)

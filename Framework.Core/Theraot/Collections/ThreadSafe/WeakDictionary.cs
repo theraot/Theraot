@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
 {
     // TODO: this is actually a Weak Key dictionary useful to extend objects, there could also be Weak Value dictionaries useful for caches, and fully weak dictionary useful for the combination.
     [DebuggerNonUserCode]
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : class
     {

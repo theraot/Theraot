@@ -29,7 +29,7 @@
     <Rule Id="CA1027" Action="Warning" />
     <Rule Id="CA1028" Action="Warning" />
     <Rule Id="CA1030" Action="Warning" />
-    <Rule Id="CA1031" Action="Warning" />
+    <Rule Id="CA1031" Action="Hidden" />
     <Rule Id="CA1032" Action="Warning" />
     <Rule Id="CA1033" Action="Warning" />
     <Rule Id="CA1034" Action="Warning" />

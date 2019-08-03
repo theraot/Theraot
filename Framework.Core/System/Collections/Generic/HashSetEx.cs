@@ -13,7 +13,7 @@ namespace System.Collections.Generic
 {
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class HashSetEx<T> : HashSet<T>
 #if NET35
         , ISet<T>
@@ -46,6 +46,7 @@ namespace System.Collections.Generic
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
+
         protected HashSetEx(SerializationInfo info, StreamingContext context)
             : base(info, context)
 #else

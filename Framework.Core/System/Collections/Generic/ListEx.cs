@@ -2,14 +2,16 @@
 using System.Runtime.CompilerServices;
 
 #if LESSTHAN_NET45
+
 using System.Collections.ObjectModel;
+
 #endif
 
 namespace System.Collections.Generic
 {
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public sealed
 #if LESSTHAN_NET45
         partial
@@ -44,12 +46,14 @@ namespace System.Collections.Generic
     }
 
 #if LESSTHAN_NET45
+
     public sealed partial class ListEx<T>
     {
-        public new ReadOnlyCollectionEx<T> AsReadOnly ()
+        public new ReadOnlyCollectionEx<T> AsReadOnly()
         {
             return new ReadOnlyCollectionEx<T>(this);
         }
     }
+
 #endif
 }

@@ -88,7 +88,7 @@ namespace System.Linq.Expressions.Interpreter
         public static DebugInfo GetMatchingDebugInfo(DebugInfo[] debugInfos, int index)
         {
             //Create a faked DebugInfo to do the search
-            var d = new DebugInfo {Index = index};
+            var d = new DebugInfo { Index = index };
 
             //to find the closest debug info before the current index
 
@@ -317,8 +317,10 @@ namespace System.Linq.Expressions.Interpreter
             {
                 case FieldInfo fi:
                     return fi.FieldType;
+
                 case PropertyInfo pi:
                     return pi.PropertyType;
+
                 default:
                     throw new InvalidOperationException("MemberNotFieldOrProperty");
             }
@@ -367,9 +369,9 @@ namespace System.Linq.Expressions.Interpreter
 
                 default:
                     break;
-                // ExpressionType.Unbox does have the behaviour writeback is used to simulate, but
-                // it doesn't need explicit writeback to produce it, so include it in the default
-                // false cases.
+                    // ExpressionType.Unbox does have the behaviour writeback is used to simulate, but
+                    // it doesn't need explicit writeback to produce it, so include it in the default
+                    // false cases.
             }
 
             return false;
@@ -496,12 +498,7 @@ namespace System.Linq.Expressions.Interpreter
                         Debug.Assert(member.Member is PropertyInfo);
                         var property = (PropertyInfo)member.Member;
                         Instructions.EmitCall(property.GetGetMethod(true));
-                        if (property.CanWrite)
-                        {
-                            return new PropertyByRefUpdater(memberTemp, property, index);
-                        }
-
-                        return null;
+                        return property.CanWrite ? new PropertyByRefUpdater(memberTemp, property, index) : null;
 
                     case ExpressionType.Call:
                         // An array index of a multi-dimensional array is represented by a call to Array.Get,
@@ -552,27 +549,35 @@ namespace System.Linq.Expressions.Interpreter
                 case ExpressionType.Add:
                     Instructions.EmitAdd(left.Type, false);
                     break;
+
                 case ExpressionType.AddChecked:
                     Instructions.EmitAdd(left.Type, true);
                     break;
+
                 case ExpressionType.Subtract:
                     Instructions.EmitSub(left.Type, false);
                     break;
+
                 case ExpressionType.SubtractChecked:
                     Instructions.EmitSub(left.Type, true);
                     break;
+
                 case ExpressionType.Multiply:
                     Instructions.EmitMul(left.Type, false);
                     break;
+
                 case ExpressionType.MultiplyChecked:
                     Instructions.EmitMul(left.Type, true);
                     break;
+
                 case ExpressionType.Divide:
                     Instructions.EmitDiv(left.Type);
                     break;
+
                 case ExpressionType.Modulo:
                     Instructions.EmitModulo(left.Type);
                     break;
+
                 default: throw ContractUtils.Unreachable;
             }
         }
@@ -993,7 +998,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 CompileMethodCallExpression
                 (
-                    Expression.Call(node.Conversion, node.Conversion.Type.GetInvokeMethod(), new Expression[] {temp})
+                    Expression.Call(node.Conversion, node.Conversion.Type.GetInvokeMethod(), new Expression[] { temp })
                 );
 
                 _locals.UndefineLocal(local, Instructions.Count);
@@ -1024,15 +1029,19 @@ namespace System.Linq.Expressions.Interpreter
                 case ExpressionType.LessThan:
                     Instructions.EmitLessThan(left.Type, node.IsLiftedToNull);
                     break;
+
                 case ExpressionType.LessThanOrEqual:
                     Instructions.EmitLessThanOrEqual(left.Type, node.IsLiftedToNull);
                     break;
+
                 case ExpressionType.GreaterThan:
                     Instructions.EmitGreaterThan(left.Type, node.IsLiftedToNull);
                     break;
+
                 case ExpressionType.GreaterThanOrEqual:
                     Instructions.EmitGreaterThanOrEqual(left.Type, node.IsLiftedToNull);
                     break;
+
                 default: throw ContractUtils.Unreachable;
             }
         }
@@ -1234,7 +1243,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    Instructions.EmitByRefCall(method, parameters, new[] {updater});
+                    Instructions.EmitByRefCall(method, parameters, new[] { updater });
                     updater.UndefineTemps(Instructions, _locals);
                 }
 
@@ -1923,7 +1932,7 @@ namespace System.Linq.Expressions.Interpreter
                 var updater = CompileAddress(@object, -1);
                 if (updater != null)
                 {
-                    updaters = new List<ByRefUpdater> {updater};
+                    updaters = new List<ByRefUpdater> { updater };
                 }
             }
 
@@ -2141,15 +2150,19 @@ namespace System.Linq.Expressions.Interpreter
                 case ExpressionType.SubtractChecked:
                     CompileBinaryExpression(expr);
                     break;
+
                 case ExpressionType.AndAlso:
                     CompileAndAlsoBinaryExpression(expr);
                     break;
+
                 case ExpressionType.OrElse:
                     CompileOrElseBinaryExpression(expr);
                     break;
+
                 case ExpressionType.Coalesce:
                     CompileCoalesceBinaryExpression(expr);
                     break;
+
                 case ExpressionType.ArrayLength:
                 case ExpressionType.Decrement:
                 case ExpressionType.Increment:
@@ -2163,92 +2176,121 @@ namespace System.Linq.Expressions.Interpreter
                 case ExpressionType.UnaryPlus:
                     CompileUnaryExpression(expr);
                     break;
+
                 case ExpressionType.Convert:
                 case ExpressionType.ConvertChecked:
                     CompileConvertUnaryExpression(expr);
                     break;
+
                 case ExpressionType.Quote:
                     CompileQuoteUnaryExpression(expr);
                     break;
+
                 case ExpressionType.Throw:
                     CompileThrowUnaryExpression(expr, expr.Type == typeof(void));
                     break;
+
                 case ExpressionType.Unbox:
                     CompileUnboxUnaryExpression(expr);
                     break;
+
                 case ExpressionType.Call:
                     CompileMethodCallExpression(expr);
                     break;
+
                 case ExpressionType.Conditional:
                     CompileConditionalExpression(expr, expr.Type == typeof(void));
                     break;
+
                 case ExpressionType.Constant:
                     CompileConstantExpression(expr);
                     break;
+
                 case ExpressionType.Invoke:
                     CompileInvocationExpression(expr);
                     break;
+
                 case ExpressionType.Lambda:
                     CompileLambdaExpression(expr);
                     break;
+
                 case ExpressionType.ListInit:
                     CompileListInitExpression(expr);
                     break;
+
                 case ExpressionType.MemberAccess:
                     CompileMemberExpression(expr);
                     break;
+
                 case ExpressionType.MemberInit:
                     CompileMemberInitExpression(expr);
                     break;
+
                 case ExpressionType.New:
                     CompileNewExpression(expr);
                     break;
+
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
                     CompileNewArrayExpression(expr);
                     break;
+
                 case ExpressionType.Parameter:
                     CompileParameterExpression(expr);
                     break;
+
                 case ExpressionType.TypeIs:
                     CompileTypeIsExpression(expr);
                     break;
+
                 case ExpressionType.TypeEqual:
                     CompileTypeEqualExpression(expr);
                     break;
+
                 case ExpressionType.Assign:
                     CompileAssignBinaryExpression(expr, expr.Type == typeof(void));
                     break;
+
                 case ExpressionType.Block:
                     CompileBlockExpression(expr, expr.Type == typeof(void));
                     break;
+
                 case ExpressionType.DebugInfo:
                     CompileDebugInfoExpression(expr);
                     break;
+
                 case ExpressionType.Default:
                     CompileDefaultExpression(expr);
                     break;
+
                 case ExpressionType.Goto:
                     CompileGotoExpression(expr);
                     break;
+
                 case ExpressionType.Index:
                     CompileIndexExpression(expr);
                     break;
+
                 case ExpressionType.Label:
                     CompileLabelExpression(expr);
                     break;
+
                 case ExpressionType.RuntimeVariables:
                     CompileRuntimeVariablesExpression(expr);
                     break;
+
                 case ExpressionType.Loop:
                     CompileLoopExpression(expr);
                     break;
+
                 case ExpressionType.Switch:
                     CompileSwitchExpression(expr);
                     break;
+
                 case ExpressionType.Try:
                     CompileTryExpression(expr);
                     break;
+
                 default:
                     Compile(expr.ReduceAndCheck());
                     break;
@@ -3243,14 +3285,14 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (node.Variable != null)
                 {
-                    PushParameters(new[] {node.Variable});
+                    PushParameters(new[] { node.Variable });
                 }
 
                 Visit(node.Body);
                 Visit(node.Filter);
                 if (node.Variable != null)
                 {
-                    PopParameters(new[] {node.Variable});
+                    PopParameters(new[] { node.Variable });
                 }
 
                 return node;

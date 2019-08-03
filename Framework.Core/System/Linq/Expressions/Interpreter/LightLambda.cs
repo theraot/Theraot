@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CC0021 // Use nameof
 
 // Licensed to the .NET Foundation under one or more agreements.

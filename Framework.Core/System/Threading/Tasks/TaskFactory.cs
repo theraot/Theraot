@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
@@ -592,7 +593,7 @@ namespace System.Threading.Tasks
             return endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
         }
 
-        internal async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        internal static async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var task = new Task(() => endMethod(asyncResult), Task.InternalCurrentIfAttached(creationOptions), CancellationToken.None, creationOptions, InternalTaskOptions.None, scheduler);
             if (asyncResult.IsCompleted)
@@ -612,7 +613,7 @@ namespace System.Threading.Tasks
         private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state)
         {
             var source = new TaskCompletionSource<IAsyncResult>();
-            var canInvokeEnd = new[] {0};
+            var canInvokeEnd = new[] { 0 };
             var asyncResult = beginMethod(AsyncCallback, state);
             if (asyncResult?.CompletedSynchronously == true)
             {
@@ -635,7 +636,7 @@ namespace System.Threading.Tasks
         private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state, TaskCreationOptions creationOptions)
         {
             var source = new TaskCompletionSource<IAsyncResult>(creationOptions);
-            var canInvokeEnd = new[] {0};
+            var canInvokeEnd = new[] { 0 };
             var asyncResult = beginMethod(AsyncCallback, state);
             if (asyncResult?.CompletedSynchronously == true)
             {

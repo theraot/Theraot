@@ -363,7 +363,7 @@ namespace System.Threading.Tasks
 
             return value;
         }
-        
+
         /// <summary>
         ///     Attempts to transition the underlying
         ///     <see cref="T:System.Threading.Tasks.Task{TResult}" /> into the

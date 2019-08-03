@@ -10,7 +10,7 @@ namespace System.Collections.Concurrent
 {
     [Serializable]
     [ComVisible(false)]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public class ConcurrentBag<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         private ThreadSafeQueue<T> _wrapped;

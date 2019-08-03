@@ -64,7 +64,7 @@ namespace System.Collections
     // be specified.
     //
     [DebuggerTypeProxy(typeof(SortedListDebugView))]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [Serializable]
     public class SortedList : IDictionary, ICloneable
     {

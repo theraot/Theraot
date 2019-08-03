@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -12,7 +14,7 @@ using Theraot.Threading;
 namespace System.Collections.Concurrent
 {
     [ComVisible(false)]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class BlockingCollection<T> : ICollection, IDisposable, IReadOnlyCollection<T>
     {

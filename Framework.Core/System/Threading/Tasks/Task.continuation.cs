@@ -862,13 +862,14 @@ namespace System.Threading.Tasks
                         // asynchronous ones have been weeded out
                         tc.Run(this, canInlineContinuations);
                         break;
+
                     default:
-                    {
-                        Contract.Assert(currentContinuation is ITaskCompletionAction, "Expected continuation element to be Action, TaskContinuation, or ITaskContinuationAction");
-                        var action = (ITaskCompletionAction)currentContinuation;
-                        action.Invoke(this);
-                        break;
-                    }
+                        {
+                            Contract.Assert(currentContinuation is ITaskCompletionAction, "Expected continuation element to be Action, TaskContinuation, or ITaskContinuationAction");
+                            var action = (ITaskCompletionAction)currentContinuation;
+                            action.Invoke(this);
+                            break;
+                        }
                 }
             }
         }
@@ -1136,13 +1137,9 @@ namespace System.Threading.Tasks
                 default:
                     // The continuations may have already executed at this point
                     LockEnter(spinWait);
-                    if (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization)
-                    {
-                        return continuations;
-                    }
+                    return Volatile.Read(ref _continuationsStatus) == _continuationsInitialization ? continuations : null;
 
                     // It is being taken or has already been taken for execution
-                    return null;
             }
         }
     }

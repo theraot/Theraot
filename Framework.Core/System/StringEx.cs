@@ -1,4 +1,5 @@
-﻿#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+﻿#pragma warning disable CA1062 // Validate arguments of public methods
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System.Collections.Generic;
 using System.Linq;
@@ -390,17 +391,7 @@ namespace System
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
 
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-
-            if (separator is null)
-            {
-                separator = string.Empty;
-            }
-
-            return ImplodeExtracted(separator, array, arrayIndex, array.Length - arrayIndex);
+            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, array.Length - arrayIndex);
         }
 
         public static string Implode(string separator, object[] array, int arrayIndex, int countLimit)
@@ -425,17 +416,7 @@ namespace System
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
 
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-
-            if (separator is null)
-            {
-                separator = string.Empty;
-            }
-
-            return ImplodeExtracted(separator, array, arrayIndex, countLimit);
+            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
         }
 
         public static string Implode(string separator, params string[] value)
@@ -445,12 +426,7 @@ namespace System
                 throw new ArgumentNullException(nameof(value));
             }
 
-            if (separator is null)
-            {
-                separator = string.Empty;
-            }
-
-            return ImplodeExtracted(separator, value, 0, value.Length);
+            return ImplodeExtracted(separator ?? string.Empty, value, 0, value.Length);
         }
 
         public static string Implode(string separator, string[] array, int arrayIndex)
@@ -465,17 +441,7 @@ namespace System
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
 
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-
-            if (separator is null)
-            {
-                separator = string.Empty;
-            }
-
-            return ImplodeExtracted(separator, array, arrayIndex, array.Length - arrayIndex);
+            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, array.Length - arrayIndex);
         }
 
         public static string Implode(string separator, string[] array, int arrayIndex, int countLimit)
@@ -500,17 +466,7 @@ namespace System
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
 
-            if (arrayIndex == array.Length)
-            {
-                return string.Empty;
-            }
-
-            if (separator is null)
-            {
-                separator = string.Empty;
-            }
-
-            return ImplodeExtracted(separator, array, arrayIndex, countLimit);
+            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
         }
 
         public static string Implode(string separator, IEnumerable<string> values)

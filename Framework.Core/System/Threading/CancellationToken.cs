@@ -34,7 +34,7 @@ using System.Diagnostics;
 
 namespace System.Threading
 {
-    [DebuggerDisplay("IsCancellationRequested = {IsCancellationRequested}")]
+    [DebuggerDisplay("IsCancellationRequested = {" + nameof(IsCancellationRequested) + "}")]
     public struct CancellationToken
     {
         private readonly CancellationTokenSource _source;

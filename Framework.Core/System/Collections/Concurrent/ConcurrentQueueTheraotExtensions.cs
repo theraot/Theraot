@@ -1,4 +1,7 @@
 ﻿#if GREATERTHAN_NET35 || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 using System.Runtime.CompilerServices;
 
 namespace System.Collections.Concurrent

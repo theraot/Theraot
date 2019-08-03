@@ -131,6 +131,7 @@ namespace System.Linq.Expressions.Interpreter
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
         private List<KeyValuePair<int, object>> _debugCookies;
+
         private readonly List<Instruction> _instructions = new List<Instruction>();
 
         private List<BranchLabel> _labels;
@@ -458,6 +459,7 @@ namespace System.Linq.Expressions.Interpreter
                     case bool b:
                         EmitLoad(b);
                         return;
+
                     case int i when i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue:
                         if (_ints == null)
                         {
@@ -1059,7 +1061,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            [DebuggerDisplay("{GetValue(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
+            [DebuggerDisplay("{" + nameof(GetValue) + "(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
             internal /*readonly*/ struct InstructionView
             {
                 private readonly int _continuationsDepth;

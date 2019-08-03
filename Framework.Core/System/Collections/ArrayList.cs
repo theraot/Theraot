@@ -31,7 +31,7 @@ namespace System.Collections
     // internal array.
     //
     [DebuggerTypeProxy(typeof(ArrayListDebugView))]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [Serializable]
     public class ArrayList : IList, ICloneable
     {

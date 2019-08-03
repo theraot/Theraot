@@ -10,7 +10,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    [DebuggerDisplay("IsValueCreated={IsValueCreated}")]
+    [DebuggerDisplay("IsValueCreated={" + nameof(IsValueCreated) + "}")]
     public sealed class TrackingThreadLocal<T> : IThreadLocal<T>, ICacheNeedle<T>, IObserver<T>
     {
         private const int _maxProbingHint = 4;

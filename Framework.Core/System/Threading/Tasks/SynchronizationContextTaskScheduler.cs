@@ -11,7 +11,7 @@ namespace System.Threading.Tasks
             Context = SynchronizationContext.Current ?? throw new InvalidOperationException("The current SynchronizationContext may not be used as a TaskScheduler.");
         }
 
-        public SynchronizationContext Context { get; set; }
+        public SynchronizationContext Context { get; }
 
         protected internal override void QueueTask(Task task)
         {

@@ -17,15 +17,13 @@ namespace Theraot.Threading.Needles
 
         private readonly StrongDelegateCollection _onCompleted;
 
-        private StructNeedle<ManualResetEventSlim> _waitHandle;
-
         public Promise(bool done)
         {
             Exception = null;
             _hashCode = base.GetHashCode();
             if (!done)
             {
-                _waitHandle = new ManualResetEventSlim(false);
+                WaitHandle = new ManualResetEventSlim(false);
             }
 
             _onCompleted = new StrongDelegateCollection(true);
@@ -33,9 +31,9 @@ namespace Theraot.Threading.Needles
 
         public Promise(Exception exception)
         {
-            Exception = exception;
-            _hashCode = exception.GetHashCode();
-            _waitHandle = new ManualResetEventSlim(true);
+            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+            _hashCode = Exception.GetHashCode();
+            WaitHandle = new ManualResetEventSlim(true);
             _onCompleted = new StrongDelegateCollection(true);
         }
 
@@ -50,21 +48,25 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                var waitHandle = _waitHandle.Value;
+                var waitHandle = WaitHandle;
                 return waitHandle?.IsSet != false;
             }
         }
 
         public bool IsFaulted => Exception != null;
 
-        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle => _waitHandle;
+        protected ManualResetEventSlim WaitHandle
+        {
+            get;
+            private set;
+        }
 
         public virtual void Free()
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
-                _waitHandle.Value = new ManualResetEventSlim(false);
+                WaitHandle = new ManualResetEventSlim(false);
             }
             else
             {
@@ -81,7 +83,7 @@ namespace Theraot.Threading.Needles
                 throw new ArgumentNullException(nameof(beforeFree));
             }
 
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle?.IsSet != false)
             {
                 try
@@ -92,7 +94,7 @@ namespace Theraot.Threading.Needles
                 {
                     if (waitHandle == null)
                     {
-                        _waitHandle.Value = new ManualResetEventSlim(false);
+                        WaitHandle = new ManualResetEventSlim(false);
                     }
                     else
                     {
@@ -138,7 +140,7 @@ namespace Theraot.Threading.Needles
 
         public virtual void Wait()
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
                 return;
@@ -157,7 +159,7 @@ namespace Theraot.Threading.Needles
 
         public virtual void Wait(CancellationToken cancellationToken)
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
                 return;
@@ -176,7 +178,7 @@ namespace Theraot.Threading.Needles
 
         public virtual void Wait(int milliseconds)
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
                 return;
@@ -195,7 +197,7 @@ namespace Theraot.Threading.Needles
 
         public virtual void Wait(TimeSpan timeout)
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
                 return;
@@ -214,7 +216,7 @@ namespace Theraot.Threading.Needles
 
         public virtual void Wait(int milliseconds, CancellationToken cancellationToken)
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
                 return;
@@ -233,7 +235,7 @@ namespace Theraot.Threading.Needles
 
         public virtual void Wait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
                 return;
@@ -252,7 +254,7 @@ namespace Theraot.Threading.Needles
 
         protected void ReleaseWaitHandle(bool done)
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = WaitHandle;
             if (waitHandle != null)
             {
                 if (done)
@@ -264,7 +266,7 @@ namespace Theraot.Threading.Needles
             }
 
             _onCompleted.Invoke(null, DelegateCollectionInvokeOptions.RemoveDelegates);
-            _waitHandle.Value = null;
+            WaitHandle = null;
         }
     }
 }

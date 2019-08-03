@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable IDE1006 // Naming Styles
 
 // BASEDON: https://raw.githubusercontent.com/dotnet/corefx/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/ParallelLoopState.cs
 
@@ -25,7 +26,7 @@ namespace System.Threading.Tasks
     ///     Enables iterations of <see cref="T:System.Threading.Tasks.Parallel" /> loops to interact with
     ///     other iterations.
     /// </summary>
-    [DebuggerDisplay("ShouldExitCurrentIteration = {ShouldExitCurrentIteration}")]
+    [DebuggerDisplay("ShouldExitCurrentIteration = {" + nameof(ShouldExitCurrentIteration) + "}")]
     public class ParallelLoopState
     {
         // Derived classes will track a ParallelStateFlags32 or ParallelStateFlags64.

@@ -68,7 +68,7 @@ namespace System.Collections
     // IEqualityComparer) would be used for all objects in the table.
     //
     [DebuggerTypeProxy(typeof(HashtableDebugView))]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     [Serializable]
     [TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")]
     public class Hashtable : IDictionary, ISerializable, IDeserializationCallback, ICloneable
@@ -1804,7 +1804,7 @@ namespace System.Collections
         }
     }
 
-    [DebuggerDisplay("{_value}", Name = "[{_key}]")]
+    [DebuggerDisplay("{" + nameof(_value) + "}", Name = "[{_key}]")]
     internal class KeyValuePairs
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]

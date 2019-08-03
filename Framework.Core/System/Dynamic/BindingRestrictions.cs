@@ -22,13 +22,14 @@ namespace System.Dynamic
     ///     valid.
     /// </summary>
     [DebuggerTypeProxy(typeof(BindingRestrictionsProxy))]
-    [DebuggerDisplay("{DebugView}")]
+    [DebuggerDisplay("{" + nameof(DebugView) + "}")]
     public abstract class BindingRestrictions
     {
         /// <summary>
         ///     Represents an empty set of binding restrictions. This field is read-only.
         /// </summary>
         public static readonly BindingRestrictions Empty = new CustomRestriction(AstUtils.Constant(true));
+
         private const int _customRestrictionHash = 613566756;
         private const int _instanceRestrictionHash = -1840700270;
         private const int _typeRestrictionHash = 1227133513; // 00100 1001 0010 0100 1001 0010 0100 1001₂

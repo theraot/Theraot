@@ -445,15 +445,14 @@ namespace System.Numerics
 
         public void Mul(uint u)
         {
-            if (u == 0)
+            switch (u)
             {
-                Set(0);
-                return;
-            }
+                case 0:
+                    Set(0);
+                    return;
 
-            if (u == 1)
-            {
-                return;
+                case 1:
+                    return;
             }
 
             if (_iuLast == 0)
@@ -919,7 +918,7 @@ namespace System.Numerics
 
                 if (_bits == null)
                 {
-                    _bits = new[] {_uSmall};
+                    _bits = new[] { _uSmall };
                 }
                 else if (_fWritable)
                 {
@@ -927,7 +926,7 @@ namespace System.Numerics
                 }
                 else if (_bits[0] != _uSmall)
                 {
-                    _bits = new[] {_uSmall};
+                    _bits = new[] { _uSmall };
                 }
             }
 

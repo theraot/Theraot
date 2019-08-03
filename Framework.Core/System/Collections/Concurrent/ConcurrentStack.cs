@@ -11,7 +11,7 @@ namespace System.Collections.Concurrent
 {
     [Serializable]
     [ComVisible(false)]
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         private ThreadSafeStack<T> _wrapped;

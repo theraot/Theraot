@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET45
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
@@ -15,16 +17,16 @@ namespace System.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
-            if (methodInfo == null)
+            switch (methodInfo)
             {
-                throw new NullReferenceException();
-            }
-            if (methodInfo is DynamicMethod dynamicMethod)
-            {
-                return dynamicMethod.CreateDelegate(delegateType);
-            }
+                case null:
+                    throw new NullReferenceException();
+                case DynamicMethod dynamicMethod:
+                    return dynamicMethod.CreateDelegate(delegateType);
 
-            return Delegate.CreateDelegate(delegateType, methodInfo);
+                default:
+                    return Delegate.CreateDelegate(delegateType, methodInfo);
+            }
         }
 
         /// <summary>
@@ -36,17 +38,18 @@ namespace System.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
-            if (methodInfo == null)
+            switch (methodInfo)
             {
-                throw new NullReferenceException();
-            }
-            if (methodInfo is DynamicMethod dynamicMethod)
-            {
-                return dynamicMethod.CreateDelegate(delegateType, target);
-            }
+                case null:
+                    throw new NullReferenceException();
+                case DynamicMethod dynamicMethod:
+                    return dynamicMethod.CreateDelegate(delegateType, target);
 
-            return Delegate.CreateDelegate(delegateType, target, methodInfo);
+                default:
+                    return Delegate.CreateDelegate(delegateType, target, methodInfo);
+            }
         }
     }
 }
+
 #endif

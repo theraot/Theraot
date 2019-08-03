@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -134,7 +136,7 @@ namespace TestRunner
                 var type = method.DeclaringType;
                 if (type == null)
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException("Null declaring type", nameof(testMethod));
                 }
 
                 _instance = method.IsStatic ? null : Activator.CreateInstance(type);
@@ -284,6 +286,7 @@ namespace TestRunner
         }
     }
 
+    [Serializable]
     public sealed class AssertionFailedException : Exception
     {
         public AssertionFailedException()
@@ -302,6 +305,16 @@ namespace TestRunner
         {
             // Empty
         }
+
+#if GREATERTHAN_NETCOREAPP11 || NETSTANDARD2_0 || TARGETS_NET
+
+        private AssertionFailedException(global::System.Runtime.Serialization.SerializationInfo serializationInfo, global::System.Runtime.Serialization.StreamingContext streamingContext)
+            : base(serializationInfo, streamingContext)
+        {
+            // Empty
+        }
+
+#endif
     }
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]

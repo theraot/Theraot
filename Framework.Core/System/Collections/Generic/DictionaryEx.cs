@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Theraot;
+
 #if LESSTHAN_NET45
+
 using System.Runtime.CompilerServices;
 
 #endif
@@ -14,7 +16,7 @@ namespace System.Collections.Generic
     [Serializable]
     [ComVisible(false)]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>
 #if LESSTHAN_NET45
         , IReadOnlyDictionary<TKey, TValue>
@@ -56,6 +58,7 @@ namespace System.Collections.Generic
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
+
         protected DictionaryEx(SerializationInfo info, StreamingContext context)
             : base(info, context)
 #else

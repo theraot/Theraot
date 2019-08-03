@@ -8,7 +8,6 @@ namespace System.Threading
         private TimerCallback _callback;
         private CancellationTokenSource _changeSource;
         private object _state;
-        private Task _task;
 
         public Timer(TimerCallback callback, object state, TimeSpan dueTime, TimeSpan period)
         {
@@ -120,17 +119,14 @@ namespace System.Threading
         {
             _callback = null;
             _state = null;
-            Stop();
+            _changeSource?.Cancel();
+            _changeSource?.Dispose();
         }
 
         private void Stop()
         {
             _changeSource?.Cancel();
-            if (_task != null)
-            {
-                _task.Wait();
-                _task = null;
-            }
+            _changeSource?.Dispose();
             _changeSource = new CancellationTokenSource();
         }
     }

@@ -189,13 +189,17 @@ namespace Theraot.Collections
             {
                 case null:
                     return EmptyCollection<T>.Instance;
+
                 case ReadOnlyCollectionEx<T> arrayReadOnlyCollection:
                     return arrayReadOnlyCollection;
+
                 default:
-                {
-                    var array = AsArrayInternal(enumerable);
-                    return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
-                }
+                    {
+                        var array = AsArrayInternal(enumerable);
+#pragma warning disable CA1062 // Validate arguments of public methods
+                        return array.Length == 0 ? EmptyCollection<T>.Instance : ReadOnlyCollectionEx.Create(array);
+#pragma warning restore CA1062 // Validate arguments of public methods
+                    }
             }
         }
 

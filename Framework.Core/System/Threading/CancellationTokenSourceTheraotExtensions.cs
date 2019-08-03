@@ -1,6 +1,8 @@
 ﻿#if LESSTHAN_NET45
 // Needed for Workaround
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 using System.Runtime.CompilerServices;
 using Theraot;
 using Theraot.Threading;
@@ -60,4 +62,5 @@ namespace System.Threading
         }
     }
 }
+
 #endif

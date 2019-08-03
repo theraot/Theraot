@@ -15,6 +15,11 @@ namespace TestRunner
 
         public static object Get(Type type, IEnumerable<Type> preferredTypes)
         {
+            if (preferredTypes == null)
+            {
+                throw new ArgumentNullException(nameof(preferredTypes));
+            }
+
             if (!_dataGenerators.TryGetValue(type, out var dictionary))
             {
                 return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
@@ -49,7 +54,7 @@ namespace TestRunner
                 .Select(GetGenerators);
             var typeComparer = new CustomComparer<Type>
             (
-                (left, right) => string.Compare(left.Name, right.Name, StringComparison.Ordinal)
+                (left, right) => string.CompareOrdinal(left.Name, right.Name)
             );
             foreach (var (returnType, generatorType, @delegate) in generators)
             {

@@ -32,18 +32,18 @@ namespace System.Collections.Generic
         }
 
         /// <summary>Gets the current underlying array.</summary>
-        public T[] Buffer { get; private set; }
+        private T[] Buffer { get; set; }
 
         /// <summary>
         ///     Gets the number of items this instance can store without re-allocating,
         ///     or 0 if the backing array is <c>null</c>.
         /// </summary>
-        public int Capacity => Buffer?.Length ?? 0;
+        private int Capacity => Buffer?.Length ?? 0;
 
         /// <summary>
         ///     Gets the number of items in the array currently in use.
         /// </summary>
-        public int Count { get; private set; }
+        private int Count { get; set; }
 
         /// <summary>
         ///     Gets or sets the item at a certain index in the array.

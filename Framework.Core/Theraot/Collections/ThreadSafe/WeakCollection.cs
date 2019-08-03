@@ -14,7 +14,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Collections.ThreadSafe
 {
     [DebuggerNonUserCode]
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class WeakCollection<T, TNeedle> : ICollection<T>
         where T : class
         where TNeedle : WeakNeedle<T>, new()
@@ -91,9 +91,9 @@ namespace Theraot.Collections.ThreadSafe
         public void Add(T item)
         {
             var needle = new TNeedle
-                         {
-                             Value = item
-                         };
+            {
+                Value = item
+            };
             _wrapped.Add(needle);
         }
 

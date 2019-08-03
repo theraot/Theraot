@@ -6,7 +6,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using Theraot.Threading;
-using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
@@ -18,11 +17,11 @@ namespace System.Threading.Tasks
         private static int _lastId;
         private readonly InternalTaskOptions _internalOptions;
         private readonly Task _parent;
-        protected readonly object State;
+        internal readonly object State;
         private int _isDisposed;
         private int _status;
-        private StructNeedle<ManualResetEventSlim> _waitHandle;
-        protected object Action;
+        private ManualResetEventSlim _waitHandle;
+        internal object Action;
 
         internal TaskScheduler ExecutingTaskScheduler;
 
@@ -272,7 +271,7 @@ namespace System.Threading.Tasks
                     throw new ObjectDisposedException(nameof(Task));
                 }
 
-                return _waitHandle.Value.WaitHandle;
+                return _waitHandle.WaitHandle;
             }
         }
 
@@ -452,7 +451,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.WaitingToRun:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
-                        var waitHandle = _waitHandle.Value;
+                        var waitHandle = _waitHandle;
                         waitHandle?.Wait
                         (
                             TimeSpan.FromMilliseconds
@@ -632,7 +631,7 @@ namespace System.Threading.Tasks
 
         internal void MarkCompleted()
         {
-            var waitHandle = _waitHandle.Value;
+            var waitHandle = _waitHandle;
             waitHandle?.Set();
         }
 
@@ -670,7 +669,7 @@ namespace System.Threading.Tasks
                     throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
                 }
 
-                var waitHandle = _waitHandle.Value;
+                var waitHandle = _waitHandle;
                 if (waitHandle != null)
                 {
                     if (!waitHandle.IsSet)
@@ -679,7 +678,7 @@ namespace System.Threading.Tasks
                     }
 
                     waitHandle.Dispose();
-                    _waitHandle.Value = null;
+                    _waitHandle = null;
                 }
             }
 
@@ -745,7 +744,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.WaitingForActivation:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
-                        var waitHandle = _waitHandle.Value;
+                        var waitHandle = _waitHandle;
                         waitHandle?.Wait(cancellationToken);
                         break;
 

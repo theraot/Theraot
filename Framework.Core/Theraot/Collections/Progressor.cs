@@ -1,6 +1,7 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
+// ReSharper disable ConstantConditionalAccessQualifier
 
 using System;
 using System.Collections;
@@ -91,10 +92,13 @@ namespace Theraot.Collections
                     throw new ArgumentNullException(nameof(enumerable));
                 case T[] array:
                     return CreateFromArray(array);
+
                 case IList<T> list:
                     return CreateFromIList(list);
+
                 case IReadOnlyList<T> readOnlyList:
                     return CreateFromIReadOnlyList(readOnlyList);
+
                 default:
                     break;
             }
@@ -169,8 +173,12 @@ namespace Theraot.Collections
             }
 
             var buffer = new ThreadSafeQueue<T>();
+#pragma warning disable CA2000 // Dispose objects before losing scope
+#pragma warning disable IDE0067 // Desechar (Dispose) objetos antes de perder el ámbito
             var semaphore = new SemaphoreSlim(0);
             var source = new CancellationTokenSource();
+#pragma warning restore IDE0067 // Desechar (Dispose) objetos antes de perder el ámbito
+#pragma warning restore CA2000 // Dispose objects before losing scope
             var subscription = observable.Subscribe
             (
                 new CustomObserver<T>
@@ -181,7 +189,7 @@ namespace Theraot.Collections
                 )
             );
             var proxy = new ProxyObservable<T>();
-            var tryTake = new TryTake<T>[] {null};
+            var tryTake = new TryTake<T>[] { null };
             tryTake[0] = TakeInitial;
 
             void OnNext(T item)
