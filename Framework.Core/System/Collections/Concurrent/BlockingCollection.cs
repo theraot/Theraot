@@ -581,6 +581,7 @@ namespace System.Collections.Concurrent
             {
                 _addSemaphore?.Dispose();
                 _takeSemaphore?.Dispose();
+                _addCancellation?.Dispose();
             }
 
             public IEnumerator<T> GetEnumerator()
@@ -604,17 +605,19 @@ namespace System.Collections.Concurrent
                 Interlocked.Increment(ref _addWaiters);
                 try
                 {
-                    var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token);
-                    try
+                    using (var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token))
                     {
-                        if (!_addSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                        try
                         {
-                            return false;
+                            if (!_addSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                            {
+                                return false;
+                            }
                         }
-                    }
-                    catch (OperationCanceledException exception)
-                    {
-                        No.Op(exception);
+                        catch (OperationCanceledException exception)
+                        {
+                            No.Op(exception);
+                        }
                     }
 
                     if (_addCancellation.IsCancellationRequested)
@@ -651,17 +654,19 @@ namespace System.Collections.Concurrent
                     return false;
                 }
 
-                var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token);
-                try
+                using (var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _addCancellation.Token))
                 {
-                    if (!_takeSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                    try
                     {
-                        return false;
+                        if (!_takeSemaphore.Wait(millisecondsTimeout, combinedSource.Token))
+                        {
+                            return false;
+                        }
                     }
-                }
-                catch (OperationCanceledException exception)
-                {
-                    No.Op(exception);
+                    catch (OperationCanceledException exception)
+                    {
+                        No.Op(exception);
+                    }
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
