@@ -575,6 +575,11 @@ namespace Theraot.Collections
                 return true;
             }
 
+            if (first == null || second == null)
+            {
+                return false;
+            }
+
             var count = first.Count;
             if (count != second.Count)
             {
@@ -641,6 +646,11 @@ namespace Theraot.Collections
             if (ReferenceEquals(first, second))
             {
                 return true;
+            }
+
+            if (first == null || second == null)
+            {
+                return false;
             }
 
             var count = first.Count;
@@ -1120,6 +1130,7 @@ namespace Theraot.Collections
                 return false;
             }
         }
+
 #endif
     }
 
