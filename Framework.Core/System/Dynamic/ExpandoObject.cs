@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -269,6 +270,7 @@ namespace System.Dynamic
                             }
 
                             break;
+
                         default:
                             break;
                     }
@@ -886,6 +888,7 @@ namespace System.Dynamic
                     case AmbiguousMatchFound:
                         @class = originalClass;
                         return null;
+
                     case NoMatch:
                         // go ahead and find a new class now...
                         var newClass = originalClass.FindNewClass(name, obj.LockObject);
@@ -895,6 +898,7 @@ namespace System.Dynamic
 
                         Debug.Assert(index != NoMatch);
                         return originalClass;
+
                     default:
                         @class = originalClass;
                         return null;

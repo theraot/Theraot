@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="rules" Description=" " ToolsVersion="15.0">
+<RuleSet Name="rules" Description=" " ToolsVersion="16.0">
   <Rules AnalyzerId="CodeCracker.CSharp" RuleNamespace="CodeCracker.CSharp">
     <Rule Id="CC0037" Action="None" />
   </Rules>
@@ -65,7 +65,6 @@
     <Rule Id="CA1300" Action="Warning" />
     <Rule Id="CA1301" Action="Warning" />
     <Rule Id="CA1302" Action="Warning" />
-    <Rule Id="CA1303" Action="Warning" />
     <Rule Id="CA1304" Action="Warning" />
     <Rule Id="CA1305" Action="Warning" />
     <Rule Id="CA1306" Action="Warning" />
@@ -90,10 +89,8 @@
     <Rule Id="CA1415" Action="Warning" />
     <Rule Id="CA1500" Action="Warning" />
     <Rule Id="CA1501" Action="Warning" />
-    <Rule Id="CA1502" Action="Warning" />
     <Rule Id="CA1504" Action="Warning" />
     <Rule Id="CA1505" Action="Warning" />
-    <Rule Id="CA1506" Action="Warning" />
     <Rule Id="CA1600" Action="Warning" />
     <Rule Id="CA1601" Action="Warning" />
     <Rule Id="CA1700" Action="Warning" />

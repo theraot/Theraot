@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
+#pragma warning disable CA1305 // Specify IFormatProvider
+
 using System.Runtime.CompilerServices;
 using Theraot;
 
