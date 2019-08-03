@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+// Needed for NET40
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
@@ -53,7 +53,7 @@ namespace Theraot.Collections
                 return proxy.Subscribe(observer);
             }
 
-            observer.OnCompleted();
+            observer?.OnCompleted();
             return NoOpDisposable.Instance;
         }
 

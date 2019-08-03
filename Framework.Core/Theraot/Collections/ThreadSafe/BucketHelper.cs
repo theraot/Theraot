@@ -545,6 +545,11 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
 
+            if (itemFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemFactory));
+            }
+
             var created = itemFactory.Invoke();
             if (!bucket.Insert(index, created, out stored))
             {

@@ -26,6 +26,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public Bucket(IEnumerable<T> source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
             _bucketCore = new BucketCore();
             var index = 0;
             foreach (var item in source)

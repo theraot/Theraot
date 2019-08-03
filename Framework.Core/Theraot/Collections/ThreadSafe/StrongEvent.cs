@@ -24,6 +24,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Add(MethodInfo method, object target)
         {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
             var value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
             EventHandlers.Add(value);
         }
@@ -45,6 +49,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Remove(MethodInfo method, object target)
         {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
             var value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
             EventHandlers.Remove(value);
         }
