@@ -96,6 +96,9 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
     <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net20|AnyCPU'">
+    <NoWarn>1701;1702;NU1701;NU1702</NoWarn>
+  </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net30'">
     <Reference Include="WindowsBase" />
   </ItemGroup>
