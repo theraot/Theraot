@@ -395,7 +395,7 @@ namespace System.Collections.Generic
             private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
             private bool _valid;
 
-            public Enumerator(HashSet<T> hashSet)
+            internal Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
                 _valid = false;
