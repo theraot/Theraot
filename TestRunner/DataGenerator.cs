@@ -175,9 +175,9 @@ namespace TestRunner
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
     public sealed class UseGeneratorAttribute : Attribute
     {
-        public UseGeneratorAttribute(Type type)
+        public UseGeneratorAttribute(Type generatorType)
         {
-            GeneratorType = type;
+            GeneratorType = generatorType;
         }
 
         public Type GeneratorType { get; }
