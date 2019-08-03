@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal /*readonly*/ struct LocalDefinition
+    internal readonly struct LocalDefinition
     {
         internal LocalDefinition(int localIndex, ParameterExpression parameter)
         {

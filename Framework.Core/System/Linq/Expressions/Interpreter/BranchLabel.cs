@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal /*readonly*/ struct RuntimeLabel
+    internal readonly struct RuntimeLabel
     {
         public readonly int ContinuationStackDepth;
         public readonly int Index;

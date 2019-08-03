@@ -165,7 +165,7 @@ namespace System.Linq.Expressions.Compiler
         ///     ends up using a JIT temp and defeats the purpose of caching the
         ///     value in a local)
         /// </summary>
-        private /*readonly*/ struct TypedConstant : IEquatable<TypedConstant>
+        private readonly struct TypedConstant : IEquatable<TypedConstant>
         {
             internal readonly Type Type;
             internal readonly object Value;

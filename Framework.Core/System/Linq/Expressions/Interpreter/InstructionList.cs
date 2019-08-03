@@ -17,7 +17,7 @@ using Theraot.Collections;
 namespace System.Linq.Expressions.Interpreter
 {
     [DebuggerTypeProxy(typeof(DebugView))]
-    internal /*readonly*/ struct InstructionArray
+    internal readonly struct InstructionArray
     {
         // list of (instruction index, cookie) sorted by instruction index:
         internal readonly KeyValuePair<int, object>[] DebugCookies;
@@ -1062,7 +1062,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerDisplay("{" + nameof(GetValue) + "(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
-            internal /*readonly*/ struct InstructionView
+            internal readonly struct InstructionView
             {
                 private readonly int _continuationsDepth;
                 private readonly int _index;

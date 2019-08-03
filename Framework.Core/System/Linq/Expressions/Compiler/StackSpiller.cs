@@ -639,11 +639,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 case RewriteAction.None:
                     return new Result(expression.Action, expr);
+
                 case RewriteAction.SpillStack when node.Member is PropertyInfo:
                     // Only need to validate properties because reading a field
                     // is always side-effect free.
                     RequireNotRefInstance(node.Expression);
                     break;
+
                 default:
                     break;
             }
@@ -1049,7 +1051,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     Result of a rewrite operation. Always contains an action and a node.
         /// </summary>
-        private /*readonly*/ struct Result
+        private readonly struct Result
         {
             internal readonly RewriteAction Action;
             internal readonly Expression Node;
