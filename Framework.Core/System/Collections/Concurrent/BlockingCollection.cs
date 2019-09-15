@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
@@ -185,12 +186,12 @@ namespace System.Collections.Concurrent
             }
         }
 
-        public static int TakeFromAny(BlockingCollection<T>[] collections, out T item)
+        public static int TakeFromAny(BlockingCollection<T>[] collections, [MaybeNull] out T item)
         {
             return TakeFromAny(collections, out item, CancellationToken.None);
         }
 
-        public static int TakeFromAny(BlockingCollection<T>[] collections, out T item, CancellationToken cancellationToken)
+        public static int TakeFromAny(BlockingCollection<T>[] collections, [MaybeNull] out T item, CancellationToken cancellationToken)
         {
             if (collections == null)
             {
@@ -343,22 +344,22 @@ namespace System.Collections.Concurrent
             }
         }
 
-        public static int TryTakeFromAny(BlockingCollection<T>[] collections, out T item)
+        public static int TryTakeFromAny(BlockingCollection<T>[] collections, [MaybeNull] out T item)
         {
             return TryTakeFromAny(collections, out item, 0, CancellationToken.None);
         }
 
-        public static int TryTakeFromAny(BlockingCollection<T>[] collections, out T item, TimeSpan timeout)
+        public static int TryTakeFromAny(BlockingCollection<T>[] collections, [MaybeNull] out T item, TimeSpan timeout)
         {
             return TryTakeFromAny(collections, out item, (int)timeout.TotalMilliseconds, CancellationToken.None);
         }
 
-        public static int TryTakeFromAny(BlockingCollection<T>[] collections, out T item, int millisecondsTimeout)
+        public static int TryTakeFromAny(BlockingCollection<T>[] collections, [MaybeNull] out T item, int millisecondsTimeout)
         {
             return TryTakeFromAny(collections, out item, millisecondsTimeout, CancellationToken.None);
         }
 
-        public static int TryTakeFromAny(BlockingCollection<T>[] collections, out T item, int millisecondsTimeout, CancellationToken cancellationToken)
+        public static int TryTakeFromAny(BlockingCollection<T>[] collections, [MaybeNull] out T item, int millisecondsTimeout, CancellationToken cancellationToken)
         {
             if (collections == null)
             {
@@ -515,22 +516,22 @@ namespace System.Collections.Concurrent
             return Data.TryAdd(item, millisecondsTimeout, cancellationToken);
         }
 
-        public bool TryTake(out T item)
+        public bool TryTake([MaybeNullWhen(false)] out T item)
         {
             return Data.TryTake(out item);
         }
 
-        public bool TryTake(out T item, TimeSpan timeout)
+        public bool TryTake([MaybeNullWhen(false)] out T item, TimeSpan timeout)
         {
             return Data.TryTake(out item, (int)timeout.TotalMilliseconds, CancellationToken.None);
         }
 
-        public bool TryTake(out T item, int millisecondsTimeout)
+        public bool TryTake([MaybeNullWhen(false)] out T item, int millisecondsTimeout)
         {
             return Data.TryTake(out item, millisecondsTimeout, CancellationToken.None);
         }
 
-        public bool TryTake(out T item, int millisecondsTimeout, CancellationToken cancellationToken)
+        public bool TryTake([MaybeNullWhen(false)] out T item, int millisecondsTimeout, CancellationToken cancellationToken)
         {
             return Data.TryTake(out item, millisecondsTimeout, cancellationToken);
         }
@@ -539,7 +540,7 @@ namespace System.Collections.Concurrent
         {
             if (disposing)
             {
-                Interlocked.Exchange(ref _data, null)?.Dispose();
+                Interlocked.Exchange(ref _data, null!)?.Dispose();
             }
         }
 
@@ -642,15 +643,15 @@ namespace System.Collections.Concurrent
                 }
             }
 
-            public bool TryTake(out T item)
+            public bool TryTake([MaybeNullWhen(false)] out T item)
             {
-                item = default;
+                item = default!;
                 return _collection.Count != 0 && TryTake(out item, Timeout.Infinite, CancellationToken.None);
             }
 
-            public bool TryTake(out T item, int millisecondsTimeout, CancellationToken cancellationToken)
+            public bool TryTake([MaybeNullWhen(false)] out T item, int millisecondsTimeout, CancellationToken cancellationToken)
             {
-                item = default;
+                item = default!;
                 if (!CanAdd && _collection.Count == 0)
                 {
                     return false;
