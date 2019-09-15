@@ -1,15 +1,17 @@
-﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿using Theraot.Reflection;
 
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
+#if LESSTHAN_NET40 || NETSTANDARD1_0
+
+#pragma warning disable 162
 // ReSharper disable HeuristicUnreachableCode
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Reflection;
 
 namespace System.Collections.Concurrent
 {
@@ -17,7 +19,7 @@ namespace System.Collections.Concurrent
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
         [NonSerialized]
-        private ValueCollection<TKey, TValue> _valueCollection;
+        private ValueCollection<TKey, TValue>? _valueCollection;
 
         private readonly ThreadSafeDictionary<TKey, TValue> _wrapped;
 
@@ -70,6 +72,7 @@ namespace System.Collections.Concurrent
             }
 
             _wrapped = new ThreadSafeDictionary<TKey, TValue>(comparer ?? throw new ArgumentNullException(nameof(comparer)));
+            _valueCollection = new ValueCollection<TKey, TValue>(this);
         }
 
         public int Count => _wrapped.Count;
@@ -87,7 +90,7 @@ namespace System.Collections.Concurrent
         object ICollection.SyncRoot => this;
         ICollection IDictionary.Values => GetValues();
 
-        public TValue this[TKey key]
+        public TValue this[[NotNull] TKey key]
         {
             get
             {
@@ -113,7 +116,7 @@ namespace System.Collections.Concurrent
             }
         }
 
-        object IDictionary.this[object key]
+        object? IDictionary.this[[NotNull] object key]
         {
             get
             {
@@ -124,6 +127,7 @@ namespace System.Collections.Concurrent
                         throw new ArgumentNullException(nameof(key));
                     case TKey keyAsTKey when _wrapped.TryGetValue(keyAsTKey, out var result):
                         return result;
+
                     default:
                         return null;
                 }
@@ -139,6 +143,7 @@ namespace System.Collections.Concurrent
                     case TKey keyAsTKey when value is TValue valueAsTValue:
                         this[keyAsTKey] = valueAsTValue;
                         break;
+
                     default:
                         break;
                 }
@@ -311,6 +316,7 @@ namespace System.Collections.Concurrent
                 case TKey keyAsTKey when value is TValue valueAsTValue:
                     _wrapped.AddNew(keyAsTKey, valueAsTValue);
                     break;
+
                 default:
                     break;
             }
@@ -363,6 +369,7 @@ namespace System.Collections.Concurrent
                 // keep the is operator
                 case TKey keyAsTKey:
                     return ContainsKey(keyAsTKey);
+
                 default:
                     return false;
             }
@@ -470,6 +477,7 @@ namespace System.Collections.Concurrent
                 case TKey keyAsTKey:
                     _wrapped.Remove(keyAsTKey);
                     break;
+
                 default:
                     break;
             }
@@ -519,11 +527,11 @@ namespace System.Collections.Concurrent
                 get
                 {
                     var current = _wrapped.Current;
-                    return current.Key;
+                    return current.Key!;
                 }
             }
 
-            public object Value
+            public object? Value
             {
                 get
                 {

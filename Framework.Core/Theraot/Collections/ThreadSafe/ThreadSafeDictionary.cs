@@ -6,6 +6,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using Theraot.Collections.Specialized;
@@ -20,7 +21,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <remarks>
-    ///     Consider wrapping this class to implement <see cref="T:System.Collections.Generic.IDictionary`2" /> or any other
+    ///     Consider wrapping this class to implement <see cref="IDictionary{Tkey, TValue}" /> or any other
     ///     desired interface.
     /// </remarks>
     [Serializable]
@@ -32,12 +33,12 @@ namespace Theraot.Collections.ThreadSafe
         private Bucket<KeyValuePair<TKey, TValue>> _bucket;
 
         [NonSerialized]
-        private KeyCollection<TKey, TValue> _keyCollection;
+        private KeyCollection<TKey, TValue>? _keyCollection;
 
         private int _probing;
 
         [NonSerialized]
-        private ValueCollection<TKey, TValue> _valueCollection;
+        private ValueCollection<TKey, TValue>? _valueCollection;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey,TValue}" /> class.
@@ -54,7 +55,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafe.ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
         public ThreadSafeDictionary()
             : this(EqualityComparer<TKey>.Default, _defaultProbing)
@@ -64,7 +65,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafe.ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
         public ThreadSafeDictionary(int initialProbing)
@@ -75,7 +76,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeDictionary`2" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafe.ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
         public ThreadSafeDictionary(IEqualityComparer<TKey> comparer)
@@ -146,9 +147,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="T:System.ArgumentNullException">array</exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="System.ArgumentNullException">array</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);
@@ -156,10 +157,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the
+        ///     An <see cref="IEnumerator{T}" /> object that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -216,9 +217,9 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            value = default;
+            value = default!;
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -454,9 +455,9 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Remove(TKey key, out TValue value)
+        public bool Remove(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            value = default;
+            value = default!;
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -501,14 +502,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Remove(int hashCode, Predicate<TKey> keyCheck, out TValue value)
+        public bool Remove(int hashCode, [NotNull] Predicate<TKey> keyCheck, [MaybeNullWhen(false)] out TValue value)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
 
-            value = default;
+            value = default!;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -552,14 +553,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Remove(TKey key, Predicate<TValue> valueCheck, out TValue value)
+        public bool Remove(TKey key, [NotNull] Predicate<TValue> valueCheck, [MaybeNullWhen(false)] out TValue value)
         {
             if (valueCheck == null)
             {
                 throw new ArgumentNullException(nameof(valueCheck));
             }
 
-            value = default;
+            value = default!;
             var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -605,7 +606,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Remove(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck, out TValue value)
+        public bool Remove(int hashCode, [NotNull] Predicate<TKey> keyCheck, [NotNull] Predicate<TValue> valueCheck, [MaybeNullWhen(false)] out TValue value)
         {
             if (keyCheck == null)
             {
@@ -617,7 +618,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(valueCheck));
             }
 
-            value = default;
+            value = default!;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -1044,13 +1045,6 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="ArgumentException">An item with the same key has already been added</exception>
         internal void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException(nameof(keyOverwriteCheck));
-            }
-#endif
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
@@ -1064,7 +1058,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
+                        throw new ArgumentException("An item with the same key has already been added", nameof(key));
                     }
 
                     // This is not the key, overwrite?
@@ -1092,13 +1086,6 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="value">The value.</param>
         internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException(nameof(keyOverwriteCheck));
-            }
-#endif
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
@@ -1129,13 +1116,6 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="isNew">if set to <c>true</c> the item value was set.</param>
         internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out bool isNew)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException(nameof(keyOverwriteCheck));
-            }
-#endif
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
@@ -1168,13 +1148,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException(nameof(keyOverwriteCheck));
-            }
-#endif
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
@@ -1188,7 +1161,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
+                        throw new ArgumentException("An item with the same key has already been added", nameof(key));
                     }
 
                     // This is not the key, overwrite?
@@ -1217,13 +1190,6 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out TValue stored)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException(nameof(keyOverwriteCheck));
-            }
-#endif
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
@@ -1241,8 +1207,7 @@ namespace Theraot.Collections.ThreadSafe
                     // This is the item that has been stored with the key
                     value = found.Value;
                     // Throw to abort overwrite
-                    throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
-                    // This is not the key, overwrite?
+                    throw new ArgumentException("An item with the same key has already been added", nameof(key));
                 }
 
                 try
@@ -1493,14 +1458,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryGetValue(int hashCode, Predicate<TKey> keyCheck, out TValue value)
+        public bool TryGetValue(int hashCode, [NotNull] Predicate<TKey> keyCheck, [MaybeNullWhen(false)] out TValue value)
         {
             if (keyCheck == null)
             {
                 throw new ArgumentNullException(nameof(keyCheck));
             }
 
-            value = default;
+            value = default!;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 if (!_bucket.TryGet(hashCode + attempts, out var found) || GetHashCode(found.Key) != hashCode || !keyCheck(found.Key))
@@ -1527,13 +1492,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException(nameof(keyOverwriteCheck));
-            }
-#endif
             var hashCode = GetHashCode(key);
             var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
@@ -1549,7 +1507,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
+                        throw new ArgumentException("An item with the same key has already been added", nameof(key));
                     }
 
                     // This is not the key, overwrite?
@@ -1580,23 +1538,11 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetOrAdd(TKey key, Func<TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory, out TValue stored)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (addValueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(addValueFactory));
-            }
-
-            if (updateValueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(updateValueFactory));
-            }
-#endif
             var hashCode = GetHashCode(key);
             var attempts = 0;
             while (true)
             {
-                var value = default(TValue);
+                var value = default(TValue)!;
                 ExtendProbingIfNeeded(attempts);
 
                 KeyValuePair<TKey, TValue> ItemFactory()
@@ -1611,7 +1557,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = found.Value;
                         // Throw to abort overwrite
-                        throw CreateKeyArgumentException(null); // This exception will bubble up to the context where "key" is an argument.
+                        throw new ArgumentException("An item with the same key has already been added", nameof(key));
                     }
 
                     value = updateValueFactory(found.Key, found.Value);
@@ -1638,12 +1584,6 @@ namespace Theraot.Collections.ThreadSafe
 
                 attempts++;
             }
-        }
-
-        private static ArgumentException CreateKeyArgumentException(object key)
-        {
-            No.Op(key);
-            return new ArgumentException("An item with the same key has already been added", nameof(key));
         }
     }
 }
