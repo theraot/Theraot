@@ -1,7 +1,5 @@
 ﻿// Needed for NET20 (Linq)
 
-#pragma warning disable RCS1231 // Make parameter ref read-only.
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,7 +41,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            comparer = comparer ?? Comparer<TNewKey>.Default;
+            comparer ??= Comparer<TNewKey>.Default;
             if (descending)
             {
                 comparer = comparer.Reverse();
@@ -76,9 +74,9 @@ namespace Theraot.Core
 
         private IEnumerable<TElement> Sort(IEnumerable<TElement> source)
         {
-            var array = source.AsArrayInternal();
-            var keys = new KeyValuePair<TKey, int>[array.Length];
-            for (var index = 0; index < array.Length; index++)
+            var array = source.AsIList();
+            var keys = new KeyValuePair<TKey, int>[array.Count];
+            for (var index = 0; index < array.Count; index++)
             {
                 keys[index] = new KeyValuePair<TKey, int>(_keySelector.Invoke(array[index]), index);
             }
