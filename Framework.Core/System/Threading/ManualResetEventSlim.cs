@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
 using System.Diagnostics;
 using Theraot.Threading;
 
@@ -140,24 +142,25 @@ namespace System.Threading
                         switch (status)
                         {
                             case Status.HandleReadySet:
-                            {
-                                // We reset it
-                                // Update the wait handle
-                                var handle = Volatile.Read(ref _handle);
-                                if (handle != null)
                                 {
-                                    // Reset it
-                                    handle.Reset();
-                                    // Done
-                                    return;
-                                }
+                                    // We reset it
+                                    // Update the wait handle
+                                    var handle = Volatile.Read(ref _handle);
+                                    if (handle != null)
+                                    {
+                                        // Reset it
+                                        handle.Reset();
+                                        // Done
+                                        return;
+                                    }
 
-                                break;
-                            }
+                                    break;
+                                }
                             case Status.HandleReadyNotSet:
                                 // Another thread reset it
                                 // we are done
                                 return;
+
                             default:
                                 break;
                         }
@@ -211,24 +214,25 @@ namespace System.Threading
                         switch (status)
                         {
                             case Status.HandleReadyNotSet:
-                            {
-                                // We set it
-                                // Update the wait handle
-                                var handle = Volatile.Read(ref _handle);
-                                if (handle != null)
                                 {
-                                    // Reset it
-                                    handle.Set();
-                                    // Done
-                                    return;
-                                }
+                                    // We set it
+                                    // Update the wait handle
+                                    var handle = Volatile.Read(ref _handle);
+                                    if (handle != null)
+                                    {
+                                        // Reset it
+                                        handle.Set();
+                                        // Done
+                                        return;
+                                    }
 
-                                break;
-                            }
+                                    break;
+                                }
                             case Status.HandleReadySet:
                                 // Another thread set it
                                 // we are done
                                 return;
+
                             default:
                                 break;
                         }
@@ -266,7 +270,7 @@ namespace System.Threading
                 return;
             }
 
-            retry:
+retry:
             if (IsSet)
             {
                 return;
@@ -492,7 +496,7 @@ namespace System.Threading
             }
 
             var start = ThreadingHelper.TicksNow();
-            retry_longTimeout:
+retry_longTimeout:
             if (IsSet)
             {
                 return true;
@@ -526,7 +530,7 @@ namespace System.Threading
             }
 
             var start = ThreadingHelper.TicksNow();
-            retry_longTimeout:
+retry_longTimeout:
             if (IsSet)
             {
                 return true;
@@ -577,7 +581,7 @@ namespace System.Threading
                 return;
             }
 
-            retry:
+retry:
             if (IsSet)
             {
                 return;
