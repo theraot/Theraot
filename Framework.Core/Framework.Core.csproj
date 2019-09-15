@@ -122,6 +122,12 @@
     <DefineConstants>TARGETS_NETCORE;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <ItemGroup>
