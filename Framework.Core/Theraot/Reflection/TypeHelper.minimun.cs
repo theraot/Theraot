@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -227,7 +228,8 @@ namespace Theraot.Reflection
             return false;
         }
 
-        public static T LazyCreate<T>(ref T target)
+        [return: NotNull]
+        public static T LazyCreate<T>([NotNull] ref T? target)
             where T : class
         {
             var found = target;
@@ -236,7 +238,7 @@ namespace Theraot.Reflection
                 return found;
             }
 
-            found = Volatile.Read(ref target);
+            found = Interlocked.CompareExchange(ref target, null!, null!);
             if (found != null)
             {
                 return found;
@@ -256,7 +258,8 @@ namespace Theraot.Reflection
             return found ?? created;
         }
 
-        public static T LazyCreate<T>(ref T target, object syncRoot)
+        [return: NotNull]
+        public static T LazyCreate<T>([NotNull] ref T? target, object syncRoot)
             where T : class
         {
             var found = target;
@@ -265,7 +268,7 @@ namespace Theraot.Reflection
                 return found;
             }
 
-            found = Volatile.Read(ref target);
+            found = Interlocked.CompareExchange(ref target, null!, null!);
             if (found != null)
             {
                 return found;
@@ -277,7 +280,8 @@ namespace Theraot.Reflection
             }
         }
 
-        public static T LazyCreate<T>(ref T target, Func<T> valueFactory)
+        [return: NotNull]
+        public static T LazyCreate<T>([NotNull] ref T? target, Func<T> valueFactory)
             where T : class
         {
             var found = target;
@@ -286,7 +290,7 @@ namespace Theraot.Reflection
                 return found;
             }
 
-            found = Volatile.Read(ref target);
+            found = Interlocked.CompareExchange(ref target, null!, null!);
             if (found != null)
             {
                 return found;
@@ -307,7 +311,7 @@ namespace Theraot.Reflection
             return found ?? created;
         }
 
-        public static T LazyCreate<T>(ref T target, Func<T> valueFactory, object syncRoot)
+        public static T LazyCreate<T>([NotNull] ref T? target, Func<T> valueFactory, object syncRoot)
             where T : class
         {
             var found = target;
@@ -316,7 +320,7 @@ namespace Theraot.Reflection
                 return found;
             }
 
-            found = Volatile.Read(ref target);
+            found = Interlocked.CompareExchange(ref target, null!, null!);
             if (found != null)
             {
                 return found;
