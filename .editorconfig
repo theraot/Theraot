@@ -54,7 +54,7 @@ dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields 
 dotnet_naming_rule.constant_fields_should_be_pascal_case.style    = pascal_case_style 
 dotnet_naming_symbols.constant_fields.applicable_kinds            = field 
-dotnet_naming_symbols.constant_fields.applicable_accessibilities  = * 
+dotnet_naming_symbols.constant_fields.applicable_accessibilities  = public, internal, protected, protected_interal, private_protected 
 dotnet_naming_symbols.constant_fields.required_modifiers          = const 
 ############################### 
 # C# Coding Conventions       # 
