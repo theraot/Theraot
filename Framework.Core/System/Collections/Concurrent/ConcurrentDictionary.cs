@@ -1,17 +1,14 @@
-﻿using Theraot.Reflection;
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#if LESSTHAN_NET40 || NETSTANDARD1_0
-
-#pragma warning disable 162
 // ReSharper disable HeuristicUnreachableCode
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Collections.Concurrent
 {
@@ -90,12 +87,12 @@ namespace System.Collections.Concurrent
         object ICollection.SyncRoot => this;
         ICollection IDictionary.Values => GetValues();
 
-        public TValue this[[NotNull] TKey key]
+        public TValue this[TKey key]
         {
             get
             {
                 // key could be null
-                if (key == null)
+                if (key == null!)
                 {
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException(nameof(key));
@@ -106,7 +103,7 @@ namespace System.Collections.Concurrent
             set
             {
                 // key could be null
-                if (key == null)
+                if (key == null!)
                 {
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException(nameof(key));
@@ -116,7 +113,7 @@ namespace System.Collections.Concurrent
             }
         }
 
-        object? IDictionary.this[[NotNull] object key]
+        object? IDictionary.this[object key]
         {
             get
             {
@@ -155,7 +152,7 @@ namespace System.Collections.Concurrent
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -174,7 +171,7 @@ namespace System.Collections.Concurrent
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -199,7 +196,7 @@ namespace System.Collections.Concurrent
         public bool ContainsKey(TKey key)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -217,7 +214,7 @@ namespace System.Collections.Concurrent
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -230,7 +227,7 @@ namespace System.Collections.Concurrent
         public TValue GetOrAdd(TKey key, TValue value)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -254,7 +251,7 @@ namespace System.Collections.Concurrent
         public bool TryAdd(TKey key, TValue value)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -266,7 +263,7 @@ namespace System.Collections.Concurrent
         public bool TryGetValue(TKey key, out TValue value)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -278,7 +275,7 @@ namespace System.Collections.Concurrent
         public bool TryRemove(TKey key, out TValue value)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -290,7 +287,7 @@ namespace System.Collections.Concurrent
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -327,7 +324,7 @@ namespace System.Collections.Concurrent
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             // key could be null
-            if (key == null)
+            if (key == null!)
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException(nameof(key));
@@ -339,7 +336,7 @@ namespace System.Collections.Concurrent
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             // key could be null
-            if (item.Key == null)
+            if (item.Key == null!)
             {
                 // ConcurrentDictionary hates null
                 // While technically item is not null and item.Key is not an argument...
@@ -378,7 +375,7 @@ namespace System.Collections.Concurrent
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
         {
             // key could be null
-            if (item.Key == null)
+            if (item.Key == null!)
             {
                 // ConcurrentDictionary hates null
                 // While technically item is not null and item.Key is not an argument...
@@ -486,7 +483,7 @@ namespace System.Collections.Concurrent
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
             // key could be null
-            if (item.Key == null)
+            if (item.Key == null!)
             {
                 // ConcurrentDictionary hates null
                 // While technically item is not null and item.Key is not an argument...

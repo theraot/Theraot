@@ -1,4 +1,7 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 

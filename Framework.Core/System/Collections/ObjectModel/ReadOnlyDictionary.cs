@@ -40,7 +40,7 @@ namespace System.Collections.ObjectModel
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
         public TValue this[TKey key] => Dictionary[key];
 
-        object IDictionary.this[object key]
+        object? IDictionary.this[object key]
         {
             get
             {
@@ -50,6 +50,7 @@ namespace System.Collections.ObjectModel
                         throw new ArgumentNullException(nameof(key));
                     case TKey keyAsTKey:
                         return this[keyAsTKey];
+
                     default:
                         return null;
                 }

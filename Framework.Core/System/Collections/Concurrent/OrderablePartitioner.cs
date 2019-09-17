@@ -43,7 +43,7 @@ namespace System.Collections.Concurrent
 
             return partitions;
 
-            IEnumerator<TSource> Enumerator(IEnumerator<KeyValuePair<long, TSource>> enumerator)
+            static IEnumerator<TSource> Enumerator(IEnumerator<KeyValuePair<long, TSource>> enumerator)
             {
                 try
                 {

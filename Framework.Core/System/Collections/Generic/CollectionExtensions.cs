@@ -1,5 +1,6 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Theraot;
 
@@ -30,7 +31,7 @@ namespace System.Collections.Generic
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static bool Remove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+        public static bool Remove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, [MaybeNullWhen(false)] out TValue value)
         {
             if (dictionary == null)
             {
@@ -42,7 +43,7 @@ namespace System.Collections.Generic
                 return true;
             }
 
-            value = default;
+            value = default!;
             return false;
         }
 
