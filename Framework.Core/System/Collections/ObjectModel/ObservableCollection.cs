@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET30
 
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -28,17 +30,19 @@ namespace System.Collections.ObjectModel
             : base(new List<T>(collection))
         {
             _entryCheck = new TrackingThreadLocal<int>(() => 0);
+            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
         }
 
         public ObservableCollection(List<T> list)
             : base(new List<T>(list))
         {
             _entryCheck = new TrackingThreadLocal<int>(() => 0);
+            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
         }
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public void Move(int oldIndex, int newIndex)
         {
@@ -74,7 +78,7 @@ namespace System.Collections.ObjectModel
             base.InsertItem(index, item);
             InvokePropertyChanged("Count");
             InvokePropertyChanged("Item[]");
-            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item!, index));
         }
 
         protected virtual void MoveItem(int oldIndex, int newIndex)
@@ -86,7 +90,7 @@ namespace System.Collections.ObjectModel
             base.RemoveItem(oldIndex);
             base.InsertItem(newIndex, item);
             InvokePropertyChanged("Item[]");
-            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, item, newIndex, oldIndex));
+            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, item!, newIndex, oldIndex));
         }
 
         protected override void RemoveItem(int index)
@@ -98,7 +102,7 @@ namespace System.Collections.ObjectModel
             base.RemoveItem(index);
             InvokePropertyChanged("Count");
             InvokePropertyChanged("Item[]");
-            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item!, index));
         }
 
         protected override void SetItem(int index, T item)
@@ -109,7 +113,7 @@ namespace System.Collections.ObjectModel
             var oldItem = base[index];
             base.SetItem(index, item);
             InvokePropertyChanged("Item[]");
-            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, oldItem, index));
+            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item!, oldItem!, index));
         }
 
         private void InvokeCollectionChanged(NotifyCollectionChangedEventArgs eventArgs)
