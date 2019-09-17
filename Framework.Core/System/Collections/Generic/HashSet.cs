@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CC0091 // Use static method
-
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -14,11 +12,11 @@ namespace System.Collections.Generic
     [Serializable]
     public class HashSet<T> : ISet<T>, IReadOnlyCollection<T>, ISerializable
     {
-        private readonly NullAwareDictionary<T, object> _wrapped;
+        private readonly NullAwareDictionary<T, object?> _wrapped;
 
         public HashSet()
         {
-            _wrapped = new NullAwareDictionary<T, object>();
+            _wrapped = new NullAwareDictionary<T, object?>();
         }
 
         public HashSet(IEnumerable<T> collection)
@@ -28,7 +26,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(collection));
             }
 
-            _wrapped = new NullAwareDictionary<T, object>();
+            _wrapped = new NullAwareDictionary<T, object?>();
             foreach (var item in collection)
             {
                 _wrapped[item] = null;
@@ -37,7 +35,7 @@ namespace System.Collections.Generic
 
         public HashSet(IEqualityComparer<T> comparer)
         {
-            _wrapped = new NullAwareDictionary<T, object>(comparer);
+            _wrapped = new NullAwareDictionary<T, object?>(comparer);
         }
 
         public HashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
@@ -47,7 +45,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(collection));
             }
 
-            _wrapped = new NullAwareDictionary<T, object>(comparer);
+            _wrapped = new NullAwareDictionary<T, object?>(comparer);
             foreach (var item in collection)
             {
                 _wrapped[item] = null;
@@ -64,7 +62,9 @@ namespace System.Collections.Generic
             }
 
             No.Op(context);
-            _wrapped = new NullAwareDictionary<T, object>(info.GetValue("dictionary", typeof(KeyValuePair<T, object>[])) as KeyValuePair<T, object>[]);
+            _wrapped = info.GetValue("dictionary", typeof(KeyValuePair<T, object?>[])) is KeyValuePair<T, object?>[] recovered
+                ? new NullAwareDictionary<T, object?>(recovered)
+                : new NullAwareDictionary<T, object?>();
         }
 
         public IEqualityComparer<T> Comparer => _wrapped.Comparer;
@@ -392,14 +392,14 @@ namespace System.Collections.Generic
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
+            private readonly IEnumerator<KeyValuePair<T, object?>> _enumerator;
             private bool _valid;
 
             internal Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
                 _valid = false;
-                Current = default;
+                Current = default!;
             }
 
             public T Current { get; private set; }
@@ -410,7 +410,7 @@ namespace System.Collections.Generic
                 {
                     if (_valid)
                     {
-                        return Current;
+                        return Current!;
                     }
 
                     throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");

@@ -12,9 +12,6 @@ namespace System.Collections.Generic
     [Serializable]
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
-        [NonSerialized]
-        private SerializationInfo _serializationInfo;
-
         private readonly AVLTree<T, T> _wrapped;
 
         public SortedSet()
@@ -57,11 +54,37 @@ namespace System.Collections.Generic
 
         protected SortedSet(SerializationInfo info, StreamingContext context)
         {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
             No.Op(context);
-            _serializationInfo = info;
+            Comparer = (IComparer<T>)info.GetValue(nameof(Comparer), typeof(IComparer<T>));
+            _wrapped = new AVLTree<T, T>(Comparer);
+            var count = info.GetInt32(nameof(Count));
+            if (count != 0)
+            {
+                var value = (T[])info.GetValue("Items", typeof(T[]));
+                if (value == null)
+                {
+                    throw new SerializationException();
+                }
+
+                foreach (var item in value)
+                {
+                    Add(item);
+                }
+            }
+
+            info.GetInt32("Version");
+            if (Count != count)
+            {
+                throw new SerializationException();
+            }
         }
 
-        public IComparer<T> Comparer { get; private set; }
+        public IComparer<T> Comparer { get; }
 
         public int Count => GetCount();
         public T Max => GetMax();
@@ -210,7 +233,7 @@ namespace System.Collections.Generic
             var node = _wrapped.Root;
             if (node == null)
             {
-                return default;
+                return default!;
             }
 
             while (node.Right != null)
@@ -226,7 +249,7 @@ namespace System.Collections.Generic
             var node = _wrapped.Root;
             if (node == null)
             {
-                return default;
+                return default!;
             }
 
             while (node.Left != null)
@@ -255,44 +278,6 @@ namespace System.Collections.Generic
             info.AddValue("Version", 0);
         }
 
-        protected virtual void OnDeserialization(object sender)
-        {
-            No.Op(sender);
-            if (Comparer != null)
-            {
-                return;
-            }
-
-            if (_serializationInfo == null)
-            {
-                throw new SerializationException();
-            }
-
-            Comparer = (IComparer<T>)_serializationInfo.GetValue(nameof(Comparer), typeof(IComparer<T>));
-            var count = _serializationInfo.GetInt32(nameof(Count));
-            if (count != 0)
-            {
-                var value = (T[])_serializationInfo.GetValue("Items", typeof(T[]));
-                if (value == null)
-                {
-                    throw new SerializationException();
-                }
-
-                foreach (var item in value)
-                {
-                    Add(item);
-                }
-            }
-
-            _serializationInfo.GetInt32("Version");
-            if (Count != count)
-            {
-                throw new SerializationException();
-            }
-
-            _serializationInfo = null;
-        }
-
         protected virtual bool RemoveExtracted(T item)
         {
             return _wrapped.Remove(item);
@@ -316,7 +301,7 @@ namespace System.Collections.Generic
 
         void IDeserializationCallback.OnDeserialization(object sender)
         {
-            OnDeserialization(sender);
+            No.Op(sender);
         }
 
         [Serializable]
@@ -402,7 +387,7 @@ namespace System.Collections.Generic
                 var bound = _wrapped._wrapped.GetNearestLeft(_upper);
                 if (bound == null || Comparer.Compare(_lower, bound.Key) > 0)
                 {
-                    return default;
+                    return default!;
                 }
 
                 return bound.Key;
@@ -413,7 +398,7 @@ namespace System.Collections.Generic
                 var bound = _wrapped._wrapped.GetNearestRight(_lower);
                 if (bound == null || Comparer.Compare(_upper, bound.Key) < 0)
                 {
-                    return default;
+                    return default!;
                 }
 
                 return bound.Key;
