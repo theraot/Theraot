@@ -126,19 +126,18 @@ namespace System.Linq.Expressions.Compiler
         private void EmitLabelExpression(Expression expr, CompilationFlags flags)
         {
             var node = (LabelExpression)expr;
-            Debug.Assert(node.Target != null);
 
             // If we're an immediate child of a block, our label will already
             // be defined. If not, we need to define our own block so this
             // label isn't exposed except to its own child expression.
-            LabelInfo label = null;
+            LabelInfo? label = null;
 
-            if (_labelBlock.Kind == LabelScopeKind.Block)
+            if (_labelBlock?.Kind == LabelScopeKind.Block)
             {
                 _labelBlock.TryGetLabelInfo(node.Target, out label);
 
                 // We're in a block but didn't find our label, try switch
-                if (label == null && _labelBlock.Parent.Kind == LabelScopeKind.Switch)
+                if (label == null && _labelBlock.Parent?.Kind == LabelScopeKind.Switch)
                 {
                     _labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
                 }
@@ -193,7 +192,7 @@ namespace System.Linq.Expressions.Compiler
         private void PopLabelBlock(LabelScopeKind kind)
         {
             No.Op(kind);
-            Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
+            Debug.Assert(_labelBlock.Kind == kind);
             _labelBlock = _labelBlock.Parent;
         }
 
@@ -220,7 +219,7 @@ namespace System.Linq.Expressions.Compiler
             switch (node.NodeType)
             {
                 default:
-                    if (_labelBlock.Kind == LabelScopeKind.Expression)
+                    if (_labelBlock?.Kind == LabelScopeKind.Expression)
                     {
                         return false;
                     }
@@ -232,7 +231,7 @@ namespace System.Linq.Expressions.Compiler
                     // LabelExpression is a bit special, if it's directly in a
                     // block it becomes associate with the block's scope. Same
                     // thing if it's in a switch case body.
-                    if (_labelBlock.Kind == LabelScopeKind.Block)
+                    if (_labelBlock?.Kind == LabelScopeKind.Block)
                     {
                         var label = ((LabelExpression)node).Target;
                         if (_labelBlock.ContainsTarget(label))
@@ -240,7 +239,7 @@ namespace System.Linq.Expressions.Compiler
                             return false;
                         }
 
-                        if (_labelBlock.Parent.Kind == LabelScopeKind.Switch && _labelBlock.Parent.ContainsTarget(label))
+                        if (_labelBlock.Parent?.Kind == LabelScopeKind.Switch && _labelBlock.Parent.ContainsTarget(label))
                         {
                             return false;
                         }
@@ -259,7 +258,7 @@ namespace System.Linq.Expressions.Compiler
                     PushLabelBlock(LabelScopeKind.Block);
                     // Labels defined immediately in the block are valid for
                     // the whole block.
-                    if (_labelBlock.Parent.Kind != LabelScopeKind.Switch)
+                    if (_labelBlock?.Parent?.Kind != LabelScopeKind.Switch)
                     {
                         DefineBlockLabels(node);
                     }

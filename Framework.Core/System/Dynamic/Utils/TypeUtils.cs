@@ -1,9 +1,10 @@
-﻿#if LESSTHAN_NET45
+﻿using System.Diagnostics.CodeAnalysis;
+
+#if LESSTHAN_NET45
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -23,7 +24,7 @@ namespace System.Dynamic.Utils
             return t1 != null && t1 == t2;
         }
 
-        internal static Type FindGenericType(Type definition, Type type)
+        internal static Type? FindGenericType(Type definition, Type type)
         {
             while (type != null && type != typeof(object))
             {
@@ -50,11 +51,11 @@ namespace System.Dynamic.Utils
             return null;
         }
 
-        internal static MethodInfo GetBooleanOperator(Type type, string name)
+        internal static MethodInfo? GetBooleanOperator(Type type, string name)
         {
             do
             {
-                var result = type.GetStaticMethodInternal(name, new[] {type});
+                var result = type.GetStaticMethodInternal(name, new[] { type });
                 if (result?.IsSpecialName == true && !result.ContainsGenericParameters)
                 {
                     return result;
@@ -64,22 +65,6 @@ namespace System.Dynamic.Utils
             } while (type != null);
 
             return null;
-        }
-
-        internal static MethodInfo GetStaticMethod(this Type type, string name, Type[] types)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (types == null)
-            {
-                throw new ArgumentNullException(nameof(types));
-            }
-
-            // Don't use BindingFlags.Static
-            return Array.Find(type.GetMethods(), method => string.Equals(method.Name, name, StringComparison.Ordinal) && method.IsStatic && method.MatchesArgumentTypes(types));
         }
 
         internal static MethodInfo GetStaticMethodInternal(this Type type, string name, Type[] types)
@@ -247,11 +232,6 @@ namespace System.Dynamic.Utils
                 && type.GetElementType() == target.GetGenericArguments()[0];
         }
 
-        internal static bool IsAssignableTo(this Type type, ParameterInfo parameterInfo)
-        {
-            return IsAssignableTo(type.GetNotNullable(), parameterInfo.GetNonRefType());
-        }
-
         internal static bool IsAssignableTo(this Type type, Type target)
         {
             if (type == null)
@@ -287,27 +267,7 @@ namespace System.Dynamic.Utils
             }
         }
 
-        internal static bool IsGenericImplementationOf(this Type type, Type interfaceGenericTypeDefinition)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            return type.GetInterfaces().Any(currentInterface => currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition));
-        }
-
-        internal static bool IsGenericImplementationOf(this Type type, params Type[] interfaceGenericTypeDefinitions)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            return (from currentInterface in type.GetInterfaces() where currentInterface.IsGenericTypeDefinition select currentInterface.GetGenericTypeDefinition()).Any(match => Array.Exists(interfaceGenericTypeDefinitions, item => item == match));
-        }
-
-        internal static bool IsGenericImplementationOf(this Type type, out Type interfaceType, Type interfaceGenericTypeDefinition)
+        internal static bool IsGenericImplementationOf(this Type type, Type interfaceGenericTypeDefinition, [NotNullWhen(true)] out Type? interfaceType)
         {
             if (type == null)
             {
@@ -325,75 +285,7 @@ namespace System.Dynamic.Utils
                 return true;
             }
 
-            interfaceType = null;
-            return false;
-        }
-
-        internal static bool IsGenericImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceGenericTypeDefinitions)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            var implementedInterfaces = type.GetInterfaces();
-            foreach (var currentInterface in interfaceGenericTypeDefinitions)
-            {
-                var index = Array.FindIndex(implementedInterfaces, item => item.IsGenericInstanceOf(currentInterface));
-                if (index == -1)
-                {
-                    continue;
-                }
-
-                interfaceType = implementedInterfaces[index];
-                return true;
-            }
-
-            interfaceType = null;
-            return false;
-        }
-
-        internal static bool IsImplementationOf(this Type type, Type interfaceType)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            return type.GetInterfaces().Any(currentInterface => currentInterface == interfaceType);
-        }
-
-        internal static bool IsImplementationOf(this Type type, params Type[] interfaceTypes)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            return type.GetInterfaces().Any(currentInterface => Array.Exists(interfaceTypes, item => currentInterface == item));
-        }
-
-        internal static bool IsImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceTypes)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            var implementedInterfaces = type.GetInterfaces();
-            foreach (var currentInterface in interfaceTypes)
-            {
-                var index = Array.FindIndex(implementedInterfaces, item => item == currentInterface);
-                if (index == -1)
-                {
-                    continue;
-                }
-
-                interfaceType = implementedInterfaces[index];
-                return true;
-            }
-
-            interfaceType = null;
+            interfaceType = default;
             return false;
         }
 
@@ -480,21 +372,6 @@ namespace System.Dynamic.Utils
             }
 
             return true;
-        }
-
-        internal static bool IsReferenceAssignableFrom(this Type type, Type source)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            return type.IsReferenceAssignableFromInternal(source);
         }
 
         internal static bool IsReferenceAssignableFromInternal(this Type type, Type source)

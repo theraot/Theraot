@@ -20,6 +20,7 @@
 #define DEBUG // The behavior of this contract library should be consistent regardless of build type.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using Theraot;
@@ -417,10 +418,11 @@ namespace System.Diagnostics.Contracts
         /// </remarks>
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [return: MaybeNull]
         public static T OldValue<T>(T value)
         {
             No.Op(value);
-            return default;
+            return default!;
         }
 
         /// <summary>
@@ -513,9 +515,10 @@ namespace System.Diagnostics.Contracts
         /// </remarks>
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        [return: MaybeNull]
         public static T Result<T>()
         {
-            return default;
+            return default!;
         }
 
         /// <summary>
@@ -529,9 +532,10 @@ namespace System.Diagnostics.Contracts
         /// </remarks>
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public static T ValueAtReturn<T>(out T value)
+        [return: MaybeNull]
+        public static T ValueAtReturn<T>([MaybeNull] out T value)
         {
-            value = default;
+            value = default!;
             return value;
         }
     }

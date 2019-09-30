@@ -58,12 +58,14 @@ namespace System.Collections.Specialized
                     }
 
                     break;
+
                 case NotifyCollectionChangedAction.Reset when changedItems != null:
                     throw new ArgumentException("This constructor can only be used with the Reset action if changedItems is null", nameof(changedItems));
                 case NotifyCollectionChangedAction.Reset when startingIndex != -1:
                     throw new ArgumentException("This constructor can only be used with the Reset action if startingIndex is -1", nameof(startingIndex));
                 case NotifyCollectionChangedAction.Reset:
                     break;
+
                 default:
                     throw new ArgumentException("This constructor can only be used with the Reset, Add, or Remove actions.", nameof(action));
             }
@@ -71,7 +73,7 @@ namespace System.Collections.Specialized
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem, int index)
         {
-            IList changedItems = new[] {changedItem};
+            IList changedItems = new[] { changedItem };
             Action = action;
             switch (action)
             {
@@ -138,7 +140,7 @@ namespace System.Collections.Specialized
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem, int index, int oldIndex)
-            : this(action, new[] {changedItem}, index, oldIndex)
+            : this(action, new[] { changedItem }, index, oldIndex)
         {
             // Empty
         }
@@ -151,16 +153,16 @@ namespace System.Collections.Specialized
                 throw new ArgumentException("This constructor can only be used with the Replace action.", nameof(action));
             }
 
-            InitializeReplace(new[] {newItem}, new[] {oldItem}, index);
+            InitializeReplace(new[] { newItem }, new[] { oldItem }, index);
         }
 
         public NotifyCollectionChangedAction Action { get; }
 
-        public IList NewItems { get; private set; }
+        public IList? NewItems { get; private set; }
 
         public int NewStartingIndex { get; private set; } = -1;
 
-        public IList OldItems { get; private set; }
+        public IList? OldItems { get; private set; }
 
         public int OldStartingIndex { get; private set; } = -1;
 

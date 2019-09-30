@@ -70,7 +70,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 var p1 = Expression.Variable(b.Left.Type.GetNonNullable(), null);
                 var p2 = Expression.Variable(b.Right.Type.GetNonNullable(), null);
-                var mc = Expression.Call(null, b.Method, p1, p2);
+                var mc = Expression.Call(null, b.Method!, p1, p2);
                 Type resultType;
                 if (b.IsLiftedToNull)
                 {
@@ -94,11 +94,11 @@ namespace System.Linq.Expressions.Compiler
 
                 Debug.Assert(p1.Type.IsReferenceAssignableFromInternal(b.Left.Type.GetNonNullable()));
                 Debug.Assert(p2.Type.IsReferenceAssignableFromInternal(b.Right.Type.GetNonNullable()));
-                EmitLift(b.NodeType, resultType, mc, new[] {p1, p2}, new[] {b.Left, b.Right});
+                EmitLift(b.NodeType, resultType, mc, new[] { p1, p2 }, new[] { b.Left, b.Right });
             }
             else
             {
-                EmitMethodCallExpression(Expression.Call(null, b.Method, b.Left, b.Right), flags);
+                EmitMethodCallExpression(Expression.Call(null, b.Method!, b.Left, b.Right), flags);
             }
         }
 
@@ -145,6 +145,7 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Int16:
                     IL.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_I2 : OpCodes.Conv_I2);
                     break;
+
                 default:
                     break;
             }
@@ -215,7 +216,7 @@ namespace System.Linq.Expressions.Compiler
             EmitBinaryOperator(op, leftType.GetNonNullable(), rightType.GetNonNullable(), resultType.GetNonNullable(), false);
 
             // construct result type
-            var ci = resultType.GetConstructor(new[] {resultType.GetNonNullable()});
+            var ci = resultType.GetConstructor(new[] { resultType.GetNonNullable() });
             // ReSharper disable once AssignNullToNotNullAttribute
             IL.Emit(OpCodes.Newobj, ci);
             IL.Emit(OpCodes.Stloc, locResult);
@@ -296,6 +297,7 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     break;
+
                 default:
                     break;
             }
@@ -382,8 +384,8 @@ namespace System.Linq.Expressions.Compiler
             IL.EmitGetValueOrDefault(type);
             IL.Emit(OpCodes.Ldloca, locRight);
             IL.EmitGetValueOrDefault(type);
-            var unnullable = type.GetNonNullable();
-            EmitUnliftedBinaryOp(op, unnullable, unnullable);
+            var nonNullable = type.GetNonNullable();
+            EmitUnliftedBinaryOp(op, nonNullable, nonNullable);
             IL.Emit(OpCodes.Ldloca, locLeft);
             IL.EmitHasValue(type);
             IL.Emit(OpCodes.Ldloca, locRight);
@@ -427,8 +429,8 @@ namespace System.Linq.Expressions.Compiler
             IL.EmitGetValueOrDefault(type);
             FreeLocal(locLeft);
             FreeLocal(locRight);
-            var unnullable = type.GetNonNullable();
-            EmitUnliftedBinaryOp(op, unnullable, unnullable);
+            var nonNullable = type.GetNonNullable();
+            EmitUnliftedBinaryOp(op, nonNullable, nonNullable);
             IL.Emit(OpCodes.Newobj, CachedReflectionInfo.NullableBooleanCtor);
             IL.MarkLabel(end);
         }
@@ -585,6 +587,7 @@ namespace System.Linq.Expressions.Compiler
                     IL.Emit(leftType.IsUnsigned() ? OpCodes.Shr_Un : OpCodes.Shr);
                     // Guaranteed to fit within result type: no conversion
                     return;
+
                 default:
                     break;
             }

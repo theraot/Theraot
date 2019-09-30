@@ -184,6 +184,7 @@ namespace System.Linq.Expressions
                 case FieldInfo field:
                     memberType = field.FieldType;
                     return;
+
                 case PropertyInfo pi when !pi.CanRead:
                     throw new ArgumentException($"The property '{pi}' has no 'get' accessor", index >= 0 ? $"{paramName}[{index}]" : paramName);
                 case PropertyInfo pi when pi.GetGetMethod().IsStatic:
@@ -191,6 +192,7 @@ namespace System.Linq.Expressions
                 case PropertyInfo pi:
                     memberType = pi.PropertyType;
                     return;
+
                 case MethodInfo method when method.IsStatic:
                     throw new ArgumentException("Argument must be an instance member", index >= 0 ? $"{paramName}[{index}]" : paramName);
                 case MethodInfo method:
@@ -198,6 +200,7 @@ namespace System.Linq.Expressions
                     member = prop;
                     memberType = prop.PropertyType;
                     break;
+
                 default:
                     throw new ArgumentException("Argument must be either a FieldInfo, PropertyInfo or MethodInfo", index >= 0 ? $"{paramName}[{index}]" : paramName);
             }
@@ -389,6 +392,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitNew(this);
         }
     }

@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using Theraot;
 
 #if NET35
+
 using System.Runtime.CompilerServices;
 
 #endif
@@ -31,8 +32,8 @@ namespace System.Collections.Generic
             // Empty
         }
 
-        public HashSetEx(IEqualityComparer<T> comparer)
-            : base(comparer)
+        public HashSetEx(IEqualityComparer<T>? comparer)
+            : base(comparer ?? EqualityComparer<T>.Default)
         {
             // Empty
         }

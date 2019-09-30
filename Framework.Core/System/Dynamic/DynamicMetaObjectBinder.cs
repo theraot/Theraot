@@ -2,6 +2,7 @@
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
+// ReSharper disable MemberCanBeMadeStatic.Global
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -18,14 +19,14 @@ namespace System.Dynamic
 {
     /// <inheritdoc />
     /// <summary>
-    ///     The dynamic call site binder that participates in the <see cref="T:System.Dynamic.DynamicMetaObject" /> binding
+    ///     The dynamic call site binder that participates in the <see cref="DynamicMetaObject" /> binding
     ///     protocol.
     /// </summary>
     /// <remarks>
-    ///     The <see cref="T:System.Runtime.CompilerServices.CallSiteBinder" /> performs the binding of the dynamic operation
+    ///     The <see cref="CallSiteBinder" /> performs the binding of the dynamic operation
     ///     using the runtime values
-    ///     as input. On the other hand, the <see cref="T:System.Dynamic.DynamicMetaObjectBinder" /> participates in the
-    ///     <see cref="T:System.Dynamic.DynamicMetaObject" />
+    ///     as input. On the other hand, the <see cref="DynamicMetaObjectBinder" /> participates in the
+    ///     <see cref="DynamicMetaObject" />
     ///     binding protocol.
     /// </remarks>
     public abstract class DynamicMetaObjectBinder : CallSiteBinder
@@ -46,7 +47,7 @@ namespace System.Dynamic
         /// </summary>
         /// <param name="args">An array of arguments to the dynamic operation.</param>
         /// <param name="parameters">
-        ///     The array of <see cref="T:System.Linq.Expressions.ParameterExpression" /> instances that represent the parameters
+        ///     The array of <see cref="ParameterExpression" /> instances that represent the parameters
         ///     of the
         ///     call site in the binding process.
         /// </param>
@@ -55,7 +56,7 @@ namespace System.Dynamic
         ///     An Expression that performs tests on the dynamic operation arguments, and
         ///     performs the dynamic operation if the tests are valid. If the tests fail on
         ///     subsequent occurrences of the dynamic operation, Bind will be called again
-        ///     to produce a new <see cref="T:System.Linq.Expressions.Expression" /> for the new argument types.
+        ///     to produce a new <see cref="Expression" /> for the new argument types.
         /// </returns>
         public sealed override Expression Bind(object[] args, ReadOnlyCollection<ParameterExpression> parameters, LabelTarget returnLabel)
         {
@@ -129,7 +130,7 @@ namespace System.Dynamic
             // ideally IDO meta-objects should do this, but they often miss that type of "this" is significant.
             if (IsStandardBinder && args[0] is IDynamicMetaObjectProvider && restrictions == BindingRestrictions.Empty)
             {
-                throw new InvalidOperationException($"The result of the dynamic binding produced by the object with type '{target.Value.GetType()}' for the binder '{this}' needs at least one restriction.");
+                throw new InvalidOperationException($"The result of the dynamic binding produced by the object with type '{target.Value?.GetType()}' for the binder '{this}' needs at least one restriction.");
             }
 
             // Add the return

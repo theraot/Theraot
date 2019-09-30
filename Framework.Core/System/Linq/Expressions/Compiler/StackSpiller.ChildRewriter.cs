@@ -32,7 +32,7 @@ namespace System.Linq.Expressions.Compiler
             /// <summary>
             ///     The child expressions being rewritten.
             /// </summary>
-            private readonly Expression[] _expressions;
+            private readonly Expression?[] _expressions;
 
             /// <summary>
             ///     The parent stack spiller, used to perform rewrites of expressions
@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Compiler
             ///     requires use of a <see cref="ByRefAssignBinaryExpression" /> node
             ///     to perform spilling.
             /// </summary>
-            private bool[] _byRefs;
+            private bool[]? _byRefs;
 
             /// <summary>
             ///     The comma of expressions that will evaluate the parent expression
@@ -68,7 +68,7 @@ namespace System.Linq.Expressions.Compiler
             ///     </c>
             ///     These get wrapped in a Block in the <see cref="Rewrite" /> method.
             /// </example>
-            private List<Expression> _comma;
+            private List<Expression>? _comma;
 
             private bool _done;
 
@@ -120,7 +120,7 @@ namespace System.Linq.Expressions.Compiler
             /// <returns>
             ///     The rewritten child expression at the specified <paramref name="index" />.
             /// </returns>
-            internal Expression this[int index]
+            internal Expression? this[int index]
             {
                 get
                 {
@@ -154,7 +154,7 @@ namespace System.Linq.Expressions.Compiler
             ///     The rewritten child expressions between the specified <paramref name="first" />
             ///     and <paramref name="last" /> (inclusive) indexes.
             /// </returns>
-            internal Expression[] this[int first, int last]
+            internal Expression?[] this[int first, int last]
             {
                 get
                 {
@@ -188,7 +188,7 @@ namespace System.Linq.Expressions.Compiler
             ///     stack state and rewrite action to be updated accordingly.
             /// </summary>
             /// <param name="expression">The child expression to add.</param>
-            internal void Add(Expression expression)
+            internal void Add(Expression? expression)
             {
                 Debug.Assert(!_done);
 
@@ -217,7 +217,7 @@ namespace System.Linq.Expressions.Compiler
             ///     stack state and rewrite action to be updated accordingly.
             /// </summary>
             /// <param name="expressions">The child expressions to add.</param>
-            internal void Add(ReadOnlyCollection<Expression> expressions)
+            internal void Add(ReadOnlyCollection<Expression?> expressions)
             {
                 for (int i = 0, count = expressions.Count; i < count; i++)
                 {
@@ -266,7 +266,7 @@ namespace System.Linq.Expressions.Compiler
                     return new Result(Action, expression);
                 }
 
-                Debug.Assert(_comma.Capacity == _comma.Count + 1);
+                Debug.Assert(_comma!.Capacity == _comma.Count + 1);
                 _comma.Add(expression);
                 expression = MakeBlock(_comma.ToArray());
 
@@ -298,7 +298,7 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
 
-            internal void MarkRefInstance(Expression expr)
+            internal void MarkRefInstance(Expression? expr)
             {
                 if (IsRefInstance(expr))
                 {
@@ -319,11 +319,6 @@ namespace System.Linq.Expressions.Compiler
             /// </returns>
             private static bool ShouldSaveToTemp(Expression expression)
             {
-                if (expression == null)
-                {
-                    return false;
-                }
-
                 // Some expressions have no side-effects and don't have to be
                 // stored into temporaries, e.g.
                 //
@@ -407,7 +402,7 @@ namespace System.Linq.Expressions.Compiler
                 for (var i = 0; i < count; i++)
                 {
                     var current = clone[i];
-                    if (!ShouldSaveToTemp(current))
+                    if (current == null || !ShouldSaveToTemp(current))
                     {
                         continue;
                     }

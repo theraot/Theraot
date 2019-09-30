@@ -38,13 +38,15 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         internal static event EventHandler<ContractFailedEventArgs> InternalContractFailed
         {
-            [SecurityCritical] add => _contractFailedEvent.Add(value);
-            [SecurityCritical] remove => _contractFailedEvent.Remove(value);
+            [SecurityCritical]
+            add => _contractFailedEvent.Add(value);
+            [SecurityCritical]
+            remove => _contractFailedEvent.Remove(value);
         }
 
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
+        public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string? userMessage, string? conditionText, Exception? innerException)
         {
             var resultFailureMessage = "Contract failed"; // default in case implementation does not assign anything.
             RaiseContractFailedEventImplementation(failureKind, userMessage, conditionText, innerException, ref resultFailureMessage);
@@ -53,7 +55,7 @@ namespace System.Runtime.CompilerServices
 
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public static void TriggerFailure(ContractFailureKind kind, string displayMessage, string userMessage, string conditionText, Exception innerException)
+        public static void TriggerFailure(ContractFailureKind kind, string displayMessage, string? userMessage, string? conditionText, Exception? innerException)
         {
             TriggerFailureImplementation(kind, displayMessage, userMessage, conditionText, innerException);
         }
@@ -81,8 +83,7 @@ namespace System.Runtime.CompilerServices
 
         [DebuggerNonUserCode]
         [SecuritySafeCritical]
-        private static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string userMessage,
-            string conditionText, Exception innerException, ref string resultFailureMessage)
+        private static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string? userMessage, string? conditionText, Exception? innerException, ref string resultFailureMessage)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {
@@ -137,8 +138,7 @@ namespace System.Runtime.CompilerServices
 
         [DebuggerNonUserCode]
         [SecuritySafeCritical]
-        private static void TriggerFailureImplementation(ContractFailureKind kind, string displayMessage,
-            string userMessage, string conditionText, Exception innerException)
+        private static void TriggerFailureImplementation(ContractFailureKind kind, string displayMessage, string? userMessage, string? conditionText, Exception? innerException)
         {
             // If we're here, our intent is to pop up a dialog box (if we can).  For developers
             // interacting live with a debugger, this is a good experience.  For Silverlight

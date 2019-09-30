@@ -72,11 +72,11 @@ namespace System.Collections
         internal const int MaxArrayLength = 0X7FEFFFFF;
 
         private IComparer _comparer;
-        private KeyList _keyList;
-        private object[] _keys;
+        private KeyList? _keyList;
+        private object?[] _keys;
         private int _size;
-        private ValueList _valueList;
-        private object[] _values;
+        private ValueList? _valueList;
+        private object?[] _values;
         private int _version;
 
         // Constructs a new sorted list. The sorted list is initially empty and has
@@ -87,7 +87,10 @@ namespace System.Collections
         // all entries added to the sorted list.
         public SortedList()
         {
-            Init();
+            _keys = ArrayEx.Empty<object>();
+            _values = ArrayEx.Empty<object>();
+            _size = 0;
+            _comparer = new Comparer(CultureInfo.CurrentCulture);
         }
 
         // Constructs a new sorted list. The sorted list is initially empty and has
@@ -119,7 +122,7 @@ namespace System.Collections
         // interface, which in that case must be implemented by the keys of all
         // entries added to the sorted list.
         //
-        public SortedList(IComparer comparer)
+        public SortedList(IComparer? comparer)
             : this()
         {
             if (comparer != null)
@@ -137,7 +140,7 @@ namespace System.Collections
         // the IComparable interface, which in that case must be implemented
         // by the keys of all entries added to the sorted list.
         //
-        public SortedList(IComparer comparer, int capacity)
+        public SortedList(IComparer? comparer, int capacity)
             : this(comparer)
         {
             // ReSharper disable once VirtualMemberCallInConstructor
@@ -164,7 +167,7 @@ namespace System.Collections
         // by the keys of all entries in the given dictionary as well as keys
         // subsequently added to the sorted list.
         //
-        public SortedList(IDictionary d, IComparer comparer)
+        public SortedList(IDictionary d, IComparer? comparer)
             : this(comparer, d?.Count ?? 0)
         {
             if (d == null)
@@ -256,7 +259,7 @@ namespace System.Collections
         // Returns the value associated with the given key. If an entry with the
         // given key is not found, the returned value is null.
         //
-        public virtual object this[object key]
+        public virtual object? this[object key]
         {
             get
             {
@@ -353,7 +356,7 @@ namespace System.Collections
         //
         public virtual bool ContainsKey(object key)
         {
-            // Yes, this is a SPEC'ed duplicate of Contains().
+            // Yes, this is a documented duplicate of Contains().
             return IndexOfKey(key) >= 0;
         }
 
@@ -400,7 +403,7 @@ namespace System.Collections
 
         // Returns the value of the entry at the given index.
         //
-        public virtual object GetByIndex(int index)
+        public virtual object? GetByIndex(int index)
         {
             if (index < 0 || index >= Count)
             {
@@ -422,7 +425,7 @@ namespace System.Collections
 
         // Returns the key of the entry at the given index.
         //
-        public virtual object GetKey(int index)
+        public virtual object? GetKey(int index)
         {
             if (index < 0 || index >= Count)
             {
@@ -601,16 +604,8 @@ namespace System.Collections
             return new SortedListEnumerator(this, 0, _size, SortedListEnumerator.DictEntry);
         }
 
-        private void Init()
-        {
-            _keys = ArrayEx.Empty<object>();
-            _values = ArrayEx.Empty<object>();
-            _size = 0;
-            _comparer = new Comparer(CultureInfo.CurrentCulture);
-        }
-
         // Inserts an entry with a given key and value at a given index.
-        private void Insert(int index, object key, object value)
+        private void Insert(int index, object key, object? value)
         {
             if (_size == _keys.Length)
             {
@@ -646,7 +641,7 @@ namespace System.Collections
 
             public object SyncRoot => _sortedList.SyncRoot;
 
-            public object this[int index]
+            public object? this[int index]
             {
                 get => _sortedList.GetKey(index);
                 set => throw new NotSupportedException("Mutating a key collection derived from a dictionary is not allowed.");
@@ -740,10 +735,10 @@ namespace System.Collections
             private readonly int _endIndex;
             private readonly int _getObjectRetType;
             private int _index;
-            private object _key;
+            private object? _key;
             private readonly SortedList _sortedList;
             private readonly int _startIndex;
-            private object _value;
+            private object? _value;
 
             // Store for Reset.
             private readonly int _version;
@@ -761,7 +756,7 @@ namespace System.Collections
                 _current = false;
             }
 
-            public object Current
+            public object? Current
             {
                 get
                 {
@@ -770,7 +765,11 @@ namespace System.Collections
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
 
-                    return _getObjectRetType == Keys ? _key : _getObjectRetType == Values ? _value : new DictionaryEntry(_key, _value);
+                    return _getObjectRetType == Keys
+                        ? _key
+                        : _getObjectRetType == Values
+                            ? _value
+                            : new DictionaryEntry(_key, _value);
                 }
             }
 
@@ -792,7 +791,7 @@ namespace System.Collections
                 }
             }
 
-            public object Key
+            public object? Key
             {
                 get
                 {
@@ -810,7 +809,7 @@ namespace System.Collections
                 }
             }
 
-            public object Value
+            public object? Value
             {
                 get
                 {
@@ -894,7 +893,7 @@ namespace System.Collections
             public override bool IsSynchronized => true;
             public override object SyncRoot => _root;
 
-            public override object this[object key]
+            public override object? this[object key]
             {
                 get
                 {
@@ -968,7 +967,7 @@ namespace System.Collections
                 }
             }
 
-            public override object GetByIndex(int index)
+            public override object? GetByIndex(int index)
             {
                 lock (_root)
                 {
@@ -984,7 +983,7 @@ namespace System.Collections
                 }
             }
 
-            public override object GetKey(int index)
+            public override object? GetKey(int index)
             {
                 lock (_root)
                 {
@@ -1080,7 +1079,7 @@ namespace System.Collections
 
             public object SyncRoot => _sortedList.SyncRoot;
 
-            public object this[int index]
+            public object? this[int index]
             {
                 get => _sortedList.GetByIndex(index);
                 set => throw new NotSupportedException("This operation is not supported on SortedList nested types because they require modifying the original SortedList.");

@@ -6,7 +6,6 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Dynamic.Utils;
 using Theraot.Core;
 
@@ -108,7 +107,7 @@ namespace System.Linq.Expressions.Compiler
             _scopes.Push(_tree.Scopes[node] = new CompilerScope(lambda, false));
             Visit(MergeScopes(lambda));
             _scopes.Pop();
-            // visit the invoke's arguments
+            // visit the invoke arguments
             for (int i = 0, n = node.ArgumentCount; i < n; i++)
             {
                 Visit(node.GetArgument(i));
@@ -129,33 +128,43 @@ namespace System.Linq.Expressions.Compiler
 
         protected internal override Expression VisitParameter(ParameterExpression node)
         {
-            Reference(node, VariableStorageKind.Local);
-
-            //
-            // Track reference count so we can emit it in a more optimal way if
-            // it is used a lot.
-            //
-            CompilerScope referenceScope = null;
+            var storage = VariableStorageKind.Local;
+            CompilerScope? definition = null;
+            CompilerScope? referenceScope = null;
             foreach (var scope in _scopes)
             {
-                //
-                // There are two times we care about references:
-                //   1. When we enter a lambda, we want to cache frequently
-                //      used variables
-                //   2. When we enter a scope with closed-over variables, we
-                //      want to cache it immediately when we allocate the
-                //      closure slot for it
-                //
-                if (!scope.IsMethod && !scope.Definitions.ContainsKey(node))
+                if (scope.Definitions.ContainsKey(node))
+                {
+                    definition = scope;
+                    break;
+                }
+
+                scope.NeedsClosure = true;
+                if (!scope.IsMethod)
                 {
                     continue;
                 }
 
+                storage = VariableStorageKind.Hoisted;
                 referenceScope = scope;
-                break;
             }
 
-            Debug.Assert(referenceScope != null);
+            if (definition == null)
+            {
+                throw new InvalidOperationException($"variable '{node.Name}' of type '{node.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
+            }
+
+            if (storage == VariableStorageKind.Hoisted)
+            {
+                if (node.IsByRef)
+                {
+                    throw new InvalidOperationException($"Cannot close over byref parameter '{node.Name}' referenced in lambda '{CurrentLambdaName}'");
+                }
+
+                definition.Definitions[node] = VariableStorageKind.Hoisted;
+            }
+
+            referenceScope ??= definition;
 
             (referenceScope.ReferenceCount ?? (referenceScope.ReferenceCount = new Dictionary<ParameterExpression, int>())).TryGetValue(node, out var count);
             referenceScope.ReferenceCount[node] = count + 1;
@@ -167,7 +176,29 @@ namespace System.Linq.Expressions.Compiler
             foreach (var v in node.Variables)
             {
                 // Force hoisting of these variables
-                Reference(v, VariableStorageKind.Hoisted);
+                CompilerScope? definition = null;
+                foreach (var scope in _scopes)
+                {
+                    if (scope.Definitions.ContainsKey(v))
+                    {
+                        definition = scope;
+                        break;
+                    }
+
+                    scope.NeedsClosure = true;
+                }
+
+                if (definition == null)
+                {
+                    throw new InvalidOperationException($"variable '{v.Name}' of type '{v.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
+                }
+
+                if (v.IsByRef)
+                {
+                    throw new InvalidOperationException($"Cannot close over byref parameter '{v.Name}' referenced in lambda '{CurrentLambdaName}'");
+                }
+
+                definition.Definitions[v] = VariableStorageKind.Hoisted;
             }
 
             return node;
@@ -211,7 +242,7 @@ namespace System.Linq.Expressions.Compiler
         // array accesses.
         private ReadOnlyCollection<Expression> MergeScopes(Expression node)
         {
-            var body = node is LambdaExpression lambda ? new ReadOnlyCollection<Expression>(new[] {lambda.Body}) : ((BlockExpression)node).Expressions;
+            var body = node is LambdaExpression lambda ? new ReadOnlyCollection<Expression>(new[] { lambda.Body }) : ((BlockExpression)node).Expressions;
 
             var currentScope = _scopes.Peek();
 
@@ -246,42 +277,6 @@ namespace System.Linq.Expressions.Compiler
             }
 
             return body;
-        }
-
-        private void Reference(ParameterExpression node, VariableStorageKind storage)
-        {
-            CompilerScope definition = null;
-            foreach (var scope in _scopes)
-            {
-                if (scope.Definitions.ContainsKey(node))
-                {
-                    definition = scope;
-                    break;
-                }
-
-                scope.NeedsClosure = true;
-                if (scope.IsMethod)
-                {
-                    storage = VariableStorageKind.Hoisted;
-                }
-            }
-
-            if (definition == null)
-            {
-                throw new InvalidOperationException($"variable '{node.Name}' of type '{node.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
-            }
-
-            if (storage != VariableStorageKind.Hoisted)
-            {
-                return;
-            }
-
-            if (node.IsByRef)
-            {
-                throw new InvalidOperationException($"Cannot close over byref parameter '{node.Name}' referenced in lambda '{CurrentLambdaName}'");
-            }
-
-            definition.Definitions[node] = VariableStorageKind.Hoisted;
         }
     }
 }

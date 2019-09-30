@@ -71,7 +71,7 @@ namespace System.Linq.Expressions
         /// <param name="arg0">The <see cref="Expression"/> that represents the first argument.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="method"/> is null.</exception>
-        public static MethodCallExpression Call(MethodInfo method, Expression arg0)
+        public static MethodCallExpression Call(MethodInfo? method, Expression arg0)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
@@ -224,7 +224,7 @@ namespace System.Linq.Expressions
         /// <param name="instance">An <see cref="Expression"/> that specifies the instance for an instance call. (pass null for a static (Shared in Visual Basic) method).</param>
         /// <param name="method">The <see cref="MethodInfo"/> that represents the target method.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));
 
@@ -247,9 +247,9 @@ namespace System.Linq.Expressions
         /// <param name="method">The <see cref="MethodInfo"/> that represents the target method.</param>
         /// <param name="arguments">An array of one or more of <see cref="Expression"/> that represents the call arguments.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method, params Expression[] arguments)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method, params Expression?[] arguments)
         {
-            return Call(instance, method, (IEnumerable<Expression>)arguments);
+            return Call(instance, method, (IEnumerable<Expression?>)arguments);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace System.Linq.Expressions
         /// <param name="arg0">The <see cref="Expression"/> that represents the first argument.</param>
         /// <param name="arg1">The <see cref="Expression"/> that represents the second argument.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method, Expression arg0, Expression arg1)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method, Expression arg0, Expression arg1)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
@@ -290,7 +290,7 @@ namespace System.Linq.Expressions
         /// <param name="arg1">The <see cref="Expression"/> that represents the second argument.</param>
         /// <param name="arg2">The <see cref="Expression"/> that represents the third argument.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method, Expression arg0, Expression arg1, Expression arg2)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method, Expression arg0, Expression arg1, Expression arg2)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
@@ -325,14 +325,10 @@ namespace System.Linq.Expressions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="instance"/> or <paramref name="methodName"/> is null.</exception>
         /// <exception cref="InvalidOperationException">No method whose name is <paramref name="methodName"/>, whose type parameters match <paramref name="typeArguments"/>, and whose parameter types match <paramref name="arguments"/> is found in <paramref name="instance"/>.Type or its base types.-or-More than one method whose name is <paramref name="methodName"/>, whose type parameters match <paramref name="typeArguments"/>, and whose parameter types match <paramref name="arguments"/> is found in <paramref name="instance"/>.Type or its base types.</exception>
-        public static MethodCallExpression Call(Expression instance, string methodName, Type[] typeArguments, params Expression[] arguments)
+        public static MethodCallExpression Call(Expression instance, string methodName, Type[]? typeArguments, params Expression[] arguments)
         {
             ContractUtils.RequiresNotNull(instance, nameof(instance));
             ContractUtils.RequiresNotNull(methodName, nameof(methodName));
-            if (arguments == null)
-            {
-                arguments = ArrayEx.Empty<Expression>();
-            }
 
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return Call(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
@@ -350,15 +346,10 @@ namespace System.Linq.Expressions
         /// <exception cref="ArgumentNullException">
         /// <paramref name="type"/> or <paramref name="methodName"/> is null.</exception>
         /// <exception cref="InvalidOperationException">No method whose name is <paramref name="methodName"/>, whose type parameters match <paramref name="typeArguments"/>, and whose parameter types match <paramref name="arguments"/> is found in <paramref name="type"/> or its base types.-or-More than one method whose name is <paramref name="methodName"/>, whose type parameters match <paramref name="typeArguments"/>, and whose parameter types match <paramref name="arguments"/> is found in <paramref name="type"/> or its base types.</exception>
-        public static MethodCallExpression Call(Type type, string methodName, Type[] typeArguments, params Expression[] arguments)
+        public static MethodCallExpression Call(Type type, string methodName, Type[]? typeArguments, params Expression[] arguments)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(methodName, nameof(methodName));
-
-            if (arguments == null)
-            {
-                arguments = ArrayEx.Empty<Expression>();
-            }
 
             const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return Call(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
@@ -373,8 +364,13 @@ namespace System.Linq.Expressions
         /// <paramref name="method"/> is null.-or-<paramref name="instance"/> is null and <paramref name="method"/> represents an instance method.</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="instance"/>.Type is not assignable to the declaring type of the method represented by <paramref name="method"/>.-or-The number of elements in <paramref name="arguments"/> does not equal the number of parameters for the method represented by <paramref name="method"/>.-or-One or more of the elements of <paramref name="arguments"/> is not assignable to the corresponding parameter for the method represented by <paramref name="method"/>.</exception>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method, IEnumerable<Expression>? arguments)
         {
+            if (arguments == null)
+            {
+                return Call(instance, method);
+            }
+
             var argumentList = arguments.AsArrayInternal();
 
             var argCount = argumentList.Length;
@@ -451,7 +447,7 @@ namespace System.Linq.Expressions
         /// <param name="method">The <see cref="MethodInfo"/> that represents the target method.</param>
         /// <param name="arg0">The <see cref="Expression"/> that represents the first argument.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        internal static MethodCallExpression Call(Expression instance, MethodInfo method, Expression arg0)
+        internal static MethodCallExpression Call(Expression? instance, MethodInfo method, Expression arg0)
         {
             // COMPAT: This method is marked as non-public to ensure compile-time compatibility for Expression.Call(e, m, null).
 
@@ -472,7 +468,7 @@ namespace System.Linq.Expressions
             return new MethodCallExpression1(method, arg0);
         }
 
-        private static MethodInfo ApplyTypeArgs(MethodInfo m, Type[] typeArgs)
+        private static MethodInfo? ApplyTypeArgs(MethodInfo m, Type[]? typeArgs)
         {
             if (typeArgs == null || typeArgs.Length == 0)
             {
@@ -492,10 +488,10 @@ namespace System.Linq.Expressions
             return null;
         }
 
-        private static MethodInfo FindMethod(Type type, string methodName, Type[] typeArgs, Expression[] args, BindingFlags flags)
+        private static MethodInfo FindMethod(Type type, string methodName, Type[]? typeArgs, Expression[] args, BindingFlags flags)
         {
             var count = 0;
-            MethodInfo method = null;
+            MethodInfo? method = null;
 
             foreach (var mi in type.GetMethods(flags))
             {
@@ -538,7 +534,7 @@ namespace System.Linq.Expressions
                 throw new InvalidOperationException($"More than one method '{methodName}' on type '{type}' is compatible with the supplied arguments.");
             }
 
-            return method;
+            return method!;
         }
 
         private static ParameterInfo[] GetParametersForValidation(MethodBase method, ExpressionType nodeKind)
@@ -598,7 +594,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static ParameterInfo[] ValidateMethodAndGetParameters(Expression instance, MethodInfo method)
+        private static ParameterInfo[] ValidateMethodAndGetParameters(Expression? instance, MethodInfo method)
         {
             ValidateMethodInfo(method, nameof(method));
             ValidateStaticOrInstanceMethod(instance, method);
@@ -611,7 +607,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ValidateOneArgument(method, nodeKind, arg, pi, methodParamName, argumentParamName);
         }
 
-        private static void ValidateStaticOrInstanceMethod(Expression instance, MethodInfo method)
+        private static void ValidateStaticOrInstanceMethod(Expression? instance, MethodInfo method)
         {
             if (method.IsStatic)
             {
@@ -661,22 +657,22 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        /// Returns the node type of this <see cref="Expression" />. (Inherited from <see cref="Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Call;
 
         /// <summary>
         /// Gets the <see cref="Expression"/> that represents the instance
         /// for instance method calls or null for static method calls.
         /// </summary>
-        public Expression Object => GetInstance();
+        public Expression? Object => GetInstance();
 
         /// <inheritdoc />
         /// <summary>
-        /// Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents. (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        /// Gets the static type of the expression that this <see cref="Expression" /> represents. (Inherited from <see cref="Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type => Method.ReturnType;
 
         /// <summary>
@@ -706,7 +702,7 @@ namespace System.Linq.Expressions
 
             // Ensure arguments is safe to enumerate twice.
             // (If this means a second call to ToReadOnlyCollection it will return quickly).
-            ICollection<Expression> args;
+            ICollection<Expression>? args;
             if (arguments == null)
             {
                 args = null;
@@ -723,7 +719,7 @@ namespace System.Linq.Expressions
             return SameArguments(args) ? this : Call(@object, Method, arguments);
         }
 
-        internal virtual Expression GetInstance()
+        internal virtual Expression? GetInstance()
         {
             return null;
         }
@@ -738,26 +734,29 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        internal virtual bool SameArguments(ICollection<Expression> arguments)
+        internal virtual bool SameArguments(ICollection<Expression?>? arguments)
         {
             throw ContractUtils.Unreachable;
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitMethodCall(this);
         }
     }
 
     internal class InstanceMethodCallExpression : MethodCallExpression
     {
-        private readonly Expression _instance;
+        private readonly Expression? _instance;
 
-        public InstanceMethodCallExpression(MethodInfo method, Expression instance)
+        public InstanceMethodCallExpression(MethodInfo method, Expression? instance)
             : base(method)
         {
-            Debug.Assert(instance != null);
-
             _instance = instance;
         }
 
@@ -789,13 +788,12 @@ namespace System.Linq.Expressions
 
         internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
         {
-            Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == 0);
 
             return Call(instance, Method);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             return arguments == null || arguments.Count == 0;
         }
@@ -829,13 +827,12 @@ namespace System.Linq.Expressions
 
         internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
         {
-            Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == 1);
 
             return Call(instance, Method, args != null ? args[0] : ExpressionUtils.ReturnObject<Expression>(_arg0));
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 1)
             {
@@ -889,16 +886,16 @@ namespace System.Linq.Expressions
             return args != null ? Call(instance, Method, args[0], args[1]) : Call(instance, Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 2)
             {
                 return false;
             }
 
-            if (_arg0 is Expression[] alreadyArray)
+            if (_arg0 is Expression?[] alreadyArray)
             {
-                return ExpressionUtils.SameElements(arguments, alreadyArray);
+                return ExpressionUtils.SameElementsWithPossibleNulls(arguments, alreadyArray);
             }
 
             using (var en = arguments.GetEnumerator())
@@ -956,16 +953,16 @@ namespace System.Linq.Expressions
             return args != null ? Call(instance, Method, args[0], args[1], args[2]) : Call(instance, Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 3)
             {
                 return false;
             }
 
-            if (_arg0 is Expression[] alreadyArray)
+            if (_arg0 is Expression?[] alreadyArray)
             {
-                return ExpressionUtils.SameElements(arguments, alreadyArray);
+                return ExpressionUtils.SameElementsWithPossibleNulls(arguments, alreadyArray);
             }
 
             using (var en = arguments.GetEnumerator())
@@ -990,10 +987,10 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpressionN : InstanceMethodCallExpression, IArgumentProvider
     {
-        private readonly Expression[] _arguments;
+        private readonly Expression?[] _arguments;
         private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
 
-        public InstanceMethodCallExpressionN(MethodInfo method, Expression instance, Expression[] args)
+        public InstanceMethodCallExpressionN(MethodInfo method, Expression? instance, Expression?[] args)
             : base(method, instance)
         {
             _arguments = args;
@@ -1012,17 +1009,16 @@ namespace System.Linq.Expressions
             return _argumentsAsReadOnlyCollection;
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression?> args)
         {
-            Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
             return Call(instance, Method, args == null ? _arguments : args.AsArrayInternal());
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
-            return ExpressionUtils.SameElements(arguments, _arguments);
+            return ExpressionUtils.SameElementsWithPossibleNulls(arguments, _arguments);
         }
     }
 
@@ -1054,7 +1050,7 @@ namespace System.Linq.Expressions
             return Call(Method);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             return arguments == null || arguments.Count == 0;
         }
@@ -1094,7 +1090,7 @@ namespace System.Linq.Expressions
             return Call(Method, args != null ? args[0] : ExpressionUtils.ReturnObject<Expression>(_arg0));
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 1)
             {
@@ -1148,7 +1144,7 @@ namespace System.Linq.Expressions
             return args != null ? Call(Method, args[0], args[1]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 2)
             {
@@ -1215,7 +1211,7 @@ namespace System.Linq.Expressions
             return args != null ? Call(Method, args[0], args[1], args[2]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 3)
             {
@@ -1290,7 +1286,7 @@ namespace System.Linq.Expressions
             return args != null ? Call(Method, args[0], args[1], args[2], args[3]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 4)
             {
@@ -1373,7 +1369,7 @@ namespace System.Linq.Expressions
             return args != null ? Call(Method, args[0], args[1], args[2], args[3], args[4]) : Call(Method, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
             if (arguments?.Count != 5)
             {
@@ -1419,10 +1415,10 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpressionN : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression[] _arguments;
-        private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
+        private readonly Expression?[] _arguments;
+        private readonly ReadOnlyCollectionEx<Expression?> _argumentsAsReadOnlyCollection;
 
-        public MethodCallExpressionN(MethodInfo method, Expression[] args)
+        public MethodCallExpressionN(MethodInfo method, Expression?[] args)
             : base(method)
         {
             _arguments = args;
@@ -1449,9 +1445,9 @@ namespace System.Linq.Expressions
             return Call(Method, args == null ? _arguments : args.AsArrayInternal());
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression?>? arguments)
         {
-            return ExpressionUtils.SameElements(arguments, _arguments);
+            return ExpressionUtils.SameElementsWithPossibleNulls(arguments, _arguments);
         }
     }
 }

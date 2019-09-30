@@ -12,7 +12,7 @@ namespace System.Linq.Expressions
     {
         /// <inheritdoc />
         /// <summary>
-        ///     Visits the children of the <see cref="T:System.Linq.Expressions.DynamicExpression" />.
+        ///     Visits the children of the <see cref="System.Linq.Expressions.DynamicExpression" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
         /// <returns>
@@ -21,6 +21,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal override Expression VisitDynamic(DynamicExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             var a = ExpressionVisitorUtils.VisitArguments(this, node);
             return a == null ? node : node.Rewrite(a);
         }

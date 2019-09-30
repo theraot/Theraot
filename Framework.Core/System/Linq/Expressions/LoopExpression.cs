@@ -116,6 +116,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitLoop(this);
         }
     }

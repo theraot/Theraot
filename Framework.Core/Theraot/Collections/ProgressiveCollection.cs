@@ -27,7 +27,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        protected ProgressiveCollection(Progressor<T> progressor, ICollection<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveCollection(Progressor<T> progressor, ICollection<T> cache, IEqualityComparer<T>? comparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Cache = _cache.WrapAsIReadOnlyCollection();
@@ -43,6 +43,8 @@ namespace Theraot.Collections
 
         public IReadOnlyCollection<T> Cache { get; }
 
+        public IEqualityComparer<T> Comparer { get; }
+
         public int Count
         {
             get
@@ -53,10 +55,17 @@ namespace Theraot.Collections
         }
 
         bool ICollection<T>.IsReadOnly => true;
-
-        protected IEqualityComparer<T> Comparer { get; }
-
         private Progressor<T> Progressor { get; }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
+        }
 
         public void Close()
         {
@@ -113,6 +122,16 @@ namespace Theraot.Collections
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            throw new NotSupportedException();
+        }
+
         public IEnumerable<T> Where(Predicate<T> check)
         {
             foreach (var item in _cache)
@@ -124,26 +143,6 @@ namespace Theraot.Collections
             {
                 yield return p;
             }
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         internal static ProgressiveCollection<T> Create<TCollection>(Progressor<T> progressor, IEqualityComparer<T> comparer)

@@ -40,7 +40,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static Type MakeNewDelegate(Type[] types)
         {
-            Debug.Assert(types?.Length > 0);
+            Debug.Assert(types.Length > 0);
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>
@@ -52,10 +52,7 @@ namespace System.Linq.Expressions.Compiler
                 return MakeNewCustomDelegate(types);
             }
 
-            var result = types[types.Length - 1] == typeof(void) ? DelegateBuilder.GetActionType(types.RemoveLast()) : DelegateBuilder.GetFuncType(types);
-
-            Debug.Assert(result != null);
-            return result;
+            return types[types.Length - 1] == typeof(void) ? DelegateBuilder.GetActionType(types.RemoveLast()) : DelegateBuilder.GetFuncType(types);
         }
 
         internal static TypeInfo NextTypeInfo(Type initialArg)
@@ -88,8 +85,8 @@ namespace System.Linq.Expressions.Compiler
 
         internal class TypeInfo
         {
-            public Type DelegateType;
-            public Dictionary<Type, TypeInfo> TypeChain;
+            public Type? DelegateType;
+            public Dictionary<Type, TypeInfo>? TypeChain;
         }
     }
 }

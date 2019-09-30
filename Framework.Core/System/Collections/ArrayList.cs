@@ -1,8 +1,10 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
+#pragma warning disable CA2214 // Do not call overridable methods in constructors
 #pragma warning disable CA2235 // Mark all non-serializable fields
+#pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
-// ReSharper disable VirtualMemberCallInConstructor
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -20,7 +22,6 @@
 
 using System.Diagnostics;
 using Theraot;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Collections
 {
@@ -39,7 +40,7 @@ namespace System.Collections
         internal const int MaxArrayLength = 0X7FEFFFFF;
 
         private const int _defaultCapacity = 4;
-        private object[] _items;
+        private object?[] _items;
         private int _size;
         private int _version;
 
@@ -156,7 +157,7 @@ namespace System.Collections
                     throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
                 }
 
-                return _items[index];
+                return _items[index]!;
             }
             set
             {
@@ -325,7 +326,7 @@ namespace System.Collections
         // The method uses the Array.BinarySearch method to perform the
         // search.
         //
-        public virtual int BinarySearch(int index, int count, object value, IComparer comparer)
+        public virtual int BinarySearch(int index, int count, object value, IComparer? comparer)
         {
             if (index < 0)
             {
@@ -940,7 +941,7 @@ namespace System.Collections
             private readonly ArrayList _list;
             private readonly int _startIndex; // Save this for Reset.
             private readonly int _version;
-            private object _currentElement;
+            private object? _currentElement;
             private int _index;
 
             internal ArrayListEnumerator(ArrayList list, int index, int count)
@@ -955,7 +956,7 @@ namespace System.Collections
 
             public object Clone() => MemberwiseClone();
 
-            public object Current
+            public object? Current
             {
                 get
                 {
@@ -1009,7 +1010,7 @@ namespace System.Collections
             private readonly bool _isArrayList;
             private readonly ArrayList _list;
             private readonly int _version;
-            private object _currentElement;
+            private object? _currentElement;
             private int _index;
 
             internal ArrayListEnumeratorSimple(ArrayList list)
@@ -1023,7 +1024,7 @@ namespace System.Collections
 
             public object Clone() => MemberwiseClone();
 
-            public object Current
+            public object? Current
             {
                 get
                 {
@@ -1133,7 +1134,7 @@ namespace System.Collections
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
             {
                 return _list.BinarySearch(index, count, value, comparer);
             }
@@ -1145,8 +1146,7 @@ namespace System.Collections
 
             public override object Clone()
             {
-                var arrayList = new FixedSizeArrayList(_list) { _list = (ArrayList)_list.Clone() };
-                return arrayList;
+                return new FixedSizeArrayList(_list) { _list = (ArrayList)_list.Clone() };
             }
 
             public override bool Contains(object value)
@@ -1406,7 +1406,7 @@ namespace System.Collections
             }
 
             // Other overloads with automatically work
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
             {
                 if (index < 0 || count < 0)
                 {
@@ -1834,18 +1834,18 @@ namespace System.Collections
             // class that implements all of ArrayList's methods.
             private sealed class ListWrapperEnumWrapper : IEnumerator, ICloneable
             {
-                private IEnumerator _en;
+                private readonly IEnumerator _enumerator;
                 private bool _firstCall; // firstCall to MoveNext
-                private int _initialCount; // for reset
-                private int _initialStartIndex; // for reset
+                private readonly int _initialCount; // for reset
+                private readonly int _initialStartIndex; // for reset
                 private int _remaining;
 
                 internal ListWrapperEnumWrapper(ListWrapper listWrapper, int startIndex, int count)
                 {
-                    _en = listWrapper.GetEnumerator();
+                    _enumerator = listWrapper.GetEnumerator();
                     _initialStartIndex = startIndex;
                     _initialCount = count;
-                    while (startIndex-- > 0 && _en.MoveNext())
+                    while (startIndex-- > 0 && _enumerator.MoveNext())
                     {
                         // Empty
                     }
@@ -1854,21 +1854,18 @@ namespace System.Collections
                     _firstCall = true;
                 }
 
-                private ListWrapperEnumWrapper()
+                private ListWrapperEnumWrapper(ListWrapperEnumWrapper prototype)
                 {
+                    _enumerator = (IEnumerator)((ICloneable)prototype._enumerator).Clone();
+                    _initialStartIndex = prototype._initialStartIndex;
+                    _initialCount = prototype._initialCount;
+                    _remaining = prototype._remaining;
+                    _firstCall = prototype._firstCall;
                 }
 
                 public object Clone()
                 {
-                    var clone = new ListWrapperEnumWrapper
-                    {
-                        _en = (IEnumerator)((ICloneable)_en).Clone(),
-                        _initialStartIndex = _initialStartIndex,
-                        _initialCount = _initialCount,
-                        _remaining = _remaining,
-                        _firstCall = _firstCall
-                    };
-                    return clone;
+                    return new ListWrapperEnumWrapper(this);
                 }
 
                 public object Current
@@ -1885,7 +1882,7 @@ namespace System.Collections
                             throw new InvalidOperationException("Enumeration already finished.");
                         }
 
-                        return _en.Current;
+                        return _enumerator.Current;
                     }
                 }
 
@@ -1894,7 +1891,7 @@ namespace System.Collections
                     if (_firstCall)
                     {
                         _firstCall = false;
-                        return _remaining-- > 0 && _en.MoveNext();
+                        return _remaining-- > 0 && _enumerator.MoveNext();
                     }
 
                     if (_remaining < 0)
@@ -1902,15 +1899,15 @@ namespace System.Collections
                         return false;
                     }
 
-                    var r = _en.MoveNext();
+                    var r = _enumerator.MoveNext();
                     return r && _remaining-- > 0;
                 }
 
                 public void Reset()
                 {
-                    _en.Reset();
+                    _enumerator.Reset();
                     var startIndex = _initialStartIndex;
-                    while (startIndex-- > 0 && _en.MoveNext())
+                    while (startIndex-- > 0 && _enumerator.MoveNext())
                     {
                         // Empty
                     }
@@ -2021,7 +2018,7 @@ namespace System.Collections
                 }
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
             {
                 if (index < 0 || count < 0)
                 {
@@ -2058,8 +2055,7 @@ namespace System.Collections
             public override object Clone()
             {
                 InternalUpdateRange();
-                var arrayList = new Range(_baseList, _baseIndex, _baseSize) { _baseList = (ArrayList)_baseList.Clone() };
-                return arrayList;
+                return new Range(_baseList, _baseIndex, _baseSize) { _baseList = (ArrayList)_baseList.Clone() };
             }
 
             public override bool Contains(object value)
@@ -2492,7 +2488,7 @@ namespace System.Collections
                 throw new NotSupportedException("Collection is read-only.");
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
             {
                 return _list.BinarySearch(index, count, value, comparer);
             }
@@ -2504,8 +2500,7 @@ namespace System.Collections
 
             public override object Clone()
             {
-                var arrayList = new ReadOnlyArrayList(_list) { _list = (ArrayList)_list.Clone() };
-                return arrayList;
+                return new ReadOnlyArrayList(_list) { _list = (ArrayList)_list.Clone() };
             }
 
             public override bool Contains(object value)
@@ -2806,7 +2801,7 @@ namespace System.Collections
                 }
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer comparer)
+            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
             {
                 lock (_root)
                 {

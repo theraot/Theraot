@@ -22,7 +22,7 @@ namespace System.Linq.Expressions
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Defines a <see cref="T:System.Linq.Expressions.Expression`1" /> node.
+    ///     Defines a <see cref="System.Linq.Expressions.Expression`1" /> node.
     ///     This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
@@ -151,6 +151,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitLambda(this);
         }
     }
@@ -716,11 +721,7 @@ namespace System.Linq.Expressions
             // Get or create a delegate to the public Expression.Lambda<T>
             // method and call that will be used for creating instances of this
             // delegate type
-            var factories = _lambdaFactories;
-            if (factories == null)
-            {
-                _lambdaFactories = factories = new CacheDict<Type, Func<Expression, string, bool, ParameterExpression[], LambdaExpression>>(50);
-            }
+            var factories = TypeHelper.LazyCreate(ref _lambdaFactories, () => new CacheDict<Type, Func<Expression, string, bool, ParameterExpression[], LambdaExpression>>(50));
 
             if (factories.TryGetValue(delegateType, out var fastPath))
             {

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Dynamic.Utils
 {
@@ -51,7 +52,7 @@ namespace System.Dynamic.Utils
         {
             Debug.Assert(!string.IsNullOrEmpty(offsetName));
             Debug.Assert(!string.IsNullOrEmpty(countName));
-            Debug.Assert(array != null);
+
             if (count < 0)
             {
                 throw new ArgumentOutOfRangeException(countName);
@@ -96,7 +97,7 @@ namespace System.Dynamic.Utils
         /// <exception cref="ArgumentNullException">
         ///     Thrown if <paramref name="value" /> is <c>null</c>.
         /// </exception>
-        public static void RequiresNotNull(object value, string paramName)
+        public static void RequiresNotNull([NotNull] object? value, string paramName)
         {
             Debug.Assert(!string.IsNullOrEmpty(paramName));
 
@@ -123,7 +124,7 @@ namespace System.Dynamic.Utils
         /// <exception cref="ArgumentNullException">
         ///     Thrown if <paramref name="value" /> is <c>null</c>.
         /// </exception>
-        public static void RequiresNotNull(object value, string paramName, int index)
+        public static void RequiresNotNull([NotNull] object? value, string paramName, int index)
         {
             Debug.Assert(!string.IsNullOrEmpty(paramName));
 
@@ -158,12 +159,6 @@ namespace System.Dynamic.Utils
                 }
             }
         }
-
-        /*[Conditional("DEBUG")]
-        public static void AssertLockHeld(object lockObject)
-        {
-            Debug.Assert(Monitor.IsEntered(lockObject), "Expected lock is not held.");
-        }*/
 
         private static string GetParamName(string paramName, int index)
         {

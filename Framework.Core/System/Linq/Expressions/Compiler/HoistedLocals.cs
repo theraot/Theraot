@@ -53,7 +53,7 @@ namespace System.Linq.Expressions.Compiler
         internal readonly ReadOnlyDictionary<Expression, int> Indexes;
 
         // The parent locals, if any
-        internal readonly HoistedLocals Parent;
+        internal readonly HoistedLocals? Parent;
 
         // A virtual variable for accessing this locals array
         internal readonly ParameterExpression SelfVariable;
@@ -61,7 +61,7 @@ namespace System.Linq.Expressions.Compiler
         // The variables, in the order they appear in the array
         internal readonly ReadOnlyCollection<ParameterExpression> Variables;
 
-        internal HoistedLocals(HoistedLocals parent, ReadOnlyCollection<ParameterExpression> vars)
+        internal HoistedLocals(HoistedLocals? parent, ReadOnlyCollection<ParameterExpression> vars)
         {
             if (parent != null)
             {
@@ -81,7 +81,7 @@ namespace System.Linq.Expressions.Compiler
             Indexes = new ReadOnlyDictionary<Expression, int>(indexes);
         }
 
-        internal ParameterExpression ParentVariable => Parent?.SelfVariable;
+        internal ParameterExpression? ParentVariable => Parent?.SelfVariable;
 
         internal static object[] GetParent(object[] locals)
         {

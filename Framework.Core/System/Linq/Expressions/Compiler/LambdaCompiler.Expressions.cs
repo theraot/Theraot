@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -33,8 +34,10 @@ namespace System.Linq.Expressions.Compiler
             {
                 case FieldInfo memberFieldInfo:
                     return memberFieldInfo.FieldType;
+
                 case PropertyInfo memberPropertyInfo:
                     return memberPropertyInfo.PropertyType;
+
                 default:
                     Debug.Assert(member is FieldInfo || member is PropertyInfo);
                     throw new ArgumentException(string.Empty, nameof(member));
@@ -97,12 +100,12 @@ namespace System.Linq.Expressions.Compiler
             return mi.DeclaringType?.IsValueType == false;
         }
 
-        private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters = 0)
+        private List<WriteBack>? EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters = 0)
         {
             var pis = method.GetParameters();
             Debug.Assert(args.ArgumentCount + skipParameters == pis.Length);
 
-            List<WriteBack> writeBacks = null;
+            List<WriteBack>? writeBacks = null;
             for (int i = skipParameters, n = pis.Length; i < n; i++)
             {
                 var parameter = pis[i];
@@ -116,7 +119,7 @@ namespace System.Linq.Expressions.Compiler
                     var wb = EmitAddressWriteBack(argument, type);
                     if (wb != null)
                     {
-                        (writeBacks ?? (writeBacks = new List<WriteBack>())).Add(wb);
+                        (writeBacks ??= new List<WriteBack>()).Add(wb);
                     }
                 }
                 else
@@ -169,12 +172,13 @@ namespace System.Linq.Expressions.Compiler
                 case MemberBindingType.MemberBinding:
                     EmitMemberMemberBinding((MemberMemberBinding)binding);
                     break;
+
                 default:
                     break;
             }
         }
 
-        private void EmitCall(Type objectType, MethodInfo method)
+        private void EmitCall(Type? objectType, MethodInfo method)
         {
             if (method.CallingConvention == CallingConventions.VarArgs)
             {
@@ -182,7 +186,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             var callOp = UseVirtual(method) ? OpCodes.Callvirt : OpCodes.Call;
-            if (callOp == OpCodes.Callvirt && objectType.IsValueType)
+            if (callOp == OpCodes.Callvirt && objectType?.IsValueType == true)
             {
                 IL.Emit(OpCodes.Constrained, objectType);
             }
@@ -192,11 +196,10 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitConstant(object value)
         {
-            Debug.Assert(value != null);
             EmitConstant(value, value.GetType());
         }
 
-        private void EmitConstant(object value, Type type)
+        private void EmitConstant(object? value, Type type)
         {
             // Try to emit the constant directly into IL
             if (!IL.TryEmitConstant(value, type, this))
@@ -273,8 +276,6 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitExpressionAsVoid(Expression node, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
-            Debug.Assert(node != null);
-
             var startEmitted = EmitExpressionStart(node);
 
             switch (node.NodeType)
@@ -345,7 +346,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitGetIndexCall(IndexExpression node, Type objectType)
+        private void EmitGetIndexCall(IndexExpression node, Type? objectType)
         {
             if (node.Indexer != null)
             {
@@ -355,6 +356,10 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
+                if (objectType == null)
+                {
+                    throw new ArgumentNullException(nameof(objectType));
+                }
                 EmitGetArrayElement(objectType);
             }
         }
@@ -368,7 +373,7 @@ namespace System.Linq.Expressions.Compiler
             var emitAs = flags & CompilationFlags.EmitAsTypeMask;
 
             // Emit instance, if calling an instance method
-            Type objectType = null;
+            Type? objectType = null;
             if (index.Object != null)
             {
                 EmitInstance(index.Object, out objectType);
@@ -386,7 +391,7 @@ namespace System.Linq.Expressions.Compiler
             EmitExpression(node.Right);
 
             // Save the expression value, if needed
-            LocalBuilder temp = null;
+            LocalBuilder? temp = null;
             if (emitAs != CompilationFlags.EmitAsVoidType)
             {
                 IL.Emit(OpCodes.Dup);
@@ -396,7 +401,7 @@ namespace System.Linq.Expressions.Compiler
             EmitSetIndexCall(index, objectType);
 
             // Restore the value
-            if (emitAs == CompilationFlags.EmitAsVoidType)
+            if (temp == null)
             {
                 return;
             }
@@ -410,7 +415,7 @@ namespace System.Linq.Expressions.Compiler
             var node = (IndexExpression)expr;
 
             // Emit instance, if calling an instance method
-            Type objectType = null;
+            Type? objectType = null;
             if (node.Object != null)
             {
                 EmitInstance(node.Object, out objectType);
@@ -456,7 +461,7 @@ namespace System.Linq.Expressions.Compiler
             EmitWriteBack(wb);
         }
 
-        private void EmitInstance(Expression instance, out Type type)
+        private void EmitInstance(Expression instance, [NotNull] out Type type)
         {
             type = instance.Type;
 
@@ -516,51 +521,34 @@ namespace System.Linq.Expressions.Compiler
             {
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
-                {
-                    if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
                     {
-                        goto default;
-                    }
-
-                    var exit = IL.DefineLabel();
-                    var exitAllNull = IL.DefineLabel();
-                    var exitAnyNull = IL.DefineLabel();
-
-                    var anyNull = GetLocal(typeof(bool));
-                    var allNull = GetLocal(typeof(bool));
-                    IL.Emit(OpCodes.Ldc_I4_0);
-                    IL.Emit(OpCodes.Stloc, anyNull);
-                    IL.Emit(OpCodes.Ldc_I4_1);
-                    IL.Emit(OpCodes.Stloc, allNull);
-
-                    for (int i = 0, n = paramList.Length; i < n; i++)
-                    {
-                        var v = paramList[i];
-                        var arg = argList[i];
-                        _scope.AddLocal(this, v);
-                        if (arg.Type.IsNullable())
+                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
                         {
-                            EmitAddress(arg, arg.Type);
-                            IL.Emit(OpCodes.Dup);
-                            IL.EmitHasValue(arg.Type);
-                            IL.Emit(OpCodes.Ldc_I4_0);
-                            IL.Emit(OpCodes.Ceq);
-                            IL.Emit(OpCodes.Dup);
-                            IL.Emit(OpCodes.Ldloc, anyNull);
-                            IL.Emit(OpCodes.Or);
-                            IL.Emit(OpCodes.Stloc, anyNull);
-                            IL.Emit(OpCodes.Ldloc, allNull);
-                            IL.Emit(OpCodes.And);
-                            IL.Emit(OpCodes.Stloc, allNull);
-                            IL.EmitGetValueOrDefault(arg.Type);
+                            goto default;
                         }
-                        else
+
+                        var exit = IL.DefineLabel();
+                        var exitAllNull = IL.DefineLabel();
+                        var exitAnyNull = IL.DefineLabel();
+
+                        var anyNull = GetLocal(typeof(bool));
+                        var allNull = GetLocal(typeof(bool));
+                        IL.Emit(OpCodes.Ldc_I4_0);
+                        IL.Emit(OpCodes.Stloc, anyNull);
+                        IL.Emit(OpCodes.Ldc_I4_1);
+                        IL.Emit(OpCodes.Stloc, allNull);
+
+                        for (int i = 0, n = paramList.Length; i < n; i++)
                         {
-                            EmitExpression(arg);
-                            if (!arg.Type.IsValueType)
+                            var v = paramList[i];
+                            var arg = argList[i];
+                            _scope.AddLocal(this, v);
+                            if (arg.Type.IsNullable())
                             {
+                                EmitAddress(arg, arg.Type);
                                 IL.Emit(OpCodes.Dup);
-                                IL.Emit(OpCodes.Ldnull);
+                                IL.EmitHasValue(arg.Type);
+                                IL.Emit(OpCodes.Ldc_I4_0);
                                 IL.Emit(OpCodes.Ceq);
                                 IL.Emit(OpCodes.Dup);
                                 IL.Emit(OpCodes.Ldloc, anyNull);
@@ -569,131 +557,148 @@ namespace System.Linq.Expressions.Compiler
                                 IL.Emit(OpCodes.Ldloc, allNull);
                                 IL.Emit(OpCodes.And);
                                 IL.Emit(OpCodes.Stloc, allNull);
+                                IL.EmitGetValueOrDefault(arg.Type);
                             }
                             else
                             {
-                                IL.Emit(OpCodes.Ldc_I4_0);
-                                IL.Emit(OpCodes.Stloc, allNull);
+                                EmitExpression(arg);
+                                if (!arg.Type.IsValueType)
+                                {
+                                    IL.Emit(OpCodes.Dup);
+                                    IL.Emit(OpCodes.Ldnull);
+                                    IL.Emit(OpCodes.Ceq);
+                                    IL.Emit(OpCodes.Dup);
+                                    IL.Emit(OpCodes.Ldloc, anyNull);
+                                    IL.Emit(OpCodes.Or);
+                                    IL.Emit(OpCodes.Stloc, anyNull);
+                                    IL.Emit(OpCodes.Ldloc, allNull);
+                                    IL.Emit(OpCodes.And);
+                                    IL.Emit(OpCodes.Stloc, allNull);
+                                }
+                                else
+                                {
+                                    IL.Emit(OpCodes.Ldc_I4_0);
+                                    IL.Emit(OpCodes.Stloc, allNull);
+                                }
                             }
-                        }
 
-                        _scope.EmitSet(v);
-                    }
-
-                    IL.Emit(OpCodes.Ldloc, allNull);
-                    IL.Emit(OpCodes.Brtrue, exitAllNull);
-                    IL.Emit(OpCodes.Ldloc, anyNull);
-                    IL.Emit(OpCodes.Brtrue, exitAnyNull);
-
-                    EmitMethodCallExpression(mc);
-                    if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
-                    {
-                        var ci = resultType.GetConstructor(new[] {mc.Type});
-                        IL.Emit(OpCodes.Newobj, ci);
-                    }
-
-                    IL.Emit(OpCodes.Br_S, exit);
-
-                    IL.MarkLabel(exitAllNull);
-                    IL.EmitPrimitive(nodeType == ExpressionType.Equal);
-                    IL.Emit(OpCodes.Br_S, exit);
-
-                    IL.MarkLabel(exitAnyNull);
-                    IL.EmitPrimitive(nodeType == ExpressionType.NotEqual);
-
-                    IL.MarkLabel(exit);
-                    FreeLocal(anyNull);
-                    FreeLocal(allNull);
-                    return;
-                }
-                default:
-                {
-                    var exit = IL.DefineLabel();
-                    var exitNull = IL.DefineLabel();
-                    var anyNull = GetLocal(typeof(bool));
-                    for (int i = 0, n = paramList.Length; i < n; i++)
-                    {
-                        var v = paramList[i];
-                        var arg = argList[i];
-                        if (arg.Type.IsNullable())
-                        {
-                            _scope.AddLocal(this, v);
-                            EmitAddress(arg, arg.Type);
-                            IL.Emit(OpCodes.Dup);
-                            IL.EmitHasValue(arg.Type);
-                            IL.Emit(OpCodes.Ldc_I4_0);
-                            IL.Emit(OpCodes.Ceq);
-                            IL.Emit(OpCodes.Stloc, anyNull);
-                            IL.EmitGetValueOrDefault(arg.Type);
                             _scope.EmitSet(v);
                         }
-                        else
+
+                        IL.Emit(OpCodes.Ldloc, allNull);
+                        IL.Emit(OpCodes.Brtrue, exitAllNull);
+                        IL.Emit(OpCodes.Ldloc, anyNull);
+                        IL.Emit(OpCodes.Brtrue, exitAnyNull);
+
+                        EmitMethodCallExpression(mc);
+                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
-                            _scope.AddLocal(this, v);
-                            EmitExpression(arg);
-                            if (!arg.Type.IsValueType)
+                            var ci = resultType.GetConstructor(new[] { mc.Type });
+                            IL.Emit(OpCodes.Newobj, ci);
+                        }
+
+                        IL.Emit(OpCodes.Br_S, exit);
+
+                        IL.MarkLabel(exitAllNull);
+                        IL.EmitPrimitive(nodeType == ExpressionType.Equal);
+                        IL.Emit(OpCodes.Br_S, exit);
+
+                        IL.MarkLabel(exitAnyNull);
+                        IL.EmitPrimitive(nodeType == ExpressionType.NotEqual);
+
+                        IL.MarkLabel(exit);
+                        FreeLocal(anyNull);
+                        FreeLocal(allNull);
+                        return;
+                    }
+                default:
+                    {
+                        var exit = IL.DefineLabel();
+                        var exitNull = IL.DefineLabel();
+                        var anyNull = GetLocal(typeof(bool));
+                        for (int i = 0, n = paramList.Length; i < n; i++)
+                        {
+                            var v = paramList[i];
+                            var arg = argList[i];
+                            if (arg.Type.IsNullable())
                             {
+                                _scope.AddLocal(this, v);
+                                EmitAddress(arg, arg.Type);
                                 IL.Emit(OpCodes.Dup);
-                                IL.Emit(OpCodes.Ldnull);
+                                IL.EmitHasValue(arg.Type);
+                                IL.Emit(OpCodes.Ldc_I4_0);
                                 IL.Emit(OpCodes.Ceq);
                                 IL.Emit(OpCodes.Stloc, anyNull);
+                                IL.EmitGetValueOrDefault(arg.Type);
+                                _scope.EmitSet(v);
+                            }
+                            else
+                            {
+                                _scope.AddLocal(this, v);
+                                EmitExpression(arg);
+                                if (!arg.Type.IsValueType)
+                                {
+                                    IL.Emit(OpCodes.Dup);
+                                    IL.Emit(OpCodes.Ldnull);
+                                    IL.Emit(OpCodes.Ceq);
+                                    IL.Emit(OpCodes.Stloc, anyNull);
+                                }
+
+                                _scope.EmitSet(v);
                             }
 
-                            _scope.EmitSet(v);
+                            IL.Emit(OpCodes.Ldloc, anyNull);
+                            IL.Emit(OpCodes.Brtrue, exitNull);
                         }
 
-                        IL.Emit(OpCodes.Ldloc, anyNull);
-                        IL.Emit(OpCodes.Brtrue, exitNull);
-                    }
-
-                    EmitMethodCallExpression(mc);
-                    if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
-                    {
-                        var ci = resultType.GetConstructor(new[] {mc.Type});
-                        IL.Emit(OpCodes.Newobj, ci);
-                    }
-
-                    IL.Emit(OpCodes.Br_S, exit);
-                    IL.MarkLabel(exitNull);
-                    if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
-                    {
-                        if (resultType.IsValueType)
+                        EmitMethodCallExpression(mc);
+                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
-                            var result = GetLocal(resultType);
-                            IL.Emit(OpCodes.Ldloca, result);
-                            IL.Emit(OpCodes.Initobj, resultType);
-                            IL.Emit(OpCodes.Ldloc, result);
-                            FreeLocal(result);
+                            var ci = resultType.GetConstructor(new[] { mc.Type });
+                            IL.Emit(OpCodes.Newobj, ci);
+                        }
+
+                        IL.Emit(OpCodes.Br_S, exit);
+                        IL.MarkLabel(exitNull);
+                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
+                        {
+                            if (resultType.IsValueType)
+                            {
+                                var result = GetLocal(resultType);
+                                IL.Emit(OpCodes.Ldloca, result);
+                                IL.Emit(OpCodes.Initobj, resultType);
+                                IL.Emit(OpCodes.Ldloc, result);
+                                FreeLocal(result);
+                            }
+                            else
+                            {
+                                IL.Emit(OpCodes.Ldnull);
+                            }
                         }
                         else
                         {
-                            IL.Emit(OpCodes.Ldnull);
+                            Debug.Assert
+                            (
+                                nodeType == ExpressionType.LessThan
+                                || nodeType == ExpressionType.LessThanOrEqual
+                                || nodeType == ExpressionType.GreaterThan
+                                || nodeType == ExpressionType.GreaterThanOrEqual
+                            );
+
+                            IL.Emit(OpCodes.Ldc_I4_0);
                         }
-                    }
-                    else
-                    {
-                        Debug.Assert
-                        (
-                            nodeType == ExpressionType.LessThan
-                            || nodeType == ExpressionType.LessThanOrEqual
-                            || nodeType == ExpressionType.GreaterThan
-                            || nodeType == ExpressionType.GreaterThanOrEqual
-                        );
 
-                        IL.Emit(OpCodes.Ldc_I4_0);
+                        IL.MarkLabel(exit);
+                        FreeLocal(anyNull);
+                        return;
                     }
-
-                    IL.MarkLabel(exit);
-                    FreeLocal(anyNull);
-                    return;
-                }
             }
         }
 
         private void EmitListInit(ListInitExpression init)
         {
             EmitExpression(init.NewExpression);
-            LocalBuilder loc = null;
+            LocalBuilder? loc = null;
             if (init.NewExpression.Type.IsValueType)
             {
                 loc = GetLocal(init.NewExpression.Type);
@@ -758,7 +763,7 @@ namespace System.Linq.Expressions.Compiler
             var member = lvalue.Member;
 
             // emit "this", if any
-            Type objectType = null;
+            Type? objectType = null;
             if (lvalue.Expression != null)
             {
                 EmitInstance(lvalue.Expression, out objectType);
@@ -767,13 +772,15 @@ namespace System.Linq.Expressions.Compiler
             // emit value
             EmitExpression(node.Right);
 
-            LocalBuilder temp = null;
+            LocalBuilder? temp = null;
+
             var emitAs = flags & CompilationFlags.EmitAsTypeMask;
             if (emitAs != CompilationFlags.EmitAsVoidType)
             {
                 // save the value so we can return it
                 IL.Emit(OpCodes.Dup);
-                IL.Emit(OpCodes.Stloc, temp = GetLocal(node.Type));
+                temp = GetLocal(node.Type);
+                IL.Emit(OpCodes.Stloc, temp);
             }
 
             if (member is FieldInfo info)
@@ -788,7 +795,7 @@ namespace System.Linq.Expressions.Compiler
                 EmitCall(objectType, prop.GetSetMethod(true));
             }
 
-            if (emitAs == CompilationFlags.EmitAsVoidType)
+            if (temp == null)
             {
                 return;
             }
@@ -820,7 +827,7 @@ namespace System.Linq.Expressions.Compiler
             var node = (MemberExpression)expr;
 
             // emit "this", if any
-            Type instanceType = null;
+            Type? instanceType = null;
             if (node.Expression != null)
             {
                 EmitInstance(node.Expression, out instanceType);
@@ -830,7 +837,7 @@ namespace System.Linq.Expressions.Compiler
         }
 
         // assumes instance is already on the stack
-        private void EmitMemberGet(MemberInfo member, Type objectType)
+        private void EmitMemberGet(MemberInfo member, Type? objectType)
         {
             if (member is FieldInfo fi)
             {
@@ -855,7 +862,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberInit(MemberInitExpression init)
         {
             EmitExpression(init.NewExpression);
-            LocalBuilder loc = null;
+            LocalBuilder? loc = null;
             if (init.NewExpression.Type.IsValueType && init.Bindings.Count > 0)
             {
                 loc = GetLocal(init.NewExpression.Type);
@@ -945,13 +952,16 @@ namespace System.Linq.Expressions.Compiler
             EmitMemberInit(binding.Bindings, false, type);
         }
 
-        private void EmitMethodCall(Expression obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitMethodCall(Expression? obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             // Emit instance, if calling an instance method
-            Type objectType = null;
+            Type? objectType = null;
             if (!method.IsStatic)
             {
-                Debug.Assert(obj != null);
+                if (obj == null)
+                {
+                    throw new ArgumentNullException(nameof(obj));
+                }
                 EmitInstance(obj, out objectType);
             }
 
@@ -970,14 +980,14 @@ namespace System.Linq.Expressions.Compiler
         // assumes 'object' of non-static call is already on stack
 
         // assumes 'object' of non-static call is already on stack
-        private void EmitMethodCall(MethodInfo mi, IArgumentProvider args, Type objectType, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitMethodCall(MethodInfo mi, IArgumentProvider args, Type? objectType, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             // Emit arguments
             var wb = EmitArguments(mi, args);
 
             // Emit the actual call
             var callOp = UseVirtual(mi) ? OpCodes.Callvirt : OpCodes.Call;
-            if (callOp == OpCodes.Callvirt && objectType.IsValueType)
+            if (callOp == OpCodes.Callvirt && objectType?.IsValueType == true)
             {
                 // This automatically boxes value types if necessary.
                 IL.Emit(OpCodes.Constrained, objectType);
@@ -995,11 +1005,12 @@ namespace System.Linq.Expressions.Compiler
 
             if (mi.CallingConvention == CallingConventions.VarArgs)
             {
+                var methodParametersTypes = mi.GetParameterTypes();
                 var count = args.ArgumentCount;
                 var types = new Type[count];
                 for (var i = 0; i < count; i++)
                 {
-                    types[i] = args.GetArgument(i).Type;
+                    types[i] = args.GetArgument(i)?.Type ?? methodParametersTypes[i];
                 }
 
                 IL.EmitCall(callOp, mi, types);
@@ -1111,7 +1122,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitSetIndexCall(IndexExpression node, Type objectType)
+        private void EmitSetIndexCall(IndexExpression node, Type? objectType)
         {
             if (node.Indexer != null)
             {
@@ -1121,6 +1132,10 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
+                if (objectType == null)
+                {
+                    throw new ArgumentNullException(nameof(objectType));
+                }
                 EmitSetArrayElement(objectType);
             }
         }
@@ -1149,16 +1164,19 @@ namespace System.Linq.Expressions.Compiler
                     EmitExpressionAsVoid(node.Expression);
                     IL.EmitPrimitive(result == AnalyzeTypeIsResult.KnownTrue);
                     return;
+
                 case AnalyzeTypeIsResult.KnownAssignable when type.IsNullable():
                     EmitAddress(node.Expression, type);
                     IL.EmitHasValue(type);
                     return;
+
                 case AnalyzeTypeIsResult.KnownAssignable:
                     Debug.Assert(!type.IsValueType);
                     EmitExpression(node.Expression);
                     IL.Emit(OpCodes.Ldnull);
                     IL.Emit(OpCodes.Cgt_Un);
                     return;
+
                 default:
                     break;
             }
@@ -1216,7 +1234,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitWriteBack(List<WriteBack> writeBacks)
+        private void EmitWriteBack(List<WriteBack>? writeBacks)
         {
             if (writeBacks == null)
             {

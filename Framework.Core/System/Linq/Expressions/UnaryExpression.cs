@@ -987,7 +987,7 @@ namespace System.Linq.Expressions
         private static UnaryExpression GetUserDefinedUnaryOperator(ExpressionType unaryType, string name, Expression operand)
         {
             var operandType = operand.Type;
-            Type[] types = {operandType};
+            Type[] types = { operandType };
             var nnOperandType = operandType.GetNonNullable();
             var method = nnOperandType.GetStaticMethodInternal(name, types);
             if (method != null)
@@ -1094,6 +1094,7 @@ namespace System.Linq.Expressions
                     case ExpressionType.PostIncrementAssign:
                     case ExpressionType.PostDecrementAssign:
                         return true;
+
                     default:
                         return false;
                 }
@@ -1205,6 +1206,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitUnary(this);
         }
 

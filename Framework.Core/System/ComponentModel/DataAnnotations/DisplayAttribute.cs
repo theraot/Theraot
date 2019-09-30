@@ -12,7 +12,7 @@ namespace System.ComponentModel.DataAnnotations
     /// <summary>
     ///     DisplayAttribute is a general-purpose attribute to specify user-visible globalizable strings for types and members.
     ///     The string properties of this class can be used either as literals or as resource identifiers into a specified
-    ///     <see cref="P:System.ComponentModel.DataAnnotations.DisplayAttribute.ResourceType" />
+    ///     <see cref="ResourceType" />
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method)]
     public sealed class DisplayAttribute : Attribute
@@ -24,7 +24,7 @@ namespace System.ComponentModel.DataAnnotations
         private readonly LocalizableString _name = new LocalizableString(nameof(Name));
         private int? _order;
         private readonly LocalizableString _prompt = new LocalizableString(nameof(Prompt));
-        private Type _resourceType;
+        private Type? _resourceType;
         private readonly LocalizableString _shortName = new LocalizableString(nameof(ShortName));
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     Description is generally used as a tool tip or description a UI element bound to the member
         ///     bearing this attribute.  A <c>null</c> or empty string is legal, and consumers must allow for that.
         /// </value>
-        public string Description
+        public string? Description
         {
             get => _description.Value;
             set
@@ -132,7 +132,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     A group name is used for grouping fields into the UI.  A <c>null</c> or empty string is legal,
         ///     and consumers must allow for that.
         /// </value>
-        public string GroupName
+        public string? GroupName
         {
             get => _groupName.Value;
             set
@@ -163,7 +163,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     The name is generally used as the field label for a UI element bound to the member
         ///     bearing this attribute.  A <c>null</c> or empty string is legal, and consumers must allow for that.
         /// </value>
-        public string Name
+        public string? Name
         {
             get => _name.Value;
             set
@@ -220,7 +220,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     A prompt is generally used as a prompt or watermark for a UI element bound to the member
         ///     bearing this attribute.  A <c>null</c> or empty string is legal, and consumers must allow for that.
         /// </value>
-        public string Prompt
+        public string? Prompt
         {
             get => _prompt.Value;
             set
@@ -239,7 +239,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     <see cref="GetName" />, <see cref="GetDescription" />, <see cref="GetPrompt" />, and <see cref="GetGroupName" />
         ///     methods to return localized values.
         /// </summary>
-        public Type ResourceType
+        public Type? ResourceType
         {
             get => _resourceType;
             set
@@ -278,7 +278,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     The short name is generally used as the grid column label for a UI element bound to the member
         ///     bearing this attribute.  A <c>null</c> or empty string is legal, and consumers must allow for that.
         /// </value>
-        public string ShortName
+        public string? ShortName
         {
             get => _shortName.Value;
             set
@@ -339,7 +339,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     but a public static property with a name matching the <see cref="Description" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
         /// </exception>
-        public string GetDescription()
+        public string? GetDescription()
         {
             return _description.GetLocalizableValue();
         }
@@ -365,7 +365,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     but a public static property with a name matching the <see cref="GroupName" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
         /// </exception>
-        public string GetGroupName()
+        public string? GetGroupName()
         {
             return _groupName.GetLocalizableValue();
         }
@@ -395,7 +395,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     but a public static property with a name matching the <see cref="Name" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
         /// </exception>
-        public string GetName()
+        public string? GetName()
         {
             return _name.GetLocalizableValue();
         }
@@ -440,7 +440,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     but a public static property with a name matching the <see cref="Prompt" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
         /// </exception>
-        public string GetPrompt()
+        public string? GetPrompt()
         {
             return _prompt.GetLocalizableValue();
         }
@@ -469,7 +469,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     but a public static property with a name matching the <see cref="ShortName" /> value couldn't be found
         ///     on the <see cref="ResourceType" />.
         /// </exception>
-        public string GetShortName()
+        public string? GetShortName()
         {
             return _shortName.GetLocalizableValue() ?? GetName();
         }

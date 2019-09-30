@@ -6,7 +6,6 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -20,7 +19,7 @@ namespace System.Linq.Expressions
 
         // Associate every unique label or anonymous parameter in the tree with an integer.
         // Labels are displayed as UnnamedLabel_#; parameters are displayed as Param_#.
-        private Dictionary<object, int> _ids;
+        private Dictionary<object, int>? _ids;
 
         private ExpressionStringBuilder()
         {
@@ -34,7 +33,6 @@ namespace System.Linq.Expressions
 
         internal static string CatchBlockToString(CatchBlock node)
         {
-            Debug.Assert(node != null);
             var esb = new ExpressionStringBuilder();
             esb.VisitCatchBlock(node);
             return esb.ToString();
@@ -42,7 +40,6 @@ namespace System.Linq.Expressions
 
         internal static string ElementInitBindingToString(ElementInit node)
         {
-            Debug.Assert(node != null);
             var esb = new ExpressionStringBuilder();
             esb.VisitElementInit(node);
             return esb.ToString();
@@ -50,7 +47,6 @@ namespace System.Linq.Expressions
 
         internal static string ExpressionToString(Expression node)
         {
-            Debug.Assert(node != null);
             var esb = new ExpressionStringBuilder();
             esb.Visit(node);
             return esb.ToString();
@@ -58,7 +54,6 @@ namespace System.Linq.Expressions
 
         internal static string MemberBindingToString(MemberBinding node)
         {
-            Debug.Assert(node != null);
             var esb = new ExpressionStringBuilder();
             esb.VisitMemberBinding(node);
             return esb.ToString();
@@ -66,7 +61,6 @@ namespace System.Linq.Expressions
 
         internal static string SwitchCaseToString(SwitchCase node)
         {
-            Debug.Assert(node != null);
             var esb = new ExpressionStringBuilder();
             esb.VisitSwitchCase(node);
             return esb.ToString();
@@ -347,15 +341,19 @@ namespace System.Linq.Expressions
                 case GotoExpressionKind.Goto:
                     op = "goto";
                     break;
+
                 case GotoExpressionKind.Break:
                     op = "break";
                     break;
+
                 case GotoExpressionKind.Continue:
                     op = "continue";
                     break;
+
                 case GotoExpressionKind.Return:
                     op = "return";
                     break;
+
                 default:
                     throw new InvalidOperationException();
             }
@@ -382,8 +380,10 @@ namespace System.Linq.Expressions
             }
             else
             {
-                Debug.Assert(node.Indexer != null);
-                Out(node.Indexer.DeclaringType?.Name);
+                if (node.Indexer?.DeclaringType != null)
+                {
+                    Out(node.Indexer.DeclaringType.Name);
+                }
             }
 
             if (node.Indexer != null)
@@ -593,6 +593,7 @@ namespace System.Linq.Expressions
                     Out("new [] ");
                     VisitExpressions('{', node.Expressions, '}');
                     break;
+
                 default:
                     break;
             }
@@ -654,6 +655,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeEqual:
                     Out(" TypeEqual ");
                     break;
+
                 default:
                     break;
             }
@@ -671,51 +673,67 @@ namespace System.Linq.Expressions
                 case ExpressionType.NegateChecked:
                     Out('-');
                     break;
+
                 case ExpressionType.Not:
                     Out("Not(");
                     break;
+
                 case ExpressionType.IsFalse:
                     Out("IsFalse(");
                     break;
+
                 case ExpressionType.IsTrue:
                     Out("IsTrue(");
                     break;
+
                 case ExpressionType.OnesComplement:
                     Out("~(");
                     break;
+
                 case ExpressionType.ArrayLength:
                     Out("ArrayLength(");
                     break;
+
                 case ExpressionType.Convert:
                     Out("Convert(");
                     break;
+
                 case ExpressionType.ConvertChecked:
                     Out("ConvertChecked(");
                     break;
+
                 case ExpressionType.Throw:
                     Out("throw(");
                     break;
+
                 case ExpressionType.TypeAs:
                     Out('(');
                     break;
+
                 case ExpressionType.UnaryPlus:
                     Out('+');
                     break;
+
                 case ExpressionType.Unbox:
                     Out("Unbox(");
                     break;
+
                 case ExpressionType.Increment:
                     Out("Increment(");
                     break;
+
                 case ExpressionType.Decrement:
                     Out("Decrement(");
                     break;
+
                 case ExpressionType.PreIncrementAssign:
                     Out("++");
                     break;
+
                 case ExpressionType.PreDecrementAssign:
                     Out("--");
                     break;
+
                 case ExpressionType.Quote:
                 case ExpressionType.PostIncrementAssign:
                 case ExpressionType.PostDecrementAssign:
@@ -742,6 +760,7 @@ namespace System.Linq.Expressions
                     Out(node.Type.Name);
                     Out(')');
                     break;
+
                 case ExpressionType.Convert:
                 case ExpressionType.ConvertChecked:
                     /*Out(", ");
@@ -751,9 +770,11 @@ namespace System.Linq.Expressions
                 case ExpressionType.PostIncrementAssign:
                     Out("++");
                     break;
+
                 case ExpressionType.PostDecrementAssign:
                     Out("--");
                     break;
+
                 default:
                     Out(')');
                     break;
@@ -769,7 +790,7 @@ namespace System.Linq.Expressions
             if (!string.IsNullOrEmpty(node.Variable?.Name))
             {
                 Out(' ');
-                Out(node.Variable.Name);
+                Out(node.Variable!.Name);
             }
 
             Out(") { ... }");
@@ -908,14 +929,15 @@ namespace System.Linq.Expressions
             if (instance != null)
             {
                 Visit(instance);
+                Out('.');
             }
-            else
+            else if (member.DeclaringType != null)
             {
                 // For static members, include the type name
-                Out(member.DeclaringType?.Name);
+                Out(member.DeclaringType.Name);
+                Out('.');
             }
 
-            Out('.');
             Out(member.Name);
         }
 

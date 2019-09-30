@@ -26,23 +26,23 @@ namespace System.Linq.Expressions
         // Associate every unique anonymous LabelTarget in the tree with an integer.
         // The id is used to create a name for the anonymous LabelTarget.
         //
-        private Dictionary<LabelTarget, int> _labelIds;
+        private Dictionary<LabelTarget, int>? _labelIds;
 
         // Associate every unique anonymous LambdaExpression in the tree with an integer.
         // The id is used to create a name for the anonymous lambda.
         //
-        private Dictionary<LambdaExpression, int> _lambdaIds;
+        private Dictionary<LambdaExpression, int>? _lambdaIds;
 
         // All the unique lambda expressions in the ET, will be used for displaying all
         // the lambda definitions.
-        private Queue<LambdaExpression> _lambdas;
+        private Queue<LambdaExpression>? _lambdas;
 
         private readonly TextWriter _out;
 
         // Associate every unique anonymous parameter or variable in the tree with an integer.
         // The id is used to create a name for the anonymous parameter or variable.
         //
-        private Dictionary<ParameterExpression, int> _paramIds;
+        private Dictionary<ParameterExpression, int>? _paramIds;
 
         private readonly Stack<int> _stack = new Stack<int>();
 
@@ -69,9 +69,6 @@ namespace System.Linq.Expressions
 
         internal static void WriteTo(Expression node, TextWriter writer)
         {
-            Debug.Assert(node != null);
-            Debug.Assert(writer != null);
-
             new DebugViewWriter(writer).WriteTo(node);
         }
 
@@ -96,116 +93,153 @@ namespace System.Linq.Expressions
                     case ExpressionType.Assign:
                         op = "=";
                         break;
+
                     case ExpressionType.Equal:
                         op = "==";
                         break;
+
                     case ExpressionType.NotEqual:
                         op = "!=";
                         break;
+
                     case ExpressionType.AndAlso:
                         op = "&&";
                         beforeOp = Flow.Break | Flow.Space;
                         break;
+
                     case ExpressionType.OrElse:
                         op = "||";
                         beforeOp = Flow.Break | Flow.Space;
                         break;
+
                     case ExpressionType.GreaterThan:
                         op = ">";
                         break;
+
                     case ExpressionType.LessThan:
                         op = "<";
                         break;
+
                     case ExpressionType.GreaterThanOrEqual:
                         op = ">=";
                         break;
+
                     case ExpressionType.LessThanOrEqual:
                         op = "<=";
                         break;
+
                     case ExpressionType.Add:
                         op = "+";
                         break;
+
                     case ExpressionType.AddAssign:
                         op = "+=";
                         break;
+
                     case ExpressionType.AddAssignChecked:
                         op = "#+=";
                         break;
+
                     case ExpressionType.AddChecked:
                         op = "#+";
                         break;
+
                     case ExpressionType.Subtract:
                         op = "-";
                         break;
+
                     case ExpressionType.SubtractAssign:
                         op = "-=";
                         break;
+
                     case ExpressionType.SubtractAssignChecked:
                         op = "#-=";
                         break;
+
                     case ExpressionType.SubtractChecked:
                         op = "#-";
                         break;
+
                     case ExpressionType.Divide:
                         op = "/";
                         break;
+
                     case ExpressionType.DivideAssign:
                         op = "/=";
                         break;
+
                     case ExpressionType.Modulo:
                         op = "%";
                         break;
+
                     case ExpressionType.ModuloAssign:
                         op = "%=";
                         break;
+
                     case ExpressionType.Multiply:
                         op = "*";
                         break;
+
                     case ExpressionType.MultiplyAssign:
                         op = "*=";
                         break;
+
                     case ExpressionType.MultiplyAssignChecked:
                         op = "#*=";
                         break;
+
                     case ExpressionType.MultiplyChecked:
                         op = "#*";
                         break;
+
                     case ExpressionType.LeftShift:
                         op = "<<";
                         break;
+
                     case ExpressionType.LeftShiftAssign:
                         op = "<<=";
                         break;
+
                     case ExpressionType.RightShift:
                         op = ">>";
                         break;
+
                     case ExpressionType.RightShiftAssign:
                         op = ">>=";
                         break;
+
                     case ExpressionType.And:
                         op = "&";
                         break;
+
                     case ExpressionType.AndAssign:
                         op = "&=";
                         break;
+
                     case ExpressionType.Or:
                         op = "|";
                         break;
+
                     case ExpressionType.OrAssign:
                         op = "|=";
                         break;
+
                     case ExpressionType.ExclusiveOr:
                         op = "^";
                         break;
+
                     case ExpressionType.ExclusiveOrAssign:
                         op = "^=";
                         break;
+
                     case ExpressionType.Power:
                         op = "**";
                         break;
+
                     case ExpressionType.PowerAssign:
                         op = "**=";
                         break;
+
                     case ExpressionType.Coalesce:
                         op = "??";
                         break;
@@ -298,6 +332,7 @@ namespace System.Linq.Expressions
                 case null:
                     Out("null");
                     break;
+
                 case string _ when node.Type == typeof(string):
                     Out
                     (
@@ -309,6 +344,7 @@ namespace System.Linq.Expressions
                         )
                     );
                     break;
+
                 case char _ when node.Type == typeof(char):
                     Out
                     (
@@ -320,10 +356,12 @@ namespace System.Linq.Expressions
                         )
                     );
                     break;
+
                 case int _ when node.Type == typeof(int):
                 case bool _ when node.Type == typeof(bool):
                     Out(value.ToString());
                     break;
+
                 default:
                     {
                         var suffix = GetConstantValueSuffix(node.Type);
@@ -643,6 +681,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeEqual:
                     Out(Flow.Space, ".TypeEqual", Flow.Space);
                     break;
+
                 default:
                     break;
             }
@@ -732,6 +771,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.Unbox:
                     Out(".Unbox");
                     break;
+
                 default:
                     break;
             }
@@ -756,6 +796,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.PostIncrementAssign:
                     Out("++");
                     break;
+
                 default:
                     break;
             }
@@ -854,7 +895,7 @@ namespace System.Linq.Expressions
             return false;
         }
 
-        private static string GetConstantValueSuffix(Type type)
+        private static string? GetConstantValueSuffix(Type type)
         {
             return type == typeof(uint) ? "U"
                 : type == typeof(long) ? "L"
@@ -870,7 +911,7 @@ namespace System.Linq.Expressions
             return ContainsWhiteSpace(name) ? QuoteName(name) : name;
         }
 
-        private static int GetId<T>(T e, ref Dictionary<T, int> ids)
+        private static int GetId<T>(T e, ref Dictionary<T, int>? ids)
         {
             if (ids == null)
             {
@@ -1022,9 +1063,8 @@ namespace System.Linq.Expressions
             return false;
         }
 
-        private static bool NeedsParentheses(Expression parent, Expression child)
+        private static bool NeedsParentheses(Expression parent, Expression? child)
         {
-            Debug.Assert(parent != null);
             if (child == null)
             {
                 return false;
@@ -1040,6 +1080,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.IsFalse:
                 case ExpressionType.Unbox:
                     return true;
+
                 default:
                     break;
             }
@@ -1083,10 +1124,10 @@ namespace System.Linq.Expressions
                     case ExpressionType.SubtractChecked:
                     case ExpressionType.Divide:
                     case ExpressionType.Modulo:
-                        var binary = parent as BinaryExpression;
-                        Debug.Assert(binary != null);
+                        var binary = (BinaryExpression)parent;
                         // Need to have parenthesis for the right operand.
                         return child == binary.Right;
+
                     default:
                         return true;
                 }
@@ -1220,6 +1261,7 @@ namespace System.Linq.Expressions
                     WriteLine();
                     Write(new string(' ', Depth));
                     break;
+
                 default:
                     break;
             }
@@ -1243,7 +1285,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private void ParenthesizedVisit(Expression parent, Expression nodeToVisit)
+        private void ParenthesizedVisit(Expression parent, Expression? nodeToVisit)
         {
             if (NeedsParentheses(parent, nodeToVisit))
             {
@@ -1322,12 +1364,15 @@ namespace System.Linq.Expressions
                 case '(':
                     close = ')';
                     break;
+
                 case '{':
                     close = '}';
                     break;
+
                 case '[':
                     close = ']';
                     break;
+
                 default: throw ContractUtils.Unreachable;
             }
 

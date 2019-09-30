@@ -45,14 +45,14 @@ namespace System.Dynamic
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.Dynamic.DynamicMetaObject" /> class.
+        ///     Initializes a new instance of the <see cref="DynamicMetaObject" /> class.
         /// </summary>
         /// <param name="expression">
-        ///     The expression representing this <see cref="T:System.Dynamic.DynamicMetaObject" /> during the dynamic binding
+        ///     The expression representing this <see cref="DynamicMetaObject" /> during the dynamic binding
         ///     process.
         /// </param>
         /// <param name="restrictions">The set of binding restrictions under which the binding is valid.</param>
-        /// <param name="value">The runtime value represented by the <see cref="T:System.Dynamic.DynamicMetaObject" />.</param>
+        /// <param name="value">The runtime value represented by the <see cref="DynamicMetaObject" />.</param>
         public DynamicMetaObject(Expression expression, BindingRestrictions restrictions, object value)
             : this(expression, restrictions)
         {
@@ -87,7 +87,7 @@ namespace System.Dynamic
         ///     Gets the <see cref="Type" /> of the runtime value or null if the <see cref="DynamicMetaObject" /> has no value
         ///     associated with it.
         /// </summary>
-        public Type RuntimeType
+        public Type? RuntimeType
         {
             get
             {
@@ -105,7 +105,7 @@ namespace System.Dynamic
         /// <summary>
         ///     The runtime value represented by this <see cref="DynamicMetaObject" />.
         /// </summary>
-        public object Value => HasValue ? _value : null;
+        public object? Value => HasValue ? _value : null;
 
         /// <summary>
         ///     Creates a meta-object for the specified object.
@@ -348,7 +348,7 @@ namespace System.Dynamic
                 ContractUtils.RequiresNotNull(mo, nameof(objects));
                 var expr = mo.Expression;
                 Debug.Assert(expr != null, "Unexpected null expression; ctor should have caught this.");
-                res[i] = expr;
+                res[i] = expr!;
             }
 
             return res;

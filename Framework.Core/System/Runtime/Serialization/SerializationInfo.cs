@@ -78,7 +78,7 @@ namespace System.Runtime.Serialization
 
         public Type ObjectType { get; private set; }
 
-        public void AddValue(string name, object value, Type type)
+        public void AddValue(string name, object? value, Type type)
         {
             if (name == null)
             {
@@ -317,7 +317,7 @@ namespace System.Runtime.Serialization
             IsAssemblyNameSetExplicit = false;
         }
 
-        internal void AddValueInternal(string name, object value, Type type)
+        internal void AddValueInternal(string name, object? value, Type type)
         {
             if (_nameToIndex.ContainsKey(name))
             {

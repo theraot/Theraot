@@ -56,7 +56,7 @@ namespace System.Dynamic
 
         /// <inheritdoc />
         /// <summary>
-        ///     Always returns <c>true</c> because this is a standard <see cref="T:System.Dynamic.DynamicMetaObjectBinder" />.
+        ///     Always returns <c>true</c> because this is a standard <see cref="DynamicMetaObjectBinder" />.
         /// </summary>
         internal sealed override bool IsStandardBinder => true;
 
@@ -66,7 +66,7 @@ namespace System.Dynamic
         /// </summary>
         /// <param name="target">The target of the dynamic invoke member operation.</param>
         /// <param name="args">An array of arguments of the dynamic invoke member operation.</param>
-        /// <returns>The <see cref="T:System.Dynamic.DynamicMetaObject" /> representing the result of the binding.</returns>
+        /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public sealed override DynamicMetaObject Bind(DynamicMetaObject target, DynamicMetaObject[] args)
         {
             ContractUtils.RequiresNotNull(target, nameof(target));
@@ -88,7 +88,7 @@ namespace System.Dynamic
         ///     as a sequence of get member, and invoke, to let the <see cref="DynamicMetaObject" />
         ///     request the binding of the invoke operation only.
         /// </remarks>
-        public abstract DynamicMetaObject FallbackInvoke(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion);
+        public abstract DynamicMetaObject FallbackInvoke(DynamicMetaObject? target, DynamicMetaObject[] args, DynamicMetaObject? errorSuggestion);
 
         /// <summary>
         ///     Performs the binding of the dynamic invoke member operation if the target dynamic object cannot bind.
@@ -109,7 +109,7 @@ namespace System.Dynamic
         /// <param name="args">The arguments of the dynamic invoke member operation.</param>
         /// <param name="errorSuggestion">The binding result to use if binding fails, or null.</param>
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
-        public abstract DynamicMetaObject FallbackInvokeMember(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion);
+        public abstract DynamicMetaObject FallbackInvokeMember(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject? errorSuggestion);
     }
 }
 

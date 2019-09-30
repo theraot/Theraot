@@ -20,7 +20,7 @@ namespace Theraot.Collections.Specialized
 
         private readonly IList<T> _target;
 
-        public ConditionalExtendedList(IEnumerable<T> target, IEnumerable<T> append, Func<bool> enumerateTarget, Func<bool> enumerateAppend)
+        public ConditionalExtendedList(IEnumerable<T> target, IEnumerable<T> append, Func<bool>? enumerateTarget, Func<bool>? enumerateAppend)
         {
             _target = target == null ? ArrayEx.Empty<T>() : target.WrapAsIList();
             _append = append == null ? ArrayEx.Empty<T>() : append.WrapAsIList();

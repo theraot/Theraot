@@ -80,7 +80,7 @@ namespace System.Dynamic
         /// <param name="expression">The expression to test.</param>
         /// <param name="instance">The exact object instance to test.</param>
         /// <returns>The new binding restrictions.</returns>
-        public static BindingRestrictions GetInstanceRestriction(Expression expression, object instance)
+        public static BindingRestrictions GetInstanceRestriction(Expression expression, object? instance)
         {
             ContractUtils.RequiresNotNull(expression, nameof(expression));
 
@@ -128,7 +128,6 @@ namespace System.Dynamic
 
         internal static BindingRestrictions GetTypeRestriction(DynamicMetaObject obj)
         {
-            Debug.Assert(obj != null);
             if (obj.Value == null && obj.HasValue)
             {
                 return GetInstanceRestriction(obj.Expression, null);
@@ -163,7 +162,6 @@ namespace System.Dynamic
 
             internal CustomRestriction(Expression expression)
             {
-                Debug.Assert(expression != null);
                 _expression = expression;
             }
 
@@ -187,11 +185,10 @@ namespace System.Dynamic
         private sealed class InstanceRestriction : BindingRestrictions
         {
             private readonly Expression _expression;
-            private readonly object _instance;
+            private readonly object? _instance;
 
-            internal InstanceRestriction(Expression parameter, object instance)
+            internal InstanceRestriction(Expression parameter, object? instance)
             {
-                Debug.Assert(parameter != null);
                 _expression = parameter;
                 _instance = instance;
             }
@@ -353,8 +350,6 @@ namespace System.Dynamic
 
             internal TypeRestriction(Expression parameter, Type type)
             {
-                Debug.Assert(parameter != null);
-                Debug.Assert(type != null);
                 _expression = parameter;
                 _type = type;
             }

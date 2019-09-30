@@ -53,22 +53,22 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Dynamic;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
         /// </summary>
         /// <returns>
-        ///     The <see cref="P:System.Linq.Expressions.DynamicExpression.Type" /> that represents the static type of the
+        ///     The <see cref="System.Linq.Expressions.DynamicExpression.Type" /> that represents the static type of the
         ///     expression.
         /// </returns>
         public override Type Type => typeof(object);
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the type of the delegate used by the <see cref="T:System.Runtime.CompilerServices.CallSite" />.
+        ///     Gets the type of the delegate used by the <see cref="System.Runtime.CompilerServices.CallSite" />.
         /// </summary>
         public Type DelegateType { get; }
 
@@ -373,9 +373,9 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="arguments">The <see cref="Arguments" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public DynamicExpression Update(IEnumerable<Expression> arguments)
+        public DynamicExpression Update(IEnumerable<Expression>? arguments)
         {
-            ICollection<Expression> args;
+            ICollection<Expression>? args;
             if (arguments == null)
             {
                 args = null;
@@ -422,12 +422,12 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        internal virtual DynamicExpression Rewrite(Expression[] args)
+        internal virtual DynamicExpression Rewrite(Expression[]? args)
         {
             throw ContractUtils.Unreachable;
         }
 
-        internal virtual bool SameArguments(ICollection<Expression> arguments)
+        internal virtual bool SameArguments(ICollection<Expression>? arguments)
         {
             throw ContractUtils.Unreachable;
         }
@@ -469,14 +469,12 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override DynamicExpression Rewrite(Expression[] args)
+        internal override DynamicExpression Rewrite(Expression[]? args)
         {
-            Debug.Assert(args.Length == 1);
-
-            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args[0]);
+            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args![0]);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression>? arguments)
         {
             if (arguments?.Count != 1)
             {
@@ -522,14 +520,12 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override DynamicExpression Rewrite(Expression[] args)
+        internal override DynamicExpression Rewrite(Expression[]? args)
         {
-            Debug.Assert(args.Length == 2);
-
-            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args[0], args[1]);
+            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args![0], args![1]);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression>? arguments)
         {
             if (arguments?.Count != 2)
             {
@@ -588,14 +584,12 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override DynamicExpression Rewrite(Expression[] args)
+        internal override DynamicExpression Rewrite(Expression[]? args)
         {
-            Debug.Assert(args.Length == 3);
-
-            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args[0], args[1], args[2]);
+            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args![0], args![1], args![2]);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression>? arguments)
         {
             if (arguments?.Count != 3)
             {
@@ -662,14 +656,12 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override DynamicExpression Rewrite(Expression[] args)
+        internal override DynamicExpression Rewrite(Expression[]? args)
         {
-            Debug.Assert(args.Length == 4);
-
-            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args[0], args[1], args[2], args[3]);
+            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args![0], args![1], args![2], args![3]);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression>? arguments)
         {
             if (arguments?.Count != 4)
             {
@@ -731,14 +723,12 @@ namespace System.Linq.Expressions
             return _argumentsAsReadOnlyCollection;
         }
 
-        internal override DynamicExpression Rewrite(Expression[] args)
+        internal override DynamicExpression Rewrite(Expression[]? args)
         {
-            Debug.Assert(args.Length == ((IArgumentProvider)this).ArgumentCount);
-
-            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args);
+            return ExpressionExtension.MakeDynamic(DelegateType, Binder, args!);
         }
 
-        internal override bool SameArguments(ICollection<Expression> arguments)
+        internal override bool SameArguments(ICollection<Expression>? arguments)
         {
             return ExpressionUtils.SameElements(arguments, _arguments);
         }
@@ -856,7 +846,7 @@ namespace System.Linq.Expressions
                 )
             );
 
-            var delegateType = info.DelegateType ?? info.MakeDelegateType(returnType, arg0);
+            var delegateType = info.GetDelegateType(returnType, arg0);
 
             return DynamicExpression.Make(returnType, delegateType, binder, arg0);
         }
@@ -899,7 +889,7 @@ namespace System.Linq.Expressions
                 )
             );
 
-            var delegateType = info.DelegateType ?? info.MakeDelegateType(returnType, arg0, arg1);
+            var delegateType = info.GetDelegateType(returnType, arg0, arg1);
 
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1);
         }
@@ -948,7 +938,7 @@ namespace System.Linq.Expressions
                 )
             );
 
-            var delegateType = info.DelegateType ?? info.MakeDelegateType(returnType, arg0, arg1, arg2);
+            var delegateType = info.GetDelegateType(returnType, arg0, arg1, arg2);
 
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1, arg2);
         }
@@ -1003,7 +993,7 @@ namespace System.Linq.Expressions
                 )
             );
 
-            var delegateType = info.DelegateType ?? info.MakeDelegateType(returnType, arg0, arg1, arg2, arg3);
+            var delegateType = info.GetDelegateType(returnType, arg0, arg1, arg2, arg3);
 
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1, arg2, arg3);
         }
@@ -1068,7 +1058,7 @@ namespace System.Linq.Expressions
         ///     <see cref="DynamicExpression.Binder">Binder</see>, and
         ///     <see cref="DynamicExpression.Arguments">Arguments</see> set to the specified values.
         /// </returns>
-        public static DynamicExpression MakeDynamic(Type delegateType, CallSiteBinder binder, IEnumerable<Expression> arguments)
+        public static DynamicExpression MakeDynamic(Type delegateType, CallSiteBinder binder, IEnumerable<Expression>? arguments)
         {
             var argumentList = arguments.AsArrayInternal();
             switch (argumentList.Length)

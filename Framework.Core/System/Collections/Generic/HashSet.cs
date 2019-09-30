@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CC0091 // Use static method
+
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -214,22 +216,22 @@ namespace System.Collections.Generic
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(ToHashSet(other), true);
+            return IsSubsetOf(other.ToHashSet(Comparer), true);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(ToHashSet(other), true);
+            return IsSupersetOf(other.ToHashSet(Comparer), true);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(ToHashSet(other), false);
+            return IsSubsetOf(other.ToHashSet(Comparer), false);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(ToHashSet(other), false);
+            return IsSupersetOf(other.ToHashSet(Comparer), false);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -262,7 +264,7 @@ namespace System.Collections.Generic
             }
 
             var containsCount = 0;
-            foreach (var item in ToHashSet(other))
+            foreach (var item in other.ToHashSet(Comparer))
             {
                 if (!_wrapped.ContainsKey(item))
                 {
@@ -282,8 +284,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(other));
             }
 
-            var tmpSet = new HashSet<T>(other);
-            foreach (var item in tmpSet)
+            foreach (var item in new HashSet<T>(other))
             {
                 if (_wrapped.ContainsKey(item))
                 {
@@ -377,17 +378,6 @@ namespace System.Collections.Generic
             }
 
             return true;
-        }
-
-        private IEnumerable<T> ToHashSet(IEnumerable<T> other)
-        {
-            var comparer = Comparer;
-            if (other is HashSet<T> test && comparer.Equals(test.Comparer))
-            {
-                return test;
-            }
-
-            return new HashSet<T>(other, comparer);
         }
 
         public struct Enumerator : IEnumerator<T>

@@ -38,7 +38,7 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Block;
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => GetExpression(ExpressionCount - 1).Type;
 
         /// <summary>
@@ -72,12 +72,12 @@ namespace System.Linq.Expressions
         {
             if (expressions == null)
             {
-                return Block(Type, variables, expressions);
+                throw new ArgumentNullException(nameof(expressions));
             }
 
             // Ensure variables is safe to enumerate twice.
             // (If this means a second call to ToReadOnlyCollection it will return quickly).
-            ICollection<ParameterExpression> vars;
+            ICollection<ParameterExpression>? vars;
             if (variables == null)
             {
                 vars = null;
@@ -138,7 +138,7 @@ namespace System.Linq.Expressions
             return EmptyCollection<ParameterExpression>.Instance;
         }
 
-        internal virtual BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal virtual BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             throw ContractUtils.Unreachable;
         }
@@ -148,13 +148,18 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        internal virtual bool SameVariables(ICollection<ParameterExpression> variables)
+        internal virtual bool SameVariables(ICollection<ParameterExpression>? variables)
         {
             return variables == null || variables.Count == 0;
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitBlock(this);
         }
     }
@@ -191,7 +196,6 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            Debug.Assert(args != null);
             Debug.Assert(args.Length == 2);
             Debug.Assert(variables == null || variables.Count == 0);
 
@@ -200,7 +204,6 @@ namespace System.Linq.Expressions
 
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
-            Debug.Assert(expressions != null);
             if (expressions.Count != 2)
             {
                 return false;
@@ -259,7 +262,6 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            Debug.Assert(args != null);
             Debug.Assert(args.Length == 3);
             Debug.Assert(variables == null || variables.Count == 0);
 
@@ -268,7 +270,6 @@ namespace System.Linq.Expressions
 
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
-            Debug.Assert(expressions != null);
             if (expressions.Count != 3)
             {
                 return false;
@@ -335,7 +336,6 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            Debug.Assert(args != null);
             Debug.Assert(args.Length == 4);
             Debug.Assert(variables == null || variables.Count == 0);
 
@@ -344,7 +344,6 @@ namespace System.Linq.Expressions
 
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
-            Debug.Assert(expressions != null);
             if (expressions.Count != 4)
             {
                 return false;
@@ -419,7 +418,6 @@ namespace System.Linq.Expressions
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
-            Debug.Assert(args != null);
             Debug.Assert(args.Length == 5);
             Debug.Assert(variables == null || variables.Count == 0);
 
@@ -428,7 +426,6 @@ namespace System.Linq.Expressions
 
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
-            Debug.Assert(expressions != null);
             if (expressions.Count != 5)
             {
                 return false;
@@ -501,7 +498,6 @@ namespace System.Linq.Expressions
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
             Debug.Assert(variables == null || variables.Count == 0);
-            Debug.Assert(args != null);
 
             return new BlockN(args);
         }
@@ -549,7 +545,7 @@ namespace System.Linq.Expressions
             var array = variables.AsArrayInternal();
             if (args == null)
             {
-                Debug.Assert(variables.Count == Variables.Count);
+                Debug.Assert(array.Length == Variables.Count);
                 ValidateVariables(array, nameof(variables));
                 return new Scope1(array, _body);
             }
@@ -562,7 +558,6 @@ namespace System.Linq.Expressions
 
         internal override bool SameExpressions(ICollection<Expression> expressions)
         {
-            Debug.Assert(expressions != null);
             if (expressions.Count != 1)
             {
                 return false;
@@ -612,7 +607,7 @@ namespace System.Linq.Expressions
             return variables;
         }
 
-        internal override bool SameVariables(ICollection<ParameterExpression> variables)
+        internal override bool SameVariables(ICollection<ParameterExpression>? variables)
         {
             return ExpressionUtils.SameElements(variables, _variables);
         }
@@ -649,7 +644,7 @@ namespace System.Linq.Expressions
             var array = variables.AsArrayInternal();
             if (args == null)
             {
-                Debug.Assert(variables.Count == Variables.Count);
+                Debug.Assert(array.Length == Variables.Count);
                 ValidateVariables(array, nameof(variables));
                 return new ScopeN(array, _body);
             }
@@ -681,7 +676,7 @@ namespace System.Linq.Expressions
             var array = variables.AsArrayInternal();
             if (args == null)
             {
-                Debug.Assert(variables.Count == Variables.Count);
+                Debug.Assert(array.Length == Variables.Count);
                 ValidateVariables(array, nameof(variables));
                 return new ScopeWithType(array, Body.AsArrayInternal(), Type);
             }
@@ -972,7 +967,7 @@ namespace System.Linq.Expressions
         /// <param name="variables">The variables in the block.</param>
         /// <param name="expressions">The expressions in the block.</param>
         /// <returns>The created <see cref="BlockExpression" />.</returns>
-        public static BlockExpression Block(Type type, IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
+        public static BlockExpression Block(Type type, IEnumerable<ParameterExpression>? variables, IEnumerable<Expression> expressions)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.RequiresNotNull(expressions, nameof(expressions));
@@ -1025,7 +1020,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static BlockExpression BlockCore(Type type, ParameterExpression[] variables, Expression[] expressions)
+        private static BlockExpression BlockCore(Type? type, ParameterExpression[] variables, Expression[] expressions)
         {
             ValidateVariables(variables, nameof(variables));
 

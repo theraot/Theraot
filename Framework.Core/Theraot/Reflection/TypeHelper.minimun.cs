@@ -71,8 +71,7 @@ namespace Theraot.Reflection
 
             try
             {
-                var sourceAsTarget = (TTarget)source;
-                return sourceAsTarget;
+                return (TTarget)source;
             }
             catch (Exception exception)
             {
@@ -238,12 +237,6 @@ namespace Theraot.Reflection
                 return found;
             }
 
-            found = Interlocked.CompareExchange(ref target, null!, null!);
-            if (found != null)
-            {
-                return found;
-            }
-
             T created;
             try
             {
@@ -268,12 +261,6 @@ namespace Theraot.Reflection
                 return found;
             }
 
-            found = Interlocked.CompareExchange(ref target, null!, null!);
-            if (found != null)
-            {
-                return found;
-            }
-
             lock (syncRoot)
             {
                 return LazyCreate(ref target);
@@ -285,12 +272,6 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found != null)
-            {
-                return found;
-            }
-
-            found = Interlocked.CompareExchange(ref target, null!, null!);
             if (found != null)
             {
                 return found;
@@ -320,7 +301,33 @@ namespace Theraot.Reflection
                 return found;
             }
 
-            found = Interlocked.CompareExchange(ref target, null!, null!);
+            lock (syncRoot)
+            {
+                return LazyCreate(ref target, valueFactory);
+            }
+        }
+
+        [return: NotNull]
+        public static T LazyCreateNew<T>([NotNull] ref T? target)
+            where T : class, new()
+        {
+            var found = target;
+            if (found != null)
+            {
+                return found;
+            }
+
+            var created = new T();
+
+            found = Interlocked.CompareExchange(ref target, created, null!);
+            return found ?? created;
+        }
+
+        [return: NotNull]
+        public static T LazyCreateNew<T>([NotNull] ref T? target, object syncRoot)
+            where T : class, new()
+        {
+            var found = target;
             if (found != null)
             {
                 return found;
@@ -328,7 +335,7 @@ namespace Theraot.Reflection
 
             lock (syncRoot)
             {
-                return LazyCreate(ref target, valueFactory);
+                return LazyCreateNew(ref target);
             }
         }
     }

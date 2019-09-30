@@ -6,8 +6,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Collections;
@@ -19,9 +19,9 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class ElementInit : IArgumentProvider
     {
-        private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<Expression?> _argumentsAsReadOnlyCollection;
 
-        internal ElementInit(MethodInfo addMethod, Expression[] arguments)
+        internal ElementInit(MethodInfo addMethod, Expression?[] arguments)
         {
             AddMethod = addMethod;
             _argumentsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(arguments);
@@ -35,7 +35,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the list of elements to be added to the object.
         /// </summary>
-        public ReadOnlyCollection<Expression> Arguments => _argumentsAsReadOnlyCollection;
+        public ReadOnlyCollection<Expression?> Arguments => _argumentsAsReadOnlyCollection;
 
         /// <summary>
         ///     Gets the number of argument expressions of the node.
@@ -49,7 +49,7 @@ namespace System.Linq.Expressions
         /// <returns>The expression representing the argument at the specified <paramref name="index" />.</returns>
         public Expression GetArgument(int index)
         {
-            return Arguments[index];
+            return Arguments[index] ?? Expression.Constant(null);
         }
 
         /// <summary>
@@ -101,12 +101,12 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(addMethod, nameof(addMethod));
             ContractUtils.RequiresNotNull(arguments, nameof(arguments));
 
-            var argumentsRo = arguments.AsArrayInternal();
+            var array = arguments.AsArrayInternal();
 
-            RequiresCanRead(argumentsRo, nameof(arguments));
+            RequiresCanRead(array, nameof(arguments));
             ValidateElementInitAddMethodInfo(addMethod, nameof(addMethod));
-            ValidateArgumentTypes(addMethod, ExpressionType.Call, ref argumentsRo, nameof(addMethod));
-            return new ElementInit(addMethod, argumentsRo);
+            ValidateArgumentTypes(addMethod, ExpressionType.Call, ref array, nameof(addMethod));
+            return new ElementInit(addMethod, array);
         }
 
         private static void ValidateElementInitAddMethodInfo(MethodInfo addMethod, string paramName)

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.Specialized;
 using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
@@ -25,7 +26,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     The index of each constant in the constant array
         /// </summary>
-        private readonly Dictionary<object, int> _indexes = new Dictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
+        private readonly NullAwareDictionary<object, int> _indexes = new NullAwareDictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
 
         /// <summary>
         ///     Each constant referenced within this lambda, and how often it was referenced
@@ -35,7 +36,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     The list of constants in the order they appear in the constant array
         /// </summary>
-        private readonly List<object> _values = new List<object>();
+        private readonly List<object?> _values = new List<object?>();
 
         internal int Count => _values.Count;
 
@@ -98,7 +99,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal void EmitConstant(LambdaCompiler lc, object value, Type type)
+        internal void EmitConstant(LambdaCompiler lc, object? value, Type type)
         {
             Debug.Assert(!ILGen.CanEmitConstant(value, type));
 
@@ -117,7 +118,7 @@ namespace System.Linq.Expressions.Compiler
             EmitConstantFromArray(lc, value, type);
         }
 
-        internal object[] ToArray()
+        internal object?[] ToArray()
         {
             return _values.ToArray();
         }
@@ -138,7 +139,7 @@ namespace System.Linq.Expressions.Compiler
             return refCount > 2;
         }
 
-        private void EmitConstantFromArray(LambdaCompiler lc, object value, Type type)
+        private void EmitConstantFromArray(LambdaCompiler lc, object? value, Type type)
         {
             if (!_indexes.TryGetValue(value, out var index))
             {
@@ -168,9 +169,9 @@ namespace System.Linq.Expressions.Compiler
         private readonly struct TypedConstant : IEquatable<TypedConstant>
         {
             internal readonly Type Type;
-            internal readonly object Value;
+            internal readonly object? Value;
 
-            internal TypedConstant(object value, Type type)
+            internal TypedConstant(object? value, Type type)
             {
                 Value = value;
                 Type = type;

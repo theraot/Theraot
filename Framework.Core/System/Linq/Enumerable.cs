@@ -104,14 +104,13 @@ namespace System.Linq
 
         public static bool Any<TSource>(this IEnumerable<TSource> source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-                case ICollection<TSource> collection:
-                    return collection.Count > 0;
-                default:
-                    break;
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (source is ICollection<TSource> collection)
+            {
+                return collection.Count > 0;
             }
 
             using (var enumerator = source.GetEnumerator())
@@ -153,6 +152,7 @@ namespace System.Linq
                     throw new ArgumentNullException(nameof(source));
                 case IEnumerable<TResult> enumerable:
                     return enumerable;
+
                 default:
                     return CastExtracted();
             }
@@ -201,7 +201,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            comparer ??= EqualityComparer<TSource>.Default;
             foreach (var item in source)
             {
                 if (comparer.Equals(item, value))
@@ -220,6 +220,7 @@ namespace System.Linq
                     throw new ArgumentNullException(nameof(source));
                 case ICollection<TSource> collection:
                     return collection.Count;
+
                 default:
                     var result = 0;
                     using (var item = source.GetEnumerator())
@@ -331,8 +332,10 @@ namespace System.Linq
             {
                 case IList<TSource> list:
                     return list[index];
+
                 case IReadOnlyList<TSource> readOnlyList:
                     return readOnlyList[index];
+
                 default:
                     var count = 0L;
                     foreach (var item in source)
@@ -361,8 +364,10 @@ namespace System.Linq
             {
                 case IList<TSource> list:
                     return index < list.Count ? list[index] : default;
+
                 case IReadOnlyList<TSource> readOnlyList:
                     return index < readOnlyList.Count ? readOnlyList[index] : default;
+
                 default:
                     var count = 0L;
                     foreach (var item in source)
@@ -509,6 +514,7 @@ namespace System.Linq
                     throw new InvalidOperationException();
                 case IList<TSource> list:
                     return list[list.Count - 1];
+
                 default:
                     var found = false;
                     var result = default(TSource);
@@ -562,6 +568,7 @@ namespace System.Linq
                     throw new ArgumentNullException(nameof(source));
                 case IList<TSource> list:
                     return list.Count > 0 ? list[list.Count - 1] : default;
+
                 default:
                     var found = false;
                     var result = default(TSource);
@@ -604,6 +611,7 @@ namespace System.Linq
                     throw new ArgumentNullException(nameof(source));
                 case TSource[] array:
                     return array.LongLength;
+
                 default:
                     long count = 0;
                     using (var item = source.GetEnumerator())
@@ -864,7 +872,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(second));
             }
-            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            comparer ??= EqualityComparer<TSource>.Default;
             return SequenceEqualExtracted();
 
             bool SequenceEqualExtracted()
@@ -1151,13 +1159,14 @@ namespace System.Linq
                 case null:
                     throw new ArgumentNullException(nameof(source));
                 case ICollection<TSource> collection:
-                {
-                    var result = new TSource[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return result;
-                }
+                    {
+                        var result = new TSource[collection.Count];
+                        collection.CopyTo(result, 0);
+                        return result;
+                    }
                 case string str:
                     return (TSource[])(object)str.ToCharArray();
+
                 default:
                     return new List<TSource>(source).ToArray();
             }
@@ -1182,7 +1191,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            comparer = comparer ?? EqualityComparer<TKey>.Default;
+            comparer ??= EqualityComparer<TKey>.Default;
             var result = new Dictionary<TKey, TElement>(comparer);
             foreach (var item in source)
             {
@@ -1324,7 +1333,7 @@ namespace System.Linq
 
         private static IEnumerable<TSource> ExceptExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            comparer ??= EqualityComparer<TSource>.Default;
             var items = new HashSet<TSource>(second, comparer);
             foreach (var item in first)
             {

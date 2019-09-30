@@ -60,7 +60,7 @@ namespace System.Diagnostics.Contracts
             // find the first non-mscorlib assembly.
             var thisAssembly = typeof(Contract).Assembly; // In case we refactor mscorlib, use Contract class instead of Object.
             var stack = new StackTrace();
-            Assembly probablyNotRewritten = null;
+            Assembly? probablyNotRewritten = null;
             for (var i = 0; i < stack.FrameCount; i++)
             {
                 var declaringType = stack.GetFrame(i).GetMethod().DeclaringType;
@@ -93,7 +93,7 @@ namespace System.Diagnostics.Contracts
 
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        private static void ReportFailure(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
+        private static void ReportFailure(ContractFailureKind failureKind, string? userMessage, string? conditionText, Exception? innerException)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {

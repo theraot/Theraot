@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(ConstantExpressionProxy))]
     public class ConstantExpression : Expression
     {
-        internal ConstantExpression(object value)
+        internal ConstantExpression(object? value)
         {
             Value = value;
         }
@@ -27,23 +27,28 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Constant;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => Value == null ? typeof(object) : Value.GetType();
 
         /// <summary>
         ///     Gets the value of the constant expression.
         /// </summary>
-        public object Value { get; }
+        public object? Value { get; }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitConstant(this);
         }
     }
@@ -60,7 +65,7 @@ namespace System.Linq.Expressions
         ///     <see cref="ExpressionType.Constant" /> and the <see cref="ConstantExpression.Value" /> property set to the
         ///     specified value.
         /// </returns>
-        public static ConstantExpression Constant(object value)
+        public static ConstantExpression Constant(object? value)
         {
             return new ConstantExpression(value);
         }
@@ -76,7 +81,7 @@ namespace System.Linq.Expressions
         ///     <see cref="ExpressionType.Constant" /> and the <see cref="ConstantExpression.Value" /> and
         ///     <see cref="Type" /> properties set to the specified values.
         /// </returns>
-        public static ConstantExpression Constant(object value, Type type)
+        public static ConstantExpression Constant(object? value, Type type)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
             TypeUtils.ValidateType(type, nameof(type));
@@ -112,7 +117,7 @@ namespace System.Linq.Expressions
 
     internal class TypedConstantExpression : ConstantExpression
     {
-        internal TypedConstantExpression(object value, Type type)
+        internal TypedConstantExpression(object? value, Type type)
             : base(value)
         {
             Type = type;

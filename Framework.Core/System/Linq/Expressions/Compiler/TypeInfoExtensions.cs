@@ -11,12 +11,12 @@ namespace System.Linq.Expressions.Compiler
 {
     internal static class TypeInfoExtensions
     {
-        public static Type MakeDelegateType(this DelegateHelpers.TypeInfo info, Type retType, params Expression[] args)
+        public static Type GetDelegateType(this DelegateHelpers.TypeInfo info, Type retType, params Expression[] args)
         {
-            return info.MakeDelegateType(retType, (IList<Expression>)args);
+            return info.DelegateType ?? (info.DelegateType = MakeDelegateTypeExtracted(info, retType, args));
         }
 
-        public static Type MakeDelegateType(this DelegateHelpers.TypeInfo info, Type retType, IList<Expression> args)
+        private static Type MakeDelegateTypeExtracted(DelegateHelpers.TypeInfo info, Type retType, IList<Expression> args)
         {
             // nope, go ahead and create it and spend the
             // cost of creating the array.

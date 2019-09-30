@@ -62,7 +62,7 @@ namespace System.Linq.Expressions.Compiler
             if (TypeUtils.AreEquivalent(type, node.Type))
             {
                 // emit "this", if any
-                Type objectType = null;
+                Type? objectType = null;
                 if (node.Expression != null)
                 {
                     EmitInstance(node.Expression, out objectType);
@@ -85,7 +85,8 @@ namespace System.Linq.Expressions.Compiler
             // this situation and replace it with a call to the Address method.
             if
             (
-                !node.Method.IsStatic
+                node.Object != null
+                && !node.Method.IsStatic
                 && node.Object.Type.IsArray
                 && node.Method == node.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance)
             )
@@ -106,6 +107,11 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitExpressionAddress(node, type);
                 return;
+            }
+
+            if (node.Object == null)
+            {
+                throw new ArgumentException(string.Empty, nameof(node));
             }
 
             if (node.ArgumentCount == 1)
@@ -131,7 +137,7 @@ namespace System.Linq.Expressions.Compiler
             IL.Emit(OpCodes.Unbox, type);
         }
 
-        private WriteBack AddressOfWriteBack(MemberExpression node)
+        private WriteBack? AddressOfWriteBack(MemberExpression node)
         {
             if (!(node.Member is PropertyInfo property) || !property.CanWrite)
             {
@@ -141,7 +147,7 @@ namespace System.Linq.Expressions.Compiler
             return AddressOfWriteBackCore(node); // avoids closure allocation
         }
 
-        private WriteBack AddressOfWriteBack(IndexExpression node)
+        private WriteBack? AddressOfWriteBack(IndexExpression node)
         {
             return node.Indexer?.CanWrite != true ? null : AddressOfWriteBackCore(node);
         }
@@ -149,8 +155,8 @@ namespace System.Linq.Expressions.Compiler
         private WriteBack AddressOfWriteBackCore(MemberExpression node)
         {
             // emit instance, if any
-            LocalBuilder instanceLocal = null;
-            Type instanceType = null;
+            LocalBuilder? instanceLocal = null;
+            Type? instanceType = null;
             if (node.Expression != null)
             {
                 EmitInstance(node.Expression, out instanceType);
@@ -189,8 +195,8 @@ namespace System.Linq.Expressions.Compiler
         private WriteBack AddressOfWriteBackCore(IndexExpression node)
         {
             // emit instance, if any
-            LocalBuilder instanceLocal = null;
-            Type instanceType = null;
+            LocalBuilder? instanceLocal = null;
+            Type? instanceType = null;
             if (node.Object != null)
             {
                 EmitInstance(node.Object, out instanceType);
@@ -201,7 +207,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Emit indexes. We don't allow byref args, so no need to worry
-            // about writebacks or EmitAddress
+            // about write-backs or EmitAddress
             var n = node.ArgumentCount;
             var args = new LocalBuilder[n];
             for (var i = 0; i < n; i++)
@@ -232,13 +238,11 @@ namespace System.Linq.Expressions.Compiler
                     @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
-
-                foreach (var arg in args)
+                foreach (LocalBuilder arg in args)
                 {
                     @this.IL.Emit(OpCodes.Ldloc, arg);
                     @this.FreeLocal(arg);
                 }
-
                 @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
 
@@ -252,7 +256,6 @@ namespace System.Linq.Expressions.Compiler
         // boxed value)
         private void EmitAddress(Expression node, Type type, CompilationFlags flags = CompilationFlags.EmitExpressionStart)
         {
-            Debug.Assert(node != null);
             var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
             var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
 
@@ -297,11 +300,11 @@ namespace System.Linq.Expressions.Compiler
         //
         // For properties, we want to write back into the property if it's
         // passed byref.
-        private WriteBack EmitAddressWriteBack(Expression node, Type type)
+        private WriteBack? EmitAddressWriteBack(Expression node, Type type)
         {
             var startEmitted = EmitExpressionStart(node);
 
-            WriteBack result = null;
+            WriteBack? result = null;
             if (TypeUtils.AreEquivalent(type, node.Type))
             {
                 switch (node.NodeType)
@@ -313,6 +316,7 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.Index:
                         result = AddressOfWriteBack((IndexExpression)node);
                         break;
+
                     default:
                         break;
                 }
@@ -337,7 +341,7 @@ namespace System.Linq.Expressions.Compiler
         }
 
         // assumes the instance is already on the stack
-        private void EmitMemberAddress(MemberInfo member, Type objectType)
+        private void EmitMemberAddress(MemberInfo member, Type? objectType)
         {
             // Verifiable code may not take the address of an init-only field.
             // If we are asked to do so then get the value out of the field, stuff it

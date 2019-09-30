@@ -29,7 +29,7 @@ namespace System.Linq.Expressions
         /// <param name="type">The type of the parameter or variable.</param>
         /// <param name="name">The name of the parameter or variable, used for debugging or pretty printing purpose only.</param>
         /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
-        public static ParameterExpression Parameter(Type type, string name)
+        public static ParameterExpression Parameter(Type type, string? name)
         {
             Validate(type, true);
             var byref = type.IsByRef;
@@ -59,7 +59,7 @@ namespace System.Linq.Expressions
         /// <param name="type">The type of the parameter or variable.</param>
         /// <param name="name">The name of the parameter or variable, used for debugging or pretty printing purpose only.</param>
         /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
-        public static ParameterExpression Variable(Type type, string name)
+        public static ParameterExpression Variable(Type type, string? name)
         {
             Validate(type, false);
             return ParameterExpression.Make(type, name, false);
@@ -177,6 +177,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitParameter(this);
         }
     }

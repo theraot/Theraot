@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NET40
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -37,21 +38,41 @@ namespace System.Linq
 
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             return _queryable.CreateQuery(expression);
         }
 
         IQueryable<TElem> IQueryProvider.CreateQuery<TElem>(Expression expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             return new EnumerableQuery<TElem>(expression);
         }
 
         object IQueryProvider.Execute(Expression expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             return _queryable.Execute(expression);
         }
 
         TResult IQueryProvider.Execute<TResult>(Expression expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             return _queryable.Execute<TResult>(expression);
         }
 

@@ -158,6 +158,7 @@ namespace System.Linq
                     throw new ArgumentNullException(nameof(source));
                 case IQueryable<TElement> queryable:
                     return queryable;
+
                 default:
                     return new QueryableEnumerable<TElement>(source);
             }
@@ -165,17 +166,16 @@ namespace System.Linq
 
         public static IQueryable AsQueryable(this IEnumerable source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-                case IQueryable queryable:
-                    return queryable;
-                default:
-                    break;
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (source is IQueryable queryable)
+            {
+                return queryable;
             }
 
-            if (!source.GetType().IsGenericImplementationOf(out var iEnumerable, typeof(IEnumerable<>)))
+            if (!source.GetType().IsGenericImplementationOf(typeof(IEnumerable<>), out var iEnumerable))
             {
                 throw new ArgumentException("source is not IEnumerable<>");
             }

@@ -10,36 +10,35 @@ namespace System.Dynamic.Utils
 {
     internal static class ExpressionVisitorUtils
     {
-        public static Expression[] VisitArguments(ExpressionVisitor visitor, IArgumentProvider nodes)
+        public static Expression[]? VisitArguments(ExpressionVisitor visitor, IArgumentProvider nodes)
         {
-            Expression[] newNodes = null;
+            Expression[]? newNodes = null;
             for (int i = 0, n = nodes.ArgumentCount; i < n; i++)
             {
                 var curNode = nodes.GetArgument(i);
                 var node = visitor.Visit(curNode);
 
-                if (newNodes != null)
+                if (newNodes == null && node == curNode)
                 {
-                    newNodes[i] = node;
+                    continue;
                 }
-                else if (node != curNode)
+                if (newNodes == null)
                 {
                     newNodes = new Expression[n];
                     for (var j = 0; j < i; j++)
                     {
                         newNodes[j] = nodes.GetArgument(j);
                     }
-
-                    newNodes[i] = node;
                 }
+                newNodes[i] = node;
             }
 
             return newNodes;
         }
 
-        public static Expression[] VisitBlockExpressions(ExpressionVisitor visitor, BlockExpression block)
+        public static Expression[]? VisitBlockExpressions(ExpressionVisitor visitor, BlockExpression block)
         {
-            Expression[] newNodes = null;
+            Expression[]? newNodes = null;
             for (int i = 0, n = block.ExpressionCount; i < n; i++)
             {
                 var curNode = block.GetExpression(i);
@@ -64,9 +63,9 @@ namespace System.Dynamic.Utils
             return newNodes;
         }
 
-        public static ParameterExpression[] VisitParameters(ExpressionVisitor visitor, IParameterProvider nodes, string callerName)
+        public static ParameterExpression[]? VisitParameters(ExpressionVisitor visitor, IParameterProvider nodes, string callerName)
         {
-            ParameterExpression[] newNodes = null;
+            ParameterExpression[]? newNodes = null;
             for (int i = 0, n = nodes.ParameterCount; i < n; i++)
             {
                 var curNode = nodes.GetParameter(i);

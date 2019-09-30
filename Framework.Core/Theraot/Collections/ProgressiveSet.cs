@@ -23,19 +23,19 @@ namespace Theraot.Collections
             // Empty
         }
 
-        public ProgressiveSet(IEnumerable<T> enumerable, IEqualityComparer<T> comparer)
+        public ProgressiveSet(IEnumerable<T> enumerable, IEqualityComparer<T>? comparer)
             : this(Progressor<T>.CreateFromIEnumerable(enumerable), new HashSetEx<T>(comparer), null)
         {
             // Empty
         }
 
-        public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T> comparer)
+        public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T>? comparer)
             : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(comparer), null)
         {
             // Empty
         }
 
-        protected ProgressiveSet(Progressor<T> progressor, ISet<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveSet(Progressor<T> progressor, ISet<T> cache, IEqualityComparer<T>? comparer)
             : base(progressor, cache, comparer)
         {
             // Empty

@@ -5,6 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
@@ -71,7 +72,8 @@ namespace System.Linq.Expressions
         ///     The modified expression, if it or any subexpression was modified;
         ///     otherwise, returns the original expression.
         /// </returns>
-        public virtual Expression Visit(Expression node)
+        [return: NotNullIfNotNull("node")]
+        public virtual Expression? Visit(Expression? node)
         {
             return node?.Accept(this);
         }
@@ -285,6 +287,16 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitDynamic(DynamicExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             var a = VisitArguments(node);
             return a == null ? node : node.Rewrite(a);
         }
@@ -794,12 +806,12 @@ namespace System.Linq.Expressions
             return after;
         }
 
-        private Expression[] VisitArguments(IArgumentProvider nodes)
+        private Expression[]? VisitArguments(IArgumentProvider nodes)
         {
             return ExpressionVisitorUtils.VisitArguments(this, nodes);
         }
 
-        private ParameterExpression[] VisitParameters(IParameterProvider nodes, string callerName)
+        private ParameterExpression[]? VisitParameters(IParameterProvider nodes, string callerName)
         {
             return ExpressionVisitorUtils.VisitParameters(this, nodes, callerName);
         }

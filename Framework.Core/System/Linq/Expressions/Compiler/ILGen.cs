@@ -16,7 +16,7 @@ namespace System.Linq.Expressions.Compiler
 {
     internal static class ILGen
     {
-        internal static bool CanEmitConstant(object value, Type type)
+        internal static bool CanEmitConstant(object? value, Type type)
         {
             if (value == null || CanEmitILConstant(type))
             {
@@ -31,22 +31,21 @@ namespace System.Linq.Expressions.Compiler
             return value is MethodBase mb && ShouldLdtoken(mb);
         }
 
-        internal static void Emit(this ILGenerator il, OpCode opcode, MethodBase methodBase)
+        internal static void Emit(this ILGenerator il, OpCode opCode, MethodBase methodBase)
         {
             Debug.Assert(methodBase is MethodInfo || methodBase is ConstructorInfo);
             if (methodBase is ConstructorInfo ctor)
             {
-                il.Emit(opcode, ctor);
+                il.Emit(opCode, ctor);
             }
             else
             {
-                il.Emit(opcode, (MethodInfo)methodBase);
+                il.Emit(opCode, (MethodInfo)methodBase);
             }
         }
 
         internal static void EmitArray<T>(this ILGenerator il, T[] items, ILocalCache locals)
         {
-            Debug.Assert(items != null);
             il.EmitPrimitive(items.Length);
             il.Emit(OpCodes.Newarr, typeof(T));
             for (var i = 0; i < items.Length; i++)
@@ -68,7 +67,6 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitArray(this ILGenerator il, Type arrayType)
         {
-            Debug.Assert(arrayType != null);
             Debug.Assert(arrayType.IsArray);
             if (arrayType.IsSafeArray())
             {
@@ -82,9 +80,7 @@ namespace System.Linq.Expressions.Compiler
                     types[i] = typeof(int);
                 }
 
-                var ci = arrayType.GetConstructor(types);
-                Debug.Assert(ci != null);
-                il.EmitNew(ci);
+                il.EmitNew(arrayType.GetConstructor(types));
             }
         }
 
@@ -209,19 +205,16 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitFieldAddress(this ILGenerator il, FieldInfo fi)
         {
-            Debug.Assert(fi != null);
             il.Emit(fi.IsStatic ? OpCodes.Ldsflda : OpCodes.Ldflda, fi);
         }
 
         internal static void EmitFieldGet(this ILGenerator il, FieldInfo fi)
         {
-            Debug.Assert(fi != null);
             il.Emit(fi.IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld, fi);
         }
 
         internal static void EmitFieldSet(this ILGenerator il, FieldInfo fi)
         {
-            Debug.Assert(fi != null);
             il.Emit(fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, fi);
         }
 
@@ -300,7 +293,6 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitLoadElement(this ILGenerator il, Type type)
         {
-            Debug.Assert(type != null);
             if (!type.IsValueType)
             {
                 il.Emit(OpCodes.Ldelem_Ref);
@@ -357,7 +349,6 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitLoadValueIndirect(this ILGenerator il, Type type)
         {
-            Debug.Assert(type != null);
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Byte:
@@ -415,9 +406,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitNew(this ILGenerator il, ConstructorInfo ci)
         {
-            Debug.Assert(ci != null);
-            Debug.Assert(ci.DeclaringType != null);
-            Debug.Assert(!ci.DeclaringType.ContainsGenericParameters);
+            Debug.Assert(ci.DeclaringType?.ContainsGenericParameters == false);
             il.Emit(OpCodes.Newobj, ci);
         }
 
@@ -509,8 +498,6 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitStoreElement(this ILGenerator il, Type type)
         {
-            Debug.Assert(type != null);
-
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
@@ -559,7 +546,6 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitStoreValueIndirect(this ILGenerator il, Type type)
         {
-            Debug.Assert(type != null);
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Boolean:
@@ -631,7 +617,7 @@ namespace System.Linq.Expressions.Compiler
             return dt == null || ShouldLdtoken(dt);
         }
 
-        internal static bool TryEmitConstant(this ILGenerator il, object value, Type type, ILocalCache locals)
+        internal static bool TryEmitConstant(this ILGenerator il, object? value, Type type, ILocalCache locals)
         {
             if (value == null)
             {
@@ -748,7 +734,7 @@ namespace System.Linq.Expressions.Compiler
                                 return;
 
                             case 0:
-                                il.EmitDefault(typeof(decimal), null); // locals won't be used.
+                                il.EmitDefault(typeof(decimal), null!); // locals won't be used.
                                 return;
 
                             case 1:
@@ -813,7 +799,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(typeTo.IsNullable());
             var nnTypeTo = typeTo.GetNonNullable();
             il.EmitConvertToType(typeFrom, nnTypeTo, isChecked, locals);
-            var ci = typeTo.GetConstructor(new[] {nnTypeTo});
+            var ci = typeTo.GetConstructor(new[] { nnTypeTo });
             il.Emit(OpCodes.Newobj, ci);
         }
 
@@ -882,7 +868,7 @@ namespace System.Linq.Expressions.Compiler
             var nnTypeTo = typeTo.GetNonNullable();
             il.EmitConvertToType(nnTypeFrom, nnTypeTo, isChecked, locals);
             // construct result type
-            var ci = typeTo.GetConstructor(new[] {nnTypeTo});
+            var ci = typeTo.GetConstructor(new[] { nnTypeTo });
             il.Emit(OpCodes.Newobj, ci);
             var labEnd = il.DefineLabel();
             il.Emit(OpCodes.Br_S, labEnd);
@@ -1070,6 +1056,7 @@ namespace System.Linq.Expressions.Compiler
                             }
 
                             break;
+
                         default:
                             break;
                     }
@@ -1221,7 +1208,6 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool TryEmitILConstant(this ILGenerator il, object value, Type type)
         {
-            Debug.Assert(value != null);
             if (type.IsNullable())
             {
                 var nonNullType = type.GetNonNullable();
@@ -1230,7 +1216,7 @@ namespace System.Linq.Expressions.Compiler
                     return false;
                 }
 
-                il.Emit(OpCodes.Newobj, type.GetConstructor(new[] {nonNullType}));
+                il.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nonNullType }));
                 return true;
             }
 

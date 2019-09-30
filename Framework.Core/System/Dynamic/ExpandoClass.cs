@@ -19,7 +19,7 @@ namespace System.Dynamic
         internal readonly string[] Keys; // list of names associated with each element in the data array, sorted
         private const int _emptyHashCode = 6551;
         private readonly int _hashCode; // pre-calculated hash code of all the keys the class contains
-        private Dictionary<int, List<WeakReference>> _transitions; // cached transitions
+        private Dictionary<int, List<WeakReference>>? _transitions; // cached transitions
 
         // hash code of the empty ExpandoClass.
 

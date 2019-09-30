@@ -25,12 +25,12 @@ namespace System.Linq.Expressions
             }
 
             public bool CanReduce => _node.CanReduce;
-            public LambdaExpression Conversion => _node.Conversion;
+            public LambdaExpression? Conversion => _node.Conversion;
             public string DebugView => _node.DebugView;
             public bool IsLifted => _node.IsLifted;
             public bool IsLiftedToNull => _node.IsLiftedToNull;
             public Expression Left => _node.Left;
-            public MethodInfo Method => _node.Method;
+            public MethodInfo? Method => _node.Method;
             public ExpressionType NodeType => _node.NodeType;
             public Expression Right => _node.Right;
             public Type Type => _node.Type;
@@ -66,10 +66,10 @@ namespace System.Linq.Expressions
             }
 
             public Expression Body => _node.Body;
-            public Expression Filter => _node.Filter;
+            public Expression? Filter => _node.Filter;
             public Type Test => _node.Test;
 #pragma warning disable RECS0146 // Member hides static member from outer class
-            public ParameterExpression Variable => _node.Variable;
+            public ParameterExpression? Variable => _node.Variable;
 #pragma warning restore RECS0146 // Member hides static member from outer class
         }
 
@@ -106,7 +106,7 @@ namespace System.Linq.Expressions
             public string DebugView => _node.DebugView;
             public ExpressionType NodeType => _node.NodeType;
             public Type Type => _node.Type;
-            public object Value => _node.Value;
+            public object? Value => _node.Value;
         }
 
         internal class DebugInfoExpressionProxy
@@ -330,7 +330,7 @@ namespace System.Linq.Expressions
             public string DebugView => _node.DebugView;
             public MethodInfo Method => _node.Method;
             public ExpressionType NodeType => _node.NodeType;
-            public Expression Object => _node.Object;
+            public Expression? Object => _node.Object;
             public Type Type => _node.Type;
         }
 

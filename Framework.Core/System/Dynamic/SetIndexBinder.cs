@@ -39,7 +39,7 @@ namespace System.Dynamic
 
         /// <inheritdoc />
         /// <summary>
-        ///     Always returns <c>true</c> because this is a standard <see cref="T:System.Dynamic.DynamicMetaObjectBinder" />.
+        ///     Always returns <c>true</c> because this is a standard <see cref="DynamicMetaObjectBinder" />.
         /// </summary>
         internal sealed override bool IsStandardBinder => true;
 
@@ -49,7 +49,7 @@ namespace System.Dynamic
         /// </summary>
         /// <param name="target">The target of the dynamic set index operation.</param>
         /// <param name="args">An array of arguments of the dynamic set index operation.</param>
-        /// <returns>The <see cref="T:System.Dynamic.DynamicMetaObject" /> representing the result of the binding.</returns>
+        /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public sealed override DynamicMetaObject Bind(DynamicMetaObject target, DynamicMetaObject[] args)
         {
             ContractUtils.RequiresNotNull(target, nameof(target));
@@ -86,7 +86,7 @@ namespace System.Dynamic
         /// <param name="value">The value to set to the collection.</param>
         /// <param name="errorSuggestion">The binding result to use if binding fails, or null.</param>
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
-        public abstract DynamicMetaObject FallbackSetIndex(DynamicMetaObject target, DynamicMetaObject[] indexes, DynamicMetaObject value, DynamicMetaObject errorSuggestion);
+        public abstract DynamicMetaObject FallbackSetIndex(DynamicMetaObject target, DynamicMetaObject[] indexes, DynamicMetaObject value, DynamicMetaObject? errorSuggestion);
     }
 }
 

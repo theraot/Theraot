@@ -16,10 +16,10 @@ namespace System.ComponentModel.DataAnnotations
     /// </summary>
     internal class LocalizableString
     {
-        private Func<string> _cachedResult;
+        private Func<string?>? _cachedResult;
         private readonly string _propertyName;
-        private string _propertyValue;
-        private Type _resourceType;
+        private string? _propertyValue;
+        private Type? _resourceType;
 
         /// <summary>
         ///     Constructs a localizable string, specifying the property name associated
@@ -38,7 +38,7 @@ namespace System.ComponentModel.DataAnnotations
         /// <summary>
         ///     Gets or sets the resource type to be used for localization.
         /// </summary>
-        public Type ResourceType
+        public Type? ResourceType
         {
             get => _resourceType;
             set
@@ -58,7 +58,7 @@ namespace System.ComponentModel.DataAnnotations
         ///     either the literal, non-localized value, or it can be a resource name
         ///     found on the resource type supplied to <see cref="GetLocalizableValue" />.
         /// </summary>
-        public string Value
+        public string? Value
         {
             get => _propertyValue;
             set
@@ -93,59 +93,44 @@ namespace System.ComponentModel.DataAnnotations
         /// <returns>
         ///     Returns the potentially localized value.
         /// </returns>
-        public string GetLocalizableValue()
+        public string? GetLocalizableValue()
         {
-            var cachedResult = _cachedResult;
-            if (cachedResult == null)
+            // Return the cached result
+            var cachedResult = _cachedResult ??= GetCachedResult();
+            return cachedResult();
+        }
+
+        private Func<string?> GetCachedResult()
+        {
+            // If the property value is null, then just cache that value
+            // If the resource type is null, then property value is literal, so cache it
+            if (_propertyValue == null || _resourceType == null)
             {
-                // If the property value is null, then just cache that value
-                // If the resource type is null, then property value is literal, so cache it
-                if (_propertyValue == null || _resourceType == null)
-                {
-                    cachedResult = () => _propertyValue;
-                }
-                else
-                {
-                    var resourceTypeInfo = _resourceType.GetTypeInfo();
-
-                    // Get the property from the resource type for this resource key
-                    var property = _resourceType.GetProperty(_propertyValue);
-
-                    // We need to detect bad configurations so that we can throw exceptions accordingly
-                    var badlyConfigured = false;
-
-                    // Make sure we found the property and it's the correct type, and that the type itself is public
-                    if (!resourceTypeInfo.IsVisible || property == null || property.PropertyType != typeof(string))
-                    {
-                        badlyConfigured = true;
-                    }
-                    else
-                    {
-                        // Ensure the getter for the property is available as public static
-                        var getter = property.GetGetMethod();
-                        if (getter == null || !(getter.IsPublic && getter.IsStatic))
-                        {
-                            badlyConfigured = true;
-                        }
-                    }
-
-                    // If the property is not configured properly, then throw a missing member exception
-                    if (badlyConfigured)
-                    {
-                        var exceptionMessage = $"Localization failed ({_propertyName}, {_resourceType.FullName}, _propertyValue)";
-                        cachedResult = () => throw new InvalidOperationException(exceptionMessage);
-                    }
-                    else
-                    {
-                        // We have a valid property, so cache the resource
-                        cachedResult = () => (string)property.GetValue(null, null);
-                    }
-                }
+                return () => _propertyValue;
             }
 
-            // Return the cached result
-            _cachedResult = cachedResult;
-            return cachedResult();
+            var resourceTypeInfo = _resourceType.GetTypeInfo();
+
+            // Get the property from the resource type for this resource key
+            var property = _resourceType.GetProperty(_propertyValue);
+
+            // We need to detect bad configurations so that we can throw exceptions accordingly
+            // Make sure we found the property and it's the correct type, and that the type itself is public
+            // If the property is not configured properly, then throw a missing member exception
+            if (!resourceTypeInfo.IsVisible || property == null || property.PropertyType != typeof(string) || !IsGetterPublicAndStatic())
+            {
+                return () => throw new InvalidOperationException($"Localization failed ({_propertyName}, {_resourceType.FullName}, _propertyValue)");
+            }
+
+            // We have a valid property, so cache the resource
+            return () => (string)property.GetValue(null, null);
+
+            bool IsGetterPublicAndStatic()
+            {
+                // Ensure the getter for the property is available as public static
+                var getter = property.GetGetMethod();
+                return getter?.IsPublic == true && getter.IsStatic;
+            }
         }
 
         /// <summary>

@@ -73,7 +73,7 @@ namespace System.Linq.Expressions.Compiler
         ///     <para>Scopes whose variables were merged into this one</para>
         ///     <para>Created lazily as we create hundreds of compiler scopes w/o merging scopes when compiling rules.</para>
         /// </summary>
-        internal HashSet<BlockExpression> MergedScopes;
+        internal HashSet<BlockExpression>? MergedScopes;
 
         /// <summary>
         ///     Does this scope (or any inner scope) close over variables from any
@@ -92,18 +92,18 @@ namespace System.Linq.Expressions.Compiler
         ///     Each variable referenced within this scope, and how often it was referenced
         ///     Populated by VariableBinder
         /// </summary>
-        internal Dictionary<ParameterExpression, int> ReferenceCount;
+        internal Dictionary<ParameterExpression, int>? ReferenceCount;
 
         /// <summary>
         ///     The closed over hoisted locals
         /// </summary>
-        private HoistedLocals _closureHoistedLocals;
+        private HoistedLocals? _closureHoistedLocals;
 
         /// <summary>
         ///     The scope's hoisted locals, if any.
         ///     Provides storage for variables that are referenced from nested lambdas
         /// </summary>
-        private HoistedLocals _hoistedLocals;
+        private HoistedLocals? _hoistedLocals;
 
         /// <summary>
         ///     Mutable dictionary that maps non-hoisted variables to either local
@@ -114,7 +114,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     parent scope, if any
         /// </summary>
-        private CompilerScope _parent;
+        private CompilerScope? _parent;
 
         internal CompilerScope(object node, bool isMethod)
         {
@@ -133,21 +133,27 @@ namespace System.Linq.Expressions.Compiler
         ///     This scope's hoisted locals, or the closed over locals, if any
         ///     Equivalent to: _hoistedLocals ?? _closureHoistedLocals
         /// </summary>
-        internal HoistedLocals NearestHoistedLocals => _hoistedLocals ?? _closureHoistedLocals;
+        internal HoistedLocals? NearestHoistedLocals => _hoistedLocals ?? _closureHoistedLocals;
 
         private string CurrentLambdaName
         {
             get
             {
-                var s = this;
-                while (s != null)
+                var next = this;
+                while (true)
                 {
-                    if (s.Node is LambdaExpression lambda)
+                    var scope = next;
+                    if (scope.Node is LambdaExpression lambda)
                     {
                         return lambda.Name;
                     }
 
-                    s = s._parent;
+                    if (scope._parent == null)
+                    {
+                        break;
+                    }
+
+                    next = scope._parent;
                 }
 
                 throw ContractUtils.Unreachable;
@@ -189,8 +195,14 @@ namespace System.Linq.Expressions.Compiler
                     while (!locals.Indexes.ContainsKey(variable))
                     {
                         parents++;
-                        locals = locals.Parent;
-                        Debug.Assert(locals != null);
+                        if (locals.Parent == null)
+                        {
+                            Debug.Fail(string.Empty);
+                        }
+                        else
+                        {
+                            locals = locals.Parent;
+                        }
                     }
 
                     // combine the number of parents we walked, with the
@@ -211,7 +223,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal CompilerScope Enter(LambdaCompiler lc, CompilerScope parent)
+        internal CompilerScope Enter(LambdaCompiler lc, CompilerScope? parent)
         {
             SetParent(lc, parent);
 
@@ -235,7 +247,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     Frees unnamed locals, clears state associated with this compiler
         /// </summary>
-        internal CompilerScope Exit()
+        internal CompilerScope? Exit()
         {
             // free scope's variables
             if (!IsMethod)
@@ -263,10 +275,14 @@ namespace System.Linq.Expressions.Compiler
             {
                 case LambdaExpression lambda:
                     return new ParameterList(lambda).AsArrayInternal();
+
                 case BlockExpression block:
                     return block.Variables.AsArrayInternal();
+
                 default:
-                    return new[] { ((CatchBlock)scope).Variable };
+                    return ((CatchBlock)scope).Variable is ParameterExpression parameter
+                        ? new[] { parameter }
+                        : ArrayEx.Empty<ParameterExpression>();
             }
         }
 
@@ -332,8 +348,9 @@ namespace System.Linq.Expressions.Compiler
 
             EmitClosureToVariable(lc, locals);
 
-            while ((locals = locals.Parent) != null)
+            while (locals.Parent != null)
             {
+                locals = locals.Parent;
                 var v = locals.SelfVariable;
                 var local = new LocalStorage(lc, v);
                 local.EmitStore(ResolveVariable(v));
@@ -408,17 +425,17 @@ namespace System.Linq.Expressions.Compiler
 
         private IEnumerable<ParameterExpression> GetVariables()
         {
-            return MergedScopes == null ? GetVariables(Node) : GetVariablesIncludingMerged();
+            return MergedScopes == null ? GetVariables(Node) : GetVariablesIncludingMerged(MergedScopes);
         }
 
-        private IEnumerable<ParameterExpression> GetVariablesIncludingMerged()
+        private IEnumerable<ParameterExpression> GetVariablesIncludingMerged(HashSet<BlockExpression> blockExpressions)
         {
             foreach (var param in GetVariables(Node))
             {
                 yield return param;
             }
 
-            foreach (var scope in MergedScopes)
+            foreach (var scope in blockExpressions)
             {
                 foreach (var param in scope.Variables)
                 {
@@ -432,10 +449,10 @@ namespace System.Linq.Expressions.Compiler
             return ResolveVariable(variable, NearestHoistedLocals);
         }
 
-        private Storage ResolveVariable(ParameterExpression variable, HoistedLocals hoistedLocals)
+        private Storage ResolveVariable(ParameterExpression variable, HoistedLocals? hoistedLocals)
         {
             // Search IL locals and arguments, but only in this lambda
-            for (var s = this; s != null; s = s._parent)
+            foreach (var s in Theraot.Core.SequenceHelper.ExploreSequenceUntilNull(this, found => found._parent))
             {
                 if (s._locals.TryGetValue(variable, out var storage))
                 {
@@ -472,7 +489,7 @@ namespace System.Linq.Expressions.Compiler
             throw new InvalidOperationException($"variable '{variable.Name}' of type '{variable.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
         }
 
-        private void SetParent(LambdaCompiler lc, CompilerScope parent)
+        private void SetParent(LambdaCompiler lc, CompilerScope? parent)
         {
             Debug.Assert(_parent == null && parent != this);
             _parent = parent;
@@ -484,7 +501,7 @@ namespace System.Linq.Expressions.Compiler
 
             var hoistedVars = GetVariables().Where(p => Definitions[p] == VariableStorageKind.Hoisted).ToReadOnlyCollection();
 
-            if (hoistedVars.Count <= 0)
+            if (hoistedVars.Count == 0)
             {
                 return;
             }

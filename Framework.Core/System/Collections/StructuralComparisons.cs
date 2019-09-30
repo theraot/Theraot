@@ -93,8 +93,8 @@ namespace System.Collections
 
                 var xEnumeratorInfo = typeX.GetMethod("GetEnumerator");
                 var yEnumeratorInfo = typeX.GetMethod("GetEnumerator");
-                IEnumerator firstEnumerator = null;
-                IEnumerator secondEnumerator = null;
+                IEnumerator? firstEnumerator = null;
+                IEnumerator? secondEnumerator = null;
                 var comparer = this as IEqualityComparer;
                 try
                 {

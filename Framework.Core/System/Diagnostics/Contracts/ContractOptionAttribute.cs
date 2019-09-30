@@ -32,7 +32,7 @@ namespace System.Diagnostics.Contracts
 
         public bool Enabled { get; }
         public string Setting { get; }
-        public string Value { get; }
+        public string? Value { get; }
     }
 }
 

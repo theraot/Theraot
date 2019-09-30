@@ -42,7 +42,7 @@ namespace System.Linq.Expressions.Compiler
         private readonly AnalyzedTree _tree;
 
         // The TypeBuilder backing this method, if any
-        private readonly TypeBuilder _typeBuilder;
+        private readonly TypeBuilder? _typeBuilder;
 
         // Currently active LabelTargets and their mapping to IL labels
         private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
@@ -136,7 +136,6 @@ namespace System.Linq.Expressions.Compiler
 
         public void FreeLocal(LocalBuilder local)
         {
-            Debug.Assert(local != null);
             _freeLocals.Add(local.LocalType, local);
         }
 
@@ -226,7 +225,7 @@ namespace System.Linq.Expressions.Compiler
             // conflicts, so choose a long name that is unlikely to conflict.
             // Naming scheme chosen here is similar to what the C# compiler
             // uses.
-            return _typeBuilder.DefineField("<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
+            return _typeBuilder!.DefineField("<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
         }
 
         private void InitializeMethod()

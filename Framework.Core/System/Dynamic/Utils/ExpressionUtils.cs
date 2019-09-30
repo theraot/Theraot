@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
@@ -17,12 +18,12 @@ namespace System.Dynamic.Utils
 {
     internal static class ExpressionUtils
     {
-        public static void RequiresCanRead(Expression expression, string paramName)
+        public static void RequiresCanRead([NotNull] Expression? expression, string paramName)
         {
             RequiresCanRead(expression, paramName, -1);
         }
 
-        public static void RequiresCanRead(Expression expression, string paramName, int idx)
+        public static void RequiresCanRead([NotNull] Expression? expression, string paramName, int idx)
         {
             ContractUtils.RequiresNotNull(expression, paramName, idx);
 
@@ -46,6 +47,7 @@ namespace System.Dynamic.Utils
                     }
 
                     break;
+
                 default:
                     break;
             }
@@ -78,23 +80,6 @@ namespace System.Dynamic.Utils
             return (ReadOnlyCollection<ParameterExpression>)collection;
         }
 
-        public static ReadOnlyCollection<T> ReturnReadOnly<T>(ref IReadOnlyList<T> collection)
-        {
-            var value = collection;
-
-            // if it's already read-only just return it.
-            if (value is ReadOnlyCollection<T> res)
-            {
-                return res;
-            }
-
-            // otherwise make sure only read-only collection every gets exposed
-            Interlocked.CompareExchange(ref collection, value.ToReadOnlyCollection(), value);
-
-            // and return it
-            return (ReadOnlyCollection<T>)collection;
-        }
-
         public static ReadOnlyCollection<Expression> ReturnReadOnly(IArgumentProvider provider, ref object collection)
         {
             if (collection is Expression tObj)
@@ -118,9 +103,9 @@ namespace System.Dynamic.Utils
             // We used to allow quoting of any expression, but the behavior of
             // quote (produce a new tree closed over parameter values), only
             // works consistently for lambdas
-            var quoteable = typeof(LambdaExpression);
+            var quotable = typeof(LambdaExpression);
 
-            if (!parameterType.IsSameOrSubclassOfInternal(quoteable) || !parameterType.IsInstanceOfType(argument))
+            if (!parameterType.IsSameOrSubclassOfInternal(quotable) || !parameterType.IsInstanceOfType(argument))
             {
                 return false;
             }
@@ -167,7 +152,7 @@ namespace System.Dynamic.Utils
 
             ValidateArgumentCount(method, nodeKind, arguments.Length, pis);
 
-            Expression[] newArgs = null;
+            Expression[]? newArgs = null;
             for (int i = 0, n = pis.Length; i < n; i++)
             {
                 var arg = arguments[i];
@@ -237,9 +222,9 @@ namespace System.Dynamic.Utils
             return pis;
         }
 
-        internal static bool SameElements<T>(ICollection<T> replacement, T[] current) where T : class
+        internal static bool SameElements<T>(ICollection<T>? replacement, T[] current)
+            where T : class
         {
-            Debug.Assert(current != null);
             if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
             {
                 return true;
@@ -253,9 +238,25 @@ namespace System.Dynamic.Utils
             return SameElementsInCollection(replacement, current);
         }
 
-        internal static bool SameElements<T>(ref IEnumerable<T> replacement, T[] current) where T : class
+        internal static bool SameElementsWithPossibleNulls<T>(ICollection<T?>? replacement, T?[] current)
+            where T : class
         {
-            Debug.Assert(current != null);
+            if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
+            {
+                return true;
+            }
+
+            if (replacement == null) // Treat null as empty.
+            {
+                return current.Length == 0;
+            }
+
+            return SameElementsInCollectionWithPossibleNulls(replacement, current);
+        }
+
+        internal static bool SameElements<T>(ref IEnumerable<T>? replacement, T[] current)
+            where T : class
+        {
             if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
             {
                 return true;
@@ -277,7 +278,60 @@ namespace System.Dynamic.Utils
             return SameElementsInCollection(replacementCol, current);
         }
 
-        private static bool SameElementsInCollection<T>(ICollection<T> replacement, T[] current) where T : class
+        internal static bool SameElementsWithPossibleNulls<T>(ref IEnumerable<T?>? replacement, T?[] current)
+            where T : class
+        {
+            if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
+            {
+                return true;
+            }
+
+            if (replacement == null) // Treat null as empty.
+            {
+                return current.Length == 0;
+            }
+
+            // Ensure arguments is safe to enumerate twice.
+            // If we have to build a collection, build a ArrayReadOnlyCollection<T>
+            // so it won't be built a second time if used.
+            if (!(replacement is ICollection<T?> replacementCol))
+            {
+                replacement = replacementCol = replacement.ToReadOnlyCollection();
+            }
+
+            return SameElementsInCollectionWithPossibleNulls(replacementCol, current);
+        }
+
+        private static bool SameElementsInCollection<T>(ICollection<T> replacement, T[] current)
+            where T : class
+        {
+            var count = current.Length;
+            if (replacement.Count != count)
+            {
+                return false;
+            }
+
+            if (count == 0)
+            {
+                return true;
+            }
+
+            var index = 0;
+            foreach (var replacementObject in replacement)
+            {
+                if (replacementObject != current[index])
+                {
+                    return false;
+                }
+
+                index++;
+            }
+
+            return true;
+        }
+
+        private static bool SameElementsInCollectionWithPossibleNulls<T>(ICollection<T?> replacement, T?[] current)
+            where T : class
         {
             var count = current.Length;
             if (replacement.Count != count)

@@ -5,6 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Collections.Generic
 {
@@ -32,13 +33,14 @@ namespace System.Collections.Generic
         }
 
         /// <summary>Gets the current underlying array.</summary>
+        [NotNull]
         private T[] Buffer { get; set; }
 
         /// <summary>
         ///     Gets the number of items this instance can store without re-allocating,
         ///     or 0 if the backing array is <c>null</c>.
         /// </summary>
-        private int Capacity => Buffer?.Length ?? 0;
+        private int Capacity => Buffer.Length;
 
         /// <summary>
         ///     Gets the number of items in the array currently in use.
@@ -103,23 +105,15 @@ namespace System.Collections.Generic
                 return ArrayEx.Empty<T>();
             }
 
-            Debug.Assert(Buffer != null); // Nonzero _count should imply this
-
-            var result = Buffer;
-            if (Count < result.Length)
+            if (Count == Buffer.Length)
             {
-                // Avoid a bit of overhead (method call, some branches, extra code-gen)
-                // which would be incurred by using Array.Resize
-                result = new T[Count];
-                Array.Copy(Buffer, 0, result, 0, Count);
+                return Buffer;
             }
 
-#if DEBUG
-            // Try to prevent callers from using the ArrayBuilder after ToArray, if _count != 0.
-            Count = -1;
-            Buffer = null;
-#endif
-
+            // Avoid a bit of overhead (method call, some branches, extra code-gen)
+            // which would be incurred by using Array.Resize
+            var result = new T[Count];
+            Array.Copy(Buffer, 0, result, 0, Count);
             return result;
         }
 

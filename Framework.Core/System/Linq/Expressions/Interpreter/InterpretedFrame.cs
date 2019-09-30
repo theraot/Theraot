@@ -27,7 +27,7 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly Interpreter Interpreter;
 
         [ThreadStatic]
-        private static InterpretedFrame _currentFrame;
+        private static InterpretedFrame? _currentFrame;
 
         private int _continuationIndex;
 
@@ -46,11 +46,7 @@ namespace System.Linq.Expressions.Interpreter
             StackIndex = interpreter.LocalCount;
             Data = new object[StackIndex + interpreter.Instructions.MaxStackDepth];
 
-            var c = interpreter.Instructions.MaxContinuationDepth;
-            if (c > 0)
-            {
-                _continuations = new int[c];
-            }
+            _continuations = new int[interpreter.Instructions.MaxContinuationDepth];
 
             Closure = closure;
 
@@ -60,7 +56,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public string Name => Interpreter.Name;
 
-        public InterpretedFrame Parent { get; internal set; }
+        public InterpretedFrame? Parent { get; internal set; }
 
         internal string[] Trace
         {
@@ -71,16 +67,10 @@ namespace System.Linq.Expressions.Interpreter
                 do
                 {
                     trace.Add(frame.Name);
-                    frame = frame.Parent;
-                } while (frame != null);
+                } while (frame.Parent != null && (frame = frame.Parent) != null);
 
                 return trace.ToArray();
             }
-        }
-
-        public static InterpretedFrameInfo[] GetExceptionStackTrace(Exception exception)
-        {
-            return exception.Data[typeof(InterpretedFrameInfo)] as InterpretedFrameInfo[];
         }
 
         public static bool IsInterpretedFrame(MethodBase method)
@@ -107,8 +97,7 @@ namespace System.Linq.Expressions.Interpreter
             do
             {
                 yield return new InterpretedFrameInfo(frame.Name, frame.GetDebugInfo(frame.InstructionIndex));
-                frame = frame.Parent;
-            } while (frame != null);
+            } while (frame.Parent != null && (frame = frame.Parent) != null);
         }
 
         public int Goto(int labelIndex, object value, bool gotoExceptionHandler)
@@ -228,7 +217,7 @@ namespace System.Linq.Expressions.Interpreter
             return pendingTarget.Index - InstructionIndex;
         }
 
-        internal InterpretedFrame Enter()
+        internal InterpretedFrame? Enter()
         {
             var currentFrame = _currentFrame;
             _currentFrame = this;
@@ -240,7 +229,7 @@ namespace System.Linq.Expressions.Interpreter
             return _pendingContinuation >= 0;
         }
 
-        internal void Leave(InterpretedFrame prevFrame)
+        internal void Leave(InterpretedFrame? prevFrame)
         {
             _currentFrame = prevFrame;
         }

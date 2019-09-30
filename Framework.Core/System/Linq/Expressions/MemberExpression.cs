@@ -18,7 +18,7 @@ namespace System.Linq.Expressions
         /// <param name="expression">The containing object of the field.  This can be null for static fields.</param>
         /// <param name="field">The field to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression" />.</returns>
-        public static MemberExpression Field(Expression expression, FieldInfo field)
+        public static MemberExpression Field(Expression? expression, FieldInfo field)
         {
             ContractUtils.RequiresNotNull(field, nameof(field));
 
@@ -104,8 +104,10 @@ namespace System.Linq.Expressions
             {
                 case FieldInfo fi:
                     return Field(expression, fi);
+
                 case PropertyInfo pi:
                     return Property(expression, pi);
+
                 default:
                     throw new ArgumentException($"Member '{member}' not field or property", nameof(member));
             }
@@ -369,6 +371,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitMember(this);
         }
     }

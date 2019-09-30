@@ -4,8 +4,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
-
 namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
@@ -25,6 +23,7 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.MultiplyAssignChecked:
                 case ExpressionType.SubtractAssignChecked:
                     return true;
+
                 default:
                     return false;
             }
@@ -40,8 +39,6 @@ namespace System.Linq.Expressions.Compiler
                 _guard.RunOnEmptyStack((@this, n, f) => @this.EmitExpression(n, f), this, node, flags);
                 return;
             }
-
-            Debug.Assert(node != null);
 
             var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
 

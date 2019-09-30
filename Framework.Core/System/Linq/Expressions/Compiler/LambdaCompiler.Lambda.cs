@@ -47,7 +47,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private static Type[] GetParameterTypes(LambdaExpression lambda, Type firstType)
+        private static Type[] GetParameterTypes(LambdaExpression lambda, Type? firstType)
         {
             var count = lambda.ParameterCount;
 
@@ -103,7 +103,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (closure)
             {
-                _scope.EmitGet(_scope.NearestHoistedLocals.SelfVariable);
+                _scope.EmitGet(_scope.NearestHoistedLocals!.SelfVariable);
             }
             else
             {
@@ -123,7 +123,7 @@ namespace System.Linq.Expressions.Compiler
                 IL.EmitType(delegateType);
                 EmitClosureCreation(inner);
                 // ReSharper disable once AssignNullToNotNullAttribute
-                IL.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] {typeof(Type), typeof(object)}));
+                IL.Emit(OpCodes.Callvirt, typeof(DynamicMethod).GetMethod(nameof(DynamicMethod.CreateDelegate), new[] { typeof(Type), typeof(object) }));
                 IL.Emit(OpCodes.Castclass, delegateType);
             }
             else
@@ -152,7 +152,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // When the lambda does not have a name or the name is empty, generate a unique name for it.
                 var name = string.IsNullOrEmpty(lambda.Name) ? GetUniqueMethodName() : lambda.Name;
-                var mb = _typeBuilder.DefineMethod(name, MethodAttributes.Private | MethodAttributes.Static);
+                var mb = _typeBuilder!.DefineMethod(name, MethodAttributes.Private | MethodAttributes.Static);
                 impl = new LambdaCompiler(_tree, lambda, mb);
             }
 
@@ -180,7 +180,7 @@ namespace System.Linq.Expressions.Compiler
         /// <param name="flags">
         ///     The enum to specify if the lambda is compiled with the tail call optimization.
         /// </param>
-        private void EmitLambdaBody(CompilerScope parent, bool inlined, CompilationFlags flags)
+        private void EmitLambdaBody(CompilerScope? parent, bool inlined, CompilationFlags flags)
         {
             _scope.Enter(this, parent);
 

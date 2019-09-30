@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 using System;
 using System.Collections.Generic;
@@ -60,6 +60,31 @@ namespace Theraot.Collections
             }
 #else
             return AsISet(source);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: NotNull]
+        public static ICollection<T> AsDistinctICollection<T>([MaybeNull] this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
+        {
+            comparer ??= EqualityComparer<T>.Default;
+#if NET35
+            switch (source)
+            {
+                case null:
+                    return new EmptySet<T>(comparer);
+
+                case HashSet<T> sourceAsHashSet when sourceAsHashSet.Comparer.Equals(comparer):
+                    return sourceAsHashSet;
+
+                case ProgressiveSet<T> sourceAsProgressiveSet when sourceAsProgressiveSet.Comparer.Equals(comparer):
+                    return sourceAsProgressiveSet;
+
+                default:
+                    return new ProgressiveSet<T>(source, comparer);
+            }
+#else
+            return AsISet(source, comparer);
 #endif
         }
 
@@ -159,6 +184,32 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
+        public static ISet<T> AsISet<T>([MaybeNull] this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
+        {
+            comparer ??= EqualityComparer<T>.Default;
+            switch (source)
+            {
+                case null:
+                    return EmptySet<T>.Instance;
+
+#if !NET35
+                case HashSet<T> sourceAsHashSet when sourceAsHashSet.Comparer.Equals(comparer):
+                    return sourceAsHashSet;
+#endif
+
+                case SortedSet<T> sourceAsSortedSet when sourceAsSortedSet.Comparer.Equals(comparer):
+                    return sourceAsSortedSet;
+
+                case ProgressiveSet<T> sourceAsProgressiveSet when sourceAsProgressiveSet.Comparer.Equals(comparer):
+                    return sourceAsProgressiveSet;
+
+                default:
+                    return new ProgressiveSet<T>(source, comparer);
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: NotNull]
         public static List<T> AsList<T>([MaybeNull] this IEnumerable<T>? source)
         {
             switch (source)
@@ -201,11 +252,23 @@ namespace Theraot.Collections
                 case null:
                     return EmptyCollection<T>.Instance;
 
-                case ReadOnlyCollectionEx<T> arrayReadOnlyCollection:
-                    return arrayReadOnlyCollection;
+                case ReadOnlyCollectionEx<T> readOnlyCollectionEx:
+                    return readOnlyCollectionEx;
+
+                case T[] array:
+                    return array.Length == 0 ? EmptyCollection<T>.Instance : new ReadOnlyCollectionEx<T>(array);
+
+                case ICollection<T> collection:
+                    if (collection.Count == 0)
+                    {
+                        return EmptyCollection<T>.Instance;
+                    }
+                    var result = new T[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return new ReadOnlyCollectionEx<T>(result);
 
                 default:
-                    return ToReadOnlyCollectionInternal(enumerable);
+                    return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
             }
         }
 
@@ -326,32 +389,34 @@ namespace Theraot.Collections
             }
         }
 
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        [return: NotNull]
-        internal static ReadOnlyCollectionEx<T> ToReadOnlyCollectionInternal<T>([MaybeNull] this IEnumerable<T>? source)
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
                 case null:
-                    return EmptyCollection<T>.Instance;
+                    return new HashSet<T>();
 
-                case T[] array:
-                    return array.Length == 0 ? EmptyCollection<T>.Instance : new ReadOnlyCollectionEx<T>(array);
-
-                case ReadOnlyCollectionEx<T> readOnlyCollectionEx:
-                    return readOnlyCollectionEx;
-
-                case ICollection<T> collection:
-                    if (collection.Count == 0)
-                    {
-                        return EmptyCollection<T>.Instance;
-                    }
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return new ReadOnlyCollectionEx<T>(result);
+                case HashSet<T> hashSet:
+                    return hashSet;
 
                 default:
-                    return new ReadOnlyCollectionEx<T>(new List<T>(source));
+                    return new HashSet<T>(source);
+            }
+        }
+
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
+        {
+            comparer ??= EqualityComparer<T>.Default;
+            switch (source)
+            {
+                case null:
+                    return new HashSet<T>(comparer);
+
+                case HashSet<T> hashSet when hashSet.Comparer.Equals(comparer):
+                    return hashSet;
+
+                default:
+                    return new HashSet<T>(source, comparer);
             }
         }
     }
@@ -479,14 +544,14 @@ namespace Theraot.Collections
             return result.ToArray();
         }
 
-        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
+        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, [NotNull] Predicate<T> predicateCount, int skipCount)
         {
             var count = 0;
             foreach (var item in source)
             {
                 if (count < skipCount)
                 {
-                    if (predicateCount(item))
+                    if (predicateCount!(item))
                     {
                         count++;
                     }
@@ -529,7 +594,7 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> TakeExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
+        private static IEnumerable<T> TakeExtracted<T>(IEnumerable<T> source, [NotNull] Predicate<T> predicateCount, int takeCount)
         {
             var count = 0;
             foreach (var item in source)
@@ -540,7 +605,7 @@ namespace Theraot.Collections
                 }
 
                 yield return item;
-                if (predicateCount(item))
+                if (predicateCount!(item))
                 {
                     count++;
                 }

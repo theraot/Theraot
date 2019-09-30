@@ -358,7 +358,7 @@ namespace System.Linq.Expressions.Compiler
 
             // if not null, call conversion
             IL.MarkLabel(labNotNull);
-            Debug.Assert(b.Conversion.ParameterCount == 1);
+            Debug.Assert(b.Conversion!.ParameterCount == 1);
 
             // emit the delegate instance
             EmitLambdaExpression(b.Conversion);
@@ -446,7 +446,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitMethodAndAlso(BinaryExpression b, CompilationFlags flags)
         {
-            Debug.Assert(b.Method.IsStatic);
+            Debug.Assert(b.Method!.IsStatic);
 
             var labEnd = IL.DefineLabel();
             EmitExpression(b.Left);
@@ -468,7 +468,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitMethodOrElse(BinaryExpression b, CompilationFlags flags)
         {
-            Debug.Assert(b.Method.IsStatic);
+            Debug.Assert(b.Method!.IsStatic);
 
             var labEnd = IL.DefineLabel();
             EmitExpression(b.Left);

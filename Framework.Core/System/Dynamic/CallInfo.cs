@@ -41,11 +41,11 @@ namespace System.Dynamic
 
         /// <inheritdoc />
         /// <summary>
-        ///     Creates a new <see cref="T:System.Dynamic.CallInfo" /> that represents arguments in the dynamic binding process.
+        ///     Creates a new <see cref="CallInfo" /> that represents arguments in the dynamic binding process.
         /// </summary>
         /// <param name="argCount">The number of arguments.</param>
         /// <param name="argNames">The argument names.</param>
-        /// <returns>The new <see cref="T:System.Dynamic.CallInfo" /> instance.</returns>
+        /// <returns>The new <see cref="CallInfo" /> instance.</returns>
         public CallInfo(int argCount, params string[] argNames)
             : this(argCount, (IEnumerable<string>)argNames)
         {

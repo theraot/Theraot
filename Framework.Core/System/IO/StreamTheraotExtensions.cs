@@ -175,7 +175,7 @@ namespace System.IO
             {
                 throw new NullReferenceException();
             }
-            return TaskEx.Run(() => stream.Flush());
+            return TaskEx.Run(stream.Flush);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -186,7 +186,7 @@ namespace System.IO
                 throw new NullReferenceException();
             }
             token.ThrowIfCancellationRequested();
-            return TaskEx.Run(() => stream.Flush(), token);
+            return TaskEx.Run(stream.Flush, token);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

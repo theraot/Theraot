@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NET35
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -8,12 +9,13 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
     internal sealed class AssemblyGen
     {
-        private static AssemblyGen _assembly;
+        private static AssemblyGen? _assembly;
         private int _index;
 
         private readonly ModuleBuilder _myModule;
@@ -31,12 +33,7 @@ namespace System.Linq.Expressions.Compiler
         {
             get
             {
-                if (_assembly == null)
-                {
-                    Interlocked.CompareExchange(ref _assembly, new AssemblyGen(), null);
-                }
-
-                return _assembly;
+                return TypeHelper.LazyCreate(ref _assembly, () => new AssemblyGen());
             }
         }
 

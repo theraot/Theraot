@@ -5,7 +5,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
-
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic.Utils;
@@ -13,8 +12,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -24,7 +23,7 @@ namespace System.Linq.Expressions
     public abstract partial class Expression
     {
         private static readonly CacheDict<Type, MethodInfo> _lambdaDelegateCache = new CacheDict<Type, MethodInfo>(40);
-        private static volatile CacheDict<Type, Func<Expression, string, bool, ParameterExpression[], LambdaExpression>> _lambdaFactories;
+        private static CacheDict<Type, Func<Expression, string, bool, ParameterExpression[], LambdaExpression>>? _lambdaFactories;
 
         // For 4.0, many frequently used Expression nodes have had their memory
         // footprint reduced by removing the Type and NodeType fields. This has
@@ -33,7 +32,7 @@ namespace System.Linq.Expressions
         // To support the 3.5 protected constructor, we store the fields that
         // used to be here in a ConditionalWeakTable.
 
-        private static ConditionalWeakTable<Expression, ExtensionInfo> _legacyCtorSupportTable;
+        private static ConditionalWeakTable<Expression, ExtensionInfo>? _legacyCtorSupportTable;
 
         /// <summary>
         ///     Constructs a new instance of <see cref="Expression" />.
@@ -43,18 +42,8 @@ namespace System.Linq.Expressions
         [Obsolete("use a different constructor that does not take ExpressionType. Then override NodeType and Type properties to provide the values that would be specified to this constructor.")]
         protected Expression(ExpressionType nodeType, Type type)
         {
-            // Can't enforce anything that V1 didn't
-            if (_legacyCtorSupportTable == null)
-            {
-                Interlocked.CompareExchange
-                (
-                    ref _legacyCtorSupportTable,
-                    new ConditionalWeakTable<Expression, ExtensionInfo>(),
-                    null
-                );
-            }
-
-            _legacyCtorSupportTable.Add(this, new ExtensionInfo(nodeType, type));
+            var legacyCtorSupportTable = TypeHelper.LazyCreateNew(ref _legacyCtorSupportTable);
+            legacyCtorSupportTable.Add(this, new ExtensionInfo(nodeType, type));
         }
 
         /// <summary>
@@ -472,6 +461,11 @@ namespace System.Linq.Expressions
         /// </remarks>
         protected internal virtual Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitExtension(this);
         }
 
@@ -500,7 +494,6 @@ namespace System.Linq.Expressions
 
         private static void RequiresCanRead(Expression[] items, string paramName)
         {
-            Debug.Assert(items != null);
             // this is called a lot, avoid allocating an enumerator if we can...
             for (int i = 0, n = items.Length; i < n; i++)
             {

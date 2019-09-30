@@ -99,6 +99,7 @@ namespace System.Linq.Expressions
 
                 case 5:
                     return Invoke(expression, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
+
                 default:
                     break;
             }
@@ -517,6 +518,11 @@ namespace System.Linq.Expressions
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
             return visitor.VisitInvocation(this);
         }
     }

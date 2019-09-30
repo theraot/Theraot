@@ -6,12 +6,12 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
-
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
@@ -94,6 +94,7 @@ namespace System.Dynamic
 
         object IDictionary<string, object>.this[string key]
         {
+            [return: MaybeNull]
             get
             {
                 if (!TryGetValueForKey(key, out var value))
@@ -136,7 +137,7 @@ namespace System.Dynamic
             }
         }
 
-        internal bool TryDeleteValue(object indexClass, int index, string name, bool ignoreCase, object deleteValue)
+        internal bool TryDeleteValue(object? indexClass, int index, string name, bool ignoreCase, object deleteValue)
         {
             string propertyName;
             lock (LockObject)
@@ -187,7 +188,7 @@ namespace System.Dynamic
             return true;
         }
 
-        internal bool TryGetValue(object indexClass, int index, string name, bool ignoreCase, out object value)
+        internal bool TryGetValue(object? indexClass, int index, string name, bool ignoreCase, [MaybeNullWhen(false)] out object? value)
         {
             // read the data now.  The data is immutable so we get a consistent view.
             // If there's a concurrent writer they will replace data and it just appears
@@ -231,7 +232,7 @@ namespace System.Dynamic
             return true;
         }
 
-        internal void TrySetValue(object indexClass, int index, object value, string name, bool ignoreCase, bool add)
+        internal void TrySetValue(object? indexClass, int index, object value, string name, bool ignoreCase, bool add)
         {
             string propertyName;
 
@@ -441,10 +442,16 @@ namespace System.Dynamic
 
         bool IDictionary<string, object>.TryGetValue(string key, out object value)
         {
-            return TryGetValueForKey(key, out value);
+            if (TryGetValueForKey(key, out var tmp))
+            {
+                value = tmp;
+                return true;
+            }
+            value = null!;
+            return false;
         }
 
-        private bool TryGetValueForKey(string key, out object value)
+        private bool TryGetValueForKey(string key, [NotNullWhen(true)] out object? value)
         {
             // Pass null to the class, which forces lookup.
             return TryGetValue(null, -1, key, false, out value);
@@ -524,8 +531,7 @@ namespace System.Dynamic
                 var oldLength = _dataArray.Length;
                 var arr = new object[GetAlignedSize(newClass.Keys.Length)];
                 Array.Copy(_dataArray, 0, arr, 0, _dataArray.Length);
-                var newData = new ExpandoData(newClass, arr, Version) { [oldLength] = Uninitialized };
-                return newData;
+                return new ExpandoData(newClass, arr, Version) { [oldLength] = Uninitialized };
             }
 
             private static int GetAlignedSize(int len)
@@ -671,15 +677,17 @@ namespace System.Dynamic
             public MetaExpando(Expression expression, ExpandoObject value)
                 : base(expression, BindingRestrictions.Empty, value)
             {
+                // Empty
             }
 
-            private new ExpandoObject Value => (ExpandoObject)base.Value;
+            private new ExpandoObject? Value => (ExpandoObject?)base.Value;
 
             public override DynamicMetaObject BindDeleteMember(DeleteMemberBinder binder)
             {
                 ContractUtils.RequiresNotNull(binder, nameof(binder));
 
-                var index = Value.Class.GetValueIndex(binder.Name, binder.IgnoreCase, Value);
+                // Value can be null, let it true if it is
+                var index = Value!.Class.GetValueIndex(binder.Name, binder.IgnoreCase, Value);
 
                 Expression tryDelete = Expression.Call
                 (
@@ -732,7 +740,7 @@ namespace System.Dynamic
                 ContractUtils.RequiresNotNull(binder, nameof(binder));
                 ContractUtils.RequiresNotNull(value, nameof(value));
 
-                var originalClass = GetClassEnsureIndex(binder.Name, binder.IgnoreCase, Value, out var @class, out var index);
+                var originalClass = GetClassEnsureIndex(binder.Name, binder.IgnoreCase, Value!, out var @class, out var index);
 
                 return AddDynamicTestAndDefer
                 (
@@ -758,7 +766,7 @@ namespace System.Dynamic
 
             public override IEnumerable<string> GetDynamicMemberNames()
             {
-                var expandoData = Value._data;
+                var expandoData = Value!._data;
                 var @class = expandoData.Class;
                 for (var i = 0; i < @class.Keys.Length; i++)
                 {
@@ -770,7 +778,7 @@ namespace System.Dynamic
                 }
             }
 
-            private DynamicMetaObject AddDynamicTestAndDefer(DynamicMetaObjectBinder binder, ExpandoClass @class, ExpandoClass originalClass, DynamicMetaObject succeeds)
+            private DynamicMetaObject AddDynamicTestAndDefer(DynamicMetaObjectBinder binder, ExpandoClass @class, ExpandoClass? originalClass, DynamicMetaObject succeeds)
             {
                 var ifTestSucceeds = succeeds.Expression;
                 if (originalClass == null)
@@ -830,9 +838,10 @@ namespace System.Dynamic
                 );
             }
 
-            private DynamicMetaObject BindGetOrInvokeMember(DynamicMetaObjectBinder binder, string name, bool ignoreCase, DynamicMetaObject fallback, Func<DynamicMetaObject, DynamicMetaObject> fallbackInvoke)
+            private DynamicMetaObject BindGetOrInvokeMember(DynamicMetaObjectBinder binder, string name, bool ignoreCase, DynamicMetaObject fallback, Func<DynamicMetaObject, DynamicMetaObject>? fallbackInvoke)
             {
-                var @class = Value.Class;
+                // Value can be null, let it true if it is
+                var @class = Value!.Class;
 
                 //try to find the member, including the deleted members
                 var index = @class.GetValueIndex(name, ignoreCase, Value);
@@ -878,9 +887,10 @@ namespace System.Dynamic
                 return AddDynamicTestAndDefer(binder, Value.Class, null, result);
             }
 
-            private ExpandoClass GetClassEnsureIndex(string name, bool caseInsensitive, ExpandoObject obj, out ExpandoClass @class, out int index)
+            private ExpandoClass? GetClassEnsureIndex(string name, bool caseInsensitive, ExpandoObject obj, out ExpandoClass @class, out int index)
             {
-                var originalClass = Value.Class;
+                // Value can be null, let it true if it is
+                var originalClass = Value!.Class;
 
                 index = originalClass.GetValueIndex(name, caseInsensitive, obj);
                 switch (index)
@@ -1129,7 +1139,7 @@ namespace System.Runtime.CompilerServices
         /// <param name="value">The out parameter containing the value of the member.</param>
         /// <returns>True if the member exists in the expando object, otherwise false.</returns>
         // [Obsolete("do not use this method", error: true), EditorBrowsable(EditorBrowsableState.Never)]
-        public static bool ExpandoTryGetValue(ExpandoObject expando, object indexClass, int index, string name, bool ignoreCase, out object value)
+        public static bool ExpandoTryGetValue(ExpandoObject expando, object indexClass, int index, string name, bool ignoreCase, out object? value)
         {
             return expando.TryGetValue(indexClass, index, name, ignoreCase, out value);
         }

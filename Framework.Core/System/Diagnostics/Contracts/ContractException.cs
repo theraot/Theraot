@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1032 // Implement standard exception constructors
 #pragma warning disable CA1064 // Exceptions should be public
@@ -18,7 +18,7 @@ namespace System.Diagnostics.Contracts
     [Serializable]
     internal sealed class ContractException : Exception
     {
-        public ContractException(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
+        public ContractException(ContractFailureKind kind, string failure, string? userMessage, string? condition, Exception? innerException)
             : base(failure, innerException)
         {
             HResult = ContractHelper.Cor_E_CodeContractFailed;
@@ -42,10 +42,10 @@ namespace System.Diagnostics.Contracts
             Condition = info.GetString(nameof(Condition));
         }
 
-        public string Condition { get; }
+        public string? Condition { get; }
         public ContractFailureKind Kind { get; }
 
-        public string UserMessage { get; }
+        public string? UserMessage { get; }
 
         [SecurityCritical]
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]

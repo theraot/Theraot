@@ -16,7 +16,7 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(Expression.CatchBlockProxy))]
     public sealed class CatchBlock
     {
-        internal CatchBlock(Type test, ParameterExpression variable, Expression body, Expression filter)
+        internal CatchBlock(Type test, ParameterExpression? variable, Expression body, Expression? filter)
         {
             Test = test;
             Variable = variable;
@@ -32,7 +32,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the body of the <see cref="CatchBlock" />'s filter.
         /// </summary>
-        public Expression Filter { get; }
+        public Expression? Filter { get; }
 
         /// <summary>
         ///     Gets the type of <see cref="Exception" /> this handler catches.
@@ -42,7 +42,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets a reference to the <see cref="Exception" /> object caught by this handler.
         /// </summary>
-        public ParameterExpression Variable { get; }
+        public ParameterExpression? Variable { get; }
 
         /// <summary>
         ///     Returns a <see cref="string" /> that represents the current <see cref="object" />.
@@ -149,7 +149,7 @@ namespace System.Linq.Expressions
         ///     <paramref name="type" /> must be non-null and match the type of <paramref name="variable" /> (if it is
         ///     supplied).
         /// </remarks>
-        public static CatchBlock MakeCatchBlock(Type type, ParameterExpression variable, Expression body, Expression filter)
+        public static CatchBlock MakeCatchBlock(Type type, ParameterExpression? variable, Expression body, Expression? filter)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
             ContractUtils.Requires(variable == null || TypeUtils.AreEquivalent(variable.Type, type), nameof(variable));

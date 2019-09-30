@@ -72,7 +72,6 @@ namespace System.Linq.Expressions.Compiler
 
         private static T[] Clone<T>(T[] original, int max)
         {
-            Debug.Assert(original != null);
             Debug.Assert(max < original.Length);
 
             var clone = new T[original.Length];
@@ -84,7 +83,7 @@ namespace System.Linq.Expressions.Compiler
             return clone;
         }
 
-        private static bool IsRefInstance(Expression instance)
+        private static bool IsRefInstance(Expression? instance)
         {
             // Primitive value types are okay because they are all read-only,
             // but we can't rely on this for non-primitive types. So we have
@@ -211,8 +210,7 @@ namespace System.Linq.Expressions.Compiler
             var node = (BlockExpression)expr;
 
             var count = node.ExpressionCount;
-            var action = RewriteAction.None;
-            Expression[] clone = null;
+            (RewriteAction action, Expression[] clone)? x = null;
             for (var i = 0; i < count; i++)
             {
                 var expression = node.GetExpression(i);
@@ -220,26 +218,34 @@ namespace System.Linq.Expressions.Compiler
                 // All statements within the block execute at the
                 // same stack state.
                 var rewritten = RewriteExpression(expression, stack);
-                action |= rewritten.Action;
+                var action = rewritten.Action;
 
-                if (clone == null && rewritten.Action != RewriteAction.None)
+                if (!x.HasValue)
                 {
-                    clone = Clone(node.Expressions.AsArrayInternal(), i);
+                    if (action != RewriteAction.None)
+                    {
+                        var clone = Clone(node.Expressions.AsArrayInternal(), i);
+                        clone[i] = rewritten.Node;
+                        x = (action, clone);
+                    }
                 }
-
-                if (clone != null)
+                else
                 {
-                    clone[i] = rewritten.Node;
+                    var tmp = x.Value;
+                    tmp.clone[i] = rewritten.Node;
+                    tmp.action |= rewritten.Action;
+                    x = tmp;
                 }
             }
 
-            if (action != RewriteAction.None)
+            if (x.HasValue)
             {
                 // Okay to wrap since we know no one can mutate the clone array.
-                expr = node.Rewrite(null, clone);
+                expr = node.Rewrite(null, x.Value.clone);
+                return new Result(x.Value.action, expr);
             }
 
-            return new Result(action, expr);
+            return new Result(RewriteAction.None, expr);
         }
 
         private Result RewriteConditionalExpression(Expression expr, Stack stack)
@@ -814,12 +820,12 @@ namespace System.Linq.Expressions.Compiler
 
             var action = switchValue.Action;
             var cases = node.Cases.AsArrayInternal();
-            SwitchCase[] clone = null;
+            SwitchCase[]? clone = null;
             for (var i = 0; i < cases.Length; i++)
             {
                 var @case = cases[i];
 
-                Expression[] cloneTests = null;
+                Expression[]? cloneTests = null;
                 var testValues = @case.TestValues.AsArrayInternal();
                 for (var j = 0; j < testValues.Length; j++)
                 {

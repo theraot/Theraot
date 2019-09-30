@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Theraot.Collections;
 
 namespace Theraot.Core
 {
@@ -354,41 +356,6 @@ namespace Theraot.Core
                     branches = null;
                 }
             }
-        }
-    }
-
-    public static partial class GraphHelper
-    {
-        public static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException(nameof(parent));
-            }
-
-            // Copyright (c) Microsoft. All rights reserved.
-            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-            var cmp = EqualityComparer<T>.Default;
-            if (cmp.Equals(first, second))
-            {
-                return first;
-            }
-
-            var set = new HashSet<T>(cmp);
-            for (var t = first; t != null; t = parent(t))
-            {
-                set.Add(t);
-            }
-
-            for (var t = second; t != null; t = parent(t))
-            {
-                if (set.Contains(t))
-                {
-                    return t;
-                }
-            }
-
-            return null;
         }
     }
 }
