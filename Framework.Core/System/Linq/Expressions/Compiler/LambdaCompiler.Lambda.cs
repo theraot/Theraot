@@ -135,7 +135,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitDelegateConstruction(LabelScopeInfo labelBlock, LambdaExpression lambda)
+        private void EmitDelegateConstruction(LambdaExpression lambda)
         {
             // 1. Create the new compiler
             LambdaCompiler impl;
@@ -153,20 +153,20 @@ namespace System.Linq.Expressions.Compiler
 
             // 2. emit the lambda
             // Since additional ILs are always emitted after the lambda's body, should not emit with tail call optimization.
-            impl.EmitLambdaBody(labelBlock, _scope, false, CompilationFlags.EmitAsNoTail);
+            impl.EmitLambdaBody(_scope, false, CompilationFlags.EmitAsNoTail);
 
             // 3. emit the delegate creation in the outer lambda
             EmitDelegateConstruction(impl);
         }
 
-        private void EmitLambdaBody(LabelScopeInfo labelBlock)
+        private void EmitLambdaBody()
         {
             // The lambda body is the "last" expression of the lambda
             var tailCallFlag = _lambda.TailCall ? CompilationFlags.EmitAsTail : CompilationFlags.EmitAsNoTail;
-            EmitLambdaBody(labelBlock, null, false, tailCallFlag);
+            EmitLambdaBody(null, false, tailCallFlag);
         }
 
-        private void EmitLambdaBody(LabelScopeInfo labelBlock, CompilerScope? parent, bool inlined, CompilationFlags flags)
+        private void EmitLambdaBody(CompilerScope? parent, bool inlined, CompilationFlags flags)
         {
             _scope.Enter(this, parent);
 
@@ -187,11 +187,11 @@ namespace System.Linq.Expressions.Compiler
             flags = UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart);
             if (_lambda.ReturnType == typeof(void))
             {
-                EmitExpressionAsVoid(labelBlock, _lambda.Body, flags);
+                EmitExpressionAsVoid(_lambda.Body, flags);
             }
             else
             {
-                EmitExpression(labelBlock, _lambda.Body, flags);
+                EmitExpression(_lambda.Body, flags);
             }
 
             // Return must be the last instruction in a CLI method.
@@ -205,7 +205,7 @@ namespace System.Linq.Expressions.Compiler
             _scope.Exit();
 
             // Validate labels
-            Debug.Assert(labelBlock.Parent == null && labelBlock.Kind == LabelScopeKind.Lambda);
+            Debug.Assert(_labelBlock.Parent == null && _labelBlock.Kind == LabelScopeKind.Lambda);
             foreach (var label in _labelInfo.Values)
             {
                 label.ValidateFinish();

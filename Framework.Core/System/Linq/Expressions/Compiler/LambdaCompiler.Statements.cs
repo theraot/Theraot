@@ -160,14 +160,14 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void DefineSwitchCaseLabel(LabelScopeInfo labelBlock, SwitchCase @case, out Label label, out bool isGoto)
+        private void DefineSwitchCaseLabel(SwitchCase @case, out Label label, out bool isGoto)
         {
             // if it's a goto with no value
             if (@case.Body is GotoExpression jump && jump.Value == null)
             {
                 // Reference the label from the switch. This will cause us to
                 // analyze the jump target and determine if it is safe.
-                var jumpInfo = ReferenceLabel(labelBlock, jump.Target);
+                var jumpInfo = ReferenceLabel(jump.Target);
 
                 // If we have are allowed to emit the "branch" opcode, then we
                 // can jump directly there from the switch's jump table.
@@ -185,7 +185,7 @@ namespace System.Linq.Expressions.Compiler
             isGoto = false;
         }
 
-        private void Emit(LabelScopeInfo labelBlock, BlockExpression node, CompilationFlags flags)
+        private void Emit(BlockExpression node, CompilationFlags flags)
         {
             var count = node.ExpressionCount;
 
@@ -194,7 +194,11 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            EnterScope(node);
+            var innerScopeInfo = GetInnerScope(node, _scope);
+            if (innerScopeInfo.HasValue)
+            {
+                _scope = innerScopeInfo.Value.child.Enter(this, innerScopeInfo.Value.parent);
+            }
 
             var emitAs = flags & CompilationFlags.EmitAsTypeMask;
             var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
@@ -204,13 +208,13 @@ namespace System.Linq.Expressions.Compiler
                 var next = node.GetExpression(index + 1);
 
                 var tailCallFlag = tailCall != CompilationFlags.EmitAsNoTail
-                    ? next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(labelBlock, g.Target).CanReturn
+                    ? next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn
                         ? CompilationFlags.EmitAsTail
                         : CompilationFlags.EmitAsMiddle
                     : CompilationFlags.EmitAsNoTail;
 
                 flags = UpdateEmitAsTailCallFlag(flags, tailCallFlag);
-                EmitExpressionAsVoid(labelBlock, e, flags);
+                EmitExpressionAsVoid(e, flags);
             }
             // if the type of Block it means this is not a Comma
             // so we will force the last expression to emit as void.
@@ -218,23 +222,27 @@ namespace System.Linq.Expressions.Compiler
             // the EmitTailCall field in flags to emitting the last expression.
             if (emitAs == CompilationFlags.EmitAsVoidType || node.Type == typeof(void))
             {
-                EmitExpressionAsVoid(labelBlock, node.GetExpression(count - 1), tailCall);
+                EmitExpressionAsVoid(node.GetExpression(count - 1), tailCall);
             }
             else
             {
-                EmitExpressionAsType(labelBlock, node.GetExpression(count - 1), node.Type, tailCall);
+                EmitExpressionAsType(node.GetExpression(count - 1), node.Type, tailCall);
             }
 
-            ExitScope(node);
+            if (innerScopeInfo.HasValue)
+            {
+                innerScopeInfo.Value.child.Exit();
+                _scope = innerScopeInfo.Value.parent;
+            }
         }
 
-        private void EmitBlockExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
+        private void EmitBlockExpression(Expression expr, CompilationFlags flags)
         {
             // emit body
-            Emit(labelBlock, (BlockExpression)expr, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsDefaultType));
+            Emit((BlockExpression)expr, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsDefaultType));
         }
 
-        private void EmitCatchStart(LabelScopeInfo labelBlock, CatchBlock cb)
+        private void EmitCatchStart(CatchBlock cb)
         {
             if (cb.Filter == null)
             {
@@ -261,12 +269,12 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(rightType);
             EmitSaveExceptionOrPop(cb);
 
-            var parent = labelBlock;
-            labelBlock = new LabelScopeInfo(parent, LabelScopeKind.Filter);
+            var parent = _labelBlock;
+            _labelBlock = new LabelScopeInfo(parent, LabelScopeKind.Filter);
 
-            EmitExpression(labelBlock, cb.Filter);
+            EmitExpression(cb.Filter);
 
-            // labelBlock = parent;
+            _labelBlock = parent;
 
             // begin the catch, clear the exception, we've
             // already saved it
@@ -285,19 +293,19 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitLoopExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitLoopExpression(Expression expr)
         {
             var node = (LoopExpression)expr;
 
-            var parent = labelBlock;
-            labelBlock = new LabelScopeInfo(parent, LabelScopeKind.Statement);
+            var parent = _labelBlock;
+            _labelBlock = new LabelScopeInfo(parent, LabelScopeKind.Statement);
 
-            var breakTarget = DefineLabel(labelBlock, node.BreakLabel);
-            var continueTarget = DefineLabel(labelBlock, node.ContinueLabel);
+            var breakTarget = DefineLabel(node.BreakLabel);
+            var continueTarget = DefineLabel(node.ContinueLabel);
             continueTarget.MarkWithEmptyStack();
-            EmitExpressionAsVoid(labelBlock, node.Body);
+            EmitExpressionAsVoid(node.Body);
 
-            // labelBlock = parent;
+            _labelBlock = parent;
 
             breakTarget.MarkWithEmptyStack();
         }
@@ -424,7 +432,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitSwitchCases(LabelScopeInfo labelBlock, SwitchExpression node, Label[] labels, bool[] isGoto, Label @default, Label end, CompilationFlags flags)
+        private void EmitSwitchCases(SwitchExpression node, Label[] labels, bool[] isGoto, Label @default, Label end, CompilationFlags flags)
         {
             // Jump to default (to handle the fallthrough case)
             IL.Emit(OpCodes.Br, @default);
@@ -440,7 +448,7 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 IL.MarkLabel(labels[i]);
-                EmitExpressionAsType(labelBlock, node.Cases[i].Body, node.Type, flags);
+                EmitExpressionAsType(node.Cases[i].Body, node.Type, flags);
 
                 // Last case doesn't need branch
                 if (node.DefaultBody == null && i >= n - 1)
@@ -464,13 +472,13 @@ namespace System.Linq.Expressions.Compiler
             if (node.DefaultBody != null)
             {
                 IL.MarkLabel(@default);
-                EmitExpressionAsType(labelBlock, node.DefaultBody, node.Type, flags);
+                EmitExpressionAsType(node.DefaultBody, node.Type, flags);
             }
 
             IL.MarkLabel(end);
         }
 
-        private void EmitSwitchExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
+        private void EmitSwitchExpression(Expression expr, CompilationFlags flags)
         {
             var node = (SwitchExpression)expr;
 
@@ -478,12 +486,12 @@ namespace System.Linq.Expressions.Compiler
             {
                 // Emit the switch value in case it has side-effects, but as void
                 // since the value is ignored.
-                EmitExpressionAsVoid(labelBlock, node.SwitchValue);
+                EmitExpressionAsVoid(node.SwitchValue);
 
                 // Now if there is a default body, it happens unconditionally.
                 if (node.DefaultBody != null)
                 {
-                    EmitExpressionAsType(labelBlock, node.DefaultBody, node.Type, flags);
+                    EmitExpressionAsType(node.DefaultBody, node.Type, flags);
                 }
                 else
                 {
@@ -496,13 +504,13 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Try to emit it as an IL switch. Works for integer types.
-            if (TryEmitSwitchInstruction(labelBlock, node, flags))
+            if (TryEmitSwitchInstruction(node, flags))
             {
                 return;
             }
 
             // Try to emit as a hashtable lookup. Works for strings.
-            if (TryEmitHashtableSwitch(labelBlock, node, flags))
+            if (TryEmitHashtableSwitch(node, flags))
             {
                 return;
             }
@@ -517,7 +525,7 @@ namespace System.Linq.Expressions.Compiler
             _scope.AddLocal(this, switchValue);
             _scope.AddLocal(this, testValue);
 
-            EmitExpression(labelBlock, node.SwitchValue);
+            EmitExpression(node.SwitchValue);
             _scope.EmitSet(switchValue);
 
             // Emit tests
@@ -525,15 +533,15 @@ namespace System.Linq.Expressions.Compiler
             var isGoto = new bool[node.Cases.Count];
             for (int i = 0, n = node.Cases.Count; i < n; i++)
             {
-                DefineSwitchCaseLabel(labelBlock, node.Cases[i], out labels[i], out isGoto[i]);
+                DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
                 foreach (var test in node.Cases[i].TestValues)
                 {
                     // Pull the test out into a temp so it runs on the same
                     // stack as the switch. This simplifies spilling.
-                    EmitExpression(labelBlock, test);
+                    EmitExpression(test);
                     _scope.EmitSet(testValue);
                     Debug.Assert(testValue.Type.IsReferenceAssignableFromInternal(test.Type));
-                    EmitExpressionAndBranch(labelBlock, true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
+                    EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
                 }
             }
 
@@ -542,27 +550,27 @@ namespace System.Linq.Expressions.Compiler
             var @default = node.DefaultBody == null ? end : IL.DefineLabel();
 
             // Emit the case and default bodies
-            EmitSwitchCases(labelBlock, node, labels, isGoto, @default, end, flags);
+            EmitSwitchCases(node, labels, isGoto, @default, end, flags);
         }
 
-        private void EmitTryExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitTryExpression(Expression expr)
         {
             var node = (TryExpression)expr;
 
-            CheckTry(labelBlock);
+            CheckTry(_labelBlock);
 
             //******************************************************************
             // 1. ENTERING TRY
             //******************************************************************
 
-            var parent = labelBlock;
-            labelBlock = new LabelScopeInfo(parent, LabelScopeKind.Try);
+            var parent = _labelBlock;
+            _labelBlock = new LabelScopeInfo(parent, LabelScopeKind.Try);
 
             IL.BeginExceptionBlock();
             //******************************************************************
             // 2. Emit the try statement body
             //******************************************************************
-            EmitExpression(labelBlock, node.Body);
+            EmitExpression(node.Body);
             var tryType = node.Type;
             LocalBuilder? value = null;
             if (tryType != typeof(void))
@@ -576,8 +584,8 @@ namespace System.Linq.Expressions.Compiler
             //******************************************************************
             foreach (var cb in node.Handlers)
             {
-                var tmpParent = labelBlock;
-                labelBlock = new LabelScopeInfo(tmpParent, LabelScopeKind.Catch);
+                var tmpParent = _labelBlock;
+                _labelBlock = new LabelScopeInfo(tmpParent, LabelScopeKind.Catch);
 
                 // Begin the strongly typed exception block
                 if (cb.Filter == null)
@@ -589,13 +597,17 @@ namespace System.Linq.Expressions.Compiler
                     IL.BeginExceptFilterBlock();
                 }
 
-                EnterScope(cb);
+                var innerScopeInfo = GetInnerScope(node, _scope);
+                if (innerScopeInfo.HasValue)
+                {
+                    _scope = innerScopeInfo.Value.child.Enter(this, innerScopeInfo.Value.parent);
+                }
 
-                EmitCatchStart(labelBlock, cb);
+                EmitCatchStart(cb);
                 //
                 // Emit the catch block body
                 //
-                EmitExpression(labelBlock, cb.Body);
+                EmitExpression(cb.Body);
                 if (tryType != typeof(void))
                 {
                     //store the value of the catch block body
@@ -603,17 +615,21 @@ namespace System.Linq.Expressions.Compiler
                     IL.Emit(OpCodes.Stloc, value);
                 }
 
-                ExitScope(cb);
+                if (innerScopeInfo.HasValue)
+                {
+                    innerScopeInfo.Value.child.Exit();
+                    _scope = innerScopeInfo.Value.parent;
+                }
 
-                labelBlock = tmpParent;
+                _labelBlock = tmpParent;
             }
             //******************************************************************
             // 4. Emit the finally block
             //******************************************************************
             if (node.Finally != null || node.Fault != null)
             {
-                var tmpParent = labelBlock;
-                labelBlock = new LabelScopeInfo(tmpParent, LabelScopeKind.Finally);
+                var tmpParent = _labelBlock;
+                _labelBlock = new LabelScopeInfo(tmpParent, LabelScopeKind.Finally);
 
                 if (node.Finally != null)
                 {
@@ -624,10 +640,10 @@ namespace System.Linq.Expressions.Compiler
                     IL.BeginFaultBlock();
                 }
                 // Emit the body
-                EmitExpressionAsVoid(labelBlock, node.Finally ?? node.Fault);
+                EmitExpressionAsVoid(node.Finally ?? node.Fault);
                 IL.EndExceptionBlock();
 
-                // labelBlock = tmpParent;
+                _labelBlock = tmpParent;
             }
             else
             {
@@ -640,45 +656,38 @@ namespace System.Linq.Expressions.Compiler
                 FreeLocal(value);
             }
 
-            // labelBlock = parent;
+            _labelBlock = parent;
         }
 
-        private void EnterScope(object node)
+        private (CompilerScope parent, CompilerScope child)? GetInnerScope(object node, CompilerScope scope)
         {
-            if (!HasVariables(node) || _scope.MergedScopes?.Contains(node as BlockExpression) == true)
-            {
-                return;
-            }
+            //
+            // Very often, we want to compile nodes as reductions
+            // rather than as IL, but usually they need to allocate
+            // some IL locals. To support this, we allow emitting a
+            // BlockExpression that was not bound by VariableBinder.
+            // This works as long as the variables are only used
+            // locally -- i.e. not closed over.
+            //
+            // User-created blocks will never hit this case; only our
+            // internally reduced nodes will.
+            //
 
-            if (!_tree.Scopes.TryGetValue(node, out var scope))
-            {
-                //
-                // Very often, we want to compile nodes as reductions
-                // rather than as IL, but usually they need to allocate
-                // some IL locals. To support this, we allow emitting a
-                // BlockExpression that was not bound by VariableBinder.
-                // This works as long as the variables are only used
-                // locally -- i.e. not closed over.
-                //
-                // User-created blocks will never hit this case; only our
-                // internally reduced nodes will.
-                //
-                scope = new CompilerScope(node, false) { NeedsClosure = _scope.NeedsClosure };
-            }
-
-            _scope = scope.Enter(this, _scope);
-            Debug.Assert(_scope.Node == node);
+            return !HasVariables(node) || scope.MergedScopes?.Contains(node as BlockExpression) == true
+                ? default
+                :
+                (
+                    scope,
+                    _tree.Scopes.TryGetValue(node, out var innerScope)
+                        ? innerScope
+                        : new CompilerScope(node, false)
+                        {
+                            NeedsClosure = scope.NeedsClosure
+                        }
+                );
         }
 
-        private void ExitScope(object node)
-        {
-            if (_scope.Node == node)
-            {
-                _scope = _scope.Exit();
-            }
-        }
-
-        private bool TryEmitHashtableSwitch(LabelScopeInfo labelBlock, SwitchExpression node, CompilationFlags flags)
+        private bool TryEmitHashtableSwitch(SwitchExpression node, CompilationFlags flags)
         {
             // If we have a comparison other than string equality, bail
             if (node.Comparison != CachedReflectionInfo.StringOpEqualityStringString && node.Comparison != CachedReflectionInfo.StringEqualsStringString)
@@ -805,12 +814,12 @@ namespace System.Linq.Expressions.Compiler
                 )
             );
 
-            EmitExpression(labelBlock, reduced, flags);
+            EmitExpression(reduced, flags);
             return true;
         }
 
         // Tries to emit switch as a jmp table
-        private bool TryEmitSwitchInstruction(LabelScopeInfo labelBlock, SwitchExpression node, CompilationFlags flags)
+        private bool TryEmitSwitchInstruction(SwitchExpression node, CompilationFlags flags)
         {
             // If we have a comparison, bail
             if (node.Comparison != null)
@@ -845,7 +854,7 @@ namespace System.Linq.Expressions.Compiler
             var keys = new List<SwitchLabel>();
             for (var i = 0; i < node.Cases.Count; i++)
             {
-                DefineSwitchCaseLabel(labelBlock, node.Cases[i], out labels[i], out isGoto[i]);
+                DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
 
                 foreach (var expression in node.Cases[i].TestValues)
                 {
@@ -875,7 +884,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Emit the switchValue
             var value = GetLocal(node.SwitchValue.Type);
-            EmitExpression(labelBlock, node.SwitchValue);
+            EmitExpression(node.SwitchValue);
             IL.Emit(OpCodes.Stloc, value);
 
             // Create end label, and default label if needed
@@ -887,7 +896,7 @@ namespace System.Linq.Expressions.Compiler
             EmitSwitchBuckets(info, buckets, 0, buckets.Count - 1);
 
             // Emit the case bodies and default
-            EmitSwitchCases(labelBlock, node, labels, isGoto, @default, end, flags);
+            EmitSwitchCases(node, labels, isGoto, @default, end, flags);
 
             FreeLocal(value);
             return true;

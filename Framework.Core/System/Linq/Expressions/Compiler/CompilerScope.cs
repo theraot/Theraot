@@ -247,7 +247,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     Frees unnamed locals, clears state associated with this compiler
         /// </summary>
-        internal CompilerScope? Exit()
+        internal void Exit()
         {
             // free scope's variables
             if (!IsMethod)
@@ -260,13 +260,10 @@ namespace System.Linq.Expressions.Compiler
 
             // Clear state that is associated with this parent
             // (because the scope can be reused in another context)
-            var parent = _parent;
             _parent = null;
             _hoistedLocals = null;
             _closureHoistedLocals = null;
             _locals.Clear();
-
-            return parent;
         }
 
         private static ParameterExpression[] GetVariables(object scope)

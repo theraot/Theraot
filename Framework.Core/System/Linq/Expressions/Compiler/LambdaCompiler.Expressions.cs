@@ -23,9 +23,9 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        internal void EmitExpression(LabelScopeInfo labelBlock, Expression node)
+        internal void EmitExpression(Expression node)
         {
-            EmitExpression(labelBlock, node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitExpressionStart);
+            EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitExpressionStart);
         }
 
         private static Type GetMemberType(MemberInfo member)
@@ -100,7 +100,7 @@ namespace System.Linq.Expressions.Compiler
             return mi.DeclaringType?.IsValueType == false;
         }
 
-        private List<WriteBack>? EmitArguments(LabelScopeInfo labelBlock, MethodBase method, IArgumentProvider args, int skipParameters = 0)
+        private List<WriteBack>? EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters = 0)
         {
             var pis = method.GetParameters();
             Debug.Assert(args.ArgumentCount + skipParameters == pis.Length);
@@ -116,7 +116,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     type = type.GetElementType();
 
-                    var wb = EmitAddressWriteBack(labelBlock, argument, type);
+                    var wb = EmitAddressWriteBack(argument, type);
                     if (wb != null)
                     {
                         (writeBacks ??= new List<WriteBack>()).Add(wb);
@@ -124,27 +124,27 @@ namespace System.Linq.Expressions.Compiler
                 }
                 else
                 {
-                    EmitExpression(labelBlock, argument);
+                    EmitExpression(argument);
                 }
             }
 
             return writeBacks;
         }
 
-        private void EmitAssign(LabelScopeInfo labelBlock, AssignBinaryExpression node, CompilationFlags emitAs)
+        private void EmitAssign(AssignBinaryExpression node, CompilationFlags emitAs)
         {
             switch (node.Left.NodeType)
             {
                 case ExpressionType.Index:
-                    EmitIndexAssignment(labelBlock, node, emitAs);
+                    EmitIndexAssignment(node, emitAs);
                     return;
 
                 case ExpressionType.MemberAccess:
-                    EmitMemberAssignment(labelBlock, node, emitAs);
+                    EmitMemberAssignment(node, emitAs);
                     return;
 
                 case ExpressionType.Parameter:
-                    EmitVariableAssignment(labelBlock, node, emitAs);
+                    EmitVariableAssignment(node, emitAs);
                     return;
 
                 default:
@@ -152,25 +152,25 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitAssignBinaryExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitAssignBinaryExpression(Expression expr)
         {
-            EmitAssign(labelBlock, (AssignBinaryExpression)expr, CompilationFlags.EmitAsDefaultType);
+            EmitAssign((AssignBinaryExpression)expr, CompilationFlags.EmitAsDefaultType);
         }
 
-        private void EmitBinding(LabelScopeInfo labelBlock, MemberBinding binding, Type objectType)
+        private void EmitBinding(MemberBinding binding, Type objectType)
         {
             switch (binding.BindingType)
             {
                 case MemberBindingType.Assignment:
-                    EmitMemberAssignment(labelBlock, (MemberAssignment)binding, objectType);
+                    EmitMemberAssignment((MemberAssignment)binding, objectType);
                     break;
 
                 case MemberBindingType.ListBinding:
-                    EmitMemberListBinding(labelBlock, (MemberListBinding)binding);
+                    EmitMemberListBinding((MemberListBinding)binding);
                     break;
 
                 case MemberBindingType.MemberBinding:
-                    EmitMemberMemberBinding(labelBlock, (MemberMemberBinding)binding);
+                    EmitMemberMemberBinding((MemberMemberBinding)binding);
                     break;
 
                 default:
@@ -220,7 +220,7 @@ namespace System.Linq.Expressions.Compiler
             No.Op(expr);
         }
 
-        private void EmitDynamicExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitDynamicExpression(Expression expr)
         {
             if (!(_method is DynamicMethod))
             {
@@ -245,16 +245,16 @@ namespace System.Linq.Expressions.Compiler
             IL.Emit(OpCodes.Ldloc, siteTemp);
             FreeLocal(siteTemp);
 
-            var wb = EmitArguments(labelBlock, invoke, node, 1);
+            var wb = EmitArguments(invoke, node, 1);
             IL.Emit(OpCodes.Callvirt, invoke);
             EmitWriteBack(wb);
         }
 
-        private void EmitExpressionAsType(LabelScopeInfo labelBlock, Expression node, Type type, CompilationFlags flags)
+        private void EmitExpressionAsType(Expression node, Type type, CompilationFlags flags)
         {
             if (type == typeof(void))
             {
-                EmitExpressionAsVoid(labelBlock, node, flags);
+                EmitExpressionAsVoid(node, flags);
             }
             else
             {
@@ -262,43 +262,43 @@ namespace System.Linq.Expressions.Compiler
                 // should not emit with tail calls.
                 if (!TypeUtils.AreEquivalent(node.Type, type))
                 {
-                    EmitExpression(labelBlock, node);
+                    EmitExpression(node);
                     Debug.Assert(type.IsReferenceAssignableFromInternal(node.Type));
                     IL.Emit(OpCodes.Castclass, type);
                 }
                 else
                 {
                     // emit the node with the flags and emit expression start
-                    EmitExpression(labelBlock, node, UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart));
+                    EmitExpression(node, UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart));
                 }
             }
         }
 
-        private void EmitExpressionAsVoid(LabelScopeInfo labelBlock, Expression node, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitExpressionAsVoid(Expression node, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
-            var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, labelBlock, node);
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, _labelBlock, node);
             if (labelScopeChangeInfo.HasValue)
             {
-                labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
-                DefineBlockLabels(labelBlock, labelScopeChangeInfo.Value.nodes);
+                _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
+                DefineBlockLabels(labelScopeChangeInfo.Value.nodes);
             }
 
             switch (node.NodeType)
             {
                 case ExpressionType.Assign:
-                    EmitAssign(labelBlock, (AssignBinaryExpression)node, CompilationFlags.EmitAsVoidType);
+                    EmitAssign((AssignBinaryExpression)node, CompilationFlags.EmitAsVoidType);
                     break;
 
                 case ExpressionType.Block:
-                    Emit(labelBlock, (BlockExpression)node, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsVoidType));
+                    Emit((BlockExpression)node, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsVoidType));
                     break;
 
                 case ExpressionType.Throw:
-                    EmitThrow(labelBlock, (UnaryExpression)node, CompilationFlags.EmitAsVoidType);
+                    EmitThrow((UnaryExpression)node, CompilationFlags.EmitAsVoidType);
                     break;
 
                 case ExpressionType.Goto:
-                    EmitGotoExpression(labelBlock, node, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsVoidType));
+                    EmitGotoExpression(node, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsVoidType));
                     break;
 
                 case ExpressionType.Constant:
@@ -310,21 +310,21 @@ namespace System.Linq.Expressions.Compiler
                 default:
                     if (node.Type == typeof(void))
                     {
-                        EmitExpression(labelBlock, node, UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitNoExpressionStart));
+                        EmitExpression(node, UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitNoExpressionStart));
                     }
                     else
                     {
-                        EmitExpression(labelBlock, node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
+                        EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
                         IL.Emit(OpCodes.Pop);
                     }
 
                     break;
             }
 
-            // if (labelScopeChangeInfo.HasValue)
-            // {
-            //     labelBlock = labelScopeChangeInfo.Value.parent;
-            // }
+            if (labelScopeChangeInfo.HasValue)
+            {
+                _labelBlock = labelScopeChangeInfo.Value.parent;
+            }
         }
 
         private void EmitGetArrayElement(Type arrayType)
@@ -359,7 +359,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitIndexAssignment(LabelScopeInfo labelBlock, AssignBinaryExpression node, CompilationFlags flags)
+        private void EmitIndexAssignment(AssignBinaryExpression node, CompilationFlags flags)
         {
             Debug.Assert(!node.IsByRef);
 
@@ -371,7 +371,7 @@ namespace System.Linq.Expressions.Compiler
             Type? objectType = null;
             if (index.Object != null)
             {
-                EmitInstance(labelBlock, index.Object, out objectType);
+                EmitInstance(index.Object, out objectType);
             }
 
             // Emit indexes. We don't allow byref args, so no need to worry
@@ -379,11 +379,11 @@ namespace System.Linq.Expressions.Compiler
             for (int i = 0, n = index.ArgumentCount; i < n; i++)
             {
                 var arg = index.GetArgument(i);
-                EmitExpression(labelBlock, arg);
+                EmitExpression(arg);
             }
 
             // Emit value
-            EmitExpression(labelBlock, node.Right);
+            EmitExpression(node.Right);
 
             // Save the expression value, if needed
             LocalBuilder? temp = null;
@@ -405,7 +405,7 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(temp);
         }
 
-        private void EmitIndexExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitIndexExpression(Expression expr)
         {
             var node = (IndexExpression)expr;
 
@@ -413,7 +413,7 @@ namespace System.Linq.Expressions.Compiler
             Type? objectType = null;
             if (node.Object != null)
             {
-                EmitInstance(labelBlock, node.Object, out objectType);
+                EmitInstance(node.Object, out objectType);
             }
 
             // Emit indexes. We don't allow byref args, so no need to worry
@@ -421,13 +421,13 @@ namespace System.Linq.Expressions.Compiler
             for (int i = 0, n = node.ArgumentCount; i < n; i++)
             {
                 var arg = node.GetArgument(i);
-                EmitExpression(labelBlock, arg);
+                EmitExpression(arg);
             }
 
             EmitGetIndexCall(node, objectType);
         }
 
-        private void EmitInlinedInvoke(LabelScopeInfo labelBlock, InvocationExpression invoke, CompilationFlags flags)
+        private void EmitInlinedInvoke(InvocationExpression invoke, CompilationFlags flags)
         {
             var lambda = invoke.LambdaOperand;
 
@@ -436,7 +436,7 @@ namespace System.Linq.Expressions.Compiler
             // stack it is entirely doable.
 
             // 1. Emit invoke arguments
-            var wb = EmitArguments(labelBlock, lambda.Type.GetInvokeMethod(), invoke);
+            var wb = EmitArguments(lambda.Type.GetInvokeMethod(), invoke);
 
             // 2. Create the nested LambdaCompiler
             var inner = new LambdaCompiler(this, lambda, invoke);
@@ -450,13 +450,13 @@ namespace System.Linq.Expressions.Compiler
                 flags = UpdateEmitAsTailCallFlag(flags, CompilationFlags.EmitAsNoTail);
             }
 
-            inner.EmitLambdaBody(labelBlock, _scope, true, flags);
+            inner.EmitLambdaBody(_scope, true, flags);
 
             // 4. Emit writebacks if needed
             EmitWriteBack(wb);
         }
 
-        private void EmitInstance(LabelScopeInfo labelBlock, Expression instance, [NotNull] out Type type)
+        private void EmitInstance(Expression instance, [NotNull] out Type type)
         {
             type = instance.Type;
 
@@ -470,19 +470,19 @@ namespace System.Linq.Expressions.Compiler
 
                 Debug.Assert(instance.NodeType == ExpressionType.Parameter);
 
-                EmitExpression(labelBlock, instance);
+                EmitExpression(instance);
             }
             else if (type.IsValueType)
             {
-                EmitAddress(labelBlock, instance, type);
+                EmitAddress(instance, type);
             }
             else
             {
-                EmitExpression(labelBlock, instance);
+                EmitExpression(instance);
             }
         }
 
-        private void EmitInvocationExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
+        private void EmitInvocationExpression(Expression expr, CompilationFlags flags)
         {
             var node = (InvocationExpression)expr;
 
@@ -493,22 +493,22 @@ namespace System.Linq.Expressions.Compiler
             //
             if (node.LambdaOperand != null)
             {
-                EmitInlinedInvoke(labelBlock, node, flags);
+                EmitInlinedInvoke(node, flags);
                 return;
             }
 
             expr = node.Expression;
             Debug.Assert(!typeof(LambdaExpression).IsAssignableFrom(expr.Type));
-            EmitMethodCall(labelBlock, expr, expr.Type.GetInvokeMethod(), node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitExpressionStart);
+            EmitMethodCall(expr, expr.Type.GetInvokeMethod(), node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitExpressionStart);
         }
 
-        private void EmitLambdaExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitLambdaExpression(Expression expr)
         {
             var node = (LambdaExpression)expr;
-            EmitDelegateConstruction(labelBlock, node);
+            EmitDelegateConstruction(node);
         }
 
-        private void EmitLift(LabelScopeInfo labelBlock, ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
+        private void EmitLift(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
         {
             Debug.Assert(TypeUtils.AreEquivalent(resultType.GetNonNullable(), mc.Type.GetNonNullable()));
 
@@ -540,7 +540,7 @@ namespace System.Linq.Expressions.Compiler
                             _scope.AddLocal(this, v);
                             if (arg.Type.IsNullable())
                             {
-                                EmitAddress(labelBlock, arg, arg.Type);
+                                EmitAddress(arg, arg.Type);
                                 IL.Emit(OpCodes.Dup);
                                 IL.EmitHasValue(arg.Type);
                                 IL.Emit(OpCodes.Ldc_I4_0);
@@ -556,7 +556,7 @@ namespace System.Linq.Expressions.Compiler
                             }
                             else
                             {
-                                EmitExpression(labelBlock, arg);
+                                EmitExpression(arg);
                                 if (!arg.Type.IsValueType)
                                 {
                                     IL.Emit(OpCodes.Dup);
@@ -585,7 +585,7 @@ namespace System.Linq.Expressions.Compiler
                         IL.Emit(OpCodes.Ldloc, anyNull);
                         IL.Emit(OpCodes.Brtrue, exitAnyNull);
 
-                        EmitMethodCallExpression(labelBlock, mc);
+                        EmitMethodCallExpression(mc);
                         if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
                             var ci = resultType.GetConstructor(new[] { mc.Type });
@@ -618,7 +618,7 @@ namespace System.Linq.Expressions.Compiler
                             if (arg.Type.IsNullable())
                             {
                                 _scope.AddLocal(this, v);
-                                EmitAddress(labelBlock, arg, arg.Type);
+                                EmitAddress(arg, arg.Type);
                                 IL.Emit(OpCodes.Dup);
                                 IL.EmitHasValue(arg.Type);
                                 IL.Emit(OpCodes.Ldc_I4_0);
@@ -630,7 +630,7 @@ namespace System.Linq.Expressions.Compiler
                             else
                             {
                                 _scope.AddLocal(this, v);
-                                EmitExpression(labelBlock, arg);
+                                EmitExpression(arg);
                                 if (!arg.Type.IsValueType)
                                 {
                                     IL.Emit(OpCodes.Dup);
@@ -646,7 +646,7 @@ namespace System.Linq.Expressions.Compiler
                             IL.Emit(OpCodes.Brtrue, exitNull);
                         }
 
-                        EmitMethodCallExpression(labelBlock, mc);
+                        EmitMethodCallExpression(mc);
                         if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                         {
                             var ci = resultType.GetConstructor(new[] { mc.Type });
@@ -690,9 +690,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitListInit(LabelScopeInfo labelBlock, ListInitExpression init)
+        private void EmitListInit(ListInitExpression init)
         {
-            EmitExpression(labelBlock, init.NewExpression);
+            EmitExpression(init.NewExpression);
             LocalBuilder? loc = null;
             if (init.NewExpression.Type.IsValueType)
             {
@@ -701,7 +701,7 @@ namespace System.Linq.Expressions.Compiler
                 IL.Emit(OpCodes.Ldloca, loc);
             }
 
-            EmitListInit(labelBlock, init.Initializers, loc == null, init.NewExpression.Type);
+            EmitListInit(init.Initializers, loc == null, init.NewExpression.Type);
             if (loc == null)
             {
                 return;
@@ -713,7 +713,7 @@ namespace System.Linq.Expressions.Compiler
 
         // This method assumes that the list instance is on the stack and is expected, based on "keepOnStack" flag
         // to either leave the list instance on the stack, or pop it.
-        private void EmitListInit(LabelScopeInfo labelBlock, ReadOnlyCollection<ElementInit> initializers, bool keepOnStack, Type objectType)
+        private void EmitListInit(ReadOnlyCollection<ElementInit> initializers, bool keepOnStack, Type objectType)
         {
             var n = initializers.Count;
 
@@ -734,7 +734,7 @@ namespace System.Linq.Expressions.Compiler
                         IL.Emit(OpCodes.Dup);
                     }
 
-                    EmitMethodCall(labelBlock, initializers[i].AddMethod, initializers[i], objectType);
+                    EmitMethodCall(initializers[i].AddMethod, initializers[i], objectType);
 
                     // Some add methods, ArrayList.Add for example, return non-void
                     if (initializers[i].AddMethod.ReturnType != typeof(void))
@@ -745,12 +745,12 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitListInitExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitListInitExpression(Expression expr)
         {
-            EmitListInit(labelBlock, (ListInitExpression)expr);
+            EmitListInit((ListInitExpression)expr);
         }
 
-        private void EmitMemberAssignment(LabelScopeInfo labelBlock, AssignBinaryExpression node, CompilationFlags flags)
+        private void EmitMemberAssignment(AssignBinaryExpression node, CompilationFlags flags)
         {
             Debug.Assert(!node.IsByRef);
 
@@ -761,11 +761,11 @@ namespace System.Linq.Expressions.Compiler
             Type? objectType = null;
             if (lvalue.Expression != null)
             {
-                EmitInstance(labelBlock, lvalue.Expression, out objectType);
+                EmitInstance(lvalue.Expression, out objectType);
             }
 
             // emit value
-            EmitExpression(labelBlock, node.Right);
+            EmitExpression(node.Right);
 
             LocalBuilder? temp = null;
 
@@ -799,9 +799,9 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(temp);
         }
 
-        private void EmitMemberAssignment(LabelScopeInfo labelBlock, MemberAssignment binding, Type objectType)
+        private void EmitMemberAssignment(MemberAssignment binding, Type objectType)
         {
-            EmitExpression(labelBlock, binding.Expression);
+            EmitExpression(binding.Expression);
             if (binding.Member is FieldInfo fi)
             {
                 IL.Emit(OpCodes.Stfld, fi);
@@ -817,7 +817,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitMemberExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitMemberExpression(Expression expr)
         {
             var node = (MemberExpression)expr;
 
@@ -825,7 +825,7 @@ namespace System.Linq.Expressions.Compiler
             Type? instanceType = null;
             if (node.Expression != null)
             {
-                EmitInstance(labelBlock, node.Expression, out instanceType);
+                EmitInstance(node.Expression, out instanceType);
             }
 
             EmitMemberGet(node.Member, instanceType);
@@ -854,9 +854,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitMemberInit(LabelScopeInfo labelBlock, MemberInitExpression init)
+        private void EmitMemberInit(MemberInitExpression init)
         {
-            EmitExpression(labelBlock, init.NewExpression);
+            EmitExpression(init.NewExpression);
             LocalBuilder? loc = null;
             if (init.NewExpression.Type.IsValueType && init.Bindings.Count > 0)
             {
@@ -865,7 +865,7 @@ namespace System.Linq.Expressions.Compiler
                 IL.Emit(OpCodes.Ldloca, loc);
             }
 
-            EmitMemberInit(labelBlock, init.Bindings, loc == null, init.NewExpression.Type);
+            EmitMemberInit(init.Bindings, loc == null, init.NewExpression.Type);
             if (loc == null)
             {
                 return;
@@ -877,7 +877,7 @@ namespace System.Linq.Expressions.Compiler
 
         // This method assumes that the instance is on the stack and is expected, based on "keepOnStack" flag
         // to either leave the instance on the stack, or pop it.
-        private void EmitMemberInit(LabelScopeInfo labelBlock, ReadOnlyCollection<MemberBinding> bindings, bool keepOnStack, Type objectType)
+        private void EmitMemberInit(ReadOnlyCollection<MemberBinding> bindings, bool keepOnStack, Type objectType)
         {
             var n = bindings.Count;
             if (n == 0)
@@ -897,17 +897,17 @@ namespace System.Linq.Expressions.Compiler
                         IL.Emit(OpCodes.Dup);
                     }
 
-                    EmitBinding(labelBlock, bindings[i], objectType);
+                    EmitBinding(bindings[i], objectType);
                 }
             }
         }
 
-        private void EmitMemberInitExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitMemberInitExpression(Expression expr)
         {
-            EmitMemberInit(labelBlock, (MemberInitExpression)expr);
+            EmitMemberInit((MemberInitExpression)expr);
         }
 
-        private void EmitMemberListBinding(LabelScopeInfo labelBlock, MemberListBinding binding)
+        private void EmitMemberListBinding(MemberListBinding binding)
         {
             var type = GetMemberType(binding.Member);
             if (binding.Member is PropertyInfo && type.IsValueType)
@@ -924,10 +924,10 @@ namespace System.Linq.Expressions.Compiler
                 EmitMemberGet(binding.Member, binding.Member.DeclaringType);
             }
 
-            EmitListInit(labelBlock, binding.Initializers, false, type);
+            EmitListInit(binding.Initializers, false, type);
         }
 
-        private void EmitMemberMemberBinding(LabelScopeInfo labelBlock, MemberMemberBinding binding)
+        private void EmitMemberMemberBinding(MemberMemberBinding binding)
         {
             var type = GetMemberType(binding.Member);
             if (binding.Member is PropertyInfo && type.IsValueType)
@@ -944,10 +944,10 @@ namespace System.Linq.Expressions.Compiler
                 EmitMemberGet(binding.Member, binding.Member.DeclaringType);
             }
 
-            EmitMemberInit(labelBlock, binding.Bindings, false, type);
+            EmitMemberInit(binding.Bindings, false, type);
         }
 
-        private void EmitMethodCall(LabelScopeInfo labelBlock, Expression? obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitMethodCall(Expression? obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             // Emit instance, if calling an instance method
             Type? objectType = null;
@@ -957,28 +957,25 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw new ArgumentNullException(nameof(obj));
                 }
-                EmitInstance(labelBlock, obj, out objectType);
+                EmitInstance(obj, out objectType);
             }
 
             // if the obj has a value type, its address is passed to the method call so we cannot destroy the
             // stack by emitting a tail call
             if (obj?.Type.IsValueType == true)
             {
-                EmitMethodCall(labelBlock, method, methodCallExpr, objectType);
+                EmitMethodCall(method, methodCallExpr, objectType);
             }
             else
             {
-                EmitMethodCall(labelBlock, method, methodCallExpr, objectType, flags);
+                EmitMethodCall(method, methodCallExpr, objectType, flags);
             }
         }
 
-        // assumes 'object' of non-static call is already on stack
-
-        // assumes 'object' of non-static call is already on stack
-        private void EmitMethodCall(LabelScopeInfo labelBlock, MethodInfo mi, IArgumentProvider args, Type? objectType, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitMethodCall(MethodInfo mi, IArgumentProvider args, Type? objectType, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             // Emit arguments
-            var wb = EmitArguments(labelBlock, mi, args);
+            var wb = EmitArguments(mi, args);
 
             // Emit the actual call
             var callOp = UseVirtual(mi) ? OpCodes.Callvirt : OpCodes.Call;
@@ -1019,14 +1016,14 @@ namespace System.Linq.Expressions.Compiler
             EmitWriteBack(wb);
         }
 
-        private void EmitMethodCallExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitMethodCallExpression(Expression expr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             var node = (MethodCallExpression)expr;
 
-            EmitMethodCall(labelBlock, node.Object, node.Method, node, flags);
+            EmitMethodCall(node.Object, node.Method, node, flags);
         }
 
-        private void EmitNewArrayExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitNewArrayExpression(Expression expr)
         {
             var node = (NewArrayExpression)expr;
 
@@ -1043,7 +1040,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     IL.Emit(OpCodes.Dup);
                     IL.EmitPrimitive(i);
-                    EmitExpression(labelBlock, expressions[i]);
+                    EmitExpression(expressions[i]);
                     IL.EmitStoreElement(elementType);
                 }
             }
@@ -1052,7 +1049,7 @@ namespace System.Linq.Expressions.Compiler
                 for (var i = 0; i < n; i++)
                 {
                     var x = expressions[i];
-                    EmitExpression(labelBlock, x);
+                    EmitExpression(x);
                     IL.EmitConvertToType(x.Type, typeof(int), true, this);
                 }
 
@@ -1060,7 +1057,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitNewExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitNewExpression(Expression expr)
         {
             var node = (NewExpression)expr;
 
@@ -1071,7 +1068,7 @@ namespace System.Linq.Expressions.Compiler
                     throw new InvalidOperationException("Can't compile a NewExpression with a constructor declared on an abstract class");
                 }
 
-                var wb = EmitArguments(labelBlock, node.Constructor, node);
+                var wb = EmitArguments(node.Constructor, node);
                 IL.Emit(OpCodes.Newobj, node.Constructor);
                 EmitWriteBack(wb);
             }
@@ -1135,13 +1132,13 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitTypeBinaryExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitTypeBinaryExpression(Expression expr)
         {
             var node = (TypeBinaryExpression)expr;
 
             if (node.NodeType == ExpressionType.TypeEqual)
             {
-                EmitExpression(labelBlock, node.ReduceTypeEqual());
+                EmitExpression(node.ReduceTypeEqual());
                 return;
             }
 
@@ -1156,18 +1153,18 @@ namespace System.Linq.Expressions.Compiler
                 case AnalyzeTypeIsResult.KnownFalse:
                     // Result is known statically, so just emit the expression for
                     // its side effects and return the result
-                    EmitExpressionAsVoid(labelBlock, node.Expression);
+                    EmitExpressionAsVoid(node.Expression);
                     IL.EmitPrimitive(result == AnalyzeTypeIsResult.KnownTrue);
                     return;
 
                 case AnalyzeTypeIsResult.KnownAssignable when type.IsNullable():
-                    EmitAddress(labelBlock, node.Expression, type);
+                    EmitAddress(node.Expression, type);
                     IL.EmitHasValue(type);
                     return;
 
                 case AnalyzeTypeIsResult.KnownAssignable:
                     Debug.Assert(!type.IsValueType);
-                    EmitExpression(labelBlock, node.Expression);
+                    EmitExpression(node.Expression);
                     IL.Emit(OpCodes.Ldnull);
                     IL.Emit(OpCodes.Cgt_Un);
                     return;
@@ -1179,7 +1176,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(result == AnalyzeTypeIsResult.Unknown);
 
             // Emit a full runtime "isinst" check
-            EmitExpression(labelBlock, node.Expression);
+            EmitExpression(node.Expression);
             if (type.IsValueType)
             {
                 IL.Emit(OpCodes.Box, type);
@@ -1190,18 +1187,18 @@ namespace System.Linq.Expressions.Compiler
             IL.Emit(OpCodes.Cgt_Un);
         }
 
-        private void EmitVariableAssignment(LabelScopeInfo labelBlock, AssignBinaryExpression node, CompilationFlags flags)
+        private void EmitVariableAssignment(AssignBinaryExpression node, CompilationFlags flags)
         {
             var variable = (ParameterExpression)node.Left;
             var emitAs = flags & CompilationFlags.EmitAsTypeMask;
 
             if (node.IsByRef)
             {
-                EmitAddress(labelBlock, node.Right, node.Right.Type);
+                EmitAddress(node.Right, node.Right.Type);
             }
             else
             {
-                EmitExpression(labelBlock, node.Right);
+                EmitExpression(node.Right);
             }
 
             if (emitAs != CompilationFlags.EmitAsVoidType)

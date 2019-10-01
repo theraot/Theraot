@@ -59,18 +59,18 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void DefineBlockLabels(LabelScopeInfo labelBlock, IList<Expression>? nodes)
+        private void DefineBlockLabels(IList<Expression>? nodes)
         {
             if (nodes != null)
             {
                 foreach (var node in nodes)
                 {
-                    DefineBlockLabels(labelBlock, node);
+                    DefineBlockLabels(node);
                 }
             }
         }
 
-        private void DefineBlockLabels(LabelScopeInfo labelBlock, Expression node)
+        private void DefineBlockLabels(Expression node)
         {
             if (!(node is BlockExpression block) || block is SpilledExpressionBlock)
             {
@@ -83,12 +83,12 @@ namespace System.Linq.Expressions.Compiler
 
                 if (e is LabelExpression label)
                 {
-                    DefineLabel(labelBlock, label.Target);
+                    DefineLabel(label.Target);
                 }
             }
         }
 
-        private LabelInfo DefineLabel(LabelScopeInfo labelBlock, LabelTarget node)
+        private LabelInfo DefineLabel(LabelTarget node)
         {
             if (node == null)
             {
@@ -96,14 +96,14 @@ namespace System.Linq.Expressions.Compiler
             }
 
             var result = EnsureLabel(node);
-            result.Define(labelBlock);
+            result.Define(_labelBlock);
             return result;
         }
 
-        private void EmitGotoExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
+        private void EmitGotoExpression(Expression expr, CompilationFlags flags)
         {
             var node = (GotoExpression)expr;
-            var labelInfo = ReferenceLabel(labelBlock, node.Target);
+            var labelInfo = ReferenceLabel(node.Target);
 
             var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
             if (tailCall != CompilationFlags.EmitAsNoTail)
@@ -120,12 +120,12 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (node.Target.Type == typeof(void))
                 {
-                    EmitExpressionAsVoid(labelBlock, node.Value, flags);
+                    EmitExpressionAsVoid(node.Value, flags);
                 }
                 else
                 {
                     flags = UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart);
-                    EmitExpression(labelBlock, node.Value, flags);
+                    EmitExpression(node.Value, flags);
                 }
             }
 
@@ -134,7 +134,7 @@ namespace System.Linq.Expressions.Compiler
             EmitUnreachable(node, flags);
         }
 
-        private void EmitLabelExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
+        private void EmitLabelExpression(Expression expr, CompilationFlags flags)
         {
             var node = (LabelExpression)expr;
 
@@ -143,14 +143,14 @@ namespace System.Linq.Expressions.Compiler
             // label isn't exposed except to its own child expression.
             LabelInfo? label = null;
 
-            if (labelBlock.Kind == LabelScopeKind.Block)
+            if (_labelBlock.Kind == LabelScopeKind.Block)
             {
-                labelBlock.TryGetLabelInfo(node.Target, out label);
+                _labelBlock.TryGetLabelInfo(node.Target, out label);
 
                 // We're in a block but didn't find our label, try switch
-                if (label == null && labelBlock.Parent?.Kind == LabelScopeKind.Switch)
+                if (label == null && _labelBlock.Parent?.Kind == LabelScopeKind.Switch)
                 {
-                    labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
+                    _labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
                 }
 
                 // if we're in a switch or block, we should've found the label
@@ -159,19 +159,19 @@ namespace System.Linq.Expressions.Compiler
 
             if (label == null)
             {
-                label = DefineLabel(labelBlock, node.Target);
+                label = DefineLabel(node.Target);
             }
 
             if (node.DefaultValue != null)
             {
                 if (node.Target.Type == typeof(void))
                 {
-                    EmitExpressionAsVoid(labelBlock, node.DefaultValue, flags);
+                    EmitExpressionAsVoid(node.DefaultValue, flags);
                 }
                 else
                 {
                     flags = UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart);
-                    EmitExpression(labelBlock, node.DefaultValue, flags);
+                    EmitExpression(node.DefaultValue, flags);
                 }
             }
 
@@ -200,10 +200,10 @@ namespace System.Linq.Expressions.Compiler
             return result;
         }
 
-        private LabelInfo ReferenceLabel(LabelScopeInfo labelBlock, LabelTarget node)
+        private LabelInfo ReferenceLabel(LabelTarget node)
         {
             var result = EnsureLabel(node);
-            result.Reference(labelBlock);
+            result.Reference(_labelBlock);
             return result;
         }
 

@@ -44,6 +44,9 @@ namespace System.Linq.Expressions.Compiler
         // The TypeBuilder backing this method, if any
         private readonly TypeBuilder? _typeBuilder;
 
+        // Currently active LabelTargets and their mapping to IL labels
+        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+
         // The currently active variable scope
         private CompilerScope _scope;
 
@@ -157,8 +160,7 @@ namespace System.Linq.Expressions.Compiler
             var c = new LambdaCompiler(tree, lambda);
 
             // 3. Emit
-            var labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
-            c.EmitLambdaBody(labelBlock);
+            c.EmitLambdaBody();
 
             // 4. Return the delegate.
             return c.CreateDelegate();
@@ -173,8 +175,7 @@ namespace System.Linq.Expressions.Compiler
             var c = new LambdaCompiler(tree, lambda, method);
 
             // 3. Emit
-            var labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
-            c.EmitLambdaBody(labelBlock);
+            c.EmitLambdaBody();
         }
 
         internal void EmitClosureArgument()

@@ -2,6 +2,7 @@
 
 #pragma warning disable CC0091 // Use static method
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -96,7 +97,7 @@ namespace System.Collections.Generic
             _wrapped.Clear();
         }
 
-        public bool Contains(T item)
+        public bool Contains([AllowNull] T item)
         {
             // item can be null
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -244,7 +245,7 @@ namespace System.Collections.Generic
             return other.Any(item => _wrapped.ContainsKey(item));
         }
 
-        public bool Remove(T item)
+        public bool Remove([AllowNull] T item)
         {
             // item can be null
             // ReSharper disable once AssignNullToNotNullAttribute

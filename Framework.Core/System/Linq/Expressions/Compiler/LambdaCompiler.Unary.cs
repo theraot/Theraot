@@ -37,7 +37,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitConvert(LabelScopeInfo labelBlock, UnaryExpression node, CompilationFlags flags)
+        private void EmitConvert(UnaryExpression node, CompilationFlags flags)
         {
             if (node.Method != null)
             {
@@ -76,33 +76,33 @@ namespace System.Linq.Expressions.Compiler
                 }
                 else
                 {
-                    EmitUnaryMethod(labelBlock, node, flags);
+                    EmitUnaryMethod(node, flags);
                     return;
                 }
             }
 
             if (node.Type == typeof(void))
             {
-                EmitExpressionAsVoid(labelBlock, node.Operand, flags);
+                EmitExpressionAsVoid(node.Operand, flags);
             }
             else
             {
                 if (TypeUtils.AreEquivalent(node.Operand.Type, node.Type))
                 {
-                    EmitExpression(labelBlock, node.Operand, flags);
+                    EmitExpression(node.Operand, flags);
                 }
                 else
                 {
                     // A conversion is emitted after emitting the operand, no tail call is emitted
-                    EmitExpression(labelBlock, node.Operand);
+                    EmitExpression(node.Operand);
                     IL.EmitConvertToType(node.Operand.Type, node.Type, node.NodeType == ExpressionType.ConvertChecked, this);
                 }
             }
         }
 
-        private void EmitConvertUnaryExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
+        private void EmitConvertUnaryExpression(Expression expr, CompilationFlags flags)
         {
-            EmitConvert(labelBlock, (UnaryExpression)expr, flags);
+            EmitConvert((UnaryExpression)expr, flags);
         }
 
         private void EmitQuote(UnaryExpression quote)
@@ -131,33 +131,33 @@ namespace System.Linq.Expressions.Compiler
             EmitQuote((UnaryExpression)expr);
         }
 
-        private void EmitThrow(LabelScopeInfo labelBlock, UnaryExpression expr, CompilationFlags flags)
+        private void EmitThrow(UnaryExpression expr, CompilationFlags flags)
         {
             if (expr.Operand == null)
             {
-                CheckRethrow(labelBlock);
+                CheckRethrow(_labelBlock);
 
                 IL.Emit(OpCodes.Rethrow);
             }
             else
             {
-                EmitExpression(labelBlock, expr.Operand);
+                EmitExpression(expr.Operand);
                 IL.Emit(OpCodes.Throw);
             }
 
             EmitUnreachable(expr, flags);
         }
 
-        private void EmitThrowUnaryExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitThrowUnaryExpression(Expression expr)
         {
-            EmitThrow(labelBlock, (UnaryExpression)expr, CompilationFlags.EmitAsDefaultType);
+            EmitThrow((UnaryExpression)expr, CompilationFlags.EmitAsDefaultType);
         }
 
-        private void EmitUnary(LabelScopeInfo labelBlock, UnaryExpression node, CompilationFlags flags)
+        private void EmitUnary(UnaryExpression node, CompilationFlags flags)
         {
             if (node.Method != null)
             {
-                EmitUnaryMethod(labelBlock, node, flags);
+                EmitUnaryMethod(node, flags);
             }
             else if (node.NodeType == ExpressionType.NegateChecked && node.Operand.Type.IsInteger())
             {
@@ -167,7 +167,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     var nullOrZero = IL.DefineLabel();
                     var end = IL.DefineLabel();
-                    EmitExpression(labelBlock, node.Operand);
+                    EmitExpression(node.Operand);
                     var loc = GetLocal(type);
 
                     // check for null or zero
@@ -178,7 +178,7 @@ namespace System.Linq.Expressions.Compiler
 
                     // calculate 0 - operand
                     var nnType = type.GetNonNullable();
-                    IL.EmitDefault(nnType, null); // locals won't be used.
+                    IL.EmitDefault(nnType);
                     IL.Emit(OpCodes.Ldloca, loc);
                     IL.EmitGetValueOrDefault(type);
                     EmitBinaryOperator(ExpressionType.SubtractChecked, nnType, nnType, nnType, false);
@@ -196,24 +196,24 @@ namespace System.Linq.Expressions.Compiler
                 }
                 else
                 {
-                    IL.EmitDefault(type, null); // locals won't be used.
-                    EmitExpression(labelBlock, node.Operand);
+                    IL.EmitDefault(type);
+                    EmitExpression(node.Operand);
                     EmitBinaryOperator(ExpressionType.SubtractChecked, type, type, type, false);
                 }
             }
             else
             {
-                EmitExpression(labelBlock, node.Operand);
+                EmitExpression(node.Operand);
                 EmitUnaryOperator(node.NodeType, node.Operand.Type, node.Type);
             }
         }
 
-        private void EmitUnaryExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
+        private void EmitUnaryExpression(Expression expr, CompilationFlags flags)
         {
-            EmitUnary(labelBlock, (UnaryExpression)expr, flags);
+            EmitUnary((UnaryExpression)expr, flags);
         }
 
-        private void EmitUnaryMethod(LabelScopeInfo labelBlock, UnaryExpression node, CompilationFlags flags)
+        private void EmitUnaryMethod(UnaryExpression node, CompilationFlags flags)
         {
             if (node.IsLifted)
             {
@@ -221,12 +221,12 @@ namespace System.Linq.Expressions.Compiler
                 var mc = Expression.Call(node.Method, v);
 
                 var resultType = mc.Type.GetNullable();
-                EmitLift(labelBlock, node.NodeType, resultType, mc, new[] { v }, new[] { node.Operand });
+                EmitLift(node.NodeType, resultType, mc, new[] { v }, new[] { node.Operand });
                 IL.EmitConvertToType(resultType, node.Type, false, this);
             }
             else
             {
-                EmitMethodCallExpression(labelBlock, Expression.Call(node.Method, node.Operand), flags);
+                EmitMethodCallExpression(Expression.Call(node.Method, node.Operand), flags);
             }
         }
 
@@ -376,13 +376,13 @@ namespace System.Linq.Expressions.Compiler
             EmitConvertArithmeticResult(op, resultType);
         }
 
-        private void EmitUnboxUnaryExpression(LabelScopeInfo labelBlock, Expression expr)
+        private void EmitUnboxUnaryExpression(Expression expr)
         {
             var node = (UnaryExpression)expr;
             Debug.Assert(node.Type.IsValueType);
 
             // Unbox_Any leaves the value on the stack
-            EmitExpression(labelBlock, node.Operand);
+            EmitExpression(node.Operand);
             IL.Emit(OpCodes.Unbox_Any, node.Type);
         }
     }

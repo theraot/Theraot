@@ -203,6 +203,57 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
+        internal static void EmitDefault(this ILGenerator il, Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.DateTime:
+                    il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DateTimeMinValue);
+                    break;
+
+                case TypeCode.Object:
+                    throw new ArgumentOutOfRangeException(nameof(type));
+
+                case TypeCode.Empty:
+                case TypeCode.String:
+                case TypeCode.DBNull:
+                    il.Emit(OpCodes.Ldnull);
+                    break;
+
+                case TypeCode.Boolean:
+                case TypeCode.Char:
+                case TypeCode.SByte:
+                case TypeCode.Byte:
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    break;
+
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Conv_I8);
+                    break;
+
+                case TypeCode.Single:
+                    il.Emit(OpCodes.Ldc_R4, default(float));
+                    break;
+
+                case TypeCode.Double:
+                    il.Emit(OpCodes.Ldc_R8, default(double));
+                    break;
+
+                case TypeCode.Decimal:
+                    il.Emit(OpCodes.Ldsfld, CachedReflectionInfo.DecimalZero);
+                    break;
+
+                default:
+                    throw ContractUtils.Unreachable;
+            }
+        }
+
         internal static void EmitFieldAddress(this ILGenerator il, FieldInfo fi)
         {
             il.Emit(fi.IsStatic ? OpCodes.Ldsflda : OpCodes.Ldflda, fi);
