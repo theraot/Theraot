@@ -13,7 +13,7 @@ namespace Theraot.Collections
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static T[] AsArray<T>([MaybeNull] this IEnumerable<T>? source)
+        public static T[] AsArray<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -39,7 +39,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static ICollection<T> AsDistinctICollection<T>([MaybeNull] this IEnumerable<T>? source)
+        public static ICollection<T> AsDistinctICollection<T>(this IEnumerable<T>? source)
         {
 #if NET35
             switch (source)
@@ -65,7 +65,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static ICollection<T> AsDistinctICollection<T>([MaybeNull] this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
+        public static ICollection<T> AsDistinctICollection<T>(this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
         {
             comparer ??= EqualityComparer<T>.Default;
 #if NET35
@@ -90,7 +90,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static ICollection<T> AsICollection<T>([MaybeNull] this IEnumerable<T>? source)
+        public static ICollection<T> AsICollection<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -107,7 +107,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IList<T> AsIList<T>([MaybeNull] this IEnumerable<T>? source)
+        public static IList<T> AsIList<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -133,7 +133,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IReadOnlyCollection<T> AsIReadOnlyCollection<T>([MaybeNull] this IEnumerable<T>? source)
+        public static IReadOnlyCollection<T> AsIReadOnlyCollection<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -150,7 +150,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IReadOnlyCollection<T> AsIReadOnlyList<T>([MaybeNull] this IEnumerable<T>? source)
+        public static IReadOnlyCollection<T> AsIReadOnlyList<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -167,7 +167,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static ISet<T> AsISet<T>([MaybeNull] this IEnumerable<T>? source)
+        public static ISet<T> AsISet<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -184,7 +184,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static ISet<T> AsISet<T>([MaybeNull] this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
+        public static ISet<T> AsISet<T>(this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
         {
             comparer ??= EqualityComparer<T>.Default;
             switch (source)
@@ -210,7 +210,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static List<T> AsList<T>([MaybeNull] this IEnumerable<T>? source)
+        public static List<T> AsList<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -239,13 +239,13 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IEnumerable<T> AsUnaryIEnumerable<T>([MaybeNull] this T source)
+        public static IEnumerable<T> AsUnaryIEnumerable<T>([AllowNull] this T source)
         {
             yield return source;
         }
 
         [return: NotNull]
-        public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>([MaybeNull] this IEnumerable<T>? enumerable)
+        public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T>? enumerable)
         {
             switch (enumerable)
             {
@@ -362,7 +362,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        internal static T[] AsArrayInternal<T>([MaybeNull] this IEnumerable<T>? source)
+        internal static T[] AsArrayInternal<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
@@ -461,7 +461,7 @@ namespace Theraot.Collections
         }
 
         [return: NotNull]
-        public static IEnumerable<T> Skip<T>([NotNull] this IEnumerable<T> source, [MaybeNull] Predicate<T>? predicateCount, int skipCount)
+        public static IEnumerable<T> Skip<T>([NotNull] this IEnumerable<T> source, Predicate<T>? predicateCount, int skipCount)
         {
             if (source == null)
             {
@@ -500,7 +500,7 @@ namespace Theraot.Collections
         }
 
         [return: NotNull]
-        public static IEnumerable<T> Take<T>([NotNull] this IEnumerable<T> source, [MaybeNull] Predicate<T>? predicateCount, int takeCount)
+        public static IEnumerable<T> Take<T>([NotNull] this IEnumerable<T> source, Predicate<T>? predicateCount, int takeCount)
         {
             if (source == null)
             {

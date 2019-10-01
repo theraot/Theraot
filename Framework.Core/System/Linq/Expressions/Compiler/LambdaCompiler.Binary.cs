@@ -12,7 +12,7 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        private void EmitBinaryExpression(Expression expr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitBinaryExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             var b = (BinaryExpression)expr;
 
@@ -20,7 +20,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (b.Method != null)
             {
-                EmitBinaryMethod(b, flags);
+                EmitBinaryMethod(labelBlock, b, flags);
                 return;
             }
 
@@ -39,32 +39,32 @@ namespace System.Linq.Expressions.Compiler
                 Debug.Assert(!b.IsLiftedToNull || b.Type == typeof(bool?));
                 if (ConstantCheck.IsNull(b.Left) && !ConstantCheck.IsNull(b.Right) && b.Right.Type.IsNullable())
                 {
-                    EmitNullEquality(b.NodeType, b.Right, b.IsLiftedToNull);
+                    EmitNullEquality(labelBlock, b.NodeType, b.Right, b.IsLiftedToNull);
                     return;
                 }
 
                 if (ConstantCheck.IsNull(b.Right) && !ConstantCheck.IsNull(b.Left) && b.Left.Type.IsNullable())
                 {
-                    EmitNullEquality(b.NodeType, b.Left, b.IsLiftedToNull);
+                    EmitNullEquality(labelBlock, b.NodeType, b.Left, b.IsLiftedToNull);
                     return;
                 }
 
                 // For EQ and NE, we can avoid some conversions if we're
                 // ultimately just comparing two managed pointers.
-                EmitExpression(GetEqualityOperand(b.Left));
-                EmitExpression(GetEqualityOperand(b.Right));
+                EmitExpression(labelBlock, GetEqualityOperand(b.Left));
+                EmitExpression(labelBlock, GetEqualityOperand(b.Right));
             }
             else
             {
                 // Otherwise generate it normally
-                EmitExpression(b.Left);
-                EmitExpression(b.Right);
+                EmitExpression(labelBlock, b.Left);
+                EmitExpression(labelBlock, b.Right);
             }
 
             EmitBinaryOperator(b.NodeType, b.Left.Type, b.Right.Type, b.Type, b.IsLiftedToNull);
         }
 
-        private void EmitBinaryMethod(BinaryExpression b, CompilationFlags flags)
+        private void EmitBinaryMethod(LabelScopeInfo labelBlock, BinaryExpression b, CompilationFlags flags)
         {
             if (b.IsLifted)
             {
@@ -94,11 +94,11 @@ namespace System.Linq.Expressions.Compiler
 
                 Debug.Assert(p1.Type.IsReferenceAssignableFromInternal(b.Left.Type.GetNonNullable()));
                 Debug.Assert(p2.Type.IsReferenceAssignableFromInternal(b.Right.Type.GetNonNullable()));
-                EmitLift(b.NodeType, resultType, mc, new[] { p1, p2 }, new[] { b.Left, b.Right });
+                EmitLift(labelBlock, b.NodeType, resultType, mc, new[] { p1, p2 }, new[] { b.Left, b.Right });
             }
             else
             {
-                EmitMethodCallExpression(Expression.Call(null, b.Method!, b.Left, b.Right), flags);
+                EmitMethodCallExpression(labelBlock, Expression.Call(null, b.Method!, b.Left, b.Right), flags);
             }
         }
 
@@ -435,7 +435,7 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(end);
         }
 
-        private void EmitNullEquality(ExpressionType op, Expression e, bool isLiftedToNull)
+        private void EmitNullEquality(LabelScopeInfo labelBlock, ExpressionType op, Expression e, bool isLiftedToNull)
         {
             Debug.Assert(e.Type.IsNullable());
             Debug.Assert(op == ExpressionType.Equal || op == ExpressionType.NotEqual);
@@ -443,12 +443,12 @@ namespace System.Linq.Expressions.Compiler
             // and generate null.  If we are not lifted to null then generate a call to HasValue.
             if (isLiftedToNull)
             {
-                EmitExpressionAsVoid(e);
+                EmitExpressionAsVoid(labelBlock, e);
                 IL.EmitDefault(typeof(bool?), this);
             }
             else
             {
-                EmitAddress(e, e.Type);
+                EmitAddress(labelBlock, e, e.Type);
                 IL.EmitHasValue(e.Type);
                 if (op != ExpressionType.Equal)
                 {

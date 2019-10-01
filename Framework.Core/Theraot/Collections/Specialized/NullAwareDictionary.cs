@@ -136,7 +136,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public void Add([AllowNull][MaybeNull] TKey key, TValue value)
+        public void Add([AllowNull] TKey key, TValue value)
         {
             // key could  be null
             if (key == null)
@@ -191,7 +191,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public bool ContainsKey([AllowNull][MaybeNull] TKey key)
+        public bool ContainsKey([AllowNull] TKey key)
         {
             // key could  be null
             return key == null ? _hasNull : _wrapped.ContainsKey(key);
@@ -269,7 +269,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public bool TryGetValue([AllowNull][MaybeNull] TKey key, [MaybeNullWhen(false)] out TValue value)
+        public bool TryGetValue([AllowNull] TKey key, [MaybeNullWhen(false)] out TValue value)
         {
             // key can be null
             if (key != null)

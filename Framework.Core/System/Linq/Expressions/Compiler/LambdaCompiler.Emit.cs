@@ -29,20 +29,25 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitExpression(Expression node, CompilationFlags flags)
+        private void EmitExpression(LabelScopeInfo labelBlock, Expression node, CompilationFlags flags)
         {
             // When compiling deep trees, we run the risk of triggering a terminating StackOverflowException,
             // so we use the StackGuard utility here to probe for sufficient stack and continue the work on
             // another thread when we run out of stack space.
             if (!_guard.TryEnterOnCurrentStack())
             {
-                _guard.RunOnEmptyStack((@this, n, f) => @this.EmitExpression(n, f), this, node, flags);
+                _guard.RunOnEmptyStack((@this, n, f) => @this.EmitExpression(labelBlock, n, f), this, node, flags);
                 return;
             }
 
             var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(emitStart, labelBlock, node);
+            if (labelScopeChangeInfo.HasValue)
+            {
+                labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
+                DefineBlockLabels(labelBlock, labelScopeChangeInfo.Value.nodes);
+            }
 
-            var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
             // only pass tail call flags to emit the expression
             flags &= CompilationFlags.EmitAsTailCallMask;
 
@@ -69,23 +74,23 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.RightShift:
                 case ExpressionType.Subtract:
                 case ExpressionType.SubtractChecked:
-                    EmitBinaryExpression(node, flags);
+                    EmitBinaryExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.AndAlso:
-                    EmitAndAlsoBinaryExpression(node, flags);
+                    EmitAndAlsoBinaryExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.OrElse:
-                    EmitOrElseBinaryExpression(node, flags);
+                    EmitOrElseBinaryExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Coalesce:
-                    EmitCoalesceBinaryExpression(node);
+                    EmitCoalesceBinaryExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Assign:
-                    EmitAssignBinaryExpression(node);
+                    EmitAssignBinaryExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.ArrayLength:
@@ -99,12 +104,12 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.OnesComplement:
                 case ExpressionType.TypeAs:
                 case ExpressionType.UnaryPlus:
-                    EmitUnaryExpression(node, flags);
+                    EmitUnaryExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Convert:
                 case ExpressionType.ConvertChecked:
-                    EmitConvertUnaryExpression(node, flags);
+                    EmitConvertUnaryExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Quote:
@@ -112,19 +117,19 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.Throw:
-                    EmitThrowUnaryExpression(node);
+                    EmitThrowUnaryExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Unbox:
-                    EmitUnboxUnaryExpression(node);
+                    EmitUnboxUnaryExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Call:
-                    EmitMethodCallExpression(node, flags);
+                    EmitMethodCallExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Conditional:
-                    EmitConditionalExpression(node, flags);
+                    EmitConditionalExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Constant:
@@ -132,32 +137,32 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.Invoke:
-                    EmitInvocationExpression(node, flags);
+                    EmitInvocationExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Lambda:
-                    EmitLambdaExpression(node);
+                    EmitLambdaExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.ListInit:
-                    EmitListInitExpression(node);
+                    EmitListInitExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.MemberAccess:
-                    EmitMemberExpression(node);
+                    EmitMemberExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.MemberInit:
-                    EmitMemberInitExpression(node);
+                    EmitMemberInitExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.New:
-                    EmitNewExpression(node);
+                    EmitNewExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
-                    EmitNewArrayExpression(node);
+                    EmitNewArrayExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Parameter:
@@ -166,11 +171,11 @@ namespace System.Linq.Expressions.Compiler
 
                 case ExpressionType.TypeEqual:
                 case ExpressionType.TypeIs:
-                    EmitTypeBinaryExpression(node);
+                    EmitTypeBinaryExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Block:
-                    EmitBlockExpression(node, flags);
+                    EmitBlockExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.DebugInfo:
@@ -178,7 +183,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.Dynamic:
-                    EmitDynamicExpression(node);
+                    EmitDynamicExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Default:
@@ -186,15 +191,15 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.Goto:
-                    EmitGotoExpression(node, flags);
+                    EmitGotoExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Index:
-                    EmitIndexExpression(node);
+                    EmitIndexExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Label:
-                    EmitLabelExpression(node, flags);
+                    EmitLabelExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.RuntimeVariables:
@@ -202,25 +207,25 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.Loop:
-                    EmitLoopExpression(node);
+                    EmitLoopExpression(labelBlock, node);
                     break;
 
                 case ExpressionType.Switch:
-                    EmitSwitchExpression(node, flags);
+                    EmitSwitchExpression(labelBlock, node, flags);
                     break;
 
                 case ExpressionType.Try:
-                    EmitTryExpression(node);
+                    EmitTryExpression(labelBlock, node);
                     break;
 
                 default:
                     break;
             }
 
-            if (emitStart)
-            {
-                EmitExpressionEnd(startEmitted);
-            }
+            // if (labelScopeChangeInfo.HasValue)
+            // {
+            //     labelBlock = labelScopeChangeInfo.Value.parent;
+            // }
         }
     }
 }

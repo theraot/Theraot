@@ -3,9 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic.Utils;
-using Theraot;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -59,7 +59,18 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void DefineBlockLabels(Expression node)
+        private void DefineBlockLabels(LabelScopeInfo labelBlock, IList<Expression>? nodes)
+        {
+            if (nodes != null)
+            {
+                foreach (var node in nodes)
+                {
+                    DefineBlockLabels(labelBlock, node);
+                }
+            }
+        }
+
+        private void DefineBlockLabels(LabelScopeInfo labelBlock, Expression node)
         {
             if (!(node is BlockExpression block) || block is SpilledExpressionBlock)
             {
@@ -72,12 +83,12 @@ namespace System.Linq.Expressions.Compiler
 
                 if (e is LabelExpression label)
                 {
-                    DefineLabel(label.Target);
+                    DefineLabel(labelBlock, label.Target);
                 }
             }
         }
 
-        private LabelInfo DefineLabel(LabelTarget node)
+        private LabelInfo DefineLabel(LabelScopeInfo labelBlock, LabelTarget node)
         {
             if (node == null)
             {
@@ -85,14 +96,14 @@ namespace System.Linq.Expressions.Compiler
             }
 
             var result = EnsureLabel(node);
-            result.Define(_labelBlock);
+            result.Define(labelBlock);
             return result;
         }
 
-        private void EmitGotoExpression(Expression expr, CompilationFlags flags)
+        private void EmitGotoExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
         {
             var node = (GotoExpression)expr;
-            var labelInfo = ReferenceLabel(node.Target);
+            var labelInfo = ReferenceLabel(labelBlock, node.Target);
 
             var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
             if (tailCall != CompilationFlags.EmitAsNoTail)
@@ -109,12 +120,12 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (node.Target.Type == typeof(void))
                 {
-                    EmitExpressionAsVoid(node.Value, flags);
+                    EmitExpressionAsVoid(labelBlock, node.Value, flags);
                 }
                 else
                 {
                     flags = UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart);
-                    EmitExpression(node.Value, flags);
+                    EmitExpression(labelBlock, node.Value, flags);
                 }
             }
 
@@ -123,7 +134,7 @@ namespace System.Linq.Expressions.Compiler
             EmitUnreachable(node, flags);
         }
 
-        private void EmitLabelExpression(Expression expr, CompilationFlags flags)
+        private void EmitLabelExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
         {
             var node = (LabelExpression)expr;
 
@@ -132,14 +143,14 @@ namespace System.Linq.Expressions.Compiler
             // label isn't exposed except to its own child expression.
             LabelInfo? label = null;
 
-            if (_labelBlock?.Kind == LabelScopeKind.Block)
+            if (labelBlock.Kind == LabelScopeKind.Block)
             {
-                _labelBlock.TryGetLabelInfo(node.Target, out label);
+                labelBlock.TryGetLabelInfo(node.Target, out label);
 
                 // We're in a block but didn't find our label, try switch
-                if (label == null && _labelBlock.Parent?.Kind == LabelScopeKind.Switch)
+                if (label == null && labelBlock.Parent?.Kind == LabelScopeKind.Switch)
                 {
-                    _labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
+                    labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
                 }
 
                 // if we're in a switch or block, we should've found the label
@@ -148,19 +159,19 @@ namespace System.Linq.Expressions.Compiler
 
             if (label == null)
             {
-                label = DefineLabel(node.Target);
+                label = DefineLabel(labelBlock, node.Target);
             }
 
             if (node.DefaultValue != null)
             {
                 if (node.Target.Type == typeof(void))
                 {
-                    EmitExpressionAsVoid(node.DefaultValue, flags);
+                    EmitExpressionAsVoid(labelBlock, node.DefaultValue, flags);
                 }
                 else
                 {
                     flags = UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart);
-                    EmitExpression(node.DefaultValue, flags);
+                    EmitExpression(labelBlock, node.DefaultValue, flags);
                 }
             }
 
@@ -189,27 +200,20 @@ namespace System.Linq.Expressions.Compiler
             return result;
         }
 
-        private void PopLabelBlock(LabelScopeKind kind)
-        {
-            No.Op(kind);
-            Debug.Assert(_labelBlock.Kind == kind);
-            _labelBlock = _labelBlock.Parent;
-        }
-
-        private void PushLabelBlock(LabelScopeKind type)
-        {
-            _labelBlock = new LabelScopeInfo(_labelBlock, type);
-        }
-
-        private LabelInfo ReferenceLabel(LabelTarget node)
+        private LabelInfo ReferenceLabel(LabelScopeInfo labelBlock, LabelTarget node)
         {
             var result = EnsureLabel(node);
-            result.Reference(_labelBlock);
+            result.Reference(labelBlock);
             return result;
         }
 
-        private bool TryPushLabelBlock(Expression node)
+        private static (LabelScopeInfo parent, LabelScopeKind kind, IList<Expression>? nodes)? GetLabelScopeChangeInfo(bool emitStart, LabelScopeInfo labelBlock, Expression node)
         {
+            if (!emitStart)
+            {
+                return null;
+            }
+
             // Anything that is "statement-like" -- e.g. has no associated
             // stack state can be jumped into, with the exception of try-blocks
             // We indicate this by a "Block"
@@ -219,34 +223,34 @@ namespace System.Linq.Expressions.Compiler
             switch (node.NodeType)
             {
                 default:
-                    if (_labelBlock?.Kind == LabelScopeKind.Expression)
+                    if (labelBlock.Kind == LabelScopeKind.Expression)
                     {
-                        return false;
+                        return null;
                     }
 
-                    PushLabelBlock(LabelScopeKind.Expression);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Expression, null);
 
                 case ExpressionType.Label:
                     // LabelExpression is a bit special, if it's directly in a
                     // block it becomes associate with the block's scope. Same
                     // thing if it's in a switch case body.
-                    if (_labelBlock?.Kind == LabelScopeKind.Block)
+                    if (labelBlock.Kind != LabelScopeKind.Block)
                     {
-                        var label = ((LabelExpression)node).Target;
-                        if (_labelBlock.ContainsTarget(label))
-                        {
-                            return false;
-                        }
-
-                        if (_labelBlock.Parent?.Kind == LabelScopeKind.Switch && _labelBlock.Parent.ContainsTarget(label))
-                        {
-                            return false;
-                        }
+                        return (labelBlock, LabelScopeKind.Statement, null);
                     }
 
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
+                    var label = ((LabelExpression)node).Target;
+                    if (labelBlock.ContainsTarget(label))
+                    {
+                        return null;
+                    }
+
+                    if (labelBlock.Parent?.Kind == LabelScopeKind.Switch && labelBlock.Parent.ContainsTarget(label))
+                    {
+                        return null;
+                    }
+
+                    return (labelBlock, LabelScopeKind.Statement, null);
 
                 case ExpressionType.Block:
                     if (node is SpilledExpressionBlock)
@@ -255,29 +259,20 @@ namespace System.Linq.Expressions.Compiler
                         goto default;
                     }
 
-                    PushLabelBlock(LabelScopeKind.Block);
-                    // Labels defined immediately in the block are valid for
-                    // the whole block.
-                    if (_labelBlock?.Parent?.Kind != LabelScopeKind.Switch)
-                    {
-                        DefineBlockLabels(node);
-                    }
-
-                    return true;
+                    return labelBlock.Parent?.Kind != LabelScopeKind.Switch
+                        ? (labelBlock, LabelScopeKind.Block, new[] { node })
+                        : (labelBlock, LabelScopeKind.Block, null);
 
                 case ExpressionType.Switch:
-                    PushLabelBlock(LabelScopeKind.Switch);
-                    // Define labels inside of the switch cases so they are in
-                    // scope for the whole switch. This allows "goto case" and
-                    // "goto default" to be considered as local jumps.
+                    var nodes = new List<Expression>();
                     var @switch = (SwitchExpression)node;
                     foreach (var c in @switch.Cases)
                     {
-                        DefineBlockLabels(c.Body);
+                        nodes.Add(c.Body);
                     }
+                    nodes.Add(@switch.DefaultBody);
 
-                    DefineBlockLabels(@switch.DefaultBody);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Switch, nodes);
 
                 // Remove this when Convert(Void) goes away.
                 case ExpressionType.Convert:
@@ -287,14 +282,12 @@ namespace System.Linq.Expressions.Compiler
                         goto default;
                     }
 
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Statement, null);
 
                 case ExpressionType.Conditional:
                 case ExpressionType.Loop:
                 case ExpressionType.Goto:
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Statement, null);
             }
         }
     }

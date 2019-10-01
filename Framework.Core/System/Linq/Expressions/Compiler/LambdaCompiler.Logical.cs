@@ -51,7 +51,7 @@ namespace System.Linq.Expressions.Compiler
             return false;
         }
 
-        private void EmitAndAlsoBinaryExpression(Expression expr, CompilationFlags flags)
+        private void EmitAndAlsoBinaryExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
         {
             var b = (BinaryExpression)expr;
 
@@ -59,53 +59,53 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (b.IsLiftedLogical)
                 {
-                    EmitExpression(b.ReduceUserDefinedLifted());
+                    EmitExpression(labelBlock, b.ReduceUserDefinedLifted());
                 }
                 else
                 {
-                    EmitMethodAndAlso(b, flags);
+                    EmitMethodAndAlso(labelBlock, b, flags);
                 }
             }
             else if (b.Left.Type == typeof(bool?))
             {
-                EmitLiftedAndAlso(b);
+                EmitLiftedAndAlso(labelBlock, b);
             }
             else
             {
-                EmitUnliftedAndAlso(b);
+                EmitUnliftedAndAlso(labelBlock, b);
             }
         }
 
         // Generates optimized AndAlso with branch == true
         // or optimized OrElse with branch == false
-        private void EmitBranchAnd(bool branch, BinaryExpression node, Label label)
+        private void EmitBranchAnd(LabelScopeInfo labelBlock, bool branch, BinaryExpression node, Label label)
         {
             // if (left) then
             //   if (right) branch label
             // endif
 
             var endif = IL.DefineLabel();
-            EmitExpressionAndBranch(!branch, node.Left, endif);
-            EmitExpressionAndBranch(branch, node.Right, label);
+            EmitExpressionAndBranch(labelBlock, !branch, node.Left, endif);
+            EmitExpressionAndBranch(labelBlock, branch, node.Right, label);
             IL.MarkLabel(endif);
         }
 
-        private void EmitBranchBlock(bool branch, BlockExpression node, Label label)
+        private void EmitBranchBlock(LabelScopeInfo labelBlock, bool branch, BlockExpression node, Label label)
         {
             EnterScope(node);
 
             var count = node.ExpressionCount;
             for (var i = 0; i < count - 1; i++)
             {
-                EmitExpressionAsVoid(node.GetExpression(i));
+                EmitExpressionAsVoid(labelBlock, node.GetExpression(i));
             }
 
-            EmitExpressionAndBranch(branch, node.GetExpression(count - 1), label);
+            EmitExpressionAndBranch(labelBlock, branch, node.GetExpression(count - 1), label);
 
             ExitScope(node);
         }
 
-        private void EmitBranchComparison(bool branch, BinaryExpression node, Label label)
+        private void EmitBranchComparison(LabelScopeInfo labelBlock, bool branch, BinaryExpression node, Label label)
         {
             Debug.Assert(node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual);
             Debug.Assert(!node.IsLiftedToNull);
@@ -115,7 +115,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (node.Method != null)
             {
-                EmitBinaryMethod(node, CompilationFlags.EmitAsNoTail);
+                EmitBinaryMethod(labelBlock, node, CompilationFlags.EmitAsNoTail);
                 // EmitBinaryMethod takes into account the Equal/NotEqual
                 // node kind, so use the original branch value
                 EmitBranchOp(branch, label);
@@ -124,13 +124,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (node.Right.Type.IsNullable())
                 {
-                    EmitAddress(node.Right, node.Right.Type);
+                    EmitAddress(labelBlock, node.Right, node.Right.Type);
                     IL.EmitHasValue(node.Right.Type);
                 }
                 else
                 {
                     Debug.Assert(!node.Right.Type.IsValueType);
-                    EmitExpression(GetEqualityOperand(node.Right));
+                    EmitExpression(labelBlock, GetEqualityOperand(node.Right));
                 }
 
                 EmitBranchOp(!branchWhenEqual, label);
@@ -139,40 +139,40 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (node.Left.Type.IsNullable())
                 {
-                    EmitAddress(node.Left, node.Left.Type);
+                    EmitAddress(labelBlock, node.Left, node.Left.Type);
                     IL.EmitHasValue(node.Left.Type);
                 }
                 else
                 {
                     Debug.Assert(!node.Left.Type.IsValueType);
-                    EmitExpression(GetEqualityOperand(node.Left));
+                    EmitExpression(labelBlock, GetEqualityOperand(node.Left));
                 }
 
                 EmitBranchOp(!branchWhenEqual, label);
             }
             else if (node.Left.Type.IsNullable() || node.Right.Type.IsNullable())
             {
-                EmitBinaryExpression(node);
+                EmitBinaryExpression(labelBlock, node);
                 // EmitBinaryExpression takes into account the Equal/NotEqual
                 // node kind, so use the original branch value
                 EmitBranchOp(branch, label);
             }
             else
             {
-                EmitExpression(GetEqualityOperand(node.Left));
-                EmitExpression(GetEqualityOperand(node.Right));
+                EmitExpression(labelBlock, GetEqualityOperand(node.Left));
+                EmitExpression(labelBlock, GetEqualityOperand(node.Right));
                 IL.Emit(branchWhenEqual ? OpCodes.Beq : OpCodes.Bne_Un, label);
             }
         }
 
-        private void EmitBranchLogical(bool branch, BinaryExpression node, Label label)
+        private void EmitBranchLogical(LabelScopeInfo labelBlock, bool branch, BinaryExpression node, Label label)
         {
             Debug.Assert(node.NodeType == ExpressionType.AndAlso || node.NodeType == ExpressionType.OrElse);
             Debug.Assert(!node.IsLiftedToNull);
 
             if (node.Method != null || node.IsLifted)
             {
-                EmitExpression(node);
+                EmitExpression(labelBlock, node);
                 EmitBranchOp(branch, label);
                 return;
             }
@@ -194,24 +194,24 @@ namespace System.Linq.Expressions.Compiler
             //
             if (branch == isAnd)
             {
-                EmitBranchAnd(branch, node, label);
+                EmitBranchAnd(labelBlock, branch, node, label);
             }
             else
             {
-                EmitBranchOr(branch, node, label);
+                EmitBranchOr(labelBlock, branch, node, label);
             }
         }
 
-        private void EmitBranchNot(bool branch, UnaryExpression node, Label label)
+        private void EmitBranchNot(LabelScopeInfo labelBlock, bool branch, UnaryExpression node, Label label)
         {
             if (node.Method != null)
             {
-                EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
+                EmitExpression(labelBlock, node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
                 EmitBranchOp(branch, label);
                 return;
             }
 
-            EmitExpressionAndBranch(!branch, node.Operand, label);
+            EmitExpressionAndBranch(labelBlock, !branch, node.Operand, label);
         }
 
         private void EmitBranchOp(bool branch, Label label)
@@ -221,44 +221,44 @@ namespace System.Linq.Expressions.Compiler
 
         // Generates optimized OrElse with branch == true
         // or optimized AndAlso with branch == false
-        private void EmitBranchOr(bool branch, BinaryExpression node, Label label)
+        private void EmitBranchOr(LabelScopeInfo labelBlock, bool branch, BinaryExpression node, Label label)
         {
             // if (left OR right) branch label
 
-            EmitExpressionAndBranch(branch, node.Left, label);
-            EmitExpressionAndBranch(branch, node.Right, label);
+            EmitExpressionAndBranch(labelBlock, branch, node.Left, label);
+            EmitExpressionAndBranch(labelBlock, branch, node.Right, label);
         }
 
-        private void EmitCoalesceBinaryExpression(Expression expr)
+        private void EmitCoalesceBinaryExpression(LabelScopeInfo labelBlock, Expression expr)
         {
             var b = (BinaryExpression)expr;
             Debug.Assert(b.Method == null);
 
             if (b.Left.Type.IsNullable())
             {
-                EmitNullableCoalesce(b);
+                EmitNullableCoalesce(labelBlock, b);
             }
             else
             {
                 Debug.Assert(!b.Left.Type.IsValueType);
                 if (b.Conversion != null)
                 {
-                    EmitLambdaReferenceCoalesce(b);
+                    EmitLambdaReferenceCoalesce(labelBlock, b);
                 }
                 else
                 {
-                    EmitReferenceCoalesceWithoutConversion(b);
+                    EmitReferenceCoalesceWithoutConversion(labelBlock, b);
                 }
             }
         }
 
-        private void EmitConditionalExpression(Expression expr, CompilationFlags flags)
+        private void EmitConditionalExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
         {
             var node = (ConditionalExpression)expr;
             Debug.Assert(node.Test.Type == typeof(bool));
             var labFalse = IL.DefineLabel();
-            EmitExpressionAndBranch(false, node.Test, labFalse);
-            EmitExpressionAsType(node.IfTrue, node.Type, flags);
+            EmitExpressionAndBranch(labelBlock, false, node.Test, labFalse);
+            EmitExpressionAsType(labelBlock, node.IfTrue, node.Type, flags);
 
             if (NotEmpty(node.IfFalse))
             {
@@ -275,7 +275,7 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 IL.MarkLabel(labFalse);
-                EmitExpressionAsType(node.IfFalse, node.Type, flags);
+                EmitExpressionAsType(labelBlock, node.IfFalse, node.Type, flags);
                 IL.MarkLabel(labEnd);
             }
             else
@@ -284,76 +284,58 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        ///     Emits the expression and then either brtrue/brfalse to the label.
-        /// </summary>
-        /// <param name="branchValue">True for brtrue, false for brfalse.</param>
-        /// <param name="node">The expression to emit.</param>
-        /// <param name="label">The label to conditionally branch to.</param>
-        /// <remarks>
-        ///     <para>
-        ///         This function optimizes equality and short circuiting logical
-        ///         operators to avoid double-branching, minimize instruction count,
-        ///         and generate similar IL to the C# compiler. This is important for
-        ///         the JIT to optimize patterns like:
-        ///         x != null AndAlso x.GetType() == typeof(SomeType)
-        ///     </para>
-        ///     <para>
-        ///         One optimization we don't do: we always emits at least one
-        ///         conditional branch to the label, and always possibly falls through,
-        ///         even if we know if the branch will always succeed or always fail.
-        ///         We do this to avoid generating unreachable code, which is fine for
-        ///         the CLR JIT, but doesn't verify with peverify.
-        ///     </para>
-        ///     <para>
-        ///         This kind of optimization could be implemented safely, by doing
-        ///         constant folding over conditionals and logical expressions at the
-        ///         tree level.
-        ///     </para>
-        /// </remarks>
-        private void EmitExpressionAndBranch(bool branchValue, Expression node, Label label)
+        private void EmitExpressionAndBranch(LabelScopeInfo labelBlock, bool branchValue, Expression node, Label label)
         {
             Debug.Assert(node.Type == typeof(bool));
-            var startEmitted = EmitExpressionStart(node);
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, labelBlock, node);
+            if (labelScopeChangeInfo.HasValue)
+            {
+                labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
+                DefineBlockLabels(labelBlock, labelScopeChangeInfo.Value.nodes);
+            }
+
             switch (node.NodeType)
             {
                 case ExpressionType.Not:
-                    EmitBranchNot(branchValue, (UnaryExpression)node, label);
+                    EmitBranchNot(labelBlock, branchValue, (UnaryExpression)node, label);
                     break;
 
                 case ExpressionType.AndAlso:
                 case ExpressionType.OrElse:
-                    EmitBranchLogical(branchValue, (BinaryExpression)node, label);
+                    EmitBranchLogical(labelBlock, branchValue, (BinaryExpression)node, label);
                     break;
 
                 case ExpressionType.Block:
-                    EmitBranchBlock(branchValue, (BlockExpression)node, label);
+                    EmitBranchBlock(labelBlock, branchValue, (BlockExpression)node, label);
                     break;
 
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
-                    EmitBranchComparison(branchValue, (BinaryExpression)node, label);
+                    EmitBranchComparison(labelBlock, branchValue, (BinaryExpression)node, label);
                     break;
 
                 default:
-                    EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
+                    EmitExpression(labelBlock, node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
                     EmitBranchOp(branchValue, label);
                     break;
             }
 
-            EmitExpressionEnd(startEmitted);
+            if (labelScopeChangeInfo.HasValue)
+            {
+                labelBlock = labelScopeChangeInfo.Value.parent;
+            }
         }
 
-        private void EmitLambdaReferenceCoalesce(BinaryExpression b)
+        private void EmitLambdaReferenceCoalesce(LabelScopeInfo labelBlock, BinaryExpression b)
         {
             var loc = GetLocal(b.Left.Type);
             var labEnd = IL.DefineLabel();
             var labNotNull = IL.DefineLabel();
-            EmitExpression(b.Left);
+            EmitExpression(labelBlock, b.Left);
             IL.Emit(OpCodes.Dup);
             IL.Emit(OpCodes.Stloc, loc);
             IL.Emit(OpCodes.Brtrue, labNotNull);
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             IL.Emit(OpCodes.Br, labEnd);
 
             // if not null, call conversion
@@ -361,7 +343,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(b.Conversion!.ParameterCount == 1);
 
             // emit the delegate instance
-            EmitLambdaExpression(b.Conversion);
+            EmitLambdaExpression(labelBlock, b.Conversion);
 
             // emit argument
             IL.Emit(OpCodes.Ldloc, loc);
@@ -373,14 +355,14 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(labEnd);
         }
 
-        private void EmitLiftedAndAlso(BinaryExpression b)
+        private void EmitLiftedAndAlso(LabelScopeInfo labelBlock, BinaryExpression b)
         {
             var type = typeof(bool?);
             var returnLeft = IL.DefineLabel();
             var returnRight = IL.DefineLabel();
             var exit = IL.DefineLabel();
             // Compute left
-            EmitExpression(b.Left);
+            EmitExpression(labelBlock, b.Left);
             var locLeft = GetLocal(type);
             IL.Emit(OpCodes.Stloc, locLeft);
             IL.Emit(OpCodes.Ldloca, locLeft);
@@ -392,7 +374,7 @@ namespace System.Linq.Expressions.Compiler
             // if left == false
             IL.Emit(OpCodes.Brtrue, returnLeft);
             // Compute right
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             var locRight = GetLocal(type);
             IL.Emit(OpCodes.Stloc, locRight);
             IL.Emit(OpCodes.Ldloca, locLeft);
@@ -413,19 +395,19 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(exit);
         }
 
-        private void EmitLiftedOrElse(BinaryExpression b)
+        private void EmitLiftedOrElse(LabelScopeInfo labelBlock, BinaryExpression b)
         {
             var type = typeof(bool?);
             var returnLeft = IL.DefineLabel();
             var exit = IL.DefineLabel();
             var locLeft = GetLocal(type);
-            EmitExpression(b.Left);
+            EmitExpression(labelBlock, b.Left);
             IL.Emit(OpCodes.Stloc, locLeft);
             IL.Emit(OpCodes.Ldloca, locLeft);
             IL.EmitGetValueOrDefault(type);
             // if left == true
             IL.Emit(OpCodes.Brtrue, returnLeft);
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             var locRight = GetLocal(type);
             IL.Emit(OpCodes.Stloc, locRight);
             IL.Emit(OpCodes.Ldloca, locRight);
@@ -444,19 +426,19 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(exit);
         }
 
-        private void EmitMethodAndAlso(BinaryExpression b, CompilationFlags flags)
+        private void EmitMethodAndAlso(LabelScopeInfo labelBlock, BinaryExpression b, CompilationFlags flags)
         {
             Debug.Assert(b.Method!.IsStatic);
 
             var labEnd = IL.DefineLabel();
-            EmitExpression(b.Left);
+            EmitExpression(labelBlock, b.Left);
             IL.Emit(OpCodes.Dup);
             var opFalse = TypeUtils.GetBooleanOperator(b.Method.DeclaringType, "op_False");
             Debug.Assert(opFalse != null, "factory should check that the method exists");
             IL.Emit(OpCodes.Call, opFalse);
             IL.Emit(OpCodes.Brtrue, labEnd);
 
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             if ((flags & CompilationFlags.EmitAsTailCallMask) == CompilationFlags.EmitAsTail)
             {
                 IL.Emit(OpCodes.Tailcall);
@@ -466,19 +448,19 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(labEnd);
         }
 
-        private void EmitMethodOrElse(BinaryExpression b, CompilationFlags flags)
+        private void EmitMethodOrElse(LabelScopeInfo labelBlock, BinaryExpression b, CompilationFlags flags)
         {
             Debug.Assert(b.Method!.IsStatic);
 
             var labEnd = IL.DefineLabel();
-            EmitExpression(b.Left);
+            EmitExpression(labelBlock, b.Left);
             IL.Emit(OpCodes.Dup);
             var opTrue = TypeUtils.GetBooleanOperator(b.Method.DeclaringType, "op_True");
             Debug.Assert(opTrue != null, "factory should check that the method exists");
 
             IL.Emit(OpCodes.Call, opTrue);
             IL.Emit(OpCodes.Brtrue, labEnd);
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             if ((flags & CompilationFlags.EmitAsTailCallMask) == CompilationFlags.EmitAsTail)
             {
                 IL.Emit(OpCodes.Tailcall);
@@ -488,14 +470,14 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(labEnd);
         }
 
-        private void EmitNullableCoalesce(BinaryExpression b)
+        private void EmitNullableCoalesce(LabelScopeInfo labelBlock, BinaryExpression b)
         {
             Debug.Assert(b.Method == null);
 
             var loc = GetLocal(b.Left.Type);
             var labIfNull = IL.DefineLabel();
             var labEnd = IL.DefineLabel();
-            EmitExpression(b.Left);
+            EmitExpression(labelBlock, b.Left);
             IL.Emit(OpCodes.Stloc, loc);
             IL.Emit(OpCodes.Ldloca, loc);
             IL.EmitHasValue(b.Left.Type);
@@ -509,7 +491,7 @@ namespace System.Linq.Expressions.Compiler
                 Debug.Assert(p.Type.IsAssignableFrom(b.Left.Type) || p.Type.IsAssignableFrom(nnLeftType));
 
                 // emit the delegate instance
-                EmitLambdaExpression(b.Conversion);
+                EmitLambdaExpression(labelBlock, b.Conversion);
 
                 // emit argument
                 if (!p.Type.IsAssignableFrom(b.Left.Type))
@@ -543,7 +525,7 @@ namespace System.Linq.Expressions.Compiler
 
             IL.Emit(OpCodes.Br, labEnd);
             IL.MarkLabel(labIfNull);
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             if (!TypeUtils.AreEquivalent(b.Right.Type, b.Type))
             {
                 IL.EmitConvertToType(b.Right.Type, b.Type, true, this);
@@ -552,7 +534,7 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(labEnd);
         }
 
-        private void EmitOrElseBinaryExpression(Expression expr, CompilationFlags flags)
+        private void EmitOrElseBinaryExpression(LabelScopeInfo labelBlock, Expression expr, CompilationFlags flags)
         {
             var b = (BinaryExpression)expr;
 
@@ -560,32 +542,32 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (b.IsLiftedLogical)
                 {
-                    EmitExpression(b.ReduceUserDefinedLifted());
+                    EmitExpression(labelBlock, b.ReduceUserDefinedLifted());
                 }
                 else
                 {
-                    EmitMethodOrElse(b, flags);
+                    EmitMethodOrElse(labelBlock, b, flags);
                 }
             }
             else if (b.Left.Type == typeof(bool?))
             {
-                EmitLiftedOrElse(b);
+                EmitLiftedOrElse(labelBlock, b);
             }
             else
             {
-                EmitUnliftedOrElse(b);
+                EmitUnliftedOrElse(labelBlock, b);
             }
         }
 
-        private void EmitReferenceCoalesceWithoutConversion(BinaryExpression b)
+        private void EmitReferenceCoalesceWithoutConversion(LabelScopeInfo labelBlock, BinaryExpression b)
         {
             var labEnd = IL.DefineLabel();
             var labCast = IL.DefineLabel();
-            EmitExpression(b.Left);
+            EmitExpression(labelBlock, b.Left);
             IL.Emit(OpCodes.Dup);
             IL.Emit(OpCodes.Brtrue, labCast);
             IL.Emit(OpCodes.Pop);
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             if (!TypeUtils.AreEquivalent(b.Right.Type, b.Type))
             {
                 if (b.Right.Type.IsValueType)
@@ -607,27 +589,27 @@ namespace System.Linq.Expressions.Compiler
             IL.MarkLabel(labEnd);
         }
 
-        private void EmitUnliftedAndAlso(BinaryExpression b)
+        private void EmitUnliftedAndAlso(LabelScopeInfo labelBlock, BinaryExpression b)
         {
             var @else = IL.DefineLabel();
             var end = IL.DefineLabel();
-            EmitExpressionAndBranch(false, b.Left, @else);
-            EmitExpression(b.Right);
+            EmitExpressionAndBranch(labelBlock, false, b.Left, @else);
+            EmitExpression(labelBlock, b.Right);
             IL.Emit(OpCodes.Br, end);
             IL.MarkLabel(@else);
             IL.Emit(OpCodes.Ldc_I4_0);
             IL.MarkLabel(end);
         }
 
-        private void EmitUnliftedOrElse(BinaryExpression b)
+        private void EmitUnliftedOrElse(LabelScopeInfo labelBlock, BinaryExpression b)
         {
             var @else = IL.DefineLabel();
             var end = IL.DefineLabel();
-            EmitExpressionAndBranch(false, b.Left, @else);
+            EmitExpressionAndBranch(labelBlock, false, b.Left, @else);
             IL.Emit(OpCodes.Ldc_I4_1);
             IL.Emit(OpCodes.Br, end);
             IL.MarkLabel(@else);
-            EmitExpression(b.Right);
+            EmitExpression(labelBlock, b.Right);
             IL.MarkLabel(end);
         }
     }

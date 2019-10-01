@@ -176,7 +176,8 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(next));
             }
 
-            return ExploreCircularSequenceExtracted(initial, next, FuncHelper.GetIdentityFunc<T>(), comparer ?? EqualityComparer<T>.Default);
+            comparer ??= EqualityComparer<T>.Default;
+            return ExploreCircularSequenceExtracted(initial, next, FuncHelper.GetIdentityFunc<T>(), comparer);
         }
 
         public static IEnumerable<TOutput> ExploreCircularSequence<TInput, TOutput>(TInput initial, Func<TInput, TInput> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput>? comparer)
@@ -191,7 +192,8 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(resultSelector));
             }
 
-            return ExploreCircularSequenceExtracted(initial, next, resultSelector, comparer ?? EqualityComparer<TInput>.Default);
+            comparer ??= EqualityComparer<TInput>.Default;
+            return ExploreCircularSequenceExtracted(initial, next, resultSelector, comparer);
         }
 
         private static IEnumerable<TOutput> ExploreCircularSequenceExtracted<TInput, TOutput>(TInput initial, Func<TInput, TInput> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
@@ -252,7 +254,8 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(next));
             }
 
-            return CommonNodeExtracted(first, second, next, comparer ?? EqualityComparer<T>.Default);
+            comparer ??= EqualityComparer<T>.Default;
+            return CommonNodeExtracted(first, second, next, comparer);
         }
 
         public static T CommonNode<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T>? comparer)
@@ -263,7 +266,8 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(next));
             }
 
-            return CommonNodeExtracted(first, second, next, comparer ?? EqualityComparer<T>.Default);
+            comparer ??= EqualityComparer<T>.Default;
+            return CommonNodeExtracted(first, second, next, comparer);
         }
 
         public static T CommonNode<T>(T first, T second, Func<T, T?> next)

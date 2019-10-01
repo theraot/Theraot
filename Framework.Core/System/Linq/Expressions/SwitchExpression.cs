@@ -61,7 +61,7 @@ namespace System.Linq.Expressions
         /// <param name="comparison">The equality comparison method to use.</param>
         /// <param name="cases">The valid cases for this switch.</param>
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
-        public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, params SwitchCase[] cases)
+        public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo? comparison, params SwitchCase[] cases)
         {
             return Switch(type, switchValue, defaultBody, comparison, (IEnumerable<SwitchCase>)cases);
         }
@@ -88,7 +88,7 @@ namespace System.Linq.Expressions
         /// <param name="comparison">The equality comparison method to use.</param>
         /// <param name="cases">The valid cases for this switch.</param>
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
-        public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, IEnumerable<SwitchCase> cases)
+        public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo? comparison, IEnumerable<SwitchCase> cases)
         {
             ExpressionUtils.RequiresCanRead(switchValue, nameof(switchValue));
             if (switchValue.Type == typeof(void))

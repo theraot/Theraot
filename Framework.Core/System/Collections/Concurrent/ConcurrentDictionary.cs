@@ -159,13 +159,12 @@ namespace System.Collections.Concurrent
             }
 
             // addValueFactory and updateValueFactory are checked for null inside the call
-            var result = _wrapped.AddOrUpdate
+            return _wrapped.AddOrUpdate
             (
                 key,
                 addValueFactory,
                 updateValueFactory
             );
-            return result;
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
@@ -178,13 +177,12 @@ namespace System.Collections.Concurrent
             }
 
             // updateValueFactory is checked for null inside the call
-            var result = _wrapped.AddOrUpdate
+            return _wrapped.AddOrUpdate
             (
                 key,
                 addValue,
                 updateValueFactory
             );
-            return result;
         }
 
         public void Clear()

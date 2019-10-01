@@ -135,12 +135,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        ///     Emits a delegate to the method generated for the LambdaExpression.
-        ///     May end up creating a wrapper to match the requested delegate type.
-        /// </summary>
-        /// <param name="lambda">Lambda for which to generate a delegate</param>
-        private void EmitDelegateConstruction(LambdaExpression lambda)
+        private void EmitDelegateConstruction(LabelScopeInfo labelBlock, LambdaExpression lambda)
         {
             // 1. Create the new compiler
             LambdaCompiler impl;
@@ -158,29 +153,20 @@ namespace System.Linq.Expressions.Compiler
 
             // 2. emit the lambda
             // Since additional ILs are always emitted after the lambda's body, should not emit with tail call optimization.
-            impl.EmitLambdaBody(_scope, false, CompilationFlags.EmitAsNoTail);
+            impl.EmitLambdaBody(labelBlock, _scope, false, CompilationFlags.EmitAsNoTail);
 
             // 3. emit the delegate creation in the outer lambda
             EmitDelegateConstruction(impl);
         }
 
-        private void EmitLambdaBody()
+        private void EmitLambdaBody(LabelScopeInfo labelBlock)
         {
             // The lambda body is the "last" expression of the lambda
             var tailCallFlag = _lambda.TailCall ? CompilationFlags.EmitAsTail : CompilationFlags.EmitAsNoTail;
-            EmitLambdaBody(null, false, tailCallFlag);
+            EmitLambdaBody(labelBlock, null, false, tailCallFlag);
         }
 
-        /// <summary>
-        ///     Emits the lambda body. If inlined, the parameters should already be
-        ///     pushed onto the IL stack.
-        /// </summary>
-        /// <param name="parent">The parent scope.</param>
-        /// <param name="inlined">true if the lambda is inlined; false otherwise.</param>
-        /// <param name="flags">
-        ///     The enum to specify if the lambda is compiled with the tail call optimization.
-        /// </param>
-        private void EmitLambdaBody(CompilerScope? parent, bool inlined, CompilationFlags flags)
+        private void EmitLambdaBody(LabelScopeInfo labelBlock, CompilerScope? parent, bool inlined, CompilationFlags flags)
         {
             _scope.Enter(this, parent);
 
@@ -201,11 +187,11 @@ namespace System.Linq.Expressions.Compiler
             flags = UpdateEmitExpressionStartFlag(flags, CompilationFlags.EmitExpressionStart);
             if (_lambda.ReturnType == typeof(void))
             {
-                EmitExpressionAsVoid(_lambda.Body, flags);
+                EmitExpressionAsVoid(labelBlock, _lambda.Body, flags);
             }
             else
             {
-                EmitExpression(_lambda.Body, flags);
+                EmitExpression(labelBlock, _lambda.Body, flags);
             }
 
             // Return must be the last instruction in a CLI method.
@@ -219,7 +205,7 @@ namespace System.Linq.Expressions.Compiler
             _scope.Exit();
 
             // Validate labels
-            Debug.Assert(_labelBlock.Parent == null && _labelBlock.Kind == LabelScopeKind.Lambda);
+            Debug.Assert(labelBlock.Parent == null && labelBlock.Kind == LabelScopeKind.Lambda);
             foreach (var label in _labelInfo.Values)
             {
                 label.ValidateFinish();

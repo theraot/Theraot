@@ -12,24 +12,24 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        private void AddressOf(BinaryExpression node, Type type)
+        private void AddressOf(LabelScopeInfo labelBlock, BinaryExpression node, Type type)
         {
             Debug.Assert(node.NodeType == ExpressionType.ArrayIndex && node.Method == null);
 
             if (TypeUtils.AreEquivalent(type, node.Type))
             {
-                EmitExpression(node.Left);
-                EmitExpression(node.Right);
+                EmitExpression(labelBlock, node.Left);
+                EmitExpression(labelBlock, node.Right);
                 Debug.Assert(node.Right.Type == typeof(int));
                 IL.Emit(OpCodes.Ldelema, node.Type);
             }
             else
             {
-                EmitExpressionAddress(node, type);
+                EmitExpressionAddress(labelBlock, node, type);
             }
         }
 
-        private void AddressOf(ParameterExpression node, Type type)
+        private void AddressOf(LabelScopeInfo labelBlock, ParameterExpression node, Type type)
         {
             if (TypeUtils.AreEquivalent(type, node.Type))
             {
@@ -48,16 +48,16 @@ namespace System.Linq.Expressions.Compiler
 
                 if (node.Type.IsByRef && node.Type.GetElementType() == type)
                 {
-                    EmitExpression(node);
+                    EmitExpression(labelBlock, node);
                 }
                 else
                 {
-                    EmitExpressionAddress(node, type);
+                    EmitExpressionAddress(labelBlock, node, type);
                 }
             }
         }
 
-        private void AddressOf(MemberExpression node, Type type)
+        private void AddressOf(LabelScopeInfo labelBlock, MemberExpression node, Type type)
         {
             if (TypeUtils.AreEquivalent(type, node.Type))
             {
@@ -65,18 +65,18 @@ namespace System.Linq.Expressions.Compiler
                 Type? objectType = null;
                 if (node.Expression != null)
                 {
-                    EmitInstance(node.Expression, out objectType);
+                    EmitInstance(labelBlock, node.Expression, out objectType);
                 }
 
                 EmitMemberAddress(node.Member, objectType);
             }
             else
             {
-                EmitExpressionAddress(node, type);
+                EmitExpressionAddress(labelBlock, node, type);
             }
         }
 
-        private void AddressOf(MethodCallExpression node, Type type)
+        private void AddressOf(LabelScopeInfo labelBlock, MethodCallExpression node, Type type)
         {
             // An array index of a multi-dimensional array is represented by a call to Array.Get,
             // rather than having its own array-access node. This means that when we are trying to
@@ -93,19 +93,19 @@ namespace System.Linq.Expressions.Compiler
             {
                 var mi = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
 
-                EmitMethodCall(node.Object, mi, node);
+                EmitMethodCall(labelBlock, node.Object, mi, node);
             }
             else
             {
-                EmitExpressionAddress(node, type);
+                EmitExpressionAddress(labelBlock, node, type);
             }
         }
 
-        private void AddressOf(IndexExpression node, Type type)
+        private void AddressOf(LabelScopeInfo labelBlock, IndexExpression node, Type type)
         {
             if (!TypeUtils.AreEquivalent(type, node.Type) || node.Indexer != null)
             {
-                EmitExpressionAddress(node, type);
+                EmitExpressionAddress(labelBlock, node, type);
                 return;
             }
 
@@ -116,50 +116,50 @@ namespace System.Linq.Expressions.Compiler
 
             if (node.ArgumentCount == 1)
             {
-                EmitExpression(node.Object);
-                EmitExpression(node.GetArgument(0));
+                EmitExpression(labelBlock, node.Object);
+                EmitExpression(labelBlock, node.GetArgument(0));
                 IL.Emit(OpCodes.Ldelema, node.Type);
             }
             else
             {
                 var address = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
-                EmitMethodCall(node.Object, address, node);
+                EmitMethodCall(labelBlock, node.Object, address, node);
             }
         }
 
-        private void AddressOf(UnaryExpression node, Type type)
+        private void AddressOf(LabelScopeInfo labelBlock, UnaryExpression node, Type type)
         {
             Debug.Assert(node.NodeType == ExpressionType.Unbox);
             Debug.Assert(type.IsValueType);
 
             // Unbox leaves a pointer to the boxed value on the stack
-            EmitExpression(node.Operand);
+            EmitExpression(labelBlock, node.Operand);
             IL.Emit(OpCodes.Unbox, type);
         }
 
-        private WriteBack? AddressOfWriteBack(MemberExpression node)
+        private WriteBack? AddressOfWriteBack(LabelScopeInfo labelBlock, MemberExpression node)
         {
             if (!(node.Member is PropertyInfo property) || !property.CanWrite)
             {
                 return null;
             }
 
-            return AddressOfWriteBackCore(node); // avoids closure allocation
+            return AddressOfWriteBackCore(labelBlock, node); // avoids closure allocation
         }
 
-        private WriteBack? AddressOfWriteBack(IndexExpression node)
+        private WriteBack? AddressOfWriteBack(LabelScopeInfo labelBlock, IndexExpression node)
         {
-            return node.Indexer?.CanWrite != true ? null : AddressOfWriteBackCore(node);
+            return node.Indexer?.CanWrite != true ? null : AddressOfWriteBackCore(labelBlock, node);
         }
 
-        private WriteBack AddressOfWriteBackCore(MemberExpression node)
+        private WriteBack AddressOfWriteBackCore(LabelScopeInfo labelBlock, MemberExpression node)
         {
             // emit instance, if any
             LocalBuilder? instanceLocal = null;
             Type? instanceType = null;
             if (node.Expression != null)
             {
-                EmitInstance(node.Expression, out instanceType);
+                EmitInstance(labelBlock, node.Expression, out instanceType);
 
                 // store in local
                 IL.Emit(OpCodes.Dup);
@@ -192,14 +192,14 @@ namespace System.Linq.Expressions.Compiler
             };
         }
 
-        private WriteBack AddressOfWriteBackCore(IndexExpression node)
+        private WriteBack AddressOfWriteBackCore(LabelScopeInfo labelBlock, IndexExpression node)
         {
             // emit instance, if any
             LocalBuilder? instanceLocal = null;
             Type? instanceType = null;
             if (node.Object != null)
             {
-                EmitInstance(node.Object, out instanceType);
+                EmitInstance(labelBlock, node.Object, out instanceType);
 
                 // store in local
                 IL.Emit(OpCodes.Dup);
@@ -213,7 +213,7 @@ namespace System.Linq.Expressions.Compiler
             for (var i = 0; i < n; i++)
             {
                 var arg = node.GetArgument(i);
-                EmitExpression(arg);
+                EmitExpression(labelBlock, arg);
 
                 var argLocal = GetLocal(arg.Type);
                 IL.Emit(OpCodes.Dup);
@@ -254,45 +254,50 @@ namespace System.Linq.Expressions.Compiler
         // except where it would in IL: locals, args, fields, and array elements
         // (Unbox is an exception, it's intended to emit a ref to the original
         // boxed value)
-        private void EmitAddress(Expression node, Type type, CompilationFlags flags = CompilationFlags.EmitExpressionStart)
+        private void EmitAddress(LabelScopeInfo labelBlock, Expression node, Type type, CompilationFlags flags = CompilationFlags.EmitExpressionStart)
         {
             var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
-            var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(emitStart, labelBlock, node);
+            if (labelScopeChangeInfo.HasValue)
+            {
+                labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
+                DefineBlockLabels(labelBlock, labelScopeChangeInfo.Value.nodes);
+            }
 
             switch (node.NodeType)
             {
                 default:
-                    EmitExpressionAddress(node, type);
+                    EmitExpressionAddress(labelBlock, node, type);
                     break;
 
                 case ExpressionType.ArrayIndex:
-                    AddressOf((BinaryExpression)node, type);
+                    AddressOf(labelBlock, (BinaryExpression)node, type);
                     break;
 
                 case ExpressionType.Parameter:
-                    AddressOf((ParameterExpression)node, type);
+                    AddressOf(labelBlock, (ParameterExpression)node, type);
                     break;
 
                 case ExpressionType.MemberAccess:
-                    AddressOf((MemberExpression)node, type);
+                    AddressOf(labelBlock, (MemberExpression)node, type);
                     break;
 
                 case ExpressionType.Unbox:
-                    AddressOf((UnaryExpression)node, type);
+                    AddressOf(labelBlock, (UnaryExpression)node, type);
                     break;
 
                 case ExpressionType.Call:
-                    AddressOf((MethodCallExpression)node, type);
+                    AddressOf(labelBlock, (MethodCallExpression)node, type);
                     break;
 
                 case ExpressionType.Index:
-                    AddressOf((IndexExpression)node, type);
+                    AddressOf(labelBlock, (IndexExpression)node, type);
                     break;
             }
 
-            if (emitStart)
+            if (labelScopeChangeInfo.HasValue)
             {
-                EmitExpressionEnd(startEmitted);
+                labelBlock = labelScopeChangeInfo.Value.parent;
             }
         }
 
@@ -300,9 +305,14 @@ namespace System.Linq.Expressions.Compiler
         //
         // For properties, we want to write back into the property if it's
         // passed byref.
-        private WriteBack? EmitAddressWriteBack(Expression node, Type type)
+        private WriteBack? EmitAddressWriteBack(LabelScopeInfo labelBlock, Expression node, Type type)
         {
-            var startEmitted = EmitExpressionStart(node);
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, labelBlock, node);
+            if (labelScopeChangeInfo.HasValue)
+            {
+                labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
+                DefineBlockLabels(labelBlock, labelScopeChangeInfo.Value.nodes);
+            }
 
             WriteBack? result = null;
             if (TypeUtils.AreEquivalent(type, node.Type))
@@ -310,11 +320,11 @@ namespace System.Linq.Expressions.Compiler
                 switch (node.NodeType)
                 {
                     case ExpressionType.MemberAccess:
-                        result = AddressOfWriteBack((MemberExpression)node);
+                        result = AddressOfWriteBack(labelBlock, (MemberExpression)node);
                         break;
 
                     case ExpressionType.Index:
-                        result = AddressOfWriteBack((IndexExpression)node);
+                        result = AddressOfWriteBack(labelBlock, (IndexExpression)node);
                         break;
 
                     default:
@@ -324,17 +334,21 @@ namespace System.Linq.Expressions.Compiler
 
             if (result == null)
             {
-                EmitAddress(node, type, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
+                EmitAddress(labelBlock, node, type, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
             }
 
-            EmitExpressionEnd(startEmitted);
+            if (labelScopeChangeInfo.HasValue)
+            {
+                labelBlock = labelScopeChangeInfo.Value.parent;
+            }
+
             return result;
         }
 
-        private void EmitExpressionAddress(Expression node, Type type)
+        private void EmitExpressionAddress(LabelScopeInfo labelBlock, Expression node, Type type)
         {
             Debug.Assert(type.IsReferenceAssignableFromInternal(node.Type));
-            EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
+            EmitExpression(labelBlock, node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
             var tmp = GetLocal(type);
             IL.Emit(OpCodes.Stloc, tmp);
             IL.Emit(OpCodes.Ldloca, tmp);
