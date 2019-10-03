@@ -12,7 +12,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class AddInstruction : Instruction
     {
-        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _uInt64, _single, _double;
+        private static Instruction? _int16, _int32, _int64, _uInt16, _uInt32, _uInt64, _single, _double;
 
         private AddInstruction()
         {
@@ -28,14 +28,14 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(type.IsArithmetic());
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new AddInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new AddInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new AddInt64());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new AddUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new AddUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new AddUInt64());
-                case TypeCode.Single: return _single ?? (_single = new AddSingle());
-                case TypeCode.Double: return _double ?? (_double = new AddDouble());
+                case TypeCode.Int16: return _int16 ??= new AddInt16();
+                case TypeCode.Int32: return _int32 ??= new AddInt32();
+                case TypeCode.Int64: return _int64 ??= new AddInt64();
+                case TypeCode.UInt16: return _uInt16 ??= new AddUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new AddUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new AddUInt64();
+                case TypeCode.Single: return _single ??= new AddSingle();
+                case TypeCode.Double: return _double ??= new AddDouble();
                 default:
                     throw ContractUtils.Unreachable;
             }
@@ -188,7 +188,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class AddOvfInstruction : Instruction
     {
-        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _uInt64;
+        private static Instruction? _int16, _int32, _int64, _uInt16, _uInt32, _uInt64;
 
         private AddOvfInstruction()
         {
@@ -204,12 +204,12 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(type.IsArithmetic());
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new AddOvfInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new AddOvfInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new AddOvfInt64());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new AddOvfUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new AddOvfUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new AddOvfUInt64());
+                case TypeCode.Int16: return _int16 ??= new AddOvfInt16();
+                case TypeCode.Int32: return _int32 ??= new AddOvfInt32();
+                case TypeCode.Int64: return _int64 ??= new AddOvfInt64();
+                case TypeCode.UInt16: return _uInt16 ??= new AddOvfUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new AddOvfUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new AddOvfUInt64();
                 default:
                     return AddInstruction.Create(type);
             }
