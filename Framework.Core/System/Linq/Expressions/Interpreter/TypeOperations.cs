@@ -293,6 +293,7 @@ namespace System.Linq.Expressions.Interpreter
                     return argCount == 0
                         ? new GetValueOrDefault(mi)
                         : _getValueOrDefault1 ?? (_getValueOrDefault1 = new GetValueOrDefault1());
+
                 case "ToString": return _toString ?? (_toString = new ToStringClass());
                 default:
                     // System.Nullable doesn't have other instance methods
@@ -558,7 +559,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (node.Variable != null)
                 {
-                    _shadowedVars.Push(new HashSet<ParameterExpression> {node.Variable});
+                    _shadowedVars.Push(new HashSet<ParameterExpression> { node.Variable });
                 }
 
                 var b = Visit(node.Body);

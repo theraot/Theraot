@@ -118,6 +118,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 case 3:
                     return Utils.BoxedInt3;
+
                 default:
                     return i;
             }
