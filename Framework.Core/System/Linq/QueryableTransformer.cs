@@ -181,7 +181,7 @@ namespace System.Linq
                 return expression;
             }
 
-            var lambda = (LambdaExpression)((UnaryExpression)expression).Operand;
+            var lambda = (LambdaExpression)((UnaryExpression)expression).Operand!;
             return lambda.Type == delegateType ? lambda : expression;
         }
 

@@ -464,13 +464,13 @@ namespace System.Linq.Expressions
         /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this
-        ///     <see cref="P:System.Linq.Expressions.InvocationExpression.Expression" /> represents.
+        ///     <see cref="System.Linq.Expressions.InvocationExpression.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type { get; }
 
         internal LambdaExpression LambdaOperand => Expression.NodeType == ExpressionType.Quote
-            ? (LambdaExpression)((UnaryExpression)Expression).Operand
+            ? (LambdaExpression)((UnaryExpression)Expression).Operand!
             : Expression as LambdaExpression;
 
         /// <summary>

@@ -5,6 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
@@ -71,6 +72,7 @@ namespace System.Linq.Expressions
         ///     A <see cref="DefaultExpression" /> that has the <see cref="NodeType" /> property equal to
         ///     <see cref="ExpressionType.Default" /> and the <see cref="Type" /> property set to <see cref="System.Void" />.
         /// </returns>
+        [return: NotNull]
         public static DefaultExpression Empty()
         {
             return new DefaultExpression(typeof(void)); // Create new object each time for different identity

@@ -6,6 +6,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using Theraot.Reflection;
@@ -103,7 +104,7 @@ namespace System.Linq.Expressions
         ///     <paramref name="type" /> is a nullable value type and the corresponding non-nullable value type does not equal the
         ///     argument type or the return type, respectively, of the method represented by <paramref name="method" />.
         /// </exception>
-        public static UnaryExpression Convert(Expression expression, Type type, MethodInfo method)
+        public static UnaryExpression Convert(Expression expression, Type type, MethodInfo? method)
         {
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             ContractUtils.RequiresNotNull(type, nameof(type));
@@ -196,7 +197,9 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(ExpressionType.ConvertChecked, expression, type, null);
             }
 
-            return expression.Type.HasReferenceConversionToInternal(type) ? new UnaryExpression(ExpressionType.Convert, expression, type, null) : GetUserDefinedCoercionOrThrow(ExpressionType.ConvertChecked, expression, type);
+            return expression.Type.HasReferenceConversionToInternal(type)
+                ? new UnaryExpression(ExpressionType.Convert, expression, type, null)
+                : GetUserDefinedCoercionOrThrow(ExpressionType.ConvertChecked, expression, type);
         }
 
         /// <summary>
@@ -223,7 +226,9 @@ namespace System.Linq.Expressions
                 return GetMethodBasedUnaryOperator(ExpressionType.Decrement, expression, method);
             }
 
-            return expression.Type.IsArithmetic() ? new UnaryExpression(ExpressionType.Decrement, expression, expression.Type, null) : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.Decrement, "op_Decrement", expression);
+            return expression.Type.IsArithmetic()
+                ? new UnaryExpression(ExpressionType.Decrement, expression, expression.Type, null)
+                : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.Decrement, "op_Decrement", expression);
         }
 
         /// <summary>
@@ -250,7 +255,9 @@ namespace System.Linq.Expressions
                 return GetMethodBasedUnaryOperator(ExpressionType.Increment, expression, method);
             }
 
-            return expression.Type.IsArithmetic() ? new UnaryExpression(ExpressionType.Increment, expression, expression.Type, null) : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.Increment, "op_Increment", expression);
+            return expression.Type.IsArithmetic()
+                ? new UnaryExpression(ExpressionType.Increment, expression, expression.Type, null)
+                : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.Increment, "op_Increment", expression);
         }
 
         /// <summary>
@@ -277,7 +284,9 @@ namespace System.Linq.Expressions
                 return GetMethodBasedUnaryOperator(ExpressionType.IsFalse, expression, method);
             }
 
-            return expression.Type.IsBool() ? new UnaryExpression(ExpressionType.IsFalse, expression, expression.Type, null) : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.IsFalse, "op_False", expression);
+            return expression.Type.IsBool()
+                ? new UnaryExpression(ExpressionType.IsFalse, expression, expression.Type, null)
+                : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.IsFalse, "op_False", expression);
         }
 
         /// <summary>
@@ -304,7 +313,9 @@ namespace System.Linq.Expressions
                 return GetMethodBasedUnaryOperator(ExpressionType.IsTrue, expression, method);
             }
 
-            return expression.Type.IsBool() ? new UnaryExpression(ExpressionType.IsTrue, expression, expression.Type, null) : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.IsTrue, "op_True", expression);
+            return expression.Type.IsBool()
+                ? new UnaryExpression(ExpressionType.IsTrue, expression, expression.Type, null)
+                : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.IsTrue, "op_True", expression);
         }
 
         /// <summary>
@@ -622,7 +633,9 @@ namespace System.Linq.Expressions
                 return GetMethodBasedUnaryOperator(ExpressionType.OnesComplement, expression, method);
             }
 
-            return expression.Type.IsInteger() ? new UnaryExpression(ExpressionType.OnesComplement, expression, expression.Type, null) : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.OnesComplement, "op_OnesComplement", expression);
+            return expression.Type.IsInteger()
+                ? new UnaryExpression(ExpressionType.OnesComplement, expression, expression.Type, null)
+                : GetUserDefinedUnaryOperatorOrThrow(ExpressionType.OnesComplement, "op_OnesComplement", expression);
         }
 
         /// <summary>
@@ -733,6 +746,7 @@ namespace System.Linq.Expressions
         /// <exception cref="ArgumentNullException">
         ///     <paramref name="expression" /> is null.
         /// </exception>
+        [return: NotNull]
         public static UnaryExpression Quote(Expression expression)
         {
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
@@ -1071,11 +1085,11 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(UnaryExpressionProxy))]
     public sealed class UnaryExpression : Expression
     {
-        internal UnaryExpression(ExpressionType nodeType, Expression expression, Type type, MethodInfo method)
+        internal UnaryExpression(ExpressionType nodeType, Expression? expression, Type type, MethodInfo? method)
         {
+            NodeType = nodeType;
             Operand = expression;
             Method = method;
-            NodeType = nodeType;
             Type = type;
         }
 
@@ -1137,28 +1151,28 @@ namespace System.Linq.Expressions
         ///     Gets the implementing method for the unary operation.
         /// </summary>
         /// <returns>The <see cref="MethodInfo" /> that represents the implementing method.</returns>
-        public MethodInfo Method { get; }
+        public MethodInfo? Method { get; }
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
+        ///     <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType { get; }
 
         /// <summary>
         ///     Gets the operand of the unary operation.
         /// </summary>
         /// <returns> An <see cref="ExpressionType" /> that represents the operand of the unary operation.</returns>
-        public Expression Operand { get; }
+        public Expression? Operand { get; }
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type { get; }
 
         private bool IsPrefix => NodeType == ExpressionType.PreIncrementAssign || NodeType == ExpressionType.PreDecrementAssign;
@@ -1245,7 +1259,7 @@ namespace System.Linq.Expressions
             // tempValue
 
             var prefix = IsPrefix;
-            var index = (IndexExpression)Operand;
+            var index = (IndexExpression)Operand!;
             var count = index.ArgumentCount;
             var block = new Expression[count + (prefix ? 2 : 4)];
             var temps = new ParameterExpression[count + (prefix ? 1 : 2)];
@@ -1285,7 +1299,7 @@ namespace System.Linq.Expressions
 
         private Expression ReduceMember()
         {
-            var member = (MemberExpression)Operand;
+            var member = (MemberExpression)Operand!;
             if (member.Expression == null)
             {
                 //static member, reduce the same as variable

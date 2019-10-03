@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        public override Expression Visit(Expression node)
+        public override Expression? Visit(Expression? node)
         {
             // When compiling deep trees, we run the risk of triggering a terminating StackOverflowException,
             // so we use the StackGuard utility here to probe for sufficient stack and continue the work on
@@ -210,7 +210,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 var savedInQuote = _inQuote;
                 _inQuote = true;
-                Visit(node.Operand);
+                Visit(node.Operand!);
                 _inQuote = savedInQuote;
             }
             else

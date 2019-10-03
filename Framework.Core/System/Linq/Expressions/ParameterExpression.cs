@@ -5,6 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
@@ -31,11 +32,19 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
         public static ParameterExpression Parameter(Type type, string? name)
         {
+            ContractUtils.RequiresNotNull(type, nameof(type));
             Validate(type, true);
+
+            var elementType = type.GetElementType();
+            if (elementType == null)
+            {
+                return ParameterExpression.Make(type, name, false);
+            }
+
             var byref = type.IsByRef;
             if (byref)
             {
-                type = type.GetElementType();
+                type = elementType;
             }
 
             return ParameterExpression.Make(type, name, byref);
@@ -61,13 +70,13 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="ParameterExpression" /> node with the specified name and type.</returns>
         public static ParameterExpression Variable(Type type, string? name)
         {
+            ContractUtils.RequiresNotNull(type, nameof(type));
             Validate(type, false);
             return ParameterExpression.Make(type, name, false);
         }
 
         private static void Validate(Type type, bool allowByRef)
         {
-            ContractUtils.RequiresNotNull(type, nameof(type));
             TypeUtils.ValidateType(type, nameof(type), allowByRef, false);
 
             if (type == typeof(void))
@@ -84,7 +93,7 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(ParameterExpressionProxy))]
     public class ParameterExpression : Expression
     {
-        internal ParameterExpression(string name)
+        internal ParameterExpression(string? name)
         {
             Name = name;
         }
@@ -97,25 +106,26 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     The Name of the parameter or variable.
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
+        ///     <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Parameter;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(object);
 
-        internal static ParameterExpression Make(Type type, string name, bool isByRef)
+        [return: NotNull]
+        internal static ParameterExpression Make(Type type, string? name, bool isByRef)
         {
             if (isByRef)
             {
@@ -194,7 +204,7 @@ namespace System.Linq.Expressions
     /// </summary>
     internal sealed class ByRefParameterExpression : TypedParameterExpression
     {
-        internal ByRefParameterExpression(Type type, string name)
+        internal ByRefParameterExpression(Type type, string? name)
             : base(type, name)
         {
             // Empty
@@ -213,7 +223,7 @@ namespace System.Linq.Expressions
     /// </summary>
     internal sealed class PrimitiveParameterExpression<T> : ParameterExpression
     {
-        internal PrimitiveParameterExpression(string name)
+        internal PrimitiveParameterExpression(string? name)
             : base(name)
         {
             // Empty
@@ -229,7 +239,7 @@ namespace System.Linq.Expressions
     /// </summary>
     internal class TypedParameterExpression : ParameterExpression
     {
-        internal TypedParameterExpression(Type type, string name)
+        internal TypedParameterExpression(Type type, string? name)
             : base(name)
         {
             Type = type;

@@ -19,9 +19,9 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class ElementInit : IArgumentProvider
     {
-        private readonly ReadOnlyCollectionEx<Expression?> _argumentsAsReadOnlyCollection;
+        private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
 
-        internal ElementInit(MethodInfo addMethod, Expression?[] arguments)
+        internal ElementInit(MethodInfo addMethod, Expression[] arguments)
         {
             AddMethod = addMethod;
             _argumentsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(arguments);
@@ -35,7 +35,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the list of elements to be added to the object.
         /// </summary>
-        public ReadOnlyCollection<Expression?> Arguments => _argumentsAsReadOnlyCollection;
+        public ReadOnlyCollection<Expression> Arguments => _argumentsAsReadOnlyCollection;
 
         /// <summary>
         ///     Gets the number of argument expressions of the node.

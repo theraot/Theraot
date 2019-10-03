@@ -32,7 +32,7 @@ namespace System.Linq.Expressions.Compiler
             /// <summary>
             ///     The child expressions being rewritten.
             /// </summary>
-            private readonly Expression?[] _expressions;
+            private readonly Expression[] _expressions;
 
             /// <summary>
             ///     The parent stack spiller, used to perform rewrites of expressions
@@ -120,7 +120,7 @@ namespace System.Linq.Expressions.Compiler
             /// <returns>
             ///     The rewritten child expression at the specified <paramref name="index" />.
             /// </returns>
-            internal Expression? this[int index]
+            internal Expression this[int index]
             {
                 get
                 {
@@ -154,7 +154,7 @@ namespace System.Linq.Expressions.Compiler
             ///     The rewritten child expressions between the specified <paramref name="first" />
             ///     and <paramref name="last" /> (inclusive) indexes.
             /// </returns>
-            internal Expression?[] this[int first, int last]
+            internal Expression[] this[int first, int last]
             {
                 get
                 {
@@ -188,15 +188,9 @@ namespace System.Linq.Expressions.Compiler
             ///     stack state and rewrite action to be updated accordingly.
             /// </summary>
             /// <param name="expression">The child expression to add.</param>
-            internal void Add(Expression? expression)
+            internal void Add(Expression expression)
             {
                 Debug.Assert(!_done);
-
-                if (expression == null)
-                {
-                    _expressions[_expressionsCount++] = null;
-                    return;
-                }
 
                 var exp = _self.RewriteExpression(expression, _stack);
                 Action |= exp.Action;
@@ -217,7 +211,7 @@ namespace System.Linq.Expressions.Compiler
             ///     stack state and rewrite action to be updated accordingly.
             /// </summary>
             /// <param name="expressions">The child expressions to add.</param>
-            internal void Add(ReadOnlyCollection<Expression?> expressions)
+            internal void Add(ReadOnlyCollection<Expression> expressions)
             {
                 for (int i = 0, count = expressions.Count; i < count; i++)
                 {
@@ -298,7 +292,7 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
 
-            internal void MarkRefInstance(Expression? expr)
+            internal void MarkRefInstance(Expression expr)
             {
                 if (IsRefInstance(expr))
                 {
@@ -399,18 +393,17 @@ namespace System.Linq.Expressions.Compiler
                 var clone = _expressions;
                 var count = _lastSpillIndex + 1;
                 var comma = new List<Expression>(count + 1);
-                for (var i = 0; i < count; i++)
+                for (int index = 0; index < count; index++)
                 {
-                    var current = clone[i];
+                    var current = clone[index];
                     if (current == null || !ShouldSaveToTemp(current))
                     {
                         continue;
                     }
 
-                    clone[i] = _self.ToTemp(current, out var temp, _byRefs?[i] ?? false);
+                    clone[index] = _self.ToTemp(current, out var temp, _byRefs?[index] ?? false);
                     comma.Add(temp);
                 }
-
                 comma.Capacity = comma.Count + 1;
                 _comma = comma;
             }

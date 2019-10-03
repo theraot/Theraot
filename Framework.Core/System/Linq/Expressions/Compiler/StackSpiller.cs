@@ -48,7 +48,18 @@ namespace System.Linq.Expressions.Compiler
             VerifyTemps();
 
             // Lambda starts with an empty stack.
-            var body = RewriteExpressionFreeTemps(lambda.Body, _startingStack);
+            var result = RewriteExpressionFreeTemps(lambda.Body, _startingStack);
+
+            if (result == null)
+            {
+                _lambdaRewrite = RewriteAction.None;
+
+                VerifyTemps();
+
+                return lambda;
+            }
+
+            var body = result.Value;
             _lambdaRewrite = body.Action;
 
             VerifyTemps();
@@ -83,7 +94,7 @@ namespace System.Linq.Expressions.Compiler
             return clone;
         }
 
-        private static bool IsRefInstance(Expression? instance)
+        private static bool IsRefInstance(Expression instance)
         {
             // Primitive value types are okay because they are all read-only,
             // but we can't rely on this for non-primitive types. So we have
@@ -91,7 +102,7 @@ namespace System.Linq.Expressions.Compiler
             return instance?.Type.IsValueType == true && Type.GetTypeCode(instance.Type) == TypeCode.Object;
         }
 
-        private static void RequireNoRefArgs(MethodBase method)
+        private static void RequireNoRefArgs(MethodBase? method)
         {
             if (method?.GetParameters().Any(p => p.ParameterType.IsByRef) == true)
             {
@@ -130,12 +141,12 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert((result.Action == RewriteAction.None) ^ (node != result.Node), "rewrite action does not match node object identity");
 
             // if the original node is an extension node, it should have been rewritten
-            Debug.Assert(result.Node.NodeType != ExpressionType.Extension, "extension nodes must be rewritten");
+            Debug.Assert(result.Node!.NodeType != ExpressionType.Extension, "extension nodes must be rewritten");
 
             // if we have Copy, then node type must match
             Debug.Assert
             (
-                result.Action != RewriteAction.Copy || node.NodeType == result.Node.NodeType || node.CanReduce,
+                result.Action != RewriteAction.Copy || node.NodeType == result.Node!.NodeType || node.CanReduce,
                 "rewrite action does not match node object kind"
             );
 
@@ -144,7 +155,7 @@ namespace System.Linq.Expressions.Compiler
             // an extension node are more lenient, see Expression.ReduceAndCheck())
             Debug.Assert
             (
-                node.Type.IsReferenceAssignableFromInternal(result.Node.Type),
+                node.Type.IsReferenceAssignableFromInternal(result.Node!.Type),
                 "rewritten object must be reference assignable to the original type"
             );
         }
@@ -210,7 +221,8 @@ namespace System.Linq.Expressions.Compiler
             var node = (BlockExpression)expr;
 
             var count = node.ExpressionCount;
-            (RewriteAction action, Expression[] clone)? x = null;
+            var action = RewriteAction.None;
+            Expression[]? clone = null;
             for (var i = 0; i < count; i++)
             {
                 var expression = node.GetExpression(i);
@@ -218,34 +230,26 @@ namespace System.Linq.Expressions.Compiler
                 // All statements within the block execute at the
                 // same stack state.
                 var rewritten = RewriteExpression(expression, stack);
-                var action = rewritten.Action;
+                action |= rewritten.Action;
 
-                if (!x.HasValue)
+                if (clone == null && rewritten.Action != RewriteAction.None)
                 {
-                    if (action != RewriteAction.None)
-                    {
-                        var clone = Clone(node.Expressions.AsArrayInternal(), i);
-                        clone[i] = rewritten.Node;
-                        x = (action, clone);
-                    }
+                    clone = Clone(node.Expressions.AsArrayInternal(), i);
                 }
-                else
+
+                if (clone != null)
                 {
-                    var tmp = x.Value;
-                    tmp.clone[i] = rewritten.Node;
-                    tmp.action |= rewritten.Action;
-                    x = tmp;
+                    clone[i] = rewritten.Node;
                 }
             }
 
-            if (x.HasValue)
+            if (clone != null)
             {
                 // Okay to wrap since we know no one can mutate the clone array.
-                expr = node.Rewrite(null, x.Value.clone);
-                return new Result(x.Value.action, expr);
+                expr = node.Rewrite(null, clone);
             }
 
-            return new Result(RewriteAction.None, expr);
+            return new Result(action, expr);
         }
 
         private Result RewriteConditionalExpression(Expression expr, Stack stack)
@@ -285,10 +289,16 @@ namespace System.Linq.Expressions.Compiler
             return cr.Finish(cr.Rewrite ? node.Rewrite(cr[0, -1]) : expr);
         }
 
-        private Result RewriteExpressionFreeTemps(Expression expression, Stack stack)
+        private Result? RewriteExpressionFreeTemps(Expression? expression, Stack stack)
         {
             var mark = Mark();
-            var result = RewriteExpression(expression, stack);
+            Result? result = null;
+
+            if (expression != null)
+            {
+                result = RewriteExpression(expression, stack);
+            }
+
             Free(mark);
             return result;
         }
@@ -320,10 +330,23 @@ namespace System.Linq.Expressions.Compiler
 
             // Goto requires empty stack to execute so the expression is
             // going to execute on an empty stack.
-            var value = RewriteExpressionFreeTemps(node.Value, Stack.Empty);
+            var result = RewriteExpressionFreeTemps(node.Value, Stack.Empty);
+
+            if (result == null)
+            {
+                // However, the statement itself needs an empty stack for itself
+                // so if stack is not empty, rewrite to empty the stack.
+                if (stack != Stack.Empty)
+                {
+                    expr = Expression.MakeGoto(node.Kind, node.Target, null, node.Type);
+                }
+
+                return new Result(RewriteAction.None, expr);
+            }
 
             // However, the statement itself needs an empty stack for itself
             // so if stack is not empty, rewrite to empty the stack.
+            var value = result.Value;
             var action = value.Action;
             if (stack != Stack.Empty)
             {
@@ -816,9 +839,9 @@ namespace System.Linq.Expressions.Compiler
             var node = (SwitchExpression)expr;
 
             // The switch statement test is emitted on the stack in current state.
-            var switchValue = RewriteExpressionFreeTemps(node.SwitchValue, stack);
+            var result = RewriteExpressionFreeTemps(node.SwitchValue, stack);
 
-            var action = switchValue.Action;
+            var action = result?.Action ?? RewriteAction.None;
             var cases = node.Cases.AsArrayInternal();
             SwitchCase[]? clone = null;
             for (var i = 0; i < cases.Length; i++)
@@ -885,7 +908,7 @@ namespace System.Linq.Expressions.Compiler
                 cases = clone;
             }
 
-            expr = new SwitchExpression(node.Type, switchValue.Node, defaultBody.Node, node.Comparison, cases);
+            expr = new SwitchExpression(node.Type, result?.Node, defaultBody.Node, node.Comparison, cases);
 
             return new Result(action, expr);
         }
@@ -899,8 +922,19 @@ namespace System.Linq.Expressions.Compiler
             // it so we need to restore stack after unconditional throw to make JIT happy
             // this has an effect of executing Throw on an empty stack.
 
-            var value = RewriteExpressionFreeTemps(node.Operand, Stack.Empty);
+            var result = RewriteExpressionFreeTemps(node.Operand, Stack.Empty);
 
+            if (result == null)
+            {
+                if (stack != Stack.Empty)
+                {
+                    expr = new UnaryExpression(ExpressionType.Throw, null, node.Type, null);
+                }
+
+                return new Result(RewriteAction.None, expr);
+            }
+
+            var value = result.Value;
             var action = value.Action;
 
             if (stack != Stack.Empty)
@@ -924,48 +958,8 @@ namespace System.Linq.Expressions.Compiler
             // child nodes execute at empty stack.
             var body = RewriteExpression(node.Body, Stack.Empty);
             var handlers = node.Handlers.AsArrayInternal();
-            CatchBlock[] clone = null;
 
-            var action = body.Action;
-            if (handlers != null)
-            {
-                for (var i = 0; i < handlers.Length; i++)
-                {
-                    var curAction = body.Action;
-
-                    var handler = handlers[i];
-
-                    var filter = handler.Filter;
-                    if (handler.Filter != null)
-                    {
-                        // Our code gen saves the incoming filter value and provides it as a variable so the stack is empty
-                        var rfault = RewriteExpression(handler.Filter, Stack.Empty);
-                        action |= rfault.Action;
-                        curAction |= rfault.Action;
-                        filter = rfault.Node;
-                    }
-
-                    // Catch block starts with an empty stack (guaranteed by TryStatement).
-                    var rbody = RewriteExpression(handler.Body, Stack.Empty);
-                    action |= rbody.Action;
-                    curAction |= rbody.Action;
-
-                    if (curAction != RewriteAction.None)
-                    {
-                        handler = Expression.MakeCatchBlock(handler.Test, handler.Variable, rbody.Node, filter);
-
-                        if (clone == null)
-                        {
-                            clone = Clone(handlers, i);
-                        }
-                    }
-
-                    if (clone != null)
-                    {
-                        clone[i] = handler;
-                    }
-                }
-            }
+            var action = ProcessHandlers(body, ref handlers);
 
             var fault = RewriteExpression(node.Fault, Stack.Empty);
             action |= fault.Action;
@@ -984,14 +978,59 @@ namespace System.Linq.Expressions.Compiler
                 return new Result(action, expr);
             }
 
+            expr = new TryExpression(node.Type, body.Node, @finally.Node, fault.Node, handlers);
+
+            return new Result(action, expr);
+        }
+
+        private RewriteAction ProcessHandlers(Result body, ref CatchBlock[] handlers)
+        {
+            var action = body.Action;
+
+            CatchBlock[]? clone = null;
+            for (var index = 0; index < handlers.Length; index++)
+            {
+                var curAction = body.Action;
+
+                var handler = handlers[index];
+
+                var filter = handler.Filter;
+                if (handler.Filter != null)
+                {
+                    // Our code gen saves the incoming filter value and provides it as a variable so the stack is empty
+                    var catchFilter = RewriteExpression(handler.Filter, Stack.Empty);
+                    action |= catchFilter.Action;
+                    curAction |= catchFilter.Action;
+                    filter = catchFilter.Node;
+                }
+
+                // Catch block starts with an empty stack (guaranteed by TryStatement).
+                var catchBody = RewriteExpression(handler.Body, Stack.Empty);
+                action |= catchBody.Action;
+                curAction |= catchBody.Action;
+
+                if (curAction != RewriteAction.None)
+                {
+                    handler = Expression.MakeCatchBlock(handler.Test, handler.Variable, catchBody.Node, filter);
+
+                    if (clone == null)
+                    {
+                        clone = Clone(handlers, index);
+                    }
+                }
+
+                if (clone != null)
+                {
+                    clone[index] = handler;
+                }
+            }
+
             if (clone != null)
             {
                 handlers = clone;
             }
 
-            expr = new TryExpression(node.Type, body.Node, @finally.Node, fault.Node, handlers);
-
-            return new Result(action, expr);
+            return action;
         }
 
         private Result RewriteTypeBinaryExpression(Expression expr, Stack stack)
@@ -1017,7 +1056,19 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(node.NodeType != ExpressionType.Throw, "unexpected Throw");
 
             // Operand is emitted on top of the stack as-is.
-            var expression = RewriteExpression(node.Operand, stack);
+            Result? result = null;
+
+            if (node.Operand != null)
+            {
+                result = RewriteExpression(node.Operand, stack);
+            }
+
+            if (result == null)
+            {
+                return new Result(RewriteAction.None, expr);
+            }
+
+            var expression = result.Value;
 
             if (expression.Action == RewriteAction.SpillStack)
             {

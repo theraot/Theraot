@@ -947,7 +947,7 @@ namespace System.Linq.Expressions.Compiler
             EmitMemberInit(binding.Bindings, false, type);
         }
 
-        private void EmitMethodCall(Expression? obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitMethodCall(Expression obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             // Emit instance, if calling an instance method
             Type? objectType = null;

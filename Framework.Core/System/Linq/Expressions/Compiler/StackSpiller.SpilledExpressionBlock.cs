@@ -4,6 +4,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
@@ -30,6 +31,7 @@ namespace System.Linq.Expressions.Compiler
 
     internal partial class StackSpiller
     {
+        [return: NotNull]
         private static Expression MakeBlock(ArrayBuilder<Expression> expressions)
         {
             return new SpilledExpressionBlock(expressions.ToArray());

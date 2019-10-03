@@ -18,12 +18,12 @@ namespace System.Dynamic.Utils
 {
     internal static class ExpressionUtils
     {
-        public static void RequiresCanRead([NotNull] Expression? expression, string paramName)
+        public static void RequiresCanRead([NotNull] Expression expression, string paramName)
         {
             RequiresCanRead(expression, paramName, -1);
         }
 
-        public static void RequiresCanRead([NotNull] Expression? expression, string paramName, int idx)
+        public static void RequiresCanRead([NotNull] Expression expression, string paramName, int idx)
         {
             ContractUtils.RequiresNotNull(expression, paramName, idx);
 
@@ -98,7 +98,7 @@ namespace System.Dynamic.Utils
         }
 
         // Attempts to auto-quote the expression tree. Returns true if it succeeded, false otherwise.
-        public static bool TryQuote(Type parameterType, ref Expression argument)
+        public static bool TryQuote(Type parameterType, [NotNull] ref Expression argument)
         {
             // We used to allow quoting of any expression, but the behavior of
             // quote (produce a new tree closed over parameter values), only

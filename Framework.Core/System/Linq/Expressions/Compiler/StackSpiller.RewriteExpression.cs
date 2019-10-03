@@ -18,11 +18,6 @@ namespace System.Linq.Expressions.Compiler
         /// <returns>Rewritten expression.</returns>
         private Result RewriteExpression(Expression node, Stack stack)
         {
-            if (node == null)
-            {
-                return new Result(RewriteAction.None, null);
-            }
-
             // When compiling deep trees, we run the risk of triggering a terminating StackOverflowException,
             // so we use the StackGuard utility here to probe for sufficient stack and continue the work on
             // another thread when we run out of stack space.

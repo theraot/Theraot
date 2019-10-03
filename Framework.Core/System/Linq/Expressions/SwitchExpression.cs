@@ -232,7 +232,7 @@ namespace System.Linq.Expressions
         private readonly SwitchCase[] _cases;
         private readonly ReadOnlyCollectionEx<SwitchCase> _casesAsReadOnlyCollection;
 
-        internal SwitchExpression(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, SwitchCase[] cases)
+        internal SwitchExpression(Type type, Expression? switchValue, Expression defaultBody, MethodInfo comparison, SwitchCase[] cases)
         {
             Type = type;
             SwitchValue = switchValue;
@@ -268,7 +268,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the test for the switch.
         /// </summary>
-        public Expression SwitchValue { get; }
+        public Expression? SwitchValue { get; }
 
         /// <inheritdoc />
         /// <summary>

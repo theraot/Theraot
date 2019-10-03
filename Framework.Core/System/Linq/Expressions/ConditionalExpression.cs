@@ -7,6 +7,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using AstUtils = System.Linq.Expressions.Utils;
 
@@ -74,6 +75,7 @@ namespace System.Linq.Expressions
             return Condition(test, ifTrue, ifFalse, Type);
         }
 
+        [return: NotNull]
         internal static ConditionalExpression Make(Expression test, Expression ifTrue, Expression ifFalse, Type type)
         {
             if (ifTrue.Type != type || ifFalse.Type != type)
@@ -89,6 +91,7 @@ namespace System.Linq.Expressions
             return new FullConditionalExpression(test, ifTrue, ifFalse);
         }
 
+        [return: NotNull]
         internal virtual Expression GetFalse()
         {
             // Using a singleton here to ensure a stable object identity for IfFalse, which Update relies on.

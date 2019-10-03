@@ -19,6 +19,11 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberAssignment" />.</returns>
         public static MemberAssignment Bind(MemberInfo member, Expression expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             ContractUtils.RequiresNotNull(member, nameof(member));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             ValidateSettableFieldOrPropertyMember(member, out var memberType);
@@ -53,7 +58,7 @@ namespace System.Linq.Expressions
             }
 
             // Null paramName as there are two paths here with different parameter names at the API
-            TypeUtils.ValidateType(decType, null);
+            TypeUtils.ValidateType(decType, nameof(member));
             switch (member)
             {
                 case PropertyInfo pi:

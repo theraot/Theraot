@@ -40,6 +40,7 @@ namespace System.Linq.Expressions.Compiler
                     case MemberBindingType.MemberBinding:
                         var member = (MemberMemberBinding)binding;
                         return new MemberMemberBindingRewriter(member, spiller, stack);
+
                     default:
                         break;
                 }
@@ -109,6 +110,7 @@ namespace System.Linq.Expressions.Compiler
                         }
 
                         return new MemberListBinding(Binding.Member, ReadOnlyCollectionEx.Create(newInitializer));
+
                     default:
                         break;
                 }
@@ -173,6 +175,7 @@ namespace System.Linq.Expressions.Compiler
 
                     case RewriteAction.Copy:
                         return new MemberAssignment(Binding.Member, _rhs);
+
                     default:
                         break;
                 }
@@ -231,6 +234,7 @@ namespace System.Linq.Expressions.Compiler
                         }
 
                         return new MemberMemberBinding(Binding.Member, newBindings);
+
                     default:
                         break;
                 }

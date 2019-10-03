@@ -133,7 +133,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(type.IsValueType);
 
             // Unbox leaves a pointer to the boxed value on the stack
-            EmitExpression(node.Operand);
+            EmitExpression(node.Operand!);
             IL.Emit(OpCodes.Unbox, type);
         }
 

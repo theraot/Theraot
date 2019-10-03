@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             var convert = (UnaryExpression)expression;
-            return convert.Type.IsReferenceAssignableFromInternal(convert.Operand.Type) ? convert.Operand : expression;
+            return convert.Type.IsReferenceAssignableFromInternal(convert.Operand!.Type) ? convert.Operand : expression;
         }
 
         private static bool NotEmpty(Expression node)
@@ -219,7 +219,7 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            EmitExpressionAndBranch(!branch, node.Operand, label);
+            EmitExpressionAndBranch(!branch, node.Operand!, label);
         }
 
         private void EmitBranchOp(bool branch, Label label)

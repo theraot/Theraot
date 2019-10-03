@@ -1285,7 +1285,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private void ParenthesizedVisit(Expression parent, Expression? nodeToVisit)
+        private void ParenthesizedVisit(Expression parent, Expression nodeToVisit)
         {
             if (NeedsParentheses(parent, nodeToVisit))
             {

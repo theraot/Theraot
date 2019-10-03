@@ -5,6 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
@@ -218,7 +219,8 @@ namespace System.Linq.Expressions
         ///     the <see cref="Type" /> property set to <paramref name="type" />,
         ///     and <paramref name="value" /> to be passed to the target label upon jumping.
         /// </returns>
-        public static GotoExpression MakeGoto(GotoExpressionKind kind, LabelTarget target, Expression value, Type type)
+        [return: NotNull]
+        public static GotoExpression MakeGoto(GotoExpressionKind kind, LabelTarget target, Expression? value, Type type)
         {
             ValidateGoto(target, ref value, nameof(target), nameof(value), type);
             return new GotoExpression(kind, target, value, type);
@@ -292,7 +294,7 @@ namespace System.Linq.Expressions
             return MakeGoto(GotoExpressionKind.Return, target, value, type);
         }
 
-        private static void ValidateGoto(LabelTarget target, ref Expression value, string targetParameter, string valueParameter, Type type)
+        private static void ValidateGoto(LabelTarget target, ref Expression? value, string targetParameter, string valueParameter, Type type)
         {
             ContractUtils.RequiresNotNull(target, targetParameter);
             if (value == null)
@@ -314,7 +316,7 @@ namespace System.Linq.Expressions
         }
 
         // Standard argument validation, taken from ValidateArgumentTypes
-        private static void ValidateGotoType(Type expectedType, ref Expression value, string paramName)
+        private static void ValidateGotoType(Type expectedType, [NotNull] ref Expression value, string paramName)
         {
             ExpressionUtils.RequiresCanRead(value, paramName);
             // C# auto-quotes return values, so we'll do that here
@@ -332,7 +334,7 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(GotoExpressionProxy))]
     public sealed class GotoExpression : Expression
     {
-        internal GotoExpression(GotoExpressionKind kind, LabelTarget target, Expression value, Type type)
+        internal GotoExpression(GotoExpressionKind kind, LabelTarget target, Expression? value, Type type)
         {
             Kind = kind;
             Value = value;
@@ -370,7 +372,7 @@ namespace System.Linq.Expressions
         ///     The value passed to the target, or null if the target is of type
         ///     System.Void.
         /// </summary>
-        public Expression Value { get; }
+        public Expression? Value { get; }
 
         /// <summary>
         ///     Creates a new expression that is like this one, but using the

@@ -22,7 +22,7 @@ namespace System.Linq.Expressions
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Defines a <see cref="System.Linq.Expressions.Expression`1" /> node.
+    ///     Defines a <see cref="System.Linq.Expressions.Expression{TDelegate}"/> node.
     ///     This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
@@ -851,7 +851,7 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    ///     Creates a <see cref="T:System.Linq.Expressions.LambdaExpression" /> node.
+    ///     Creates a <see cref="System.Linq.Expressions.LambdaExpression" /> node.
     ///     This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <remarks>
@@ -878,10 +878,10 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
+        ///     <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Lambda;
 
         /// <summary>
@@ -902,11 +902,11 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
         /// <returns>
-        ///     The <see cref="P:System.Linq.Expressions.LambdaExpression.Type" /> that represents the static type of the
+        ///     The <see cref="System.Linq.Expressions.LambdaExpression.Type" /> that represents the static type of the
         ///     expression.
         /// </returns>
         public sealed override Type Type => TypeCore;

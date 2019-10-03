@@ -19,7 +19,7 @@ namespace System.Dynamic.Utils
             .Select(i => i.GetGenericTypeDefinition())
             .ToArray();
 
-        internal static bool AreEquivalent(Type t1, Type t2)
+        internal static bool AreEquivalent(Type? t1, Type t2)
         {
             return t1 != null && t1 == t2;
         }

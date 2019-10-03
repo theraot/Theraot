@@ -5,6 +5,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 
@@ -347,18 +348,21 @@ namespace System.Linq.Expressions
             return expression == Expression ? this : MakeMemberAccess(expression, Member);
         }
 
+        [return: NotNull]
         internal static PropertyExpression Make(Expression expression, PropertyInfo property)
         {
             Debug.Assert(property != null);
             return new PropertyExpression(expression, property);
         }
 
+        [return: NotNull]
         internal static FieldExpression Make(Expression expression, FieldInfo field)
         {
             Debug.Assert(field != null);
             return new FieldExpression(expression, field);
         }
 
+        [return: NotNull]
         internal static MemberExpression Make(Expression expression, MemberInfo member)
         {
             return !(member is FieldInfo fi) ? (MemberExpression)Make(expression, (PropertyInfo)member) : Make(expression, fi);

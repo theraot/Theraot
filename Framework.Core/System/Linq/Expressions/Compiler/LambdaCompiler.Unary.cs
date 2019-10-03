@@ -57,7 +57,7 @@ namespace System.Linq.Expressions.Compiler
                 // an expression tree and then compiling it.  We can live with this
                 // discrepancy however.
 
-                if (node.IsLifted && (!node.Type.IsValueType || !node.Operand.Type.IsValueType))
+                if (node.IsLifted && (!node.Type.IsValueType || !node.Operand!.Type.IsValueType))
                 {
                     var pis = node.Method.GetParameters();
                     Debug.Assert(pis.Length == 1);
@@ -67,7 +67,7 @@ namespace System.Linq.Expressions.Compiler
                         paramType = paramType.GetElementType();
                     }
 
-                    var operand = Expression.Convert(node.Operand, paramType);
+                    var operand = Expression.Convert(node.Operand!, paramType);
                     Debug.Assert(operand.Method == null);
 
                     node = Expression.Convert(Expression.Call(node.Method, operand), node.Type);
@@ -83,11 +83,11 @@ namespace System.Linq.Expressions.Compiler
 
             if (node.Type == typeof(void))
             {
-                EmitExpressionAsVoid(node.Operand, flags);
+                EmitExpressionAsVoid(node.Operand!, flags);
             }
             else
             {
-                if (TypeUtils.AreEquivalent(node.Operand.Type, node.Type))
+                if (TypeUtils.AreEquivalent(node.Operand!.Type, node.Type))
                 {
                     EmitExpression(node.Operand, flags);
                 }
@@ -159,7 +159,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitUnaryMethod(node, flags);
             }
-            else if (node.NodeType == ExpressionType.NegateChecked && node.Operand.Type.IsInteger())
+            else if (node.NodeType == ExpressionType.NegateChecked && node.Operand!.Type.IsInteger())
             {
                 var type = node.Type;
                 Debug.Assert(type == node.Operand.Type);
@@ -203,8 +203,8 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                EmitExpression(node.Operand);
-                EmitUnaryOperator(node.NodeType, node.Operand.Type, node.Type);
+                EmitExpression(node.Operand!);
+                EmitUnaryOperator(node.NodeType, node.Operand!.Type, node.Type);
             }
         }
 
@@ -217,7 +217,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.IsLifted)
             {
-                var v = Expression.Variable(node.Operand.Type.GetNonNullable(), null);
+                var v = Expression.Variable(node.Operand!.Type.GetNonNullable(), null);
                 var mc = Expression.Call(node.Method, v);
 
                 var resultType = mc.Type.GetNullable();
@@ -226,7 +226,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                EmitMethodCallExpression(Expression.Call(node.Method, node.Operand), flags);
+                EmitMethodCallExpression(Expression.Call(node.Method, node.Operand!), flags);
             }
         }
 
@@ -382,7 +382,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(node.Type.IsValueType);
 
             // Unbox_Any leaves the value on the stack
-            EmitExpression(node.Operand);
+            EmitExpression(node.Operand!);
             IL.Emit(OpCodes.Unbox_Any, node.Type);
         }
     }

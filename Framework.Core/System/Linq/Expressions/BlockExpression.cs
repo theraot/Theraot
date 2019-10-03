@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Threading;
 using Theraot.Collections;
@@ -951,13 +952,16 @@ namespace System.Linq.Expressions
         /// <param name="variables">The variables in the block.</param>
         /// <param name="expressions">The expressions in the block.</param>
         /// <returns>The created <see cref="BlockExpression" />.</returns>
+        [return: NotNull]
         public static BlockExpression Block(IEnumerable<ParameterExpression> variables, IEnumerable<Expression> expressions)
         {
             ContractUtils.RequiresNotNull(expressions, nameof(expressions));
             var variableArray = variables.AsArrayInternal();
             var expressionArray = expressions.AsArrayInternal();
             RequiresCanRead(expressionArray, nameof(expressions));
-            return variableArray.Length == 0 ? GetOptimizedBlockExpression(expressionArray) : BlockCore(null, variableArray, expressionArray);
+            return variableArray.Length == 0
+                ? GetOptimizedBlockExpression(expressionArray)
+                : BlockCore(null, variableArray, expressionArray);
         }
 
         /// <summary>
@@ -1020,6 +1024,7 @@ namespace System.Linq.Expressions
             }
         }
 
+        [return: NotNull]
         private static BlockExpression BlockCore(Type? type, ParameterExpression[] variables, Expression[] expressions)
         {
             ValidateVariables(variables, nameof(variables));
@@ -1061,6 +1066,7 @@ namespace System.Linq.Expressions
             }
         }
 
+        [return: NotNull]
         private static BlockExpression GetOptimizedBlockExpression(Expression[] expressions)
         {
             switch (expressions.Length)

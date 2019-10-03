@@ -1199,7 +1199,7 @@ namespace System.Linq.Expressions.Interpreter
                 var parameters = method.GetParameters();
                 Debug.Assert(parameters.Length == 1);
                 var parameter = parameters[0];
-                var operand = node.Operand;
+                var operand = node.Operand!;
                 var operandType = operand.Type;
                 var opTemp = _locals.DefineLocal(Expression.Parameter(operandType), Instructions.Count);
                 ByRefUpdater updater = null;
@@ -1208,17 +1208,17 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     if (node.IsLifted)
                     {
-                        Compile(node.Operand);
+                        Compile(operand);
                     }
                     else
                     {
-                        updater = CompileAddress(node.Operand, 0);
+                        updater = CompileAddress(operand, 0);
                         parameterType = parameterType.GetElementType();
                     }
                 }
                 else
                 {
-                    Compile(node.Operand);
+                    Compile(operand);
                 }
 
                 Instructions.EmitStoreLocal(opTemp.Index);
@@ -1258,12 +1258,12 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (node.Type == typeof(void))
             {
-                CompileAsVoid(node.Operand);
+                CompileAsVoid(node.Operand!);
             }
             else
             {
-                Compile(node.Operand);
-                CompileConvertToType(node.Operand.Type, node.Type, node.NodeType == ExpressionType.ConvertChecked, node.IsLiftedToNull);
+                Compile(node.Operand!);
+                CompileConvertToType(node.Operand!.Type, node.Type, node.NodeType == ExpressionType.ConvertChecked, node.IsLiftedToNull);
             }
         }
 
@@ -2315,8 +2315,8 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileNotExpression(UnaryExpression node)
         {
-            Compile(node.Operand);
-            Instructions.EmitNot(node.Operand.Type);
+            Compile(node.Operand!);
+            Instructions.EmitNot(node.Operand!.Type);
         }
 
         private void CompileOrElseBinaryExpression(Expression expr)
@@ -2335,7 +2335,7 @@ namespace System.Linq.Expressions.Interpreter
             var unary = (UnaryExpression)expr;
 
             var visitor = new QuoteVisitor();
-            visitor.Visit(unary.Operand);
+            visitor.Visit(unary.Operand!);
 
             var mapping = new Dictionary<ParameterExpression, LocalVariable>();
 
@@ -2345,7 +2345,7 @@ namespace System.Linq.Expressions.Interpreter
                 mapping[local] = ResolveLocal(local);
             }
 
-            Instructions.Emit(new QuoteInstruction(unary.Operand, mapping.Count > 0 ? mapping : null));
+            Instructions.Emit(new QuoteInstruction(unary.Operand!, mapping.Count > 0 ? mapping : null));
         }
 
         private void CompileRuntimeVariablesExpression(Expression expr)
@@ -2776,7 +2776,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileTypeAsExpression(UnaryExpression node)
         {
-            Compile(node.Operand);
+            Compile(node.Operand!);
             Instructions.EmitTypeAs(node.Type);
         }
 
@@ -2866,32 +2866,32 @@ namespace System.Linq.Expressions.Interpreter
                         break;
 
                     case ExpressionType.ArrayLength:
-                        Compile(node.Operand);
+                        Compile(node.Operand!);
                         Instructions.EmitArrayLength();
                         break;
 
                     case ExpressionType.NegateChecked:
-                        Compile(node.Operand);
+                        Compile(node.Operand!);
                         Instructions.EmitNegateChecked(node.Type);
                         break;
 
                     case ExpressionType.Negate:
-                        Compile(node.Operand);
+                        Compile(node.Operand!);
                         Instructions.EmitNegate(node.Type);
                         break;
 
                     case ExpressionType.Increment:
-                        Compile(node.Operand);
+                        Compile(node.Operand!);
                         Instructions.EmitIncrement(node.Type);
                         break;
 
                     case ExpressionType.Decrement:
-                        Compile(node.Operand);
+                        Compile(node.Operand!);
                         Instructions.EmitDecrement(node.Type);
                         break;
 
                     case ExpressionType.UnaryPlus:
-                        Compile(node.Operand);
+                        Compile(node.Operand!);
                         break;
 
                     case ExpressionType.IsTrue:
@@ -2909,7 +2909,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var node = (UnaryExpression)expr;
 
-            Compile(node.Operand);
+            Compile(node.Operand!);
 
             if (node.Type.IsValueType && !node.Type.IsNullable())
             {
@@ -3011,7 +3011,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void EmitUnaryBoolCheck(UnaryExpression node)
         {
-            Compile(node.Operand);
+            Compile(node.Operand!);
             if (node.IsLifted)
             {
                 var notNull = Instructions.MakeLabel();
@@ -3035,7 +3035,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void EmitUnaryMethodCall(UnaryExpression node)
         {
-            Compile(node.Operand);
+            Compile(node.Operand!);
             if (node.IsLifted)
             {
                 var notNull = Instructions.MakeLabel();
