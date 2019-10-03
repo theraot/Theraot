@@ -14,14 +14,24 @@ namespace System.Collections.ObjectModel
         }
     }
 
+#if LESSTHAN_NET45
+
+    public partial class ReadOnlyCollectionEx<T> : IReadOnlyList<T>
+    {
+        // Empty
+    }
+
+#endif
+
     [Serializable]
     [ComVisible(false)]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
+    public
 #if LESSTHAN_NET45
-        , IReadOnlyList<T>
+    partial
 #endif
+    class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
     {
         public ReadOnlyCollectionEx(IList<T> wrapped)
             : base(wrapped)
@@ -30,6 +40,13 @@ namespace System.Collections.ObjectModel
         }
 
         internal IList<T> Wrapped { get; }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public void CopyTo(int index, T[] array, int arrayIndex, int count)
+        {
+            Extensions.CanCopyTo(Count - index, array, count);
+            Extensions.CopyTo(this, index, array, arrayIndex, count);
+        }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public void CopyTo(T[] array)
@@ -44,21 +61,6 @@ namespace System.Collections.ObjectModel
             Extensions.CopyTo(this, array, arrayIndex, count);
         }
 
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public void CopyTo(int index, T[] array, int arrayIndex, int count)
-        {
-            Extensions.CanCopyTo(Count - index, array, count);
-            Extensions.CopyTo(this, index, array, arrayIndex, count);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public T[] ToArray()
-        {
-            var array = new T[Wrapped.Count];
-            CopyTo(array);
-            return array;
-        }
-
         public override int GetHashCode()
         {
             // Copyright (c) Microsoft. All rights reserved.
@@ -71,6 +73,14 @@ namespace System.Collections.ObjectModel
             }
 
             return h;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public T[] ToArray()
+        {
+            var array = new T[Wrapped.Count];
+            CopyTo(array);
+            return array;
         }
     }
 }
