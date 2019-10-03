@@ -61,7 +61,7 @@ namespace System.Linq.Expressions
         /// <param name="comparison">The equality comparison method to use.</param>
         /// <param name="cases">The valid cases for this switch.</param>
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
-        public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo? comparison, params SwitchCase[] cases)
+        public static SwitchExpression Switch(Type type, Expression switchValue, Expression? defaultBody, MethodInfo? comparison, params SwitchCase[] cases)
         {
             return Switch(type, switchValue, defaultBody, comparison, (IEnumerable<SwitchCase>)cases);
         }
@@ -74,7 +74,7 @@ namespace System.Linq.Expressions
         /// <param name="comparison">The equality comparison method to use.</param>
         /// <param name="cases">The valid cases for this switch.</param>
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
-        public static SwitchExpression Switch(Expression switchValue, Expression defaultBody, MethodInfo comparison, IEnumerable<SwitchCase> cases)
+        public static SwitchExpression Switch(Expression switchValue, Expression? defaultBody, MethodInfo? comparison, IEnumerable<SwitchCase> cases)
         {
             return Switch(null, switchValue, defaultBody, comparison, cases);
         }
@@ -88,8 +88,13 @@ namespace System.Linq.Expressions
         /// <param name="comparison">The equality comparison method to use.</param>
         /// <param name="cases">The valid cases for this switch.</param>
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
-        public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo? comparison, IEnumerable<SwitchCase> cases)
+        public static SwitchExpression Switch(Type? type, Expression switchValue, Expression? defaultBody, MethodInfo? comparison, IEnumerable<SwitchCase>? cases)
         {
+            if (switchValue == null)
+            {
+                throw new ArgumentNullException(nameof(switchValue));
+            }
+
             ExpressionUtils.RequiresCanRead(switchValue, nameof(switchValue));
             if (switchValue.Type == typeof(void))
             {
@@ -224,7 +229,7 @@ namespace System.Linq.Expressions
     /// <inheritdoc />
     /// <summary>
     ///     Represents a control expression that handles multiple selections by passing control to a
-    ///     <see cref="T:System.Linq.Expressions.SwitchCase" />.
+    ///     <see cref="System.Linq.Expressions.SwitchCase" />.
     /// </summary>
     [DebuggerTypeProxy(typeof(SwitchExpressionProxy))]
     public sealed class SwitchExpression : Expression
@@ -232,7 +237,7 @@ namespace System.Linq.Expressions
         private readonly SwitchCase[] _cases;
         private readonly ReadOnlyCollectionEx<SwitchCase> _casesAsReadOnlyCollection;
 
-        internal SwitchExpression(Type type, Expression? switchValue, Expression defaultBody, MethodInfo comparison, SwitchCase[] cases)
+        internal SwitchExpression(Type type, Expression switchValue, Expression? defaultBody, MethodInfo? comparison, SwitchCase[] cases)
         {
             Type = type;
             SwitchValue = switchValue;
@@ -250,31 +255,31 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the equality comparison method, if any.
         /// </summary>
-        public MethodInfo Comparison { get; }
+        public MethodInfo? Comparison { get; }
 
         /// <summary>
         ///     Gets the test for the switch.
         /// </summary>
-        public Expression DefaultBody { get; }
+        public Expression? DefaultBody { get; }
 
         /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Switch;
 
         /// <summary>
         ///     Gets the test for the switch.
         /// </summary>
-        public Expression? SwitchValue { get; }
+        public Expression SwitchValue { get; }
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type { get; }
 
         internal bool IsLifted

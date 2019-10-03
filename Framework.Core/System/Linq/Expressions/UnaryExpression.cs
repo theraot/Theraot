@@ -984,7 +984,9 @@ namespace System.Linq.Expressions
         private static UnaryExpression GetUserDefinedCoercion(ExpressionType coercionType, Expression expression, Type convertToType)
         {
             var method = TypeHelper.GetUserDefinedConversionMethod(expression.Type, convertToType, false);
-            return method != null ? new UnaryExpression(coercionType, expression, convertToType, method) : null;
+            return method != null
+                ? new UnaryExpression(coercionType, expression, convertToType, method)
+                : null;
         }
 
         private static UnaryExpression GetUserDefinedCoercionOrThrow(ExpressionType coercionType, Expression expression, Type convertToType)

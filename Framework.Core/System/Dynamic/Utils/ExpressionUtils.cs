@@ -254,7 +254,7 @@ namespace System.Dynamic.Utils
             return SameElementsInCollectionWithPossibleNulls(replacement, current);
         }
 
-        internal static bool SameElements<T>(ref IEnumerable<T>? replacement, T[] current)
+        internal static bool SameElements<T>([NotNullIfNotNull("replacement")] ref IEnumerable<T>? replacement, T[] current)
             where T : class
         {
             if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.

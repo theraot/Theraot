@@ -270,7 +270,11 @@ namespace System.Linq.Expressions.Compiler
                     {
                         nodes.Add(c.Body);
                     }
-                    nodes.Add(@switch.DefaultBody);
+
+                    if (@switch.DefaultBody != null)
+                    {
+                        nodes.Add(@switch.DefaultBody);
+                    }
 
                     return (labelBlock, LabelScopeKind.Switch, nodes);
 

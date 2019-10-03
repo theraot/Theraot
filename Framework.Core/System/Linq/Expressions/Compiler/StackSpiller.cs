@@ -48,18 +48,8 @@ namespace System.Linq.Expressions.Compiler
             VerifyTemps();
 
             // Lambda starts with an empty stack.
-            var result = RewriteExpressionFreeTemps(lambda.Body, _startingStack);
+            var body = RewriteExpressionFreeTempsNotNull(lambda.Body, _startingStack);
 
-            if (result == null)
-            {
-                _lambdaRewrite = RewriteAction.None;
-
-                VerifyTemps();
-
-                return lambda;
-            }
-
-            var body = result.Value;
             _lambdaRewrite = body.Action;
 
             VerifyTemps();
@@ -289,18 +279,22 @@ namespace System.Linq.Expressions.Compiler
             return cr.Finish(cr.Rewrite ? node.Rewrite(cr[0, -1]) : expr);
         }
 
-        private Result? RewriteExpressionFreeTemps(Expression? expression, Stack stack)
+        private Result RewriteExpressionFreeTempsNotNull(Expression expression, Stack stack)
         {
             var mark = Mark();
-            Result? result = null;
-
-            if (expression != null)
-            {
-                result = RewriteExpression(expression, stack);
-            }
-
+            var result = RewriteExpression(expression, stack);
             Free(mark);
             return result;
+        }
+
+        private Result? RewriteExpressionFreeTemps(Expression? expression, Stack stack)
+        {
+            if (expression != null)
+            {
+                return RewriteExpressionFreeTempsNotNull(expression, stack);
+            }
+
+            return null;
         }
 
         private Result RewriteExtensionAssignment(BinaryExpression node, Stack stack)
@@ -839,9 +833,9 @@ namespace System.Linq.Expressions.Compiler
             var node = (SwitchExpression)expr;
 
             // The switch statement test is emitted on the stack in current state.
-            var result = RewriteExpressionFreeTemps(node.SwitchValue, stack);
+            var result = RewriteExpressionFreeTempsNotNull(node.SwitchValue, stack);
 
-            var action = result?.Action ?? RewriteAction.None;
+            var action = result.Action;
             var cases = node.Cases.AsArrayInternal();
             SwitchCase[]? clone = null;
             for (var i = 0; i < cases.Length; i++)
@@ -893,22 +887,29 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
 
-            // default body also runs on initial stack
-            var defaultBody = RewriteExpression(node.DefaultBody, stack);
-            action |= defaultBody.Action;
-
-            if (action == RewriteAction.None)
-            {
-                return new Result(action, expr);
-            }
-
             if (clone != null)
             {
                 // okay to wrap because we aren't modifying the array
                 cases = clone;
             }
 
-            expr = new SwitchExpression(node.Type, result?.Node, defaultBody.Node, node.Comparison, cases);
+            // default body also runs on initial stack
+
+            Result? defaultBody = null;
+
+            if (node.DefaultBody != null)
+            {
+                defaultBody = RewriteExpression(node.DefaultBody, stack);
+            }
+
+            action |= defaultBody?.Action ?? RewriteAction.None;
+
+            if (action == RewriteAction.None)
+            {
+                return new Result(action, expr);
+            }
+
+            expr = new SwitchExpression(node.Type, result.Node, defaultBody?.Node, node.Comparison, cases);
 
             return new Result(action, expr);
         }

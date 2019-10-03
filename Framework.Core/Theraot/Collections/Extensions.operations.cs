@@ -375,11 +375,10 @@ namespace Theraot.Collections
                 case ReadOnlyCollectionEx<T> readOnlyCollectionEx:
                     return readOnlyCollectionEx.Wrapped is T[] wrappedArray ? wrappedArray : readOnlyCollectionEx.ToArray();
 
+                case ICollection<T> collection when collection.Count == 0:
+                    return ArrayEx.Empty<T>();
+
                 case ICollection<T> collection:
-                    if (collection.Count == 0)
-                    {
-                        return ArrayEx.Empty<T>();
-                    }
                     var result = new T[collection.Count];
                     collection.CopyTo(result, 0);
                     return result;

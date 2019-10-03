@@ -605,6 +605,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitUnary(UnaryExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return ValidateUnary(node, node.Update(Visit(node.Operand)));
         }
 

@@ -435,7 +435,7 @@ namespace System.Linq.Expressions
             public string DebugView => _node.DebugView;
             public Expression DefaultBody => _node.DefaultBody;
             public ExpressionType NodeType => _node.NodeType;
-            public Expression? SwitchValue => _node.SwitchValue;
+            public Expression SwitchValue => _node.SwitchValue;
             public Type Type => _node.Type;
         }
 
