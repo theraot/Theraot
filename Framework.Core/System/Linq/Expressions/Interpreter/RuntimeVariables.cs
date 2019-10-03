@@ -19,7 +19,7 @@ namespace System.Linq.Expressions.Interpreter
 
         int IRuntimeVariables.Count => _boxes.Length;
 
-        object IRuntimeVariables.this[int index]
+        object? IRuntimeVariables.this[int index]
         {
             get => _boxes[index].Value;
             set => _boxes[index].Value = value;

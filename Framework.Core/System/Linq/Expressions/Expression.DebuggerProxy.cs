@@ -163,7 +163,7 @@ namespace System.Linq.Expressions
             public ExpressionType NodeType => _node.NodeType;
             public LabelTarget Target => _node.Target;
             public Type Type => _node.Type;
-            public Expression Value => _node.Value;
+            public Expression? Value => _node.Value;
         }
 
         internal class IndexExpressionProxy
@@ -179,7 +179,7 @@ namespace System.Linq.Expressions
             public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
-            public PropertyInfo Indexer => _node.Indexer;
+            public PropertyInfo? Indexer => _node.Indexer;
             public ExpressionType NodeType => _node.NodeType;
             public Expression Object => _node.Object;
             public Type Type => _node.Type;
@@ -383,7 +383,7 @@ namespace System.Linq.Expressions
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
             public bool IsByRef => _node.IsByRef;
-            public string Name => _node.Name;
+            public string? Name => _node.Name;
             public ExpressionType NodeType => _node.NodeType;
             public Type Type => _node.Type;
         }
@@ -435,7 +435,7 @@ namespace System.Linq.Expressions
             public string DebugView => _node.DebugView;
             public Expression DefaultBody => _node.DefaultBody;
             public ExpressionType NodeType => _node.NodeType;
-            public Expression SwitchValue => _node.SwitchValue;
+            public Expression? SwitchValue => _node.SwitchValue;
             public Type Type => _node.Type;
         }
 
@@ -491,9 +491,9 @@ namespace System.Linq.Expressions
             public string DebugView => _node.DebugView;
             public bool IsLifted => _node.IsLifted;
             public bool IsLiftedToNull => _node.IsLiftedToNull;
-            public MethodInfo Method => _node.Method;
+            public MethodInfo? Method => _node.Method;
             public ExpressionType NodeType => _node.NodeType;
-            public Expression Operand => _node.Operand;
+            public Expression? Operand => _node.Operand;
             public Type Type => _node.Type;
         }
     }

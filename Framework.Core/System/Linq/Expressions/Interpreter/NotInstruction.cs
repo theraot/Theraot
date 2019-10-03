@@ -11,7 +11,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class NotInstruction : Instruction
     {
-        public static Instruction Boolean, Int64, Int32, Int16, UInt64, UInt32, UInt16, Byte, SByte;
+        public static Instruction? Boolean, Int64, Int32, Int16, UInt64, UInt32, UInt16, Byte, SByte;
 
         private NotInstruction()
         {
@@ -26,15 +26,15 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Boolean: return Boolean ?? (Boolean = new NotBoolean());
-                case TypeCode.Int64: return Int64 ?? (Int64 = new NotInt64());
-                case TypeCode.Int32: return Int32 ?? (Int32 = new NotInt32());
-                case TypeCode.Int16: return Int16 ?? (Int16 = new NotInt16());
-                case TypeCode.UInt64: return UInt64 ?? (UInt64 = new NotUInt64());
-                case TypeCode.UInt32: return UInt32 ?? (UInt32 = new NotUInt32());
-                case TypeCode.UInt16: return UInt16 ?? (UInt16 = new NotUInt16());
-                case TypeCode.Byte: return Byte ?? (Byte = new NotByte());
-                case TypeCode.SByte: return SByte ?? (SByte = new NotSByte());
+                case TypeCode.Boolean: return Boolean ??= new NotBoolean();
+                case TypeCode.Int64: return Int64 ??= new NotInt64();
+                case TypeCode.Int32: return Int32 ??= new NotInt32();
+                case TypeCode.Int16: return Int16 ??= new NotInt16();
+                case TypeCode.UInt64: return UInt64 ??= new NotUInt64();
+                case TypeCode.UInt32: return UInt32 ??= new NotUInt32();
+                case TypeCode.UInt16: return UInt16 ??= new NotUInt16();
+                case TypeCode.Byte: return Byte ??= new NotByte();
+                case TypeCode.SByte: return SByte ??= new NotSByte();
                 default:
                     throw ContractUtils.Unreachable;
             }

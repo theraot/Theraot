@@ -1165,6 +1165,7 @@ namespace System.Linq.Expressions
         ///     Gets the operand of the unary operation.
         /// </summary>
         /// <returns> An <see cref="ExpressionType" /> that represents the operand of the unary operation.</returns>
+        /// <remarks>Can be null when <see cref="NodeType"/> is <see cref="ExpressionType.Throw"/>. </remarks>
         public Expression? Operand { get; }
 
         /// <inheritdoc />

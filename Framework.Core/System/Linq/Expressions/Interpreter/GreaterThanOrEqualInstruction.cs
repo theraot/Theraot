@@ -12,11 +12,11 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class GreaterThanOrEqualInstruction : Instruction
     {
-        private static Instruction _liftedToNullSByte, _liftedToNullInt16, _liftedToNullChar, _liftedToNullInt32, _liftedToNullInt64, _liftedToNullByte, _liftedToNullUInt16, _liftedToNullUInt32, _liftedToNullUInt64, _liftedToNullSingle, _liftedToNullDouble;
-        private static Instruction _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
-        private readonly object _nullValue;
+        private static Instruction? _liftedToNullSByte, _liftedToNullInt16, _liftedToNullChar, _liftedToNullInt32, _liftedToNullInt64, _liftedToNullByte, _liftedToNullUInt16, _liftedToNullUInt32, _liftedToNullUInt64, _liftedToNullSingle, _liftedToNullDouble;
+        private static Instruction? _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
+        private readonly object? _nullValue;
 
-        private GreaterThanOrEqualInstruction(object nullValue)
+        private GreaterThanOrEqualInstruction(object? nullValue)
         {
             _nullValue = nullValue;
         }
@@ -32,17 +32,17 @@ namespace System.Linq.Expressions.Interpreter
             {
                 switch (Type.GetTypeCode(type.GetNonNullable()))
                 {
-                    case TypeCode.SByte: return _liftedToNullSByte ?? (_liftedToNullSByte = new GreaterThanOrEqualSByte(null));
-                    case TypeCode.Int16: return _liftedToNullInt16 ?? (_liftedToNullInt16 = new GreaterThanOrEqualInt16(null));
-                    case TypeCode.Char: return _liftedToNullChar ?? (_liftedToNullChar = new GreaterThanOrEqualChar(null));
-                    case TypeCode.Int32: return _liftedToNullInt32 ?? (_liftedToNullInt32 = new GreaterThanOrEqualInt32(null));
-                    case TypeCode.Int64: return _liftedToNullInt64 ?? (_liftedToNullInt64 = new GreaterThanOrEqualInt64(null));
-                    case TypeCode.Byte: return _liftedToNullByte ?? (_liftedToNullByte = new GreaterThanOrEqualByte(null));
-                    case TypeCode.UInt16: return _liftedToNullUInt16 ?? (_liftedToNullUInt16 = new GreaterThanOrEqualUInt16(null));
-                    case TypeCode.UInt32: return _liftedToNullUInt32 ?? (_liftedToNullUInt32 = new GreaterThanOrEqualUInt32(null));
-                    case TypeCode.UInt64: return _liftedToNullUInt64 ?? (_liftedToNullUInt64 = new GreaterThanOrEqualUInt64(null));
-                    case TypeCode.Single: return _liftedToNullSingle ?? (_liftedToNullSingle = new GreaterThanOrEqualSingle(null));
-                    case TypeCode.Double: return _liftedToNullDouble ?? (_liftedToNullDouble = new GreaterThanOrEqualDouble(null));
+                    case TypeCode.SByte: return _liftedToNullSByte ??= new GreaterThanOrEqualSByte(null);
+                    case TypeCode.Int16: return _liftedToNullInt16 ??= new GreaterThanOrEqualInt16(null);
+                    case TypeCode.Char: return _liftedToNullChar ??= new GreaterThanOrEqualChar(null);
+                    case TypeCode.Int32: return _liftedToNullInt32 ??= new GreaterThanOrEqualInt32(null);
+                    case TypeCode.Int64: return _liftedToNullInt64 ??= new GreaterThanOrEqualInt64(null);
+                    case TypeCode.Byte: return _liftedToNullByte ??= new GreaterThanOrEqualByte(null);
+                    case TypeCode.UInt16: return _liftedToNullUInt16 ??= new GreaterThanOrEqualUInt16(null);
+                    case TypeCode.UInt32: return _liftedToNullUInt32 ??= new GreaterThanOrEqualUInt32(null);
+                    case TypeCode.UInt64: return _liftedToNullUInt64 ??= new GreaterThanOrEqualUInt64(null);
+                    case TypeCode.Single: return _liftedToNullSingle ??= new GreaterThanOrEqualSingle(null);
+                    case TypeCode.Double: return _liftedToNullDouble ??= new GreaterThanOrEqualDouble(null);
                     default:
                         throw ContractUtils.Unreachable;
                 }
@@ -50,17 +50,17 @@ namespace System.Linq.Expressions.Interpreter
 
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.SByte: return _sByte ?? (_sByte = new GreaterThanOrEqualSByte(Utils.BoxedFalse));
-                case TypeCode.Int16: return _int16 ?? (_int16 = new GreaterThanOrEqualInt16(Utils.BoxedFalse));
-                case TypeCode.Char: return _char ?? (_char = new GreaterThanOrEqualChar(Utils.BoxedFalse));
-                case TypeCode.Int32: return _int32 ?? (_int32 = new GreaterThanOrEqualInt32(Utils.BoxedFalse));
-                case TypeCode.Int64: return _int64 ?? (_int64 = new GreaterThanOrEqualInt64(Utils.BoxedFalse));
-                case TypeCode.Byte: return _byte ?? (_byte = new GreaterThanOrEqualByte(Utils.BoxedFalse));
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new GreaterThanOrEqualUInt16(Utils.BoxedFalse));
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new GreaterThanOrEqualUInt32(Utils.BoxedFalse));
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new GreaterThanOrEqualUInt64(Utils.BoxedFalse));
-                case TypeCode.Single: return _single ?? (_single = new GreaterThanOrEqualSingle(Utils.BoxedFalse));
-                case TypeCode.Double: return _double ?? (_double = new GreaterThanOrEqualDouble(Utils.BoxedFalse));
+                case TypeCode.SByte: return _sByte ??= new GreaterThanOrEqualSByte(Utils.BoxedFalse);
+                case TypeCode.Int16: return _int16 ??= new GreaterThanOrEqualInt16(Utils.BoxedFalse);
+                case TypeCode.Char: return _char ??= new GreaterThanOrEqualChar(Utils.BoxedFalse);
+                case TypeCode.Int32: return _int32 ??= new GreaterThanOrEqualInt32(Utils.BoxedFalse);
+                case TypeCode.Int64: return _int64 ??= new GreaterThanOrEqualInt64(Utils.BoxedFalse);
+                case TypeCode.Byte: return _byte ??= new GreaterThanOrEqualByte(Utils.BoxedFalse);
+                case TypeCode.UInt16: return _uInt16 ??= new GreaterThanOrEqualUInt16(Utils.BoxedFalse);
+                case TypeCode.UInt32: return _uInt32 ??= new GreaterThanOrEqualUInt32(Utils.BoxedFalse);
+                case TypeCode.UInt64: return _uInt64 ??= new GreaterThanOrEqualUInt64(Utils.BoxedFalse);
+                case TypeCode.Single: return _single ??= new GreaterThanOrEqualSingle(Utils.BoxedFalse);
+                case TypeCode.Double: return _double ??= new GreaterThanOrEqualDouble(Utils.BoxedFalse);
                 default:
                     throw ContractUtils.Unreachable;
             }
@@ -68,7 +68,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualByte : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualByte(object nullValue)
+            public GreaterThanOrEqualByte(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -93,7 +93,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualChar : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualChar(object nullValue)
+            public GreaterThanOrEqualChar(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -118,7 +118,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualDouble : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualDouble(object nullValue)
+            public GreaterThanOrEqualDouble(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -143,7 +143,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualInt16 : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualInt16(object nullValue)
+            public GreaterThanOrEqualInt16(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -168,7 +168,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualInt32 : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualInt32(object nullValue)
+            public GreaterThanOrEqualInt32(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -193,7 +193,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualInt64 : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualInt64(object nullValue)
+            public GreaterThanOrEqualInt64(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -218,7 +218,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualSByte : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualSByte(object nullValue)
+            public GreaterThanOrEqualSByte(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -243,7 +243,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualSingle : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualSingle(object nullValue)
+            public GreaterThanOrEqualSingle(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -268,7 +268,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualUInt16 : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualUInt16(object nullValue)
+            public GreaterThanOrEqualUInt16(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -293,7 +293,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualUInt32 : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualUInt32(object nullValue)
+            public GreaterThanOrEqualUInt32(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -318,7 +318,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class GreaterThanOrEqualUInt64 : GreaterThanOrEqualInstruction
         {
-            public GreaterThanOrEqualUInt64(object nullValue)
+            public GreaterThanOrEqualUInt64(object? nullValue)
                 : base(nullValue)
             {
                 // Empty

@@ -23,7 +23,7 @@ namespace System.Linq.Expressions.Interpreter
             return frame.Interpreter.Labels[LabelIndex];
         }
 
-        public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
+        public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
         {
             Debug.Assert(LabelIndex != UnknownInstrIndex);
             var targetIndex = labelIndexer(LabelIndex);

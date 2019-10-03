@@ -11,7 +11,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class LeftShiftInstruction : Instruction
     {
-        private static Instruction _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64;
+        private static Instruction? _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64;
 
         private LeftShiftInstruction()
         {
@@ -26,14 +26,14 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.SByte: return _sByte ?? (_sByte = new LeftShiftSByte());
-                case TypeCode.Int16: return _int16 ?? (_int16 = new LeftShiftInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new LeftShiftInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new LeftShiftInt64());
-                case TypeCode.Byte: return _byte ?? (_byte = new LeftShiftByte());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new LeftShiftUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new LeftShiftUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new LeftShiftUInt64());
+                case TypeCode.SByte: return _sByte ??= new LeftShiftSByte();
+                case TypeCode.Int16: return _int16 ??= new LeftShiftInt16();
+                case TypeCode.Int32: return _int32 ??= new LeftShiftInt32();
+                case TypeCode.Int64: return _int64 ??= new LeftShiftInt64();
+                case TypeCode.Byte: return _byte ??= new LeftShiftByte();
+                case TypeCode.UInt16: return _uInt16 ??= new LeftShiftUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new LeftShiftUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new LeftShiftUInt64();
                 default:
                     throw ContractUtils.Unreachable;
             }

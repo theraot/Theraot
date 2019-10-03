@@ -630,6 +630,7 @@ namespace System.Threading.Tasks
 #endif
         }
     }
+
 #endif
 
     public static partial class TaskEx
