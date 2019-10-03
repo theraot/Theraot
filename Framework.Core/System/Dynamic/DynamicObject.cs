@@ -515,7 +515,7 @@ namespace System.Dynamic
 
             // used in reference comparison, requires unique object identity
 
-            private static Expression[] BuildCallArgs<TBinder>(TBinder binder, Expression[] parameters, Expression arg0, Expression arg1)
+            private static Expression[] BuildCallArgs<TBinder>(TBinder binder, Expression[] parameters, Expression arg0, Expression? arg1)
                 where TBinder : DynamicMetaObjectBinder
             {
                 if (parameters != _noArgs)
