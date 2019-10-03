@@ -270,17 +270,20 @@ namespace System.Threading
                 return;
             }
 
-retry:
-            if (IsSet)
+            while (true)
             {
-                return;
-            }
+                if (IsSet)
+                {
+                    return;
+                }
 
-            if (spinCount > 0)
-            {
+                if (spinCount <= 0)
+                {
+                    break;
+                }
+
                 spinCount--;
                 spinWait.SpinOnce();
-                goto retry;
             }
 
             var handle = GetOrCreateWaitHandle();
@@ -581,19 +584,22 @@ retry_longTimeout:
                 return;
             }
 
-retry:
-            if (IsSet)
+            while (true)
             {
-                return;
-            }
+                if (IsSet)
+                {
+                    return;
+                }
 
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            if (spinCount > 0)
-            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (spinCount <= 0)
+                {
+                    break;
+                }
+
                 spinCount--;
                 spinWait.SpinOnce();
-                goto retry;
             }
 
             var handle = GetOrCreateWaitHandle();
