@@ -38,7 +38,6 @@ namespace System.Dynamic.Utils
 
         public static Expression[]? VisitBlockExpressions(ExpressionVisitor visitor, BlockExpression block)
         {
-            
             Expression[]? newNodes = null;
             for (int i = 0, n = block.ExpressionCount; i < n; i++)
             {
@@ -54,7 +53,7 @@ namespace System.Dynamic.Utils
                     newNodes = new Expression[n];
                     for (var j = 0; j < i; j++)
                     {
-                        newNodes[j] =  block.GetExpression(j);
+                        newNodes[j] = block.GetExpression(j);
                     }
 
                     newNodes[i] = node;
