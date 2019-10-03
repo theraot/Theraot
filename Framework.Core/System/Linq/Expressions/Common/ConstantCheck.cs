@@ -32,6 +32,7 @@ namespace System.Linq.Expressions
 
                 case ExpressionType.Default:
                     return e.Type.CanBeNull();
+
                 default:
                     return false;
             }
