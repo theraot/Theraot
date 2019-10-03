@@ -29,7 +29,7 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly object[] Objects;
 
         internal InstructionArray(int maxStackDepth, int maxContinuationDepth, Instruction[] instructions,
-            object[] objects, RuntimeLabel[] labels, IEnumerable<KeyValuePair<int, object>> debugCookies)
+            object[] objects, RuntimeLabel[] labels, IEnumerable<KeyValuePair<int, object>>? debugCookies)
         {
             MaxStackDepth = maxStackDepth;
             MaxContinuationDepth = maxContinuationDepth;
@@ -50,7 +50,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionList.DebugView.InstructionView[] /*!*/ A0 => GetInstructionViews(true);
+            public InstructionList.DebugView.InstructionView[] A0 => GetInstructionViews(true);
 
             public InstructionList.DebugView.InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {
@@ -101,42 +101,42 @@ namespace System.Linq.Expressions.Interpreter
         private const int _pushIntMaxCachedValue = 100;
         private const int _pushIntMinCachedValue = -100;
 
-        private static Instruction[] _assignLocal;
+        private static Instruction[]? _assignLocal;
 
-        private static Instruction[] _assignLocalBoxed;
+        private static Instruction[]? _assignLocalBoxed;
 
-        private static Instruction[] _assignLocalToClosure;
+        private static Instruction[]? _assignLocalToClosure;
 
         private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
-        private static Instruction _false;
-        private static Instruction[] _ints;
+        private static Instruction? _false;
+        private static Instruction[]? _ints;
 
         private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
 
-        private static Instruction[] _loadLocal;
+        private static Instruction[]? _loadLocal;
 
-        private static Instruction[] _loadLocalBoxed;
+        private static Instruction[]? _loadLocalBoxed;
 
-        private static Instruction[] _loadLocalFromClosure;
+        private static Instruction[]? _loadLocalFromClosure;
 
-        private static Instruction[] _loadLocalFromClosureBoxed;
-        private static Instruction[] _loadObjectCached;
-        private static Instruction _null;
+        private static Instruction[]? _loadLocalFromClosureBoxed;
+        private static Instruction[]? _loadObjectCached;
+        private static Instruction? _null;
 
-        private static Instruction[] _storeLocal;
+        private static Instruction[]? _storeLocal;
 
-        private static Instruction[] _storeLocalBoxed;
-        private static Instruction _true;
+        private static Instruction[]? _storeLocalBoxed;
+        private static Instruction? _true;
 
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
-        private List<KeyValuePair<int, object>> _debugCookies;
+        private List<KeyValuePair<int, object>>? _debugCookies;
 
         private readonly List<Instruction> _instructions = new List<Instruction>();
 
-        private List<BranchLabel> _labels;
+        private List<BranchLabel>? _labels;
         private int _maxContinuationDepth;
-        private List<object> _objects;
+        private List<object>? _objects;
         private int _runtimeLabelCount;
 
         public int Count => _instructions.Count;
@@ -436,19 +436,19 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (value)
             {
-                Emit(_true ?? (_true = new LoadObjectInstruction(Utils.BoxedTrue)));
+                Emit(_true ??= new LoadObjectInstruction(Utils.BoxedTrue));
             }
             else
             {
-                Emit(_false ?? (_false = new LoadObjectInstruction(Utils.BoxedFalse)));
+                Emit(_false ??= new LoadObjectInstruction(Utils.BoxedFalse));
             }
         }
 
-        public void EmitLoad(object value, Type type)
+        public void EmitLoad(object value, Type? type)
         {
             if (value == null)
             {
-                Emit(_null ?? (_null = new LoadObjectInstruction(null)));
+                Emit(_null ??= new LoadObjectInstruction(null));
                 return;
             }
 
@@ -484,7 +484,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            if (_objects.Count < _loadObjectCached.Length)
+            if (_objects.Count < _loadObjectCached!.Length)
             {
                 var index = (uint)_objects.Count;
                 _objects.Add(value);
@@ -799,7 +799,7 @@ namespace System.Linq.Expressions.Interpreter
                 MaxStackDepth,
                 _maxContinuationDepth,
                 _instructions.AsArrayInternal(),
-                _objects?.AsArrayInternal(),
+                _objects.AsArrayInternal(),
                 BuildRuntimeLabels(),
                 _debugCookies
             );
@@ -942,7 +942,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var result = new RuntimeLabel[_runtimeLabelCount + 1];
-            foreach (var label in _labels)
+            foreach (var label in _labels!)
             {
                 if (label.HasRuntimeLabel)
                 {
@@ -1005,7 +1005,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionView[] /*!*/ A0 => GetInstructionViews(true);
+            public InstructionView[] A0 => GetInstructionViews(true);
 
             public InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {
@@ -1013,13 +1013,13 @@ namespace System.Linq.Expressions.Interpreter
                 (
                     _list._instructions,
                     _list._objects,
-                    index => _list._labels[index].TargetIndex,
+                    index => _list._labels![index].TargetIndex,
                     includeDebugCookies ? _list._debugCookies : null
                 );
             }
 
-            internal static InstructionView[] GetInstructionViews(IList<Instruction> instructions, IList<object> objects,
-                Func<int, int> labelIndexer, IList<KeyValuePair<int, object>> debugCookies)
+            internal static InstructionView[] GetInstructionViews(IList<Instruction> instructions, IList<object>? objects,
+                Func<int, int> labelIndexer, IList<KeyValuePair<int, object>>? debugCookies)
             {
                 var result = new List<InstructionView>();
                 var stackDepth = 0;
@@ -1041,7 +1041,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         var instruction = instructions[i];
 
-                        object cookie = null;
+                        object? cookie = null;
                         while (hasCookie && cookieEnumerator.Current.Key == i)
                         {
                             cookie = cookieEnumerator.Current.Value;

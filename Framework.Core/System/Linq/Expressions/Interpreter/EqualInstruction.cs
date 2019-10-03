@@ -16,10 +16,10 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class EqualInstruction : Instruction
     {
-        private static Instruction _booleanLiftedToNull, _sByteLiftedToNull, _int16LiftedToNull, _charLiftedToNull, _int32LiftedToNull, _int64LiftedToNull, _byteLiftedToNull, _uInt16LiftedToNull, _uInt32LiftedToNull, _uInt64LiftedToNull, _singleLiftedToNull, _doubleLiftedToNull;
+        private static Instruction? _booleanLiftedToNull, _sByteLiftedToNull, _int16LiftedToNull, _charLiftedToNull, _int32LiftedToNull, _int64LiftedToNull, _byteLiftedToNull, _uInt16LiftedToNull, _uInt32LiftedToNull, _uInt64LiftedToNull, _singleLiftedToNull, _doubleLiftedToNull;
 
         // Perf: EqualityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction _reference, _boolean, _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
+        private static Instruction? _reference, _boolean, _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
 
         private EqualInstruction()
         {
@@ -36,41 +36,41 @@ namespace System.Linq.Expressions.Interpreter
             {
                 switch (Type.GetTypeCode(type.GetNonNullable()))
                 {
-                    case TypeCode.Boolean: return _booleanLiftedToNull ?? (_booleanLiftedToNull = new EqualBooleanLiftedToNull());
-                    case TypeCode.SByte: return _sByteLiftedToNull ?? (_sByteLiftedToNull = new EqualSByteLiftedToNull());
-                    case TypeCode.Int16: return _int16LiftedToNull ?? (_int16LiftedToNull = new EqualInt16LiftedToNull());
-                    case TypeCode.Char: return _charLiftedToNull ?? (_charLiftedToNull = new EqualCharLiftedToNull());
-                    case TypeCode.Int32: return _int32LiftedToNull ?? (_int32LiftedToNull = new EqualInt32LiftedToNull());
-                    case TypeCode.Int64: return _int64LiftedToNull ?? (_int64LiftedToNull = new EqualInt64LiftedToNull());
-                    case TypeCode.Byte: return _byteLiftedToNull ?? (_byteLiftedToNull = new EqualByteLiftedToNull());
-                    case TypeCode.UInt16: return _uInt16LiftedToNull ?? (_uInt16LiftedToNull = new EqualUInt16LiftedToNull());
-                    case TypeCode.UInt32: return _uInt32LiftedToNull ?? (_uInt32LiftedToNull = new EqualUInt32LiftedToNull());
-                    case TypeCode.UInt64: return _uInt64LiftedToNull ?? (_uInt64LiftedToNull = new EqualUInt64LiftedToNull());
-                    case TypeCode.Single: return _singleLiftedToNull ?? (_singleLiftedToNull = new EqualSingleLiftedToNull());
+                    case TypeCode.Boolean: return _booleanLiftedToNull ??= new EqualBooleanLiftedToNull();
+                    case TypeCode.SByte: return _sByteLiftedToNull ??= new EqualSByteLiftedToNull();
+                    case TypeCode.Int16: return _int16LiftedToNull ??= new EqualInt16LiftedToNull();
+                    case TypeCode.Char: return _charLiftedToNull ??= new EqualCharLiftedToNull();
+                    case TypeCode.Int32: return _int32LiftedToNull ??= new EqualInt32LiftedToNull();
+                    case TypeCode.Int64: return _int64LiftedToNull ??= new EqualInt64LiftedToNull();
+                    case TypeCode.Byte: return _byteLiftedToNull ??= new EqualByteLiftedToNull();
+                    case TypeCode.UInt16: return _uInt16LiftedToNull ??= new EqualUInt16LiftedToNull();
+                    case TypeCode.UInt32: return _uInt32LiftedToNull ??= new EqualUInt32LiftedToNull();
+                    case TypeCode.UInt64: return _uInt64LiftedToNull ??= new EqualUInt64LiftedToNull();
+                    case TypeCode.Single: return _singleLiftedToNull ??= new EqualSingleLiftedToNull();
                     default:
                         Debug.Assert(Type.GetTypeCode(type.GetNonNullable()) == TypeCode.Double);
-                        return _doubleLiftedToNull ?? (_doubleLiftedToNull = new EqualDoubleLiftedToNull());
+                        return _doubleLiftedToNull ??= new EqualDoubleLiftedToNull();
                 }
             }
 
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Boolean: return _boolean ?? (_boolean = new EqualBoolean());
-                case TypeCode.SByte: return _sByte ?? (_sByte = new EqualSByte());
-                case TypeCode.Int16: return _int16 ?? (_int16 = new EqualInt16());
-                case TypeCode.Char: return _char ?? (_char = new EqualChar());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new EqualInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new EqualInt64());
-                case TypeCode.Byte: return _byte ?? (_byte = new EqualByte());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new EqualUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new EqualUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new EqualUInt64());
-                case TypeCode.Single: return _single ?? (_single = new EqualSingle());
-                case TypeCode.Double: return _double ?? (_double = new EqualDouble());
+                case TypeCode.Boolean: return _boolean ??= new EqualBoolean();
+                case TypeCode.SByte: return _sByte ??= new EqualSByte();
+                case TypeCode.Int16: return _int16 ??= new EqualInt16();
+                case TypeCode.Char: return _char ??= new EqualChar();
+                case TypeCode.Int32: return _int32 ??= new EqualInt32();
+                case TypeCode.Int64: return _int64 ??= new EqualInt64();
+                case TypeCode.Byte: return _byte ??= new EqualByte();
+                case TypeCode.UInt16: return _uInt16 ??= new EqualUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new EqualUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new EqualUInt64();
+                case TypeCode.Single: return _single ??= new EqualSingle();
+                case TypeCode.Double: return _double ??= new EqualDouble();
                 default:
                     // Nullable only valid if one operand is constant null, so this assert is slightly too broad.
                     Debug.Assert(type.CanBeNull());
-                    return _reference ?? (_reference = new EqualReference());
+                    return _reference ??= new EqualReference();
             }
         }
 

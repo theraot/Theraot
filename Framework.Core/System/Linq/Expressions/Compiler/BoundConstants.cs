@@ -40,7 +40,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal int Count => _values.Count;
 
-        internal void AddReference(object value, Type type)
+        internal void AddReference(object? value, Type type)
         {
             if (_indexes.TryAdd(value, _values.Count))
             {

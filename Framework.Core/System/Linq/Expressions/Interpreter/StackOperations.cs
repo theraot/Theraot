@@ -59,9 +59,9 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class LoadObjectInstruction : Instruction
     {
-        private readonly object _value;
+        private readonly object? _value;
 
-        internal LoadObjectInstruction(object value)
+        internal LoadObjectInstruction(object? value)
         {
             _value = value;
         }

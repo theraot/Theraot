@@ -105,7 +105,7 @@ namespace Theraot.Collections.Specialized
 
         public ICollection<TValue> Values { get; }
 
-        public TValue this[TKey key]
+        public TValue this[[AllowNull] TKey key]
         {
             get
             {
@@ -134,6 +134,12 @@ namespace Theraot.Collections.Specialized
                     _wrapped[key] = value;
                 }
             }
+        }
+
+        TValue IDictionary<TKey, TValue>.this[TKey key]
+        {
+            get => this[key];
+            set => this[key] = value;
         }
 
         public void Add([AllowNull] TKey key, TValue value)
@@ -227,7 +233,7 @@ namespace Theraot.Collections.Specialized
             return GetEnumerator();
         }
 
-        public bool Remove(TKey key)
+        public bool Remove([AllowNull] TKey key)
         {
             // key can be null
             if (key != null)
@@ -242,6 +248,11 @@ namespace Theraot.Collections.Specialized
 
             ClearForNull();
             return true;
+        }
+
+        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        {
+            return Remove(key);
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
@@ -314,6 +325,25 @@ namespace Theraot.Collections.Specialized
         {
             _valueForNull[0] = value;
             _hasNull = true;
+        }
+
+        public bool TryAdd([AllowNull] TKey key, TValue value)
+        {
+            // key could  be null
+            if (key == null)
+            {
+                if (_hasNull)
+                {
+                    return false;
+                }
+
+                SetForNull(value);
+            }
+            else
+            {
+                return _wrapped.TryAdd(key, value);
+            }
+            return true;
         }
     }
 }

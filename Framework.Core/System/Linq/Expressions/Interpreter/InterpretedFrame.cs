@@ -18,7 +18,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         public readonly IStrongBox[] Closure;
 
-        public readonly object[] Data;
+        public readonly object?[] Data;
 
         public int InstructionIndex;
 
@@ -33,7 +33,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private readonly int[] _continuations;
         private int _pendingContinuation;
-        private object _pendingValue;
+        private object? _pendingValue;
 #if FEATURE_THREAD_ABORT
         // When a ThreadAbortException is raised from interpreted code this is the first frame that caught it.
         // No handlers within this handler re-abort the current thread when left.
@@ -127,17 +127,17 @@ namespace System.Linq.Expressions.Interpreter
             return YieldToCurrentContinuation();
         }
 
-        public object Peek()
+        public object? Peek()
         {
             return Data[StackIndex - 1];
         }
 
-        public object Pop()
+        public object? Pop()
         {
             return Data[--StackIndex];
         }
 
-        public void Push(object value)
+        public void Push(object? value)
         {
             Data[StackIndex++] = value;
         }
@@ -237,7 +237,7 @@ namespace System.Linq.Expressions.Interpreter
         internal void PopPendingContinuation()
         {
             _pendingValue = Pop();
-            _pendingContinuation = (int)Pop();
+            _pendingContinuation = (int)Pop()!;
         }
 
         internal void PushPendingContinuation()

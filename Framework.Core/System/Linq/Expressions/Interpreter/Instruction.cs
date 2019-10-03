@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -22,7 +24,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public abstract int Run(InterpretedFrame frame);
 
-        public virtual string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
+        public virtual string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
         {
             return ToString();
         }
@@ -33,12 +35,11 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         // throws NRE when o is null
-        protected static void NullCheck(object o)
+        protected static void NullCheck(object? o)
         {
             if (o == null)
             {
-                // ReSharper disable once PossibleNullReferenceException
-                GC.KeepAlive(o.GetType());
+                throw new NullReferenceException();
             }
         }
     }

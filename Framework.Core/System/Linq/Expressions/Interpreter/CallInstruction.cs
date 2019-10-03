@@ -4,6 +4,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 
@@ -23,9 +24,9 @@ namespace System.Linq.Expressions.Interpreter
 
         public sealed override int Run(InterpretedFrame frame)
         {
-            var first = frame.StackIndex - _argumentCount;
-            object[] args = null;
-            object instance = null;
+            var first = frame.StackIndex - ArgumentCountProtected;
+            object[]? args = null;
+            object? instance = null;
 
             try
             {
@@ -295,15 +296,12 @@ namespace System.Linq.Expressions.Interpreter
 #endif
         }
 
-        protected static bool TryGetLightLambdaTarget(object instance, out LightLambda lightLambda)
+        protected static bool TryGetLightLambdaTarget(object instance, [NotNullWhen(true)] out LightLambda? lightLambda)
         {
-            if (instance is Delegate del && del.Target is Func<object[], object> thunk)
+            if (instance is Delegate del && del.Target is Func<object[], object> thunk && thunk.Target is LightLambda found)
             {
-                lightLambda = thunk.Target as LightLambda;
-                if (lightLambda != null)
-                {
-                    return true;
-                }
+                lightLambda = found;
+                return true;
             }
 
             lightLambda = null;
@@ -319,21 +317,22 @@ namespace System.Linq.Expressions.Interpreter
         {
             var arrayType = info.DeclaringType;
             var isGetter = string.Equals(info.Name, "Get", StringComparison.Ordinal);
-            MethodInfo alternativeMethod = null;
+            MethodInfo? alternativeMethod = null;
 
             switch (arrayType?.GetArrayRank())
             {
                 case 1:
-                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter1));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] { typeof(int) }) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter1));
                     break;
 
                 case 2:
-                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int), typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter2));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int) }) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter2));
                     break;
 
                 case 3:
-                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] {typeof(int), typeof(int), typeof(int)}) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter3));
+                    alternativeMethod = isGetter ? arrayType.GetMethod("GetValue", new[] { typeof(int), typeof(int), typeof(int) }) : typeof(CallInstruction).GetMethod(nameof(ArrayItemSetter3));
                     break;
+
                 default:
                     break;
             }
@@ -344,21 +343,21 @@ namespace System.Linq.Expressions.Interpreter
 
     internal class MethodInfoCallInstruction : CallInstruction
     {
-        protected readonly int _argumentCount;
+        protected readonly int ArgumentCountProtected;
         protected readonly MethodInfo Target;
 
         internal MethodInfoCallInstruction(MethodInfo target, int argumentCount)
         {
             Target = target;
-            _argumentCount = argumentCount;
+            ArgumentCountProtected = argumentCount;
         }
 
-        public override int ArgumentCount => _argumentCount;
+        public override int ArgumentCount => ArgumentCountProtected;
         public override int ProducedStack => Target.ReturnType == typeof(void) ? 0 : 1;
 
         public override int Run(InterpretedFrame frame)
         {
-            var first = frame.StackIndex - _argumentCount;
+            var first = frame.StackIndex - ArgumentCountProtected;
 
             object ret;
             if (Target.IsStatic)
@@ -420,7 +419,7 @@ namespace System.Linq.Expressions.Interpreter
 
         protected object[] GetArgs(InterpretedFrame frame, int first, int skip)
         {
-            var count = _argumentCount - skip;
+            var count = ArgumentCountProtected - skip;
 
             if (count <= 0)
             {

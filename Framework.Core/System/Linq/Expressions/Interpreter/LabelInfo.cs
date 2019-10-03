@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -55,10 +56,10 @@ namespace System.Linq.Expressions.Interpreter
         // the blocks can't be jumped to except from a child block
         // If there's only 1 block (the common case) it's stored here, if there's multiple blocks it's stored
         // as a HashSet<LabelScopeInfo>
-        private object _definitions;
+        private object? _definitions;
 
         // The BranchLabel label, will be mutated if Node is redefined
-        private BranchLabel _label;
+        private BranchLabel? _label;
 
         internal LabelInfo(LabelTarget node)
         {
@@ -69,7 +70,8 @@ namespace System.Linq.Expressions.Interpreter
 
         private bool HasMultipleDefinitions => _definitions is HashSet<LabelScopeInfo>;
 
-        internal static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class
+        internal static T? CommonNode<T>(T first, T second, Func<T, T> parent)
+            where T : class
         {
             var cmp = EqualityComparer<T>.Default;
             if (cmp.Equals(first, second))
@@ -137,8 +139,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal BranchLabel GetLabel(LightCompiler compiler)
         {
-            EnsureLabel(compiler);
-            return _label;
+            return EnsureLabel(compiler);
         }
 
         internal void Reference(LabelScopeInfo block)
@@ -169,7 +170,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (!(_definitions is HashSet<LabelScopeInfo> set))
                 {
-                    _definitions = set = new HashSet<LabelScopeInfo> {(LabelScopeInfo)_definitions};
+                    _definitions = set = new HashSet<LabelScopeInfo> { (LabelScopeInfo)_definitions };
                 }
 
                 set.Add(scope);
@@ -191,12 +192,9 @@ namespace System.Linq.Expressions.Interpreter
             return false;
         }
 
-        private void EnsureLabel(LightCompiler compiler)
+        private BranchLabel EnsureLabel(LightCompiler compiler)
         {
-            if (_label == null)
-            {
-                _label = compiler.Instructions.MakeLabel();
-            }
+            return _label ??= compiler.Instructions.MakeLabel();
         }
 
         private LabelScopeInfo FirstDefinition()
@@ -206,7 +204,7 @@ namespace System.Linq.Expressions.Interpreter
                 return scope;
             }
 
-            foreach (var x in (HashSet<LabelScopeInfo>)_definitions)
+            foreach (var x in (HashSet<LabelScopeInfo>)_definitions!)
             {
                 return x;
             }
@@ -294,7 +292,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         internal readonly LabelScopeKind Kind;
         internal readonly LabelScopeInfo Parent;
-        private HybridReferenceDictionary<LabelTarget, LabelInfo> _labels; // lazily allocated, we typically use this only once every 6th-7th block
+        private HybridReferenceDictionary<LabelTarget, LabelInfo>? _labels; // lazily allocated, we typically use this only once every 6th-7th block
 
         internal LabelScopeInfo(LabelScopeInfo parent, LabelScopeKind kind)
         {
@@ -340,7 +338,7 @@ namespace System.Linq.Expressions.Interpreter
             return _labels?.ContainsKey(target) == true;
         }
 
-        internal bool TryGetLabelInfo(LabelTarget target, out LabelInfo info)
+        internal bool TryGetLabelInfo(LabelTarget target, [NotNullWhen(true)] out LabelInfo? info)
         {
             if (_labels != null)
             {

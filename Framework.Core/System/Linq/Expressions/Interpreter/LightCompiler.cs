@@ -55,8 +55,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public override void Update(InterpretedFrame frame, object value)
         {
-            var index = frame.Data[_index.Index];
-            ((Array)frame.Data[_array.Index]).SetValue(value, (int)index);
+            var index = frame.Data[_index.Index]!;
+            ((Array)frame.Data[_array.Index]!).SetValue(value, (int)index);
         }
     }
 
@@ -74,12 +74,12 @@ namespace System.Linq.Expressions.Interpreter
             // Empty
         }
 
-        public abstract void Update(InterpretedFrame frame, object value);
+        public abstract void Update(InterpretedFrame frame, object? value);
     }
 
     internal sealed class DebugInfo
     {
-        public string FileName;
+        public string? FileName;
         public int Index;
         public bool IsClear;
         public int StartLine, EndLine;
@@ -968,7 +968,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var leftNotNull = Instructions.MakeLabel();
-            BranchLabel end = null;
+            BranchLabel? end = null;
 
             Compile(node.Left);
             Instructions.EmitCoalescingBranch(leftNotNull);
