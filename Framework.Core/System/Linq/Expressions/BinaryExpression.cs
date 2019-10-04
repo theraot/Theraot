@@ -23,7 +23,7 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(BinaryExpressionProxy))]
     public class BinaryExpression : Expression
     {
-        internal BinaryExpression(Expression left, Expression right)
+        private protected BinaryExpression(Expression left, Expression right)
         {
             Left = left;
             Right = right;

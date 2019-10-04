@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -101,7 +102,7 @@ namespace System.Linq.Expressions.Interpreter
             // Prevent the label from being shadowed, which enforces cleaner
             // trees. Also we depend on this for simplicity (keeping only one
             // active IL Label per LabelInfo)
-            for (var j = block; j != null; j = j.Parent)
+            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(block, found => found.Parent))
             {
                 if (j.ContainsTarget(_node))
                 {
@@ -215,7 +216,7 @@ namespace System.Linq.Expressions.Interpreter
         private void ValidateJump(LabelScopeInfo reference)
         {
             // look for a simple jump out
-            for (var j = reference; j != null; j = j.Parent)
+            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(reference, found => found.Parent))
             {
                 if (DefinedIn(j))
                 {
@@ -242,10 +243,10 @@ namespace System.Linq.Expressions.Interpreter
 
             // We didn't find an outward jump. Look for a jump across blocks
             var def = FirstDefinition();
-            var common = CommonNode(def, reference, b => b.Parent);
+            var common = SequenceHelper.CommonNode(def, reference, b => b.Parent);
 
             // Validate that we aren't jumping across a finally
-            for (var j = reference; j != common; j = j.Parent)
+            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(reference, common, found => found.Parent))
             {
                 switch (j.Kind)
                 {
@@ -291,10 +292,10 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class LabelScopeInfo
     {
         internal readonly LabelScopeKind Kind;
-        internal readonly LabelScopeInfo Parent;
+        internal readonly LabelScopeInfo? Parent;
         private HybridReferenceDictionary<LabelTarget, LabelInfo>? _labels; // lazily allocated, we typically use this only once every 6th-7th block
 
-        internal LabelScopeInfo(LabelScopeInfo parent, LabelScopeKind kind)
+        internal LabelScopeInfo(LabelScopeInfo? parent, LabelScopeKind kind)
         {
             Parent = parent;
             Kind = kind;

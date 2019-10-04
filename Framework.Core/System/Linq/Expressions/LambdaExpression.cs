@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Linq.Expressions.Compiler;
 using System.Reflection;
@@ -100,7 +101,7 @@ namespace System.Linq.Expressions
 
             // Ensure parameters is safe to enumerate twice.
             // (If this means a second call to ToReadOnlyCollection it will return quickly).
-            ICollection<ParameterExpression> pars;
+            ICollection<ParameterExpression>? pars;
             if (parameters == null)
             {
                 pars = null;
@@ -117,7 +118,7 @@ namespace System.Linq.Expressions
             return SameParameters(pars) ? this : Lambda<TDelegate>(body, Name, TailCall, parameters);
         }
 
-        internal static Expression<TDelegate> Create(Expression body, string name, bool tailCall, ParameterExpression[] parameters)
+        internal static Expression<TDelegate> Create(Expression body, string? name, bool tailCall, ParameterExpression[] parameters)
         {
             if (name != null || tailCall)
             {
@@ -139,12 +140,12 @@ namespace System.Linq.Expressions
             return spiller.Rewrite(this);
         }
 
-        internal virtual Expression<TDelegate> Rewrite(Expression body, ParameterExpression[] parameters)
+        internal virtual Expression<TDelegate> Rewrite(Expression body, ParameterExpression[]? parameters)
         {
             throw ContractUtils.Unreachable;
         }
 
-        internal virtual bool SameParameters(ICollection<ParameterExpression> parameters)
+        internal virtual bool SameParameters(ICollection<ParameterExpression>? parameters)
         {
             throw ContractUtils.Unreachable;
         }
@@ -211,6 +212,7 @@ namespace System.Linq.Expressions
         /// </remarks>
         public static Type GetDelegateType(params Type[] typeArgs)
         {
+            ContractUtils.RequiresNotNull(typeArgs, nameof(typeArgs));
             ContractUtils.RequiresNotEmpty(typeArgs, nameof(typeArgs));
             ContractUtils.RequiresNotNullItems(typeArgs, nameof(typeArgs));
             return DelegateHelpers.MakeDelegateType(typeArgs);
@@ -371,7 +373,7 @@ namespace System.Linq.Expressions
         ///     <see cref="ExpressionType.Lambda" /> and the <see cref="LambdaExpression.Body" /> and
         ///     <see cref="LambdaExpression.Parameters" /> properties set to the specified values.
         /// </returns>
-        public static Expression<TDelegate> Lambda<TDelegate>(Expression body, string name, bool tailCall, IEnumerable<ParameterExpression> parameters)
+        public static Expression<TDelegate> Lambda<TDelegate>(Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression>? parameters)
         {
             var parameterList = parameters.AsArrayInternal();
             ValidateLambdaArgs(typeof(TDelegate), ref body, parameterList, nameof(TDelegate));
@@ -579,7 +581,7 @@ namespace System.Linq.Expressions
         ///     <see cref="ExpressionType.Lambda" /> and the <see cref="LambdaExpression.Body" /> and
         ///     <see cref="LambdaExpression.Parameters" /> properties set to the specified values.
         /// </returns>
-        public static LambdaExpression Lambda(Expression body, string name, bool tailCall, IEnumerable<ParameterExpression> parameters)
+        public static LambdaExpression Lambda(Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression> parameters)
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
 
@@ -705,7 +707,7 @@ namespace System.Linq.Expressions
         ///     true if generic System.Func delegate type was created for specific <paramref name="typeArgs" />; false
         ///     otherwise.
         /// </returns>
-        public static bool TryGetFuncType(Type[] typeArgs, out Type funcType)
+        public static bool TryGetFuncType(Type[] typeArgs, [NotNullWhen(true)] out Type funcType)
         {
             if (ValidateTryGetFuncActionArgs(typeArgs) == TryGetFuncActionArgsResult.Valid)
             {
@@ -716,7 +718,7 @@ namespace System.Linq.Expressions
             return false;
         }
 
-        internal static LambdaExpression CreateLambda(Type delegateType, Expression body, string name, bool tailCall, ParameterExpression[] parameters)
+        internal static LambdaExpression CreateLambda(Type delegateType, Expression body, string? name, bool tailCall, ParameterExpression[] parameters)
         {
             // Get or create a delegate to the public Expression.Lambda<T>
             // method and call that will be used for creating instances of this
@@ -874,7 +876,7 @@ namespace System.Linq.Expressions
         ///     Gets the name of the lambda expression.
         /// </summary>
         /// <remarks>Used for debugging purposes.</remarks>
-        public string Name => NameCore;
+        public string? Name => NameCore;
 
         /// <inheritdoc />
         /// <summary>
@@ -911,7 +913,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public sealed override Type Type => TypeCore;
 
-        internal virtual string NameCore => null;
+        internal virtual string? NameCore => null;
 
         internal virtual int ParameterCount => throw ContractUtils.Unreachable;
 
@@ -1043,7 +1045,7 @@ namespace System.Linq.Expressions
             throw new ArgumentOutOfRangeException(nameof(index));
         }
 
-        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[] parameters)
+        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[]? parameters)
         {
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == 0);
@@ -1051,7 +1053,7 @@ namespace System.Linq.Expressions
             return Lambda<TDelegate>(body, parameters);
         }
 
-        internal override bool SameParameters(ICollection<ParameterExpression> parameters)
+        internal override bool SameParameters(ICollection<ParameterExpression>? parameters)
         {
             return parameters == null || parameters.Count == 0;
         }
@@ -1083,7 +1085,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[] parameters)
+        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[]? parameters)
         {
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == 1);
@@ -1091,7 +1093,7 @@ namespace System.Linq.Expressions
             return parameters != null ? Lambda<TDelegate>(body, parameters) : Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0));
         }
 
-        internal override bool SameParameters(ICollection<ParameterExpression> parameters)
+        internal override bool SameParameters(ICollection<ParameterExpression>? parameters)
         {
             if (parameters?.Count != 1)
             {
@@ -1135,7 +1137,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[] parameters)
+        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[]? parameters)
         {
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == 2);
@@ -1143,7 +1145,7 @@ namespace System.Linq.Expressions
             return parameters != null ? Lambda<TDelegate>(body, parameters) : Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0), _par1);
         }
 
-        internal override bool SameParameters(ICollection<ParameterExpression> parameters)
+        internal override bool SameParameters(ICollection<ParameterExpression>? parameters)
         {
             if (parameters?.Count != 2)
             {
@@ -1201,7 +1203,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[] parameters)
+        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[]? parameters)
         {
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == 3);
@@ -1209,7 +1211,7 @@ namespace System.Linq.Expressions
             return parameters != null ? Lambda<TDelegate>(body, parameters) : Lambda<TDelegate>(body, ExpressionUtils.ReturnObject<ParameterExpression>(_par0), _par1, _par2);
         }
 
-        internal override bool SameParameters(ICollection<ParameterExpression> parameters)
+        internal override bool SameParameters(ICollection<ParameterExpression>? parameters)
         {
             if (parameters?.Count != 3)
             {
@@ -1265,7 +1267,7 @@ namespace System.Linq.Expressions
             return _parameters[index];
         }
 
-        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[] parameters)
+        internal override Expression<TDelegate> Rewrite(Expression body, ParameterExpression[]? parameters)
         {
             Debug.Assert(body != null);
             Debug.Assert(parameters == null || parameters.Length == _parameters.Length);
@@ -1273,7 +1275,7 @@ namespace System.Linq.Expressions
             return Lambda<TDelegate>(body, Name, TailCall, parameters ?? _parameters);
         }
 
-        internal override bool SameParameters(ICollection<ParameterExpression> parameters)
+        internal override bool SameParameters(ICollection<ParameterExpression>? parameters)
         {
             return ExpressionUtils.SameElements(parameters, _parameters);
         }
@@ -1281,14 +1283,14 @@ namespace System.Linq.Expressions
 
     internal sealed class FullExpression<TDelegate> : ExpressionN<TDelegate>
     {
-        public FullExpression(Expression body, string name, bool tailCall, ParameterExpression[] parameters)
+        public FullExpression(Expression body, string? name, bool tailCall, ParameterExpression[] parameters)
             : base(body, parameters)
         {
             NameCore = name;
             TailCallCore = tailCall;
         }
 
-        internal override string NameCore { get; }
+        internal override string? NameCore { get; }
         internal override bool TailCallCore { get; }
     }
 }

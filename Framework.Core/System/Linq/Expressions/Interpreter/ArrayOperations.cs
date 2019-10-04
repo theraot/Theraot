@@ -12,10 +12,9 @@ namespace System.Linq.Expressions.Interpreter
     {
         public static int ToInt32NoNull(object val)
         {
-            // If the value is null, unbox and cast to throw an InvalidOperationException
-            // that the desktop throws.
-            // ReSharper disable once PossibleInvalidOperationException
-            return val == null ? (int)(int?)val : Convert.ToInt32(val);
+            return val == null
+                ? throw new InvalidOperationException()
+                : Convert.ToInt32(val);
         }
     }
 
@@ -34,7 +33,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var obj = frame.Pop();
+            var obj = frame.Pop()!;
             frame.Push(((Array)obj).Length);
             return 1;
         }
@@ -55,8 +54,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var index = ConvertHelper.ToInt32NoNull(frame.Pop());
-            var array = (Array)frame.Pop();
+            var index = ConvertHelper.ToInt32NoNull(frame.Pop()!);
+            var array = (Array)frame.Pop()!;
             frame.Push(array.GetValue(index));
             return 1;
         }
@@ -81,7 +80,7 @@ namespace System.Linq.Expressions.Interpreter
             var lengths = new int[ConsumedStack];
             for (var i = ConsumedStack - 1; i >= 0; i--)
             {
-                var length = ConvertHelper.ToInt32NoNull(frame.Pop());
+                var length = ConvertHelper.ToInt32NoNull(frame.Pop()!);
 
                 if (length < 0)
                 {
@@ -140,7 +139,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var length = ConvertHelper.ToInt32NoNull(frame.Pop());
+            var length = ConvertHelper.ToInt32NoNull(frame.Pop()!);
             // To make behavior aligned with array creation emitted by C# compiler if length is less than
             // zero we try to use it to create an array, which will throw an OverflowException with the
             // correct localized error message.
@@ -164,8 +163,8 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var value = frame.Pop();
-            var index = ConvertHelper.ToInt32NoNull(frame.Pop());
-            var array = (Array)frame.Pop();
+            var index = ConvertHelper.ToInt32NoNull(frame.Pop()!);
+            var array = (Array)frame.Pop()!;
             array.SetValue(value, index);
             return 1;
         }

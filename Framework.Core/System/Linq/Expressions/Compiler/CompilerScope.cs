@@ -135,7 +135,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal HoistedLocals? NearestHoistedLocals => _hoistedLocals ?? _closureHoistedLocals;
 
-        private string CurrentLambdaName
+        private string? CurrentLambdaName
         {
             get
             {

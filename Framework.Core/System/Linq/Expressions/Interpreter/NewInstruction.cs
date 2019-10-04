@@ -4,7 +4,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 
@@ -27,7 +26,6 @@ namespace System.Linq.Expressions.Interpreter
             var first = frame.StackIndex - ArgumentCount;
 
             var args = GetArgs(frame, first);
-            Debug.Assert(args != null);
 
             try
             {
@@ -101,7 +99,7 @@ namespace System.Linq.Expressions.Interpreter
             return "New " + Constructor.DeclaringType.Name + "(" + Constructor + ")";
         }
 
-        protected object[] GetArgs(InterpretedFrame frame, int first)
+        protected object?[] GetArgs(InterpretedFrame frame, int first)
         {
             if (ArgumentCount <= 0)
             {

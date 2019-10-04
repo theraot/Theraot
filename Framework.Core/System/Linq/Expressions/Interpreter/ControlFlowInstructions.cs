@@ -699,7 +699,7 @@ namespace System.Linq.Expressions.Interpreter
             return this;
         }
 
-        public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object> objects)
+        public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
         {
             return ToString() + (Offset != Unknown ? " -> " + (instructionIndex + Offset) : "");
         }

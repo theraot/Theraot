@@ -382,7 +382,7 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="Target" /> property of the result.</param>
         /// <param name="value">The <see cref="Value" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public GotoExpression Update(LabelTarget target, Expression value)
+        public GotoExpression Update(LabelTarget target, Expression? value)
         {
             if (target == Target && value == Value)
             {

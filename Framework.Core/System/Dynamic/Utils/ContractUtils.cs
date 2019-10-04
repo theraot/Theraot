@@ -78,7 +78,6 @@ namespace System.Dynamic.Utils
         /// </exception>
         public static void RequiresNotEmpty<T>(ICollection<T> collection, string paramName)
         {
-            RequiresNotNull(collection, paramName);
             if (collection.Count == 0)
             {
                 throw new ArgumentException("Non-empty collection required", paramName);

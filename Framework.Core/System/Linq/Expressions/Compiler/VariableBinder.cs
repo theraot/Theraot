@@ -29,7 +29,7 @@ namespace System.Linq.Expressions.Compiler
             // Empty
         }
 
-        private string CurrentLambdaName
+        private string? CurrentLambdaName
         {
             get
             {

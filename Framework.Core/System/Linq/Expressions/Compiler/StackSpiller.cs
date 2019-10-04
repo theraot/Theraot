@@ -183,7 +183,7 @@ namespace System.Linq.Expressions.Compiler
             // Right expression always has non-empty stack (left is on it)
             cr.Add(node.Right);
             // conversion is a lambda, stack state will be ignored
-            cr.Add(node.Conversion);
+            cr.Add(node.Conversion!);
 
             if (cr.Action == RewriteAction.SpillStack)
             {
@@ -569,7 +569,7 @@ namespace System.Linq.Expressions.Compiler
             // ... and so does the right one
             var right = RewriteExpression(node.Right, stack);
             //conversion is a lambda. stack state will be ignored.
-            var conversion = RewriteExpression(node.Conversion, stack);
+            var conversion = RewriteExpression(node.Conversion!, stack);
 
             var action = left.Action | right.Action | conversion.Action;
 

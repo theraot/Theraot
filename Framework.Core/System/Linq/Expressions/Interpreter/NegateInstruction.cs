@@ -12,7 +12,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class NegateCheckedInstruction : Instruction
     {
-        private static Instruction _int16, _int32, _int64;
+        private static Instruction? _int16, _int32, _int64;
 
         private NegateCheckedInstruction()
         {

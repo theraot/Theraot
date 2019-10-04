@@ -7,6 +7,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -35,7 +36,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         // throws NRE when o is null
-        protected static void NullCheck(object? o)
+        protected static void NullCheck([NotNull] object? o)
         {
             if (o == null)
             {

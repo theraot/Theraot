@@ -12,11 +12,11 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class LessThanOrEqualInstruction : Instruction
     {
-        private static Instruction _liftedToNullSByte, _liftedToNullInt16, _liftedToNullChar, _liftedToNullInt32, _liftedToNullInt64, _liftedToNullByte, _liftedToNullUInt16, _liftedToNullUInt32, _liftedToNullUInt64, _liftedToNullSingle, _liftedToNullDouble;
-        private static Instruction _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
-        private readonly object _nullValue;
+        private static Instruction? _liftedToNullSByte, _liftedToNullInt16, _liftedToNullChar, _liftedToNullInt32, _liftedToNullInt64, _liftedToNullByte, _liftedToNullUInt16, _liftedToNullUInt32, _liftedToNullUInt64, _liftedToNullSingle, _liftedToNullDouble;
+        private static Instruction? _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
+        private readonly object? _nullValue;
 
-        private LessThanOrEqualInstruction(object nullValue)
+        private LessThanOrEqualInstruction(object? nullValue)
         {
             _nullValue = nullValue;
         }
@@ -68,7 +68,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualByte : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualByte(object nullValue)
+            public LessThanOrEqualByte(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -93,7 +93,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualChar : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualChar(object nullValue)
+            public LessThanOrEqualChar(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -118,7 +118,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualDouble : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualDouble(object nullValue)
+            public LessThanOrEqualDouble(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -143,7 +143,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualInt16 : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualInt16(object nullValue)
+            public LessThanOrEqualInt16(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -168,7 +168,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualInt32 : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualInt32(object nullValue)
+            public LessThanOrEqualInt32(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -193,7 +193,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualInt64 : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualInt64(object nullValue)
+            public LessThanOrEqualInt64(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -218,7 +218,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualSByte : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualSByte(object nullValue)
+            public LessThanOrEqualSByte(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -243,7 +243,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualSingle : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualSingle(object nullValue)
+            public LessThanOrEqualSingle(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -268,7 +268,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualUInt16 : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualUInt16(object nullValue)
+            public LessThanOrEqualUInt16(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -293,7 +293,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualUInt32 : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualUInt32(object nullValue)
+            public LessThanOrEqualUInt32(object? nullValue)
                 : base(nullValue)
             {
                 // Empty
@@ -318,7 +318,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class LessThanOrEqualUInt64 : LessThanOrEqualInstruction
         {
-            public LessThanOrEqualUInt64(object nullValue)
+            public LessThanOrEqualUInt64(object? nullValue)
                 : base(nullValue)
             {
                 // Empty

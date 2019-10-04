@@ -31,7 +31,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal string DebugView => new DebugViewPrinter(_interpreter).ToString();
 
-        public object Run(params object[] arguments)
+        public object Run(params object?[] arguments)
         {
             var frame = MakeFrame();
             for (var i = 0; i < arguments.Length; i++)
@@ -57,7 +57,7 @@ namespace System.Linq.Expressions.Interpreter
             return frame.Pop();
         }
 
-        public object RunVoid(params object[] arguments)
+        public object RunVoid(params object?[] arguments)
         {
             var frame = MakeFrame();
             for (var i = 0; i < arguments.Length; i++)

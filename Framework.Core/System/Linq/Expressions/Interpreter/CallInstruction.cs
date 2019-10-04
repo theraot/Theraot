@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Interpreter
         public sealed override int Run(InterpretedFrame frame)
         {
             var first = frame.StackIndex - ArgumentCountProtected;
-            object[]? args = null;
+            object?[]? args = null;
             object? instance = null;
 
             try
@@ -308,7 +308,7 @@ namespace System.Linq.Expressions.Interpreter
             return false;
         }
 
-        protected object InterpretLambdaInvoke(LightLambda targetLambda, object[] args)
+        protected object InterpretLambdaInvoke(LightLambda targetLambda, object?[] args)
         {
             return ProducedStack > 0 ? targetLambda.Run(args) : targetLambda.RunVoid(args);
         }
@@ -417,7 +417,7 @@ namespace System.Linq.Expressions.Interpreter
             return "Call(" + Target + ")";
         }
 
-        protected object[] GetArgs(InterpretedFrame frame, int first, int skip)
+        protected object?[] GetArgs(InterpretedFrame frame, int first, int skip)
         {
             var count = ArgumentCountProtected - skip;
 
@@ -426,7 +426,7 @@ namespace System.Linq.Expressions.Interpreter
                 return ArrayEx.Empty<object>();
             }
 
-            var args = new object[count];
+            var args = new object?[count];
 
             for (var i = 0; i < args.Length; i++)
             {

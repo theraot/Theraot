@@ -53,7 +53,7 @@ namespace System.Linq.Expressions.Interpreter
             locals.UndefineLocal(_index, instructions.Count);
         }
 
-        public override void Update(InterpretedFrame frame, object value)
+        public override void Update(InterpretedFrame frame, object? value)
         {
             var index = frame.Data[_index.Index]!;
             ((Array)frame.Data[_array.Index]!).SetValue(value, (int)index);
@@ -85,7 +85,7 @@ namespace System.Linq.Expressions.Interpreter
         public int StartLine, EndLine;
         private static readonly DebugInfoComparer _debugComparer = new DebugInfoComparer();
 
-        public static DebugInfo GetMatchingDebugInfo(DebugInfo[] debugInfos, int index)
+        public static DebugInfo? GetMatchingDebugInfo(DebugInfo[] debugInfos, int index)
         {
             //Create a faked DebugInfo to do the search
             var d = new DebugInfo { Index = index };
@@ -165,7 +165,6 @@ namespace System.Linq.Expressions.Interpreter
 
         internal ExceptionHandler(int labelIndex, int handlerStartIndex, int handlerEndIndex, Type exceptionType, ExceptionFilter filter)
         {
-            Debug.Assert(exceptionType != null);
             LabelIndex = labelIndex;
             _exceptionType = exceptionType;
             HandlerStartIndex = handlerStartIndex;
@@ -204,7 +203,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        public override void Update(InterpretedFrame frame, object value)
+        public override void Update(InterpretedFrame frame, object? value)
         {
             var obj = _object == null ? null : frame.Data[_object.GetValueOrDefault().Index];
             _field.SetValue(obj, value);
@@ -238,9 +237,9 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        public override void Update(InterpretedFrame frame, object value)
+        public override void Update(InterpretedFrame frame, object? value)
         {
-            var args = new object[_args.Length + 1];
+            var args = new object?[_args.Length + 1];
             for (var i = 0; i < args.Length - 1; i++)
             {
                 args[i] = frame.Data[_args[i].Index];
@@ -419,7 +418,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private ByRefUpdater CompileAddress(Expression node, int index)
+        private ByRefUpdater? CompileAddress(Expression node, int index)
         {
             if (index != -1 || ShouldWritebackNode(node))
             {
@@ -1114,7 +1113,7 @@ namespace System.Linq.Expressions.Interpreter
             if ((nonNullableFrom.IsNumericOrBool() || nonNullableFrom.IsEnum)
                 && (nonNullableTo.IsNumericOrBool() || nonNullableTo.IsEnum || nonNullableTo == typeof(decimal)))
             {
-                Type enumTypeTo = null;
+                Type? enumTypeTo = null;
 
                 if (nonNullableFrom.IsEnum)
                 {
@@ -1202,7 +1201,7 @@ namespace System.Linq.Expressions.Interpreter
                 var operand = node.Operand!;
                 var operandType = operand.Type;
                 var opTemp = _locals.DefineLocal(Expression.Parameter(operandType), Instructions.Count);
-                ByRefUpdater updater = null;
+                ByRefUpdater? updater = null;
                 var parameterType = parameter.ParameterType;
                 if (parameterType.IsByRef)
                 {
@@ -1513,7 +1512,7 @@ namespace System.Linq.Expressions.Interpreter
             // If we're an immediate child of a block, our label will already
             // be defined. If not, we need to define our own block so this
             // label isn't exposed except to its own child expression.
-            LabelInfo label = null;
+            LabelInfo? label = null;
 
             if (_labelBlock.Kind == LabelScopeKind.Block)
             {
@@ -1926,7 +1925,7 @@ namespace System.Linq.Expressions.Interpreter
             var parameters = method.GetParameters();
 
             // TODO: Support pass by reference.
-            List<ByRefUpdater> updaters = null;
+            List<ByRefUpdater>? updaters = null;
             if (!method.IsStatic)
             {
                 var updater = CompileAddress(@object, -1);
@@ -2069,7 +2068,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 var parameters = node.Constructor.GetParameters();
-                List<ByRefUpdater> updaters = null;
+                List<ByRefUpdater>? updaters = null;
 
                 for (var i = 0; i < parameters.Length; i++)
                 {
@@ -2433,17 +2432,16 @@ namespace System.Linq.Expressions.Interpreter
                 foreach (var expression in switchCase.TestValues)
                 {
                     var testValue = (ConstantExpression)expression;
-                    var key = (string)testValue.Value;
-                    if (key == null)
+                    if (testValue.Value is string key)
+                    {
+                        caseDict.TryAdd(key, caseOffset);
+                    }
+                    else
                     {
                         if (nullCase.Value == 1)
                         {
                             nullCase.Value = caseOffset;
                         }
-                    }
-                    else
-                    {
-                        caseDict.TryAdd(key, caseOffset);
                     }
                 }
 
@@ -2520,7 +2518,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (switchType == TypeCode.String)
                 {
                     // If we have a comparison other than string equality, bail
-                    var equality = CachedReflectionInfo.StringOpEqualityStringString;
+                    MethodInfo? equality = CachedReflectionInfo.StringOpEqualityStringString;
                     if (equality?.IsStatic == false)
                     {
                         equality = null;
@@ -2611,7 +2609,7 @@ namespace System.Linq.Expressions.Interpreter
                 var gotoEnd = Instructions.MakeLabel();
                 var tryStart = Instructions.Count;
 
-                BranchLabel startOfFinally = null;
+                BranchLabel? startOfFinally = null;
                 if (node.Finally != null)
                 {
                     startOfFinally = Instructions.MakeLabel();
@@ -2622,7 +2620,7 @@ namespace System.Linq.Expressions.Interpreter
                     Instructions.EmitEnterTryCatch();
                 }
 
-                List<ExceptionHandler> exHandlers = null;
+                List<ExceptionHandler>? exHandlers = null;
                 var enterTryInstr = Instructions.GetInstruction(tryStart) as EnterTryCatchFinallyInstruction;
                 Debug.Assert(enterTryInstr != null);
 
@@ -2648,7 +2646,7 @@ namespace System.Linq.Expressions.Interpreter
                         var local = _locals.DefineLocal(parameter, Instructions.Count);
                         _exceptionForRethrowStack.Push(parameter);
 
-                        ExceptionFilter filter = null;
+                        ExceptionFilter? filter = null;
 
                         if (handler.Filter != null)
                         {
@@ -3350,7 +3348,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else if (_parameter.IsBoxed)
             {
-                var box = (IStrongBox)frame.Data[_parameter.Index];
+                var box = (IStrongBox)frame.Data[_parameter.Index]!;
                 box.Value = value;
             }
             else

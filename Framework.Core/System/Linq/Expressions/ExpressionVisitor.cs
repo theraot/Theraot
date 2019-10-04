@@ -41,7 +41,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentNullException(nameof(elementVisitor));
             }
 
-            T[] newNodes = null;
+            T[]? newNodes = null;
             for (int i = 0, n = nodes.Count; i < n; i++)
             {
                 var node = elementVisitor(nodes[i]);
@@ -89,7 +89,7 @@ namespace System.Linq.Expressions
         public ReadOnlyCollection<Expression> Visit(ReadOnlyCollection<Expression> nodes)
         {
             ContractUtils.RequiresNotNull(nodes, nameof(nodes));
-            Expression[] newNodes = null;
+            Expression[]? newNodes = null;
             for (int i = 0, n = nodes.Count; i < n; i++)
             {
                 var node = Visit(nodes[i]);
@@ -124,20 +124,20 @@ namespace System.Linq.Expressions
         ///     otherwise, returns the original expression.
         /// </returns>
         /// <exception cref="InvalidOperationException">The visit method for this node returned a different type.</exception>
-        public T VisitAndConvert<T>(T node, string callerName) where T : Expression
+        public T? VisitAndConvert<T>(T node, string callerName)
+            where T : Expression
         {
             if (node == null)
             {
                 return null;
             }
 
-            node = Visit(node) as T;
-            if (node == null)
+            if (Visit(node) is T nodeAsT)
             {
-                throw new InvalidOperationException($"When called from '{callerName}', rewriting a node of type '{typeof(T)}' must return a non-null value of the same type. Alternatively, override '{callerName}' and change it to not visit children of this type.");
+                return nodeAsT;
             }
 
-            return node;
+            throw new InvalidOperationException($"When called from '{callerName}', rewriting a node of type '{typeof(T)}' must return a non-null value of the same type. Alternatively, override '{callerName}' and change it to not visit children of this type.");
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace System.Linq.Expressions
         public ReadOnlyCollection<T> VisitAndConvert<T>(ReadOnlyCollection<T> nodes, string callerName) where T : Expression
         {
             ContractUtils.RequiresNotNull(nodes, nameof(nodes));
-            T[] newNodes = null;
+            T[]? newNodes = null;
             for (int i = 0, n = nodes.Count; i < n; i++)
             {
                 if (!(Visit(nodes[i]) is T node))
@@ -397,6 +397,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitLambda<T>(Expression<T> node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             var body = Visit(node.Body);
             var parameters = VisitParameters(node, nameof(VisitLambda));
 
@@ -623,6 +628,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected virtual CatchBlock VisitCatchBlock(CatchBlock node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(VisitAndConvert(node.Variable, nameof(VisitCatchBlock)), Visit(node.Filter), Visit(node.Body));
         }
 

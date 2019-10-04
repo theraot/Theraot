@@ -86,7 +86,7 @@ namespace System.Linq.Expressions.Interpreter
             StackIndex = i + 1;
         }
 
-        public DebugInfo GetDebugInfo(int instructionIndex)
+        public DebugInfo? GetDebugInfo(int instructionIndex)
         {
             return DebugInfo.GetMatchingDebugInfo(Interpreter.DebugInfos, instructionIndex);
         }
