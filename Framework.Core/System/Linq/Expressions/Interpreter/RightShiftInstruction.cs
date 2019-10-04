@@ -26,14 +26,14 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.SByte: return _sByte ?? (_sByte = new RightShiftSByte());
-                case TypeCode.Int16: return _int16 ?? (_int16 = new RightShiftInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new RightShiftInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new RightShiftInt64());
-                case TypeCode.Byte: return _byte ?? (_byte = new RightShiftByte());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new RightShiftUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new RightShiftUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new RightShiftUInt64());
+                case TypeCode.SByte: return _sByte ??= new RightShiftSByte();
+                case TypeCode.Int16: return _int16 ??= new RightShiftInt16();
+                case TypeCode.Int32: return _int32 ??= new RightShiftInt32();
+                case TypeCode.Int64: return _int64 ??= new RightShiftInt64();
+                case TypeCode.Byte: return _byte ??= new RightShiftByte();
+                case TypeCode.UInt16: return _uInt16 ??= new RightShiftUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new RightShiftUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new RightShiftUInt64();
                 default:
                     throw ContractUtils.Unreachable;
             }

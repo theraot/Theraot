@@ -41,7 +41,7 @@ namespace System.Threading
 {
     public class CancellationTokenSource : IDisposable
     {
-        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource {_cancelRequested = 1}; // Leaked
+        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource { _cancelRequested = 1 }; // Leaked
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
         private static readonly Action<CancellationTokenSource> _timerCallback = TimerCallback;
         private readonly ManualResetEvent _handle;
@@ -107,7 +107,7 @@ namespace System.Threading
 
         public static CancellationTokenSource CreateLinkedTokenSource(CancellationToken token1, CancellationToken token2)
         {
-            return CreateLinkedTokenSource(new[] {token1, token2});
+            return CreateLinkedTokenSource(new[] { token1, token2 });
         }
 
         public static CancellationTokenSource CreateLinkedTokenSource(params CancellationToken[] tokens)
@@ -282,7 +282,7 @@ namespace System.Threading
                 }
                 catch (Exception exception)
                 {
-                    (exceptions ?? (exceptions = new List<Exception>())).Add(exception);
+                    (exceptions ??= new List<Exception>()).Add(exception);
                 }
             }
         }

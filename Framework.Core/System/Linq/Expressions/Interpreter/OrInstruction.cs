@@ -26,15 +26,15 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.SByte: return _sByte ?? (_sByte = new OrSByte());
-                case TypeCode.Int16: return _int16 ?? (_int16 = new OrInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new OrInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new OrInt64());
-                case TypeCode.Byte: return _byte ?? (_byte = new OrByte());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new OrUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new OrUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new OrUInt64());
-                case TypeCode.Boolean: return _boolean ?? (_boolean = new OrBoolean());
+                case TypeCode.SByte: return _sByte ??= new OrSByte();
+                case TypeCode.Int16: return _int16 ??= new OrInt16();
+                case TypeCode.Int32: return _int32 ??= new OrInt32();
+                case TypeCode.Int64: return _int64 ??= new OrInt64();
+                case TypeCode.Byte: return _byte ??= new OrByte();
+                case TypeCode.UInt16: return _uInt16 ??= new OrUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new OrUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new OrUInt64();
+                case TypeCode.Boolean: return _boolean ??= new OrBoolean();
                 default:
                     throw ContractUtils.Unreachable;
             }

@@ -28,14 +28,14 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!type.IsEnum);
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new DivInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new DivInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new DivInt64());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new DivUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new DivUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new DivUInt64());
-                case TypeCode.Single: return _single ?? (_single = new DivSingle());
-                case TypeCode.Double: return _double ?? (_double = new DivDouble());
+                case TypeCode.Int16: return _int16 ??= new DivInt16();
+                case TypeCode.Int32: return _int32 ??= new DivInt32();
+                case TypeCode.Int64: return _int64 ??= new DivInt64();
+                case TypeCode.UInt16: return _uInt16 ??= new DivUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new DivUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new DivUInt64();
+                case TypeCode.Single: return _single ??= new DivSingle();
+                case TypeCode.Double: return _double ??= new DivDouble();
                 default:
                     throw ContractUtils.Unreachable;
             }

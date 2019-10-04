@@ -1949,7 +1949,7 @@ namespace System.Linq.Expressions.Interpreter
                     var updater = CompileAddress(arg, i);
                     if (updater != null)
                     {
-                        (updaters ?? (updaters = new List<ByRefUpdater>())).Add(updater);
+                        (updaters ??= new List<ByRefUpdater>()).Add(updater);
                     }
                 }
                 else
@@ -2080,7 +2080,7 @@ namespace System.Linq.Expressions.Interpreter
                         var updater = CompileAddress(arg, i);
                         if (updater != null)
                         {
-                            (updaters ?? (updaters = new List<ByRefUpdater>())).Add(updater);
+                            (updaters ??= new List<ByRefUpdater>()).Add(updater);
                         }
                     }
                     else

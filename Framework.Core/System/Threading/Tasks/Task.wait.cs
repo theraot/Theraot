@@ -254,7 +254,7 @@ namespace System.Threading.Tasks
 
                 if (!taskIsCompleted)
                 {
-                    (waitedOnTaskList ?? (waitedOnTaskList = new List<Task>(tasks.Length))).Add(task);
+                    (waitedOnTaskList ??= new List<Task>(tasks.Length)).Add(task);
                 }
             }
 
@@ -282,7 +282,7 @@ namespace System.Threading.Tasks
                             // it's possible that WaitAll was called by the parent of an attached child,
                             // this will make sure it won't throw again in the implicit wait
                             task.UpdateExceptionObservedStatus();
-                            (exceptions ?? (exceptions = new List<Exception>(exception.InnerExceptions.Count))).AddRange(exception.InnerExceptions);
+                            (exceptions ??= new List<Exception>(exception.InnerExceptions.Count)).AddRange(exception.InnerExceptions);
                         }
                     }
 

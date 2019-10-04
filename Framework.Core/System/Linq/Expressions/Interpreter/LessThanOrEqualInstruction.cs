@@ -32,17 +32,17 @@ namespace System.Linq.Expressions.Interpreter
             {
                 switch (Type.GetTypeCode(type.GetNonNullable()))
                 {
-                    case TypeCode.SByte: return _liftedToNullSByte ?? (_liftedToNullSByte = new LessThanOrEqualSByte(null));
-                    case TypeCode.Int16: return _liftedToNullInt16 ?? (_liftedToNullInt16 = new LessThanOrEqualInt16(null));
-                    case TypeCode.Char: return _liftedToNullChar ?? (_liftedToNullChar = new LessThanOrEqualChar(null));
-                    case TypeCode.Int32: return _liftedToNullInt32 ?? (_liftedToNullInt32 = new LessThanOrEqualInt32(null));
-                    case TypeCode.Int64: return _liftedToNullInt64 ?? (_liftedToNullInt64 = new LessThanOrEqualInt64(null));
-                    case TypeCode.Byte: return _liftedToNullByte ?? (_liftedToNullByte = new LessThanOrEqualByte(null));
-                    case TypeCode.UInt16: return _liftedToNullUInt16 ?? (_liftedToNullUInt16 = new LessThanOrEqualUInt16(null));
-                    case TypeCode.UInt32: return _liftedToNullUInt32 ?? (_liftedToNullUInt32 = new LessThanOrEqualUInt32(null));
-                    case TypeCode.UInt64: return _liftedToNullUInt64 ?? (_liftedToNullUInt64 = new LessThanOrEqualUInt64(null));
-                    case TypeCode.Single: return _liftedToNullSingle ?? (_liftedToNullSingle = new LessThanOrEqualSingle(null));
-                    case TypeCode.Double: return _liftedToNullDouble ?? (_liftedToNullDouble = new LessThanOrEqualDouble(null));
+                    case TypeCode.SByte: return _liftedToNullSByte ??= new LessThanOrEqualSByte(null);
+                    case TypeCode.Int16: return _liftedToNullInt16 ??= new LessThanOrEqualInt16(null);
+                    case TypeCode.Char: return _liftedToNullChar ??= new LessThanOrEqualChar(null);
+                    case TypeCode.Int32: return _liftedToNullInt32 ??= new LessThanOrEqualInt32(null);
+                    case TypeCode.Int64: return _liftedToNullInt64 ??= new LessThanOrEqualInt64(null);
+                    case TypeCode.Byte: return _liftedToNullByte ??= new LessThanOrEqualByte(null);
+                    case TypeCode.UInt16: return _liftedToNullUInt16 ??= new LessThanOrEqualUInt16(null);
+                    case TypeCode.UInt32: return _liftedToNullUInt32 ??= new LessThanOrEqualUInt32(null);
+                    case TypeCode.UInt64: return _liftedToNullUInt64 ??= new LessThanOrEqualUInt64(null);
+                    case TypeCode.Single: return _liftedToNullSingle ??= new LessThanOrEqualSingle(null);
+                    case TypeCode.Double: return _liftedToNullDouble ??= new LessThanOrEqualDouble(null);
                     default:
                         throw ContractUtils.Unreachable;
                 }
@@ -50,17 +50,17 @@ namespace System.Linq.Expressions.Interpreter
 
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.SByte: return _sByte ?? (_sByte = new LessThanOrEqualSByte(Utils.BoxedFalse));
-                case TypeCode.Int16: return _int16 ?? (_int16 = new LessThanOrEqualInt16(Utils.BoxedFalse));
-                case TypeCode.Char: return _char ?? (_char = new LessThanOrEqualChar(Utils.BoxedFalse));
-                case TypeCode.Int32: return _int32 ?? (_int32 = new LessThanOrEqualInt32(Utils.BoxedFalse));
-                case TypeCode.Int64: return _int64 ?? (_int64 = new LessThanOrEqualInt64(Utils.BoxedFalse));
-                case TypeCode.Byte: return _byte ?? (_byte = new LessThanOrEqualByte(Utils.BoxedFalse));
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new LessThanOrEqualUInt16(Utils.BoxedFalse));
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new LessThanOrEqualUInt32(Utils.BoxedFalse));
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new LessThanOrEqualUInt64(Utils.BoxedFalse));
-                case TypeCode.Single: return _single ?? (_single = new LessThanOrEqualSingle(Utils.BoxedFalse));
-                case TypeCode.Double: return _double ?? (_double = new LessThanOrEqualDouble(Utils.BoxedFalse));
+                case TypeCode.SByte: return _sByte ??= new LessThanOrEqualSByte(Utils.BoxedFalse);
+                case TypeCode.Int16: return _int16 ??= new LessThanOrEqualInt16(Utils.BoxedFalse);
+                case TypeCode.Char: return _char ??= new LessThanOrEqualChar(Utils.BoxedFalse);
+                case TypeCode.Int32: return _int32 ??= new LessThanOrEqualInt32(Utils.BoxedFalse);
+                case TypeCode.Int64: return _int64 ??= new LessThanOrEqualInt64(Utils.BoxedFalse);
+                case TypeCode.Byte: return _byte ??= new LessThanOrEqualByte(Utils.BoxedFalse);
+                case TypeCode.UInt16: return _uInt16 ??= new LessThanOrEqualUInt16(Utils.BoxedFalse);
+                case TypeCode.UInt32: return _uInt32 ??= new LessThanOrEqualUInt32(Utils.BoxedFalse);
+                case TypeCode.UInt64: return _uInt64 ??= new LessThanOrEqualUInt64(Utils.BoxedFalse);
+                case TypeCode.Single: return _single ??= new LessThanOrEqualSingle(Utils.BoxedFalse);
+                case TypeCode.Double: return _double ??= new LessThanOrEqualDouble(Utils.BoxedFalse);
                 default:
                     throw ContractUtils.Unreachable;
             }

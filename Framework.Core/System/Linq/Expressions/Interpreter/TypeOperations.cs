@@ -29,21 +29,21 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!t.IsEnum);
             switch (Type.GetTypeCode(t))
             {
-                case TypeCode.Boolean: return _boolean ?? (_boolean = new CastInstructionT<bool>());
-                case TypeCode.Byte: return _byte ?? (_byte = new CastInstructionT<byte>());
-                case TypeCode.Char: return _char ?? (_char = new CastInstructionT<char>());
-                case TypeCode.DateTime: return _dateTime ?? (_dateTime = new CastInstructionT<DateTime>());
-                case TypeCode.Decimal: return _decimal ?? (_decimal = new CastInstructionT<decimal>());
-                case TypeCode.Double: return _double ?? (_double = new CastInstructionT<double>());
-                case TypeCode.Int16: return _int16 ?? (_int16 = new CastInstructionT<short>());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new CastInstructionT<int>());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new CastInstructionT<long>());
-                case TypeCode.SByte: return _sByte ?? (_sByte = new CastInstructionT<sbyte>());
-                case TypeCode.Single: return _single ?? (_single = new CastInstructionT<float>());
-                case TypeCode.String: return _string ?? (_string = new CastInstructionT<string>());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new CastInstructionT<ushort>());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new CastInstructionT<uint>());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new CastInstructionT<ulong>());
+                case TypeCode.Boolean: return _boolean ??= new CastInstructionT<bool>();
+                case TypeCode.Byte: return _byte ??= new CastInstructionT<byte>();
+                case TypeCode.Char: return _char ??= new CastInstructionT<char>();
+                case TypeCode.DateTime: return _dateTime ??= new CastInstructionT<DateTime>();
+                case TypeCode.Decimal: return _decimal ??= new CastInstructionT<decimal>();
+                case TypeCode.Double: return _double ??= new CastInstructionT<double>();
+                case TypeCode.Int16: return _int16 ??= new CastInstructionT<short>();
+                case TypeCode.Int32: return _int32 ??= new CastInstructionT<int>();
+                case TypeCode.Int64: return _int64 ??= new CastInstructionT<long>();
+                case TypeCode.SByte: return _sByte ??= new CastInstructionT<sbyte>();
+                case TypeCode.Single: return _single ??= new CastInstructionT<float>();
+                case TypeCode.String: return _string ??= new CastInstructionT<string>();
+                case TypeCode.UInt16: return _uInt16 ??= new CastInstructionT<ushort>();
+                case TypeCode.UInt32: return _uInt32 ??= new CastInstructionT<uint>();
+                case TypeCode.UInt64: return _uInt64 ??= new CastInstructionT<ulong>();
                 default: return CastInstructionNoT.Create(t);
             }
         }
@@ -285,16 +285,16 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (method)
             {
-                case "get_HasValue": return _hasValue ?? (_hasValue = new HasValue());
-                case "get_Value": return _value ?? (_value = new GetValue());
-                case "Equals": return _equals ?? (_equals = new EqualsClass());
-                case "GetHashCode": return _getHashCode ?? (_getHashCode = new GetHashCodeClass());
+                case "get_HasValue": return _hasValue ??= new HasValue();
+                case "get_Value": return _value ??= new GetValue();
+                case "Equals": return _equals ??= new EqualsClass();
+                case "GetHashCode": return _getHashCode ??= new GetHashCodeClass();
                 case "GetValueOrDefault":
                     return argCount == 0
                         ? new GetValueOrDefault(mi)
-                        : _getValueOrDefault1 ?? (_getValueOrDefault1 = new GetValueOrDefault1());
+                        : _getValueOrDefault1 ??= new GetValueOrDefault1();
 
-                case "ToString": return _toString ?? (_toString = new ToStringClass());
+                case "ToString": return _toString ??= new ToStringClass();
                 default:
                     // System.Nullable doesn't have other instance methods
                     throw ContractUtils.Unreachable;
@@ -303,7 +303,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction CreateGetValue()
         {
-            return _value ?? (_value = new GetValue());
+            return _value ??= new GetValue();
         }
 
         private sealed class EqualsClass : NullableMethodCallInstruction

@@ -52,7 +52,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (TargetIndex == UnknownIndex)
             {
-                (_forwardBranchFixups ?? (_forwardBranchFixups = new List<int>())).Add(branchIndex);
+                (_forwardBranchFixups ??= new List<int>()).Add(branchIndex);
             }
             else
             {

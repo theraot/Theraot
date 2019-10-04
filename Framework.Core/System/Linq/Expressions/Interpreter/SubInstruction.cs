@@ -28,14 +28,14 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(type.IsArithmetic());
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new SubInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new SubInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new SubInt64());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new SubUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new SubUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new SubUInt64());
-                case TypeCode.Single: return _single ?? (_single = new SubSingle());
-                case TypeCode.Double: return _double ?? (_double = new SubDouble());
+                case TypeCode.Int16: return _int16 ??= new SubInt16();
+                case TypeCode.Int32: return _int32 ??= new SubInt32();
+                case TypeCode.Int64: return _int64 ??= new SubInt64();
+                case TypeCode.UInt16: return _uInt16 ??= new SubUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new SubUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new SubUInt64();
+                case TypeCode.Single: return _single ??= new SubSingle();
+                case TypeCode.Double: return _double ??= new SubDouble();
                 default:
                     throw ContractUtils.Unreachable;
             }
@@ -204,12 +204,12 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(type.IsArithmetic());
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new SubOvfInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new SubOvfInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new SubOvfInt64());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new SubOvfUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new SubOvfUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new SubOvfUInt64());
+                case TypeCode.Int16: return _int16 ??= new SubOvfInt16();
+                case TypeCode.Int32: return _int32 ??= new SubOvfInt32();
+                case TypeCode.Int64: return _int64 ??= new SubOvfInt64();
+                case TypeCode.UInt16: return _uInt16 ??= new SubOvfUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new SubOvfUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new SubOvfUInt64();
                 default:
                     return SubInstruction.Create(type);
             }

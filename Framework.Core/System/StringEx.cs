@@ -541,8 +541,8 @@ namespace System
                 return string.Empty;
             }
 
-            start = start ?? string.Empty;
-            end = end ?? string.Empty;
+            start ??= string.Empty;
+            end ??= string.Empty;
             return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 
@@ -565,8 +565,8 @@ namespace System
                 return string.Empty;
             }
 
-            start = start ?? string.Empty;
-            end = end ?? string.Empty;
+            start ??= string.Empty;
+            end ??= string.Empty;
             return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 
@@ -594,8 +594,8 @@ namespace System
                 return string.Empty;
             }
 
-            start = start ?? string.Empty;
-            end = end ?? string.Empty;
+            start ??= string.Empty;
+            end ??= string.Empty;
             return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 

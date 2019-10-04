@@ -28,14 +28,14 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(type.IsArithmetic());
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new MulInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new MulInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new MulInt64());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new MulUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new MulUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new MulUInt64());
-                case TypeCode.Single: return _single ?? (_single = new MulSingle());
-                case TypeCode.Double: return _double ?? (_double = new MulDouble());
+                case TypeCode.Int16: return _int16 ??= new MulInt16();
+                case TypeCode.Int32: return _int32 ??= new MulInt32();
+                case TypeCode.Int64: return _int64 ??= new MulInt64();
+                case TypeCode.UInt16: return _uInt16 ??= new MulUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new MulUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new MulUInt64();
+                case TypeCode.Single: return _single ??= new MulSingle();
+                case TypeCode.Double: return _double ??= new MulDouble();
 
                 default:
                     throw ContractUtils.Unreachable;
@@ -205,12 +205,12 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(type.IsArithmetic());
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new MulOvfInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new MulOvfInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new MulOvfInt64());
-                case TypeCode.UInt16: return _uInt16 ?? (_uInt16 = new MulOvfUInt16());
-                case TypeCode.UInt32: return _uInt32 ?? (_uInt32 = new MulOvfUInt32());
-                case TypeCode.UInt64: return _uInt64 ?? (_uInt64 = new MulOvfUInt64());
+                case TypeCode.Int16: return _int16 ??= new MulOvfInt16();
+                case TypeCode.Int32: return _int32 ??= new MulOvfInt32();
+                case TypeCode.Int64: return _int64 ??= new MulOvfInt64();
+                case TypeCode.UInt16: return _uInt16 ??= new MulOvfUInt16();
+                case TypeCode.UInt32: return _uInt32 ??= new MulOvfUInt32();
+                case TypeCode.UInt64: return _uInt64 ??= new MulOvfUInt64();
                 default:
                     return MulInstruction.Create(type);
             }

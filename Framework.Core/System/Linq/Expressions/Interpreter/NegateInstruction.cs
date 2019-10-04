@@ -28,9 +28,9 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!type.IsEnum);
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new NegateCheckedInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new NegateCheckedInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new NegateCheckedInt64());
+                case TypeCode.Int16: return _int16 ??= new NegateCheckedInt16();
+                case TypeCode.Int32: return _int32 ??= new NegateCheckedInt32();
+                case TypeCode.Int64: return _int64 ??= new NegateCheckedInt64();
                 default:
                     return NegateInstruction.Create(type);
             }
@@ -109,11 +109,11 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!type.IsEnum);
             switch (Type.GetTypeCode(type.GetNonNullable()))
             {
-                case TypeCode.Int16: return _int16 ?? (_int16 = new NegateInt16());
-                case TypeCode.Int32: return _int32 ?? (_int32 = new NegateInt32());
-                case TypeCode.Int64: return _int64 ?? (_int64 = new NegateInt64());
-                case TypeCode.Single: return _single ?? (_single = new NegateSingle());
-                case TypeCode.Double: return _double ?? (_double = new NegateDouble());
+                case TypeCode.Int16: return _int16 ??= new NegateInt16();
+                case TypeCode.Int32: return _int32 ??= new NegateInt32();
+                case TypeCode.Int64: return _int64 ??= new NegateInt64();
+                case TypeCode.Single: return _single ??= new NegateSingle();
+                case TypeCode.Double: return _double ??= new NegateDouble();
                 default:
                     throw ContractUtils.Unreachable;
             }

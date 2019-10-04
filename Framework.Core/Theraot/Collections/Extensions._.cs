@@ -458,7 +458,7 @@ namespace Theraot.Collections
             }
 
             var currentIndex = 0;
-            comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer ??= EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -503,7 +503,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
 
-            comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer ??= EqualityComparer<T>.Default;
             var otherAsCollection = AsICollection(other);
             return source.RemoveWhere(input => !otherAsCollection.Contains(input, comparer));
         }
