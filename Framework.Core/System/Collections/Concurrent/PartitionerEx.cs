@@ -1,13 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-#if LESSTHAN_NET45 || NETSTANDARD1_0
-
-using Theraot.Collections;
-using Theraot.Core;
-
-#endif
-
 namespace System.Collections.Concurrent
 {
     public static class PartitionerEx
