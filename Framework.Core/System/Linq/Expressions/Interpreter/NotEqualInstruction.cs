@@ -17,9 +17,9 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class NotEqualInstruction : Instruction
     {
         // Perf: EqualityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction _reference, _boolean, _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
+        private static Instruction? _reference, _boolean, _sByte, _int16, _char, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _single, _double;
 
-        private static Instruction _sByteLiftedToNull, _int16LiftedToNull, _charLiftedToNull, _int32LiftedToNull, _int64LiftedToNull, _byteLiftedToNull, _uInt16LiftedToNull, _uInt32LiftedToNull, _uInt64LiftedToNull, _singleLiftedToNull, _doubleLiftedToNull;
+        private static Instruction? _sByteLiftedToNull, _int16LiftedToNull, _charLiftedToNull, _int32LiftedToNull, _int64LiftedToNull, _byteLiftedToNull, _uInt16LiftedToNull, _uInt32LiftedToNull, _uInt64LiftedToNull, _singleLiftedToNull, _doubleLiftedToNull;
 
         private NotEqualInstruction()
         {

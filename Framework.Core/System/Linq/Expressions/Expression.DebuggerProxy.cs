@@ -25,7 +25,7 @@ namespace System.Linq.Expressions
             }
 
             public bool CanReduce => _node.CanReduce;
-            public LambdaExpression Conversion => _node.Conversion;
+            public LambdaExpression? Conversion => _node.Conversion;
             public string DebugView => _node.DebugView;
             public bool IsLifted => _node.IsLifted;
             public bool IsLiftedToNull => _node.IsLiftedToNull;
@@ -176,12 +176,12 @@ namespace System.Linq.Expressions
                 _node = node;
             }
 
-            public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
+            public ReadOnlyCollection<Expression?> Arguments => _node.Arguments;
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
             public PropertyInfo? Indexer => _node.Indexer;
             public ExpressionType NodeType => _node.NodeType;
-            public Expression Object => _node.Object;
+            public Expression? Object => _node.Object;
             public Type Type => _node.Type;
         }
 
@@ -215,7 +215,7 @@ namespace System.Linq.Expressions
 
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
-            public Expression DefaultValue => _node.DefaultValue;
+            public Expression? DefaultValue => _node.DefaultValue;
             public ExpressionType NodeType => _node.NodeType;
             public LabelTarget Target => _node.Target;
             public Type Type => _node.Type;
@@ -234,7 +234,7 @@ namespace System.Linq.Expressions
             public Expression Body => _node.Body;
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
-            public string Name => _node.Name;
+            public string? Name => _node.Name;
             public ExpressionType NodeType => _node.NodeType;
             public ReadOnlyCollection<ParameterExpression> Parameters => _node.Parameters;
             public Type ReturnType => _node.ReturnType;
@@ -431,9 +431,9 @@ namespace System.Linq.Expressions
 
             public bool CanReduce => _node.CanReduce;
             public ReadOnlyCollection<SwitchCase> Cases => _node.Cases;
-            public MethodInfo Comparison => _node.Comparison;
+            public MethodInfo? Comparison => _node.Comparison;
             public string DebugView => _node.DebugView;
-            public Expression DefaultBody => _node.DefaultBody;
+            public Expression? DefaultBody => _node.DefaultBody;
             public ExpressionType NodeType => _node.NodeType;
             public Expression SwitchValue => _node.SwitchValue;
             public Type Type => _node.Type;

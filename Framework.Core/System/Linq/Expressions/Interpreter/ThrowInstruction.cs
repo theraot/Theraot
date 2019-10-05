@@ -26,18 +26,20 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var ex = WrapThrownObject(frame.Pop());
+            var ex = WrapThrownObject(frame.Pop()!);
             if (_rethrow)
             {
                 throw new RethrowException();
             }
 
-            throw ex;
+            throw ex!;
         }
 
-        private static Exception WrapThrownObject(object thrown)
+        private static Exception? WrapThrownObject(object thrown)
         {
-            return thrown == null ? null : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
+            return thrown == null
+                ? null
+                : thrown as Exception ?? new /*RuntimeWrappedException(thrown)*/ Exception();
         }
     }
 }

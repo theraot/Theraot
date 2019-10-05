@@ -68,6 +68,11 @@ namespace System.Linq.Expressions
                 return new IndexExpression(array, null, ArrayEx.Empty<Expression>());
             }
 
+            return ArrayAccessExtracted(array, indexes, arrayType);
+        }
+
+        private static IndexExpression ArrayAccessExtracted(Expression array, IEnumerable<Expression?> indexes, Type arrayType)
+        {
             var indexList = indexes.AsArrayInternal();
 
             if (arrayType.GetArrayRank() != indexList.Length)
@@ -477,7 +482,7 @@ namespace System.Linq.Expressions
         {
             if (indexer == null)
             {
-                Debug.Assert(instance.Type.IsArray && instance.Type.GetArrayRank() == arguments.Length);
+                Debug.Assert(instance!.Type.IsArray && instance.Type.GetArrayRank() == arguments.Length);
             }
 
             Object = instance;
@@ -580,3 +585,4 @@ namespace System.Linq.Expressions
 }
 
 #endif
+

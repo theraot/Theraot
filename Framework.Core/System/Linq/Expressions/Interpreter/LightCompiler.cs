@@ -1,19 +1,20 @@
-﻿using Theraot.Core;
-
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CC0021 // Use nameof
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot;
+using Theraot.Core;
 using Theraot.Reflection;
 using AstUtils = System.Linq.Expressions.Utils;
 
@@ -414,11 +415,18 @@ namespace System.Linq.Expressions.Interpreter
 
         private void Compile(Expression expr)
         {
-            var pushLabelBlock = TryPushLabelBlock(expr);
-            CompileNoLabelPush(expr);
-            if (pushLabelBlock)
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(_labelBlock, expr);
+            if (labelScopeChangeInfo.HasValue)
             {
-                PopLabelBlock(_labelBlock.Kind);
+                _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
+                DefineBlockLabels(labelScopeChangeInfo.Value.nodes);
+            }
+
+            CompileNoLabelPush(expr);
+
+            if (labelScopeChangeInfo.HasValue)
+            {
+                _labelBlock = labelScopeChangeInfo.Value.parent;
             }
         }
 
@@ -627,7 +635,13 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileAsVoid(Expression expr)
         {
-            var pushLabelBlock = TryPushLabelBlock(expr);
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(_labelBlock, expr);
+            if (labelScopeChangeInfo.HasValue)
+            {
+                _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
+                DefineBlockLabels(labelScopeChangeInfo.Value.nodes);
+            }
+
             var startingStackDepth = Instructions.CurrentStackDepth;
             switch (expr.NodeType)
             {
@@ -660,9 +674,10 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             Debug.Assert(Instructions.CurrentStackDepth == startingStackDepth);
-            if (pushLabelBlock)
+
+            if (labelScopeChangeInfo.HasValue)
             {
-                PopLabelBlock(_labelBlock.Kind);
+                _labelBlock = labelScopeChangeInfo.Value.parent;
             }
         }
 
@@ -1700,21 +1715,19 @@ namespace System.Linq.Expressions.Interpreter
         {
             var node = (LoopExpression)expr;
 
-            PushLabelBlock(LabelScopeKind.Statement);
+            var parent = _labelBlock;
+            _labelBlock = new LabelScopeInfo(_labelBlock, LabelScopeKind.Statement);
+
             var breakLabel = DefineLabel(node.BreakLabel);
             var continueLabel = DefineLabel(node.ContinueLabel);
-
             Instructions.MarkLabel(continueLabel.GetLabel(this));
-
             // emit loop body:
             CompileAsVoid(node.Body);
-
             // emit loop branch:
             Instructions.EmitBranch(continueLabel.GetLabel(this), node.Type != typeof(void), false);
-
             Instructions.MarkLabel(breakLabel.GetLabel(this));
 
-            PopLabelBlock(LabelScopeKind.Statement);
+            _labelBlock = parent;
         }
 
         private void CompileMember(Expression? from, MemberInfo member, bool forBinding)
@@ -2615,7 +2628,9 @@ namespace System.Linq.Expressions.Interpreter
                 var exHandlers = new List<ExceptionHandler>();
                 var enterTryInstr = (EnterTryCatchFinallyInstruction)Instructions.GetInstruction(tryStart);
 
-                PushLabelBlock(LabelScopeKind.Try);
+                var parent = _labelBlock;
+                _labelBlock = new LabelScopeInfo(_labelBlock, LabelScopeKind.Try);
+
                 var hasValue = node.Type != typeof(void);
 
                 Compile(node.Body, !hasValue);
@@ -2640,27 +2655,25 @@ namespace System.Linq.Expressions.Interpreter
 
                         if (handler.Filter != null)
                         {
-                            PushLabelBlock(LabelScopeKind.Filter);
+                            var filterParent = _labelBlock;
+                            _labelBlock = new LabelScopeInfo(_labelBlock, LabelScopeKind.Filter);
 
                             Instructions.EmitEnterExceptionFilter();
-
                             // at this point the stack balance is prepared for the hidden exception variable:
                             var filterLabel = Instructions.MarkRuntimeLabel();
                             var filterStart = Instructions.Count;
-
                             CompileSetVariable(parameter, true);
                             Compile(handler.Filter);
                             CompileGetVariable(parameter);
-
                             filter = new ExceptionFilter(filterLabel, filterStart, Instructions.Count);
-
                             // keep the value of the body on the stack:
                             Instructions.EmitLeaveExceptionFilter();
 
-                            PopLabelBlock(LabelScopeKind.Filter);
+                            _labelBlock = filterParent;
                         }
 
-                        PushLabelBlock(LabelScopeKind.Catch);
+                        var catchParent = _labelBlock;
+                        _labelBlock = new LabelScopeInfo(_labelBlock, LabelScopeKind.Catch);
 
                         // add a stack balancing nop instruction (exception handling pushes the current exception):
                         if (hasValue)
@@ -2671,21 +2684,17 @@ namespace System.Linq.Expressions.Interpreter
                         {
                             Instructions.EmitEnterExceptionHandlerVoid();
                         }
-
                         // at this point the stack balance is prepared for the hidden exception variable:
                         var handlerLabel = Instructions.MarkRuntimeLabel();
                         var handlerStart = Instructions.Count;
-
                         CompileSetVariable(parameter, true);
                         Compile(handler.Body, !hasValue);
-
                         _exceptionForRethrowStack.Pop();
-
                         // keep the value of the body on the stack:
                         Instructions.EmitLeaveExceptionHandler(hasValue, gotoEnd);
-
                         exHandlers.Add(new ExceptionHandler(handlerLabel, handlerStart, Instructions.Count, handler.Test, filter));
-                        PopLabelBlock(LabelScopeKind.Catch);
+
+                        _labelBlock = catchParent;
 
                         _locals.UndefineLocal(local, Instructions.Count);
                     }
@@ -2693,7 +2702,9 @@ namespace System.Linq.Expressions.Interpreter
 
                 if (@finally != null)
                 {
-                    PushLabelBlock(LabelScopeKind.Finally);
+                    var finallyParent = _labelBlock;
+                    _labelBlock = new LabelScopeInfo(_labelBlock, LabelScopeKind.Finally);
+
                     var startOfFinally = @finally.Value.start;
                     Instructions.MarkLabel(startOfFinally);
                     Instructions.EmitEnterFinally(startOfFinally);
@@ -2709,7 +2720,8 @@ namespace System.Linq.Expressions.Interpreter
                             exHandlers.ToArray()
                         )
                     );
-                    PopLabelBlock(LabelScopeKind.Finally);
+
+                    _labelBlock = finallyParent;
                 }
                 else
                 {
@@ -2721,7 +2733,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 Instructions.MarkLabel(end);
 
-                PopLabelBlock(LabelScopeKind.Try);
+                _labelBlock = parent;
             }
         }
 
@@ -2750,7 +2762,9 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(enterTryInstr == Instructions.GetInstruction(tryStart));
 
             // Emit the try block.
-            PushLabelBlock(LabelScopeKind.Try);
+            var parent = _labelBlock;
+            _labelBlock = new LabelScopeInfo(_labelBlock, LabelScopeKind.Try);
+
             var hasValue = expr.Type != typeof(void);
             Compile(expr.Body, !hasValue);
             var tryEnd = Instructions.Count;
@@ -2761,15 +2775,19 @@ namespace System.Linq.Expressions.Interpreter
 
             // Emit the fault block. The scope kind used is the same as for finally
             // blocks, which matches the Compiler.LambdaCompiler.EmitTryExpression approach.
-            PushLabelBlock(LabelScopeKind.Finally);
+            var tmpParent = _labelBlock;
+            _labelBlock = new LabelScopeInfo(_labelBlock, LabelScopeKind.Finally);
+
             var startOfFault = Instructions.MakeLabel();
             Instructions.MarkLabel(startOfFault);
             Instructions.EmitEnterFault(startOfFault);
             CompileAsVoid(expr.Fault);
             Instructions.EmitLeaveFault();
             enterTryInstr.SetTryHandler(new TryFaultHandler(tryStart, tryEnd, startOfFault.TargetIndex, Instructions.Count));
-            PopLabelBlock(LabelScopeKind.Finally);
-            PopLabelBlock(LabelScopeKind.Try);
+
+            _labelBlock = tmpParent;
+            _labelBlock = parent;
+
             Instructions.MarkLabel(end);
         }
 
@@ -2946,6 +2964,17 @@ namespace System.Linq.Expressions.Interpreter
             CompileSetVariable(target, asVoid);
         }
 
+        private void DefineBlockLabels(IEnumerable<Expression>? nodes)
+        {
+            if (nodes != null)
+            {
+                foreach (var node in nodes)
+                {
+                    DefineBlockLabels(node);
+                }
+            }
+        }
+
         private void DefineBlockLabels(Expression node)
         {
             if (!(node is BlockExpression block))
@@ -3114,18 +3143,6 @@ namespace System.Linq.Expressions.Interpreter
             return new Interpreter(lambdaName, _locals, Instructions.ToArray(), debugInfos);
         }
 
-        private void PopLabelBlock(LabelScopeKind kind)
-        {
-            No.Op(kind);
-            Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
-            _labelBlock = _labelBlock!.Parent;
-        }
-
-        private void PushLabelBlock(LabelScopeKind type)
-        {
-            _labelBlock = new LabelScopeInfo(_labelBlock, type);
-        }
-
         private LabelInfo ReferenceLabel(LabelTarget node)
         {
             var result = EnsureLabel(node);
@@ -3143,7 +3160,7 @@ namespace System.Linq.Expressions.Interpreter
             return local;
         }
 
-        private bool TryPushLabelBlock(Expression node)
+        private static (LabelScopeInfo parent, LabelScopeKind kind, IList<Expression>? nodes)? GetLabelScopeChangeInfo(LabelScopeInfo labelBlock, Expression node)
         {
             // Anything that is "statement-like" -- e.g. has no associated
             // stack state can be jumped into, with the exception of try-blocks
@@ -3157,47 +3174,48 @@ namespace System.Linq.Expressions.Interpreter
                     // LabelExpression is a bit special, if it's directly in a
                     // block it becomes associate with the block's scope. Same
                     // thing if it's in a switch case body.
-                    if (_labelBlock.Kind == LabelScopeKind.Block)
+                    if (labelBlock.Kind == LabelScopeKind.Block)
                     {
                         var label = ((LabelExpression)node).Target;
-                        if (_labelBlock.ContainsTarget(label))
+                        if (labelBlock.ContainsTarget(label))
                         {
-                            return false;
+                            return null;
                         }
 
-                        if (_labelBlock.Parent.Kind == LabelScopeKind.Switch && _labelBlock.Parent.ContainsTarget(label))
+                        if (labelBlock.Parent?.Kind == LabelScopeKind.Switch && labelBlock.Parent.ContainsTarget(label))
                         {
-                            return false;
+                            return null;
                         }
                     }
 
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Statement, null);
 
                 case ExpressionType.Block:
-                    PushLabelBlock(LabelScopeKind.Block);
                     // Labels defined immediately in the block are valid for
                     // the whole block.
-                    if (_labelBlock.Parent.Kind != LabelScopeKind.Switch)
+                    if (labelBlock.Parent?.Kind != LabelScopeKind.Switch)
                     {
-                        DefineBlockLabels(node);
+                        return (labelBlock, LabelScopeKind.Block, new[] { node });
                     }
 
-                    return true;
+                    return (labelBlock, LabelScopeKind.Block, null);
 
                 case ExpressionType.Switch:
-                    PushLabelBlock(LabelScopeKind.Switch);
+                    var nodes = new List<Expression>();
                     // Define labels inside of the switch cases so they are in
                     // scope for the whole switch. This allows "goto case" and
                     // "goto default" to be considered as local jumps.
                     var @switch = (SwitchExpression)node;
                     foreach (var c in @switch.Cases)
                     {
-                        DefineBlockLabels(c.Body);
+                        nodes.Add(c.Body);
                     }
 
-                    DefineBlockLabels(@switch.DefaultBody);
-                    return true;
+                    if (@switch.DefaultBody != null)
+                    {
+                        nodes.Add(@switch.DefaultBody);
+                    }
+                    return (labelBlock, LabelScopeKind.Switch, nodes);
 
                 // Remove this when Convert(Void) goes away.
                 case ExpressionType.Convert:
@@ -3207,23 +3225,20 @@ namespace System.Linq.Expressions.Interpreter
                         goto default;
                     }
 
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Statement, null);
 
                 case ExpressionType.Conditional:
                 case ExpressionType.Loop:
                 case ExpressionType.Goto:
-                    PushLabelBlock(LabelScopeKind.Statement);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Statement, null);
 
                 default:
-                    if (_labelBlock.Kind == LabelScopeKind.Expression)
+                    if (labelBlock.Kind == LabelScopeKind.Expression)
                     {
-                        return false;
+                        return null;
                     }
 
-                    PushLabelBlock(LabelScopeKind.Expression);
-                    return true;
+                    return (labelBlock, LabelScopeKind.Expression, null);
             }
         }
 
@@ -3344,7 +3359,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (_parameter.InClosure)
             {
-                var box = frame.Closure[_parameter.Index];
+                var box = frame.Closure![_parameter.Index];
                 box.Value = value;
             }
             else if (_parameter.IsBoxed)
@@ -3439,19 +3454,8 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        internal bool HasHandler(InterpretedFrame frame, Exception exception, out ExceptionHandler handler, out object unwrappedException)
+        internal bool HasHandler(InterpretedFrame frame, Exception exception, [NotNullWhen(true)] out ExceptionHandler? handler, [NotNullWhen(true)] out object? unwrappedException)
         {
-#if DEBUG
-            if (exception is RethrowException)
-            {
-                // Unreachable.
-                // Want to assert that this case isn't hit, but an assertion failure here will be eaten because
-                // we are in an exception filter. Therefore return true here and assert in the catch block.
-                handler = null;
-                unwrappedException = exception;
-                return true;
-            }
-#endif
             frame.SaveTraceToException(exception);
 
             if (IsCatchBlockExist)
@@ -3499,8 +3503,8 @@ namespace System.Linq.Expressions.Interpreter
                 // on the top of the stack. It may have been assigned to in the course of the filter running.
                 // If this is the handler that will be executed, then if the filter has assigned to the exception variable
                 // that change should be visible to the handler. Otherwise, it should not, so we write it back only on true.
-                var exceptionLocal = frame.Pop();
-                if ((bool)frame.Pop())
+                var exceptionLocal = frame.Pop()!;
+                if ((bool)frame.Pop()!)
                 {
                     exception = exceptionLocal;
                     // Stack and instruction indices will be overwritten in the catch block anyway, so no need to restore.

@@ -25,7 +25,7 @@ namespace System.Dynamic.Utils
 
         private static readonly CacheDict<Type, DynamicMethod> _thunks = new CacheDict<Type, DynamicMethod>(256);
 
-        internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object> handler)
+        internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object?> handler)
         {
 #if !FEATURE_DYNAMIC_DELEGATE
             return CreateObjectArrayDelegateRefEmit(delegateType, handler);
@@ -54,7 +54,7 @@ namespace System.Dynamic.Utils
         //      param0 = (T0)args[0];   // only generated for each byref argument
         // }
         // return (TRet)ret;
-        private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object> handler)
+        private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object?> handler)
         {
             if (_thunks.TryGetValue(delegateType, out var thunkMethod))
             {

@@ -468,7 +468,19 @@ namespace System.Linq.Expressions.Compiler
         {
             var node = (LabelExpression)expr;
 
-            var expression = RewriteExpression(node.DefaultValue, stack);
+            Result? result = null;
+
+            if (node.DefaultValue != null)
+            {
+                result = RewriteExpression(node.DefaultValue, stack);
+            }
+
+            if (result == null)
+            {
+                return new Result(RewriteAction.None, expr);
+            }
+
+            var expression = result.Value;
             if (expression.Action != RewriteAction.None)
             {
                 expr = new LabelExpression(node.Target, expression.Node);

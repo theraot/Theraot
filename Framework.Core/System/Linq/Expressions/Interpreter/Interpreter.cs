@@ -40,7 +40,8 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         internal int ClosureSize => ClosureVariables?.Count ?? 0;
-        internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; }
+
+        internal Dictionary<ParameterExpression, LocalVariable>? ClosureVariables { get; }
         internal InstructionArray Instructions { get; }
         internal int LocalCount { get; }
         internal string? Name { get; }

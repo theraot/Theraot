@@ -93,7 +93,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class NegateInstruction : Instruction
     {
-        private static Instruction _int16, _int32, _int64, _single, _double;
+        private static Instruction? _int16, _int32, _int64, _single, _double;
 
         private NegateInstruction()
         {

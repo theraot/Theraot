@@ -197,7 +197,7 @@ namespace System.Linq.Expressions.Interpreter
                         case EnterTryCatchFinallyInstruction enterTryCatchFinally:
                             var handler = enterTryCatchFinally.Handler;
 
-                            AddTryStart(handler.TryStartIndex);
+                            AddTryStart(handler!.TryStartIndex);
                             AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
 
                             if (handler.IsFinallyBlockExist)
@@ -238,7 +238,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         var handler = enterTryFault.Handler;
 
-                        AddTryStart(handler.TryStartIndex);
+                        AddTryStart(handler!.TryStartIndex);
                         AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
 
                         _handlerEnter.Add(handler.FinallyStartIndex, "fault");

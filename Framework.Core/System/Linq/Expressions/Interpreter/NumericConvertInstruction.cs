@@ -29,7 +29,7 @@ namespace System.Linq.Expressions.Interpreter
         public sealed override int Run(InterpretedFrame frame)
         {
             var obj = frame.Pop();
-            object converted;
+            object? converted;
             if (obj == null)
             {
                 if (_isLiftedToNull)
@@ -38,10 +38,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    // We cannot have null in a non-lifted numeric context. Throw the exception
-                    // about not Nullable object requiring a value.
-                    // ReSharper disable once PossibleInvalidOperationException
-                    return (int)(int?)obj;
+                    throw new InvalidOperationException();
                 }
             }
             else

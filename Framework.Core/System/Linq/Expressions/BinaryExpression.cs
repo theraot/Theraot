@@ -378,7 +378,7 @@ namespace System.Linq.Expressions
             var vars = new ArrayBuilder<ParameterExpression>(index.ArgumentCount + 2);
             var builder = new ArrayBuilder<Expression>(index.ArgumentCount + 3);
 
-            var tempObj = Variable(index.Object.Type, "tempObj");
+            var tempObj = Variable(index.Object!.Type, "tempObj");
             vars.UncheckedAdd(tempObj);
             builder.UncheckedAdd(Assign(tempObj, index.Object));
 

@@ -30,7 +30,7 @@ namespace System.Linq.Expressions.Interpreter
 
             try
             {
-                object ret;
+                object? ret;
                 if (Target.IsStatic)
                 {
                     args = GetArgs(frame, first, 0);
@@ -308,7 +308,7 @@ namespace System.Linq.Expressions.Interpreter
             return false;
         }
 
-        protected object InterpretLambdaInvoke(LightLambda targetLambda, object?[] args)
+        protected object? InterpretLambdaInvoke(LightLambda targetLambda, object?[] args)
         {
             return ProducedStack > 0 ? targetLambda.Run(args) : targetLambda.RunVoid(args);
         }
@@ -359,7 +359,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var first = frame.StackIndex - ArgumentCountProtected;
 
-            object ret;
+            object? ret;
             if (Target.IsStatic)
             {
                 var args = GetArgs(frame, first, 0);

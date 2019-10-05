@@ -292,7 +292,7 @@ namespace System.Linq.Expressions
         /// <param name="arg1">The <see cref="Expression"/> that represents the second argument.</param>
         /// <param name="arg2">The <see cref="Expression"/> that represents the third argument.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method, Expression arg0, Expression arg1, Expression arg2)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method, Expression arg0, Expression arg1, Expression arg2)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
@@ -609,7 +609,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ValidateOneArgument(method, nodeKind, arg, pi, methodParamName, argumentParamName);
         }
 
-        private static void ValidateStaticOrInstanceMethod(Expression instance, MethodInfo method)
+        private static void ValidateStaticOrInstanceMethod(Expression? instance, MethodInfo method)
         {
             if (method.IsStatic)
             {

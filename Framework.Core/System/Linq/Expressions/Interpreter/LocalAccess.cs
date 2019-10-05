@@ -14,7 +14,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal interface IBoxableInstruction
     {
-        Instruction BoxIfIndexMatches(int index);
+        Instruction? BoxIfIndexMatches(int index);
     }
 
     internal abstract class LocalAccessInstruction : Instruction
@@ -26,7 +26,7 @@ namespace System.Linq.Expressions.Interpreter
             Index = index;
         }
 
-        public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
+        public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
         {
             return cookie == null ? InstructionName + "(" + Index + ")" : InstructionName + "(" + cookie + ": " + Index + ")";
         }
@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = (IStrongBox)frame.Data[Index];
+            var box = (IStrongBox)frame.Data[Index]!;
             frame.Data[frame.StackIndex++] = box.Value;
             return 1;
         }
@@ -64,8 +64,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = frame.Closure[Index];
-            frame.Data[frame.StackIndex++] = box;
+            frame.Data[frame.StackIndex++] = (frame.Closure![Index]);
             return 1;
         }
     }
@@ -83,7 +82,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = frame.Closure[Index];
+            var box = frame.Closure![Index];
             frame.Data[frame.StackIndex++] = box.Value;
             return 1;
         }
@@ -100,7 +99,7 @@ namespace System.Linq.Expressions.Interpreter
         public override string InstructionName => "LoadLocal";
         public override int ProducedStack => 1;
 
-        public Instruction BoxIfIndexMatches(int index)
+        public Instruction? BoxIfIndexMatches(int index)
         {
             return index == Index ? InstructionList.LoadLocalBoxed(index) : null;
         }
@@ -126,7 +125,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = (IStrongBox)frame.Data[Index];
+            var box = (IStrongBox)frame.Data[Index]!;
             box.Value = frame.Peek();
             return 1;
         }
@@ -144,7 +143,7 @@ namespace System.Linq.Expressions.Interpreter
         public override string InstructionName => "AssignLocal";
         public override int ProducedStack => 1;
 
-        public Instruction BoxIfIndexMatches(int index)
+        public Instruction? BoxIfIndexMatches(int index)
         {
             return index == Index ? InstructionList.AssignLocalBoxed(index) : null;
         }
@@ -170,7 +169,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = frame.Closure[Index];
+            var box = frame.Closure![Index];
             box.Value = frame.Peek();
             return 1;
         }
@@ -189,7 +188,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = (IStrongBox)frame.Data[Index];
+            var box = (IStrongBox)frame.Data[Index]!;
             box.Value = frame.Data[--frame.StackIndex];
             return 1;
         }
@@ -206,7 +205,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int ConsumedStack => 1;
         public override string InstructionName => "StoreLocal";
 
-        public Instruction BoxIfIndexMatches(int index)
+        public Instruction? BoxIfIndexMatches(int index)
         {
             return index == Index ? InstructionList.StoreLocalBoxed(index) : null;
         }
@@ -288,13 +287,12 @@ namespace System.Linq.Expressions.Interpreter
             internal ImmutableValue(int index, object defaultValue)
                 : base(index)
             {
-                Debug.Assert(defaultValue != null);
                 _defaultValue = defaultValue;
             }
 
             public override string InstructionName => "InitImmutableValue";
 
-            public Instruction BoxIfIndexMatches(int index)
+            public Instruction? BoxIfIndexMatches(int index)
             {
                 return index == Index ? new ImmutableBox(index, _defaultValue) : null;
             }
@@ -350,7 +348,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName => "InitMutableValue";
 
-            public Instruction BoxIfIndexMatches(int index)
+            public Instruction? BoxIfIndexMatches(int index)
             {
                 return index == Index ? new MutableBox(index, _type) : null;
             }
@@ -381,7 +379,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName => "InitParameter";
 
-            public Instruction BoxIfIndexMatches(int index)
+            public Instruction? BoxIfIndexMatches(int index)
             {
                 return index == Index ? InstructionList.ParameterBox(index) : null;
             }
@@ -419,7 +417,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName => "InitRef";
 
-            public Instruction BoxIfIndexMatches(int index)
+            public Instruction? BoxIfIndexMatches(int index)
             {
                 return index == Index ? InstructionList.InitImmutableRefBox(index) : null;
             }
@@ -448,7 +446,7 @@ namespace System.Linq.Expressions.Interpreter
             var ret = new IStrongBox[ConsumedStack];
             for (var i = ret.Length - 1; i >= 0; i--)
             {
-                ret[i] = (IStrongBox)frame.Pop();
+                ret[i] = (IStrongBox)frame.Pop()!;
             }
 
             frame.Push(RuntimeVariables.Create(ret));

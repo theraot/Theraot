@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal readonly struct LocalDefinition
+    internal readonly struct LocalDefinition : IEquatable<LocalDefinition>
     {
         internal LocalDefinition(int localIndex, ParameterExpression parameter)
         {
@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (obj is LocalDefinition other)
             {
-                return other.Index == Index && other.Parameter == Parameter;
+                return Equals(other);
             }
 
             return false;
@@ -39,6 +39,11 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             return Parameter.GetHashCode() ^ Index.GetHashCode();
+        }
+
+        public bool Equals(LocalDefinition other)
+        {
+            return other.Index == Index && other.Parameter == Parameter;
         }
     }
 
@@ -88,7 +93,7 @@ namespace System.Linq.Expressions.Interpreter
         /// <summary>
         ///     Gets the variables which are defined in an outer scope and available within the current scope.
         /// </summary>
-        internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; private set; }
+        internal Dictionary<ParameterExpression, LocalVariable>? ClosureVariables { get; private set; }
 
         public LocalDefinition DefineLocal(ParameterExpression variable, int start)
         {
@@ -110,7 +115,7 @@ namespace System.Linq.Expressions.Interpreter
             return new LocalDefinition(result.Index, variable);
         }
 
-        public bool TryGetLocalOrClosure(ParameterExpression var, out LocalVariable local)
+        public bool TryGetLocalOrClosure(ParameterExpression var, out LocalVariable? local)
         {
             local = null;
             if (!_variables.TryGetValue(var, out var scope))
@@ -180,13 +185,13 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         private sealed class VariableScope
         {
-            public readonly VariableScope Parent;
+            public readonly VariableScope? Parent;
             public readonly int Start;
             public readonly LocalVariable Variable;
-            public List<VariableScope> ChildScopes;
+            public List<VariableScope>? ChildScopes;
             public int Stop = int.MaxValue;
 
-            public VariableScope(LocalVariable variable, int start, VariableScope parent)
+            public VariableScope(LocalVariable variable, int start, VariableScope? parent)
             {
                 Variable = variable;
                 Start = start;
@@ -197,3 +202,4 @@ namespace System.Linq.Expressions.Interpreter
 }
 
 #endif
+

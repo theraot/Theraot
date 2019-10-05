@@ -110,7 +110,7 @@ namespace System.Linq.Expressions.Interpreter
 
             for (var i = 0; i < args.Length; i++)
             {
-                args[i] = frame.Data[first + i];
+                args[i] = frame.Data[first + i]!;
             }
 
             return args;

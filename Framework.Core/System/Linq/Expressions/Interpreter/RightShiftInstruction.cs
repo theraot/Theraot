@@ -11,7 +11,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class RightShiftInstruction : Instruction
     {
-        private static Instruction _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64;
+        private static Instruction? _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64;
 
         private RightShiftInstruction()
         {

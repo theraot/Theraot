@@ -62,6 +62,7 @@ namespace System.Linq.Expressions
         ///     The value of the <see cref="LabelExpression" /> when the label is reached through
         ///     normal control flow (e.g. is not jumped to).
         /// </summary>
+        /// <remarks>Can be null when <see cref="Target" />.Type is typeof(void).</remarks>
         public Expression? DefaultValue { get; }
 
         /// <inheritdoc />

@@ -598,7 +598,8 @@ namespace System.Linq.Expressions
         {
             // Have '$' for the DebugView of ParameterExpressions
             Out("$");
-            if (string.IsNullOrEmpty(node.Name))
+            var name = node.Name;
+            if (name == null || string.IsNullOrEmpty(name))
             {
                 // If no name if provided, generate a name as $var1, $var2.
                 // No guarantee for not having name conflicts with user provided variable names.
@@ -608,7 +609,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                Out(GetDisplayName(node.Name));
+                Out(GetDisplayName(name));
             }
 
             return node;
@@ -1212,12 +1213,13 @@ namespace System.Linq.Expressions
 
         private string GetLambdaName(LambdaExpression lambda)
         {
-            if (string.IsNullOrEmpty(lambda.Name))
+            var name = lambda.Name;
+            if (name == null || string.IsNullOrEmpty(name))
             {
                 return "#Lambda" + GetLambdaId(lambda);
             }
 
-            return GetDisplayName(lambda.Name);
+            return GetDisplayName(name);
         }
 
         private int GetParamId(ParameterExpression p)
@@ -1271,7 +1273,7 @@ namespace System.Linq.Expressions
         }
 
         // Prints ".instanceField" or "declaringType.staticField"
-        private void OutMember(Expression node, Expression instance, MemberInfo member)
+        private void OutMember(Expression node, Expression? instance, MemberInfo member)
         {
             if (instance != null)
             {
@@ -1285,7 +1287,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private void ParenthesizedVisit(Expression parent, Expression nodeToVisit)
+        private void ParenthesizedVisit(Expression parent, Expression? nodeToVisit)
         {
             if (NeedsParentheses(parent, nodeToVisit))
             {
@@ -1303,7 +1305,10 @@ namespace System.Linq.Expressions
         {
             VisitExpressions
             (
-                '(', ',', expressions, variable =>
+                '(',
+                ',',
+                expressions,
+                variable =>
                 {
                     Out(variable.Type.ToString());
                     if (variable.IsByRef)
@@ -1317,17 +1322,19 @@ namespace System.Linq.Expressions
             );
         }
 
-        private void VisitExpressions<T>(char open, T[] expressions) where T : Expression
+        private void VisitExpressions<T>(char open, T[] expressions)
+            where T : Expression
         {
             VisitExpressions(open, ',', expressions);
         }
 
-        private void VisitExpressions<T>(char open, char separator, T[] expressions) where T : Expression
+        private void VisitExpressions<T>(char open, char separator, T[] expressions)
+            where T : Expression
         {
             VisitExpressions(open, separator, expressions, e => Visit(e));
         }
 
-        private void VisitExpressions<T>(char open, char separator, T[] expressions, Action<T> visit)
+        private void VisitExpressions<T>(char open, char separator, T[]? expressions, Action<T> visit)
         {
             Out($"{open}");
 

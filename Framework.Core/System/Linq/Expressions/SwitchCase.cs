@@ -31,11 +31,21 @@ namespace System.Linq.Expressions
         /// <param name="body">The body of the case.</param>
         /// <param name="testValues">The test values of the case.</param>
         /// <returns>The created <see cref="Expressions.SwitchCase" />.</returns>
-        public static SwitchCase SwitchCase(Expression body, IEnumerable<Expression> testValues)
+        public static SwitchCase SwitchCase(Expression body, IEnumerable<Expression>? testValues)
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
 
+            if (testValues == null)
+            {
+                throw new ArgumentException("Non-empty collection required", nameof(testValues));
+            }
+
+            return SwitchCaseExtracted(body, testValues);
+        }
+
+        private static SwitchCase SwitchCaseExtracted(Expression body, IEnumerable<Expression> testValues)
+        {
             var values = testValues.AsArrayInternal();
             ContractUtils.RequiresNotEmpty(values, nameof(testValues));
             RequiresCanRead(values, nameof(testValues));
@@ -88,7 +98,7 @@ namespace System.Linq.Expressions
         /// <param name="testValues">The <see cref="TestValues" /> property of the result.</param>
         /// <param name="body">The <see cref="Body" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public SwitchCase Update(IEnumerable<Expression> testValues, Expression body)
+        public SwitchCase Update(IEnumerable<Expression>? testValues, Expression body)
         {
             if (body == Body && testValues != null && ExpressionUtils.SameElements(ref testValues, _testValues))
             {
@@ -101,3 +111,4 @@ namespace System.Linq.Expressions
 }
 
 #endif
+

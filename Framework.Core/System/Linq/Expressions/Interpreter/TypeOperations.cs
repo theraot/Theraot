@@ -18,7 +18,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class CastInstruction : Instruction
     {
-        private static CastInstruction _boolean, _byte, _char, _dateTime, _decimal, _double, _int16, _int32, _int64, _sByte, _single, _string, _uInt16, _uInt32, _uInt64;
+        private static CastInstruction? _boolean, _byte, _char, _dateTime, _decimal, _double, _int16, _int32, _int64, _sByte, _single, _string, _uInt16, _uInt32, _uInt64;
 
         public override int ConsumedStack => 1;
         public override string InstructionName => "Cast";
@@ -130,7 +130,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         public override int Run(InterpretedFrame frame)
         {
-            var value = frame.Pop();
+            var value = frame.Pop()!;
             frame.Push((T)value);
             return 1;
         }
@@ -148,8 +148,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var from = frame.Pop();
-            Debug.Assert(from != null);
+            var from = frame.Pop()!;
 
             // If from is neither a T nor a type assignable to T (viz. an T-backed enum)
             // this will cause an InvalidCastException, which is what this operation should
@@ -247,13 +246,13 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            IStrongBox[] closure;
+            IStrongBox[]? closure;
             if (ConsumedStack > 0)
             {
                 closure = new IStrongBox[ConsumedStack];
                 for (var i = closure.Length - 1; i >= 0; i--)
                 {
-                    closure[i] = (IStrongBox)frame.Pop();
+                    closure[i] = (IStrongBox)frame.Pop()!;
                 }
             }
             else
@@ -270,7 +269,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class NullableMethodCallInstruction : Instruction
     {
-        private static NullableMethodCallInstruction _hasValue, _value, _equals, _getHashCode, _getValueOrDefault1, _toString;
+        private static NullableMethodCallInstruction? _hasValue, _value, _equals, _getHashCode, _getValueOrDefault1, _toString;
 
         private NullableMethodCallInstruction()
         {
@@ -347,9 +346,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (frame.Peek() == null)
                 {
-                    // Trigger InvalidOperationException with same localized method as if we'd called the Value getter.
-                    // ReSharper disable once PossibleInvalidOperationException
-                    return (int)default(int?);
+                    throw new InvalidOperationException();
                 }
 
                 return 1;
@@ -582,7 +579,7 @@ namespace System.Linq.Expressions.Interpreter
                 return new RuntimeOps.MergedRuntimeVariables(first, second, indexes);
             }
 
-            private IStrongBox GetBox(ParameterExpression variable)
+            private IStrongBox? GetBox(ParameterExpression variable)
             {
                 if (!_variables.TryGetValue(variable, out var var))
                 {
@@ -591,10 +588,10 @@ namespace System.Linq.Expressions.Interpreter
 
                 if (var.InClosure)
                 {
-                    return _frame.Closure[var.Index];
+                    return _frame.Closure![var.Index];
                 }
 
-                return (IStrongBox)_frame.Data[var.Index];
+                return _frame.Data[var.Index] as IStrongBox;
             }
         }
     }
