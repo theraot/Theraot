@@ -84,7 +84,7 @@ namespace System.Linq.Expressions.Compiler
             return clone;
         }
 
-        private static bool IsRefInstance(Expression instance)
+        private static bool IsRefInstance(Expression? instance)
         {
             // Primitive value types are okay because they are all read-only,
             // but we can't rely on this for non-primitive types. So we have
@@ -359,7 +359,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var index = (IndexExpression)node.Left;
 
-            var cr = new ChildRewriter(this, stack, 2 + index.ArgumentCount);
+            var cr = new NullAwareChildRewriter(this, stack, 2 + index.ArgumentCount);
 
             cr.Add(index.Object);
             cr.AddArguments(index);
@@ -380,7 +380,7 @@ namespace System.Linq.Expressions.Compiler
                         index.Indexer,
                         cr[1, -2] // arguments
                     ),
-                    cr[-1] // value
+                    cr[-1]! // value
                 );
             }
 
@@ -391,7 +391,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var node = (IndexExpression)expr;
 
-            var cr = new ChildRewriter(this, stack, node.ArgumentCount + 1);
+            var cr = new NullAwareChildRewriter(this, stack, node.ArgumentCount + 1);
 
             // For instance methods, the instance executes on the
             // stack as is, but stays on the stack, making it non-empty.
@@ -642,7 +642,7 @@ namespace System.Linq.Expressions.Compiler
                 (
                     new AssignBinaryExpression
                     (
-                        MemberExpression.Make(cr[0], lvalue.Member),
+                        MemberExpression.Make(cr[0]!, lvalue.Member),
                         cr[1]
                     )
                 );

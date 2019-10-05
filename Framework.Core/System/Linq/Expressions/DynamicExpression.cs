@@ -1285,6 +1285,7 @@ namespace System.Linq.Expressions
 
         private static void ValidateDynamicArgument(Expression arg, string paramName, int index = -1)
         {
+            ContractUtils.RequiresNotNull(arg, paramName, index);
             ExpressionUtils.RequiresCanRead(arg, paramName, index);
             var type = arg.Type;
             ContractUtils.RequiresNotNull(type, nameof(type));

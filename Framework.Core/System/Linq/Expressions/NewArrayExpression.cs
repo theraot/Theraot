@@ -69,6 +69,7 @@ namespace System.Linq.Expressions
             for (var i = 0; i < dimensions; i++)
             {
                 var expr = boundsList[i];
+                ContractUtils.RequiresNotNull(expr, nameof(bounds), i);
                 ExpressionUtils.RequiresCanRead(expr, nameof(bounds), i);
                 if (!expr.Type.IsInteger())
                 {
@@ -122,6 +123,7 @@ namespace System.Linq.Expressions
             for (int i = 0, n = initializerList.Count; i < n; i++)
             {
                 var expr = initializerList[i];
+                ContractUtils.RequiresNotNull(expr, nameof(initializers), i);
                 ExpressionUtils.RequiresCanRead(expr, nameof(initializers), i);
 
                 if (!type.IsReferenceAssignableFromInternal(expr.Type))

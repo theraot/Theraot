@@ -41,6 +41,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="LoopExpression" />.</returns>
         public static LoopExpression Loop(Expression body, LabelTarget @break, LabelTarget @continue)
         {
+            ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
             if (@continue != null && @continue.Type != typeof(void))
             {

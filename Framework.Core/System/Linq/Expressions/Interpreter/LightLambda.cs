@@ -16,14 +16,14 @@ namespace System.Linq.Expressions.Interpreter
 {
     public class LightLambda
     {
-        private readonly IStrongBox[] _closure;
+        private readonly IStrongBox[]? _closure;
 
         private readonly Interpreter _interpreter;
 #if NO_FEATURE_STATIC_DELEGATE
         private static readonly CacheDict<Type, Func<LightLambda, Delegate>> _runCache = new CacheDict<Type, Func<LightLambda, Delegate>>(100);
 #endif
 
-        internal LightLambda(LightDelegateCreator delegateCreator, IStrongBox[] closure)
+        internal LightLambda(LightDelegateCreator delegateCreator, IStrongBox[]? closure)
         {
             _closure = closure;
             _interpreter = delegateCreator.Interpreter;
@@ -54,10 +54,10 @@ namespace System.Linq.Expressions.Interpreter
                 frame.Leave(currentFrame);
             }
 
-            return frame.Pop();
+            return frame.Pop()!;
         }
 
-        public object RunVoid(params object?[] arguments)
+        public object? RunVoid(params object?[] arguments)
         {
             var frame = MakeFrame();
             for (var i = 0; i < arguments.Length; i++)
@@ -190,9 +190,7 @@ namespace System.Linq.Expressions.Interpreter
 
             private void Analyze()
             {
-                var instructions = _interpreter.Instructions.Instructions;
-
-                foreach (var instruction in instructions)
+                foreach (var instruction in _interpreter.Instructions.Instructions)
                 {
                     switch (instruction)
                     {

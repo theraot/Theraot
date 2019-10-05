@@ -18,15 +18,13 @@ namespace System.Dynamic.Utils
 {
     internal static class ExpressionUtils
     {
-        public static void RequiresCanRead([NotNull] Expression expression, string paramName)
+        public static void RequiresCanRead(Expression expression, string paramName)
         {
             RequiresCanRead(expression, paramName, -1);
         }
 
-        public static void RequiresCanRead([NotNull] Expression expression, string paramName, int idx)
+        public static void RequiresCanRead(Expression expression, string paramName, int idx)
         {
-            ContractUtils.RequiresNotNull(expression, paramName, idx);
-
             // validate that we can read the node
             switch (expression.NodeType)
             {
@@ -182,6 +180,7 @@ namespace System.Dynamic.Utils
 
         public static Expression ValidateOneArgument(MethodBase method, ExpressionType nodeKind, Expression arguments, ParameterInfo pi, string methodParamName, string argumentParamName, int index = -1)
         {
+            ContractUtils.RequiresNotNull(arguments, argumentParamName, index);
             RequiresCanRead(arguments, argumentParamName, index);
             var pType = pi.ParameterType;
             if (pType.IsByRef)

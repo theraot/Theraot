@@ -385,7 +385,6 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void SetTryHandler(TryCatchFinallyHandler tryHandler)
         {
-            Debug.Assert(Handler == null, "the tryHandler can be set only once");
             Handler = tryHandler;
         }
     }

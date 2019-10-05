@@ -43,7 +43,7 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class LabelInfo
     {
         // The tree node representing this label
-        private readonly LabelTarget _node;
+        private readonly LabelTarget? _node;
 
         // Blocks that jump to this block
         private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
@@ -62,7 +62,7 @@ namespace System.Linq.Expressions.Interpreter
         // The BranchLabel label, will be mutated if Node is redefined
         private BranchLabel? _label;
 
-        internal LabelInfo(LabelTarget node)
+        internal LabelInfo(LabelTarget? node)
         {
             _node = node;
         }
@@ -104,14 +104,14 @@ namespace System.Linq.Expressions.Interpreter
             // active IL Label per LabelInfo)
             foreach (var j in SequenceHelper.ExploreSequenceUntilNull(block, found => found.Parent))
             {
-                if (j.ContainsTarget(_node))
+                if (j.ContainsTarget(_node!))
                 {
-                    throw new InvalidOperationException($"Cannot redefine label '{_node.Name}' in an inner block.");
+                    throw new InvalidOperationException($"Cannot redefine label '{_node!.Name}' in an inner block.");
                 }
             }
 
             AddDefinition(block);
-            block.AddLabelInfo(_node, this);
+            block.AddLabelInfo(_node!, this);
 
             // Once defined, validate all jumps
             if (HasDefinitions && !HasMultipleDefinitions)
@@ -127,7 +127,7 @@ namespace System.Linq.Expressions.Interpreter
                 // now invalid
                 if (_acrossBlockJump)
                 {
-                    throw new InvalidOperationException($"Cannot jump to ambiguous label '{_node.Name}'.");
+                    throw new InvalidOperationException($"Cannot jump to ambiguous label '{_node!.Name}'.");
                 }
 
                 // For local jumps, we need a new IL label
@@ -157,7 +157,7 @@ namespace System.Linq.Expressions.Interpreter
             // Make sure that if this label was jumped to, it is also defined
             if (_references.Count > 0 && !HasDefinitions)
             {
-                throw new InvalidOperationException($"Cannot jump to undefined label '{_node.Name}'.");
+                throw new InvalidOperationException($"Cannot jump to undefined label '{_node!.Name}'.");
             }
         }
 
@@ -260,7 +260,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             // Validate that we aren't jumping into a catch or an expression
-            for (var j = def; j != common; j = j.Parent)
+            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(def, common, found => found.Parent))
             {
                 if (j.CanJumpInto)
                 {

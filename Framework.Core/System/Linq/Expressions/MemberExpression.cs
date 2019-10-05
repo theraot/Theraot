@@ -55,6 +55,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Field(Expression expression, string fieldName)
         {
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             ContractUtils.RequiresNotNull(fieldName, nameof(fieldName));
 
@@ -122,6 +123,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression Property(Expression expression, string propertyName)
         {
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             ContractUtils.RequiresNotNull(propertyName, nameof(propertyName));
             // bind to public names first
@@ -235,6 +237,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="MemberExpression" />.</returns>
         public static MemberExpression PropertyOrField(Expression expression, string propertyOrFieldName)
         {
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             // bind to public names first
             var pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
@@ -351,14 +354,12 @@ namespace System.Linq.Expressions
         [return: NotNull]
         internal static PropertyExpression Make(Expression expression, PropertyInfo property)
         {
-            Debug.Assert(property != null);
             return new PropertyExpression(expression, property);
         }
 
         [return: NotNull]
         internal static FieldExpression Make(Expression expression, FieldInfo field)
         {
-            Debug.Assert(field != null);
             return new FieldExpression(expression, field);
         }
 

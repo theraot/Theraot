@@ -27,7 +27,7 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly RuntimeLabel[] Labels;
         internal readonly object[] Objects;
 
-        internal Interpreter(string name, LocalVariables locals, InstructionArray instructions, DebugInfo[] debugInfos)
+        internal Interpreter(string? name, LocalVariables locals, InstructionArray instructions, DebugInfo[] debugInfos)
         {
             Name = name;
             LocalCount = locals.LocalCount;
@@ -43,7 +43,7 @@ namespace System.Linq.Expressions.Interpreter
         internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables { get; }
         internal InstructionArray Instructions { get; }
         internal int LocalCount { get; }
-        internal string Name { get; }
+        internal string? Name { get; }
 
         [MethodImpl(MethodImplOptionsEx.NoInlining)]
         public void Run(InterpretedFrame frame)

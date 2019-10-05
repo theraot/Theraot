@@ -20,7 +20,7 @@ namespace System.Linq.Expressions.Interpreter
     internal readonly struct InstructionArray
     {
         // list of (instruction index, cookie) sorted by instruction index:
-        internal readonly KeyValuePair<int, object>[] DebugCookies;
+        internal readonly KeyValuePair<int, object?>[] DebugCookies;
 
         internal readonly Instruction[] Instructions;
         internal readonly RuntimeLabel[] Labels;
@@ -29,7 +29,7 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly object[] Objects;
 
         internal InstructionArray(int maxStackDepth, int maxContinuationDepth, Instruction[] instructions,
-            object[] objects, RuntimeLabel[] labels, IEnumerable<KeyValuePair<int, object>>? debugCookies)
+            object[] objects, RuntimeLabel[] labels, IEnumerable<KeyValuePair<int, object?>>? debugCookies)
         {
             MaxStackDepth = maxStackDepth;
             MaxContinuationDepth = maxContinuationDepth;
@@ -130,7 +130,7 @@ namespace System.Linq.Expressions.Interpreter
 
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
-        private List<KeyValuePair<int, object>>? _debugCookies;
+        private List<KeyValuePair<int, object?>>? _debugCookies;
 
         private readonly List<Instruction> _instructions = new List<Instruction>();
 
@@ -427,7 +427,7 @@ namespace System.Linq.Expressions.Interpreter
             Emit(LessThanOrEqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitLoad(object value)
+        public void EmitLoad(object? value)
         {
             EmitLoad(value, null);
         }
@@ -444,7 +444,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        public void EmitLoad(object value, Type? type)
+        public void EmitLoad(object? value, Type? type)
         {
             if (value == null)
             {
@@ -757,16 +757,16 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         [Conditional("DEBUG")]
-        public void SetDebugCookie(object cookie)
+        public void SetDebugCookie(object? cookie)
         {
 #if DEBUG
             if (_debugCookies == null)
             {
-                _debugCookies = new List<KeyValuePair<int, object>>();
+                _debugCookies = new List<KeyValuePair<int, object?>>();
             }
 
             Debug.Assert(Count > 0);
-            _debugCookies.Add(new KeyValuePair<int, object>(Count - 1, cookie));
+            _debugCookies.Add(new KeyValuePair<int, object?>(Count - 1, cookie));
 #else
             Theraot.No.Op(cookie);
             _debugCookies = null;
@@ -1019,7 +1019,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             internal static InstructionView[] GetInstructionViews(IList<Instruction> instructions, IList<object>? objects,
-                Func<int, int> labelIndexer, IList<KeyValuePair<int, object>>? debugCookies)
+                Func<int, int> labelIndexer, IList<KeyValuePair<int, object?>>? debugCookies)
             {
                 var result = new List<InstructionView>();
                 var stackDepth = 0;
@@ -1030,7 +1030,7 @@ namespace System.Linq.Expressions.Interpreter
                     var cookieEnumerator =
                         (
                             debugCookies ??
-                            ArrayEx.Empty<KeyValuePair<int, object>>()
+                            ArrayEx.Empty<KeyValuePair<int, object?>>()
                         )
                         .GetEnumerator()
                 )

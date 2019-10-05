@@ -107,14 +107,14 @@ namespace System.Linq.Expressions.Compiler
             // active IL Label per LabelInfo)
             foreach (var j in SequenceHelper.ExploreSequenceUntilNull(block, found => found.Parent))
             {
-                if (j.ContainsTarget(_node))
+                if (j.ContainsTarget(_node!))
                 {
-                    throw new InvalidOperationException($"Cannot redefine label '{_node?.Name}' in an inner block.");
+                    throw new InvalidOperationException($"Cannot redefine label '{_node!.Name}' in an inner block.");
                 }
             }
 
             _definitions.Add(block);
-            block.AddLabelInfo(_node, this);
+            block.AddLabelInfo(_node!, this);
 
             // Once defined, validate all jumps
             if (_definitions.Count == 1)
@@ -338,7 +338,7 @@ namespace System.Linq.Expressions.Compiler
     {
         internal readonly LabelScopeKind Kind;
         internal readonly LabelScopeInfo? Parent;
-        private NullAwareDictionary<LabelTarget, LabelInfo>? _labels; // lazily allocated, we typically use this only once every 6th-7th block
+        private Dictionary<LabelTarget, LabelInfo>? _labels; // lazily allocated, we typically use this only once every 6th-7th block
 
         internal LabelScopeInfo(LabelScopeInfo? parent, LabelScopeKind kind)
         {
@@ -367,13 +367,13 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal void AddLabelInfo(LabelTarget? target, LabelInfo info)
+        internal void AddLabelInfo(LabelTarget target, LabelInfo info)
         {
             Debug.Assert(CanJumpInto);
-            (_labels ??= new NullAwareDictionary<LabelTarget, LabelInfo>()).Add(target, info);
+            (_labels ??= new Dictionary<LabelTarget, LabelInfo>()).Add(target, info);
         }
 
-        internal bool ContainsTarget(LabelTarget? target)
+        internal bool ContainsTarget(LabelTarget target)
         {
             return _labels?.ContainsKey(target) == true;
         }

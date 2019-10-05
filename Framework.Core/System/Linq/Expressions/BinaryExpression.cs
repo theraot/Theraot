@@ -82,6 +82,7 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Gets the right operand of the binary operation.
         /// </summary>
+        /// <remarks>Can only be null in AssignBinaryExpression.</remarks>
         public Expression Right { get; }
 
         internal bool IsLiftedLogical
@@ -155,7 +156,7 @@ namespace System.Linq.Expressions
         /// <param name="conversion">The <see cref="Conversion"/> property of the result.</param>
         /// <param name="right">The <see cref="Right"/> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public BinaryExpression Update(Expression left, LambdaExpression conversion, Expression right)
+        public BinaryExpression Update(Expression left, LambdaExpression? conversion, Expression right)
         {
             if (left == Left && right == Right && conversion == Conversion)
             {
@@ -497,6 +498,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Add(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -550,6 +553,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AddAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -612,6 +617,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AddAssignChecked(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -657,6 +664,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AddChecked(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -694,6 +703,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression And(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -731,6 +742,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AndAlso(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             Type returnType;
@@ -802,6 +815,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression AndAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -832,6 +847,8 @@ namespace System.Linq.Expressions
         /// and the <see cref="BinaryExpression.Left"/> and <see cref="BinaryExpression.Right"/> properties set to the specified values.</returns>
         public static BinaryExpression ArrayIndex(Expression array, Expression index)
         {
+            ContractUtils.RequiresNotNull(array, nameof(array));
+            ContractUtils.RequiresNotNull(index, nameof(index));
             ExpressionUtils.RequiresCanRead(array, nameof(array));
             ExpressionUtils.RequiresCanRead(index, nameof(index));
             if (index.Type != typeof(int))
@@ -862,7 +879,12 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Assign(Expression left, Expression right)
         {
+            if (left == null)
+            {
+                throw new ArgumentNullException(nameof(left));
+            }
             RequiresCanWrite(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             TypeUtils.ValidateType(left.Type, nameof(left), true, true);
             TypeUtils.ValidateType(right.Type, nameof(right), true, true);
@@ -896,6 +918,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Coalesce(Expression left, Expression right, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
 
@@ -963,6 +987,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Divide(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -1016,6 +1042,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression DivideAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -1061,6 +1089,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Equal(Expression left, Expression right, bool liftToNull, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             return method == null ? GetEqualityComparisonOperator(ExpressionType.Equal, "op_Equality", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.Equal, left, right, method, liftToNull);
@@ -1089,6 +1119,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression ExclusiveOr(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -1142,6 +1174,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression ExclusiveOrAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -1187,6 +1221,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression GreaterThan(Expression left, Expression right, bool liftToNull, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             return method == null ? GetComparisonOperator(ExpressionType.GreaterThan, "op_GreaterThan", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.GreaterThan, left, right, method, liftToNull);
@@ -1216,6 +1252,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression GreaterThanOrEqual(Expression left, Expression right, bool liftToNull, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             return method == null ? GetComparisonOperator(ExpressionType.GreaterThanOrEqual, "op_GreaterThanOrEqual", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.GreaterThanOrEqual, left, right, method, liftToNull);
@@ -1244,6 +1282,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression LeftShift(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -1299,6 +1339,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression LeftShiftAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -1346,6 +1388,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression LessThan(Expression left, Expression right, bool liftToNull, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             return method == null ? GetComparisonOperator(ExpressionType.LessThan, "op_LessThan", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.LessThan, left, right, method, liftToNull);
@@ -1375,6 +1419,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression LessThanOrEqual(Expression left, Expression right, bool liftToNull, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             return method == null ? GetComparisonOperator(ExpressionType.LessThanOrEqual, "op_LessThanOrEqual", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.LessThanOrEqual, left, right, method, liftToNull);
@@ -1566,6 +1612,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Modulo(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -1619,6 +1667,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression ModuloAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -1663,6 +1713,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Multiply(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -1716,6 +1768,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression MultiplyAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -1777,6 +1831,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression MultiplyAssignChecked(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -1821,6 +1877,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression MultiplyChecked(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -1859,6 +1917,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression NotEqual(Expression left, Expression right, bool liftToNull, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             return method == null ? GetEqualityComparisonOperator(ExpressionType.NotEqual, "op_Inequality", left, right, liftToNull) : GetMethodBasedBinaryOperator(ExpressionType.NotEqual, left, right, method, liftToNull);
@@ -1887,6 +1947,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Or(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -1940,6 +2002,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression OrAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -1984,6 +2048,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression OrElse(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             Type returnType;
@@ -2039,6 +2105,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Power(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -2115,6 +2183,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression PowerAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -2141,6 +2211,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression ReferenceEqual(Expression left, Expression right)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (TypeUtils.HasReferenceEquality(left.Type, right.Type))
@@ -2160,6 +2232,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression ReferenceNotEqual(Expression left, Expression right)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (TypeUtils.HasReferenceEquality(left.Type, right.Type))
@@ -2192,6 +2266,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression RightShift(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -2247,6 +2323,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression RightShiftAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -2292,6 +2370,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression Subtract(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)
@@ -2345,6 +2425,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression SubtractAssign(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -2405,6 +2487,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression SubtractAssignChecked(Expression left, Expression right, MethodInfo? method, LambdaExpression? conversion)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             RequiresCanWrite(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
@@ -2449,6 +2533,8 @@ namespace System.Linq.Expressions
         /// </returns>
         public static BinaryExpression SubtractChecked(Expression left, Expression right, MethodInfo? method)
         {
+            ContractUtils.RequiresNotNull(left, nameof(left));
+            ContractUtils.RequiresNotNull(right, nameof(right));
             ExpressionUtils.RequiresCanRead(left, nameof(left));
             ExpressionUtils.RequiresCanRead(right, nameof(right));
             if (method != null)

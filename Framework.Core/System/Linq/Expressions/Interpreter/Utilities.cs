@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 
@@ -124,7 +125,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        internal static object GetPrimitiveDefaultValue(Type type)
+        internal static object? GetPrimitiveDefaultValue(Type type)
         {
             object result;
 
@@ -199,18 +200,18 @@ namespace System.Linq.Expressions.Interpreter
     /// <summary>
     ///     A hybrid dictionary which compares based upon object identity.
     /// </summary>
-    internal class HybridReferenceDictionary<TKey, TValue> where TKey : class
+    internal class HybridReferenceDictionary<TKey, TValue>
+        where TKey : class
+        where TValue : class
     {
         private const int _arraySize = 10;
-        private Dictionary<TKey, TValue> _dict;
-        private KeyValuePair<TKey, TValue>[] _keysAndValues;
+        private Dictionary<TKey, TValue>? _dict;
+        private KeyValuePair<TKey, TValue>[]? _keysAndValues;
 
         public TValue this[TKey key]
         {
             get
             {
-                Debug.Assert(key != null);
-
                 if (TryGetValue(key, out var res))
                 {
                     return res;
@@ -220,8 +221,6 @@ namespace System.Linq.Expressions.Interpreter
             }
             set
             {
-                Debug.Assert(key != null);
-
                 if (_dict != null)
                 {
                     _dict[key] = value;
@@ -274,8 +273,6 @@ namespace System.Linq.Expressions.Interpreter
 
         public bool ContainsKey(TKey key)
         {
-            Debug.Assert(key != null);
-
             if (_dict != null)
             {
                 return _dict.ContainsKey(key);
@@ -292,8 +289,6 @@ namespace System.Linq.Expressions.Interpreter
 
         public void Remove(TKey key)
         {
-            Debug.Assert(key != null);
-
             if (_dict != null)
             {
                 _dict.Remove(key);
@@ -313,10 +308,8 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [NotNullWhen(true)] out TValue? value)
         {
-            Debug.Assert(key != null);
-
             if (_dict != null)
             {
                 return _dict.TryGetValue(key, out value);

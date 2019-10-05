@@ -131,6 +131,9 @@ namespace System.Linq.Expressions
         /// </returns>
         public static ConditionalExpression Condition(Expression test, Expression ifTrue, Expression ifFalse)
         {
+            ContractUtils.RequiresNotNull(test, nameof(test));
+            ContractUtils.RequiresNotNull(ifTrue, nameof(ifTrue));
+            ContractUtils.RequiresNotNull(ifFalse, nameof(ifFalse));
             ExpressionUtils.RequiresCanRead(test, nameof(test));
             ExpressionUtils.RequiresCanRead(ifTrue, nameof(ifTrue));
             ExpressionUtils.RequiresCanRead(ifFalse, nameof(ifFalse));
@@ -176,10 +179,13 @@ namespace System.Linq.Expressions
         /// </remarks>
         public static ConditionalExpression Condition(Expression test, Expression ifTrue, Expression ifFalse, Type type)
         {
+            ContractUtils.RequiresNotNull(test, nameof(test));
+            ContractUtils.RequiresNotNull(ifTrue, nameof(ifTrue));
+            ContractUtils.RequiresNotNull(ifFalse, nameof(ifFalse));
+            ContractUtils.RequiresNotNull(type, nameof(type));
             ExpressionUtils.RequiresCanRead(test, nameof(test));
             ExpressionUtils.RequiresCanRead(ifTrue, nameof(ifTrue));
             ExpressionUtils.RequiresCanRead(ifFalse, nameof(ifFalse));
-            ContractUtils.RequiresNotNull(type, nameof(type));
 
             if (test.Type != typeof(bool))
             {

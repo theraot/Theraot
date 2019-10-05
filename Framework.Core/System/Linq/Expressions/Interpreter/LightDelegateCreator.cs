@@ -4,7 +4,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace System.Linq.Expressions.Interpreter
@@ -18,9 +17,6 @@ namespace System.Linq.Expressions.Interpreter
 
         internal LightDelegateCreator(Interpreter interpreter, LambdaExpression lambda)
         {
-            Debug.Assert(interpreter != null);
-            Debug.Assert(lambda != null);
-
             Interpreter = interpreter;
             _lambda = lambda;
         }
@@ -32,7 +28,7 @@ namespace System.Linq.Expressions.Interpreter
             return CreateDelegate(null);
         }
 
-        internal Delegate CreateDelegate(IStrongBox[] closure)
+        internal Delegate CreateDelegate(IStrongBox[]? closure)
         {
             // we'll create an interpreted LightLambda
             return new LightLambda(this, closure).MakeDelegate(_lambda.Type);

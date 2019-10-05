@@ -195,7 +195,7 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             Debug.Assert(args.Length == 2);
             Debug.Assert(variables == null || variables.Count == 0);
@@ -261,7 +261,7 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             Debug.Assert(args.Length == 3);
             Debug.Assert(variables == null || variables.Count == 0);
@@ -335,7 +335,7 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             Debug.Assert(args.Length == 4);
             Debug.Assert(variables == null || variables.Count == 0);
@@ -417,7 +417,7 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             Debug.Assert(args.Length == 5);
             Debug.Assert(variables == null || variables.Count == 0);
@@ -496,7 +496,7 @@ namespace System.Linq.Expressions
             return _expressionsAsReadOnlyCollection;
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             Debug.Assert(variables == null || variables.Count == 0);
 
@@ -541,7 +541,7 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _body);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             var array = variables.AsArrayInternal();
             if (args == null)
@@ -640,7 +640,7 @@ namespace System.Linq.Expressions
             return _bodyAsReadOnlyCollection;
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             var array = variables.AsArrayInternal();
             if (args == null)
@@ -817,6 +817,8 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression" />.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1)
         {
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
+            ContractUtils.RequiresNotNull(arg1, nameof(arg1));
             ExpressionUtils.RequiresCanRead(arg0, nameof(arg0));
             ExpressionUtils.RequiresCanRead(arg1, nameof(arg1));
 
@@ -832,6 +834,9 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression" />.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1, Expression arg2)
         {
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
+            ContractUtils.RequiresNotNull(arg1, nameof(arg1));
+            ContractUtils.RequiresNotNull(arg2, nameof(arg2));
             ExpressionUtils.RequiresCanRead(arg0, nameof(arg0));
             ExpressionUtils.RequiresCanRead(arg1, nameof(arg1));
             ExpressionUtils.RequiresCanRead(arg2, nameof(arg2));
@@ -848,6 +853,10 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression" />.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1, Expression arg2, Expression arg3)
         {
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
+            ContractUtils.RequiresNotNull(arg1, nameof(arg1));
+            ContractUtils.RequiresNotNull(arg2, nameof(arg2));
+            ContractUtils.RequiresNotNull(arg3, nameof(arg3));
             ExpressionUtils.RequiresCanRead(arg0, nameof(arg0));
             ExpressionUtils.RequiresCanRead(arg1, nameof(arg1));
             ExpressionUtils.RequiresCanRead(arg2, nameof(arg2));
@@ -866,6 +875,11 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression" />.</returns>
         public static BlockExpression Block(Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)
         {
+            ContractUtils.RequiresNotNull(arg0, nameof(arg0));
+            ContractUtils.RequiresNotNull(arg1, nameof(arg1));
+            ContractUtils.RequiresNotNull(arg2, nameof(arg2));
+            ContractUtils.RequiresNotNull(arg3, nameof(arg3));
+            ContractUtils.RequiresNotNull(arg4, nameof(arg4));
             ExpressionUtils.RequiresCanRead(arg0, nameof(arg0));
             ExpressionUtils.RequiresCanRead(arg1, nameof(arg1));
             ExpressionUtils.RequiresCanRead(arg2, nameof(arg2));

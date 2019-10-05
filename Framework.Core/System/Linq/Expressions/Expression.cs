@@ -497,17 +497,13 @@ namespace System.Linq.Expressions
             // this is called a lot, avoid allocating an enumerator if we can...
             for (int i = 0, n = items.Length; i < n; i++)
             {
+                ContractUtils.RequiresNotNull(items[i], paramName, i);
                 ExpressionUtils.RequiresCanRead(items[i], paramName, i);
             }
         }
 
         private static void RequiresCanWrite(Expression expression, string paramName)
         {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(paramName);
-            }
-
             switch (expression.NodeType)
             {
                 case ExpressionType.Index:

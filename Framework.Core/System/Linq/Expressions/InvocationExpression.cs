@@ -104,6 +104,7 @@ namespace System.Linq.Expressions
                     break;
             }
 
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
 
             var mi = GetInvokeMethod(expression);

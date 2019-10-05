@@ -234,6 +234,7 @@ namespace System.Linq.Expressions
                 for (int i = 0, n = arguments.Length; i < n; i++)
                 {
                     var arg = arguments[i];
+                    ContractUtils.RequiresNotNull(arg, nameof(arguments), i);
                     ExpressionUtils.RequiresCanRead(arg, nameof(arguments), i);
                     var member = members[i];
                     ContractUtils.RequiresNotNull(member, nameof(members), i);

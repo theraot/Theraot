@@ -222,7 +222,12 @@ namespace System.Linq.Expressions
         [return: NotNull]
         public static GotoExpression MakeGoto(GotoExpressionKind kind, LabelTarget target, Expression? value, Type type)
         {
-            ValidateGoto(target, ref value, nameof(target), nameof(value), type);
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
+            ValidateGoto(target, ref value, nameof(value), type);
             return new GotoExpression(kind, target, value, type);
         }
 
@@ -294,9 +299,8 @@ namespace System.Linq.Expressions
             return MakeGoto(GotoExpressionKind.Return, target, value, type);
         }
 
-        private static void ValidateGoto(LabelTarget target, ref Expression? value, string targetParameter, string valueParameter, Type type)
+        private static void ValidateGoto(LabelTarget target, ref Expression? value, string valueParameter, Type? type)
         {
-            ContractUtils.RequiresNotNull(target, targetParameter);
             if (value == null)
             {
                 if (target.Type != typeof(void))
@@ -318,6 +322,7 @@ namespace System.Linq.Expressions
         // Standard argument validation, taken from ValidateArgumentTypes
         private static void ValidateGotoType(Type expectedType, [NotNull] ref Expression value, string paramName)
         {
+            ContractUtils.RequiresNotNull(value, paramName);
             ExpressionUtils.RequiresCanRead(value, paramName);
             // C# auto-quotes return values, so we'll do that here
             if (expectedType != typeof(void) && !expectedType.IsReferenceAssignableFromInternal(value.Type) && !TryQuote(expectedType, ref value))

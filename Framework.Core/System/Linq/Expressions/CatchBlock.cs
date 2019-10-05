@@ -162,12 +162,14 @@ namespace System.Linq.Expressions
                 throw new ArgumentException($"Variable '{variable}' uses unsupported type '{variable.Type}'. Reference types are not supported for variables.", nameof(variable));
             }
 
+            ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
             if (filter == null)
             {
                 return new CatchBlock(type, variable, body, null);
             }
 
+            ContractUtils.RequiresNotNull(filter, nameof(filter));
             ExpressionUtils.RequiresCanRead(filter, nameof(filter));
             if (filter.Type != typeof(bool))
             {

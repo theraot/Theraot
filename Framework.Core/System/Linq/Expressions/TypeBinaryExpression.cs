@@ -25,6 +25,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static TypeBinaryExpression TypeEqual(Expression expression, Type type)
         {
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             ContractUtils.RequiresNotNull(type, nameof(type));
             if (type.IsByRef)
@@ -47,6 +48,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static TypeBinaryExpression TypeIs(Expression expression, Type type)
         {
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
             ContractUtils.RequiresNotNull(type, nameof(type));
             if (type.IsByRef)

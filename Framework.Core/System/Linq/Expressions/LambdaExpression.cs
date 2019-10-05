@@ -780,6 +780,7 @@ namespace System.Linq.Expressions
                 {
                     var pex = parameters[i];
                     var pi = pis[i];
+                    ContractUtils.RequiresNotNull(pex, nameof(parameters), i);
                     ExpressionUtils.RequiresCanRead(pex, nameof(parameters), i);
                     var pType = pi.ParameterType;
                     if (pex.IsByRef)

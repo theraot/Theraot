@@ -33,6 +33,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="Expressions.SwitchCase" />.</returns>
         public static SwitchCase SwitchCase(Expression body, IEnumerable<Expression> testValues)
         {
+            ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
 
             var values = testValues.AsArrayInternal();

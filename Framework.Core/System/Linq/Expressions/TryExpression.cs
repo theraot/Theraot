@@ -31,6 +31,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="TryExpression" />.</returns>
         public static TryExpression MakeTry(Type type, Expression body, Expression @finally, Expression fault, IEnumerable<CatchBlock> handlers)
         {
+            ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
 
             var @catch = handlers.AsArrayInternal();

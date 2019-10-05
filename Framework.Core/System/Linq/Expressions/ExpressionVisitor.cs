@@ -124,14 +124,9 @@ namespace System.Linq.Expressions
         ///     otherwise, returns the original expression.
         /// </returns>
         /// <exception cref="InvalidOperationException">The visit method for this node returned a different type.</exception>
-        public T? VisitAndConvert<T>(T node, string callerName)
+        public T VisitAndConvert<T>([DisallowNull] T node, string callerName)
             where T : Expression
         {
-            if (node == null)
-            {
-                return null;
-            }
-
             if (Visit(node) is T nodeAsT)
             {
                 return nodeAsT;
@@ -191,14 +186,24 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitBinary(BinaryExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             // Walk children in evaluation order: left, conversion, right
+            return VisitBinaryExtracted(node);
+        }
+
+        private Expression VisitBinaryExtracted(BinaryExpression node)
+        {
             return ValidateBinary
             (
                 node,
                 node.Update
                 (
                     Visit(node.Left),
-                    VisitAndConvert(node.Conversion, nameof(VisitBinary)),
+                    node.Conversion == null ? null : VisitAndConvert(node.Conversion, nameof(VisitBinary)),
                     Visit(node.Right)
                 )
             );
@@ -213,6 +218,16 @@ namespace System.Linq.Expressions
         ///     otherwise, returns the original expression.
         /// </returns>
         protected internal virtual Expression VisitBlock(BlockExpression node)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            return VisitBlockExtracted(node);
+        }
+
+        private Expression VisitBlockExtracted(BlockExpression node)
         {
             var nodes = ExpressionVisitorUtils.VisitBlockExpressions(this, node);
             var v = VisitAndConvert(node.Variables, nameof(VisitBlock));
@@ -834,3 +849,4 @@ namespace System.Linq.Expressions
 }
 
 #endif
+

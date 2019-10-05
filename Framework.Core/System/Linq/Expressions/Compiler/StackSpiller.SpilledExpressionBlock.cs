@@ -23,7 +23,7 @@ namespace System.Linq.Expressions.Compiler
             // Empty
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
         {
             throw ContractUtils.Unreachable;
         }

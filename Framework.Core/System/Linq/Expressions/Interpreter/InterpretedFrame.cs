@@ -16,7 +16,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class InterpretedFrame
     {
-        public readonly IStrongBox[] Closure;
+        public readonly IStrongBox[]? Closure;
 
         public readonly object?[] Data;
 
@@ -40,7 +40,7 @@ namespace System.Linq.Expressions.Interpreter
         public ExceptionHandler CurrentAbortHandler;
 #endif
 
-        internal InterpretedFrame(Interpreter interpreter, IStrongBox[] closure)
+        internal InterpretedFrame(Interpreter interpreter, IStrongBox[]? closure)
         {
             Interpreter = interpreter;
             StackIndex = interpreter.LocalCount;
@@ -54,15 +54,15 @@ namespace System.Linq.Expressions.Interpreter
             _pendingValue = Interpreter.NoValue;
         }
 
-        public string Name => Interpreter.Name;
+        public string? Name => Interpreter.Name;
 
         public InterpretedFrame? Parent { get; internal set; }
 
-        internal string[] Trace
+        internal string?[] Trace
         {
             get
             {
-                var trace = new List<string>();
+                var trace = new List<string?>();
                 var frame = this;
                 do
                 {

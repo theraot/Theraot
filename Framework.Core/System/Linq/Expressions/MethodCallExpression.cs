@@ -36,6 +36,7 @@ namespace System.Linq.Expressions
         /// <paramref name="array"/>.Type does not represent an array type.-or-The rank of <paramref name="array"/>.Type does not match the number of elements in <paramref name="indexes"/>.-or-The <see cref="Type"/> property of one or more elements of <paramref name="indexes"/> does not represent the <see cref="int"/> type.</exception>
         public static MethodCallExpression ArrayIndex(Expression array, IEnumerable<Expression> indexes)
         {
+            ContractUtils.RequiresNotNull(array, nameof(array), -1);
             ExpressionUtils.RequiresCanRead(array, nameof(array), -1);
             ContractUtils.RequiresNotNull(indexes, nameof(indexes));
 
@@ -54,7 +55,7 @@ namespace System.Linq.Expressions
             for (int i = 0, n = indexList.Count; i < n; i++)
             {
                 var e = indexList[i];
-
+                ContractUtils.RequiresNotNull(e, nameof(indexes), i);
                 ExpressionUtils.RequiresCanRead(e, nameof(indexes), i);
                 if (e.Type != typeof(int))
                 {

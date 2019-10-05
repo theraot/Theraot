@@ -414,10 +414,10 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class QuoteInstruction : Instruction
     {
-        private readonly Dictionary<ParameterExpression, LocalVariable> _hoistedVariables;
+        private readonly Dictionary<ParameterExpression, LocalVariable>? _hoistedVariables;
         private readonly Expression _operand;
 
-        public QuoteInstruction(Expression operand, Dictionary<ParameterExpression, LocalVariable> hoistedVariables)
+        public QuoteInstruction(Expression operand, Dictionary<ParameterExpression, LocalVariable>? hoistedVariables)
         {
             _operand = operand;
             _hoistedVariables = hoistedVariables;
