@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace System.Linq.Expressions.Interpreter
@@ -115,7 +116,7 @@ namespace System.Linq.Expressions.Interpreter
             return new LocalDefinition(result.Index, variable);
         }
 
-        public bool TryGetLocalOrClosure(ParameterExpression var, out LocalVariable? local)
+        public bool TryGetLocalOrClosure(ParameterExpression var, [NotNullWhen(true)] out LocalVariable? local)
         {
             local = null;
             if (!_variables.TryGetValue(var, out var scope))

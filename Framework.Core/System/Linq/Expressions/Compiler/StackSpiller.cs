@@ -378,7 +378,7 @@ namespace System.Linq.Expressions.Compiler
                     (
                         cr[0], // Object
                         index.Indexer,
-                        cr[1, -2] // arguments
+                        cr[1, -2]! // arguments
                     ),
                     cr[-1]! // value
                 );
@@ -409,7 +409,7 @@ namespace System.Linq.Expressions.Compiler
                 (
                     cr[0],
                     node.Indexer,
-                    cr[1, -1]
+                    cr[1, -1]!
                 );
             }
 
@@ -768,7 +768,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var node = (MethodCallExpression)expr;
 
-            var cr = new ChildRewriter(this, stack, node.ArgumentCount + 1);
+            var cr = new NullAwareChildRewriter(this, stack, node.ArgumentCount + 1);
 
             // For instance methods, the instance executes on the
             // stack as is, but stays on the stack, making it non-empty.
@@ -785,8 +785,8 @@ namespace System.Linq.Expressions.Compiler
             if (cr.Rewrite)
             {
                 expr = node.Object != null
-                    ? (Expression)new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1])
-                    : new MethodCallExpressionN(node.Method, cr[1, -1]);
+                    ? (Expression)new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1]!)
+                    : new MethodCallExpressionN(node.Method, cr[1, -1]!);
             }
 
             return cr.Finish(expr);
@@ -826,7 +826,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (cr.Action == RewriteAction.SpillStack)
             {
-                cr.MarkRefArgs(node.Constructor, 0);
+                cr.MarkRefArgs(node.Constructor!, 0);
             }
 
             return cr.Finish(cr.Rewrite ? new NewExpression(node.Constructor, cr[0, -1], node.Members) : expr);

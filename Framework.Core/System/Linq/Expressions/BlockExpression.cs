@@ -139,7 +139,7 @@ namespace System.Linq.Expressions
             return EmptyCollection<ParameterExpression>.Instance;
         }
 
-        internal virtual BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal virtual BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
             throw ContractUtils.Unreachable;
         }
@@ -195,9 +195,9 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
-            Debug.Assert(args.Length == 2);
+            Debug.Assert(args!.Length == 2);
             Debug.Assert(variables == null || variables.Count == 0);
 
             return new Block2(args[0], args[1]);
@@ -261,9 +261,9 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
-            Debug.Assert(args.Length == 3);
+            Debug.Assert(args!.Length == 3);
             Debug.Assert(variables == null || variables.Count == 0);
 
             return new Block3(args[0], args[1], args[2]);
@@ -335,9 +335,9 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
-            Debug.Assert(args.Length == 4);
+            Debug.Assert(args!.Length == 4);
             Debug.Assert(variables == null || variables.Count == 0);
 
             return new Block4(args[0], args[1], args[2], args[3]);
@@ -417,9 +417,9 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _arg0);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
-            Debug.Assert(args.Length == 5);
+            Debug.Assert(args!.Length == 5);
             Debug.Assert(variables == null || variables.Count == 0);
 
             return new Block5(args[0], args[1], args[2], args[3], args[4]);
@@ -496,11 +496,11 @@ namespace System.Linq.Expressions
             return _expressionsAsReadOnlyCollection;
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
             Debug.Assert(variables == null || variables.Count == 0);
 
-            return new BlockN(args);
+            return new BlockN(args!);
         }
 
         internal override bool SameExpressions(ICollection<Expression> expressions)
@@ -541,7 +541,7 @@ namespace System.Linq.Expressions
             return ReturnReadOnlyExpressions(this, ref _body);
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
             var array = variables.AsArrayInternal();
             if (args == null)
@@ -640,7 +640,7 @@ namespace System.Linq.Expressions
             return _bodyAsReadOnlyCollection;
         }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
             var array = variables.AsArrayInternal();
             if (args == null)
@@ -672,7 +672,7 @@ namespace System.Linq.Expressions
 
         public override Type Type { get; }
 
-        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
+        internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression>? variables, Expression[]? args)
         {
             var array = variables.AsArrayInternal();
             if (args == null)

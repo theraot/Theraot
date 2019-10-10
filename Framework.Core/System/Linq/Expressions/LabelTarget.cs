@@ -45,7 +45,7 @@ namespace System.Linq.Expressions
         /// <param name="type">The type of value that is passed when jumping to the label.</param>
         /// <param name="name">The name of the label.</param>
         /// <returns>The new <see cref="LabelTarget" />.</returns>
-        public static LabelTarget Label(Type type, string name)
+        public static LabelTarget Label(Type type, string? name)
         {
             ContractUtils.RequiresNotNull(type, nameof(type));
             TypeUtils.ValidateType(type, nameof(type));
@@ -58,7 +58,7 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class LabelTarget
     {
-        internal LabelTarget(Type type, string name)
+        internal LabelTarget(Type type, string? name)
         {
             Type = type;
             Name = name;
@@ -68,7 +68,7 @@ namespace System.Linq.Expressions
         ///     Gets the name of the label.
         /// </summary>
         /// <remarks>The label's name is provided for information purposes only.</remarks>
-        public string Name { get; }
+        public string? Name { get; }
 
         /// <summary>
         ///     The type of value that is passed when jumping to the label
@@ -82,7 +82,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="string" /> that represents the current <see cref="object" />.</returns>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(Name) ? "UnamedLabel" : Name;
+            return Name == null || string.IsNullOrEmpty(Name) ? "UnamedLabel" : Name;
         }
     }
 }

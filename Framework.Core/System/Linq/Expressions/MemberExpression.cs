@@ -316,7 +316,7 @@ namespace System.Linq.Expressions
     public class MemberExpression : Expression
     {
         // param order: factories args in order, then other args
-        internal MemberExpression(Expression expression)
+        internal MemberExpression(Expression? expression)
         {
             Expression = expression;
         }
@@ -324,7 +324,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the containing object of the field or property.
         /// </summary>
-        public Expression Expression { get; }
+        public Expression? Expression { get; }
 
         /// <summary>
         ///     Gets the field or property to be accessed.
@@ -333,10 +333,10 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />. (Inherited from
-        ///     <see cref="P:System.Linq.Expressions.MemberExpression.Expression" />.)
+        ///     Returns the node type of this <see cref="System.Linq.Expressions.MemberExpression.Expression" />. (Inherited from
+        ///     <see cref="System.Linq.Expressions.MemberExpression.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.MemberAccess;
 
         /// <summary>
@@ -352,13 +352,13 @@ namespace System.Linq.Expressions
         }
 
         [return: NotNull]
-        internal static PropertyExpression Make(Expression expression, PropertyInfo property)
+        internal static PropertyExpression Make(Expression? expression, PropertyInfo property)
         {
             return new PropertyExpression(expression, property);
         }
 
         [return: NotNull]
-        internal static FieldExpression Make(Expression expression, FieldInfo field)
+        internal static FieldExpression Make(Expression? expression, FieldInfo field)
         {
             return new FieldExpression(expression, field);
         }
@@ -389,7 +389,7 @@ namespace System.Linq.Expressions
     {
         private readonly FieldInfo _field;
 
-        public FieldExpression(Expression expression, FieldInfo member)
+        public FieldExpression(Expression? expression, FieldInfo member)
             : base(expression)
         {
             _field = member;
@@ -407,7 +407,7 @@ namespace System.Linq.Expressions
     {
         private readonly PropertyInfo _property;
 
-        public PropertyExpression(Expression expression, PropertyInfo member)
+        public PropertyExpression(Expression? expression, PropertyInfo member)
             : base(expression)
         {
             _property = member;

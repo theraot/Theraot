@@ -33,6 +33,7 @@ namespace System.Linq.Expressions
         ///         class of DynamicExpression which is being used.
         ///     </para>
         /// </summary>
+        /// <param name="args"></param>
         [return: NotNull]
         Expression Rewrite(Expression[] args);
     }

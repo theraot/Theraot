@@ -76,7 +76,17 @@ namespace System.Linq.Expressions
         ///     <paramref name="arguments" /> does not contain the same number of elements as the list of parameters for the
         ///     delegate represented by <paramref name="expression" />.
         /// </exception>
-        public static InvocationExpression Invoke(Expression expression, IEnumerable<Expression> arguments)
+        public static InvocationExpression Invoke(Expression expression, IEnumerable<Expression>? arguments)
+        {
+            if (arguments == null)
+            {
+                return InvokeExtracted(expression, ArrayEx.Empty<Expression>());
+            }
+
+            return InvokeExtracted(expression, arguments);
+        }
+
+        private static InvocationExpression InvokeExtracted(Expression expression, IEnumerable<Expression> arguments)
         {
             var argumentList = arguments.AsArrayInternal();
 
@@ -459,7 +469,7 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Invoke;
 
         /// <inheritdoc />
@@ -470,7 +480,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type { get; }
 
-        internal LambdaExpression LambdaOperand => Expression.NodeType == ExpressionType.Quote
+        internal LambdaExpression? LambdaOperand => Expression.NodeType == ExpressionType.Quote
             ? (LambdaExpression)((UnaryExpression)Expression).Operand!
             : Expression as LambdaExpression;
 
@@ -512,7 +522,7 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        internal virtual InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal virtual InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
             throw ContractUtils.Unreachable;
         }
@@ -548,9 +558,8 @@ namespace System.Linq.Expressions
             return EmptyCollection<Expression>.Instance;
         }
 
-        internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal override InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
-            Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 0);
 
             return Invoke(lambda);
@@ -583,9 +592,8 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal override InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
-            Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 1);
 
             return Invoke(lambda, arguments != null ? arguments[0] : ExpressionUtils.ReturnObject<Expression>(_arg0));
@@ -623,9 +631,8 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal override InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
-            Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 2);
 
             return arguments != null ? Invoke(lambda, arguments[0], arguments[1]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1);
@@ -668,9 +675,8 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal override InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
-            Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 3);
 
             return arguments != null ? Invoke(lambda, arguments[0], arguments[1], arguments[2]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2);
@@ -718,9 +724,8 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal override InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
-            Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 4);
 
             return arguments != null ? Invoke(lambda, arguments[0], arguments[1], arguments[2], arguments[3]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
@@ -773,9 +778,8 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal override InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
-            Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == 5);
 
             return arguments != null ? Invoke(lambda, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]) : Invoke(lambda, ExpressionUtils.ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
@@ -806,9 +810,8 @@ namespace System.Linq.Expressions
             return _argumentsAsReadOnly;
         }
 
-        internal override InvocationExpression Rewrite(Expression lambda, Expression[] arguments)
+        internal override InvocationExpression Rewrite(Expression lambda, Expression[]? arguments)
         {
-            Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == _arguments.Length);
 
             return Invoke(lambda, arguments ?? _arguments);

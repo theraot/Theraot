@@ -265,8 +265,8 @@ namespace System.Linq.Expressions
             var args = VisitExpressionList(nex.Arguments);
             return args != nex.Arguments
                 ? nex.Members != null
-                    ? Expression.New(nex.Constructor, args, nex.Members)
-                    : Expression.New(nex.Constructor, args)
+                    ? Expression.New(nex.Constructor!, args, nex.Members)
+                    : Expression.New(nex.Constructor!, args)
                 : nex;
         }
 
@@ -293,7 +293,7 @@ namespace System.Linq.Expressions
 
         private Expression VisitUnary(UnaryExpression u)
         {
-            var operand = Visit(u.Operand);
+            var operand = Visit(u.Operand!);
             return operand != u.Operand ? Expression.MakeUnary(u.NodeType, operand, u.Type, u.Method) : u;
         }
 

@@ -1196,13 +1196,14 @@ namespace System.Linq.Expressions
 
         private string GetLabelTargetName(LabelTarget target)
         {
-            if (string.IsNullOrEmpty(target.Name))
+            var name = target.Name;
+            if (name == null || string.IsNullOrEmpty(name))
             {
                 // Create the label target name as #Label1, #Label2, etc.
                 return "#Label" + GetLabelTargetId(target);
             }
 
-            return GetDisplayName(target.Name);
+            return GetDisplayName(name);
         }
 
         private int GetLambdaId(LambdaExpression le)

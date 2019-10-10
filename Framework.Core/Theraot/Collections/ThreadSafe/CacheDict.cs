@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Core;
 
@@ -13,6 +15,7 @@ namespace Theraot.Collections.ThreadSafe
     ///     number of elements specified at construction time.
     /// </summary>
     public sealed class CacheDict<TKey, TValue>
+        where TKey: class
     {
         private readonly Entry[] _entries;
 
@@ -45,6 +48,11 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Add(TKey key, TValue value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             var hash = key.GetHashCode();
             var index = hash & (_entries.Length - 1);
             var entry = Volatile.Read(ref _entries[index]);
@@ -54,8 +62,13 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [NotNullWhen(true)]out TValue value)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             var hash = key.GetHashCode();
             var idx = hash & (_entries.Length - 1);
             var entry = Volatile.Read(ref _entries[idx]);
@@ -65,7 +78,7 @@ namespace Theraot.Collections.ThreadSafe
                 return true;
             }
 
-            value = default;
+            value = default!;
             return false;
         }
 

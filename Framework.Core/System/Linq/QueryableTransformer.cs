@@ -187,7 +187,7 @@ namespace System.Linq
 
         private MethodCallExpression ReplaceQueryableMethod(MethodCallExpression old)
         {
-            Expression target = null;
+            Expression? target = null;
             if (old.Object != null)
             {
                 target = Visit(old.Object);

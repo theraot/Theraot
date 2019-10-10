@@ -94,7 +94,7 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="Target" /> property of the result.</param>
         /// <param name="defaultValue">The <see cref="DefaultValue" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public LabelExpression Update(LabelTarget target, Expression defaultValue)
+        public LabelExpression Update(LabelTarget target, Expression? defaultValue)
         {
             if (target == Target && defaultValue == DefaultValue)
             {

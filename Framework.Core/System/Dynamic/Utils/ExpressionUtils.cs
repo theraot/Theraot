@@ -329,7 +329,7 @@ namespace System.Dynamic.Utils
             return true;
         }
 
-        private static bool SameElementsInCollectionWithPossibleNulls<T>(ICollection<T?> replacement, T?[] current)
+        internal static bool SameElementsInCollectionWithPossibleNulls<T>(ICollection<T?> replacement, T?[] current)
             where T : class
         {
             var count = current.Length;

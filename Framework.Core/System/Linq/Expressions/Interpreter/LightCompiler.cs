@@ -521,7 +521,7 @@ namespace System.Linq.Expressions.Interpreter
                         if
                         (
                             !call.Method.IsStatic
-                            && call.Object.Type.IsArray
+                            && call.Object!.Type.IsArray
                             && call.Method == call.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance)
                         )
                         {
@@ -1935,7 +1935,7 @@ namespace System.Linq.Expressions.Interpreter
             CompileMethodCallExpression(node.Object, node.Method, node);
         }
 
-        private void CompileMethodCallExpression(Expression @object, MethodInfo method, IArgumentProvider arguments)
+        private void CompileMethodCallExpression(Expression? @object, MethodInfo method, IArgumentProvider arguments)
         {
             var parameters = method.GetParameters();
 
@@ -1943,7 +1943,7 @@ namespace System.Linq.Expressions.Interpreter
             List<ByRefUpdater>? updaters = null;
             if (!method.IsStatic)
             {
-                var updater = CompileAddress(@object, -1);
+                var updater = CompileAddress(@object!, -1);
                 if (updater != null)
                 {
                     updaters = new List<ByRefUpdater> { updater };
@@ -1972,7 +1972,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            if (!method.IsStatic && @object.Type.IsNullable())
+            if (!method.IsStatic && @object!.Type.IsNullable())
             {
                 // reflection doesn't let us call methods on Nullable<T> when the value
                 // is null...  so we get to special case those methods!

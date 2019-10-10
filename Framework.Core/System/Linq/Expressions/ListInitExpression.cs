@@ -57,8 +57,16 @@ namespace System.Linq.Expressions
         public static ListInitExpression ListInit(NewExpression newExpression, IEnumerable<Expression> initializers)
         {
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
-            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
+            if (initializers == null)
+            {
+                throw new ArgumentNullException(nameof(initializers));
+            }
 
+            return ListInitExtracted(newExpression, initializers);
+        }
+
+        private static ListInitExpression ListInitExtracted(NewExpression newExpression, IEnumerable<Expression> initializers)
+        {
             var initializerList = initializers.ToReadOnlyCollection();
             if (initializerList.Count == 0)
             {
@@ -120,10 +128,17 @@ namespace System.Linq.Expressions
             {
                 return ListInit(newExpression, initializers);
             }
-
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
-            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
+            if (initializers == null)
+            {
+                throw new ArgumentNullException(nameof(initializers));
+            }
 
+            return ListInitExtracted(newExpression, addMethod, initializers);
+        }
+
+        private static ListInitExpression ListInitExtracted(NewExpression newExpression, MethodInfo addMethod, IEnumerable<Expression> initializers)
+        {
             var initializerList = initializers.ToReadOnlyCollection();
             var initList = new ElementInit[initializerList.Count];
             for (var i = 0; i < initializerList.Count; i++)
@@ -188,7 +203,15 @@ namespace System.Linq.Expressions
         public static ListInitExpression ListInit(NewExpression newExpression, IEnumerable<ElementInit> initializers)
         {
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
-            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
+            if (initializers == null)
+            {
+                throw new ArgumentNullException(nameof(initializers));
+            }
+            return ListInitExtracted(newExpression, initializers);
+        }
+
+        private static ListInitExpression ListInitExtracted(NewExpression newExpression, IEnumerable<ElementInit> initializers)
+        {
             var initializerList = initializers.ToReadOnlyCollection();
             ValidateListInitArgs(newExpression.Type, initializerList, nameof(newExpression));
             return new ListInitExpression(newExpression, initializerList);
@@ -201,9 +224,9 @@ namespace System.Linq.Expressions
     /// </summary>
     /// <remarks>
     ///     Use the
-    ///     <see cref="M:System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])" />
+    ///     <see cref="System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])" />
     ///     factory methods to create a ListInitExpression.
-    ///     The value of the <see cref="P:System.Linq.Expressions.ListInitExpression.NodeType" /> property of a
+    ///     The value of the <see cref="System.Linq.Expressions.ListInitExpression.NodeType" /> property of a
     ///     ListInitExpression is ListInit.
     /// </remarks>
     [DebuggerTypeProxy(typeof(ListInitExpressionProxy))]
@@ -233,18 +256,18 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
+        ///     <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.ListInit;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;
 
         /// <inheritdoc />
@@ -274,7 +297,10 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-
+            if (initializers == null)
+            {
+                throw new ArgumentNullException(nameof(initializers));
+            }
             return ListInit(newExpression, initializers);
         }
 

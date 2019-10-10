@@ -62,7 +62,7 @@ namespace System.Linq.Expressions
         /// <param name="filter">The <see cref="Filter" /> property of the result.</param>
         /// <param name="body">The <see cref="Body" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public CatchBlock Update(ParameterExpression? variable, Expression filter, Expression body)
+        public CatchBlock Update(ParameterExpression? variable, Expression? filter, Expression body)
         {
             if (variable == Variable && filter == Filter && body == Body)
             {

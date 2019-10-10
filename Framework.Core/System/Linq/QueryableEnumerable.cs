@@ -37,7 +37,7 @@ namespace System.Linq
 {
     internal interface IQueryableEnumerable : IQueryable
     {
-        IEnumerable GetEnumerable();
+        IEnumerable? GetEnumerable();
     }
 
     internal interface IQueryableEnumerable<TElement> : IQueryableEnumerable, IOrderedQueryable<TElement>
@@ -47,7 +47,7 @@ namespace System.Linq
 
     internal class QueryableEnumerable<TElement> : IQueryableEnumerable<TElement>, IQueryProvider
     {
-        private readonly IEnumerable<TElement> _enumerable;
+        private readonly IEnumerable<TElement>? _enumerable;
 
         public QueryableEnumerable(IEnumerable<TElement> enumerable)
         {
@@ -66,7 +66,7 @@ namespace System.Linq
 
         public IQueryProvider Provider => this;
 
-        public IEnumerable GetEnumerable()
+        public IEnumerable? GetEnumerable()
         {
             return _enumerable;
         }

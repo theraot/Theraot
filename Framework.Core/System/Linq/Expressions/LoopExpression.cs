@@ -27,7 +27,7 @@ namespace System.Linq.Expressions
         /// <param name="body">The body of the loop.</param>
         /// <param name="break">The break target used by the loop body.</param>
         /// <returns>The created <see cref="LoopExpression" />.</returns>
-        public static LoopExpression Loop(Expression body, LabelTarget @break)
+        public static LoopExpression Loop(Expression body, LabelTarget? @break)
         {
             return Loop(body, @break, null);
         }
@@ -39,7 +39,7 @@ namespace System.Linq.Expressions
         /// <param name="break">The break target used by the loop body.</param>
         /// <param name="continue">The continue target used by the loop body.</param>
         /// <returns>The created <see cref="LoopExpression" />.</returns>
-        public static LoopExpression Loop(Expression body, LabelTarget @break, LabelTarget @continue)
+        public static LoopExpression Loop(Expression body, LabelTarget? @break, LabelTarget? @continue)
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
@@ -59,7 +59,7 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(LoopExpressionProxy))]
     public sealed class LoopExpression : Expression
     {
-        internal LoopExpression(Expression body, LabelTarget @break, LabelTarget @continue)
+        internal LoopExpression(Expression body, LabelTarget? @break, LabelTarget? @continue)
         {
             Body = body;
             BreakLabel = @break;
@@ -74,26 +74,26 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the <see cref="LabelTarget" /> that is used by the loop body as a break statement target.
         /// </summary>
-        public LabelTarget BreakLabel { get; }
+        public LabelTarget? BreakLabel { get; }
 
         /// <summary>
         ///     Gets the <see cref="LabelTarget" /> that is used by the loop body as a continue statement target.
         /// </summary>
-        public LabelTarget ContinueLabel { get; }
+        public LabelTarget? ContinueLabel { get; }
 
         /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Loop;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => BreakLabel == null ? typeof(void) : BreakLabel.Type;
 
         /// <summary>

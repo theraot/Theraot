@@ -29,11 +29,19 @@ namespace System.Linq.Expressions
         ///     with the try block.
         /// </param>
         /// <returns>The created <see cref="TryExpression" />.</returns>
-        public static TryExpression MakeTry(Type type, Expression body, Expression @finally, Expression fault, IEnumerable<CatchBlock> handlers)
+        public static TryExpression MakeTry(Type? type, Expression body, Expression? @finally, Expression? fault, IEnumerable<CatchBlock>? handlers)
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
+            if (handlers == null)
+            {
+                return MakeTryExtracted(type, body, @finally, fault, ArrayEx.Empty<CatchBlock>());
+            }
+            return MakeTryExtracted(type, body, @finally, fault, handlers);
+        }
 
+        private static TryExpression MakeTryExtracted(Type? type, Expression body, Expression? @finally, Expression? fault, IEnumerable<CatchBlock> handlers)
+        {
             var @catch = handlers.AsArrayInternal();
             ContractUtils.RequiresNotNullItems(@catch, nameof(handlers));
             ValidateTryAndCatchHaveSameType(type, body, @catch);
@@ -113,9 +121,8 @@ namespace System.Linq.Expressions
         }
 
         //Validate that the body of the try expression must have the same type as the body of every try block.
-        private static void ValidateTryAndCatchHaveSameType(Type type, Expression tryBody, IEnumerable<CatchBlock> handlers)
+        private static void ValidateTryAndCatchHaveSameType(Type? type, Expression tryBody, IEnumerable<CatchBlock> handlers)
         {
-            Debug.Assert(tryBody != null);
             // Type unification ... all parts must be reference assignable to "type"
             if (type != null)
             {
@@ -139,7 +146,6 @@ namespace System.Linq.Expressions
                 //The body of every try block must be null or have void type.
                 foreach (var cb in handlers)
                 {
-                    Debug.Assert(cb.Body != null);
                     if (cb.Body.Type != typeof(void))
                     {
                         throw new ArgumentException("Body of catch must have the same type as body of try.");
@@ -152,7 +158,6 @@ namespace System.Linq.Expressions
                 type = tryBody.Type;
                 foreach (var cb in handlers)
                 {
-                    Debug.Assert(cb.Body != null);
                     if (!TypeUtils.AreEquivalent(cb.Body.Type, type))
                     {
                         throw new ArgumentException("Body of catch must have the same type as body of try.");
@@ -167,7 +172,7 @@ namespace System.Linq.Expressions
     ///     <para>Represents a try/catch/finally/fault block.</para>
     ///     <para>
     ///         The body is protected by the try block.
-    ///         The handlers consist of a set of <see cref="T:System.Linq.Expressions.CatchBlock" />s that can either be catch
+    ///         The handlers consist of a set of <see cref="System.Linq.Expressions.CatchBlock" />s that can either be catch
     ///         or filters.
     ///         The fault runs if an exception is thrown.
     ///         The finally runs regardless of how control exits the body.
@@ -181,7 +186,7 @@ namespace System.Linq.Expressions
         private readonly CatchBlock[] _handlers;
         private readonly ReadOnlyCollectionEx<CatchBlock> _handlersAsReadOnlyCollection;
 
-        internal TryExpression(Type type, Expression body, Expression @finally, Expression fault, CatchBlock[] handlers)
+        internal TryExpression(Type type, Expression body, Expression? @finally, Expression? fault, CatchBlock[] handlers)
         {
             Type = type;
             Body = body;
@@ -199,12 +204,12 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the <see cref="Expression" /> representing the fault block.
         /// </summary>
-        public Expression Fault { get; }
+        public Expression? Fault { get; }
 
         /// <summary>
         ///     Gets the <see cref="Expression" /> representing the finally block.
         /// </summary>
-        public Expression Finally { get; }
+        public Expression? Finally { get; }
 
         /// <summary>
         ///     Gets the collection of <see cref="CatchBlock" />s associated with the try block.
@@ -213,18 +218,18 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
+        ///     <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Try;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type { get; }
 
         /// <summary>

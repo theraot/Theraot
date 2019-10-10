@@ -250,6 +250,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitConditional(ConditionalExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Test), Visit(node.IfTrue), Visit(node.IfFalse));
         }
 
@@ -332,6 +337,11 @@ namespace System.Linq.Expressions
         /// </remarks>
         protected internal virtual Expression VisitExtension(Expression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.VisitChildren(this);
         }
 
@@ -345,6 +355,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitGoto(GotoExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(VisitLabelTarget(node.Target), Visit(node.Value));
         }
 
@@ -358,6 +373,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitIndex(IndexExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             var o = Visit(node.Object);
             var a = VisitArguments(node);
             if (o == node.Object && a == null)
@@ -378,6 +398,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitInvocation(InvocationExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             var e = Visit(node.Expression);
             var a = VisitArguments(node);
             if (e == node.Expression && a == null)
@@ -398,6 +423,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitLabel(LabelExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(VisitLabelTarget(node.Target), Visit(node.DefaultValue));
         }
 
@@ -438,6 +468,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitListInit(ListInitExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update
             (
                 VisitAndConvert(node.NewExpression, nameof(VisitListInit)),
@@ -455,6 +490,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitLoop(LoopExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(VisitLabelTarget(node.BreakLabel), VisitLabelTarget(node.ContinueLabel), Visit(node.Body));
         }
 
@@ -468,6 +508,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitMember(MemberExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Expression));
         }
 
@@ -481,6 +526,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitMemberInit(MemberInitExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update
             (
                 VisitAndConvert(node.NewExpression, nameof(VisitMemberInit)),
@@ -498,6 +548,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitMethodCall(MethodCallExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             var o = Visit(node.Object);
             var a = VisitArguments(node);
             if (o == node.Object && a == null)
@@ -518,6 +573,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitNew(NewExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             var a = VisitArguments(node);
             return a == null ? node : node.Update(a);
         }
@@ -532,6 +592,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitNewArray(NewArrayExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Expressions));
         }
 
@@ -558,6 +623,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(VisitAndConvert(node.Variables, nameof(VisitRuntimeVariables)));
         }
 
@@ -571,16 +641,21 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitSwitch(SwitchExpression node)
         {
-            return ValidateSwitch
-            (
-                node,
-                node.Update
-                (
-                    Visit(node.SwitchValue),
-                    Visit(node.Cases, VisitSwitchCase),
-                    Visit(node.DefaultBody)
-                )
-            );
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            return VisitSwitchExtracted(node);
+        }
+
+        private Expression VisitSwitchExtracted(SwitchExpression node)
+        {
+            var visitedSwitchValue = node.SwitchValue;
+            var visitedCases = Visit(node.Cases, VisitSwitchCase);
+            var visitedDefaultBody = Visit(node.DefaultBody);
+            var updated = node.Update(visitedSwitchValue, visitedCases, visitedDefaultBody);
+            return ValidateSwitch(node, updated);
         }
 
         /// <summary>
@@ -593,6 +668,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitTry(TryExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update
             (
                 Visit(node.Body),
@@ -612,6 +692,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected internal virtual Expression VisitTypeBinary(TypeBinaryExpression node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Expression));
         }
 
@@ -630,7 +715,14 @@ namespace System.Linq.Expressions
                 throw new ArgumentNullException(nameof(node));
             }
 
-            return ValidateUnary(node, node.Update(Visit(node.Operand)));
+            return VisitUnaryExtracted(node);
+        }
+
+        private Expression VisitUnaryExtracted(UnaryExpression node)
+        {
+            var visited = Visit(node.Operand);
+            var updated = node.Update(visited);
+            return ValidateUnary(node, updated);
         }
 
         /// <summary>
@@ -648,7 +740,12 @@ namespace System.Linq.Expressions
                 throw new ArgumentNullException(nameof(node));
             }
 
-            return node.Update(VisitAndConvert(node.Variable, nameof(VisitCatchBlock)), Visit(node.Filter), Visit(node.Body));
+            return VisitCatchBlockExtracted(node);
+        }
+
+        private CatchBlock VisitCatchBlockExtracted(CatchBlock node)
+        {
+            return node.Update(node.Variable == null ? null : VisitAndConvert(node.Variable, nameof(VisitCatchBlock)), Visit(node.Filter), Visit(node.Body));
         }
 
         /// <summary>
@@ -661,6 +758,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected virtual ElementInit VisitElementInit(ElementInit node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Arguments));
         }
 
@@ -687,6 +789,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected virtual MemberAssignment VisitMemberAssignment(MemberAssignment node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Expression));
         }
 
@@ -700,6 +807,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected virtual MemberBinding VisitMemberBinding(MemberBinding node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             switch (node.BindingType)
             {
                 case MemberBindingType.Assignment:
@@ -726,6 +838,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected virtual MemberListBinding VisitMemberListBinding(MemberListBinding node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Initializers, VisitElementInit));
         }
 
@@ -739,6 +856,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected virtual MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.Bindings, VisitMemberBinding));
         }
 
@@ -752,6 +874,11 @@ namespace System.Linq.Expressions
         /// </returns>
         protected virtual SwitchCase VisitSwitchCase(SwitchCase node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
             return node.Update(Visit(node.TestValues), Visit(node.Body));
         }
 

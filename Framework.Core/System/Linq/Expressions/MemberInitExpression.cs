@@ -66,7 +66,16 @@ namespace System.Linq.Expressions
         public static MemberInitExpression MemberInit(NewExpression newExpression, IEnumerable<MemberBinding> bindings)
         {
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
-            ContractUtils.RequiresNotNull(bindings, nameof(bindings));
+            if (bindings == null)
+            {
+                throw new ArgumentNullException(nameof(bindings));
+            }
+
+            return MemberInitExtracted(newExpression, bindings);
+        }
+
+        private static MemberInitExpression MemberInitExtracted(NewExpression newExpression, IEnumerable<MemberBinding> bindings)
+        {
             var bindingsArray = bindings.AsArrayInternal();
             ValidateMemberInitArgs(newExpression.Type, bindingsArray);
             return new MemberInitExpression(newExpression, bindingsArray);
@@ -112,19 +121,19 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.MemberInit;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Reduces the <see cref="T:System.Linq.Expressions.MemberInitExpression" /> to a simpler expression.
+        ///     Reduces the <see cref="System.Linq.Expressions.MemberInitExpression" /> to a simpler expression.
         ///     If CanReduce returns true, this should return a valid expression.
         ///     This method is allowed to return another node which itself
         ///     must be reduced.
@@ -149,7 +158,10 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-
+            if (bindings == null)
+            {
+                throw new ArgumentNullException(nameof(bindings));
+            }
             return MemberInit(newExpression, bindings);
         }
 

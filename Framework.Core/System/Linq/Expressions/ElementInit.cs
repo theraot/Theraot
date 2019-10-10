@@ -102,8 +102,12 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arguments, nameof(arguments));
 
             var array = arguments.AsArrayInternal();
+            return ElementInitExtracted(addMethod, nameof(arguments), ref array);
+        }
 
-            RequiresCanRead(array, nameof(arguments));
+        private static ElementInit ElementInitExtracted(MethodInfo addMethod, string paramName, ref Expression[] array)
+        {
+            RequiresCanRead(array, paramName);
             ValidateElementInitAddMethodInfo(addMethod, nameof(addMethod));
             ValidateArgumentTypes(addMethod, ExpressionType.Call, ref array, nameof(addMethod));
             return new ElementInit(addMethod, array);
@@ -140,3 +144,4 @@ namespace System.Linq.Expressions
 }
 
 #endif
+

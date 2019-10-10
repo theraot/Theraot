@@ -39,7 +39,16 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(array, nameof(array), -1);
             ExpressionUtils.RequiresCanRead(array, nameof(array), -1);
             ContractUtils.RequiresNotNull(indexes, nameof(indexes));
+            if (indexes == null)
+            {
+                throw new ArgumentNullException(nameof(indexes));
+            }
 
+            return ArrayIndexExtracted(array, indexes);
+        }
+
+        private static MethodCallExpression ArrayIndexExtracted(Expression array, IEnumerable<Expression> indexes)
+        {
             var arrayType = array.Type;
             if (!arrayType.IsArray)
             {
@@ -47,6 +56,11 @@ namespace System.Linq.Expressions
             }
 
             var indexList = indexes.ToReadOnlyCollection();
+            return ArrayIndexExtracted(array, nameof(indexes), arrayType, indexList);
+        }
+
+        private static MethodCallExpression ArrayIndexExtracted(Expression array, string paramName, Type arrayType, ReadOnlyCollectionEx<Expression> indexList)
+        {
             if (arrayType.GetArrayRank() != indexList.Count)
             {
                 throw new ArgumentException("Incorrect number of indexes");
@@ -55,11 +69,11 @@ namespace System.Linq.Expressions
             for (int i = 0, n = indexList.Count; i < n; i++)
             {
                 var e = indexList[i];
-                ContractUtils.RequiresNotNull(e, nameof(indexes), i);
-                ExpressionUtils.RequiresCanRead(e, nameof(indexes), i);
+                ContractUtils.RequiresNotNull(e, paramName, i);
+                ExpressionUtils.RequiresCanRead(e, paramName, i);
                 if (e.Type != typeof(int))
                 {
-                    throw new ArgumentException("Argument for array index must be of type Int32", i >= 0 ? $"{nameof(indexes)}[{i}]" : nameof(indexes));
+                    throw new ArgumentException("Argument for array index must be of type Int32", i >= 0 ? $"{paramName}[{i}]" : paramName);
                 }
             }
 
@@ -226,7 +240,7 @@ namespace System.Linq.Expressions
         /// <param name="instance">An <see cref="Expression"/> that specifies the instance for an instance call. (pass null for a static (Shared in Visual Basic) method).</param>
         /// <param name="method">The <see cref="MethodInfo"/> that represents the target method.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));
 
@@ -249,7 +263,7 @@ namespace System.Linq.Expressions
         /// <param name="method">The <see cref="MethodInfo"/> that represents the target method.</param>
         /// <param name="arguments">An array of one or more of <see cref="Expression"/> that represents the call arguments.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method, params Expression[] arguments)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method, params Expression[] arguments)
         {
             return Call(instance, method, (IEnumerable<Expression>)arguments);
         }
@@ -366,15 +380,23 @@ namespace System.Linq.Expressions
         /// <paramref name="method"/> is null.-or-<paramref name="instance"/> is null and <paramref name="method"/> represents an instance method.</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="instance"/>.Type is not assignable to the declaring type of the method represented by <paramref name="method"/>.-or-The number of elements in <paramref name="arguments"/> does not equal the number of parameters for the method represented by <paramref name="method"/>.-or-One or more of the elements of <paramref name="arguments"/> is not assignable to the corresponding parameter for the method represented by <paramref name="method"/>.</exception>
-        public static MethodCallExpression Call(Expression instance, MethodInfo method, IEnumerable<Expression>? arguments)
+        public static MethodCallExpression Call(Expression? instance, MethodInfo method, IEnumerable<Expression>? arguments)
         {
             if (arguments == null)
             {
                 return Call(instance, method);
             }
+            return CallExtracted(instance, method, arguments);
+        }
 
+        private static MethodCallExpression CallExtracted(Expression? instance, MethodInfo method, IEnumerable<Expression>? arguments)
+        {
             var argumentList = arguments.AsArrayInternal();
+            return CallExtracted(instance, method, argumentList);
+        }
 
+        private static MethodCallExpression CallExtracted(Expression? instance, MethodInfo method, Expression[] argumentList)
+        {
             var argCount = argumentList.Length;
 
             switch (argCount)
@@ -449,7 +471,7 @@ namespace System.Linq.Expressions
         /// <param name="method">The <see cref="MethodInfo"/> that represents the target method.</param>
         /// <param name="arg0">The <see cref="Expression"/> that represents the first argument.</param>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
-        internal static MethodCallExpression Call(Expression instance, MethodInfo method, Expression arg0)
+        internal static MethodCallExpression Call(Expression? instance, MethodInfo method, Expression arg0)
         {
             // COMPAT: This method is marked as non-public to ensure compile-time compatibility for Expression.Call(e, m, null).
 
@@ -596,7 +618,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static ParameterInfo[] ValidateMethodAndGetParameters(Expression instance, MethodInfo method)
+        private static ParameterInfo[] ValidateMethodAndGetParameters(Expression? instance, MethodInfo method)
         {
             ValidateMethodInfo(method, nameof(method));
             ValidateStaticOrInstanceMethod(instance, method);
@@ -668,7 +690,7 @@ namespace System.Linq.Expressions
         /// Gets the <see cref="Expression"/> that represents the instance
         /// for instance method calls or null for static method calls.
         /// </summary>
-        public Expression Object => GetInstance();
+        public Expression? Object => GetInstance();
 
         /// <inheritdoc />
         /// <summary>
@@ -721,7 +743,7 @@ namespace System.Linq.Expressions
             return SameArguments(args) ? this : Call(@object, Method, arguments);
         }
 
-        internal virtual Expression GetInstance()
+        internal virtual Expression? GetInstance()
         {
             return null;
         }
@@ -731,7 +753,7 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        internal virtual MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal virtual MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             throw ContractUtils.Unreachable;
         }
@@ -754,15 +776,15 @@ namespace System.Linq.Expressions
 
     internal class InstanceMethodCallExpression : MethodCallExpression
     {
-        private readonly Expression _instance;
+        private readonly Expression? _instance;
 
-        public InstanceMethodCallExpression(MethodInfo method, Expression instance)
+        public InstanceMethodCallExpression(MethodInfo method, Expression? instance)
             : base(method)
         {
             _instance = instance;
         }
 
-        internal override Expression GetInstance()
+        internal override Expression? GetInstance()
         {
             return _instance;
         }
@@ -788,7 +810,7 @@ namespace System.Linq.Expressions
             return EmptyCollection<Expression>.Instance;
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(args == null || args.Count == 0);
 
@@ -827,7 +849,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(args == null || args.Count == 1);
 
@@ -880,7 +902,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == 2);
@@ -897,7 +919,7 @@ namespace System.Linq.Expressions
 
             if (_arg0 is Expression[] alreadyArray)
             {
-                return ExpressionUtils.SameElementsWithPossibleNulls(arguments, alreadyArray);
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
             }
 
             using (var en = arguments.GetEnumerator())
@@ -947,7 +969,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == 3);
@@ -964,7 +986,7 @@ namespace System.Linq.Expressions
 
             if (_arg0 is Expression[] alreadyArray)
             {
-                return ExpressionUtils.SameElementsWithPossibleNulls(arguments, alreadyArray);
+                return ExpressionUtils.SameElements(arguments, alreadyArray);
             }
 
             using (var en = arguments.GetEnumerator())
@@ -992,7 +1014,7 @@ namespace System.Linq.Expressions
         private readonly Expression[] _arguments;
         private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
 
-        public InstanceMethodCallExpressionN(MethodInfo method, Expression instance, Expression[] args)
+        public InstanceMethodCallExpressionN(MethodInfo method, Expression? instance, Expression[] args)
             : base(method, instance)
         {
             _arguments = args;
@@ -1011,7 +1033,7 @@ namespace System.Linq.Expressions
             return _argumentsAsReadOnlyCollection;
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
@@ -1020,7 +1042,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression>? arguments)
         {
-            return ExpressionUtils.SameElementsWithPossibleNulls(arguments, _arguments);
+            return ExpressionUtils.SameElements(arguments, _arguments);
         }
     }
 
@@ -1044,7 +1066,7 @@ namespace System.Linq.Expressions
             return EmptyCollection<Expression>.Instance;
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 0);
@@ -1084,7 +1106,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 1);
@@ -1138,7 +1160,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 2);
@@ -1205,7 +1227,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 3);
@@ -1280,7 +1302,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 4);
@@ -1363,7 +1385,7 @@ namespace System.Linq.Expressions
             return ExpressionUtils.ReturnReadOnly(this, ref _arg0);
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == 5);
@@ -1439,7 +1461,7 @@ namespace System.Linq.Expressions
             return _argumentsAsReadOnlyCollection;
         }
 
-        internal override MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
+        internal override MethodCallExpression Rewrite(Expression? instance, IList<Expression>? args)
         {
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == _arguments.Length);
@@ -1449,7 +1471,7 @@ namespace System.Linq.Expressions
 
         internal override bool SameArguments(ICollection<Expression>? arguments)
         {
-            return ExpressionUtils.SameElementsWithPossibleNulls(arguments, _arguments);
+            return ExpressionUtils.SameElements(arguments, _arguments);
         }
     }
 }

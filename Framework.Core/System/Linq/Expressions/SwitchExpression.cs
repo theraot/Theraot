@@ -304,7 +304,7 @@ namespace System.Linq.Expressions
         /// <param name="cases">The <see cref="Cases" /> property of the result.</param>
         /// <param name="defaultBody">The <see cref="DefaultBody" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public SwitchExpression Update(Expression switchValue, IEnumerable<SwitchCase> cases, Expression defaultBody)
+        public SwitchExpression Update(Expression switchValue, IEnumerable<SwitchCase>? cases, Expression? defaultBody)
         {
             if (switchValue == SwitchValue && defaultBody == DefaultBody && cases != null && ExpressionUtils.SameElements(ref cases, _cases))
             {

@@ -640,7 +640,7 @@ namespace System.Linq.Expressions.Compiler
                     IL.BeginFaultBlock();
                 }
                 // Emit the body
-                EmitExpressionAsVoid(node.Finally ?? node.Fault);
+                EmitExpressionAsVoid(node.Finally ?? node.Fault!);
                 IL.EndExceptionBlock();
 
                 _labelBlock = tmpParent;

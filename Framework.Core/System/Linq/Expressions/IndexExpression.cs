@@ -27,9 +27,9 @@ namespace System.Linq.Expressions
         ///     <see cref="NewArrayInit(System.Type,System.Linq.Expressions.Expression[])" />.
         /// </remarks>
         /// <returns>The created <see cref="IndexExpression" />.</returns>
-        public static IndexExpression ArrayAccess(Expression array, params Expression?[] indexes)
+        public static IndexExpression ArrayAccess(Expression array, params Expression[] indexes)
         {
-            return ArrayAccess(array, (IEnumerable<Expression?>)indexes);
+            return ArrayAccess(array, (IEnumerable<Expression>)indexes);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace System.Linq.Expressions
         ///     <see cref="NewArrayInit(System.Type,System.Linq.Expressions.Expression[])" />.
         /// </remarks>
         /// <returns>The created <see cref="IndexExpression" />.</returns>
-        public static IndexExpression ArrayAccess(Expression array, IEnumerable<Expression?>? indexes)
+        public static IndexExpression ArrayAccess(Expression array, IEnumerable<Expression>? indexes)
         {
             if (array == null)
             {
@@ -71,7 +71,7 @@ namespace System.Linq.Expressions
             return ArrayAccessExtracted(array, indexes, arrayType);
         }
 
-        private static IndexExpression ArrayAccessExtracted(Expression array, IEnumerable<Expression?> indexes, Type arrayType)
+        private static IndexExpression ArrayAccessExtracted(Expression array, IEnumerable<Expression> indexes, Type arrayType)
         {
             var indexList = indexes.AsArrayInternal();
 
@@ -103,9 +103,20 @@ namespace System.Linq.Expressions
         ///     property.
         /// </param>
         /// <returns>The created <see cref="IndexExpression" />.</returns>
-        public static IndexExpression MakeIndex(Expression instance, PropertyInfo? indexer, IEnumerable<Expression?>? arguments)
+        public static IndexExpression MakeIndex(Expression? instance, PropertyInfo? indexer, IEnumerable<Expression>? arguments)
         {
-            return indexer != null ? Property(instance, indexer, arguments) : ArrayAccess(instance, arguments);
+            if (indexer != null)
+            {
+                return Property(instance, indexer, arguments);
+            }
+            else
+            {
+                if (instance == null)
+                {
+                    throw new ArgumentNullException(nameof(instance));
+                }
+                return ArrayAccess(instance, arguments);
+            }
         }
 
         /// <summary>
@@ -135,9 +146,9 @@ namespace System.Linq.Expressions
         /// <param name="indexer">The <see cref="PropertyInfo" /> that represents the property to index.</param>
         /// <param name="arguments">An array of <see cref="Expression" /> objects that are used to index the property.</param>
         /// <returns>The created <see cref="IndexExpression" />.</returns>
-        public static IndexExpression Property(Expression instance, PropertyInfo indexer, params Expression[] arguments)
+        public static IndexExpression Property(Expression? instance, PropertyInfo indexer, params Expression[] arguments)
         {
-            return Property(instance, indexer, (IEnumerable<Expression?>)arguments);
+            return Property(instance, indexer, (IEnumerable<Expression>)arguments);
         }
 
         /// <summary>
@@ -150,7 +161,7 @@ namespace System.Linq.Expressions
         ///     the property.
         /// </param>
         /// <returns>The created <see cref="IndexExpression" />.</returns>
-        public static IndexExpression Property(Expression? instance, PropertyInfo indexer, IEnumerable<Expression?>? arguments)
+        public static IndexExpression Property(Expression? instance, PropertyInfo indexer, IEnumerable<Expression>? arguments)
         {
             return MakeIndexProperty(instance, indexer, nameof(indexer), arguments.AsArrayInternal());
         }
@@ -274,13 +285,13 @@ namespace System.Linq.Expressions
             return true;
         }
 
-        private static IndexExpression MakeIndexProperty(Expression? instance, PropertyInfo indexer, string paramName, Expression?[] argList)
+        private static IndexExpression MakeIndexProperty(Expression? instance, PropertyInfo indexer, string paramName, Expression[] argList)
         {
             ValidateIndexedProperty(instance, indexer, paramName, ref argList);
             return new IndexExpression(instance, indexer, argList);
         }
 
-        private static void ValidateAccessor(Expression? instance, MethodInfo method, ParameterInfo[] indexes, ref Expression?[] arguments, string paramName)
+        private static void ValidateAccessor(Expression? instance, MethodInfo method, ParameterInfo[] indexes, ref Expression[] arguments, string paramName)
         {
             ContractUtils.RequiresNotNull(arguments, nameof(arguments));
 
@@ -311,7 +322,7 @@ namespace System.Linq.Expressions
             ValidateAccessorArgumentTypes(method, indexes, ref arguments, paramName);
         }
 
-        private static void ValidateAccessorArgumentTypes(MethodInfo method, ParameterInfo[] indexes, ref Expression?[] arguments, string paramName)
+        private static void ValidateAccessorArgumentTypes(MethodInfo method, ParameterInfo[] indexes, ref Expression[] arguments, string paramName)
         {
             if (indexes.Length > 0)
             {
@@ -320,7 +331,7 @@ namespace System.Linq.Expressions
                     throw new ArgumentException($"Incorrect number of arguments supplied for call to method '{method}'", paramName);
                 }
 
-                Expression?[]? newArgs = null;
+                Expression[]? newArgs = null;
                 for (int i = 0, n = indexes.Length; i < n; i++)
                 {
                     var arg = arguments[i];
@@ -372,7 +383,7 @@ namespace System.Linq.Expressions
         //
         // Does reflection help us out at all? Expression.Property skips all of
         // these checks, so either it needs more checks or we need less here.
-        private static void ValidateIndexedProperty(Expression? instance, PropertyInfo indexer, string paramName, ref Expression?[] argList)
+        private static void ValidateIndexedProperty(Expression? instance, PropertyInfo indexer, string paramName, ref Expression[] argList)
         {
             // If both getter and setter specified, all their parameter types
             // should match, with exception of the last setter parameter which
@@ -447,7 +458,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static (ParameterInfo[] parameters, MethodInfo methodInfo)? ValidateIndexedGetter(Expression? instance, PropertyInfo indexer, string paramName, ref Expression?[] argList)
+        private static (ParameterInfo[] parameters, MethodInfo methodInfo)? ValidateIndexedGetter(Expression? instance, PropertyInfo indexer, string paramName, ref Expression[] argList)
         {
             var getter = indexer.GetGetMethod(true);
             if (getter == null)
@@ -472,13 +483,13 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(IndexExpressionProxy))]
     public sealed class IndexExpression : Expression, IArgumentProvider
     {
-        private readonly Expression?[] _arguments;
-        private readonly ReadOnlyCollectionEx<Expression?> _argumentsAsReadOnlyCollection;
+        private readonly Expression[] _arguments;
+        private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
 
         internal IndexExpression(
             Expression? instance,
             PropertyInfo? indexer,
-            Expression?[] arguments)
+            Expression[] arguments)
         {
             if (indexer == null)
             {
@@ -494,7 +505,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the arguments to be used to index the property or array.
         /// </summary>
-        public ReadOnlyCollection<Expression?> Arguments => _argumentsAsReadOnlyCollection;
+        public ReadOnlyCollection<Expression> Arguments => _argumentsAsReadOnlyCollection;
 
         /// <summary>
         ///     Gets the <see cref="PropertyInfo" /> for the property if the expression represents an indexed property, returns
@@ -555,9 +566,9 @@ namespace System.Linq.Expressions
         /// <param name="object">The <see cref="Object" /> property of the result.</param>
         /// <param name="arguments">The <see cref="Arguments" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public IndexExpression Update(Expression @object, IEnumerable<Expression?>? arguments)
+        public IndexExpression Update(Expression @object, IEnumerable<Expression>? arguments)
         {
-            if (@object == Object && ExpressionUtils.SameElementsWithPossibleNulls(ref arguments, _arguments))
+            if (@object == Object && ExpressionUtils.SameElements(ref arguments, _arguments))
             {
                 return this;
             }
@@ -565,7 +576,7 @@ namespace System.Linq.Expressions
             return MakeIndex(@object, Indexer, arguments);
         }
 
-        internal Expression Rewrite(Expression instance, Expression[] arguments)
+        internal Expression Rewrite(Expression? instance, Expression[]? arguments)
         {
             Debug.Assert(arguments == null || arguments.Length == _arguments.Length);
 

@@ -69,7 +69,15 @@ namespace System.Linq.Expressions
         public static MemberListBinding ListBind(MemberInfo member, IEnumerable<ElementInit> initializers)
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
-            ContractUtils.RequiresNotNull(initializers, nameof(initializers));
+            if (initializers == null)
+            {
+                throw new ArgumentNullException(nameof(initializers));
+            }
+            return ListBindExtracted(member, initializers);
+        }
+
+        private static MemberListBinding ListBindExtracted(MemberInfo member, IEnumerable<ElementInit> initializers)
+        {
             ValidateGettableFieldOrPropertyMember(member, out var memberType);
             var initList = initializers.ToReadOnlyCollection();
             ValidateListInitArgs(memberType, initList, nameof(member));
@@ -177,7 +185,10 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-
+            if (initializers == null)
+            {
+                throw new ArgumentNullException(nameof(initializers));
+            }
             return Expression.ListBind(Member, initializers);
         }
 

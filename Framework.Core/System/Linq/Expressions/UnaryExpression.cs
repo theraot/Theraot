@@ -357,69 +357,69 @@ namespace System.Linq.Expressions
         ///     expression.
         /// </exception>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="operand" /> is null.</exception>
-        public static UnaryExpression MakeUnary(ExpressionType unaryType, Expression operand, Type type, MethodInfo? method)
+        public static UnaryExpression MakeUnary(ExpressionType unaryType, Expression? operand, Type type, MethodInfo? method)
         {
             switch (unaryType)
             {
                 case ExpressionType.Negate:
-                    return Negate(operand, method);
+                    return Negate(operand!, method);
 
                 case ExpressionType.NegateChecked:
-                    return NegateChecked(operand, method);
+                    return NegateChecked(operand!, method);
 
                 case ExpressionType.Not:
-                    return Not(operand, method);
+                    return Not(operand!, method);
 
                 case ExpressionType.IsFalse:
-                    return IsFalse(operand, method);
+                    return IsFalse(operand!, method);
 
                 case ExpressionType.IsTrue:
-                    return IsTrue(operand, method);
+                    return IsTrue(operand!, method);
 
                 case ExpressionType.OnesComplement:
-                    return OnesComplement(operand, method);
+                    return OnesComplement(operand!, method);
 
                 case ExpressionType.ArrayLength:
-                    return ArrayLength(operand);
+                    return ArrayLength(operand!);
 
                 case ExpressionType.Convert:
-                    return Convert(operand, type, method);
+                    return Convert(operand!, type, method);
 
                 case ExpressionType.ConvertChecked:
-                    return ConvertChecked(operand, type, method);
+                    return ConvertChecked(operand!, type, method);
 
                 case ExpressionType.Throw:
                     return Throw(operand, type);
 
                 case ExpressionType.TypeAs:
-                    return TypeAs(operand, type);
+                    return TypeAs(operand!, type);
 
                 case ExpressionType.Quote:
-                    return Quote(operand);
+                    return Quote(operand!);
 
                 case ExpressionType.UnaryPlus:
-                    return UnaryPlus(operand, method);
+                    return UnaryPlus(operand!, method);
 
                 case ExpressionType.Unbox:
-                    return Unbox(operand, type);
+                    return Unbox(operand!, type);
 
                 case ExpressionType.Increment:
-                    return Increment(operand, method);
+                    return Increment(operand!, method);
 
                 case ExpressionType.Decrement:
-                    return Decrement(operand, method);
+                    return Decrement(operand!, method);
 
                 case ExpressionType.PreIncrementAssign:
-                    return PreIncrementAssign(operand, method);
+                    return PreIncrementAssign(operand!, method);
 
                 case ExpressionType.PostIncrementAssign:
-                    return PostIncrementAssign(operand, method);
+                    return PostIncrementAssign(operand!, method);
 
                 case ExpressionType.PreDecrementAssign:
-                    return PreDecrementAssign(operand, method);
+                    return PreDecrementAssign(operand!, method);
 
                 case ExpressionType.PostDecrementAssign:
-                    return PostDecrementAssign(operand, method);
+                    return PostDecrementAssign(operand!, method);
 
                 default:
                     throw new ArgumentException($"Unhandled unary: {unaryType}", nameof(unaryType));
@@ -1274,7 +1274,7 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="operand">The <see cref="Operand" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public UnaryExpression Update(Expression operand)
+        public UnaryExpression Update(Expression? operand)
         {
             return operand == Operand ? this : MakeUnary(NodeType, operand, Type, Method);
         }
@@ -1338,7 +1338,7 @@ namespace System.Linq.Expressions
                 i++;
             }
 
-            index = MakeIndex(temps[0], index.Indexer, (IEnumerable<Expression?>)ReadOnlyCollectionEx.Create(args));
+            index = MakeIndex(temps[0], index.Indexer, ReadOnlyCollectionEx.Create(args));
             if (!prefix)
             {
                 var lastTemp = temps[i] = Parameter(index.Type, null);

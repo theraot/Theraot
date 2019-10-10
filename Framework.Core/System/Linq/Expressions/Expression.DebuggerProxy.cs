@@ -66,10 +66,10 @@ namespace System.Linq.Expressions
             }
 
             public Expression Body => _node.Body;
-            public Expression Filter => _node.Filter;
+            public Expression? Filter => _node.Filter;
             public Type Test => _node.Test;
 #pragma warning disable RECS0146 // Member hides static member from outer class
-            public ParameterExpression Variable => _node.Variable;
+            public ParameterExpression? Variable => _node.Variable;
 #pragma warning restore RECS0146 // Member hides static member from outer class
         }
 
@@ -176,7 +176,7 @@ namespace System.Linq.Expressions
                 _node = node;
             }
 
-            public ReadOnlyCollection<Expression?> Arguments => _node.Arguments;
+            public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
             public PropertyInfo? Indexer => _node.Indexer;
@@ -271,9 +271,9 @@ namespace System.Linq.Expressions
             }
 
             public Expression Body => _node.Body;
-            public LabelTarget BreakLabel => _node.BreakLabel;
+            public LabelTarget? BreakLabel => _node.BreakLabel;
             public bool CanReduce => _node.CanReduce;
-            public LabelTarget ContinueLabel => _node.ContinueLabel;
+            public LabelTarget? ContinueLabel => _node.ContinueLabel;
             public string DebugView => _node.DebugView;
             public ExpressionType NodeType => _node.NodeType;
             public Type Type => _node.Type;
@@ -291,7 +291,7 @@ namespace System.Linq.Expressions
 
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
-            public Expression Expression => _node.Expression;
+            public Expression? Expression => _node.Expression;
             public MemberInfo Member => _node.Member;
             public ExpressionType NodeType => _node.NodeType;
             public Type Type => _node.Type;
@@ -330,7 +330,7 @@ namespace System.Linq.Expressions
             public string DebugView => _node.DebugView;
             public MethodInfo Method => _node.Method;
             public ExpressionType NodeType => _node.NodeType;
-            public Expression Object => _node.Object;
+            public Expression? Object => _node.Object;
             public Type Type => _node.Type;
         }
 
@@ -363,9 +363,9 @@ namespace System.Linq.Expressions
 
             public ReadOnlyCollection<Expression> Arguments => _node.Arguments;
             public bool CanReduce => _node.CanReduce;
-            public ConstructorInfo Constructor => _node.Constructor;
+            public ConstructorInfo? Constructor => _node.Constructor;
             public string DebugView => _node.DebugView;
-            public ReadOnlyCollection<MemberInfo> Members => _node.Members;
+            public ReadOnlyCollection<MemberInfo>? Members => _node.Members;
             public ExpressionType NodeType => _node.NodeType;
             public Type Type => _node.Type;
         }
@@ -452,8 +452,8 @@ namespace System.Linq.Expressions
             public Expression Body => _node.Body;
             public bool CanReduce => _node.CanReduce;
             public string DebugView => _node.DebugView;
-            public Expression Fault => _node.Fault;
-            public Expression Finally => _node.Finally;
+            public Expression? Fault => _node.Fault;
+            public Expression? Finally => _node.Finally;
             public ReadOnlyCollection<CatchBlock> Handlers => _node.Handlers;
             public ExpressionType NodeType => _node.NodeType;
             public Type Type => _node.Type;

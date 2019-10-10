@@ -30,7 +30,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static NewExpression New(ConstructorInfo constructor)
         {
-            return New(constructor, (IEnumerable<Expression>)null);
+            return New(constructor, (IEnumerable<Expression>?)null);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace System.Linq.Expressions
         ///     <see cref="ExpressionType.New" /> and the <see cref="NewExpression.Constructor" /> and
         ///     <see cref="NewExpression.Arguments" /> properties set to the specified value.
         /// </returns>
-        public static NewExpression New(ConstructorInfo constructor, IEnumerable<Expression> arguments)
+        public static NewExpression New(ConstructorInfo constructor, IEnumerable<Expression>? arguments)
         {
             ContractUtils.RequiresNotNull(constructor, nameof(constructor));
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
@@ -109,6 +109,11 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
             TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), true, true);
             ValidateConstructor(constructor, nameof(constructor));
+            return NewExtracted(constructor, arguments, members);
+        }
+
+        private static NewExpression NewExtracted(ConstructorInfo constructor, IEnumerable<Expression> arguments, IEnumerable<MemberInfo> members)
+        {
             var memberList = members.ToReadOnlyCollection();
             var argList = arguments.AsArrayInternal();
             ValidateNewArgs(constructor, ref argList, ref memberList);
@@ -229,8 +234,8 @@ namespace System.Linq.Expressions
                     throw new ArgumentException("Incorrect number of arguments for the given members ");
                 }
 
-                Expression[] newArguments = null;
-                MemberInfo[] newMembers = null;
+                Expression[]? newArguments = null;
+                MemberInfo[]? newMembers = null;
                 for (int i = 0, n = arguments.Length; i < n; i++)
                 {
                     var arg = arguments[i];
@@ -320,7 +325,7 @@ namespace System.Linq.Expressions
         private readonly Expression[] _arguments;
         private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
 
-        internal NewExpression(ConstructorInfo constructor, Expression[] arguments, ReadOnlyCollection<MemberInfo> members)
+        internal NewExpression(ConstructorInfo? constructor, Expression[] arguments, ReadOnlyCollection<MemberInfo>? members)
         {
             Constructor = constructor;
             _arguments = arguments;
@@ -336,28 +341,28 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Gets the called constructor.
         /// </summary>
-        public ConstructorInfo Constructor { get; }
+        public ConstructorInfo? Constructor { get; }
 
         /// <summary>
         ///     Gets the members that can retrieve the values of the fields that were initialized with constructor arguments.
         /// </summary>
-        public ReadOnlyCollection<MemberInfo> Members { get; }
+        public ReadOnlyCollection<MemberInfo>? Members { get; }
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="T:System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
+        ///     <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.New;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="T:System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
-        public override Type Type => Constructor.DeclaringType;
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
+        public override Type Type => Constructor!.DeclaringType;
 
         /// <summary>
         ///     Gets the number of argument expressions of the node.
@@ -388,7 +393,7 @@ namespace System.Linq.Expressions
                 return this;
             }
 
-            return Members != null ? New(Constructor, arguments, Members) : New(Constructor, arguments);
+            return Members != null ? New(Constructor!, arguments, Members) : New(Constructor!, arguments);
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -404,7 +409,7 @@ namespace System.Linq.Expressions
 
     internal sealed class NewValueTypeExpression : NewExpression
     {
-        internal NewValueTypeExpression(Type type, Expression[] arguments, ReadOnlyCollection<MemberInfo> members)
+        internal NewValueTypeExpression(Type type, Expression[] arguments, ReadOnlyCollection<MemberInfo>? members)
             : base(null, arguments, members)
         {
             Type = type;

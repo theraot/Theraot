@@ -46,8 +46,16 @@ namespace System.Linq.Expressions
         /// </returns>
         public static RuntimeVariablesExpression RuntimeVariables(IEnumerable<ParameterExpression> variables)
         {
-            ContractUtils.RequiresNotNull(variables, nameof(variables));
+            if (variables == null)
+            {
+                throw new ArgumentNullException(nameof(variables));
+            }
 
+            return RuntimeVariablesExtracted(variables);
+        }
+
+        private static RuntimeVariablesExpression RuntimeVariablesExtracted(IEnumerable<ParameterExpression> variables)
+        {
             var vars = variables.AsArrayInternal();
             for (var i = 0; i < vars.Length; i++)
             {
@@ -62,7 +70,7 @@ namespace System.Linq.Expressions
     /// <summary>
     ///     An expression that provides runtime read/write access to variables.
     ///     Needed to implement "eval" in some dynamic languages.
-    ///     Evaluates to an instance of <see cref="T:System.Collections.Generic.IList`1" /> when executed.
+    ///     Evaluates to an instance of <see cref="System.Collections.Generic.IList{T}" /> when executed.
     /// </summary>
     [DebuggerTypeProxy(typeof(RuntimeVariablesExpressionProxy))]
     public sealed class RuntimeVariablesExpression : Expression
@@ -81,14 +89,14 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="T:System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.RuntimeVariables;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="T:System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
         /// </summary>
-        /// <returns>The <see cref="T:System.Type" /> that represents the static type of the expression.</returns>
+        /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => typeof(IRuntimeVariables);
 
         /// <summary>
@@ -108,6 +116,10 @@ namespace System.Linq.Expressions
             if (variables != null && ExpressionUtils.SameElements(ref variables, _variables))
             {
                 return this;
+            }
+            if (variables == null)
+            {
+                throw new ArgumentNullException(nameof(variables));
             }
 
             return RuntimeVariables(variables);

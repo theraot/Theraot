@@ -88,7 +88,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private LabelInfo DefineLabel(LabelTarget node)
+        private LabelInfo DefineLabel(LabelTarget? node)
         {
             if (node == null)
             {

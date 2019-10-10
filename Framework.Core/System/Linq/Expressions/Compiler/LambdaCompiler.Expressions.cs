@@ -436,7 +436,7 @@ namespace System.Linq.Expressions.Compiler
             // stack it is entirely doable.
 
             // 1. Emit invoke arguments
-            var wb = EmitArguments(lambda.Type.GetInvokeMethod(), invoke);
+            var wb = EmitArguments(lambda!.Type.GetInvokeMethod(), invoke);
 
             // 2. Create the nested LambdaCompiler
             var inner = new LambdaCompiler(this, lambda, invoke);
@@ -947,7 +947,7 @@ namespace System.Linq.Expressions.Compiler
             EmitMemberInit(binding.Bindings, false, type);
         }
 
-        private void EmitMethodCall(Expression obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
+        private void EmitMethodCall(Expression? obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
             // Emit instance, if calling an instance method
             Type? objectType = null;
