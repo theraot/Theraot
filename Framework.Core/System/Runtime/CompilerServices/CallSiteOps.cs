@@ -28,8 +28,14 @@ namespace System.Runtime.CompilerServices
         /// <param name="rule">An instance of the call site rule.</param>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void AddRule<T>(CallSite<T> site, T rule) where T : class
+        public static void AddRule<T>(CallSite<T> site, T rule)
+            where T : class
         {
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
             site.AddRule(rule);
         }
 
@@ -43,7 +49,8 @@ namespace System.Runtime.CompilerServices
         /// <returns>The new call site target.</returns>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static T Bind<T>(CallSiteBinder binder, CallSite<T> site, object[] args) where T : class
+        public static T Bind<T>(CallSiteBinder binder, CallSite<T> site, object[] args)
+            where T : class
         {
             No.Op(binder);
             No.Op(site);
@@ -59,6 +66,11 @@ namespace System.Runtime.CompilerServices
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static void ClearMatch(CallSite site)
         {
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
             site.Match = true;
         }
 
@@ -73,6 +85,11 @@ namespace System.Runtime.CompilerServices
         public static CallSite<T> CreateMatchmaker<T>(CallSite<T> site)
             where T : class
         {
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
             var mm = site.CreateMatchMaker();
             // CallSiteOps.ClearMatch(mm);
             mm.Match = true;
@@ -87,8 +104,14 @@ namespace System.Runtime.CompilerServices
         /// <returns>The collection of applicable rules.</returns>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static T[] GetCachedRules<T>(RuleCache<T> cache) where T : class
+        public static T[] GetCachedRules<T>(RuleCache<T> cache)
+            where T : class
         {
+            if (cache == null)
+            {
+                throw new ArgumentNullException(nameof(cache));
+            }
+
             return cache.GetRules();
         }
 
@@ -101,6 +124,11 @@ namespace System.Runtime.CompilerServices
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static bool GetMatch(CallSite site)
         {
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
             return site.Match;
         }
 
@@ -112,8 +140,14 @@ namespace System.Runtime.CompilerServices
         /// <returns>The cache.</returns>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static RuleCache<T> GetRuleCache<T>(CallSite<T> site) where T : class
+        public static RuleCache<T> GetRuleCache<T>(CallSite<T> site)
+            where T : class
         {
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
             return site.Binder.GetRuleCache<T>();
         }
 
@@ -125,8 +159,14 @@ namespace System.Runtime.CompilerServices
         /// <returns>An array of dynamic binding rules.</returns>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static T[] GetRules<T>(CallSite<T> site) where T : class
+        public static T[] GetRules<T>(CallSite<T> site)
+            where T : class
         {
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
             return site.Rules;
         }
 
@@ -139,8 +179,14 @@ namespace System.Runtime.CompilerServices
         /// <param name="i">An index of the call site rule.</param>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void MoveRule<T>(RuleCache<T> cache, T rule, int i) where T : class
+        public static void MoveRule<T>(RuleCache<T> cache, T rule, int i)
+            where T : class
         {
+            if (cache == null)
+            {
+                throw new ArgumentNullException(nameof(cache));
+            }
+
             if (i > 1)
             {
                 cache.MoveRule(rule, i);
@@ -156,6 +202,11 @@ namespace System.Runtime.CompilerServices
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static bool SetNotMatched(CallSite site)
         {
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
             var res = site.Match;
             site.Match = false; //avoid branch here to make sure the method is inlined
             return res;
@@ -169,8 +220,14 @@ namespace System.Runtime.CompilerServices
         /// <param name="matched">The matched rule index.</param>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void UpdateRules<T>(CallSite<T> @this, int matched) where T : class
+        public static void UpdateRules<T>(CallSite<T> @this, int matched)
+            where T : class
         {
+            if (@this == null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+
             if (matched > 1)
             {
                 @this.MoveRule(matched);

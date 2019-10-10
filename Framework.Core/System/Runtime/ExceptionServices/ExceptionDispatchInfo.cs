@@ -14,7 +14,7 @@ namespace System.Runtime.ExceptionServices
     /// </summary>
     public sealed class ExceptionDispatchInfo
     {
-        private static FieldInfo _remoteStackTraceString;
+        private static FieldInfo? _remoteStackTraceString;
         private readonly object _stackTrace;
 
         private ExceptionDispatchInfo(Exception exception)
@@ -69,7 +69,7 @@ namespace System.Runtime.ExceptionServices
                 throw;
             }
 
-            string BuildStackTrace(string trace)
+            static string BuildStackTrace(string trace)
             {
                 var items = trace.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
                 var newStackTrace = new StringBuilder();
@@ -99,8 +99,7 @@ namespace System.Runtime.ExceptionServices
                     }
                 }
 
-                var result = newStackTrace.ToString();
-                return result;
+                return newStackTrace.ToString();
             }
         }
 

@@ -14,11 +14,11 @@ namespace System.Runtime.CompilerServices
     public partial class ExecutionScope
     {
         //These fields are accessed via Reflection
-        public object[] Globals;
+        public object[]? Globals;
 
-        public object[] Locals;
+        public object[]? Locals;
 
-        public ExecutionScope Parent;
+        public ExecutionScope? Parent;
     }
 
     public partial class ExecutionScope

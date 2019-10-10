@@ -46,7 +46,7 @@ namespace System.Runtime.CompilerServices
         {
             int IRuntimeVariables.Count => 0;
 
-            object IRuntimeVariables.this[int index]
+            object? IRuntimeVariables.this[int index]
             {
 #pragma warning disable CA2201 // Do not raise reserved exception types
                 get => throw new IndexOutOfRangeException();
@@ -76,16 +76,13 @@ namespace System.Runtime.CompilerServices
 
             internal RuntimeVariableList(object[] data, long[] indexes)
             {
-                Debug.Assert(data != null);
-                Debug.Assert(indexes != null);
-
                 _data = data;
                 _indexes = indexes;
             }
 
             public int Count => _indexes.Length;
 
-            public object this[int index]
+            public object? this[int index]
             {
                 get => GetStrongBox(index).Value;
                 set => GetStrongBox(index).Value = value;

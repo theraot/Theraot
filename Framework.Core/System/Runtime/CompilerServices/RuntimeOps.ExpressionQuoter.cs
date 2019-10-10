@@ -38,7 +38,14 @@ namespace System.Runtime.CompilerServices
         // [Obsolete("do not use this method", true), EditorBrowsable(EditorBrowsableState.Never)]
         public static Expression Quote(Expression expression, object hoistedLocals, object[] locals)
         {
-            Debug.Assert(hoistedLocals != null && locals != null);
+            if (hoistedLocals == null)
+            {
+                throw new ArgumentNullException(nameof(hoistedLocals));
+            }
+            if (locals == null)
+            {
+                throw new ArgumentNullException(nameof(locals));
+            }
             var quoter = new ExpressionQuoter((HoistedLocals)hoistedLocals, locals);
             return quoter.Visit(expression);
         }
@@ -181,7 +188,7 @@ namespace System.Runtime.CompilerServices
                 return Expression.MakeCatchBlock(node.Test, node.Variable, b, f);
             }
 
-            private IStrongBox GetBox(ParameterExpression variable)
+            private IStrongBox? GetBox(ParameterExpression variable)
             {
                 // Skip variables that are shadowed by a nested scope/lambda
                 foreach (var hidden in _shadowedVars)
@@ -201,11 +208,12 @@ namespace System.Runtime.CompilerServices
                         return (IStrongBox)locals[hoistIndex];
                     }
 
-                    scope = scope.Parent;
-                    if (scope == null)
+                    var nullableScope = scope.Parent;
+                    if (nullableScope == null)
                     {
                         break;
                     }
+                    scope = nullableScope;
 
                     locals = HoistedLocals.GetParent(locals);
                 }

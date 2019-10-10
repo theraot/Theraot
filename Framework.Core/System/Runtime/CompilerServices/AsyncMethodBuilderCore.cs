@@ -25,11 +25,11 @@ namespace System.Runtime.CompilerServices
         ///     Associates the builder with the state machine it represents.
         /// </summary>
         /// <param name="stateMachine">The heap-allocated state machine object.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument was null (Nothing in
         ///     Visual Basic).
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
+        /// <exception cref="System.InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             if (StateMachine != null)
@@ -45,7 +45,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
         /// <param name="stateMachine">The state machine instance, passed by reference.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument is null (Nothing in
         ///     Visual Basic).
         /// </exception>
@@ -66,7 +66,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         /// <param name="exception">The exception to propagate.</param>
         /// <param name="targetContext">The target context on which to propagate the exception.  Null to use the ThreadPool.</param>
-        internal static void ThrowOnContext(Exception exception, SynchronizationContext targetContext)
+        internal static void ThrowOnContext(Exception exception, SynchronizationContext? targetContext)
         {
             if (targetContext != null)
             {
@@ -122,7 +122,7 @@ namespace System.Runtime.CompilerServices
             ///     Cached delegate used with ExecutionContext.Run.
             /// </summary>
             [SecurityCritical]
-            private static ContextCallback _invokeMoveNext;
+            private static ContextCallback? _invokeMoveNext;
 
             /// <summary>
             ///     The context with which to run MoveNext.
@@ -132,7 +132,7 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             ///     The state machine whose MoveNext method should be invoked.
             /// </summary>
-            internal IAsyncStateMachine StateMachine;
+            internal IAsyncStateMachine? StateMachine;
 
             /// <summary>
             ///     Initializes the runner.
@@ -152,7 +152,7 @@ namespace System.Runtime.CompilerServices
             {
                 if (_context == null)
                 {
-                    StateMachine.MoveNext();
+                    StateMachine!.MoveNext();
                     return;
                 }
 
@@ -164,7 +164,7 @@ namespace System.Runtime.CompilerServices
 
                 ExecutionContext.Run(_context, callback, StateMachine);
 
-                void InvokeMoveNext(object stateMachine)
+                static void InvokeMoveNext(object stateMachine)
                 {
                     ((IAsyncStateMachine)stateMachine).MoveNext();
                 }

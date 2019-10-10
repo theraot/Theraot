@@ -11,7 +11,7 @@ using Theraot;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    ///     Provides an awaiter for awaiting a <see cref="T:System.Threading.Tasks.Task" /> .
+    ///     Provides an awaiter for awaiting a <see cref="System.Threading.Tasks.Task" /> .
     /// </summary>
     /// <remarks>
     ///     This type is intended for compiler use only.
@@ -249,7 +249,7 @@ namespace System.Runtime.CompilerServices
         ///     Gets the MethodInfo for the internal PrepForRemoting method on Exception.
         /// </summary>
         /// <returns> The MethodInfo if it could be retrieved, or else null. </returns>
-        private static MethodInfo GetPrepForRemotingMethodInfo()
+        private static MethodInfo? GetPrepForRemotingMethodInfo()
         {
             try
             {
@@ -321,7 +321,7 @@ namespace System.Runtime.CompilerServices
     }
 
     /// <summary>
-    ///     Provides an awaiter for awaiting a <see cref="T:System.Threading.Tasks.Task`1" /> .
+    ///     Provides an awaiter for awaiting a <see cref="System.Threading.Tasks.Task`1" /> .
     /// </summary>
     /// <remarks>
     ///     This type is intended for compiler use only.

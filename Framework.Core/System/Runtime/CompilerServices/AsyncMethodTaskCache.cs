@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET45
 
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
@@ -98,7 +99,7 @@ namespace System.Runtime.CompilerServices
         ///     A singleton cache for this result type.
         ///     This may be null if there are no cached tasks for this TResult.
         /// </summary>
-        internal static readonly AsyncMethodTaskCache<TResult> Singleton = CreateCache();
+        internal static readonly AsyncMethodTaskCache<TResult>? Singleton = CreateCache();
 
         static AsyncMethodTaskCache()
         {
@@ -112,7 +113,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         ///     The cacheable task.
         /// </returns>
-        internal static TaskCompletionSource<TResult> CreateCompleted(TResult result)
+        internal static TaskCompletionSource<TResult> CreateCompleted([AllowNull] TResult result)
         {
             var completionSource = new TaskCompletionSource<TResult>();
             completionSource.TrySetResult(result);
@@ -137,7 +138,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         ///     A task cache for this result type.
         /// </returns>
-        private static AsyncMethodTaskCache<TResult> CreateCache()
+        private static AsyncMethodTaskCache<TResult>? CreateCache()
         {
             var type = typeof(TResult);
             if (type == typeof(bool))
