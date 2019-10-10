@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using Theraot.Collections.Specialized;
@@ -11,7 +12,7 @@ namespace System.Numerics
 {
     public partial struct BigInteger
     {
-        internal static string FormatBigInteger(BigInteger value, string format, NumberFormatInfo info)
+        internal static string FormatBigInteger(BigInteger value, string? format, NumberFormatInfo info)
         {
             var fmt = ParseFormatSpecifier(format, out var digits);
             switch (fmt)
@@ -228,10 +229,10 @@ namespace System.Numerics
             return zero;
         }
 
-        internal static char ParseFormatSpecifier(string format, out int digits)
+        internal static char ParseFormatSpecifier(string? format, out int digits)
         {
             digits = -1;
-            if (string.IsNullOrEmpty(format))
+            if (format == null || string.IsNullOrEmpty(format))
             {
                 return 'R';
             }
@@ -544,7 +545,7 @@ namespace System.Numerics
             return true;
         }
 
-        internal static bool TryValidateParseStyleInteger(NumberStyles style, out ArgumentException e)
+        internal static bool TryValidateParseStyleInteger(NumberStyles style, [NotNullWhen(false)] out ArgumentException? e)
         {
             if (((int)style & -1024) != (int)NumberStyles.None)
             {
@@ -567,7 +568,7 @@ namespace System.Numerics
             // First convert to base 10^9.
             const uint numericBase = 1000000000; // 10^9
             const int numericBaseLog10 = 9;
-            var sourceLength = Length(value.InternalBits);
+            var sourceLength = Length(value.InternalBits!);
             int maxConvertedLength;
             try
             {
@@ -583,7 +584,7 @@ namespace System.Numerics
             for (var sourceIndex = sourceLength; --sourceIndex >= 0;)
             {
                 // Take a cipher from the source
-                var carry = value.InternalBits[sourceIndex];
+                var carry = value.InternalBits![sourceIndex];
                 // Add it to converted
                 for (var convertedIndex = 0; convertedIndex < convertedLength; convertedIndex++)
                 {

@@ -6,7 +6,7 @@ namespace System.Numerics
 {
     internal struct BigIntegerBuilder
     {
-        private uint[] _bits;
+        private uint[]? _bits;
         private bool _fWritable;
         private int _iuLast;
 
@@ -90,7 +90,7 @@ namespace System.Numerics
             }
         }
 
-        public uint High => _iuLast != 0 ? _bits[_iuLast] : _uSmall;
+        public uint High => _iuLast != 0 ? _bits![_iuLast] : _uSmall;
 
         public int Size => _iuLast + 1;
 
@@ -101,7 +101,7 @@ namespace System.Numerics
                 var num = 0;
                 for (var i = _iuLast; i >= 0; i--)
                 {
-                    if (_bits[i] != 0)
+                    if (_bits![i] != 0)
                     {
                         num++;
                     }
@@ -113,7 +113,7 @@ namespace System.Numerics
 
         public static void Gcd(ref BigIntegerBuilder reg1, ref BigIntegerBuilder reg2)
         {
-            if ((reg1._iuLast <= 0 || reg1._bits[0] != 0) && (reg2._iuLast <= 0 || reg2._bits[0] != 0))
+            if ((reg1._iuLast <= 0 || reg1._bits![0] != 0) && (reg2._iuLast <= 0 || reg2._bits![0] != 0))
             {
                 LehmerGcd(ref reg1, ref reg2);
             }
@@ -145,7 +145,7 @@ namespace System.Numerics
             var num = (ulong)0;
             for (var i = regNum._iuLast; i >= 0; i--)
             {
-                num = NumericHelper.BuildUInt64((uint)num, regNum._bits[i]);
+                num = NumericHelper.BuildUInt64((uint)num, regNum._bits![i]);
                 num %= num5;
             }
 
@@ -163,7 +163,7 @@ namespace System.Numerics
                 }
 
                 SetSizeLazy(2);
-                _bits[0] = _uSmall;
+                _bits![0] = _uSmall;
                 _bits[1] = 1;
                 return;
             }
@@ -173,7 +173,7 @@ namespace System.Numerics
                 return;
             }
 
-            var num2 = _bits[0] + u;
+            var num2 = _bits![0] + u;
             if (num2 < u)
             {
                 EnsureWritable(1);
@@ -223,7 +223,7 @@ namespace System.Numerics
             uint num2 = 0;
             for (var i = 0; i < num1; i++)
             {
-                num2 = AddCarry(ref _bits[i], reg._bits[i], num2);
+                num2 = AddCarry(ref _bits![i], reg._bits![i], num2);
             }
 
             if (num2 != 0)
@@ -245,7 +245,7 @@ namespace System.Numerics
             }
 
             var num = 0;
-            while (_bits[num] == 0)
+            while (_bits![num] == 0)
             {
                 num++;
             }
@@ -291,7 +291,7 @@ namespace System.Numerics
             var num1 = (ulong)0;
             for (var i = _iuLast; i >= 0; i--)
             {
-                num1 = NumericHelper.BuildUInt64((uint)num1, _bits[i]);
+                num1 = NumericHelper.BuildUInt64((uint)num1, _bits![i]);
                 _bits[i] = (uint)(num1 / num5);
                 num1 %= num5;
             }
@@ -302,7 +302,7 @@ namespace System.Numerics
 
         public void EnsureWritable(int cu, int cuExtra)
         {
-            if (_fWritable && _bits.Length >= cu)
+            if (_fWritable && _bits!.Length >= cu)
             {
                 return;
             }
@@ -350,7 +350,7 @@ namespace System.Numerics
             }
 
             var num = _iuLast - 1;
-            man = NumericHelper.BuildUInt64(_bits[num + 1], _bits[num]);
+            man = NumericHelper.BuildUInt64(_bits![num + 1], _bits[num]);
             exp = num * 32;
             if (num <= 0)
             {
@@ -382,7 +382,7 @@ namespace System.Numerics
         {
             if (reg._iuLast != 0)
             {
-                if (!_fWritable || _bits.Length <= reg._iuLast)
+                if (!_fWritable || _bits!.Length <= reg._iuLast)
                 {
                     _bits = new uint[reg._iuLast + 1 + cuExtra];
                     _fWritable = true;
@@ -453,6 +453,9 @@ namespace System.Numerics
 
                 case 1:
                     return;
+
+                default:
+                    break;
             }
 
             if (_iuLast == 0)
@@ -465,7 +468,7 @@ namespace System.Numerics
             uint num = 0;
             for (var i = 0; i <= _iuLast; i++)
             {
-                num = MulCarry(ref _bits[i], u, num);
+                num = MulCarry(ref _bits![i], u, num);
             }
 
             if (num == 0)
@@ -474,7 +477,7 @@ namespace System.Numerics
             }
 
             SetSizeKeep(_iuLast + 2, 0);
-            _bits[_iuLast] = num;
+            _bits![_iuLast] = num;
         }
 
         public void Mul(ref BigIntegerBuilder regMul)
@@ -497,12 +500,12 @@ namespace System.Numerics
                         break;
                     }
 
-                    var num3 = _bits[num1];
+                    var num3 = _bits![num1];
                     _bits[num1] = 0;
                     uint num4 = 0;
                     for (var i = 0; i <= regMul._iuLast; i++)
                     {
-                        num4 = AddMulCarry(ref _bits[num1 + i], regMul._bits[i], num3, num4);
+                        num4 = AddMulCarry(ref _bits[num1 + i], regMul._bits![i], num3, num4);
                     }
 
                     if (num4 == 0)
@@ -562,16 +565,16 @@ namespace System.Numerics
                 int num1;
                 if (reg1.CuNonZero > reg2.CuNonZero)
                 {
-                    numArray = reg2._bits;
+                    numArray = reg2._bits!;
                     num = reg2._iuLast + 1;
-                    numArray1 = reg1._bits;
+                    numArray1 = reg1._bits!;
                     num1 = reg1._iuLast + 1;
                 }
                 else
                 {
-                    numArray = reg1._bits;
+                    numArray = reg1._bits!;
                     num = reg1._iuLast + 1;
-                    numArray1 = reg2._bits;
+                    numArray1 = reg2._bits!;
                     num1 = reg2._iuLast + 1;
                 }
 
@@ -588,7 +591,7 @@ namespace System.Numerics
                     var num5 = 0;
                     while (num5 < num1)
                     {
-                        num3 = AddMulCarry(ref _bits[num4], num2, numArray1[num5], num3);
+                        num3 = AddMulCarry(ref _bits![num4], num2, numArray1[num5], num3);
                         num5++;
                         num4++;
                     }
@@ -597,7 +600,7 @@ namespace System.Numerics
                     {
                         var num6 = num4;
                         num4 = num6 + 1;
-                        num3 = AddCarry(ref _bits[num6], 0, num3);
+                        num3 = AddCarry(ref _bits![num6], 0, num3);
                     }
                 }
 
@@ -622,7 +625,7 @@ namespace System.Numerics
             if (hi != 0)
             {
                 SetSizeLazy(2);
-                _bits[0] = (uint)uu;
+                _bits![0] = (uint)uu;
                 _bits[1] = hi;
             }
             else
@@ -668,7 +671,7 @@ namespace System.Numerics
 
             var numArray = _bits;
             var flag = cuShift > 0;
-            if (!_fWritable || _bits.Length <= num)
+            if (!_fWritable || _bits!.Length <= num)
             {
                 _bits = new uint[num + 1];
                 _fWritable = true;
@@ -695,12 +698,12 @@ namespace System.Numerics
 
                 while (num1 > 0)
                 {
-                    _bits[num2] = (numArray[num1] << (cbitShift & 31)) | (numArray[num1 - 1] >> ((32 - cbitShift) & 31));
+                    _bits[num2] = (numArray![num1] << (cbitShift & 31)) | (numArray[num1 - 1] >> ((32 - cbitShift) & 31));
                     num1--;
                     num2--;
                 }
 
-                _bits[cuShift] = numArray[0] << (cbitShift & 31);
+                _bits[cuShift] = numArray![0] << (cbitShift & 31);
             }
             else
             {
@@ -769,18 +772,18 @@ namespace System.Numerics
                     var num2 = 0;
                     while (num1 < num)
                     {
-                        _bits[num2] = (numArray[num1 - 1] >> (cbitShift & 31)) | (numArray[num1] << ((32 - cbitShift) & 31));
+                        _bits![num2] = (numArray![num1 - 1] >> (cbitShift & 31)) | (numArray[num1] << ((32 - cbitShift) & 31));
                         num1++;
                         num2++;
                     }
 
-                    _bits[_iuLast] = numArray[num - 1] >> (cbitShift & 31);
+                    _bits![_iuLast] = numArray![num - 1] >> (cbitShift & 31);
                     Trim();
                 }
             }
             else
             {
-                _uSmall = numArray[cuShift] >> (cbitShift & 31);
+                _uSmall = numArray![cuShift] >> (cbitShift & 31);
             }
         }
 
@@ -807,7 +810,7 @@ namespace System.Numerics
             }
 
             EnsureWritable();
-            var num = _bits[0];
+            var num = _bits![0];
             _bits[0] = num - u;
             if (num >= u)
             {
@@ -853,7 +856,7 @@ namespace System.Numerics
             var num1 = reg._iuLast + 1;
             if (_iuLast == reg._iuLast)
             {
-                _iuLast = BigInteger.GetDiffLength(_bits, reg._bits, _iuLast + 1) - 1;
+                _iuLast = BigInteger.GetDiffLength(_bits!, reg._bits!, _iuLast + 1) - 1;
                 if (_iuLast < 0)
                 {
                     _iuLast = 0;
@@ -861,8 +864,8 @@ namespace System.Numerics
                     return;
                 }
 
-                var num2 = _bits[_iuLast];
-                var num3 = reg._bits[_iuLast];
+                var num2 = _bits![_iuLast];
+                var num3 = reg._bits![_iuLast];
                 if (_iuLast == 0)
                 {
                     if (num2 >= num3)
@@ -894,7 +897,7 @@ namespace System.Numerics
             uint num4 = 0;
             for (var i = 0; i < num1; i++)
             {
-                num4 = SubBorrow(ref _bits[i], reg._bits[i], num4);
+                num4 = SubBorrow(ref _bits![i], reg._bits![i], num4);
             }
 
             if (num4 != 0)
@@ -905,7 +908,7 @@ namespace System.Numerics
             Trim();
         }
 
-        internal void GetIntegerParts(int signSrc, out int sign, out uint[] bits)
+        internal void GetIntegerParts(int signSrc, out int sign, out uint[]? bits)
         {
             if (_iuLast == 0)
             {
@@ -931,7 +934,7 @@ namespace System.Numerics
             }
 
             sign = signSrc;
-            var length = _bits.Length - _iuLast - 1;
+            var length = _bits!.Length - _iuLast - 1;
             if (length <= 1)
             {
                 if (length == 0 || _bits[_iuLast + 1] == 0)
@@ -1011,8 +1014,8 @@ namespace System.Numerics
                     var num3 = NumericHelper.CbitHighZero(high2 | high21);
                     if (num3 > 0)
                     {
-                        high2 = (high2 << (num3 & 63)) | (reg1._bits[num1 - 3] >> ((32 - num3) & 31));
-                        high21 = (high21 << (num3 & 63)) | (reg2._bits[num1 - 3] >> ((32 - num3) & 31));
+                        high2 = (high2 << (num3 & 63)) | (reg1._bits![num1 - 3] >> ((32 - num3) & 31));
+                        high21 = (high21 << (num3 & 63)) | (reg2._bits![num1 - 3] >> ((32 - num3) & 31));
                     }
 
                     if (high2 < high21)
@@ -1134,8 +1137,8 @@ namespace System.Numerics
                             var num15 = 0;
                             for (var i = 0; i < num2; i++)
                             {
-                                var num16 = reg1._bits[i];
-                                var num17 = reg2._bits[i];
+                                var num16 = reg1._bits![i];
+                                var num17 = reg2._bits![i];
                                 var num18 = ((long)num16 * num4) - ((long)num17 * num5) + num14;
                                 var num19 = ((long)num17 * num7) - ((long)num16 * num6) + num15;
                                 num14 = (int)(num18 >> 32);
@@ -1190,7 +1193,7 @@ namespace System.Numerics
                     break;
                 }
 
-                if (regDen._bits[num4 - num2] == regNum._bits[num4])
+                if (regDen._bits![num4 - num2] == regNum._bits![num4])
                 {
                     num4--;
                 }
@@ -1215,7 +1218,7 @@ namespace System.Numerics
                 regQuo.SetSizeLazy(num3);
             }
 
-            var num5 = regDen._bits[num1 - 1];
+            var num5 = regDen._bits![num1 - 1];
             var num6 = regDen._bits[num1 - 2];
             var num7 = NumericHelper.CbitHighZero(num5);
             var num8 = 32 - num7;
@@ -1240,9 +1243,8 @@ namespace System.Numerics
                     break;
                 }
 
-                var num = num9 + num1 > regNum._iuLast ? 0 : regNum._bits[num9 + num1];
-                var num11 = num;
-                var num12 = NumericHelper.BuildUInt64(num11, regNum._bits[num9 + num1 - 1]);
+                var num11 = num9 + num1 > regNum._iuLast ? 0 : regNum._bits![num9 + num1];
+                var num12 = NumericHelper.BuildUInt64(num11, regNum._bits![num9 + num1 - 1]);
                 var num13 = regNum._bits[num9 + num1 - 2];
                 if (num7 > 0)
                 {
@@ -1305,7 +1307,7 @@ namespace System.Numerics
 
                 if (num3 != 1)
                 {
-                    regQuo._bits[num9] = (uint)num14;
+                    regQuo._bits![num9] = (uint)num14;
                 }
                 else
                 {
@@ -1342,7 +1344,7 @@ namespace System.Numerics
         {
             for (var i = iuMin; i <= _iuLast; i++)
             {
-                var num = _bits[i];
+                var num = _bits![i];
                 var num1 = num;
                 _bits[i] = num - 1;
                 if (num1 > 0)
@@ -1358,7 +1360,7 @@ namespace System.Numerics
             {
                 if (iu <= _iuLast)
                 {
-                    var num = _bits[iu] + 1;
+                    var num = _bits![iu] + 1;
                     var num1 = num;
                     _bits[iu] = num;
                     if (num1 <= 0)
@@ -1372,7 +1374,7 @@ namespace System.Numerics
                 }
                 else
                 {
-                    if (_iuLast + 1 == _bits.Length)
+                    if (_iuLast + 1 == _bits!.Length)
                     {
                         Array.Resize(ref _bits, _iuLast + 2);
                     }
@@ -1388,10 +1390,10 @@ namespace System.Numerics
         {
             if (cu - 1 <= _iuLast)
             {
-                return NumericHelper.BuildUInt64(_bits[cu - 1], _bits[cu - 2]);
+                return NumericHelper.BuildUInt64(_bits![cu - 1], _bits[cu - 2]);
             }
 
-            return cu - 2 != _iuLast ? 0 : _bits[cu - 2];
+            return cu - 2 != _iuLast ? 0 : _bits![cu - 2];
         }
 
         private void SetSizeClear(int cu)
@@ -1403,7 +1405,7 @@ namespace System.Numerics
                 return;
             }
 
-            if (!_fWritable || _bits.Length < cu)
+            if (!_fWritable || _bits!.Length < cu)
             {
                 _bits = new uint[cu];
                 _fWritable = true;
@@ -1422,14 +1424,14 @@ namespace System.Numerics
             {
                 if (_iuLast > 0)
                 {
-                    _uSmall = _bits[0];
+                    _uSmall = _bits![0];
                 }
 
                 _iuLast = 0;
                 return;
             }
 
-            if (!_fWritable || _bits.Length < cu)
+            if (!_fWritable || _bits!.Length < cu)
             {
                 var numArray = new uint[cu + cuExtra];
                 if (_iuLast != 0)
@@ -1464,7 +1466,7 @@ namespace System.Numerics
                 return;
             }
 
-            if (!_fWritable || _bits.Length < cu)
+            if (!_fWritable || _bits!.Length < cu)
             {
                 _bits = new uint[cu];
                 _fWritable = true;
@@ -1486,7 +1488,7 @@ namespace System.Numerics
             uint num1 = 0;
             for (var i = 0; i < num; i++)
             {
-                num1 = SubRevBorrow(ref _bits[i], reg._bits[i], num1);
+                num1 = SubRevBorrow(ref _bits![i], reg._bits![i], num1);
             }
 
             if (num1 != 0)
@@ -1499,7 +1501,7 @@ namespace System.Numerics
 
         private void Trim()
         {
-            if (_iuLast <= 0 || _bits[_iuLast] != 0)
+            if (_iuLast <= 0 || _bits![_iuLast] != 0)
             {
                 return;
             }

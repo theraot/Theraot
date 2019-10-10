@@ -107,6 +107,4 @@ namespace System.Reflection
     }
 }
 
-
-
 #endif

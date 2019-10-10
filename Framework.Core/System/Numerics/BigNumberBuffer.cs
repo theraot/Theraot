@@ -4,8 +4,13 @@ using System.Text;
 
 namespace System.Numerics
 {
-    internal class BigNumberBuffer
+    internal sealed class BigNumberBuffer
     {
+        private BigNumberBuffer(StringBuilder digits)
+        {
+            Digits = digits;
+        }
+
         public StringBuilder Digits;
 
         public bool Negative { get; set; }
@@ -14,10 +19,7 @@ namespace System.Numerics
 
         public static BigNumberBuffer Create()
         {
-            return new BigNumberBuffer
-            {
-                Digits = new StringBuilder()
-            };
+            return new BigNumberBuffer(new StringBuilder());
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2225 // Operator overloads have named alternates
+
 // Complex.cs: Complex number support
 
 // Author:

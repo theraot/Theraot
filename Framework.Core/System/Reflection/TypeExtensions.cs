@@ -12,8 +12,13 @@ namespace System.Reflection
     public static class TypeExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static ConstructorInfo GetConstructor(this Type type, Type[] types)
+        public static ConstructorInfo? GetConstructor(this Type type, Type[] types)
         {
+            if (types == null)
+            {
+                throw new ArgumentNullException(nameof(types));
+            }
+
             foreach (var constructorInfo in type.GetTypeInfo().DeclaredConstructors)
             {
                 var parameters = constructorInfo.GetParameters();
@@ -103,9 +108,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static EventInfo GetEvent(this Type type, string name, BindingFlags bindingAttr)
+        public static EventInfo? GetEvent(this Type type, string name, BindingFlags bindingAttr)
         {
-            EventInfo found = null;
+            EventInfo? found = null;
             foreach (var eventInfo in type.GetTypeInfo().DeclaredEvents)
             {
                 if (!string.Equals(eventInfo.Name, name, (bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.Default ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
@@ -203,9 +208,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static FieldInfo GetField(this Type type, string name)
+        public static FieldInfo? GetField(this Type type, string name)
         {
-            FieldInfo found = null;
+            FieldInfo? found = null;
             foreach (var fieldInfo in type.GetTypeInfo().DeclaredFields)
             {
                 if (!string.Equals(fieldInfo.Name, name, StringComparison.Ordinal))
@@ -225,9 +230,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static FieldInfo GetField(this Type type, string name, BindingFlags bindingAttr)
+        public static FieldInfo? GetField(this Type type, string name, BindingFlags bindingAttr)
         {
-            FieldInfo found = null;
+            FieldInfo? found = null;
             foreach (var fieldInfo in type.GetTypeInfo().DeclaredFields)
             {
                 if (!string.Equals(fieldInfo.Name, name, (bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.Default ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
@@ -449,8 +454,13 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetMethod(this Type type, string name, Type[] types)
+        public static MethodInfo? GetMethod(this Type type, string name, Type[] types)
         {
+            if (types == null)
+            {
+                throw new ArgumentNullException(nameof(types));
+            }
+
             foreach (var methodInfo in type.GetTypeInfo().DeclaredMethods)
             {
                 if (!string.Equals(methodInfo.Name, name, StringComparison.Ordinal))
@@ -476,9 +486,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetMethod(this Type type, string name)
+        public static MethodInfo? GetMethod(this Type type, string name)
         {
-            MethodInfo found = null;
+            MethodInfo? found = null;
             foreach (var methodInfo in type.GetTypeInfo().DeclaredMethods)
             {
                 if (!string.Equals(methodInfo.Name, name, StringComparison.Ordinal))
@@ -498,9 +508,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingAttr)
+        public static MethodInfo? GetMethod(this Type type, string name, BindingFlags bindingAttr)
         {
-            MethodInfo found = null;
+            MethodInfo? found = null;
             foreach (var methodInfo in type.GetTypeInfo().DeclaredMethods)
             {
                 if (!string.Equals(methodInfo.Name, name, (bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.Default ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
@@ -598,9 +608,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Type GetNestedType(this Type type, string name, BindingFlags bindingAttr)
+        public static Type? GetNestedType(this Type type, string name, BindingFlags bindingAttr)
         {
-            Type found = null;
+            Type? found = null;
             foreach (var nestedType in type.GetTypeInfo().DeclaredNestedTypes)
             {
                 if (!string.Equals(nestedType.Name, name, (bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.Default ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
@@ -740,7 +750,7 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this Type type, string name, Type returnType)
+        public static PropertyInfo? GetProperty(this Type type, string name, Type returnType)
         {
             foreach (var propertyInfo in type.GetTypeInfo().DeclaredProperties)
             {
@@ -761,8 +771,13 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this Type type, string name, Type returnType, Type[] types)
+        public static PropertyInfo? GetProperty(this Type type, string name, Type returnType, Type[] types)
         {
+            if (types == null)
+            {
+                throw new ArgumentNullException(nameof(types));
+            }
+
             foreach (var propertyInfo in type.GetTypeInfo().DeclaredProperties)
             {
                 if (!string.Equals(propertyInfo.Name, name, StringComparison.Ordinal))
@@ -793,9 +808,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this Type type, string name)
+        public static PropertyInfo? GetProperty(this Type type, string name)
         {
-            PropertyInfo found = null;
+            PropertyInfo? found = null;
             foreach (var propertyInfo in type.GetTypeInfo().DeclaredProperties)
             {
                 if (!string.Equals(propertyInfo.Name, name, StringComparison.Ordinal))
@@ -815,9 +830,9 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingAttr)
+        public static PropertyInfo? GetProperty(this Type type, string name, BindingFlags bindingAttr)
         {
-            PropertyInfo found = null;
+            PropertyInfo? found = null;
             foreach (var propertyInfo in type.GetTypeInfo().DeclaredProperties)
             {
                 if (!string.Equals(propertyInfo.Name, name, (bindingAttr & BindingFlags.IgnoreCase) == BindingFlags.Default ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
@@ -875,6 +890,11 @@ namespace System.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool IsInstanceOfType(this Type type, object o)
         {
+            if (o == null)
+            {
+                throw new ArgumentNullException(nameof(o));
+            }
+
             return type.GetTypeInfo().IsAssignableFrom(o.GetType().GetTypeInfo());
         }
 
