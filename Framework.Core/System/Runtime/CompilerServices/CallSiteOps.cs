@@ -147,6 +147,10 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(site));
             }
+            if (site.Binder == null)
+            {
+                throw new ArgumentException($"{nameof(site.Binder)} is null", nameof(site));
+            }
 
             return site.Binder.GetRuleCache<T>();
         }
@@ -159,7 +163,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>An array of dynamic binding rules.</returns>
         [Obsolete("do not use this method", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static T[] GetRules<T>(CallSite<T> site)
+        public static T[]? GetRules<T>(CallSite<T> site)
             where T : class
         {
             if (site == null)

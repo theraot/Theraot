@@ -11,7 +11,7 @@ namespace System.Numerics
             Digits = digits;
         }
 
-        public StringBuilder Digits;
+        public readonly StringBuilder Digits;
 
         public bool Negative { get; set; }
 

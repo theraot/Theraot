@@ -26,7 +26,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     A MethodInfo for the Exception.PrepForRemoting method.
         /// </summary>
-        private static readonly MethodInfo _prepForRemoting = GetPrepForRemotingMethodInfo();
+        private static readonly MethodInfo? _prepForRemoting = GetPrepForRemotingMethodInfo();
 
         /// <summary>
         ///     The task being awaited.

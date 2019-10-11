@@ -15,7 +15,7 @@ namespace System.Diagnostics.Contracts
         internal Exception? ThrownDuringHandler;
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public ContractFailedEventArgs(ContractFailureKind failureKind, string message, string condition, Exception originalException)
+        public ContractFailedEventArgs(ContractFailureKind failureKind, string message, string? condition, Exception? originalException)
         {
             Contract.Requires(originalException == null || failureKind == ContractFailureKind.PostconditionOnException);
             FailureKind = failureKind;
@@ -24,7 +24,7 @@ namespace System.Diagnostics.Contracts
             OriginalException = originalException;
         }
 
-        public string Condition { get; }
+        public string? Condition { get; }
 
         public ContractFailureKind FailureKind { get; }
 

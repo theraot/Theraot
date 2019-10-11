@@ -46,9 +46,9 @@ namespace System.Runtime.CompilerServices
 
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string? userMessage, string? conditionText, Exception? innerException)
+        public static string? RaiseContractFailedEvent(ContractFailureKind failureKind, string? userMessage, string? conditionText, Exception? innerException)
         {
-            var resultFailureMessage = "Contract failed"; // default in case implementation does not assign anything.
+            string? resultFailureMessage = "Contract failed"; // default in case implementation does not assign anything.
             RaiseContractFailedEventImplementation(failureKind, userMessage, conditionText, innerException, ref resultFailureMessage);
             return resultFailureMessage;
         }
@@ -61,8 +61,7 @@ namespace System.Runtime.CompilerServices
         }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        private static string GetDisplayMessage(ContractFailureKind failureKind, string userMessage,
-            string conditionText)
+        private static string GetDisplayMessage(ContractFailureKind failureKind, string? userMessage, string? conditionText)
         {
             // Well-formatted English messages will take one of four forms.  A sentence ending in
             // either a period or a colon, the condition string, then the message tacked
@@ -73,7 +72,7 @@ namespace System.Runtime.CompilerServices
             var failureMessage = ContractHelperEx.GetFailureMessage(failureKind, conditionText);
 
             // Now add in the user message, if present.
-            if (!string.IsNullOrEmpty(userMessage))
+            if (!(userMessage == null || string.IsNullOrEmpty(userMessage)))
             {
                 return failureMessage + "  " + userMessage;
             }
@@ -83,7 +82,7 @@ namespace System.Runtime.CompilerServices
 
         [DebuggerNonUserCode]
         [SecuritySafeCritical]
-        private static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string? userMessage, string? conditionText, Exception? innerException, ref string resultFailureMessage)
+        private static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string? userMessage, string? conditionText, Exception? innerException, ref string? resultFailureMessage)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {
@@ -92,9 +91,9 @@ namespace System.Runtime.CompilerServices
 
             Contract.EndContractBlock();
 
-            string returnValue;
+            string? returnValue;
             var displayMessage = "contract failed."; // Incomplete, but in case of OOM during resource lookup...
-            ContractFailedEventArgs eventArgs = null; // In case of OOM.
+            ContractFailedEventArgs? eventArgs = null; // In case of OOM.
             RuntimeHelpers.PrepareConstrainedRegions();
             try
             {

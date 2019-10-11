@@ -27,6 +27,10 @@ namespace System.Runtime.CompilerServices
         /// </returns>
         public static bool IsInternalFrame(MethodBase mb)
         {
+            if (mb == null)
+            {
+                throw new ArgumentNullException(nameof(mb));
+            }
             // All the dynamic methods created for DLR rules have a special name.
             // We also check if the method has a different type than the known
             // non-static method. If it does, it is a dynamic method.

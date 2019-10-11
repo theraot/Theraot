@@ -15,7 +15,7 @@ namespace System.Diagnostics.Contracts.Internal
     {
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
+        public static string? RaiseContractFailedEvent(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
         {
             return Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent(failureKind, userMessage, conditionText, innerException);
         }

@@ -30,10 +30,10 @@ namespace System.Runtime.CompilerServices
             return GetFailureMessage(failureKind, "");
         }
 
-        internal static string GetFailureMessage(ContractFailureKind failureKind, string conditionText)
+        internal static string GetFailureMessage(ContractFailureKind failureKind, string? conditionText)
         {
             string result;
-            var withCondition = !string.IsNullOrEmpty(conditionText);
+            var withCondition = !(conditionText == null || string.IsNullOrEmpty(conditionText));
             switch (failureKind)
             {
                 case ContractFailureKind.Assert:

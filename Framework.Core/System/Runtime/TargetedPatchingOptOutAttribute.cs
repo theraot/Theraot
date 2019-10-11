@@ -12,10 +12,10 @@ namespace System.Runtime
     public sealed class TargetedPatchingOptOutAttribute : Attribute
     {
         /// <inheritdoc />
-        /// <summary>Initializes a new instance of the <see cref="T:System.Runtime.TargetedPatchingOptOutAttribute" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="System.Runtime.TargetedPatchingOptOutAttribute" /> class.</summary>
         /// <param name="reason">
         ///     The reason why the method to which the
-        ///     <see cref="T:System.Runtime.TargetedPatchingOptOutAttribute" /> attribute is applied is considered to be eligible
+        ///     <see cref="System.Runtime.TargetedPatchingOptOutAttribute" /> attribute is applied is considered to be eligible
         ///     for inlining across Native Image Generator (NGen) images.
         /// </param>
         public TargetedPatchingOptOutAttribute(string reason)

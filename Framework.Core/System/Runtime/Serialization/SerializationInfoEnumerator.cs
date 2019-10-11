@@ -12,7 +12,7 @@ namespace System.Runtime.Serialization
 {
     public struct SerializationEntry
     {
-        internal SerializationEntry(string entryName, object entryValue, Type entryType)
+        internal SerializationEntry(string entryName, object? entryValue, Type entryType)
         {
             Name = entryName;
             Value = entryValue;
@@ -22,23 +22,20 @@ namespace System.Runtime.Serialization
         public string Name { get; }
         public Type ObjectType { get; }
 
-        public object Value { get; }
+        public object? Value { get; }
     }
 
     public sealed class SerializationInfoEnumerator : IEnumerator
     {
         private bool _current;
         private int _currentItem;
-        private readonly object[] _data;
+        private readonly object?[] _data;
         private readonly string[] _members;
         private readonly int _numItems;
         private readonly Type[] _types;
 
-        internal SerializationInfoEnumerator(string[] members, object[] info, Type[] types, int numItems)
+        internal SerializationInfoEnumerator(string[] members, object?[] info, Type[] types, int numItems)
         {
-            Debug.Assert(members != null, "[SerializationInfoEnumerator.ctor]members!=null");
-            Debug.Assert(info != null, "[SerializationInfoEnumerator.ctor]info!=null");
-            Debug.Assert(types != null, "[SerializationInfoEnumerator.ctor]types!=null");
             Debug.Assert(numItems >= 0, "[SerializationInfoEnumerator.ctor]numItems>=0");
             Debug.Assert(members.Length >= numItems, "[SerializationInfoEnumerator.ctor]members.Length>=numItems");
             Debug.Assert(info.Length >= numItems, "[SerializationInfoEnumerator.ctor]info.Length>=numItems");
@@ -91,7 +88,7 @@ namespace System.Runtime.Serialization
             }
         }
 
-        public object Value
+        public object? Value
         {
             get
             {

@@ -54,7 +54,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     Cache of CallSite constructors for a given delegate type.
         /// </summary>
-        private static volatile CacheDict<Type, Func<CallSiteBinder, CallSite>> _siteCtors;
+        private static volatile CacheDict<Type, Func<CallSiteBinder, CallSite>>? _siteCtors;
 
         /// <summary>
         ///     Used by Matchmaker sites to indicate rule match.
@@ -62,7 +62,7 @@ namespace System.Runtime.CompilerServices
         internal bool Match;
 
         // only CallSite<T> derives from this
-        internal CallSite(CallSiteBinder binder)
+        internal CallSite(CallSiteBinder? binder)
         {
             Binder = binder;
         }
@@ -70,7 +70,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     Class responsible for binding dynamic operations on the dynamic site.
         /// </summary>
-        public CallSiteBinder Binder { get; }
+        public CallSiteBinder? Binder { get; }
 
         /// <summary>
         ///     Creates a CallSite with the given delegate type and binder.
@@ -126,17 +126,17 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     an instance of matchmaker site to opportunistically reuse when site is polymorphic
         /// </summary>
-        internal CallSite CachedMatchmaker;
+        internal CallSite? CachedMatchmaker;
 
         /// <summary>
         ///     The Level 1 cache - a history of the dynamic site.
         /// </summary>
-        internal T[] Rules;
+        internal T[]? Rules;
 
         /// <summary>
         ///     The Level 0 cache - a delegate specialized based on the site history.
         /// </summary>
-        public T Target;
+        public T? Target;
 
         private CallSite()
             : base(null)
@@ -216,7 +216,7 @@ namespace System.Runtime.CompilerServices
             }
 
             var rules = Rules;
-            var rule = rules[i];
+            var rule = rules![i];
 
             rules[i] = rules[i - 1];
             rules[i - 1] = rules[i - 2];

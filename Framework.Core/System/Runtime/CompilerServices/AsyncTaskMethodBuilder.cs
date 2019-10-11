@@ -4,6 +4,8 @@
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
 
+#pragma warning disable CS8653 // A default expression introduces a null value when 'T' is a non-nullable reference type.
+
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Security;

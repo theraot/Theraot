@@ -24,7 +24,7 @@ namespace System.Runtime.Serialization
         private string _rootTypeAssemblyName;
         private string _rootTypeName;
         private Type[] _types;
-        private object[] _values;
+        private object?[] _values;
 
         [CLSCompliant(false)]
         public SerializationInfo(Type type, IFormatterConverter converter)
@@ -182,37 +182,37 @@ namespace System.Runtime.Serialization
         public bool GetBoolean(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(bool)) ? (bool)value : _converter.ToBoolean(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(bool)) ? (bool)value : _converter.ToBoolean(value);
         }
 
         public byte GetByte(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(byte)) ? (byte)value : _converter.ToByte(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(byte)) ? (byte)value : _converter.ToByte(value);
         }
 
         public char GetChar(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(char)) ? (char)value : _converter.ToChar(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(char)) ? (char)value : _converter.ToChar(value);
         }
 
         public DateTime GetDateTime(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(DateTime)) ? (DateTime)value : _converter.ToDateTime(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(DateTime)) ? (DateTime)value : _converter.ToDateTime(value);
         }
 
         public decimal GetDecimal(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(decimal)) ? (decimal)value : _converter.ToDecimal(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(decimal)) ? (decimal)value : _converter.ToDecimal(value);
         }
 
         public double GetDouble(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(double)) ? (double)value : _converter.ToDouble(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(double)) ? (double)value : _converter.ToDouble(value);
         }
 
         public SerializationInfoEnumerator GetEnumerator() => new SerializationInfoEnumerator(_names, _values, _types, MemberCount);
@@ -220,62 +220,62 @@ namespace System.Runtime.Serialization
         public short GetInt16(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(short)) ? (short)value : _converter.ToInt16(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(short)) ? (short)value : _converter.ToInt16(value);
         }
 
         public int GetInt32(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(int)) ? (int)value : _converter.ToInt32(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(int)) ? (int)value : _converter.ToInt32(value);
         }
 
         public long GetInt64(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(long)) ? (long)value : _converter.ToInt64(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(long)) ? (long)value : _converter.ToInt64(value);
         }
 
         [CLSCompliant(false)]
         public sbyte GetSByte(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(sbyte)) ? (sbyte)value : _converter.ToSByte(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(sbyte)) ? (sbyte)value : _converter.ToSByte(value);
         }
 
         public float GetSingle(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(float)) ? (float)value : _converter.ToSingle(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(float)) ? (float)value : _converter.ToSingle(value);
         }
 
-        public string GetString(string name)
+        public string? GetString(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(string)) || value == null ? (string)value : _converter.ToString(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(string)) || value == null ? null : _converter.ToString(value);
         }
 
         [CLSCompliant(false)]
         public ushort GetUInt16(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(ushort)) ? (ushort)value : _converter.ToUInt16(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(ushort)) ? (ushort)value : _converter.ToUInt16(value);
         }
 
         [CLSCompliant(false)]
         public uint GetUInt32(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(uint)) ? (uint)value : _converter.ToUInt32(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(uint)) ? (uint)value : _converter.ToUInt32(value);
         }
 
         [CLSCompliant(false)]
         public ulong GetUInt64(string name)
         {
             var value = GetElement(name, out var foundType);
-            return ReferenceEquals(foundType, typeof(ulong)) ? (ulong)value : _converter.ToUInt64(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(ulong)) ? (ulong)value : _converter.ToUInt64(value);
         }
 
-        public object GetValue(string name, Type type)
+        public object? GetValue(string name, Type type)
         {
             if (type == null)
             {
@@ -294,7 +294,6 @@ namespace System.Runtime.Serialization
                 return value;
             }
 
-            Debug.Assert(_converter != null, "[SerializationInfo.GetValue]_converter!=null");
             return _converter.Convert(value, type);
         }
 
@@ -338,9 +337,12 @@ namespace System.Runtime.Serialization
             MemberCount++;
         }
 
-        internal object GetValueNoThrow(string name, Type type)
+        internal object? GetValueNoThrow(string name, Type type)
         {
-            Debug.Assert(type != null, "[SerializationInfo.GetValue]type ==null");
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
             Debug.Assert(type.GetUnderlyingSystemType() == type, "[SerializationInfo.GetValue]type is not a runtime type");
 
             var value = GetElementNoThrow(name, out var foundType);
@@ -353,8 +355,6 @@ namespace System.Runtime.Serialization
             {
                 return value;
             }
-
-            Debug.Assert(_converter != null, "[SerializationInfo.GetValue]_converter!=null");
 
             return _converter.Convert(value, type);
         }
@@ -384,10 +384,6 @@ namespace System.Runtime.Serialization
         /// <param name="type"> The type of the data being added.</param>
         internal void UpdateValue(string name, object value, Type type)
         {
-            Debug.Assert(name != null, "[SerializationInfo.UpdateValue]name!=null");
-            Debug.Assert(value != null, "[SerializationInfo.UpdateValue]value!=null");
-            Debug.Assert(type != null, "[SerializationInfo.UpdateValue]type!=null");
-
             var index = FindElement(name);
             if (index < 0)
             {
@@ -448,7 +444,7 @@ namespace System.Runtime.Serialization
         /// <param name="name"> The name of the element to find.</param>
         /// <param name="foundType"> The type of the element associated with the given name.</param>
         /// <returns>The value of the element at the position associated with name.</returns>
-        private object GetElement(string name, out Type foundType)
+        private object? GetElement(string name, out Type foundType)
         {
             var index = FindElement(name);
             if (index == -1)
@@ -464,7 +460,7 @@ namespace System.Runtime.Serialization
             return _values[index];
         }
 
-        private object GetElementNoThrow(string name, out Type foundType)
+        private object? GetElementNoThrow(string name, out Type? foundType)
         {
             var index = FindElement(name);
             if (index == -1)

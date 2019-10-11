@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Threading;
 using Theraot;
+using Theraot.Reflection;
 
 namespace System.Runtime.CompilerServices
 {
@@ -21,7 +22,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     The Level 2 cache - all rules produced for the same binder.
         /// </summary>
-        internal Dictionary<Type, object> Cache;
+        internal Dictionary<Type, object>? Cache;
 
         /// <summary>
         ///     Gets a label that can be used to cause the binding to be updated. It
@@ -57,23 +58,21 @@ namespace System.Runtime.CompilerServices
         /// <param name="site">The CallSite the bind is being performed for.</param>
         /// <param name="args">The arguments for the binder.</param>
         /// <returns>A new delegate which replaces the CallSite Target.</returns>
-        public virtual T BindDelegate<T>(CallSite<T> site, object[] args) where T : class
+        public virtual T? BindDelegate<T>(CallSite<T> site, object[] args)
+            where T : class
         {
             No.Op(site);
             No.Op(args);
             return null;
         }
 
-        internal RuleCache<T> GetRuleCache<T>() where T : class
+        internal RuleCache<T> GetRuleCache<T>()
+            where T : class
         {
             // make sure we have cache.
-            if (Cache == null)
-            {
-                Interlocked.CompareExchange(ref Cache, new Dictionary<Type, object>(), null);
-            }
+            var cache = TypeHelper.LazyCreateNew(ref Cache);
 
             object ruleCache;
-            var cache = Cache;
             lock (cache)
             {
                 if (!cache.TryGetValue(typeof(T), out ruleCache))
@@ -82,9 +81,7 @@ namespace System.Runtime.CompilerServices
                 }
             }
 
-            var result = ruleCache as RuleCache<T>;
-            Debug.Assert(result != null);
-            return result;
+            return (RuleCache<T>)ruleCache;
         }
 
         /// <summary>

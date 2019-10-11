@@ -10,7 +10,7 @@ namespace System.Runtime.Versioning
             FrameworkName = frameworkName ?? throw new ArgumentNullException(nameof(frameworkName));
         }
 
-        public string FrameworkDisplayName { get; set; }
+        public string? FrameworkDisplayName { get; set; }
 
         public string FrameworkName { get; }
     }

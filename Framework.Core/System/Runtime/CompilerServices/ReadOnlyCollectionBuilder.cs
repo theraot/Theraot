@@ -9,6 +9,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Theraot.Reflection;
 
 namespace System.Runtime.CompilerServices
 {
@@ -53,26 +54,27 @@ namespace System.Runtime.CompilerServices
         /// <param name="collection">The collection whose elements to copy to the builder.</param>
         public ReadOnlyCollectionBuilder(IEnumerable<T> collection)
         {
-            switch (collection)
+            if (collection == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(collection));
-                case ICollection<T> c:
-                    var count = c.Count;
-                    _items = new T[count];
-                    c.CopyTo(_items, 0);
-                    Count = count;
-                    break;
-                default:
-                    Count = 0;
-                    _items = new T[_defaultCapacity];
+                throw new ArgumentNullException(nameof(collection));
+            }
 
-                    foreach (var item in collection)
-                    {
-                        Add(item);
-                    }
+            if (collection is ICollection<T> c)
+            {
+                var count = c.Count;
+                _items = new T[count];
+                c.CopyTo(_items, 0);
+                Count = count;
+            }
+            else
+            {
+                Count = 0;
+                _items = new T[_defaultCapacity];
 
-                    break;
+                foreach (var item in collection)
+                {
+                    Add(item);
+                }
             }
         }
 
@@ -118,16 +120,19 @@ namespace System.Runtime.CompilerServices
 
         object ICollection.SyncRoot => this;
 
-        object IList.this[int index]
+        object? IList.this[int index]
         {
             get => this[index];
             set
             {
-                ValidateNullValue(value, nameof(value));
-
+                if (value == null && !typeof(T).CanBeNull())
+                {
+                    throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+                }
+                var typedValue = value == null ? default : (T)value;
                 try
                 {
-                    this[index] = (T)value;
+                    this[index] = typedValue;
                 }
                 catch (InvalidCastException)
                 {
@@ -138,10 +143,14 @@ namespace System.Runtime.CompilerServices
 
         int IList.Add(object value)
         {
-            ValidateNullValue(value, nameof(value));
+            if (value == null && !typeof(T).CanBeNull())
+            {
+                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+            var typedValue = value == null ? default : (T)value;
             try
             {
-                Add((T)value);
+                Add(typedValue);
             }
             catch (InvalidCastException)
             {
@@ -183,10 +192,14 @@ namespace System.Runtime.CompilerServices
 
         void IList.Insert(int index, object value)
         {
-            ValidateNullValue(value, nameof(value));
+            if (value == null && !typeof(T).CanBeNull())
+            {
+                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+            var typedValue = value == null ? default : (T)value;
             try
             {
-                Insert(index, (T)value);
+                Insert(index, typedValue);
             }
             catch (InvalidCastException)
             {
@@ -203,7 +216,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Returns number of elements in the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     Returns number of elements in the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         public int Count { get; private set; }
 
@@ -240,11 +253,11 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Adds an item to the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     Adds an item to the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         /// <param name="item">
         ///     The object to add to the
-        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         public void Add(T item)
         {
@@ -258,7 +271,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Removes all items from the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     Removes all items from the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         public void Clear()
         {
@@ -273,15 +286,15 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Determines whether the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> contains a
+        ///     Determines whether the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> contains a
         ///     specific value
         /// </summary>
         /// <param name="item">
         ///     the object to locate in the
-        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         /// <returns>
-        ///     true if item is found in the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />;
+        ///     true if item is found in the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />;
         ///     otherwise, false.
         /// </returns>
         public bool Contains(T item)
@@ -313,13 +326,13 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Copies the elements of the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> to an
-        ///     <see cref="T:System.Array" />,
-        ///     starting at particular <see cref="T:System.Array" /> index.
+        ///     Copies the elements of the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> to an
+        ///     <see cref="System.Array" />,
+        ///     starting at particular <see cref="System.Array" /> index.
         /// </summary>
         /// <param name="array">
-        ///     The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied
-        ///     from <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     The one-dimensional <see cref="System.Array" /> that is the destination of the elements copied
+        ///     from <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex)
@@ -332,7 +345,7 @@ namespace System.Runtime.CompilerServices
         ///     Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        ///     A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the
+        ///     A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
@@ -353,13 +366,13 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Inserts an item to the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> at the
+        ///     Inserts an item to the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> at the
         ///     specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which item should be inserted.</param>
         /// <param name="item">
         ///     The object to insert into the
-        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         public void Insert(int index, T item)
         {
@@ -386,17 +399,17 @@ namespace System.Runtime.CompilerServices
         /// <inheritdoc />
         /// <summary>
         ///     Removes the first occurrence of a specific object from the
-        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         /// <param name="item">
         ///     The object to remove from the
-        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         /// <returns>
         ///     true if item was successfully removed from the
-        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />;
+        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />;
         ///     otherwise, false. This method also returns false if item is not found in the original
-        ///     <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" />.
+        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
         /// </returns>
         public bool Remove(T item)
         {
@@ -411,7 +424,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Removes the <see cref="T:System.Runtime.CompilerServices.ReadOnlyCollectionBuilder`1" /> item at the specified
+        ///     Removes the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> item at the specified
         ///     index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
@@ -428,7 +441,7 @@ namespace System.Runtime.CompilerServices
                 Array.Copy(_items, index + 1, _items, index, Count - index);
             }
 
-            _items[Count] = default;
+            _items[Count] = default!;
             _version++;
         }
 
@@ -498,15 +511,7 @@ namespace System.Runtime.CompilerServices
 
         private static bool IsCompatibleObject(object value)
         {
-            return value is T || (value == null && default(T) == null);
-        }
-
-        private static void ValidateNullValue(object value, string argument)
-        {
-            if (value == null && default(T) != null)
-            {
-                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", argument);
-            }
+            return value is T || (value == null && typeof(T).CanBeNull());
         }
 
         private void EnsureCapacity(int min)
@@ -541,12 +546,12 @@ namespace System.Runtime.CompilerServices
                 _builder = builder;
                 _version = builder._version;
                 _index = 0;
-                Current = default;
+                Current = default!;
             }
 
             public T Current { get; private set; }
 
-            object IEnumerator.Current
+            object? IEnumerator.Current
             {
                 get
                 {
@@ -578,7 +583,7 @@ namespace System.Runtime.CompilerServices
                 }
 
                 _index = _builder.Count + 1;
-                Current = default;
+                Current = default!;
                 return false;
             }
 
@@ -590,7 +595,7 @@ namespace System.Runtime.CompilerServices
                 }
 
                 _index = 0;
-                Current = default;
+                Current = default!;
             }
         }
     }

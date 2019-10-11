@@ -634,7 +634,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var lvalue = (MemberExpression)node.Left;
 
-            var cr = new ChildRewriter(this, stack, 2);
+            var cr = new NullAwareChildRewriter(this, stack, 2);
 
             // If there's an instance, it executes on the stack in current state
             // and rest is executed on non-empty stack.
@@ -655,7 +655,7 @@ namespace System.Linq.Expressions.Compiler
                     new AssignBinaryExpression
                     (
                         MemberExpression.Make(cr[0]!, lvalue.Member),
-                        cr[1]
+                        cr[1]!
                     )
                 );
             }
@@ -668,7 +668,7 @@ namespace System.Linq.Expressions.Compiler
             var node = (MemberExpression)expr;
 
             // Expression is emitted on top of the stack in current state.
-            var expression = RewriteExpression(node.Expression, stack);
+            var expression = RewriteExpression(node.Expression!, stack);
 
             switch (expression.Action)
             {
@@ -678,7 +678,7 @@ namespace System.Linq.Expressions.Compiler
                 case RewriteAction.SpillStack when node.Member is PropertyInfo:
                     // Only need to validate properties because reading a field
                     // is always side-effect free.
-                    RequireNotRefInstance(node.Expression);
+                    RequireNotRefInstance(node.Expression!);
                     break;
 
                 default:
@@ -974,10 +974,10 @@ namespace System.Linq.Expressions.Compiler
 
             var action = ProcessHandlers(body, ref handlers);
 
-            var fault = RewriteExpression(node.Fault, Stack.Empty);
+            var fault = RewriteExpression(node.Fault!, Stack.Empty);
             action |= fault.Action;
 
-            var @finally = RewriteExpression(node.Finally, Stack.Empty);
+            var @finally = RewriteExpression(node.Finally!, Stack.Empty);
             action |= @finally.Action;
 
             // If the stack is initially not empty, rewrite to spill the stack

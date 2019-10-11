@@ -2781,7 +2781,7 @@ namespace System.Linq.Expressions.Interpreter
             var startOfFault = Instructions.MakeLabel();
             Instructions.MarkLabel(startOfFault);
             Instructions.EmitEnterFault(startOfFault);
-            CompileAsVoid(expr.Fault);
+            CompileAsVoid(expr.Fault!);
             Instructions.EmitLeaveFault();
             enterTryInstr.SetTryHandler(new TryFaultHandler(tryStart, tryEnd, startOfFault.TargetIndex, Instructions.Count));
 
