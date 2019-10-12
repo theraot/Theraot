@@ -17,7 +17,7 @@ namespace System.Security.Permissions
 
         public bool Unrestricted { get; set; }
 
-        public abstract IPermission CreatePermission();
+        public abstract IPermission? CreatePermission();
     }
 
     [Serializable]
@@ -150,11 +150,11 @@ namespace System.Security.Permissions
         public SecurityPermissionFlag Flags { get; set; }
         public override IPermission Copy() { return this; }
         public override void FromXml(SecurityElement securityElement) { }
-        public override IPermission Intersect(IPermission target) { return default; }
+        public override IPermission? Intersect(IPermission target) { return default; }
         public override bool IsSubsetOf(IPermission target) { return false; }
         public bool IsUnrestricted() { return false; }
-        public override SecurityElement ToXml() { return default; }
-        public override IPermission Union(IPermission target) { return default; }
+        public override SecurityElement? ToXml() { return default; }
+        public override IPermission? Union(IPermission target) { return default; }
     }
 }
 

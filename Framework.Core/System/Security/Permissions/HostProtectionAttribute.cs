@@ -33,7 +33,7 @@ namespace System.Security.Permissions
         public bool Synchronization { get; set; }
         public bool UI { get; set; }
 
-        public override IPermission CreatePermission()
+        public override IPermission? CreatePermission()
         {
             return default;
         }

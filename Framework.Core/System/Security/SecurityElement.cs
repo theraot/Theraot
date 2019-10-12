@@ -31,10 +31,10 @@ namespace System.Security
         private static readonly char[] _tagIllegalCharacters = { ' ', '<', '>' };
         private static readonly char[] _textIllegalCharacters = { '<', '>' };
         private static readonly char[] _valueIllegalCharacters = { '<', '>', '\"' };
-        private ArrayList _attributes;
-        private ArrayList _children;
+        private ArrayList? _attributes;
+        private ArrayList? _children;
         private string _tag;
-        private string _text;
+        private string? _text;
 
         public SecurityElement(string tag)
         {
@@ -52,7 +52,7 @@ namespace System.Security
             _text = null;
         }
 
-        public SecurityElement(string tag, string text)
+        public SecurityElement(string? tag, string? text)
         {
             if (tag == null)
             {
@@ -73,14 +73,7 @@ namespace System.Security
             _text = text;
         }
 
-        //-------------------------- Constructors ---------------------------
-
-        internal SecurityElement()
-        {
-            // Empty
-        }
-
-        public Hashtable Attributes
+        public Hashtable? Attributes
         {
             get
             {
@@ -137,7 +130,7 @@ namespace System.Security
             }
         }
 
-        public ArrayList Children
+        public ArrayList? Children
         {
             get
             {
@@ -154,8 +147,6 @@ namespace System.Security
                 _children = value;
             }
         }
-
-        //-------------------------- Properties -----------------------------
 
         public string Tag
         {
@@ -177,7 +168,7 @@ namespace System.Security
             }
         }
 
-        public string Text
+        public string? Text
         {
             get => Unescape(_text);
 
@@ -199,14 +190,14 @@ namespace System.Security
             }
         }
 
-        public static string Escape(string str)
+        public static string? Escape(string? str)
         {
             if (str == null)
             {
                 return null;
             }
 
-            StringBuilder sb = null;
+            StringBuilder? sb = null;
 
             var strLen = str.Length;
             var newIndex = 0; // Pointer into the string that indicates the start index of the "remaining" string (that still needs to be processed).
@@ -235,7 +226,7 @@ namespace System.Security
             // no normal exit is possible
         }
 
-        public static SecurityElement FromString(string xml)
+        public static SecurityElement? FromString(string xml)
         {
             if (xml == null)
             {
@@ -315,7 +306,7 @@ namespace System.Security
             (_children ?? (_children = new ArrayList(_childrenTypical))).Add(child);
         }
 
-        public string Attribute(string name)
+        public string? Attribute(string name)
         {
             if (name == null)
             {
@@ -355,13 +346,11 @@ namespace System.Security
 
         public SecurityElement Copy()
         {
-            var element = new SecurityElement(_tag, _text)
+            return new SecurityElement(_tag, _text)
             {
                 _children = _children == null ? null : new ArrayList(_children),
                 _attributes = _attributes == null ? null : new ArrayList(_attributes)
             };
-
-            return element;
         }
 
         public bool Equal(SecurityElement other)
@@ -452,7 +441,7 @@ namespace System.Security
             return true;
         }
 
-        public SecurityElement SearchForChildByTag(string tag)
+        public SecurityElement? SearchForChildByTag(string tag)
         {
             // Go through all the children and see if we can
             // find the one are are asked for (matching tags)
@@ -478,7 +467,7 @@ namespace System.Security
             return null;
         }
 
-        public string SearchForTextOfTag(string tag)
+        public string? SearchForTextOfTag(string tag)
         {
             // Search on each child in order and each
             // child's child, depth-first
@@ -499,7 +488,8 @@ namespace System.Security
                 return null;
             }
 
-            foreach (SecurityElement child in Children)
+            ConvertSecurityElementFactories();
+            foreach (SecurityElement child in _children)
             {
                 var text = child.SearchForTextOfTag(tag);
                 if (text != null)
@@ -518,8 +508,6 @@ namespace System.Security
 
             return sb.ToString();
         }
-
-        //-------------------------- Public Methods -----------------------------
 
         internal void AddAttributeSafe(string name, string value)
         {
@@ -610,14 +598,14 @@ namespace System.Security
             return str[index].ToString();
         }
 
-        private static string Unescape(string str)
+        private static string? Unescape(string? str)
         {
             if (str == null)
             {
                 return null;
             }
 
-            StringBuilder sb = null;
+            StringBuilder? sb = null;
 
             var strLen = str.Length;
             var newIndex = 0; // Pointer into the string that indicates the start index of the remaining string (that still needs to be processed).
@@ -642,7 +630,7 @@ namespace System.Security
             }
         }
 
-        string ISecurityElementFactory.Attribute(string attributeName)
+        string? ISecurityElementFactory.Attribute(string attributeName)
         {
             return Attribute(attributeName);
         }
@@ -651,8 +639,6 @@ namespace System.Security
         {
             return Copy();
         }
-
-        //--------------- ISecurityElementFactory implementation -----------------
 
         SecurityElement ISecurityElementFactory.CreateSecurityElement()
         {
@@ -664,7 +650,7 @@ namespace System.Security
             return Tag;
         }
 
-        private void ToString(object obj, Action<object, string> write)
+        private void ToString(object obj, Action<object, string?> write)
         {
             write(obj, "<");
             write(obj, _tag);

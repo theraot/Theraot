@@ -10,7 +10,7 @@ namespace System.Security
     [Runtime.InteropServices.ComVisible(true)]
     public interface ISecurityEncodable
     {
-        SecurityElement ToXml();
+        SecurityElement? ToXml();
 
         void FromXml(SecurityElement e);
     }
@@ -55,7 +55,7 @@ namespace System.Security
 
         public abstract void FromXml(SecurityElement securityElement);
 
-        public abstract IPermission Intersect(IPermission target);
+        public abstract IPermission? Intersect(IPermission target);
 
         public abstract bool IsSubsetOf(IPermission target);
 
@@ -64,9 +64,9 @@ namespace System.Security
             throw new PlatformNotSupportedException();
         }
 
-        public abstract SecurityElement ToXml();
+        public abstract SecurityElement? ToXml();
 
-        public virtual IPermission Union(IPermission target)
+        public virtual IPermission? Union(IPermission target)
         {
             return null;
         }
@@ -80,7 +80,7 @@ namespace System.Security
 
         string GetTag();
 
-        string Attribute(string attributeName);
+        string? Attribute(string attributeName);
     }
 }
 

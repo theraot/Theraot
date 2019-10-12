@@ -241,7 +241,7 @@ namespace System.Collections
 
         // Returns an IList that contains count copies of value.
         //
-        public static ArrayList Repeat(object value, int count)
+        public static ArrayList Repeat(object? value, int count)
         {
             if (count < 0)
             {
@@ -285,7 +285,7 @@ namespace System.Collections
         // increased by one. If required, the capacity of the list is doubled
         // before adding the new element.
         //
-        public virtual int Add(object value)
+        public virtual int Add(object? value)
         {
             if (_size == _items.Length)
             {
@@ -326,7 +326,7 @@ namespace System.Collections
         // The method uses the Array.BinarySearch method to perform the
         // search.
         //
-        public virtual int BinarySearch(int index, int count, object value, IComparer? comparer)
+        public virtual int BinarySearch(int index, int count, object? value, IComparer? comparer)
         {
             if (index < 0)
             {
@@ -346,12 +346,12 @@ namespace System.Collections
             return Array.BinarySearch(_items, index, count, value, comparer);
         }
 
-        public virtual int BinarySearch(object value)
+        public virtual int BinarySearch(object? value)
         {
             return BinarySearch(0, Count, value, null);
         }
 
-        public virtual int BinarySearch(object value, IComparer comparer)
+        public virtual int BinarySearch(object? value, IComparer comparer)
         {
             return BinarySearch(0, Count, value, comparer);
         }
@@ -382,7 +382,7 @@ namespace System.Collections
         // It does a linear, O(n) search.  Equality is determined by calling
         // item.Equals().
         //
-        public virtual bool Contains(object value)
+        public virtual bool Contains(object? value)
         {
             if (value == null)
             {
@@ -508,7 +508,7 @@ namespace System.Collections
         // This method uses the Array.IndexOf method to perform the
         // search.
         //
-        public virtual int IndexOf(object value)
+        public virtual int IndexOf(object? value)
         {
             return Array.IndexOf((Array)_items, value, 0, _size);
         }
@@ -522,7 +522,7 @@ namespace System.Collections
         // This method uses the Array.IndexOf method to perform the
         // search.
         //
-        public virtual int IndexOf(object value, int startIndex)
+        public virtual int IndexOf(object? value, int startIndex)
         {
             if (startIndex > _size)
             {
@@ -541,7 +541,7 @@ namespace System.Collections
         // This method uses the Array.IndexOf method to perform the
         // search.
         //
-        public virtual int IndexOf(object value, int startIndex, int count)
+        public virtual int IndexOf(object? value, int startIndex, int count)
         {
             if (startIndex > _size)
             {
@@ -560,7 +560,7 @@ namespace System.Collections
         // is increased by one. If required, the capacity of the list is doubled
         // before inserting the new element.
         //
-        public virtual void Insert(int index, object value)
+        public virtual void Insert(int index, object? value)
         {
             // Note that insertions at the end are legal.
             if (index < 0 || index > _size)
@@ -626,7 +626,7 @@ namespace System.Collections
         // This method uses the Array.LastIndexOf method to perform the
         // search.
         //
-        public virtual int LastIndexOf(object value)
+        public virtual int LastIndexOf(object? value)
         {
             return LastIndexOf(value, _size - 1, _size);
         }
@@ -640,7 +640,7 @@ namespace System.Collections
         // This method uses the Array.LastIndexOf method to perform the
         // search.
         //
-        public virtual int LastIndexOf(object value, int startIndex)
+        public virtual int LastIndexOf(object? value, int startIndex)
         {
             if (startIndex >= _size)
             {
@@ -659,7 +659,7 @@ namespace System.Collections
         // This method uses the Array.LastIndexOf method to perform the
         // search.
         //
-        public virtual int LastIndexOf(object value, int startIndex, int count)
+        public virtual int LastIndexOf(object? value, int startIndex, int count)
         {
             if (Count != 0 && (startIndex < 0 || count < 0))
             {
@@ -682,7 +682,7 @@ namespace System.Collections
         // Removes the element at the given index. The size of the list is
         // decreased by one.
         //
-        public virtual void Remove(object value)
+        public virtual void Remove(object? value)
         {
             var index = IndexOf(value);
             if (index >= 0)
@@ -1124,7 +1124,7 @@ namespace System.Collections
                 }
             }
 
-            public override int Add(object value)
+            public override int Add(object? value)
             {
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
@@ -1134,7 +1134,7 @@ namespace System.Collections
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
+            public override int BinarySearch(int index, int count, object? value, IComparer? comparer)
             {
                 return _list.BinarySearch(index, count, value, comparer);
             }
@@ -1149,7 +1149,7 @@ namespace System.Collections
                 return new FixedSizeArrayList(_list) { _list = (ArrayList)_list.Clone() };
             }
 
-            public override bool Contains(object value)
+            public override bool Contains(object? value)
             {
                 return _list.Contains(value);
             }
@@ -1189,22 +1189,22 @@ namespace System.Collections
                 return new Range(this, index, count);
             }
 
-            public override int IndexOf(object value)
+            public override int IndexOf(object? value)
             {
                 return _list.IndexOf(value);
             }
 
-            public override int IndexOf(object value, int startIndex)
+            public override int IndexOf(object? value, int startIndex)
             {
                 return _list.IndexOf(value, startIndex);
             }
 
-            public override int IndexOf(object value, int startIndex, int count)
+            public override int IndexOf(object? value, int startIndex, int count)
             {
                 return _list.IndexOf(value, startIndex, count);
             }
 
-            public override void Insert(int index, object value)
+            public override void Insert(int index, object? value)
             {
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
@@ -1214,22 +1214,22 @@ namespace System.Collections
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
 
-            public override int LastIndexOf(object value)
+            public override int LastIndexOf(object? value)
             {
                 return _list.LastIndexOf(value);
             }
 
-            public override int LastIndexOf(object value, int startIndex)
+            public override int LastIndexOf(object? value, int startIndex)
             {
                 return _list.LastIndexOf(value, startIndex);
             }
 
-            public override int LastIndexOf(object value, int startIndex, int count)
+            public override int LastIndexOf(object? value, int startIndex, int count)
             {
                 return _list.LastIndexOf(value, startIndex, count);
             }
 
-            public override void Remove(object value)
+            public override void Remove(object? value)
             {
                 throw new NotSupportedException("Collection was of a fixed size.");
             }
@@ -1393,7 +1393,7 @@ namespace System.Collections
                 }
             }
 
-            public override int Add(object value)
+            public override int Add(object? value)
             {
                 var i = _list.Add(value);
                 _version++;
@@ -1406,7 +1406,7 @@ namespace System.Collections
             }
 
             // Other overloads with automatically work
-            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
+            public override int BinarySearch(int index, int count, object? value, IComparer? comparer)
             {
                 if (index < 0 || count < 0)
                 {
@@ -1469,7 +1469,7 @@ namespace System.Collections
                 return new ListWrapper(_list);
             }
 
-            public override bool Contains(object value)
+            public override bool Contains(object? value)
             {
                 return _list.Contains(value);
             }
@@ -1552,17 +1552,17 @@ namespace System.Collections
                 return new Range(this, index, count);
             }
 
-            public override int IndexOf(object value)
+            public override int IndexOf(object? value)
             {
                 return _list.IndexOf(value);
             }
 
-            public override int IndexOf(object value, int startIndex)
+            public override int IndexOf(object? value, int startIndex)
             {
                 return IndexOf(value, startIndex, _list.Count - startIndex);
             }
 
-            public override int IndexOf(object value, int startIndex, int count)
+            public override int IndexOf(object? value, int startIndex, int count)
             {
                 if (startIndex < 0 || startIndex > Count)
                 {
@@ -1599,7 +1599,7 @@ namespace System.Collections
                 return -1;
             }
 
-            public override void Insert(int index, object value)
+            public override void Insert(int index, object? value)
             {
                 _list.Insert(index, value);
                 _version++;
@@ -1639,17 +1639,17 @@ namespace System.Collections
                 }
             }
 
-            public override int LastIndexOf(object value)
+            public override int LastIndexOf(object? value)
             {
                 return LastIndexOf(value, _list.Count - 1, _list.Count);
             }
 
-            public override int LastIndexOf(object value, int startIndex)
+            public override int LastIndexOf(object? value, int startIndex)
             {
                 return LastIndexOf(value, startIndex, startIndex + 1);
             }
 
-            public override int LastIndexOf(object value, int startIndex, int count)
+            public override int LastIndexOf(object? value, int startIndex, int count)
             {
                 if (_list.Count == 0)
                 {
@@ -1691,7 +1691,7 @@ namespace System.Collections
                 return -1;
             }
 
-            public override void Remove(object value)
+            public override void Remove(object? value)
             {
                 var index = IndexOf(value);
                 if (index >= 0)
@@ -1993,7 +1993,7 @@ namespace System.Collections
                 }
             }
 
-            public override int Add(object value)
+            public override int Add(object? value)
             {
                 InternalUpdateRange();
                 _baseList.Insert(_baseIndex + _baseSize, value);
@@ -2018,7 +2018,7 @@ namespace System.Collections
                 }
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
+            public override int BinarySearch(int index, int count, object? value, IComparer? comparer)
             {
                 if (index < 0 || count < 0)
                 {
@@ -2058,7 +2058,7 @@ namespace System.Collections
                 return new Range(_baseList, _baseIndex, _baseSize) { _baseList = (ArrayList)_baseList.Clone() };
             }
 
-            public override bool Contains(object value)
+            public override bool Contains(object? value)
             {
                 InternalUpdateRange();
                 if (value == null)
@@ -2179,7 +2179,7 @@ namespace System.Collections
                 return new Range(this, index, count);
             }
 
-            public override int IndexOf(object value)
+            public override int IndexOf(object? value)
             {
                 InternalUpdateRange();
                 var i = _baseList.IndexOf(value, _baseIndex, _baseSize);
@@ -2191,7 +2191,7 @@ namespace System.Collections
                 return -1;
             }
 
-            public override int IndexOf(object value, int startIndex)
+            public override int IndexOf(object? value, int startIndex)
             {
                 if (startIndex < 0)
                 {
@@ -2213,7 +2213,7 @@ namespace System.Collections
                 return -1;
             }
 
-            public override int IndexOf(object value, int startIndex, int count)
+            public override int IndexOf(object? value, int startIndex, int count)
             {
                 if (startIndex < 0 || startIndex > _baseSize)
                 {
@@ -2235,7 +2235,7 @@ namespace System.Collections
                 return -1;
             }
 
-            public override void Insert(int index, object value)
+            public override void Insert(int index, object? value)
             {
                 if (index < 0 || index > _baseSize)
                 {
@@ -2270,7 +2270,7 @@ namespace System.Collections
                 }
             }
 
-            public override int LastIndexOf(object value)
+            public override int LastIndexOf(object? value)
             {
                 InternalUpdateRange();
                 var i = _baseList.LastIndexOf(value, _baseIndex + _baseSize - 1, _baseSize);
@@ -2282,12 +2282,12 @@ namespace System.Collections
                 return -1;
             }
 
-            public override int LastIndexOf(object value, int startIndex)
+            public override int LastIndexOf(object? value, int startIndex)
             {
                 return LastIndexOf(value, startIndex, startIndex + 1);
             }
 
-            public override int LastIndexOf(object value, int startIndex, int count)
+            public override int LastIndexOf(object? value, int startIndex, int count)
             {
                 InternalUpdateRange();
                 if (_baseSize == 0)
@@ -2478,7 +2478,7 @@ namespace System.Collections
                 set => throw new NotSupportedException("Collection is read-only.");
             }
 
-            public override int Add(object value)
+            public override int Add(object? value)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
@@ -2488,7 +2488,7 @@ namespace System.Collections
                 throw new NotSupportedException("Collection is read-only.");
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
+            public override int BinarySearch(int index, int count, object? value, IComparer? comparer)
             {
                 return _list.BinarySearch(index, count, value, comparer);
             }
@@ -2503,7 +2503,7 @@ namespace System.Collections
                 return new ReadOnlyArrayList(_list) { _list = (ArrayList)_list.Clone() };
             }
 
-            public override bool Contains(object value)
+            public override bool Contains(object? value)
             {
                 return _list.Contains(value);
             }
@@ -2543,22 +2543,22 @@ namespace System.Collections
                 return new Range(this, index, count);
             }
 
-            public override int IndexOf(object value)
+            public override int IndexOf(object? value)
             {
                 return _list.IndexOf(value);
             }
 
-            public override int IndexOf(object value, int startIndex)
+            public override int IndexOf(object? value, int startIndex)
             {
                 return _list.IndexOf(value, startIndex);
             }
 
-            public override int IndexOf(object value, int startIndex, int count)
+            public override int IndexOf(object? value, int startIndex, int count)
             {
                 return _list.IndexOf(value, startIndex, count);
             }
 
-            public override void Insert(int index, object value)
+            public override void Insert(int index, object? value)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
@@ -2568,22 +2568,22 @@ namespace System.Collections
                 throw new NotSupportedException("Collection is read-only.");
             }
 
-            public override int LastIndexOf(object value)
+            public override int LastIndexOf(object? value)
             {
                 return _list.LastIndexOf(value);
             }
 
-            public override int LastIndexOf(object value, int startIndex)
+            public override int LastIndexOf(object? value, int startIndex)
             {
                 return _list.LastIndexOf(value, startIndex);
             }
 
-            public override int LastIndexOf(object value, int startIndex, int count)
+            public override int LastIndexOf(object? value, int startIndex, int count)
             {
                 return _list.LastIndexOf(value, startIndex, count);
             }
 
-            public override void Remove(object value)
+            public override void Remove(object? value)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
@@ -2769,7 +2769,7 @@ namespace System.Collections
                 }
             }
 
-            public override int Add(object value)
+            public override int Add(object? value)
             {
                 lock (_root)
                 {
@@ -2785,7 +2785,7 @@ namespace System.Collections
                 }
             }
 
-            public override int BinarySearch(object value)
+            public override int BinarySearch(object? value)
             {
                 lock (_root)
                 {
@@ -2793,7 +2793,7 @@ namespace System.Collections
                 }
             }
 
-            public override int BinarySearch(object value, IComparer comparer)
+            public override int BinarySearch(object? value, IComparer comparer)
             {
                 lock (_root)
                 {
@@ -2801,7 +2801,7 @@ namespace System.Collections
                 }
             }
 
-            public override int BinarySearch(int index, int count, object value, IComparer? comparer)
+            public override int BinarySearch(int index, int count, object? value, IComparer? comparer)
             {
                 lock (_root)
                 {
@@ -2825,7 +2825,7 @@ namespace System.Collections
                 }
             }
 
-            public override bool Contains(object value)
+            public override bool Contains(object? value)
             {
                 lock (_root)
                 {
@@ -2881,7 +2881,7 @@ namespace System.Collections
                 }
             }
 
-            public override int IndexOf(object value)
+            public override int IndexOf(object? value)
             {
                 lock (_root)
                 {
@@ -2889,7 +2889,7 @@ namespace System.Collections
                 }
             }
 
-            public override int IndexOf(object value, int startIndex)
+            public override int IndexOf(object? value, int startIndex)
             {
                 lock (_root)
                 {
@@ -2897,7 +2897,7 @@ namespace System.Collections
                 }
             }
 
-            public override int IndexOf(object value, int startIndex, int count)
+            public override int IndexOf(object? value, int startIndex, int count)
             {
                 lock (_root)
                 {
@@ -2905,7 +2905,7 @@ namespace System.Collections
                 }
             }
 
-            public override void Insert(int index, object value)
+            public override void Insert(int index, object? value)
             {
                 lock (_root)
                 {
@@ -2921,7 +2921,7 @@ namespace System.Collections
                 }
             }
 
-            public override int LastIndexOf(object value)
+            public override int LastIndexOf(object? value)
             {
                 lock (_root)
                 {
@@ -2929,7 +2929,7 @@ namespace System.Collections
                 }
             }
 
-            public override int LastIndexOf(object value, int startIndex)
+            public override int LastIndexOf(object? value, int startIndex)
             {
                 lock (_root)
                 {
@@ -2937,7 +2937,7 @@ namespace System.Collections
                 }
             }
 
-            public override int LastIndexOf(object value, int startIndex, int count)
+            public override int LastIndexOf(object? value, int startIndex, int count)
             {
                 lock (_root)
                 {
@@ -2945,7 +2945,7 @@ namespace System.Collections
                 }
             }
 
-            public override void Remove(object value)
+            public override void Remove(object? value)
             {
                 lock (_root)
                 {
