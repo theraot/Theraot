@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET45
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -78,7 +79,7 @@ namespace System
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        public bool TryGetTarget(out T target)
+        public bool TryGetTarget([NotNullWhen(true)] out T? target)
         {
             target = default;
             if (!_handle.IsAllocated)
