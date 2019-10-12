@@ -1,5 +1,8 @@
 ﻿#if GREATERTHAN_NET35 && LESSTHAN_NET46
 
+#pragma warning disable RECS0108 // Warns about static fields in generic types
+#pragma warning disable RECS0146 // Member hides static member from outer class
+
 using System.Diagnostics;
 using System.Reflection;
 
@@ -24,12 +27,12 @@ namespace System.Threading.Tasks
             public static Func<TaskCompletionSource<T>, CancellationToken, bool> TrySetCanceled =>
                 _trySetCanceled ?? (_trySetCanceled = CreateTrySetCanceledDelegate());
 
-            private static Func<TaskCompletionSource<T>, CancellationToken, bool> _trySetCanceled;
+            private static Func<TaskCompletionSource<T>, CancellationToken, bool>? _trySetCanceled;
 
             private static Func<TaskCompletionSource<T>, CancellationToken, bool> CreateTrySetCanceledDelegate()
             {
                 var trySetCanceled = typeof(TaskCompletionSource<T>).GetMethod(
-                    "TrySetCanceled",
+                    nameof(TrySetCanceled),
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod,
                     null, CallingConventions.Any, new[] {typeof(CancellationToken)}, null);
 

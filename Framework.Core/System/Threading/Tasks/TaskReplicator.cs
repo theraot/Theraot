@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+
 // BASEDON: https://raw.githubusercontent.com/dotnet/corefx/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/TaskReplicator.cs
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -7,6 +9,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Concurrent;
+using Theraot.Reflection;
 
 namespace System.Threading.Tasks
 {
@@ -29,7 +32,7 @@ namespace System.Threading.Tasks
 
         private readonly TaskScheduler _scheduler;
         private readonly bool _stopOnFirstFailure;
-        private ConcurrentQueue<Exception> _exceptions;
+        private ConcurrentQueue<Exception>? _exceptions;
         private bool _stopReplicating;
 
         private TaskReplicator(ParallelOptions options, bool stopOnFirstFailure)
@@ -69,7 +72,7 @@ namespace System.Threading.Tasks
         {
             protected readonly TaskReplicator Replicator;
             protected readonly int Timeout;
-            protected volatile Task PendingTask; // the most recently queued Task for this replica, or null if we're done.
+            protected volatile Task? PendingTask; // the most recently queued Task for this replica, or null if we're done.
             protected int RemainingConcurrency;
 
             protected Replica(TaskReplicator replicator, int maxConcurrency, int timeout)
@@ -83,7 +86,7 @@ namespace System.Threading.Tasks
 
             public void Start()
             {
-                PendingTask.RunSynchronously(Replicator._scheduler);
+                PendingTask!.RunSynchronously(Replicator._scheduler);
             }
 
             public void Wait()
@@ -98,7 +101,7 @@ namespace System.Threading.Tasks
                 // if it hasn't started running on another thread.  That's essential for preventing deadlocks,
                 // in the case where all other threads are blocked for other reasons.
                 //
-                Task pendingTask;
+                Task? pendingTask;
                 while ((pendingTask = PendingTask) != null)
                 {
                     pendingTask.Wait();
@@ -130,7 +133,7 @@ namespace System.Threading.Tasks
                 }
                 catch (Exception ex)
                 {
-                    LazyInitializer.EnsureInitialized(ref Replicator._exceptions).Enqueue(ex);
+                    TypeHelper.LazyCreate(ref Replicator._exceptions).Enqueue(ex);
                     if (Replicator._stopOnFirstFailure)
                     {
                         Replicator._stopReplicating = true;
@@ -148,7 +151,7 @@ namespace System.Threading.Tasks
         private sealed class Replica<TState> : Replica
         {
             private readonly ReplicableUserAction<TState> _action;
-            private TState _state;
+            private TState _state = default!;
 
             public Replica(TaskReplicator replicator, int maxConcurrency, int timeout, ReplicableUserAction<TState> action)
                 : base(replicator, maxConcurrency, timeout)
@@ -159,7 +162,7 @@ namespace System.Threading.Tasks
             protected override void CreateNewReplica()
             {
                 var newReplica = new Replica<TState>(Replicator, RemainingConcurrency, GenerateCooperativeMultitaskingTaskTimeout(), _action);
-                newReplica.PendingTask.Start(Replicator._scheduler);
+                newReplica.PendingTask!.Start(Replicator._scheduler);
             }
 
             protected override void ExecuteAction(out bool yieldedBeforeCompletion)

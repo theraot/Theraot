@@ -10,7 +10,6 @@ namespace System.Threading.Tasks
 
         protected static void InlineIfPossibleOrElseQueue(Task task)
         {
-            Contract.Requires(task != null);
             var scheduler = task.ExecutingTaskScheduler;
             if (scheduler == null)
             {

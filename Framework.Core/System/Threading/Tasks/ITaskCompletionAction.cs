@@ -319,7 +319,7 @@ namespace System.Threading.Tasks
 
                     if (task.IsFaulted)
                     {
-                        (observedExceptions ??= new List<ExceptionDispatchInfo>()).AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
+                        (observedExceptions ??= new List<ExceptionDispatchInfo>()).AddRange(task._exceptionsHolder!.GetExceptionDispatchInfos());
                     }
                     else if (task.IsCanceled && canceledTask == null)
                     {
@@ -457,7 +457,7 @@ namespace System.Threading.Tasks
 
                     if (task.IsFaulted)
                     {
-                        (observedExceptions ??= new List<ExceptionDispatchInfo>()).AddRange(task._exceptionsHolder.GetExceptionDispatchInfos());
+                        (observedExceptions ??= new List<ExceptionDispatchInfo>()).AddRange(task._exceptionsHolder!.GetExceptionDispatchInfos());
                     }
                     else if (task.IsCanceled)
                     {

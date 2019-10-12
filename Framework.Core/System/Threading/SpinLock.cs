@@ -12,7 +12,7 @@ namespace System.Threading
     public struct SpinLock
     {
         private int _isHeld;
-        private Thread _ownerThread;
+        private Thread? _ownerThread;
 
         public SpinLock(bool enableThreadOwnerTracking)
         {

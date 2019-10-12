@@ -38,7 +38,7 @@ namespace System.Threading.Tasks
         private readonly Task _task;
 
         /// <summary>An exception that triggered the task to cancel.</summary>
-        private ExceptionDispatchInfo _cancellationException;
+        private ExceptionDispatchInfo? _cancellationException;
 
         /// <summary>
         ///     The lazily-initialized list of faulting exceptions.  Volatile
@@ -161,7 +161,7 @@ namespace System.Threading.Tasks
         /// <returns>The aggregate exception to throw.</returns>
         internal AggregateException CreateExceptionObject(bool calledFromFinalizer, Exception? includeThisException)
         {
-            var exceptions = _faultExceptions;
+            var exceptions = _faultExceptions!;
             Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
 
             // Mark as handled and aggregate the exceptions.
@@ -195,7 +195,7 @@ namespace System.Threading.Tasks
         /// </returns>
         internal ExceptionDispatchInfo GetCancellationExceptionDispatchInfo()
         {
-            var edi = _cancellationException;
+            var edi = _cancellationException!;
             Debug.Assert
             (
                 edi.SourceException is OperationCanceledException,
@@ -211,8 +211,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal IEnumerable<ExceptionDispatchInfo> GetExceptionDispatchInfos()
         {
-            var exceptions = _faultExceptions;
-            Debug.Assert(exceptions != null, "Expected an initialized list.");
+            var exceptions = _faultExceptions!;
             Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
             MarkAsHandled(false);
             return exceptions;
@@ -301,7 +300,6 @@ namespace System.Threading.Tasks
                     foreach (var exc in exColl)
                     {
 #if DEBUG
-                        Debug.Assert(exc != null, "No exceptions should be null");
                         numExceptions++;
 #endif
                         exceptions.Add(ExceptionDispatchInfo.Capture(exc));
@@ -363,7 +361,7 @@ namespace System.Threading.Tasks
             return new AggregateException
             (
                 "A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread.",
-                _faultExceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException)
+                _faultExceptions!.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException)
             );
         }
 

@@ -43,7 +43,7 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        public Task(Action<object> action, object state)
+        public Task(Action<object> action, object? state)
             : this(action, state, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
@@ -55,31 +55,31 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        public Task(Action<object> action, object state, CancellationToken cancellationToken)
+        public Task(Action<object> action, object? state, CancellationToken cancellationToken)
             : this(action, state, null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
-        public Task(Action<object> action, object state, TaskCreationOptions creationOptions)
+        public Task(Action<object> action, object? state, TaskCreationOptions creationOptions)
             : this(action, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
-        public Task(Action<object> action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+        public Task(Action<object> action, object? state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
             : this(action, state, InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
-        internal Task(Action<object> action, object state, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+        internal Task(Action<object> action, object? state, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
             : this((Delegate)action, state, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             CapturedContext = ExecutionContext.Capture();
         }
 
-        internal Task(Action action, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+        internal Task(Action action, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
             : this(action, null, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             CapturedContext = ExecutionContext.Capture();

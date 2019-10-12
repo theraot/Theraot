@@ -313,7 +313,7 @@ namespace System.Runtime.CompilerServices
                     throw new TaskCanceledException(task);
                 case TaskStatus.Faulted:
                     // ReSharper disable once PossibleNullReferenceException
-                    throw PrepareExceptionForRethrow(task.Exception.InnerException);
+                    throw PrepareExceptionForRethrow(task.Exception!.InnerException);
                 default:
                     throw new InvalidOperationException("The task has not yet completed.");
             }

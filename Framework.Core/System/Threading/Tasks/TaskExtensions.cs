@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
         ///     Task{Task}.
         /// </remarks>
         /// <param name="task">The Task{Task} to unwrap.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The exception that is thrown if the
         ///     <paramref name="task" /> argument is null.
         /// </exception>
@@ -67,7 +67,7 @@ namespace System.Threading.Tasks
         ///     creating a proxy Task{TResult} that represents the entire asynchronous operation of such a Task{Task{TResult}}.
         /// </remarks>
         /// <param name="task">The Task{Task{TResult}} to unwrap.</param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The exception that is thrown if the
         ///     <paramref name="task" /> argument is null.
         /// </exception>
@@ -126,7 +126,7 @@ namespace System.Threading.Tasks
         /// </param>
         private static void TransferAsynchronously<TResult, TInner>(TaskCompletionSource<TResult> completionSource, Task<TInner> outer) where TInner : Task
         {
-            Action[] callback = {null};
+            Action?[] callback = {null};
 
             // Create a continuation delegate.  For performance reasons, we reuse the same delegate/closure across multiple
             // continuations; by using .ConfigureAwait(false).GetAwaiter().UnsafeOnComplete(action), in most cases
@@ -179,7 +179,7 @@ namespace System.Threading.Tasks
                                 if (!result)
                                 {
                                     // Run this delegate again once the inner task has completed.
-                                    inner.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback);
+                                    inner.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback!);
                                     return;
                                 }
                             }
@@ -192,7 +192,7 @@ namespace System.Threading.Tasks
 
                     if (!result)
                     {
-                        outer.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback);
+                        outer.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(innerCallback!);
                     }
                 }
                 else
@@ -206,7 +206,7 @@ namespace System.Threading.Tasks
             };
 
             // Kick things off by hooking up the callback as the task's continuation
-            outer.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(callback[0]);
+            outer.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(callback[0]!);
         }
 
         private static bool TrySetFromTask<TResult>(this TaskCompletionSource<TResult> completionSource, Task task)
@@ -222,7 +222,7 @@ namespace System.Threading.Tasks
                     break;
 
                 case TaskStatus.Faulted:
-                    result = completionSource.TrySetException(task.Exception.InnerExceptions);
+                    result = completionSource.TrySetException(task.Exception!.InnerExceptions);
                     break;
 
                 case TaskStatus.RanToCompletion:

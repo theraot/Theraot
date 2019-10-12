@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
             _waitHandle = new ManualResetEventSlim(false);
         }
 
-        internal Task(object state, TaskCreationOptions creationOptions)
+        internal Task(object? state, TaskCreationOptions creationOptions)
         {
             if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
@@ -252,7 +252,7 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        internal Task(object state, TaskCreationOptions creationOptions)
+        internal Task(object? state, TaskCreationOptions creationOptions)
             : base(state, creationOptions)
         {
             // Empty

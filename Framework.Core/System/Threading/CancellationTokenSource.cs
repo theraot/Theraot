@@ -45,12 +45,12 @@ namespace System.Threading
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
         private static readonly Action<CancellationTokenSource> _timerCallback = TimerCallback;
         private readonly ManualResetEvent _handle;
-        private Bucket<Action> _callbacks;
+        private Bucket<Action>? _callbacks;
         private int _cancelRequested;
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
-        private CancellationTokenRegistration[] _linkedTokens;
-        private RootedTimeout _timeout;
+        private CancellationTokenRegistration[]? _linkedTokens;
+        private RootedTimeout? _timeout;
 
         public CancellationTokenSource()
         {
@@ -267,7 +267,7 @@ namespace System.Threading
             }
         }
 
-        private static void RunCallback(bool throwOnFirstException, Action callback, ref List<Exception> exceptions)
+        private static void RunCallback(bool throwOnFirstException, Action callback, ref List<Exception>? exceptions)
         {
             // NOTICE this method has no null check
             if (throwOnFirstException)
@@ -313,16 +313,13 @@ namespace System.Threading
                 // The CancellationTokenSource may have been disposed just before this call
                 _handle.Set();
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException exception) when (ignoreDisposedException)
             {
-                if (!ignoreDisposedException)
-                {
-                    throw;
-                }
+                var _ = exception;
             }
 
             UnregisterLinkedTokens();
-            List<Exception> exceptions = null;
+            List<Exception>? exceptions = null;
             try
             {
                 var id = _currentId;

@@ -20,14 +20,14 @@ namespace System.Threading
     /// <remarks>
     ///     <para>
     ///         A group of tasks cooperate by moving through a series of phases, where each in the group signals it
-    ///         has arrived at the <see cref="T:System.Threading.Barrier" /> in a given phase and implicitly waits for all
+    ///         has arrived at the <see cref="System.Threading.Barrier" /> in a given phase and implicitly waits for all
     ///         others to
-    ///         arrive. The same <see cref="T:System.Threading.Barrier" /> can be used for multiple phases.
+    ///         arrive. The same <see cref="System.Threading.Barrier" /> can be used for multiple phases.
     ///     </para>
     ///     <para>
-    ///         All public and protected members of <see cref="T:System.Threading.Barrier" /> are thread-safe and may be used
+    ///         All public and protected members of <see cref="System.Threading.Barrier" /> are thread-safe and may be used
     ///         concurrently from multiple threads, with the exception of Dispose, which
-    ///         must only be used when all other operations on the <see cref="T:System.Threading.Barrier" /> have
+    ///         must only be used when all other operations on the <see cref="System.Threading.Barrier" /> have
     ///         completed.
     ///     </para>
     /// </remarks>
@@ -48,7 +48,7 @@ namespace System.Threading
 
         // The EC callback that invokes the post phase action
         [SecurityCritical]
-        private static ContextCallback _invokePostPhaseAction;
+        private static ContextCallback? _invokePostPhaseAction;
 
         // Even phases event
         private readonly ManualResetEventSlim _evenEvent;
@@ -57,10 +57,10 @@ namespace System.Threading
         private readonly ManualResetEventSlim _oddEvent;
 
         // The execution context of the creator thread
-        private readonly ExecutionContext _ownerThreadContext;
+        private readonly ExecutionContext? _ownerThreadContext;
 
         // Post phase action after each phase
-        private readonly Action<Barrier> _postPhaseAction;
+        private readonly Action<Barrier>? _postPhaseAction;
 
         // This is the ManagedThreadID of the postPhaseAction caller thread, this is used to determine if the SignalAndWait, Dispose or Add/RemoveParticipant caller thread is
         // the same thread as the postPhaseAction thread which means this method was called from the postPhaseAction which is illegal.
@@ -86,16 +86,16 @@ namespace System.Threading
         private bool _disposed;
 
         // In case the post phase action throws an exception, wraps it in BarrierPostPhaseException
-        private Exception _exception;
+        private Exception? _exception;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.Threading.Barrier" /> class.
+        ///     Initializes a new instance of the <see cref="System.Threading.Barrier" /> class.
         /// </summary>
         /// <param name="participantCount">The number of participating threads.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="participantCount" /> is less than 0
-        ///     or greater than <see cref="T:System.Int16.MaxValue" />.
+        ///     or greater than <see cref="System.Int16.MaxValue" />.
         /// </exception>
         public Barrier(int participantCount)
             : this(participantCount, null)
@@ -108,12 +108,12 @@ namespace System.Threading
         /// </summary>
         /// <param name="participantCount">The number of participating threads.</param>
         /// <param name="postPhaseAction">
-        ///     The <see cref="T:System.Action`1" /> to be executed after each
+        ///     The <see cref="System.Action`1" /> to be executed after each
         ///     phase.
         /// </param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="participantCount" /> is less than 0
-        ///     or greater than <see cref="T:System.Int32.MaxValue" />.
+        ///     or greater than <see cref="System.Int32.MaxValue" />.
         /// </exception>
         /// <remarks>
         ///     The <paramref name="postPhaseAction" /> delegate will be executed after
@@ -121,7 +121,7 @@ namespace System.Threading
         ///     will not be released to the next phase until the postPhaseAction delegate
         ///     has completed execution.
         /// </remarks>
-        public Barrier(int participantCount, Action<Barrier> postPhaseAction)
+        public Barrier(int participantCount, Action<Barrier>? postPhaseAction)
         {
             // the count must be non negative value
             if (participantCount < 0 || participantCount > _maxParticipants)
@@ -182,13 +182,13 @@ namespace System.Threading
 
         /// <inheritdoc />
         /// <summary>
-        ///     Releases all resources used by the current instance of <see cref="T:System.Threading.Barrier" />.
+        ///     Releases all resources used by the current instance of <see cref="System.Threading.Barrier" />.
         /// </summary>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action.
         /// </exception>
         /// <remarks>
-        ///     Unlike most of the members of <see cref="T:System.Threading.Barrier" />, Dispose is not thread-safe and may not be
+        ///     Unlike most of the members of <see cref="System.Threading.Barrier" />, Dispose is not thread-safe and may not be
         ///     used concurrently with other members of this instance.
         /// </remarks>
         public void Dispose()
@@ -210,14 +210,14 @@ namespace System.Threading
         ///     The phase number of the barrier in which the new participants will first
         ///     participate.
         /// </returns>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     Adding a participant would cause the barrier's participant count to
-        ///     exceed <see cref="T:System.Int16.MaxValue" />.
+        ///     exceed <see cref="System.Int16.MaxValue" />.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -244,18 +244,18 @@ namespace System.Threading
         ///     The phase number of the barrier in which the new participants will first
         ///     participate.
         /// </returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="participantCount" /> is less than
         ///     0.
         /// </exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     Adding <paramref name="participantCount" /> participants would cause the
-        ///     barrier's participant count to exceed <see cref="T:System.Int16.MaxValue" />.
+        ///     barrier's participant count to exceed <see cref="System.Int16.MaxValue" />.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -354,14 +354,14 @@ namespace System.Threading
         /// <summary>
         ///     Notifies the <see cref="Barrier" /> that there will be one less participant.
         /// </summary>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The barrier already has 0
         ///     participants.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -374,15 +374,15 @@ namespace System.Threading
         ///     Notifies the <see cref="Barrier" /> that there will be fewer participants.
         /// </summary>
         /// <param name="participantCount">The number of additional participants to remove from the barrier.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="participantCount" /> is less than
         ///     0.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">The barrier already has 0 participants.</exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">The barrier already has 0 participants.</exception>
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -453,11 +453,11 @@ namespace System.Threading
         ///     Signals that a participant has reached the <see cref="Barrier" /> and waits for all other
         ///     participants to reach the barrier as well.
         /// </summary>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action, the barrier currently has 0 participants,
         ///     or the barrier is being used by more threads than are registered as participants.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -468,21 +468,21 @@ namespace System.Threading
 
         /// <summary>
         ///     Signals that a participant has reached the <see cref="Barrier" /> and waits for all other
-        ///     participants to reach the barrier, while observing a <see cref="T:System.Threading.CancellationToken" />.
+        ///     participants to reach the barrier, while observing a <see cref="System.Threading.CancellationToken" />.
         /// </summary>
         /// <param name="cancellationToken">
-        ///     The <see cref="T:System.Threading.CancellationToken" /> to
+        ///     The <see cref="System.Threading.CancellationToken" /> to
         ///     observe.
         /// </param>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action, the barrier currently has 0 participants,
         ///     or the barrier is being used by more threads than are registered as participants.
         /// </exception>
-        /// <exception cref="T:System.OperationCanceledException">
+        /// <exception cref="System.OperationCanceledException">
         ///     <paramref name="cancellationToken" /> has been
         ///     canceled.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -500,24 +500,24 @@ namespace System.Threading
         /// <summary>
         ///     Signals that a participant has reached the <see cref="Barrier" /> and waits for all other
         ///     participants to reach the barrier as well, using a
-        ///     <see cref="T:System.TimeSpan" /> to measure the time interval.
+        ///     <see cref="System.TimeSpan" /> to measure the time interval.
         /// </summary>
         /// <param name="timeout">
-        ///     A <see cref="T:System.TimeSpan" /> that represents the number of
-        ///     milliseconds to wait, or a <see cref="T:System.TimeSpan" /> that represents -1 milliseconds to
+        ///     A <see cref="System.TimeSpan" /> that represents the number of
+        ///     milliseconds to wait, or a <see cref="System.TimeSpan" /> that represents -1 milliseconds to
         ///     wait indefinitely.
         /// </param>
         /// <returns>true if all other participants reached the barrier; otherwise, false.</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="timeout" />is a negative number
         ///     other than -1 milliseconds, which represents an infinite time-out, or it is greater than
-        ///     <see cref="T:System.Int32.MaxValue" />.
+        ///     <see cref="System.Int32.MaxValue" />.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action, the barrier currently has 0 participants,
         ///     or the barrier is being used by more threads than are registered as participants.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -529,32 +529,32 @@ namespace System.Threading
         /// <summary>
         ///     Signals that a participant has reached the <see cref="Barrier" /> and waits for all other
         ///     participants to reach the barrier as well, using a
-        ///     <see cref="T:System.TimeSpan" /> to measure the time interval, while observing a
-        ///     <see cref="T:System.Threading.CancellationToken" />.
+        ///     <see cref="System.TimeSpan" /> to measure the time interval, while observing a
+        ///     <see cref="System.Threading.CancellationToken" />.
         /// </summary>
         /// <param name="timeout">
-        ///     A <see cref="T:System.TimeSpan" /> that represents the number of
-        ///     milliseconds to wait, or a <see cref="T:System.TimeSpan" /> that represents -1 milliseconds to
+        ///     A <see cref="System.TimeSpan" /> that represents the number of
+        ///     milliseconds to wait, or a <see cref="System.TimeSpan" /> that represents -1 milliseconds to
         ///     wait indefinitely.
         /// </param>
         /// <param name="cancellationToken">
-        ///     The <see cref="T:System.Threading.CancellationToken" /> to
+        ///     The <see cref="System.Threading.CancellationToken" /> to
         ///     observe.
         /// </param>
         /// <returns>true if all other participants reached the barrier; otherwise, false.</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="timeout" />is a negative number
         ///     other than -1 milliseconds, which represents an infinite time-out.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action, the barrier currently has 0 participants,
         ///     or the barrier is being used by more threads than are registered as participants.
         /// </exception>
-        /// <exception cref="T:System.OperationCanceledException">
+        /// <exception cref="System.OperationCanceledException">
         ///     <paramref name="cancellationToken" /> has been
         ///     canceled.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -583,15 +583,15 @@ namespace System.Threading
         ///     indefinitely.
         /// </param>
         /// <returns>true if all other participants reached the barrier; otherwise, false.</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="millisecondsTimeout" /> is a
         ///     negative number other than -1, which represents an infinite time-out.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action, the barrier currently has 0 participants,
         ///     or the barrier is being used by more threads than are registered as participants.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -604,30 +604,30 @@ namespace System.Threading
         ///     Signals that a participant has reached the barrier and waits for all other participants to reach
         ///     the barrier as well, using a
         ///     32-bit signed integer to measure the time interval, while observing a
-        ///     <see cref="T:System.Threading.CancellationToken" />.
+        ///     <see cref="System.Threading.CancellationToken" />.
         /// </summary>
         /// <param name="millisecondsTimeout">
         ///     The number of milliseconds to wait, or <see cref="Timeout.Infinite" />(-1) to wait
         ///     indefinitely.
         /// </param>
         /// <param name="cancellationToken">
-        ///     The <see cref="T:System.Threading.CancellationToken" /> to
+        ///     The <see cref="System.Threading.CancellationToken" /> to
         ///     observe.
         /// </param>
         /// <returns>true if all other participants reached the barrier; otherwise, false.</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="millisecondsTimeout" /> is a
         ///     negative number other than -1, which represents an infinite time-out.
         /// </exception>
-        /// <exception cref="T:System.InvalidOperationException">
+        /// <exception cref="System.InvalidOperationException">
         ///     The method was invoked from within a post-phase action, the barrier currently has 0 participants,
         ///     or the barrier is being used by more threads than are registered as participants.
         /// </exception>
-        /// <exception cref="T:System.OperationCanceledException">
+        /// <exception cref="System.OperationCanceledException">
         ///     <paramref name="cancellationToken" /> has been
         ///     canceled.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The current instance has already been
         ///     disposed.
         /// </exception>
@@ -708,17 +708,9 @@ namespace System.Threading
             {
                 waitWasCanceled = true;
             }
-            catch (ObjectDisposedException) // in case a race happen where one of the thread returned from SignalAndWait and the current thread calls Wait on a disposed event
+            catch (ObjectDisposedException) when (phase < CurrentPhaseNumber) // in case a race happen where one of the thread returned from SignalAndWait and the current thread calls Wait on a disposed event
             {
-                // make sure the current phase for this thread is already finished, otherwise propagate the exception
-                if (phase < CurrentPhaseNumber)
-                {
-                    waitResult = true;
-                }
-                else
-                {
-                    throw;
-                }
+                waitResult = true;
             }
 
             if (!waitResult)
@@ -916,10 +908,10 @@ namespace System.Threading
                 SetResetEvents(observedSense);
             }
 
-            void InvokePostPhaseAction(object obj)
+            static void InvokePostPhaseAction(object obj)
             {
                 var thisBarrier = (Barrier)obj;
-                thisBarrier._postPhaseAction(thisBarrier);
+                thisBarrier._postPhaseAction!(thisBarrier);
             }
         }
 
@@ -995,24 +987,24 @@ namespace System.Threading
 
     /// <inheritdoc />
     /// <summary>
-    ///     The exception that is thrown when the post-phase action of a <see cref="T:System.Threading.Barrier" /> fails.
+    ///     The exception that is thrown when the post-phase action of a <see cref="System.Threading.Barrier" /> fails.
     /// </summary>
     [Serializable]
     public class BarrierPostPhaseException : Exception
     {
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class.
+        ///     Initializes a new instance of the <see cref="System.Threading.BarrierPostPhaseException" /> class.
         /// </summary>
         public BarrierPostPhaseException()
-            : this((string)null)
+            : this((string?)null)
         {
             // Empty
         }
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class with the
+        ///     Initializes a new instance of the <see cref="System.Threading.BarrierPostPhaseException" /> class with the
         ///     specified inner exception.
         /// </summary>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
@@ -1024,11 +1016,11 @@ namespace System.Threading
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class with a
+        ///     Initializes a new instance of the <see cref="System.Threading.BarrierPostPhaseException" /> class with a
         ///     specified error message.
         /// </summary>
         /// <param name="message">A string that describes the exception.</param>
-        public BarrierPostPhaseException(string message)
+        public BarrierPostPhaseException(string? message)
             : this(message, null)
         {
             // Empty
@@ -1036,12 +1028,12 @@ namespace System.Threading
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.Threading.BarrierPostPhaseException" /> class with a
+        ///     Initializes a new instance of the <see cref="System.Threading.BarrierPostPhaseException" /> class with a
         ///     specified error message and inner exception.
         /// </summary>
         /// <param name="message">A string that describes the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public BarrierPostPhaseException(string message, Exception innerException)
+        public BarrierPostPhaseException(string? message, Exception? innerException)
             : base(message ?? "The postPhaseAction failed with an exception.", innerException)
         {
             // Empty
