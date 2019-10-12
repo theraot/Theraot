@@ -17,11 +17,10 @@ namespace System.Threading.Tasks
         internal sealed class CompleteOnInvokePromise : Task<Task>, ITaskCompletionAction
         {
             private int _firstTaskAlreadyCompleted;
-            private ICollection<Task> _tasks; // must track this for cleanup
+            private ICollection<Task>? _tasks; // must track this for cleanup
 
             public CompleteOnInvokePromise(ICollection<Task> tasks)
             {
-                Contract.Requires(tasks != null, "Expected non-null collection of tasks");
                 Contract.Requires(tasks.Count > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
             }
@@ -41,7 +40,7 @@ namespace System.Threading.Tasks
                 // This may also help to avoided unnecessary invocations of this whenComplete delegate.
                 // Note that we may be attempting to remove a continuation from a task that hasn't had it
                 // added yet; while there's overhead there, the operation won't hurt anything.
-                foreach (var task in _tasks)
+                foreach (var task in _tasks!)
                 {
                     // if an element was erroneously nulled out concurrently, just skip it; worst case is we don't remove a continuation
                     if (task?.IsCompleted != false)
@@ -59,14 +58,13 @@ namespace System.Threading.Tasks
         private sealed class WhenAllCore : ITaskCompletionAction, IDisposable
         {
             private int _count;
-            private Action _done;
+            private Action? _done;
             private int _index;
             private int _ready;
-            private Task[] _tasks;
+            private Task?[]? _tasks;
 
             internal WhenAllCore(ICollection<Task> tasks, Action done)
             {
-                Contract.Requires(tasks != null, "Expected non-null collection of tasks");
                 Contract.Requires(tasks.Count > 0, "Expected a non-zero length task array");
                 _done = done;
                 _tasks = new Task[tasks.Count];
@@ -82,7 +80,7 @@ namespace System.Threading.Tasks
                 CheckCount();
             }
 
-            public bool IsDone => Interlocked.CompareExchange(ref _done, null, null) == null;
+            public bool IsDone => Interlocked.CompareExchange<Action?>(ref _done, null, null) == null;
 
             public void Dispose()
             {
@@ -227,18 +225,17 @@ namespace System.Threading.Tasks
         // Used in InternalWhenAll(Task[])
         private sealed class WhenAllPromise : Task<VoidStruct>, ITaskCompletionAction
         {
-            private readonly Task[] _tasks;
+            private readonly Task?[] _tasks;
             private int _count;
             private int _done;
             private int _ready;
 
             internal WhenAllPromise(Task[] tasks)
             {
-                Contract.Requires(tasks != null, "Expected a non-null task array");
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
                 // Add all tasks (this should increment _count, and add continuations)
-                foreach (var task in _tasks)
+                foreach (var task in tasks)
                 {
                     AddTask(task);
                 }
@@ -305,8 +302,8 @@ namespace System.Threading.Tasks
             private void PrivateDone()
             {
                 // Set up some accounting variables
-                List<ExceptionDispatchInfo> observedExceptions = null;
-                Task canceledTask = null;
+                List<ExceptionDispatchInfo>? observedExceptions = null;
+                Task? canceledTask = null;
                 // Loop through antecedents:
                 //   If any one of them faults, the result will be faulted
                 //   If none fault, but at least one is canceled, the result will be canceled
@@ -365,18 +362,17 @@ namespace System.Threading.Tasks
         // Used in InternalWhenAll<TResult>(Task<TResult>[])
         private sealed class WhenAllPromise<T> : Task<T[]>, ITaskCompletionAction
         {
-            private readonly Task<T>[] _tasks;
+            private readonly Task<T>?[] _tasks;
             private int _count;
             private int _done;
             private int _ready;
 
             internal WhenAllPromise(Task<T>[] tasks)
             {
-                Contract.Requires(tasks != null, "Expected a non-null task array");
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
                 // Add all tasks (this should increment _count, and add continuations)
-                foreach (var task in _tasks)
+                foreach (var task in tasks)
                 {
                     AddTask(task);
                 }
@@ -444,8 +440,8 @@ namespace System.Threading.Tasks
             {
                 // Set up some accounting variables
                 var results = new T[_tasks.Length];
-                List<ExceptionDispatchInfo> observedExceptions = null;
-                Task canceledTask = null;
+                List<ExceptionDispatchInfo>? observedExceptions = null;
+                Task? canceledTask = null;
                 // Loop through antecedents:
                 //   If any one of them faults, the result will be faulted
                 //   If none fault, but at least one is canceled, the result will be canceled

@@ -26,7 +26,7 @@ namespace System.Threading.Tasks
     internal class TaskExceptionHolder
     {
         /// <summary>An event handler used to notify of domain unload.</summary>
-        private static EventHandler _adUnloadEventHandler;
+        private static EventHandler? _adUnloadEventHandler;
 
         /// <summary>Whether the AppDomain has started to unload.</summary>
         private static volatile bool _domainUnloadStarted;
@@ -44,7 +44,7 @@ namespace System.Threading.Tasks
         ///     The lazily-initialized list of faulting exceptions.  Volatile
         ///     so that it may be read to determine whether any exceptions were stored.
         /// </summary>
-        private volatile List<ExceptionDispatchInfo> _faultExceptions;
+        private volatile List<ExceptionDispatchInfo>? _faultExceptions;
 
         /// <summary>Whether the holder was "observed" and thus doesn't cause finalization behavior.</summary>
         private volatile bool _isHandled;
@@ -55,7 +55,6 @@ namespace System.Threading.Tasks
         /// <param name="task">The task this holder belongs to.</param>
         internal TaskExceptionHolder(Task task)
         {
-            Contract.Requires(task != null, "Expected a non-null task.");
             _task = task;
             EnsureAppDomainUnloadCallbackRegistered();
         }
@@ -82,8 +81,7 @@ namespace System.Threading.Tasks
             // (Don't rethrow ThreadAbortExceptions.)
             foreach (var edi in _faultExceptions)
             {
-                var exp = edi.SourceException;
-                switch (exp)
+                switch (edi.SourceException)
                 {
                     case AggregateException aggExp:
                     {
@@ -135,7 +133,6 @@ namespace System.Threading.Tasks
         /// </remarks>
         internal void Add(object exceptionObject, bool representsCancellation)
         {
-            Contract.Requires(exceptionObject != null, "TaskExceptionHolder.Add(): Expected a non-null exceptionObject");
             Contract.Requires
             (
                 exceptionObject is Exception
@@ -162,10 +159,9 @@ namespace System.Threading.Tasks
         /// <param name="calledFromFinalizer">Whether this is being called from a finalizer.</param>
         /// <param name="includeThisException">An extra exception to be included (optionally).</param>
         /// <returns>The aggregate exception to throw.</returns>
-        internal AggregateException CreateExceptionObject(bool calledFromFinalizer, Exception includeThisException)
+        internal AggregateException CreateExceptionObject(bool calledFromFinalizer, Exception? includeThisException)
         {
             var exceptions = _faultExceptions;
-            Debug.Assert(exceptions != null, "Expected an initialized list.");
             Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
 
             // Mark as handled and aggregate the exceptions.
@@ -202,7 +198,7 @@ namespace System.Threading.Tasks
             var edi = _cancellationException;
             Debug.Assert
             (
-                edi == null || edi.SourceException is OperationCanceledException,
+                edi.SourceException is OperationCanceledException,
                 "Expected the EDI to be for an OperationCanceledException"
             );
             return edi;

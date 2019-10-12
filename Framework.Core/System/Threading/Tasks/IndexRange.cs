@@ -34,7 +34,7 @@ namespace System.Threading.Tasks
         // a 32-bit field, and just use the first 32-bits of the long.  And to minimize false sharing, each
         // value is stored in its own heap-allocated object, which is lazily allocated by the thread using
         // that range, minimizing the chances it'll be near the objects from other threads.
-        internal volatile StrongBox<long> SharedCurrentIndexOffset;
+        internal volatile StrongBox<long>? SharedCurrentIndexOffset;
 
         // to be set to 1 by the worker that finishes this range. It's OK to do a non-interlocked write here.
         internal int RangeFinished;

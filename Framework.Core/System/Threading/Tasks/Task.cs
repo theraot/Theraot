@@ -12,16 +12,16 @@ namespace System.Threading.Tasks
     public partial class Task : IDisposable, IAsyncResult, IThreadPoolWorkItem
     {
         [ThreadStatic]
-        internal static Task InternalCurrent;
+        internal static Task? InternalCurrent;
 
         private static int _lastId;
         private readonly InternalTaskOptions _internalOptions;
-        private readonly Task _parent;
-        internal readonly object State;
+        private readonly Task? _parent;
+        internal readonly object? State;
         private int _isDisposed;
         private int _status;
-        private ManualResetEventSlim _waitHandle;
-        internal object Action;
+        private ManualResetEventSlim? _waitHandle;
+        internal object? Action;
 
         internal TaskScheduler ExecutingTaskScheduler;
 
@@ -73,7 +73,7 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        internal Task(Action<object> action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+        internal Task(Action<object> action, object state, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
             : this((Delegate)action, state, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             CapturedContext = ExecutionContext.Capture();
@@ -96,7 +96,7 @@ namespace System.Threading.Tasks
         /// <param name="creationOptions">Options to control its execution.</param>
         /// <param name="internalOptions">Internal options to control its execution</param>
         /// <param name="scheduler">A task scheduler under which the task will run.</param>
-        internal Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+        internal Task(Delegate action, object? state, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
 #pragma warning disable IDE0016 // Usar expresión "throw"
             if (action == null)
@@ -184,11 +184,11 @@ namespace System.Threading.Tasks
         public static TaskFactory Factory => TaskFactory.DefaultInstance;
         public TaskCreationOptions CreationOptions { get; }
 
-        public AggregateException Exception
+        public AggregateException? Exception
         {
             get
             {
-                AggregateException e = null;
+                AggregateException? e = null;
 
                 // If you're faulted, retrieve the exception(s)
                 if (IsFaulted)
@@ -236,7 +236,7 @@ namespace System.Threading.Tasks
 
         internal CancellationToken CancellationToken { get; set; }
 
-        internal ExecutionContext CapturedContext { get; set; }
+        internal ExecutionContext? CapturedContext { get; set; }
 
         private bool IsContinuationTask => (_internalOptions & InternalTaskOptions.ContinuationTask) != 0;
 
@@ -251,7 +251,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        public object AsyncState => State;
+        public object? AsyncState => State;
 
         public bool IsCompleted
         {
@@ -266,12 +266,14 @@ namespace System.Threading.Tasks
         {
             get
             {
+                var waithandle = _waitHandle;
+
                 if (Volatile.Read(ref _isDisposed) == 1)
                 {
                     throw new ObjectDisposedException(nameof(Task));
                 }
 
-                return _waitHandle.WaitHandle;
+                return waithandle!.WaitHandle;
             }
         }
 
@@ -497,7 +499,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal static Task InternalCurrentIfAttached(TaskCreationOptions creationOptions)
+        internal static Task? InternalCurrentIfAttached(TaskCreationOptions creationOptions)
         {
             return (creationOptions & TaskCreationOptions.AttachedToParent) != 0 ? InternalCurrent : null;
         }

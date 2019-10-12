@@ -6,17 +6,17 @@ namespace System.Threading.Tasks
 {
     internal sealed class ContinuationResultTaskFromTask<TResult> : Task<TResult>, IContinuationTask
     {
-        private Task _antecedent;
+        private Task? _antecedent;
 
-        public ContinuationResultTaskFromTask(Task antecedent, Delegate function, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
+        public ContinuationResultTaskFromTask(Task antecedent, Delegate function, object? state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
             : base(function, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
         {
-            Contract.Requires(function is Func<Task, TResult> || function is Func<Task, object, TResult>, "Invalid delegate type in ContinuationResultTaskFromTask");
+            Contract.Requires(function is Func<Task, TResult> || function is Func<Task, object?, TResult>, "Invalid delegate type in ContinuationResultTaskFromTask");
             _antecedent = antecedent;
             CapturedContext = ExecutionContext.Capture();
         }
 
-        Task IContinuationTask.Antecedent => _antecedent;
+        Task? IContinuationTask.Antecedent => _antecedent;
 
         /// <summary>
         ///     Evaluates the value selector of the Task which is passed in as an object and stores the result.
@@ -33,11 +33,11 @@ namespace System.Threading.Tasks
             switch (Action)
             {
                 case Func<Task, TResult> func:
-                    InternalResult = func(antecedent);
+                    InternalResult = func(antecedent!);
                     return;
 
-                case Func<Task, object, TResult> funcWithState:
-                    InternalResult = funcWithState(antecedent, State);
+                case Func<Task, object?, TResult> funcWithState:
+                    InternalResult = funcWithState(antecedent!, State);
                     return;
 
                 default:

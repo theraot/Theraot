@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable RCS1169 // Make field read-only.
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -36,7 +38,7 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
-            Volatile.Write(ref _wrapped, new ThreadSafeStack<T>());
+            Volatile.Write(ref _wrapped!, new ThreadSafeStack<T>());
         }
 
         public void CopyTo(T[] array, int index)

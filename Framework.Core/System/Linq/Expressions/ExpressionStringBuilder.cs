@@ -925,7 +925,7 @@ namespace System.Linq.Expressions
         }
 
         // Prints ".instanceField" or "declaringType.staticField"
-        private void OutMember(Expression instance, MemberInfo member)
+        private void OutMember(Expression? instance, MemberInfo member)
         {
             if (instance != null)
             {

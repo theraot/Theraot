@@ -23,8 +23,6 @@ namespace System.Threading.Tasks
         /// <param name="scheduler">The scheduler to use for the continuation.</param>
         internal StandardTaskContinuation(Task task, TaskContinuationOptions options, TaskScheduler scheduler)
         {
-            Contract.Requires(task != null, "TaskContinuation ctor: task is null");
-            Contract.Requires(scheduler != null, "TaskContinuation ctor: scheduler is null");
             Task = task;
             Options = options;
             _scheduler = scheduler;

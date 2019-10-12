@@ -19,7 +19,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <param name="delay">The time span to wait before completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     The <paramref name="delay" /> is less than -1 or greater than Int32.MaxValue.
         /// </exception>
         /// <remarks>
@@ -36,10 +36,10 @@ namespace System.Threading.Tasks
         /// <param name="delay">The time span to wait before completing the returned Task</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     The <paramref name="delay" /> is less than -1 or greater than Int32.MaxValue.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The provided <paramref name="cancellationToken" /> has already been disposed.
         /// </exception>
         /// <remarks>
@@ -63,7 +63,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <param name="millisecondsDelay">The number of milliseconds to wait before completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     The <paramref name="millisecondsDelay" /> is less than -1.
         /// </exception>
         /// <remarks>
@@ -80,10 +80,10 @@ namespace System.Threading.Tasks
         /// <param name="millisecondsDelay">The number of milliseconds to wait before completing the returned Task</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned Task</param>
         /// <returns>A Task that represents the time delay</returns>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     The <paramref name="millisecondsDelay" /> is less than -1.
         /// </exception>
-        /// <exception cref="T:System.ObjectDisposedException">
+        /// <exception cref="System.ObjectDisposedException">
         ///     The provided <paramref name="cancellationToken" /> has already been disposed.
         /// </exception>
         /// <remarks>

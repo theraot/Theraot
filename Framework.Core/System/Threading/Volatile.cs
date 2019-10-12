@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET45
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace System.Threading
 {
     public static class Volatile
@@ -76,7 +78,7 @@ namespace System.Threading
             return Thread.VolatileRead(ref location);
         }
 
-        public static T Read<T>(ref T location)
+        public static T? Read<T>(ref T? location)
             where T : class
         {
             return Interlocked.CompareExchange(ref location, null, null);
@@ -154,7 +156,7 @@ namespace System.Threading
             Thread.VolatileWrite(ref location, value);
         }
 
-        public static void Write<T>(ref T location, T value)
+        public static void Write<T>(ref T? location, T? value)
             where T : class
         {
             GC.KeepAlive(Interlocked.Exchange(ref location, value));

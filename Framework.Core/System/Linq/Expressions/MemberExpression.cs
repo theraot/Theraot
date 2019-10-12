@@ -99,7 +99,7 @@ namespace System.Linq.Expressions
         /// <param name="expression">The containing object of the member.  This can be null for static members.</param>
         /// <param name="member">The member to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression" />.</returns>
-        public static MemberExpression MakeMemberAccess(Expression expression, MemberInfo member)
+        public static MemberExpression MakeMemberAccess(Expression? expression, MemberInfo member)
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
             switch (member)
@@ -165,7 +165,7 @@ namespace System.Linq.Expressions
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
         /// <param name="property">The property to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression" />.</returns>
-        public static MemberExpression Property(Expression expression, PropertyInfo property)
+        public static MemberExpression Property(Expression? expression, PropertyInfo property)
         {
             ContractUtils.RequiresNotNull(property, nameof(property));
 
@@ -346,7 +346,7 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="expression">The <see cref="Expression" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public MemberExpression Update(Expression expression)
+        public MemberExpression Update(Expression? expression)
         {
             return expression == Expression ? this : MakeMemberAccess(expression, Member);
         }

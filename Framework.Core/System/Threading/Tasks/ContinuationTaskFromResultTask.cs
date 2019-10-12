@@ -6,9 +6,9 @@ namespace System.Threading.Tasks
 {
     internal sealed class ContinuationTaskFromResultTask<TAntecedentResult> : Task, IContinuationTask
     {
-        private Task<TAntecedentResult> _antecedent;
+        private Task<TAntecedentResult>? _antecedent;
 
-        public ContinuationTaskFromResultTask(Task<TAntecedentResult> antecedent, Delegate action, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
+        public ContinuationTaskFromResultTask(Task<TAntecedentResult> antecedent, Delegate action, object? state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
             : base(action, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, internalOptions, TaskScheduler.Default)
         {
             Contract.Requires(action is Action<Task<TAntecedentResult>> || action is Action<Task<TAntecedentResult>, object>, "Invalid delegate type in ContinuationTaskFromResultTask");
@@ -16,7 +16,7 @@ namespace System.Threading.Tasks
             CapturedContext = ExecutionContext.Capture();
         }
 
-        public Task Antecedent => _antecedent;
+        public Task? Antecedent => _antecedent;
 
         /// <inheritdoc />
         /// <summary>
@@ -35,11 +35,11 @@ namespace System.Threading.Tasks
             switch (Action)
             {
                 case Action<Task<TAntecedentResult>> action:
-                    action(antecedent);
+                    action(antecedent!);
                     return;
 
-                case Action<Task<TAntecedentResult>, object> actionWithState:
-                    actionWithState(antecedent, State);
+                case Action<Task<TAntecedentResult>, object?> actionWithState:
+                    actionWithState(antecedent!, State);
                     return;
 
                 default:

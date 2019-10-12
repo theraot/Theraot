@@ -14,13 +14,13 @@ namespace System.Threading.Tasks
     {
         /// <summary>Cached delegate that invokes an Action passed as an object parameter.</summary>
         [SecurityCritical]
-        private static ContextCallback _invokeActionCallback;
+        private static ContextCallback? _invokeActionCallback;
 
         /// <summary>The action to invoke.</summary>
         protected readonly Action Action;
 
         /// <summary>The ExecutionContext with which to run the continuation.</summary>
-        private ExecutionContext _capturedContext;
+        private ExecutionContext? _capturedContext;
 
         /// <summary>Initializes the continuation.</summary>
         /// <param name="action">The action to invoke. Must not be null.</param>
@@ -28,7 +28,6 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         internal AwaitTaskContinuation(Action action, bool flowExecutionContext)
         {
-            Contract.Requires(action != null);
             Action = action;
             if (flowExecutionContext)
             {
@@ -103,7 +102,7 @@ namespace System.Threading.Tasks
         ///     via using TaskAwaiter.UnsafeOnCompleted or a similar path.
         /// </remarks>
         [SecurityCritical]
-        internal static void RunOrScheduleAction(Action action, bool allowInlining, ref Task currentTask)
+        internal static void RunOrScheduleAction(Action action, bool allowInlining, ref Task? currentTask)
         {
             // NOTICE this method has no null check
             Contract.Assert(currentTask == Task.InternalCurrent);
@@ -205,9 +204,6 @@ namespace System.Threading.Tasks
         /// <returns>The created task.</returns>
         protected Task CreateTask(Action<object> action, object state, TaskScheduler scheduler)
         {
-            Contract.Requires(action != null);
-            Contract.Requires(scheduler != null);
-
             return new Task
             (
                 action, state, null, default,
@@ -223,7 +219,7 @@ namespace System.Threading.Tasks
         /// <param name="state">The state to pass to the callback.</param>
         /// <param name="currentTask">A reference to Task.t_currentTask.</param>
         [SecurityCritical]
-        protected void RunCallback(ContextCallback callback, object state, ref Task currentTask)
+        protected void RunCallback(ContextCallback callback, object state, ref Task? currentTask)
         {
             if (callback == null)
             {

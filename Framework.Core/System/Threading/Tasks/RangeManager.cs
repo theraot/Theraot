@@ -110,7 +110,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal RangeWorker RegisterNewWorker()
         {
-            Debug.Assert(IndexRanges != null && IndexRanges.Length != 0);
+            Debug.Assert(IndexRanges.Length != 0);
 
             var initialRange = (Interlocked.Increment(ref CurrentIndexRangeToAssign) - 1) % IndexRanges.Length;
 

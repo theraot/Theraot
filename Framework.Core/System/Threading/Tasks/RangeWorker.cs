@@ -69,12 +69,14 @@ namespace System.Threading.Tasks
 
                 if (currentRange.RangeFinished == 0)
                 {
-                    if (_indexRanges[_currentIndexRange].SharedCurrentIndexOffset == null)
+                    var found = _indexRanges[_currentIndexRange].SharedCurrentIndexOffset;
+                    if (found == null)
                     {
-                        Interlocked.CompareExchange(ref _indexRanges[_currentIndexRange].SharedCurrentIndexOffset, new StrongBox<long>(0), null);
+                        var created = new StrongBox<long>(0);
+                        found = Interlocked.CompareExchange(ref _indexRanges[_currentIndexRange].SharedCurrentIndexOffset, created, null) ?? created;
                     }
 
-                    var myOffset = Interlocked.Add(ref _indexRanges[_currentIndexRange].SharedCurrentIndexOffset.Value, _incrementValue) - _incrementValue;
+                    var myOffset = Interlocked.Add(ref found.Value, _incrementValue) - _incrementValue;
                     if (currentRange.ToExclusive - currentRange.FromInclusive > myOffset)
                     {
                         // we found work

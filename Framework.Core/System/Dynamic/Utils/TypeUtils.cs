@@ -472,7 +472,7 @@ namespace System.Dynamic.Utils
             ValidateType(type, paramName, false, false);
         }
 
-        internal static void ValidateType(Type type, string paramName, bool allowByRef, bool allowPointer)
+        internal static void ValidateType(Type type, string? paramName, bool allowByRef, bool allowPointer)
         {
             if (!ValidateType(type, paramName, -1))
             {
@@ -490,7 +490,7 @@ namespace System.Dynamic.Utils
             }
         }
 
-        internal static bool ValidateType(Type type, string paramName, int index)
+        internal static bool ValidateType(Type type, string? paramName, int index)
         {
             if (type == typeof(void))
             {

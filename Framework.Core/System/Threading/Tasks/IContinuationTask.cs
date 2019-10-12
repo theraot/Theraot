@@ -1,10 +1,10 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
 
 namespace System.Threading.Tasks
 {
     internal interface IContinuationTask
     {
-        Task Antecedent { get; }
+        Task? Antecedent { get; }
     }
 }
 

@@ -47,10 +47,15 @@ namespace System.Linq.Expressions
         ///     <see cref="MemberBinding" /> and the <see cref="MemberBinding.Member" /> and
         ///     <see cref="MemberMemberBinding.Bindings" /> properties set to the specified values.
         /// </returns>
-        public static MemberMemberBinding MemberBind(MemberInfo member, IEnumerable<MemberBinding> bindings)
+        public static MemberMemberBinding MemberBind(MemberInfo member, IEnumerable<MemberBinding>? bindings)
         {
             ContractUtils.RequiresNotNull(member, nameof(member));
             ContractUtils.RequiresNotNull(bindings, nameof(bindings));
+            return MemberBindExtracted(member, bindings);
+        }
+
+        private static MemberMemberBinding MemberBindExtracted(MemberInfo member, IEnumerable<MemberBinding> bindings)
+        {
             var bindingsArray = bindings.AsArrayInternal();
             ValidateGettableFieldOrPropertyMember(member, out var memberType);
             ValidateMemberInitArgs(memberType, bindingsArray);
@@ -150,9 +155,9 @@ namespace System.Linq.Expressions
     ///     Represents initializing members of a member of a newly created object.
     /// </summary>
     /// <remarks>
-    ///     The value of the <see cref="P:System.Linq.Expressions.MemberBinding.BindingType" /> property of a
-    ///     <see cref="T:System.Linq.Expressions.MemberMemberBinding" /> object is
-    ///     <see cref="T:System.Linq.Expressions.MemberBinding" />.
+    ///     The value of the <see cref="System.Linq.Expressions.MemberBinding.BindingType" /> property of a
+    ///     <see cref="System.Linq.Expressions.MemberMemberBinding" /> object is
+    ///     <see cref="System.Linq.Expressions.MemberBinding" />.
     /// </remarks>
     public sealed class MemberMemberBinding : MemberBinding
     {
@@ -180,7 +185,7 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="bindings">The <see cref="Bindings" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public MemberMemberBinding Update(IEnumerable<MemberBinding> bindings)
+        public MemberMemberBinding Update(IEnumerable<MemberBinding>? bindings)
         {
             if (bindings != null && ExpressionUtils.SameElements(ref bindings, _bindings))
             {

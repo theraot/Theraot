@@ -6,17 +6,24 @@ namespace System.Threading.Tasks
 {
     internal sealed class ContinuationResultTaskFromResultTask<TAntecedentResult, TResult> : Task<TResult>, IContinuationTask
     {
-        private Task<TAntecedentResult> _antecedent;
+        private Task<TAntecedentResult>? _antecedent;
 
-        public ContinuationResultTaskFromResultTask(Task<TAntecedentResult> antecedent, Delegate function, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
+        public ContinuationResultTaskFromResultTask
+        (
+            Task<TAntecedentResult> antecedent,
+            Delegate function,
+            object? state,
+            TaskCreationOptions creationOptions,
+            InternalTaskOptions internalOptions
+        )
             : base(function, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, internalOptions, TaskScheduler.Default)
         {
-            Contract.Requires(function is Func<Task<TAntecedentResult>, TResult> || function is Func<Task<TAntecedentResult>, object, TResult>, "Invalid delegate type in ContinuationResultTaskFromResultTask");
+            Contract.Requires(function is Func<Task<TAntecedentResult>, TResult> || function is Func<Task<TAntecedentResult>, object?, TResult>, "Invalid delegate type in ContinuationResultTaskFromResultTask");
             _antecedent = antecedent;
             CapturedContext = ExecutionContext.Capture();
         }
 
-        Task IContinuationTask.Antecedent => _antecedent;
+        Task? IContinuationTask.Antecedent => _antecedent;
 
         /// <summary>
         ///     Evaluates the value selector of the Task which is passed in as an object and stores the result.
@@ -34,11 +41,11 @@ namespace System.Threading.Tasks
             switch (Action)
             {
                 case Func<Task<TAntecedentResult>, TResult> func:
-                    InternalResult = func(antecedent);
+                    InternalResult = func(antecedent!);
                     return;
 
-                case Func<Task<TAntecedentResult>, object, TResult> funcWithState:
-                    InternalResult = funcWithState(antecedent, State);
+                case Func<Task<TAntecedentResult>, object?, TResult> funcWithState:
+                    InternalResult = funcWithState(antecedent!, State);
                     return;
 
                 default:

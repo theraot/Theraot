@@ -242,7 +242,7 @@ namespace System.Linq.Expressions
         /// <param name="finally">The <see cref="Finally" /> property of the result.</param>
         /// <param name="fault">The <see cref="Fault" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public TryExpression Update(Expression body, IEnumerable<CatchBlock> handlers, Expression @finally, Expression fault)
+        public TryExpression Update(Expression body, IEnumerable<CatchBlock> handlers, Expression? @finally, Expression? fault)
         {
             if (body == Body && @finally == Finally && fault == Fault && ExpressionUtils.SameElements(ref handlers, _handlers))
             {

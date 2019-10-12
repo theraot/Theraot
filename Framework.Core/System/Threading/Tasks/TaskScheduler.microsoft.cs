@@ -153,7 +153,7 @@ namespace System.Threading.Tasks
             public int Id => _taskScheduler.Id;
 
             // returns the scheduler's GetScheduledTasks
-            public IEnumerable<Task> ScheduledTasks => _taskScheduler.GetScheduledTasks();
+            public IEnumerable<Task>? ScheduledTasks => _taskScheduler.GetScheduledTasks();
         }
     }
 }

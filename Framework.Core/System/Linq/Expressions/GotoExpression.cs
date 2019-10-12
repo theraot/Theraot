@@ -220,7 +220,7 @@ namespace System.Linq.Expressions
         ///     and <paramref name="value" /> to be passed to the target label upon jumping.
         /// </returns>
         [return: NotNull]
-        public static GotoExpression MakeGoto(GotoExpressionKind kind, LabelTarget target, Expression? value, Type type)
+        public static GotoExpression MakeGoto(GotoExpressionKind kind, LabelTarget? target, Expression? value, Type type)
         {
             if (target == null)
             {
@@ -387,7 +387,7 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="Target" /> property of the result.</param>
         /// <param name="value">The <see cref="Value" /> property of the result.</param>
         /// <returns>This expression if no children changed, or an expression with the updated children.</returns>
-        public GotoExpression Update(LabelTarget target, Expression? value)
+        public GotoExpression Update(LabelTarget? target, Expression? value)
         {
             if (target == Target && value == Value)
             {

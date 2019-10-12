@@ -64,7 +64,7 @@ namespace System.Threading.Tasks
 
         protected internal abstract void QueueTask(Task task);
 
-        protected abstract IEnumerable<Task> GetScheduledTasks();
+        protected abstract IEnumerable<Task>? GetScheduledTasks();
 
         protected virtual bool TryDequeue(Task task)
         {

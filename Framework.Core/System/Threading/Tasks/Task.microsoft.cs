@@ -16,12 +16,12 @@ namespace System.Threading.Tasks
         private static readonly Action<object> _taskCancelCallback = TaskCancelCallback;
 
         private int _cancellationAcknowledged;
-        private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
+        private StrongBox<CancellationTokenRegistration>? _cancellationRegistration;
         private int _cancellationRequested;
         private int _completionCountdown = 1;
-        private List<Task> _exceptionalChildren;
+        private List<Task>? _exceptionalChildren;
         private int _exceptionObservedByParent;
-        private TaskExceptionHolder _exceptionsHolder;
+        private TaskExceptionHolder? _exceptionsHolder;
         private int _threadAbortedManaged;
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace System.Threading.Tasks
                     action();
                     return;
 
-                case Action<object> actionWithState:
+                case Action<object?> actionWithState:
                     actionWithState(State);
                     return;
 
@@ -270,7 +270,6 @@ namespace System.Threading.Tasks
 
         internal void ProcessChildCompletion(Task childTask)
         {
-            Contract.Requires(childTask != null);
             Contract.Requires(childTask.IsCompleted, "ProcessChildCompletion was called for an uncompleted task");
 
             Contract.Assert(childTask._parent == this, "ProcessChildCompletion should only be called for a child of this task");
@@ -320,7 +319,7 @@ namespace System.Threading.Tasks
         internal void ThrowIfExceptional(bool includeTaskCanceledExceptions)
         {
             Contract.Requires(IsCompleted, "ThrowIfExceptional(): Expected IsCompleted == true");
-            Exception exception = GetExceptions(includeTaskCanceledExceptions);
+            Exception? exception = GetExceptions(includeTaskCanceledExceptions);
             if (exception == null)
             {
                 return;
@@ -399,7 +398,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        private void AssignCancellationToken(CancellationToken cancellationToken, Task antecedent, TaskContinuation continuation)
+        private void AssignCancellationToken(CancellationToken cancellationToken, Task? antecedent, TaskContinuation? continuation)
         {
             CancellationToken = cancellationToken;
             try
@@ -423,7 +422,7 @@ namespace System.Threading.Tasks
                 else
                 {
                     // Regular path for an uncanceled cancellationToken
-                    var registration = cancellationToken.Register(_taskCancelCallback, antecedent == null ? (object)this : new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
+                    var registration = cancellationToken.Register(_taskCancelCallback, antecedent == null ? (object)this : new Tuple<Task, Task, TaskContinuation?>(this, antecedent, continuation));
                     _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                 }
             }
@@ -501,7 +500,7 @@ namespace System.Threading.Tasks
                 InternalCurrent = previousTask;
             }
 
-            void ExecutionContextCallback(object obj)
+            static void ExecutionContextCallback(object obj)
             {
                 if (!(obj is Task task))
                 {
@@ -520,7 +519,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <param name="includeTaskCanceledExceptions">Whether to include a TCE if canceled.</param>
         /// <returns>An aggregate exception, or null if no exceptions have been caught.</returns>
-        private AggregateException GetExceptions(bool includeTaskCanceledExceptions)
+        private AggregateException? GetExceptions(bool includeTaskCanceledExceptions)
         {
             //
             // WARNING: The Task/Task<TResult>/TaskCompletionSource classes
@@ -539,7 +538,7 @@ namespace System.Threading.Tasks
             //
 
             // We'll lazily create a TCE if the task has been canceled.
-            Exception canceledException = null;
+            Exception? canceledException = null;
             if (includeTaskCanceledExceptions && IsCanceled)
             {
                 // Backcompat:
@@ -556,7 +555,7 @@ namespace System.Threading.Tasks
             {
                 // No need to lock around this, as other logic prevents the consumption of exceptions
                 // before they have been completely processed.
-                return _exceptionsHolder.CreateExceptionObject(false, canceledException);
+                return exceptionsHolder.CreateExceptionObject(false, canceledException);
             }
 
             return canceledException != null ? new AggregateException(canceledException) : null;
@@ -569,8 +568,6 @@ namespace System.Threading.Tasks
         /// <param name="unhandledException">The exception that went unhandled.</param>
         private void HandleException(Exception unhandledException)
         {
-            Contract.Requires(unhandledException != null);
-
             if (unhandledException is OperationCanceledExceptionEx exceptionAsOce && IsCancellationRequested && CancellationToken == exceptionAsOce.CancellationToken)
             {
                 // All conditions are satisfied for us to go into canceled state in Finish().
@@ -603,8 +600,6 @@ namespace System.Threading.Tasks
         /// </param>
         internal void AddException(object exceptionObject, bool representsCancellation)
         {
-            Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
-
             //
             // WARNING: A great deal of care went into ensuring that
             // AddException() and GetExceptions() are never called
@@ -639,7 +634,6 @@ namespace System.Threading.Tasks
 
         private void AddException(object exceptionObject)
         {
-            Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
             AddException(exceptionObject, /*representsCancellation:*/ false);
         }
     }

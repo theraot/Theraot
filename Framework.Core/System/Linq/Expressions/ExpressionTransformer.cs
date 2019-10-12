@@ -219,7 +219,7 @@ namespace System.Linq.Expressions
 
         private Expression VisitMemberAccess(MemberExpression m)
         {
-            var exp = Visit(m.Expression);
+            var exp = Visit(m.Expression!);
             return exp != m.Expression ? Expression.MakeMemberAccess(exp, m.Member) : m;
         }
 

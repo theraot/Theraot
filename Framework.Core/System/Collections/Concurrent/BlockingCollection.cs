@@ -19,7 +19,7 @@ namespace System.Collections.Concurrent
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class BlockingCollection<T> : ICollection, IDisposable, IReadOnlyCollection<T>
     {
-        private PrivateData _data;
+        private PrivateData? _data;
 
         public BlockingCollection()
         {

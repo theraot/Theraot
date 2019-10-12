@@ -36,10 +36,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.
         ///     </para>
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task.
         /// </exception>
         public static Task WhenAll(IEnumerable<Task> tasks)
@@ -50,40 +50,37 @@ namespace System.Threading.Tasks
                 return WhenAll(taskArray);
             }
 
-            switch (tasks)
+            if (tasks is ICollection<Task> taskCollection)
             {
-                // Skip a List allocation/copy if tasks is a collection
-                case ICollection<Task> taskCollection:
+                var index = 0;
+                taskArray = new Task[taskCollection.Count];
+                foreach (var task in taskCollection)
                 {
-                    var index = 0;
-                    taskArray = new Task[taskCollection.Count];
-                    foreach (var task in tasks)
+                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                }
+
+                return InternalWhenAll(taskArray);
+            }
+            else if (tasks == null)
+            {
+                throw new ArgumentNullException(nameof(tasks));
+            }
+            else
+            {
+                var taskList = new List<Task>();
+                foreach (var task in tasks)
+                {
+                    if (task == null)
                     {
-                        taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                        throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                     }
 
-                    return InternalWhenAll(taskArray);
-                }
-                // Do some argument checking and convert tasks to a List (and later an array).
-                case null:
-                    throw new ArgumentNullException(nameof(tasks));
-                default:
-                    break;
-            }
-
-            var taskList = new List<Task>();
-            foreach (var task in tasks)
-            {
-                if (task == null)
-                {
-                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                    taskList.Add(task);
                 }
 
-                taskList.Add(task);
+                // Delegate the rest to InternalWhenAll()
+                return InternalWhenAll(taskList.ToArray());
             }
-
-            // Delegate the rest to InternalWhenAll()
-            return InternalWhenAll(taskList.ToArray());
         }
 
         /// <summary>
@@ -112,10 +109,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.
         ///     </para>
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task.
         /// </exception>
         public static Task WhenAll(params Task[] tasks)
@@ -176,10 +173,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.  The returned TResult[] will be an array of 0 elements.
         ///     </para>
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task.
         /// </exception>
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
@@ -190,40 +187,37 @@ namespace System.Threading.Tasks
                 return WhenAll(taskArray);
             }
 
-            switch (tasks)
+            if (tasks is ICollection<Task<TResult>> taskCollection)
             {
-                // Skip a List allocation/copy if tasks is a collection
-                case ICollection<Task<TResult>> taskCollection:
+                var index = 0;
+                taskArray = new Task<TResult>[taskCollection.Count];
+                foreach (var task in taskCollection)
                 {
-                    var index = 0;
-                    taskArray = new Task<TResult>[taskCollection.Count];
-                    foreach (var task in tasks)
+                    taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                }
+
+                return InternalWhenAll(taskArray);
+            }
+            else if (tasks == null)
+            {
+                throw new ArgumentNullException(nameof(tasks));
+            }
+            else
+            {
+                var taskList = new List<Task<TResult>>();
+                foreach (var task in tasks)
+                {
+                    if (task == null)
                     {
-                        taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                        throw new ArgumentException("Task_MultiTaskContinuation_NullTask", nameof(tasks));
                     }
 
-                    return InternalWhenAll(taskArray);
-                }
-                // Do some argument checking and convert tasks into a List (later an array)
-                case null:
-                    throw new ArgumentNullException(nameof(tasks));
-                default:
-                    break;
-            }
-
-            var taskList = new List<Task<TResult>>();
-            foreach (var task in tasks)
-            {
-                if (task == null)
-                {
-                    throw new ArgumentException("Task_MultiTaskContinuation_NullTask", nameof(tasks));
+                    taskList.Add(task);
                 }
 
-                taskList.Add(task);
+                // Delegate the rest to InternalWhenAll<TResult>().
+                return InternalWhenAll(taskList.ToArray());
             }
-
-            // Delegate the rest to InternalWhenAll<TResult>().
-            return InternalWhenAll(taskList.ToArray());
         }
 
         /// <summary>
@@ -257,10 +251,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.  The returned TResult[] will be an array of 0 elements.
         ///     </para>
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task.
         /// </exception>
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
@@ -304,10 +298,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task, or was empty.
         /// </exception>
         public static Task<Task> WhenAny(params Task[] tasks)
@@ -351,10 +345,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task, or was empty.
         /// </exception>
         public static Task<Task> WhenAny(IEnumerable<Task> tasks)
@@ -401,10 +395,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task, or was empty.
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
@@ -433,10 +427,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task, or was empty.
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
@@ -453,7 +447,7 @@ namespace System.Threading.Tasks
         /// <summary>Returns true if any of the supplied tasks require wait notification.</summary>
         /// <param name="tasks">The tasks to check.</param>
         /// <returns>true if any of the tasks require notification; otherwise, false.</returns>
-        internal static bool AnyTaskRequiresNotifyDebuggerOfWaitCompletion(IEnumerable<Task> tasks)
+        internal static bool AnyTaskRequiresNotifyDebuggerOfWaitCompletion(IEnumerable<Task?> tasks)
         {
             if (tasks != null)
             {
@@ -468,7 +462,6 @@ namespace System.Threading.Tasks
         // tasks should be a defensive copy.
         private static Task InternalWhenAll(Task[] tasks)
         {
-            Contract.Requires(tasks != null, "Expected a non-null tasks array");
             // take shortcut if there are no tasks upon which to wait
             return tasks.Length == 0 ? TaskEx.CompletedTask : new WhenAllPromise(tasks);
         }
@@ -476,7 +469,6 @@ namespace System.Threading.Tasks
         // Some common logic to support WhenAll<TResult> methods
         private static Task<TResult[]> InternalWhenAll<TResult>(Task<TResult>[] tasks)
         {
-            Contract.Requires(tasks != null, "Expected a non-null tasks array");
             // take shortcut if there are no tasks upon which to wait
             return tasks.Length == 0 ? FromResult(new TResult[0]) : new WhenAllPromise<TResult>(tasks);
         }

@@ -18,7 +18,7 @@ namespace System.Threading.Tasks
             Context.Post(Callback, task);
         }
 
-        protected override IEnumerable<Task> GetScheduledTasks()
+        protected override IEnumerable<Task>? GetScheduledTasks()
         {
             return null;
         }

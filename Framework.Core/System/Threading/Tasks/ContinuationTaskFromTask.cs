@@ -6,17 +6,17 @@ namespace System.Threading.Tasks
 {
     internal sealed class ContinuationTaskFromTask : Task, IContinuationTask
     {
-        private Task _antecedent;
+        private Task? _antecedent;
 
-        public ContinuationTaskFromTask(Task antecedent, Delegate action, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
+        public ContinuationTaskFromTask(Task antecedent, Delegate action, object? state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
             : base(action, state, InternalCurrentIfAttached(creationOptions), default, creationOptions, internalOptions, antecedent.ExecutingTaskScheduler)
         {
-            Contract.Requires(action is Action<Task> || action is Action<Task, object>, "Invalid delegate type in ContinuationTaskFromTask");
+            Contract.Requires(action is Action<Task> || action is Action<Task, object?>, "Invalid delegate type in ContinuationTaskFromTask");
             _antecedent = antecedent;
             CapturedContext = ExecutionContext.Capture();
         }
 
-        Task IContinuationTask.Antecedent => _antecedent;
+        Task? IContinuationTask.Antecedent => _antecedent;
 
         /// <inheritdoc />
         /// <summary>
@@ -34,11 +34,11 @@ namespace System.Threading.Tasks
             switch (Action)
             {
                 case Action<Task> action:
-                    action(antecedent);
+                    action(antecedent!);
                     return;
 
-                case Action<Task, object> actionWithState:
-                    actionWithState(antecedent, State);
+                case Action<Task, object?> actionWithState:
+                    actionWithState(antecedent!, State);
                     return;
 
                 default:

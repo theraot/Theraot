@@ -71,7 +71,7 @@ namespace System.Threading.Tasks
         }
 
         [SecurityCritical]
-        protected override IEnumerable<Task> GetScheduledTasks()
+        protected override IEnumerable<Task>? GetScheduledTasks()
         {
             // TODO ?
             yield break;

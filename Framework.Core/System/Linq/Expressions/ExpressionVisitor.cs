@@ -774,7 +774,7 @@ namespace System.Linq.Expressions
         ///     The modified expression, if it or any subexpression was modified;
         ///     otherwise, returns the original expression.
         /// </returns>
-        protected virtual LabelTarget VisitLabelTarget(LabelTarget node)
+        protected virtual LabelTarget? VisitLabelTarget(LabelTarget? node)
         {
             return node;
         }

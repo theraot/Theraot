@@ -121,7 +121,8 @@ namespace System.Threading.Tasks
                 {
                     function().ContinueWith
                     (
-                        task => source.SetResult(task.InternalResult)
+                        task => source.SetResult(task.InternalResult),
+                        TaskScheduler.Current
                     );
                 }
             );
@@ -138,7 +139,17 @@ namespace System.Threading.Tasks
 
             var source = new TaskCompletionSource<TResult>();
             var result = source.Task;
-            ThreadPool.QueueUserWorkItem(_ => function().ContinueWith(task => source.SetResult(task.InternalResult), cancellationToken));
+            ThreadPool.QueueUserWorkItem
+            (
+                _ =>
+                function().ContinueWith
+                (
+                    task => source.SetResult(task.InternalResult),
+                    cancellationToken,
+                    TaskContinuationOptions.None,
+                    TaskScheduler.Current
+                )
+            );
             result.Wait(cancellationToken);
             return result;
         }

@@ -8,7 +8,7 @@ namespace System.Threading.Tasks
 {
     public partial class Task<TResult> : Task
     {
-        internal TResult InternalResult;
+        internal TResult InternalResult = default!;
 
         static Task()
         {
@@ -51,7 +51,7 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        internal Task(Delegate function, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+        internal Task(Delegate function, object? state, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
             : base(function, state, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             // Empty
@@ -64,7 +64,7 @@ namespace System.Threading.Tasks
                 Wait();
                 if (IsFaulted)
                 {
-                    throw Exception;
+                    throw Exception!;
                 }
 
                 if (IsCanceled)
@@ -86,7 +86,7 @@ namespace System.Threading.Tasks
                     InternalResult = action();
                     return;
 
-                case Func<object, TResult> withState:
+                case Func<object?, TResult> withState:
                     InternalResult = withState(State);
                     return;
 
