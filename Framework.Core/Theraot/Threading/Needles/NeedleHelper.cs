@@ -6,17 +6,17 @@ namespace Theraot.Threading.Needles
     {
         public static bool TryGetValue<T>(this IReadOnlyNeedle<T> needle, out T target)
         {
-            switch (needle)
+            if (needle == null)
             {
-                case null:
-                    target = default;
-                    return false;
-                case ICacheNeedle<T> cacheNeedle:
-                    return cacheNeedle.TryGetValue(out target);
-                default:
-                    target = needle.Value;
-                    return needle.IsAlive;
+                target = default!;
+                return false;
             }
+            if (needle is ICacheNeedle<T> cacheNeedle)
+            {
+                return cacheNeedle.TryGetValue(out target);
+            }
+            target = needle.Value;
+            return needle.IsAlive;
         }
     }
 }

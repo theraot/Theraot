@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclableNeedle<T>
+    public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclable<T>
     {
         public StructNeedle(T target)
         {
@@ -90,7 +90,7 @@ namespace Theraot.Threading.Needles
             return other.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
         }
 
-        void IRecyclableNeedle<T>.Free()
+        void IRecyclable<T>.Free()
         {
             Value = default;
         }

@@ -91,10 +91,11 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Add(T? item)
         {
-            var needle = new TNeedle
+            var needle = new TNeedle();
+            if (item != null)
             {
-                Value = item
-            };
+                needle.Value = item;
+            }
             _wrapped.Add(needle);
         }
 
@@ -269,11 +270,11 @@ namespace Theraot.Collections.ThreadSafe
             if (NeedleHelper.TryGetValue(_eventHandler, out var eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
-                _eventHandler.Value = null;
+                _eventHandler.Free();
                 return true;
             }
 
-            _eventHandler.Value = null;
+            _eventHandler.Free();
             return false;
         }
     }

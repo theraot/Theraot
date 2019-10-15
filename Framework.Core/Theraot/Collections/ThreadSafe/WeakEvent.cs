@@ -27,16 +27,20 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Add(MethodInfo method, object target)
         {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
             var value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
             EventHandlers.Add(value);
         }
 
-        public virtual void Invoke(object sender, TEventArgs eventArgs)
+        public virtual void Invoke(object? sender, TEventArgs eventArgs)
         {
             EventHandlers.Invoke(DelegateCollectionInvokeOptions.None, sender, eventArgs);
         }
 
-        public virtual void Invoke(Action<Exception> onException, object sender, TEventArgs eventArgs)
+        public virtual void Invoke(Action<Exception> onException, object? sender, TEventArgs eventArgs)
         {
             EventHandlers.Invoke(onException, DelegateCollectionInvokeOptions.None, sender, eventArgs);
         }
@@ -48,6 +52,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Remove(MethodInfo method, object target)
         {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
             var value = method.CreateDelegate(typeof(EventHandler<TEventArgs>), target);
             EventHandlers.Remove(value);
         }

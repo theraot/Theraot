@@ -37,16 +37,6 @@ namespace Theraot.Threading.Needles
             return !(right is null) && left._promised.Equals(right._promised);
         }
 
-        public static explicit operator T(ReadOnlyPromiseNeedle<T> needle)
-        {
-            if (needle == null)
-            {
-                throw new ArgumentNullException(nameof(needle));
-            }
-
-            return needle.Value;
-        }
-
         public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
             if (left is null)
@@ -74,7 +64,19 @@ namespace Theraot.Threading.Needles
                 return _promised.Equals(needle._promised);
             }
 
-            return _promised.IsCompleted && _promised.Value.Equals(null);
+            if (!_promised.IsCompleted)
+            {
+                return false;
+            }
+
+            var hasValue = _promised.TryGetValue(out var value);
+
+            if (obj is null)
+            {
+                return !hasValue;
+            }
+
+            return hasValue && obj.Equals(value);
         }
 
         public override int GetHashCode()

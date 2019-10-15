@@ -1,6 +1,7 @@
 ﻿#if NET40
 
 #pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
@@ -65,7 +66,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets an awaiter used to await this <see cref="T:System.Threading.Tasks.Task" />.
+        ///     Gets an awaiter used to await this <see cref="System.Threading.Tasks.Task" />.
         /// </summary>
         /// <param name="task">The task to await.</param>
         /// <returns>
@@ -83,7 +84,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets an awaiter used to await this <see cref="T:System.Threading.Tasks.Task" />.
+        ///     Gets an awaiter used to await this <see cref="System.Threading.Tasks.Task" />.
         /// </summary>
         /// <typeparam name="TResult">Specifies the type of data returned by the task.</typeparam>
         /// <param name="task">The task to await.</param>

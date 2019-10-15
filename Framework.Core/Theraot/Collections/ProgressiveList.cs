@@ -37,7 +37,7 @@ namespace Theraot.Collections
             // Empty
         }
 
-        protected ProgressiveList(Progressor<T> progressor, IList<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveList(Progressor<T> progressor, IList<T> cache, IEqualityComparer<T>? comparer)
             : base(progressor, cache, comparer)
         {
             _cache = cache;

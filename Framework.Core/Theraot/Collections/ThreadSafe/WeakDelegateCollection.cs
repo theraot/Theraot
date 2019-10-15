@@ -10,10 +10,10 @@ namespace Theraot.Collections.ThreadSafe
     [DebuggerNonUserCode]
     public sealed class WeakDelegateCollection : WeakCollection<Delegate, WeakDelegateNeedle>
     {
-        private readonly Action<object[]> _invoke;
-        private readonly Action<object[]> _invokeAndClear;
-        private readonly Action<Action<Exception>, object[]> _invokeAndClearWithException;
-        private readonly Action<Action<Exception>, object[]> _invokeWithException;
+        private readonly Action<object?[]> _invoke;
+        private readonly Action<object?[]> _invokeAndClear;
+        private readonly Action<Action<Exception>, object?[]> _invokeAndClearWithException;
+        private readonly Action<Action<Exception>, object?[]> _invokeWithException;
 
         public WeakDelegateCollection(bool autoRemoveDeadItems, bool freeReentry)
             : base(autoRemoveDeadItems)
@@ -35,7 +35,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public void Invoke(DelegateCollectionInvokeOptions options, params object[] args)
+        public void Invoke(DelegateCollectionInvokeOptions options, params object?[] args)
         {
             if ((options & DelegateCollectionInvokeOptions.RemoveDelegates) != DelegateCollectionInvokeOptions.None)
             {
@@ -47,7 +47,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public void Invoke(Action<Exception> onException, DelegateCollectionInvokeOptions options, params object[] args)
+        public void Invoke(Action<Exception> onException, DelegateCollectionInvokeOptions options, params object?[] args)
         {
             if ((options & DelegateCollectionInvokeOptions.RemoveDelegates) != DelegateCollectionInvokeOptions.None)
             {
@@ -59,29 +59,29 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private void InvokeExtracted(object[] args)
+        private void InvokeExtracted(object?[] args)
         {
             foreach (var handler in this)
             {
-                handler.DynamicInvoke(args);
+                handler?.DynamicInvoke(args);
             }
         }
 
-        private void InvokeAndClearExtracted(object[] args)
+        private void InvokeAndClearExtracted(object?[] args)
         {
             foreach (var handler in ClearEnumerable())
             {
-                handler.DynamicInvoke(args);
+                handler?.DynamicInvoke(args);
             }
         }
 
-        private void InvokeExtracted(Action<Exception> onException, object[] args)
+        private void InvokeExtracted(Action<Exception> onException, object?[] args)
         {
             foreach (var handler in this)
             {
                 try
                 {
-                    handler.DynamicInvoke(args);
+                    handler?.DynamicInvoke(args);
                 }
                 catch (Exception exception)
                 {
@@ -90,13 +90,13 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private void InvokeAndClearExtracted(Action<Exception> onException, object[] args)
+        private void InvokeAndClearExtracted(Action<Exception> onException, object?[] args)
         {
             foreach (var handler in ClearEnumerable())
             {
                 try
                 {
-                    handler.DynamicInvoke(args);
+                    handler?.DynamicInvoke(args);
                 }
                 catch (Exception exception)
                 {

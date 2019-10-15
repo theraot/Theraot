@@ -2,7 +2,7 @@
 
 namespace Theraot.Threading.Needles
 {
-    public interface IRecyclableNeedle<T> : INeedle<T>
+    public interface IRecyclable
     {
         void Free();
     }

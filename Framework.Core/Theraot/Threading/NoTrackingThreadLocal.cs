@@ -15,8 +15,8 @@ namespace Theraot.Threading
     public sealed class NoTrackingThreadLocal<T> : IThreadLocal<T>, ICacheNeedle<T>, IObserver<T>
     {
         private int _disposing;
-        private LocalDataStoreSlot _slot;
-        private Func<T> _valueFactory;
+        private LocalDataStoreSlot? _slot;
+        private Func<T>? _valueFactory;
 
         public NoTrackingThreadLocal()
             : this(ConstructorHelper.CreateOrDefault<T>)
@@ -41,7 +41,7 @@ namespace Theraot.Threading
             var bundle = Thread.GetData(_slot);
             if (!(bundle is INeedle<T> container))
             {
-                value = default;
+                value = default!;
                 return false;
             }
 
@@ -86,6 +86,7 @@ namespace Theraot.Threading
         {
             get
             {
+                var valueFactory = _valueFactory;
                 if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
@@ -100,7 +101,7 @@ namespace Theraot.Threading
                 try
                 {
                     Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
-                    var result = _valueFactory.Invoke();
+                    var result = valueFactory!.Invoke();
                     Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
                     return result;
                 }
@@ -153,7 +154,7 @@ namespace Theraot.Threading
 
         public override string ToString()
         {
-            return Value.ToString();
+            return Value?.ToString() ?? string.Empty;
         }
     }
 }

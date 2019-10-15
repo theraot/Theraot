@@ -87,18 +87,17 @@ namespace System
                 {
                     if (cacheExceptions)
                     {
-                        Thread thread = null;
-                        var waitHandle = new ManualResetEvent(false);
+                        Thread? thread = null;
+                        ManualResetEvent? manualResetEvent = null;
                         _valueFactory =
-                            () => CachingFullMode(valueFactory, waitHandle, ref thread);
+                            () => CachingFullMode(valueFactory, ref manualResetEvent, ref thread);
                     }
                     else
                     {
-                        Thread thread = null;
-                        var waitHandle = new ManualResetEvent(false);
-                        var preIsValueCreated = 0;
+                        Thread? thread = null;
+                        ManualResetEvent? manualResetEvent = null;
                         _valueFactory =
-                            () => FullMode(valueFactory, waitHandle, ref thread, ref preIsValueCreated);
+                            () => FullMode(valueFactory, ref manualResetEvent, ref thread);
                     }
                 }
                     break;
@@ -197,16 +196,19 @@ namespace System
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Value => _valueFactory.Invoke();
 
-        internal T ValueForDebugDisplay { get; private set; }
+        internal T ValueForDebugDisplay { get; private set; } = default!;
 
-        private T CachingFullMode(Func<T> valueFactory, EventWaitHandle waitHandle, ref Thread thread)
+        private T CachingFullMode(Func<T> valueFactory, ref ManualResetEvent? waitHandle, ref Thread? thread)
         {
+            if (waitHandle == null)
+            {
+                waitHandle = new ManualResetEvent(false);
+            }
             if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
             {
+                Volatile.Write(ref thread, Thread.CurrentThread);
                 try
                 {
-                    thread = Thread.CurrentThread;
-                    GC.KeepAlive(thread);
                     ValueForDebugDisplay = valueFactory.Invoke();
                     _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
                     return ValueForDebugDisplay;
@@ -218,58 +220,78 @@ namespace System
                 }
                 finally
                 {
+                    Volatile.Write(ref thread, null);
                     waitHandle.Set();
-                    thread = null;
+                    waitHandle.Close();
                 }
             }
 
-            if (thread == Thread.CurrentThread)
+            if (Volatile.Read(ref thread) == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
 
-            waitHandle.WaitOne();
-            return _valueFactory.Invoke();
-        }
-
-        private T FullMode(Func<T> valueFactory, EventWaitHandle waitHandle, ref Thread thread, ref int preIsValueCreated)
-        {
-            back:
-            if (Interlocked.CompareExchange(ref preIsValueCreated, 1, 0) == 0)
+            if (!waitHandle.SafeWaitHandle.IsClosed)
             {
                 try
                 {
-                    thread = Thread.CurrentThread;
-                    GC.KeepAlive(thread);
-                    ValueForDebugDisplay = valueFactory.Invoke();
-                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
-                    Volatile.Write(ref _isValueCreated, 1);
-                    return ValueForDebugDisplay;
+                    waitHandle.WaitOne();
                 }
-                catch (Exception)
+                catch (ObjectDisposedException exception)
                 {
-                    Volatile.Write(ref preIsValueCreated, 0);
-                    throw;
+                    var _ = exception;
                 }
-                finally
+            }
+            return _valueFactory.Invoke();
+        }
+
+        private T FullMode(Func<T> valueFactory, ref ManualResetEvent? waitHandle, ref Thread? thread)
+        {
+            if (waitHandle == null)
+            {
+                waitHandle = new ManualResetEvent(false);
+            }
+            while(Volatile.Read(ref _isValueCreated) != 1)
+            {
+                var foundThread = Interlocked.CompareExchange(ref thread, Thread.CurrentThread, null);
+                if (foundThread == null)
                 {
-                    waitHandle.Set();
-                    thread = null;
+                    try
+                    {
+                        ValueForDebugDisplay = valueFactory.Invoke();
+                        _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                        Volatile.Write(ref _isValueCreated, 1);
+                        return ValueForDebugDisplay;
+                    }
+                    finally
+                    {
+                        Volatile.Write(ref thread, null);
+                        waitHandle.Set();
+                        if (Volatile.Read(ref _isValueCreated) == 1)
+                        {
+                            waitHandle.Close();
+                        }
+                    }
+                }
+
+                if (foundThread == Thread.CurrentThread)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (!waitHandle.SafeWaitHandle.IsClosed)
+                {
+                    try
+                    {
+                        waitHandle.WaitOne();
+                    }
+                    catch (ObjectDisposedException exception)
+                    {
+                        var _ = exception;
+                    }
                 }
             }
-
-            if (thread == Thread.CurrentThread)
-            {
-                throw new InvalidOperationException();
-            }
-
-            waitHandle.WaitOne();
-            if (Volatile.Read(ref _isValueCreated) == 1)
-            {
-                return _valueFactory.Invoke();
-            }
-
-            goto back;
+            return _valueFactory.Invoke();
         }
     }
 

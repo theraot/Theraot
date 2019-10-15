@@ -31,7 +31,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks));
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), TaskScheduler.Current);
         }
 
         public Task ContinueWhenAll(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken)
@@ -41,7 +41,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAll(Task[] tasks, Action<Task[]> continuationAction, TaskContinuationOptions continuationOptions)
@@ -51,7 +51,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAll(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -81,7 +81,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAll<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, CancellationToken cancellationToken)
@@ -91,7 +91,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAll<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction)
@@ -101,7 +101,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks));
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAll<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -121,7 +121,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAll<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken)
@@ -131,7 +131,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAll<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction)
@@ -141,7 +141,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks));
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationAction(tasks), TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction)
@@ -151,7 +151,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks));
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken)
@@ -161,7 +161,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, TaskContinuationOptions continuationOptions)
@@ -171,7 +171,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+            return Task.WhenAll(tasks).ContinueWith(_ => continuationFunction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAll<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -191,7 +191,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks));
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), TaskScheduler.Current);
         }
 
         public Task ContinueWhenAny(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken)
@@ -201,7 +201,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAny(Task[] tasks, Action<Task[]> continuationAction, TaskContinuationOptions continuationOptions)
@@ -211,7 +211,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAny(Task[] tasks, Action<Task[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -241,7 +241,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAny<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction, CancellationToken cancellationToken)
@@ -251,7 +251,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAny<TAntecedentResult, TResult>(Task<TAntecedentResult>[] tasks, Func<Task<TAntecedentResult>[], TResult> continuationFunction)
@@ -261,7 +261,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks));
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), TaskScheduler.Current);
         }
 
         public Task ContinueWhenAny<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -281,7 +281,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), continuationOptions);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAny<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction, CancellationToken cancellationToken)
@@ -291,7 +291,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task ContinueWhenAny<TAntecedentResult>(Task<TAntecedentResult>[] tasks, Action<Task<TAntecedentResult>[]> continuationAction)
@@ -301,7 +301,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationAction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks));
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationAction(tasks), TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction)
@@ -311,7 +311,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks));
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken)
@@ -321,7 +321,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), cancellationToken, TaskContinuationOptions.None, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, TaskContinuationOptions continuationOptions)
@@ -331,7 +331,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(continuationFunction));
             }
 
-            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), continuationOptions);
+            return Task.WhenAny(tasks).ContinueWith(_ => continuationFunction(tasks), CancellationToken.None, continuationOptions, TaskScheduler.Current);
         }
 
         public Task<TResult> ContinueWhenAny<TResult>(Task[] tasks, Func<Task[], TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
@@ -606,7 +606,7 @@ namespace System.Threading.Tasks
                 task.InternalStart(scheduler, false, true);
             }
 
-            await task;
+            await task.ConfigureAwait(false);
             task.Dispose();
         }
 

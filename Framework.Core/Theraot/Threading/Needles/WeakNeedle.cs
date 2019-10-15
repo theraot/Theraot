@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T?>, ICacheNeedle<T?>
+    public class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclable, ICacheNeedle<T>
         where T : class
     {
         private readonly int _hashCode;
@@ -57,7 +57,7 @@ namespace Theraot.Threading.Needles
 
         public virtual bool TrackResurrection => _trackResurrection;
 
-        public virtual T? Value
+        public virtual T Value
         {
             get
             {
@@ -66,7 +66,7 @@ namespace Theraot.Threading.Needles
                     return target;
                 }
 
-                return null;
+                throw new InvalidOperationException();
             }
 
             set => SetTargetValue(value);
@@ -144,10 +144,15 @@ namespace Theraot.Threading.Needles
             return _handle != null && _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
         }
 
-        public virtual bool TryGetValue(out T? value)
+        public virtual bool TryGetValue(out T value)
         {
-            value = null;
-            return Exception == null && _handle?.TryGetTarget(out value) == true;
+            if (Exception == null && _handle != null && _handle.TryGetTarget(out var found))
+            {
+                value = found;
+                return true;
+            }
+            value = default!;
+            return false;
         }
 
         protected void SetTargetError(Exception error)

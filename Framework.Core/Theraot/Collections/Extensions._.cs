@@ -458,7 +458,15 @@ namespace Theraot.Collections
             }
 
             var currentIndex = 0;
-            comparer ??= EqualityComparer<T>.Default;
+            if (comparer == null)
+            {
+                return IndexOfExtracted(source, item, EqualityComparer<T>.Default, ref currentIndex);
+            }
+            return IndexOfExtracted(source, item, comparer, ref currentIndex);
+        }
+
+        private static int IndexOfExtracted<T>(IEnumerable<T> source, T item, IEqualityComparer<T> comparer, ref int currentIndex)
+        {
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -836,7 +844,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default;
+                item = default!;
                 return false;
             }
         }
@@ -893,10 +901,9 @@ namespace Theraot.Collections
 
         private static void SwapExtracted<T>(IList<T> list, int indexA, int indexB)
         {
-            var itemA = list[indexA];
-            var itemB = list[indexB];
-            list[indexA] = itemB;
-            list[indexB] = itemA;
+            var tmp = list[indexA];
+            list[indexA] = list[indexB];
+            list[indexB] = tmp;
         }
     }
 
@@ -1069,7 +1076,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default;
+                item = default!;
                 return false;
             }
         }
@@ -1088,7 +1095,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default;
+                item = default!;
                 return false;
             }
         }
@@ -1107,7 +1114,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default;
+                item = default!;
                 return false;
             }
         }
@@ -1126,7 +1133,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default;
+                item = default!;
                 return false;
             }
         }

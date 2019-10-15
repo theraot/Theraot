@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 using System.Globalization;
 using System.Runtime.CompilerServices;
 

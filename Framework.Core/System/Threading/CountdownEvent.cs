@@ -9,7 +9,7 @@ namespace System.Threading
     public class CountdownEvent : IDisposable
     {
         private int _currentCount;
-        private ManualResetEventSlim _event;
+        private ManualResetEventSlim? _event;
 
         public CountdownEvent(int initialCount)
         {

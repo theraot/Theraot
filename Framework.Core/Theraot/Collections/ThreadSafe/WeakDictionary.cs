@@ -22,11 +22,11 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly KeyCollection<TKey, TValue> _keyCollection;
 
-        private readonly NeedleReservoir<TKey, WeakNeedle<TKey>>? _reservoir;
+        private readonly NeedleReservoir<TKey, WeakNeedle<TKey>> _reservoir;
 
         private readonly ValueCollection<TKey, TValue> _valueCollection;
 
-        private EventHandler _handle;
+        private EventHandler? _handle;
 
         public WeakDictionary()
             : this(null)
@@ -34,17 +34,17 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        public WeakDictionary(IEqualityComparer<TKey?>? comparer)
+        public WeakDictionary(IEqualityComparer<TKey>? comparer)
         {
-            Comparer = comparer ?? EqualityComparer<TKey?>.Default;
-            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey?>(Comparer);
+            Comparer = comparer ?? EqualityComparer<TKey>.Default;
+            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(Comparer);
             Wrapped = new ThreadSafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer);
             _keyCollection = new KeyCollection<TKey, TValue>(this);
             _valueCollection = new ValueCollection<TKey, TValue>(this);
             _reservoir = new NeedleReservoir<TKey, WeakNeedle<TKey>>(key => new WeakNeedle<TKey>(key));
         }
 
-        public WeakDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
+        public WeakDictionary(IEqualityComparer<TKey>? comparer, int initialProbing)
         {
             Comparer = comparer ?? EqualityComparer<TKey>.Default;
             var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(Comparer);
@@ -79,7 +79,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public IEqualityComparer<TKey?> Comparer { get; }
+        public IEqualityComparer<TKey> Comparer { get; }
 
         public int Count => Wrapped.Count;
 
@@ -335,9 +335,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="T:System.ArgumentNullException">array</exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="System.ArgumentNullException">array</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             if (array == null)
@@ -360,10 +360,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{KeyValuePair{TKey, TValue}}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the
+        ///     An <see cref="System.Collections.Generic.IEnumerator{KeyValuePair{TKey, TValue}}" /> object that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
