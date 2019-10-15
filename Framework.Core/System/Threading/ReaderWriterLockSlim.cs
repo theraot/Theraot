@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 using Theraot;
+using Theraot.Reflection;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -26,7 +27,7 @@ namespace System.Threading
         private const int _rwWrite = 4;
 
         [ThreadStatic]
-        private static Dictionary<int, ThreadLockState> _currentThreadState;
+        private static Dictionary<int, ThreadLockState>? _currentThreadState;
 
         // Incremented when a new object is created, should not be readonly
         private static int _idPool = int.MinValue;
@@ -132,7 +133,7 @@ namespace System.Threading
         public void ExitReadLock()
         {
             RuntimeHelpers.PrepareConstrainedRegions();
-            SynchronizationLockException exception = null;
+            SynchronizationLockException? exception = null;
             try
             {
                 // Empty
@@ -163,7 +164,7 @@ namespace System.Threading
         public void ExitUpgradeableReadLock()
         {
             RuntimeHelpers.PrepareConstrainedRegions();
-            SynchronizationLockException exception = null;
+            SynchronizationLockException? exception = null;
             try
             {
                 // Empty
@@ -197,7 +198,7 @@ namespace System.Threading
         public void ExitWriteLock()
         {
             RuntimeHelpers.PrepareConstrainedRegions();
-            SynchronizationLockException exception = null;
+            SynchronizationLockException? exception = null;
             try
             {
                 // Empty
@@ -547,14 +548,11 @@ namespace System.Threading
 
         private ThreadLockState GetGlobalThreadState()
         {
-            if (_currentThreadState == null)
-            {
-                Interlocked.CompareExchange(ref _currentThreadState, new Dictionary<int, ThreadLockState>(), null);
-            }
+            var currentThreadState = TypeHelper.LazyCreateNew(ref _currentThreadState);
 
-            if (!_currentThreadState.TryGetValue(_id, out var state))
+            if (!currentThreadState.TryGetValue(_id, out var state))
             {
-                _currentThreadState[_id] = state = new ThreadLockState();
+                currentThreadState[_id] = state = new ThreadLockState();
             }
 
             return state;
