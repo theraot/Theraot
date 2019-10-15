@@ -15,11 +15,11 @@ namespace Theraot.Collections.ThreadSafe
 {
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public class WeakCollection<T, TNeedle> : ICollection<T>
+    public class WeakCollection<T, TNeedle> : ICollection<T?>
         where T : class
         where TNeedle : WeakNeedle<T>, new()
     {
-        private readonly IEqualityComparer<T> _comparer;
+        private readonly IEqualityComparer<T?> _comparer;
 
         private readonly ThreadSafeCollection<TNeedle> _wrapped;
 
@@ -31,7 +31,7 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        public WeakCollection(IEqualityComparer<T> comparer)
+        public WeakCollection(IEqualityComparer<T?> comparer)
             : this(comparer, true)
         {
             // Empty
@@ -43,10 +43,11 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
+        public WeakCollection(IEqualityComparer<T?>? comparer, bool autoRemoveDeadItems)
         {
-            _comparer = comparer ?? EqualityComparer<T>.Default;
+            _comparer = comparer ?? EqualityComparer<T?>.Default;
             _wrapped = new ThreadSafeCollection<TNeedle>();
+            _eventHandler = new WeakNeedle<EventHandler>(null);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -86,9 +87,9 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count => _wrapped.Count;
 
-        bool ICollection<T>.IsReadOnly => false;
+        bool ICollection<T?>.IsReadOnly => false;
 
-        public void Add(T item)
+        public void Add(T? item)
         {
             var needle = new TNeedle
             {
@@ -99,17 +100,15 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Clear()
         {
-            var displaced = _wrapped.ClearEnumerable();
-            foreach (var item in displaced)
+            foreach (var item in _wrapped.ClearEnumerable())
             {
                 item.Free();
             }
         }
 
-        public IEnumerable<T> ClearEnumerable()
+        public IEnumerable<T?> ClearEnumerable()
         {
-            var displaced = _wrapped.ClearEnumerable();
-            foreach (var needle in displaced)
+            foreach (var needle in _wrapped.ClearEnumerable())
             {
                 if (needle.TryGetValue(out var result))
                 {
@@ -120,13 +119,13 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool Contains(T item)
+        public bool Contains(T? item)
         {
             var check = Check(item);
             return _wrapped.Where(check).Any();
         }
 
-        public bool Contains(Predicate<T> itemCheck)
+        public bool Contains(Predicate<T?> itemCheck)
         {
             if (itemCheck == null)
             {
@@ -137,13 +136,13 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Where(check).Any();
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T?[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<T?> GetEnumerator()
         {
             foreach (var needle in _wrapped)
             {
@@ -154,7 +153,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool Remove(T item)
+        public bool Remove(T? item)
         {
             var check = Check(item);
             foreach (var removed in _wrapped.RemoveWhereEnumerable(check))
@@ -171,13 +170,13 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.RemoveWhere(input => !input.IsAlive);
         }
 
-        public int RemoveWhere(Predicate<T> itemCheck)
+        public int RemoveWhere(Predicate<T?> itemCheck)
         {
             var check = Check(itemCheck);
             return _wrapped.RemoveWhere(check);
         }
 
-        public IEnumerable<T> RemoveWhereEnumerable(Predicate<T> itemCheck)
+        public IEnumerable<T?> RemoveWhereEnumerable(Predicate<T?> itemCheck)
         {
             var check = Check(itemCheck);
             foreach (var removed in _wrapped.RemoveWhereEnumerable(check))
@@ -206,7 +205,7 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Where(needleCheck).Any();
         }
 
-        protected IEnumerable<T> RemoveWhereEnumerable(Predicate<TNeedle> needleCheck)
+        protected IEnumerable<T?> RemoveWhereEnumerable(Predicate<TNeedle> needleCheck)
         {
             foreach (var removed in _wrapped.RemoveWhereEnumerable(needleCheck))
             {
@@ -219,12 +218,12 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private static Predicate<TNeedle> Check(Predicate<T> itemCheck)
+        private static Predicate<TNeedle> Check(Predicate<T?> itemCheck)
         {
             return input => input.TryGetValue(out var value) && itemCheck(value);
         }
 
-        private Predicate<TNeedle> Check(T item)
+        private Predicate<TNeedle> Check(T? item)
         {
             return input => input.TryGetValue(out var value) && _comparer.Equals(item, value);
         }

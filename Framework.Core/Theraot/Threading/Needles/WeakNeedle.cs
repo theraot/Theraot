@@ -7,14 +7,14 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
+    public class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T?>, ICacheNeedle<T?>
         where T : class
     {
         private readonly int _hashCode;
 
         private readonly bool _trackResurrection;
 
-        private WeakReference<T> _handle;
+        private WeakReference<T>? _handle;
 
         public WeakNeedle()
             : this(false)
@@ -28,13 +28,13 @@ namespace Theraot.Threading.Needles
             _hashCode = base.GetHashCode();
         }
 
-        public WeakNeedle(T target)
+        public WeakNeedle(T? target)
             : this(target, false)
         {
             // Empty
         }
 
-        public WeakNeedle(T target, bool trackResurrection)
+        public WeakNeedle(T? target, bool trackResurrection)
         {
             if (target == null)
             {
@@ -49,19 +49,19 @@ namespace Theraot.Threading.Needles
             _trackResurrection = trackResurrection;
         }
 
-        public Exception Exception { get; private set; }
+        public Exception? Exception { get; private set; }
 
-        public bool IsAlive => Exception != null && _handle.TryGetTarget(out _);
+        public bool IsAlive => Exception == null && _handle?.TryGetTarget(out _) == true;
 
         public bool IsFaulted => Exception != null;
 
         public virtual bool TrackResurrection => _trackResurrection;
 
-        public virtual T Value
+        public virtual T? Value
         {
             get
             {
-                if (Exception != null && _handle.TryGetTarget(out var target))
+                if (Exception == null && _handle != null && _handle.TryGetTarget(out var target))
                 {
                     return target;
                 }
@@ -84,17 +84,12 @@ namespace Theraot.Threading.Needles
             return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
-        public static explicit operator T(WeakNeedle<T> needle)
+        public static explicit operator T?(WeakNeedle<T> needle)
         {
-            if (needle == null)
-            {
-                throw new ArgumentNullException(nameof(needle));
-            }
-
-            return needle.Value;
+            return needle?.Value;
         }
 
-        public static implicit operator WeakNeedle<T>(T field)
+        public static implicit operator WeakNeedle<T>(T? field)
         {
             return new WeakNeedle<T>(field);
         }
@@ -116,15 +111,14 @@ namespace Theraot.Threading.Needles
 
         public sealed override bool Equals(object obj)
         {
-            var needle = obj as WeakNeedle<T>;
-            if (needle != null)
+            if (obj is WeakNeedle<T> needle)
             {
                 return EqualsExtractedExtracted(this, needle);
             }
 
             if (obj is T value && TryGetValue(out var target))
             {
-                return EqualityComparer<T>.Default.Equals(target, value);
+                return EqualityComparer<T?>.Default.Equals(target, value);
             }
 
             return false;
@@ -147,30 +141,37 @@ namespace Theraot.Threading.Needles
                 return $"<Faulted: {Exception}>";
             }
 
-            return _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
+            return _handle != null && _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
         }
 
-        public virtual bool TryGetValue(out T value)
+        public virtual bool TryGetValue(out T? value)
         {
             value = null;
-            return Exception == null && _handle.TryGetTarget(out value);
+            return Exception == null && _handle?.TryGetTarget(out value) == true;
         }
 
         protected void SetTargetError(Exception error)
         {
             Exception = error;
-            _handle.SetTarget(null);
+            _handle = null;
         }
 
-        protected void SetTargetValue(T value)
+        protected void SetTargetValue(T? value)
         {
-            if (_handle == null)
+            if (value == null)
             {
-                _handle = new WeakReference<T>(value, _trackResurrection);
+                _handle = null;
             }
             else
             {
-                _handle.SetTarget(value);
+                if (_handle == null)
+                {
+                    _handle = new WeakReference<T>(value, _trackResurrection);
+                }
+                else
+                {
+                    _handle.SetTarget(value);
+                }
             }
 
             Exception = null;
@@ -182,12 +183,12 @@ namespace Theraot.Threading.Needles
             var rightException = right.Exception;
             if (left.Exception != null || right.Exception != null)
             {
-                return EqualityComparer<Exception>.Default.Equals(leftException, rightException);
+                return EqualityComparer<Exception?>.Default.Equals(leftException, rightException);
             }
 
-            if (left._handle.TryGetTarget(out var leftValue) && right._handle.TryGetTarget(out var rightValue))
+            if (left.TryGetValue(out var leftValue) && right.TryGetValue(out var rightValue))
             {
-                return EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+                return EqualityComparer<T?>.Default.Equals(leftValue, rightValue);
             }
 
             return false;

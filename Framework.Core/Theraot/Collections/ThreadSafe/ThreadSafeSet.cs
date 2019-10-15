@@ -18,7 +18,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
+        ///     Initializes a new instance of the <see cref="Theraot.Collections.ThreadSafe.ThreadSafeSet{T}" /> class.
         /// </summary>
         public ThreadSafeSet()
             : this(EqualityComparer<T>.Default, _defaultProbing)
@@ -28,7 +28,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
+        ///     Initializes a new instance of the <see cref="Theraot.Collections.ThreadSafe.ThreadSafeSet{T}" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
         public ThreadSafeSet(int initialProbing)
@@ -39,7 +39,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:Theraot.Collections.ThreadSafe.SafeSet`1" /> class.
+        ///     Initializes a new instance of the <see cref="Theraot.Collections.ThreadSafe.ThreadSafeSet{T}" /> class.
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
         public ThreadSafeSet(IEqualityComparer<T> comparer)
@@ -69,8 +69,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool Add(T item)
         {
             var hashCode = Comparer.GetHashCode(item);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.Insert(hashCode + attempts, item, out var found))
@@ -82,8 +81,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return false;
                 }
-
-                attempts++;
             }
         }
 
@@ -125,9 +122,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="T:System.ArgumentNullException">array</exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="T:System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="System.ArgumentNullException">array</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);
@@ -140,10 +137,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     An <see cref="T:System.Collections.Generic.IEnumerator`1" /> object that can be used to iterate through the
+        ///     An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
@@ -252,8 +249,7 @@ namespace Theraot.Collections.ThreadSafe
         public void AddNew(T value)
         {
             var hashCode = Comparer.GetHashCode(value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.Insert(hashCode + attempts, value, out var found))
@@ -265,8 +261,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     throw new ArgumentException("the value is already present");
                 }
-
-                attempts++;
             }
         }
 
@@ -334,7 +328,7 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
-                var tmp = default(T);
+                var tmp = default(T)!;
                 var result = _bucket.RemoveAt
                 (
                     hashCode + attempts,
@@ -359,7 +353,7 @@ namespace Theraot.Collections.ThreadSafe
                 return result;
             }
 
-            previous = default;
+            previous = default!;
             return false;
         }
 
@@ -379,11 +373,11 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
 
-            value = default;
+            value = default!;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
-                var previous = default(T);
+                var previous = default(T)!;
                 var result = _bucket.RemoveAt
                 (
                     hashCode + attempts,
@@ -453,8 +447,7 @@ namespace Theraot.Collections.ThreadSafe
 
             IEnumerable<T> RemoveWhereEnumerableExtracted()
             {
-                var matches = _bucket.Where(check);
-                foreach (var value in matches)
+                foreach (var value in _bucket.Where(check))
                 {
                     if (Remove(value))
                     {
@@ -480,7 +473,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
 
-            value = default;
+            value = default!;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 if (!_bucket.TryGet(hashCode + attempts, out var found) || Comparer.GetHashCode(found) != hashCode || !check(found))
@@ -531,8 +524,7 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             var hashCode = Comparer.GetHashCode(value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
 
@@ -563,8 +555,6 @@ namespace Theraot.Collections.ThreadSafe
                     // An item with the same key has already been added
                     return false;
                 }
-
-                attempts++;
             }
         }
 

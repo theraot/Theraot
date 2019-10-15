@@ -69,7 +69,7 @@ namespace Theraot.Threading.Needles
                 return this == needle;
             }
 
-            return obj is Exception && obj.Equals(Exception);
+            return obj is Exception exc && exc.Equals(Exception);
         }
 
         public bool Equals(ExceptionStructNeedle<T> other)

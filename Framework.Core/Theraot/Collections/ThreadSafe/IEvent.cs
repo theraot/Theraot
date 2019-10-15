@@ -10,7 +10,7 @@ namespace Theraot.Collections.ThreadSafe
 
         void Add(MethodInfo method, object target);
 
-        void Invoke(object sender, TEventArgs eventArgs);
+        void Invoke(object? sender, TEventArgs eventArgs);
 
         void Invoke(Action<Exception> onException, object? sender, TEventArgs eventArgs);
 

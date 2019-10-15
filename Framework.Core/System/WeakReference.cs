@@ -17,13 +17,13 @@ namespace System
         [NonSerialized]
         private GCHandle _handle;
 
-        public WeakReference(T target)
+        public WeakReference(T? target)
             : this(target, false)
         {
             // Empty
         }
 
-        public WeakReference(T target, bool trackResurrection)
+        public WeakReference(T? target, bool trackResurrection)
         {
             _trackResurrection = trackResurrection;
             SetTarget(target);
@@ -56,7 +56,7 @@ namespace System
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        public void SetTarget(T value)
+        public void SetTarget(T? value)
         {
             var oldHandle = _handle;
             _handle = GetNewHandle(value, _trackResurrection);
@@ -105,7 +105,7 @@ namespace System
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private static GCHandle GetNewHandle(T value, bool trackResurrection)
+        private static GCHandle GetNewHandle(T? value, bool trackResurrection)
         {
             return GCHandle.Alloc(value, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }

@@ -42,7 +42,7 @@ namespace System
             OnReport(value);
         }
 
-        public event EventHandlerEx<T> ProgressChanged;
+        public event EventHandlerEx<T>? ProgressChanged;
 
         protected virtual void OnReport(T value)
         {

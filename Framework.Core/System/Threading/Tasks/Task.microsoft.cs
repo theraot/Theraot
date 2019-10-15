@@ -13,7 +13,7 @@ namespace System.Threading.Tasks
     public partial class Task
     {
         private static readonly Predicate<Task> _isExceptionObservedByParentPredicate = t => t.IsExceptionObservedByParent;
-        private static readonly Action<object> _taskCancelCallback = TaskCancelCallback;
+        private static readonly Action<object?> _taskCancelCallback = TaskCancelCallback;
 
         private int _cancellationAcknowledged;
         private StrongBox<CancellationTokenRegistration>? _cancellationRegistration;
@@ -349,7 +349,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        private static void TaskCancelCallback(object obj)
+        private static void TaskCancelCallback(object? obj)
         {
             if (!(obj is Task task))
             {

@@ -25,7 +25,7 @@ namespace Theraot.Collections.ThreadSafe
             _needleFactory = needleFactory ?? throw new ArgumentNullException(nameof(needleFactory));
             _pool = new Pool<TNeedle>(64, Recycle);
 
-            void Recycle(TNeedle obj)
+            static void Recycle(TNeedle obj)
             {
                 try
                 {
