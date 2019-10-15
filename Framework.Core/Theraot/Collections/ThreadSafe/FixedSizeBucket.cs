@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Threading;
 
@@ -18,7 +19,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class FixedSizeBucket<T> : IBucket<T>
     {
         private int _count;
-        private object[] _entries;
+        private readonly object[] _entries;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FixedSizeBucket{T}" /> class.
@@ -59,7 +60,7 @@ namespace Theraot.Collections.ThreadSafe
                     Capacity = _entries.Length;
                 }
 
-                _entries[_count] = (object)item ?? BucketHelper.Null;
+                _entries[_count] = (object?)item ?? BucketHelper.Null;
                 _count++;
             }
         }
@@ -107,7 +108,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         if (entry == BucketHelper.Null)
                         {
-                            array[arrayIndex] = default;
+                            array[arrayIndex] = default!;
                         }
                         else
                         {
@@ -159,7 +160,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (entry == BucketHelper.Null)
                     {
-                        yield return default;
+                        yield return default!;
                     }
                     else
                     {
@@ -439,15 +440,14 @@ namespace Theraot.Collections.ThreadSafe
                 if (entries != null)
                 {
                     ArrayReservoir<object>.DonateArray(entries);
-                    _entries = null;
                 }
             }
         }
 
-        internal bool ExchangeInternal(int index, T item, out T previous)
+        internal bool ExchangeInternal(int index, T item, [MaybeNull] out T previous)
         {
-            previous = default;
-            var found = Interlocked.Exchange(ref _entries[index], (object)item ?? BucketHelper.Null);
+            previous = default!;
+            var found = Interlocked.Exchange(ref _entries[index], (object?)item ?? BucketHelper.Null);
             if (found == null)
             {
                 Interlocked.Increment(ref _count);
@@ -464,8 +464,8 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool InsertInternal(int index, T item, out T previous)
         {
-            previous = default;
-            var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, null);
+            previous = default!;
+            var found = Interlocked.CompareExchange(ref _entries[index], (object?)item ?? BucketHelper.Null, null);
             if (found == null)
             {
                 Interlocked.Increment(ref _count);
@@ -489,7 +489,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
 
-            var found = Interlocked.CompareExchange(ref entries[index], (object)item ?? BucketHelper.Null, null);
+            var found = Interlocked.CompareExchange(ref entries[index], (object?)item ?? BucketHelper.Null, null);
             if (found == null)
             {
                 Interlocked.Increment(ref _count);
@@ -501,7 +501,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool RemoveAtInternal(int index, out T previous)
         {
-            previous = default;
+            previous = default!;
             var found = Interlocked.Exchange(ref _entries[index], null);
             if (found == null)
             {
@@ -519,7 +519,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal void SetInternal(int index, T item, out bool isNew)
         {
-            isNew = Interlocked.Exchange(ref _entries[index], (object)item ?? BucketHelper.Null) == null;
+            isNew = Interlocked.Exchange(ref _entries[index], (object?)item ?? BucketHelper.Null) == null;
             if (isNew)
             {
                 Interlocked.Increment(ref _count);
@@ -531,7 +531,7 @@ namespace Theraot.Collections.ThreadSafe
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found == null)
             {
-                value = default;
+                value = default!;
                 return false;
             }
 
@@ -562,7 +562,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (check(comparisonItem))
                 {
                     var item = itemUpdateFactory(comparisonItem);
-                    compare = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, found);
+                    compare = Interlocked.CompareExchange(ref _entries[index], (object?)item ?? BucketHelper.Null, found);
                     result = found == compare;
                 }
             }

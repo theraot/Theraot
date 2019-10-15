@@ -303,8 +303,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             var hashCode = GetHashCode(key);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.Insert(hashCode + attempts, insertPair, out var found))
@@ -316,8 +315,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     throw new ArgumentException("An item with the same key has already been added", nameof(key));
                 }
-
-                attempts++;
             }
         }
 
@@ -396,8 +393,7 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             var hashCode = GetHashCode(key);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.TryGetOrInsert(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)), out var storedPair))
@@ -409,8 +405,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return storedPair.Value;
                 }
-
-                attempts++;
             }
         }
 
@@ -418,8 +412,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.TryGetOrInsert(hashCode + attempts, insertPair, out var storedPair))
@@ -431,8 +424,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return storedPair.Value;
                 }
-
-                attempts++;
             }
         }
 
@@ -746,16 +737,13 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, found => Comparer.Equals(found.Key, key), out _))
                 {
                     return;
                 }
-
-                attempts++;
             }
         }
 
@@ -769,16 +757,13 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, found => Comparer.Equals(found.Key, key), out isNew))
                 {
                     return;
                 }
-
-                attempts++;
             }
         }
 
@@ -794,8 +779,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.Insert(hashCode + attempts, insertPair, out var found))
@@ -807,8 +791,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return false;
                 }
-
-                attempts++;
             }
         }
 
@@ -825,8 +807,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.Insert(hashCode + attempts, insertPair, out stored))
@@ -839,8 +820,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return false;
                 }
-
-                attempts++;
             }
         }
 
@@ -848,8 +827,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.TryGetOrInsert(hashCode + attempts, insertPair, out var storedPair))
@@ -863,8 +841,6 @@ namespace Theraot.Collections.ThreadSafe
                     stored = storedPair.Value;
                     return false;
                 }
-
-                attempts++;
             }
         }
 
@@ -876,8 +852,7 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             var hashCode = GetHashCode(key);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 if (_bucket.TryGetOrInsert(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)), out var storedPair))
@@ -891,8 +866,6 @@ namespace Theraot.Collections.ThreadSafe
                     stored = storedPair.Value;
                     return false;
                 }
-
-                attempts++;
             }
         }
 
@@ -1047,8 +1020,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
 
@@ -1073,8 +1045,6 @@ namespace Theraot.Collections.ThreadSafe
                     // It added a new item
                     return;
                 }
-
-                attempts++;
             }
         }
 
@@ -1088,8 +1058,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
 
@@ -1102,8 +1071,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return;
                 }
-
-                attempts++;
             }
         }
 
@@ -1118,8 +1085,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
 
@@ -1132,8 +1098,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return;
                 }
-
-                attempts++;
             }
         }
 
@@ -1150,8 +1114,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
 
@@ -1183,8 +1146,6 @@ namespace Theraot.Collections.ThreadSafe
                     // An item with the same key has already been added
                     return false;
                 }
-
-                attempts++;
             }
         }
 
@@ -1192,8 +1153,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
 
@@ -1228,8 +1188,6 @@ namespace Theraot.Collections.ThreadSafe
                     stored = value;
                     return false;
                 }
-
-                attempts++;
             }
         }
 
@@ -1494,8 +1452,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var hashCode = GetHashCode(key);
             var created = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 var foundPair = created;
                 ExtendProbingIfNeeded(attempts);
@@ -1531,16 +1488,13 @@ namespace Theraot.Collections.ThreadSafe
                     stored = foundPair;
                     return false;
                 }
-
-                attempts++;
             }
         }
 
         internal bool TryGetOrAdd(TKey key, Func<TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory, out TValue stored)
         {
             var hashCode = GetHashCode(key);
-            var attempts = 0;
-            while (true)
+            for (var attempts = 0; true; attempts++)
             {
                 var value = default(TValue)!;
                 ExtendProbingIfNeeded(attempts);
@@ -1581,8 +1535,6 @@ namespace Theraot.Collections.ThreadSafe
                     stored = value;
                     return false;
                 }
-
-                attempts++;
             }
         }
     }

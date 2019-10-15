@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class ThreadSafeStack<T> : IProducerConsumerCollection<T>
     {
         private int _count;
-        private Node<T> _root;
+        private Node<T>? _root;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeStack{T}" /> class.
@@ -31,6 +31,11 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public ThreadSafeStack(IEnumerable<T> source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
             foreach (var item in source)
             {
                 _root = Node<T>.GetNode(_root, item);
@@ -56,10 +61,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        ///     A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -91,7 +96,7 @@ namespace Theraot.Collections.ThreadSafe
                 var root = Volatile.Read(ref _root);
                 if (root == null)
                 {
-                    item = default;
+                    item = default!;
                     return false;
                 }
 
@@ -180,7 +185,7 @@ namespace Theraot.Collections.ThreadSafe
             var root = Volatile.Read(ref _root);
             if (root == null)
             {
-                item = default;
+                item = default!;
                 return false;
             }
 

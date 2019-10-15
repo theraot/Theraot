@@ -137,7 +137,7 @@ namespace Theraot.Collections.ThreadSafe
 
             isNew = true;
             var factoryUsed = false;
-            var created = default(T);
+            var created = default(T)!;
             while (true)
             {
                 if (isNew)
@@ -361,7 +361,7 @@ namespace Theraot.Collections.ThreadSafe
 
             isNew = true;
             var factoryUsed = false;
-            var created = default(T);
+            var created = default(T)!;
             while (true)
             {
                 if (isNew)

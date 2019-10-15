@@ -65,7 +65,7 @@ namespace Theraot.Collections.ThreadSafe
             var spinWait = new SpinWait();
             while (true)
             {
-                var tail = Volatile.Read(ref _tail!);
+                var tail = Volatile.Read(ref _tail);
                 if (tail!.Value.TryAdd(item))
                 {
                     Interlocked.Increment(ref _count);
@@ -124,7 +124,7 @@ namespace Theraot.Collections.ThreadSafe
             var spinWait = new SpinWait();
             while (true)
             {
-                var root = Volatile.Read(ref _root!);
+                var root = Volatile.Read(ref _root);
                 if (root!.Value.TryPeek(out item))
                 {
                     return true;
@@ -157,7 +157,7 @@ namespace Theraot.Collections.ThreadSafe
             var spinWait = new SpinWait();
             while (true)
             {
-                var root = Volatile.Read(ref _root!);
+                var root = Volatile.Read(ref _root);
                 if (root!.Value.TryTake(out item))
                 {
                     Interlocked.Decrement(ref _count);
@@ -169,7 +169,7 @@ namespace Theraot.Collections.ThreadSafe
                     return false;
                 }
 
-                var found = Interlocked.CompareExchange(ref _root!, root.Link, root);
+                var found = Interlocked.CompareExchange(ref _root, root.Link, root);
                 if (found == root)
                 {
                     Node<FixedSizeQueue<T>>.Donate(root);

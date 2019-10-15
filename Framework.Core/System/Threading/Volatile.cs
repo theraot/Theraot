@@ -78,10 +78,10 @@ namespace System.Threading
             return Thread.VolatileRead(ref location);
         }
 
-        public static T? Read<T>(ref T? location)
-            where T : class
+        public static T Read<T>(ref T location)
+            where T : class?
         {
-            return Interlocked.CompareExchange(ref location, null, null);
+            return Interlocked.CompareExchange(ref location, location, location);
         }
 
         public static void Write(ref bool location, bool value)
@@ -156,8 +156,8 @@ namespace System.Threading
             Thread.VolatileWrite(ref location, value);
         }
 
-        public static void Write<T>(ref T? location, T? value)
-            where T : class
+        public static void Write<T>(ref T location, T value)
+            where T : class?
         {
             GC.KeepAlive(Interlocked.Exchange(ref location, value));
         }

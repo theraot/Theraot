@@ -68,10 +68,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        ///     A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -135,7 +135,7 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _preCount);
             }
 
-            item = default;
+            item = default!;
             return false;
         }
 
@@ -175,7 +175,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryPeek(out T item)
         {
-            item = default;
+            item = default!;
             var index = Interlocked.Add(ref _indexDequeue, 0);
             return index < Capacity && index > 0 && _entries.TryGetInternal(index, out item);
         }
