@@ -43,8 +43,6 @@ namespace Theraot.Core
         /// </summary>
         public bool EndOfString => _position == _length;
 
-        public bool Greedy { get; set; }
-
         /// <summary>
         ///     Gets or sets the current position withing the underlying string.
         /// </summary>
@@ -508,12 +506,9 @@ namespace Theraot.Core
         /// <remarks>The string that is returned does not contain the terminating carriage return or line feed.</remarks>
         public string? ReadLine()
         {
-            var oldGreedy = Greedy;
-            Greedy = true;
-            var result = PrivateReadUntil(new[] {'\r', '\n'});
+            var result = PrivateReadUntil(new[] {'\r', '\n'}, true);
             Read('\r');
             Read('\n');
-            Greedy = oldGreedy;
             return result;
         }
 
@@ -558,9 +553,9 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string? ReadUntil(string target)
+        public string? ReadUntil(string target, bool greedy)
         {
-            return ReadUntil(target, StringComparison.Ordinal);
+            return ReadUntil(target, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -575,7 +570,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string? ReadUntil(string target, StringComparison stringComparison)
+        public string? ReadUntil(string target, StringComparison stringComparison, bool greedy)
         {
             if (target == null)
             {
@@ -584,7 +579,7 @@ namespace Theraot.Core
 
             if (target.Length == 0)
             {
-                return Greedy ? ReadToEnd() : null;
+                return greedy ? ReadToEnd() : null;
             }
 
             var position = String.IndexOf(target, _position, stringComparison);
@@ -593,7 +588,7 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position);
             }
 
-            return Greedy ? ReadToEnd() : null;
+            return greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -606,7 +601,7 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="target">The character to look for.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
-        public string? ReadUntil(char target)
+        public string? ReadUntil(char target, bool greedy)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
@@ -614,7 +609,7 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position);
             }
 
-            return Greedy ? ReadToEnd() : null;
+            return greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -629,9 +624,9 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets)
+        public string? ReadUntil(IEnumerable<string> targets, bool greedy)
         {
-            return ReadUntil(targets, StringComparison.Ordinal);
+            return ReadUntil(targets, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -647,10 +642,10 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets, StringComparison stringComparison)
+        public string? ReadUntil(IEnumerable<string> targets, StringComparison stringComparison, bool greedy)
         {
             var oldPosition = _position;
-            return SkipUntil(targets, stringComparison) ? String.Substring(oldPosition, _position - oldPosition) : null;
+            return SkipUntil(targets, stringComparison, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -666,9 +661,9 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets, out string? found)
+        public string? ReadUntil(IEnumerable<string> targets, out string? found, bool greedy)
         {
-            return ReadUntil(targets, out found, StringComparison.Ordinal);
+            return ReadUntil(targets, out found, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -685,10 +680,10 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets, out string? found, StringComparison stringComparison)
+        public string? ReadUntil(IEnumerable<string> targets, out string? found, StringComparison stringComparison, bool greedy)
         {
             var oldPosition = _position;
-            return SkipUntil(targets, out found, stringComparison) ? String.Substring(oldPosition, _position - oldPosition) : null;
+            return SkipUntil(targets, out found, stringComparison, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -703,10 +698,10 @@ namespace Theraot.Core
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<char> targets)
+        public string? ReadUntil(IEnumerable<char> targets, bool greedy)
         {
             var oldPosition = _position;
-            return SkipUntil(targets) ? String.Substring(oldPosition, _position - oldPosition) : null;
+            return SkipUntil(targets, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -721,14 +716,14 @@ namespace Theraot.Core
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(char[] targets)
+        public string? ReadUntil(char[] targets, bool greedy)
         {
             if (targets == null)
             {
                 throw new ArgumentNullException(nameof(targets));
             }
 
-            return PrivateReadUntil(targets);
+            return PrivateReadUntil(targets, greedy);
         }
 
         /// <summary>
@@ -756,9 +751,9 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string? ReadUntilAfter(string target)
+        public string? ReadUntilAfter(string target, bool greedy)
         {
-            return ReadUntilAfter(target, StringComparison.Ordinal);
+            return ReadUntilAfter(target, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -770,7 +765,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string? ReadUntilAfter(string target, StringComparison stringComparison)
+        public string? ReadUntilAfter(string target, StringComparison stringComparison, bool greedy)
         {
             if (target == null)
             {
@@ -779,7 +774,7 @@ namespace Theraot.Core
 
             if (target.Length == 0)
             {
-                return Greedy ? ReadToEnd() : null;
+                return greedy ? ReadToEnd() : null;
             }
 
             var position = String.IndexOf(target, _position, stringComparison);
@@ -788,7 +783,7 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position + target.Length);
             }
 
-            return Greedy ? ReadToEnd() : null;
+            return greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -801,7 +796,7 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="target">The character to look for.</param>
         /// <returns>The read string.</returns>
-        public string? ReadUntilAfter(char target)
+        public string? ReadUntilAfter(char target, bool greedy)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
@@ -809,7 +804,7 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position + 1);
             }
 
-            return Greedy ? ReadToEnd() : null;
+            return greedy ? ReadToEnd() : null;
         }
 
         /// <summary>
@@ -903,9 +898,9 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipBackBefore(string target)
+        public bool SkipBackBefore(string target, bool greedy)
         {
-            return SkipBackBefore(target, StringComparison.Ordinal);
+            return SkipBackBefore(target, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -916,7 +911,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipBackBefore(string target, StringComparison stringComparison)
+        public bool SkipBackBefore(string target, StringComparison stringComparison, bool greedy)
         {
             if (target == null)
             {
@@ -933,7 +928,7 @@ namespace Theraot.Core
                 }
             }
 
-            if (Greedy)
+            if (greedy)
             {
                 _position = 0;
             }
@@ -947,7 +942,7 @@ namespace Theraot.Core
         /// </summary>
         /// <param name="target">The character to look for.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        public bool SkipBackBefore(char target)
+        public bool SkipBackBefore(char target, bool greedy)
         {
             var position = String.LastIndexOf(target, _position);
             if (position != -1)
@@ -956,7 +951,7 @@ namespace Theraot.Core
                 return true;
             }
 
-            if (Greedy)
+            if (greedy)
             {
                 _position = 0;
             }
@@ -971,9 +966,9 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipBackTo(string target)
+        public bool SkipBackTo(string target, bool greedy)
         {
-            return SkipBackTo(target, StringComparison.Ordinal);
+            return SkipBackTo(target, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -984,7 +979,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipBackTo(string target, StringComparison stringComparison)
+        public bool SkipBackTo(string target, StringComparison stringComparison, bool greedy)
         {
             if (target == null)
             {
@@ -1001,7 +996,7 @@ namespace Theraot.Core
                 }
             }
 
-            if (Greedy)
+            if (greedy)
             {
                 _position = 0;
             }
@@ -1015,7 +1010,7 @@ namespace Theraot.Core
         /// </summary>
         /// <param name="target">The character to look for.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        public bool SkipBackTo(char target)
+        public bool SkipBackTo(char target, bool greedy)
         {
             var position = String.LastIndexOf(target, _position);
             if (position != -1)
@@ -1024,7 +1019,7 @@ namespace Theraot.Core
                 return true;
             }
 
-            if (Greedy)
+            if (greedy)
             {
                 _position = 0;
             }
@@ -1039,11 +1034,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         public bool SkipLine()
         {
-            var oldGreedy = Greedy;
-            Greedy = true;
-            var result = PrivateSkipUntil(new[] {'\r', '\n'}) || Read('\r') || Read('\n');
-            Greedy = oldGreedy;
-            return result;
+            return PrivateSkipUntil(new[] {'\r', '\n'}, true) || Read('\r') || Read('\n');
         }
 
         /// <summary>
@@ -1054,9 +1045,9 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipUntil(string target)
+        public bool SkipUntil(string target, bool greedy)
         {
-            return SkipUntil(target, StringComparison.Ordinal);
+            return SkipUntil(target, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -1068,7 +1059,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipUntil(string target, StringComparison stringComparison)
+        public bool SkipUntil(string target, StringComparison stringComparison, bool greedy)
         {
             if (target == null)
             {
@@ -1085,7 +1076,7 @@ namespace Theraot.Core
                 }
             }
 
-            if (Greedy)
+            if (greedy)
             {
                 _position = _length;
             }
@@ -1100,7 +1091,7 @@ namespace Theraot.Core
         /// <remarks>If the end of the string is not reached, the provided character will be the next thing to be read afterwards.</remarks>
         /// <param name="target">The character to look for.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        public bool SkipUntil(char target)
+        public bool SkipUntil(char target, bool greedy)
         {
             var position = String.IndexOf(target, _position);
             var result = position != -1;
@@ -1108,7 +1099,7 @@ namespace Theraot.Core
             {
                 _position = position;
             }
-            else if (Greedy)
+            else if (greedy)
             {
                 _position = _length;
             }
@@ -1125,9 +1116,9 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets)
+        public bool SkipUntil(IEnumerable<string> targets, bool greedy)
         {
-            return SkipUntil(targets, StringComparison.Ordinal);
+            return SkipUntil(targets, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -1140,7 +1131,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets, StringComparison stringComparison)
+        public bool SkipUntil(IEnumerable<string> targets, StringComparison stringComparison, bool greedy)
         {
             if (targets == null)
             {
@@ -1175,7 +1166,7 @@ namespace Theraot.Core
             {
                 _position = bestPosition;
             }
-            else if (Greedy)
+            else if (greedy)
             {
                 _position = _length;
             }
@@ -1193,9 +1184,9 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets, [NotNullWhen(true)] out string? found)
+        public bool SkipUntil(IEnumerable<string> targets, [NotNullWhen(true)] out string? found, bool greedy)
         {
-            return SkipUntil(targets, out found, StringComparison.Ordinal);
+            return SkipUntil(targets, out found, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -1209,7 +1200,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets, [NotNullWhen(true)] out string? found, StringComparison stringComparison)
+        public bool SkipUntil(IEnumerable<string> targets, [NotNullWhen(true)] out string? found, StringComparison stringComparison, bool greedy)
         {
             if (targets == null)
             {
@@ -1246,7 +1237,7 @@ namespace Theraot.Core
             {
                 _position = bestPosition;
             }
-            else if (Greedy)
+            else if (greedy)
             {
                 _position = _length;
             }
@@ -1263,7 +1254,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<char> targets)
+        public bool SkipUntil(IEnumerable<char> targets, bool greedy)
         {
             if (targets == null)
             {
@@ -1288,7 +1279,7 @@ namespace Theraot.Core
             {
                 _position = bestPosition;
             }
-            else if (Greedy)
+            else if (greedy)
             {
                 _position = _length;
             }
@@ -1305,14 +1296,14 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(char[] targets)
+        public bool SkipUntil(char[] targets, bool greedy)
         {
             if (targets == null)
             {
                 throw new ArgumentNullException(nameof(targets));
             }
 
-            return PrivateSkipUntil(targets);
+            return PrivateSkipUntil(targets, greedy);
         }
 
         /// <summary>
@@ -1364,9 +1355,9 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipUntilAfter(string target)
+        public bool SkipUntilAfter(string target, bool greedy)
         {
-            return SkipUntilAfter(target, StringComparison.Ordinal);
+            return SkipUntilAfter(target, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
@@ -1377,7 +1368,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipUntilAfter(string target, StringComparison stringComparison)
+        public bool SkipUntilAfter(string target, StringComparison stringComparison, bool greedy)
         {
             if (target == null)
             {
@@ -1394,7 +1385,7 @@ namespace Theraot.Core
                 }
             }
 
-            if (Greedy)
+            if (greedy)
             {
                 _position = _length;
             }
@@ -1408,7 +1399,7 @@ namespace Theraot.Core
         /// </summary>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <param name="target">The character to look for.</param>
-        public bool SkipUntilAfter(char target)
+        public bool SkipUntilAfter(char target, bool greedy)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
@@ -1417,7 +1408,7 @@ namespace Theraot.Core
                 return true;
             }
 
-            if (Greedy)
+            if (greedy)
             {
                 _position = _length;
             }
@@ -1602,7 +1593,7 @@ namespace Theraot.Core
             return result;
         }
 
-        private string? PrivateReadUntil(char[] targets)
+        private string? PrivateReadUntil(char[] targets, bool greedy)
         {
             var position = String.IndexOfAny(targets, _position);
             if (position != -1)
@@ -1610,10 +1601,10 @@ namespace Theraot.Core
                 return PrivateReadToPosition(position);
             }
 
-            return Greedy ? ReadToEnd() : null;
+            return greedy ? ReadToEnd() : null;
         }
 
-        private bool PrivateSkipUntil(char[] targets)
+        private bool PrivateSkipUntil(char[] targets, bool greedy)
         {
             var position = String.IndexOfAny(targets, _position);
             var result = position != -1;
@@ -1621,7 +1612,7 @@ namespace Theraot.Core
             {
                 _position = position;
             }
-            else if (Greedy)
+            else if (greedy)
             {
                 _position = _length;
             }
