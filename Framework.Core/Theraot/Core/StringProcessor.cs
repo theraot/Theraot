@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Theraot.Collections;
 
 namespace Theraot.Core
@@ -79,7 +80,7 @@ namespace Theraot.Core
         /// <param name="found">The found string.</param>
         /// <param name="target">The string to look for. The delimiter.</param>
         /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntil(out string found, string target)
+        public bool ExtractUntil([NotNullWhen(true)] out string? found, string target)
         {
             return ExtractUntil(out found, target, StringComparison.Ordinal);
         }
@@ -91,7 +92,7 @@ namespace Theraot.Core
         /// <param name="target">The string to look for. The delimiter.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntil(out string found, string target, StringComparison stringComparison)
+        public bool ExtractUntil([NotNullWhen(true)] out string? found, string target, StringComparison stringComparison)
         {
             if (target == null)
             {
@@ -118,7 +119,7 @@ namespace Theraot.Core
         /// <param name="found">The found string.</param>
         /// <param name="target">The character to look for. The delimiter.</param>
         /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntil(out string found, char target)
+        public bool ExtractUntil([NotNullWhen(true)] out string? found, char target)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
@@ -137,7 +138,7 @@ namespace Theraot.Core
         /// <param name="found">The found string.</param>
         /// <param name="target">The string to look for. The delimiter.</param>
         /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntilAfter(out string found, string target)
+        public bool ExtractUntilAfter([NotNullWhen(true)] out string? found, string target)
         {
             return ExtractUntilAfter(out found, target, StringComparison.Ordinal);
         }
@@ -149,7 +150,7 @@ namespace Theraot.Core
         /// <param name="target">The string to look for. The delimiter.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntilAfter(out string found, string target, StringComparison stringComparison)
+        public bool ExtractUntilAfter([NotNullWhen(true)] out string? found, string target, StringComparison stringComparison)
         {
             if (target == null)
             {
@@ -176,7 +177,7 @@ namespace Theraot.Core
         /// <param name="found">The found string.</param>
         /// <param name="target">The character to look for. The delimiter.</param>
         /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntilAfter(out string found, char target)
+        public bool ExtractUntilAfter([NotNullWhen(true)] out string? found, char target)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
@@ -200,8 +201,7 @@ namespace Theraot.Core
                 return -1;
             }
 
-            var character = String[_position];
-            return character;
+            return String[_position];
         }
 
         /// <summary>
@@ -279,8 +279,7 @@ namespace Theraot.Core
                 throw new InvalidOperationException("Reached the end of the string.");
             }
 
-            var character = String[_position];
-            return character;
+            return String[_position];
         }
 
         /// <summary>
@@ -315,14 +314,14 @@ namespace Theraot.Core
         /// </param>
         /// <param name="destinationIndex">The starting index in the buffer. </param>
         /// <param name="count">The number of characters to read. </param>
-        /// <exception cref="T:System.ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         ///     <paramref name="destination" /> is null.
         /// </exception>
-        /// <exception cref="T:System.ArgumentException">
+        /// <exception cref="System.ArgumentException">
         ///     The buffer length minus <paramref name="destinationIndex" /> is less than
         ///     <paramref name="count" />.
         /// </exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         ///     <paramref name="destinationIndex" /> or <paramref name="count" /> is negative.
         /// </exception>
         public int Read(char[] destination, int destinationIndex, int count)
@@ -411,7 +410,7 @@ namespace Theraot.Core
         /// </summary>
         /// <param name="length">The number of characters to read.</param>
         /// <returns>The read string if there was enough characters left; otherwise null.</returns>
-        public string Read(int length)
+        public string? Read(int length)
         {
             if (_position + length > _length)
             {
@@ -437,7 +436,7 @@ namespace Theraot.Core
         /// </returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string Read(IEnumerable<string> targets)
+        public string? Read(IEnumerable<string> targets)
         {
             if (targets == null)
             {
@@ -507,7 +506,7 @@ namespace Theraot.Core
         /// <summary>Reads a line from the underlying string.</summary>
         /// <returns>The next line from the underlying string, or null if the end of the underlying string is reached.</returns>
         /// <remarks>The string that is returned does not contain the terminating carriage return or line feed.</remarks>
-        public string ReadLine()
+        public string? ReadLine()
         {
             var oldGreedy = Greedy;
             Greedy = true;
@@ -559,7 +558,7 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string ReadUntil(string target)
+        public string? ReadUntil(string target)
         {
             return ReadUntil(target, StringComparison.Ordinal);
         }
@@ -576,7 +575,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string ReadUntil(string target, StringComparison stringComparison)
+        public string? ReadUntil(string target, StringComparison stringComparison)
         {
             if (target == null)
             {
@@ -607,7 +606,7 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="target">The character to look for.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
-        public string ReadUntil(char target)
+        public string? ReadUntil(char target)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
@@ -630,7 +629,7 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string ReadUntil(IEnumerable<string> targets)
+        public string? ReadUntil(IEnumerable<string> targets)
         {
             return ReadUntil(targets, StringComparison.Ordinal);
         }
@@ -648,7 +647,7 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string ReadUntil(IEnumerable<string> targets, StringComparison stringComparison)
+        public string? ReadUntil(IEnumerable<string> targets, StringComparison stringComparison)
         {
             var oldPosition = _position;
             return SkipUntil(targets, stringComparison) ? String.Substring(oldPosition, _position - oldPosition) : null;
@@ -667,7 +666,7 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string ReadUntil(IEnumerable<string> targets, out string found)
+        public string? ReadUntil(IEnumerable<string> targets, out string? found)
         {
             return ReadUntil(targets, out found, StringComparison.Ordinal);
         }
@@ -686,7 +685,7 @@ namespace Theraot.Core
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string ReadUntil(IEnumerable<string> targets, out string found, StringComparison stringComparison)
+        public string? ReadUntil(IEnumerable<string> targets, out string? found, StringComparison stringComparison)
         {
             var oldPosition = _position;
             return SkipUntil(targets, out found, stringComparison) ? String.Substring(oldPosition, _position - oldPosition) : null;
@@ -704,7 +703,7 @@ namespace Theraot.Core
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string ReadUntil(IEnumerable<char> targets)
+        public string? ReadUntil(IEnumerable<char> targets)
         {
             var oldPosition = _position;
             return SkipUntil(targets) ? String.Substring(oldPosition, _position - oldPosition) : null;
@@ -722,7 +721,7 @@ namespace Theraot.Core
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string ReadUntil(char[] targets)
+        public string? ReadUntil(char[] targets)
         {
             if (targets == null)
             {
@@ -743,7 +742,7 @@ namespace Theraot.Core
         /// <param name="predicate">The predicate to test the characters.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The predicate is null.</exception>
-        public string ReadUntil(Func<char, bool> predicate)
+        public string? ReadUntil(Func<char, bool> predicate)
         {
             var oldPosition = _position;
             return SkipUntil(predicate) ? String.Substring(oldPosition, _position - oldPosition) : null;
@@ -757,7 +756,7 @@ namespace Theraot.Core
         /// <param name="target">The string to look for.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string ReadUntilAfter(string target)
+        public string? ReadUntilAfter(string target)
         {
             return ReadUntilAfter(target, StringComparison.Ordinal);
         }
@@ -771,7 +770,7 @@ namespace Theraot.Core
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public string ReadUntilAfter(string target, StringComparison stringComparison)
+        public string? ReadUntilAfter(string target, StringComparison stringComparison)
         {
             if (target == null)
             {
@@ -802,7 +801,7 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="target">The character to look for.</param>
         /// <returns>The read string.</returns>
-        public string ReadUntilAfter(char target)
+        public string? ReadUntilAfter(char target)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
@@ -1194,7 +1193,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets, out string found)
+        public bool SkipUntil(IEnumerable<string> targets, [NotNullWhen(true)] out string? found)
         {
             return SkipUntil(targets, out found, StringComparison.Ordinal);
         }
@@ -1210,7 +1209,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets, out string found, StringComparison stringComparison)
+        public bool SkipUntil(IEnumerable<string> targets, [NotNullWhen(true)] out string? found, StringComparison stringComparison)
         {
             if (targets == null)
             {
@@ -1486,6 +1485,15 @@ namespace Theraot.Core
                 return false;
             }
 
+            if (targets == null)
+            {
+                return SkipWhileExtracted(ArrayEx.Empty<char>());
+            }
+            return SkipWhileExtracted(targets);
+        }
+
+        private bool SkipWhileExtracted(IEnumerable<char> targets)
+        {
             var container = targets.AsICollection();
             var result = false;
             while (true)
@@ -1594,7 +1602,7 @@ namespace Theraot.Core
             return result;
         }
 
-        private string PrivateReadUntil(char[] targets)
+        private string? PrivateReadUntil(char[] targets)
         {
             var position = String.IndexOfAny(targets, _position);
             if (position != -1)

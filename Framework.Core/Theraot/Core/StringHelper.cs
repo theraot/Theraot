@@ -113,6 +113,10 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Like(this string text, Regex regex, int startAt)
         {
+            if (regex == null)
+            {
+                throw new ArgumentNullException(nameof(regex));
+            }
             return regex.IsMatch(text, startAt);
         }
 
@@ -162,12 +166,20 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, Regex regex, int startAt, int length)
         {
+            if (regex == null)
+            {
+                throw new ArgumentNullException(nameof(regex));
+            }
             return regex.Match(text, startAt, length);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Match Match(this string text, Regex regex, int startAt)
         {
+            if (regex == null)
+            {
+                throw new ArgumentNullException(nameof(regex));
+            }
             return regex.Match(text, startAt);
         }
 
@@ -236,6 +248,10 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, Regex regex, int startAt)
         {
+            if (regex == null)
+            {
+                throw new ArgumentNullException(nameof(regex));
+            }
             return regex.Matches(text, startAt);
         }
 

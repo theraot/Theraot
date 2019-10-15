@@ -107,7 +107,7 @@ namespace Theraot.Core
             return ExploreBreadthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
-        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
+        private static IEnumerable<TOutput> ExploreBreadthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput>? branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             // NOTICE this method has no null check
             var known = new HashSet<TInput>(comparer);
@@ -145,7 +145,7 @@ namespace Theraot.Core
             }
         }
 
-        private static IEnumerable<TOutput> ExploreBreadthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        private static IEnumerable<TOutput> ExploreBreadthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput>? branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
             // NOTICE this method has no null check
             var queue = new Queue<TInput>();
@@ -287,7 +287,7 @@ namespace Theraot.Core
             return ExploreDepthFirstTreeExtracted(branches, next, FuncHelper.GetIdentityFunc<T>());
         }
 
-        private static IEnumerable<TOutput> ExploreDepthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
+        private static IEnumerable<TOutput> ExploreDepthFirstGraphExtracted<TInput, TOutput>(IEnumerable<TInput>? branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
             // NOTICE this method has no null check
             var known = new HashSet<TInput>(comparer);
@@ -325,7 +325,7 @@ namespace Theraot.Core
             }
         }
 
-        private static IEnumerable<TOutput> ExploreDepthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput> branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
+        private static IEnumerable<TOutput> ExploreDepthFirstTreeExtracted<TInput, TOutput>(IEnumerable<TInput>? branches, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
         {
             // NOTICE this method has no null check
             var stack = new Stack<TInput>();

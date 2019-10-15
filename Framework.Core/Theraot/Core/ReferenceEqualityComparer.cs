@@ -1,5 +1,6 @@
 ﻿// Needed for NET30
 
+using System;
 using System.Collections.Generic;
 
 namespace Theraot.Core
@@ -20,6 +21,10 @@ namespace Theraot.Core
 
         public int GetHashCode(T obj)
         {
+            if (obj == null!)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
             return obj.GetHashCode();
         }
 

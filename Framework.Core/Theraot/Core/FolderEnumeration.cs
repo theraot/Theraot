@@ -17,7 +17,7 @@ namespace Theraot.Core
         public static IEnumerable<string> GetFiles(string folder, string pattern)
         {
             // TODO handle exceptions
-            IEnumerable<string> fileEntries = null;
+            IEnumerable<string>? fileEntries = null;
             try
             {
 #if LESSTHAN_NET40

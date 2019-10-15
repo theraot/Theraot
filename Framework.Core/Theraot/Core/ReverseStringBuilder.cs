@@ -11,7 +11,7 @@ namespace Theraot.Core
     {
         private readonly int _capacity;
 
-        private char[] _buffer;
+        private readonly char[] _buffer;
 
         private int _start;
 
@@ -42,7 +42,6 @@ namespace Theraot.Core
             }
 
             ArrayReservoir<char>.DonateArray(buffer);
-            _buffer = null;
         }
 
         public int Length => _capacity - _start;
@@ -62,6 +61,10 @@ namespace Theraot.Core
 
         public void Prepend(string str)
         {
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str));
+            }
             var newStart = _start - str.Length;
             str.CopyTo(0, _buffer, newStart, str.Length);
             _start = newStart;

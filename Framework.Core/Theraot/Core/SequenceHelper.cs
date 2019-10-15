@@ -412,7 +412,10 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(next));
             }
 
-            comparer ??= EqualityComparer<T>.Default;
+            if (comparer == null)
+            {
+                return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
+            }
             return CommonNodeExtracted(first, second, next, comparer);
         }
 
@@ -424,7 +427,10 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(next));
             }
 
-            comparer ??= EqualityComparer<T>.Default;
+            if (comparer == null)
+            {
+                return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
+            }
             return CommonNodeExtracted(first, second, next, comparer);
         }
 
