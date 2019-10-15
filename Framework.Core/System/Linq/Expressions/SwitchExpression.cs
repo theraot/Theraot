@@ -101,6 +101,11 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Argument type cannot be System.Void.", nameof(switchValue));
             }
 
+            return SwitchExtracted(type, switchValue, defaultBody, ref comparison, cases);
+        }
+
+        private static SwitchExpression SwitchExtracted(Type? type, Expression switchValue, Expression? defaultBody, ref MethodInfo? comparison, IEnumerable<SwitchCase>? cases)
+        {
             var caseArray = cases.AsArrayInternal();
             ContractUtils.RequiresNotNullItems(caseArray, nameof(cases));
 

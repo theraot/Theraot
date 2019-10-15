@@ -285,7 +285,7 @@ namespace Theraot.Collections
                     return collection;
 
                 default:
-                    return new EnumerationList<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 
@@ -302,7 +302,7 @@ namespace Theraot.Collections
                     return list;
 
                 default:
-                    return new EnumerationList<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 
@@ -317,19 +317,19 @@ namespace Theraot.Collections
 
                 case T[] array:
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NET45
-                    return new EnumerationList<T>(array);
+                    return EnumerationList<T>.Create(array);
 #else
                     return Array.AsReadOnly(array);
 #endif
                 case List<T> list:
 #if LESSTHAN_NETSTANDARD13 || LESSTHAN_NET45
-                    return new EnumerationList<T>(list);
+                    return EnumerationList<T>.Create(list);
 #else
                     return list.AsReadOnly();
 #endif
 
                 default:
-                    return new EnumerationList<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 
@@ -344,19 +344,19 @@ namespace Theraot.Collections
 
                 case T[] array:
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NET45
-                    return new EnumerationList<T>(array);
+                    return EnumerationList<T>.Create(array);
 #else
                     return Array.AsReadOnly(array);
 #endif
                 case List<T> list:
 #if LESSTHAN_NETSTANDARD13 || LESSTHAN_NET45
-                    return new EnumerationList<T>(list);
+                    return EnumerationList<T>.Create(list);
 #else
                     return list.AsReadOnly();
 #endif
 
                 default:
-                    return new EnumerationList<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 

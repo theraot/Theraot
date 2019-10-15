@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized
@@ -19,11 +20,12 @@ namespace Theraot.Collections.Specialized
             // Empty
         }
 
+        [return: NotNullIfNotNull("needle")]
         private static T Conversion(TNeedle needle)
         {
             if (needle == null)
             {
-                return default;
+                return default!;
             }
             if (needle is ICacheNeedle<T> cacheNeedle && cacheNeedle.TryGetValue(out var value))
             {

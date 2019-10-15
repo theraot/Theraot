@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
 // ReSharper disable UseDeconstructionOnParameter
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -21,6 +22,10 @@ namespace System
             this Tuple<T1> value,
             out T1 item1)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
         }
 
@@ -29,6 +34,10 @@ namespace System
             this Tuple<T1, T2> value,
             out T1 item1, out T2 item2)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
         }
@@ -38,6 +47,10 @@ namespace System
             this Tuple<T1, T2, T3> value,
             out T1 item1, out T2 item2, out T3 item3)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -48,6 +61,10 @@ namespace System
             this Tuple<T1, T2, T3, T4> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -59,6 +76,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -71,6 +92,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -84,6 +109,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -98,6 +127,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -113,6 +146,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -129,6 +166,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -146,6 +187,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -164,6 +209,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -183,6 +232,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -203,6 +256,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -224,6 +281,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14, out T15 item15)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -246,6 +307,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14, out T15 item15, out T16 item16)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -269,6 +334,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14, out T15 item15, out T16 item16, out T17 item17)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -293,6 +362,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14, out T15 item15, out T16 item16, out T17 item17, out T18 item18)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -318,6 +391,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14, out T15 item15, out T16 item16, out T17 item17, out T18 item18, out T19 item19)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -344,6 +421,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14, out T15 item15, out T16 item16, out T17 item17, out T18 item18, out T19 item19, out T20 item20)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -371,6 +452,10 @@ namespace System
             this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> value,
             out T1 item1, out T2 item2, out T3 item3, out T4 item4, out T5 item5, out T6 item6, out T7 item7, out T8 item8, out T9 item9, out T10 item10, out T11 item11, out T12 item12, out T13 item13, out T14 item14, out T15 item15, out T16 item16, out T17 item17, out T18 item18, out T19 item19, out T20 item20, out T21 item21)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             item1 = value.Item1;
             item2 = value.Item2;
             item3 = value.Item3;
@@ -629,6 +714,10 @@ namespace System
             ToValueTuple<T1>(
                 this Tuple<T1> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return ValueTuple.Create(value.Item1);
         }
 
@@ -636,6 +725,10 @@ namespace System
             ToValueTuple<T1, T2>(
                 this Tuple<T1, T2> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return ValueTuple.Create(value.Item1, value.Item2);
         }
 
@@ -643,6 +736,10 @@ namespace System
             ToValueTuple<T1, T2, T3>(
                 this Tuple<T1, T2, T3> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3);
         }
 
@@ -650,6 +747,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4>(
                 this Tuple<T1, T2, T3, T4> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4);
         }
 
@@ -657,6 +758,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5>(
                 this Tuple<T1, T2, T3, T4, T5> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5);
         }
 
@@ -664,6 +769,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6>(
                 this Tuple<T1, T2, T3, T4, T5, T6> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6);
         }
 
@@ -671,6 +780,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return ValueTuple.Create(value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7);
         }
 
@@ -678,6 +791,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -689,6 +806,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -700,6 +821,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -711,6 +836,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -722,6 +851,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -733,6 +866,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -744,6 +881,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -755,6 +896,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -770,6 +915,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -785,6 +934,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -800,6 +953,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -815,6 +972,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -830,6 +991,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,
@@ -845,6 +1010,10 @@ namespace System
             ToValueTuple<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(
                 this Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> value)
         {
+            if (value == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
             return CreateLong
             (
                 value.Item1, value.Item2, value.Item3, value.Item4, value.Item5, value.Item6, value.Item7,

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 #if FAT
@@ -54,16 +55,16 @@ namespace Theraot.Collections.ThreadSafe
         }
 #endif
 
-        public bool Exchange(int index, T item, out T previous)
+        public bool Exchange(int index, T item, [MaybeNullWhen(true)] out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default;
+            previous = default!;
             var result = _bucketCore.DoMayIncrement
             (
                 index,
                 (ref object target) =>
                 {
-                    found = Interlocked.Exchange(ref target, (object)item ?? BucketHelper.Null);
+                    found = Interlocked.Exchange(ref target, (object?)item ?? BucketHelper.Null);
                     return found == null;
                 }
             );
@@ -96,7 +97,7 @@ namespace Theraot.Collections.ThreadSafe
                 index,
                 (ref object target) =>
                 {
-                    var found = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, null);
+                    var found = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, null);
                     return found == null;
                 }
             );
@@ -108,16 +109,16 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        public bool Insert(int index, T item, out T previous)
+        public bool Insert(int index, T item, [MaybeNullWhen(true)] out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default;
+            previous = default!;
             var result = _bucketCore.DoMayIncrement
             (
                 index,
                 (ref object target) =>
                 {
-                    found = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, null);
+                    found = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, null);
                     return found == null;
                 }
             );
@@ -150,10 +151,10 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        public bool RemoveAt(int index, out T previous)
+        public bool RemoveAt(int index, [MaybeNull] out T previous)
         {
             var found = BucketHelper.Null;
-            previous = default;
+            previous = default!;
             var result = _bucketCore.DoMayDecrement
             (
                 index,
@@ -218,7 +219,7 @@ namespace Theraot.Collections.ThreadSafe
             isNew = _bucketCore.DoMayIncrement
             (
                 index,
-                (ref object target) => Interlocked.Exchange(ref target, (object)item ?? BucketHelper.Null) == null
+                (ref object target) => Interlocked.Exchange(ref target, (object?)item ?? BucketHelper.Null) == null
             );
             if (isNew)
             {
@@ -226,10 +227,10 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool TryGet(int index, out T value)
+        public bool TryGet(int index, [MaybeNullWhen(true)] out T value)
         {
             var found = BucketHelper.Null;
-            value = default;
+            value = default!;
             var done = _bucketCore.Do
             (
                 index,
@@ -285,7 +286,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
 
                     var item = itemUpdateFactory(comparisonItem);
-                    compare = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, found);
+                    compare = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, found);
                     result = found == compare;
                     return true;
                 }

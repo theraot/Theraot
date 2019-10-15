@@ -13,7 +13,7 @@ namespace Theraot.Threading
 
         private readonly System.Threading.Timer _timer;
 
-        private Action _callback;
+        private Action? _callback;
 
         private Timer(Action callback, TimeSpan dueTime, TimeSpan period)
         {
@@ -21,7 +21,7 @@ namespace Theraot.Threading
             _timer = new System.Threading.Timer(Callback, null, dueTime, period);
         }
 
-        public static void Donate(Timer timer)
+        public static void Donate(ref Timer? timer)
         {
             _pool.Donate(Interlocked.Exchange(ref timer, null));
         }
@@ -70,7 +70,7 @@ namespace Theraot.Threading
             _callback = null;
         }
 
-        private void Callback(object state)
+        private void Callback(object? state)
         {
             _callback?.Invoke();
         }

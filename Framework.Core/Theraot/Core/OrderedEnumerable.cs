@@ -15,14 +15,14 @@ namespace Theraot.Core
         private readonly Func<TElement, TKey> _keySelector;
         private readonly IEnumerable<TElement> _source;
 
-        public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey> comparer)
+        public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey>? comparer)
         {
             _comparer = comparer ?? Comparer<TKey>.Default;
             _source = source ?? throw new ArgumentNullException(nameof(source));
             _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
         }
 
-        public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey> comparer, bool descending)
+        public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey>? comparer, bool descending)
         {
             _comparer = comparer ?? Comparer<TKey>.Default;
             if (descending)
@@ -34,17 +34,17 @@ namespace Theraot.Core
             _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
         }
 
-        public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey> comparer, bool descending)
+        public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey>? comparer, bool descending)
         {
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            comparer ??= Comparer<TNewKey>.Default;
+            var nonNullComparer = comparer ?? Comparer<TNewKey>.Default;
             if (descending)
             {
-                comparer = comparer.Reverse();
+                nonNullComparer = nonNullComparer.Reverse();
             }
 
             var compoundComparer = new CustomComparer<KeyValuePair<TKey, TNewKey>>(Compare);
@@ -58,7 +58,7 @@ namespace Theraot.Core
             int Compare(KeyValuePair<TKey, TNewKey> x, KeyValuePair<TKey, TNewKey> y)
             {
                 var check = _comparer.Compare(x.Key, y.Key);
-                return check == 0 ? comparer.Compare(x.Value, y.Value) : check;
+                return check == 0 ? nonNullComparer.Compare(x.Value, y.Value) : check;
             }
         }
 

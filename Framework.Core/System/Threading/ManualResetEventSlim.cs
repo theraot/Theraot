@@ -10,7 +10,7 @@ namespace System.Threading
     public partial class ManualResetEventSlim : IDisposable
     {
         private const int _defaultSpinCount = 10;
-        private ManualResetEvent _handle;
+        private ManualResetEvent? _handle;
 
         private int _status;
 
@@ -46,8 +46,7 @@ namespace System.Threading
                 var spinWait = new SpinWait();
                 while (true)
                 {
-                    var status = (Status)Volatile.Read(ref _status);
-                    switch (status)
+                    switch ((Status)Volatile.Read(ref _status))
                     {
                         case Status.Disposed:
                             // Disposed

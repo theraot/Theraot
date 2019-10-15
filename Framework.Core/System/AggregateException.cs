@@ -222,7 +222,7 @@ namespace System
                 InnerExceptions = exceptions.AsReadOnly();
             }
 
-            public Exception Exception { get; }
+            public Exception? Exception { get; }
 
             public ReadOnlyCollection<Exception> InnerExceptions { get; }
 

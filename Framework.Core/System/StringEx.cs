@@ -256,7 +256,7 @@ namespace System
 
                 if (length != 0 && separatorLength != 0)
                 {
-                    stringList.Add(separator);
+                    stringList.Add(separator!);
                     length += separatorLength;
                 }
 
@@ -291,7 +291,7 @@ namespace System
 
                 if (length != 0 && separatorLength != 0)
                 {
-                    stringList.Add(separator);
+                    stringList.Add(separator!);
                     length += separatorLength;
                 }
 
@@ -327,7 +327,7 @@ namespace System
 
                 if (length != 0 && separatorLength != 0)
                 {
-                    stringList.Add(separator);
+                    stringList.Add(separator!);
                     length += separatorLength;
                 }
 
@@ -369,7 +369,7 @@ namespace System
                 throw new ArgumentNullException(nameof(values));
             }
 
-            var array = new string[values.Length];
+            var array = new string?[values.Length];
             var index = 0;
             foreach (var item in values)
             {
@@ -536,7 +536,7 @@ namespace System
 
             var stringList = values.ToList();
 
-            if (stringList.Count <= 0)
+            if (stringList.Count == 0)
             {
                 return string.Empty;
             }
@@ -560,7 +560,7 @@ namespace System
 
             var stringList = values.Select(item => item?.ToString()).ToList();
 
-            if (stringList.Count <= 0)
+            if (stringList.Count == 0)
             {
                 return string.Empty;
             }
@@ -589,7 +589,7 @@ namespace System
 
             var stringList = values.Select(item => item?.ToString()).ToList();
 
-            if (stringList.Count <= 0)
+            if (stringList.Count == 0)
             {
                 return string.Empty;
             }
@@ -621,7 +621,7 @@ namespace System
             return ImplodeExtractedExtracted(separator, newArray, 0, count, length);
         }
 
-        private static string ImplodeExtracted(string separator, string[] array, int startIndex, int count)
+        private static string ImplodeExtracted(string separator, string?[] array, int startIndex, int count)
         {
             var length = 0;
             var maxIndex = startIndex + count;
@@ -638,7 +638,7 @@ namespace System
             return ImplodeExtractedExtracted(separator, array, startIndex, maxIndex, length);
         }
 
-        private static string ImplodeExtractedExtracted(string separator, string[] array, int startIndex, int maxIndex, int length)
+        private static string ImplodeExtractedExtracted(string separator, string?[] array, int startIndex, int maxIndex, int length)
         {
             if (length <= 0)
             {

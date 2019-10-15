@@ -11,8 +11,8 @@ namespace Theraot.Collections.ThreadSafe
     internal sealed class Node<T>
     {
         private static readonly Pool<Node<T>> _pool = new Pool<Node<T>>(64, Recycle);
-        public Node<T> Link;
-        public T Value;
+        public Node<T>? Link;
+        public T Value = default!;
 
         private Node()
         {
@@ -22,10 +22,10 @@ namespace Theraot.Collections.ThreadSafe
         public static void Recycle(Node<T> node)
         {
             node.Link = null;
-            node.Value = default;
+            node.Value = default!;
         }
 
-        public void Initialize(Node<T> link, T value)
+        public void Initialize(Node<T>? link, T value)
         {
             Link = link;
             Value = value;
@@ -36,7 +36,7 @@ namespace Theraot.Collections.ThreadSafe
             _pool.Donate(node);
         }
 
-        internal static Node<T> GetNode(Node<T> link, T item)
+        internal static Node<T> GetNode(Node<T>? link, T item)
         {
             if (!_pool.TryGet(out var node))
             {

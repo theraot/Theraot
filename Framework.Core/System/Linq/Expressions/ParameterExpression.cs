@@ -156,7 +156,7 @@ namespace System.Linq.Expressions
                     {
                         return new ParameterExpression(name);
                     }
-                    else if (type == typeof(Exception))
+                    if (type == typeof(Exception))
                     {
                         return new PrimitiveParameterExpression<Exception>(name);
                     }

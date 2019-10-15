@@ -12,7 +12,7 @@ namespace System.Linq
             return GroupJoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector, null);
         }
 
-        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, IEqualityComparer<TKey>? comparer)
         {
             if (outer == null)
             {
@@ -36,13 +36,13 @@ namespace System.Linq
             }
             if (comparer == null)
             {
-                comparer = EqualityComparer<TKey>.Default;
+                return CreateGroupJoinIterator(EqualityComparer<TKey>.Default);
             }
-            return CreateGroupJoinIterator();
+            return CreateGroupJoinIterator(comparer);
 
-            IEnumerable<TResult> CreateGroupJoinIterator()
+            IEnumerable<TResult> CreateGroupJoinIterator(IEqualityComparer<TKey> notNullComparer)
             {
-                var innerKeys = ToLookup(inner, innerKeySelector, comparer);
+                var innerKeys = ToLookup(inner, innerKeySelector, notNullComparer);
 
                 foreach (var element in outer)
                 {

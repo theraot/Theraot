@@ -1,4 +1,7 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading
@@ -35,7 +38,7 @@ namespace System.Threading
 
         private class ThreadPoolThread
         {
-            private readonly AutoResetEvent _event;
+            private AutoResetEvent _event;
 
             public ThreadPoolThread()
             {
@@ -53,6 +56,11 @@ namespace System.Threading
             {
                 while (true)
                 {
+                    var e = Volatile.Read(ref _event);
+                    if (e == null)
+                    {
+                        break;
+                    }
                     Interlocked.Increment(ref _threadCount);
                     try
                     {
@@ -67,7 +75,7 @@ namespace System.Threading
                         Interlocked.Decrement(ref _threadCount);
                     }
                     _pool.Donate(this);
-                    _event.WaitOne();
+                    e.WaitOne();
                 }
             }
         }

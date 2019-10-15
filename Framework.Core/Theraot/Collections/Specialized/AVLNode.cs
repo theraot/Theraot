@@ -1,5 +1,9 @@
 ﻿// Needed for NET35 (SortedSet, OrderedCollection)
 
+#pragma warning disable CA1823 // Avoid unused private fields
+#pragma warning disable CC0052 // Make field readonly
+#pragma warning disable IDE0044 // Add readonly modifier
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,8 +15,8 @@ namespace Theraot.Collections.Specialized
     {
         private int _balance;
         private int _depth;
-        private AVLNode<TKey, TValue> _left;
-        private AVLNode<TKey, TValue> _right;
+        private AVLNode<TKey, TValue>? _left;
+        private AVLNode<TKey, TValue>? _right;
 
         private AVLNode(TKey key, TValue value)
         {
@@ -24,19 +28,19 @@ namespace Theraot.Collections.Specialized
 
         public TKey Key { get; }
 
-        public AVLNode<TKey, TValue> Left => _left;
+        public AVLNode<TKey, TValue>? Left => _left;
 
-        public AVLNode<TKey, TValue> Right => _right;
+        public AVLNode<TKey, TValue>? Right => _right;
 
         public TValue Value { get; }
 
-        internal static void Add(ref AVLNode<TKey, TValue> node, TKey key, TValue value, IComparer<TKey> comparer)
+        internal static void Add(ref AVLNode<TKey, TValue>? node, TKey key, TValue value, IComparer<TKey> comparer)
         {
             var created = new AVLNode<TKey, TValue>(key, value);
             AddExtracted(ref node, key, comparer, created);
         }
 
-        internal static bool AddNonDuplicate(ref AVLNode<TKey, TValue> node, TKey key, TValue value, IComparer<TKey> comparer)
+        internal static bool AddNonDuplicate(ref AVLNode<TKey, TValue>? node, TKey key, TValue value, IComparer<TKey> comparer)
         {
             return AddNonDuplicateExtracted(ref node, key, value, comparer, null);
         }
@@ -66,7 +70,7 @@ namespace Theraot.Collections.Specialized
         }
 #endif
 
-        internal static IEnumerable<AVLNode<TKey, TValue>> EnumerateFrom(AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer)
+        internal static IEnumerable<AVLNode<TKey, TValue>> EnumerateFrom(AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
             var stack = new Stack<AVLNode<TKey, TValue>>();
             while (node != null)
@@ -108,7 +112,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        internal static IEnumerable<AVLNode<TKey, TValue>> EnumerateRoot(AVLNode<TKey, TValue> node)
+        internal static IEnumerable<AVLNode<TKey, TValue>> EnumerateRoot(AVLNode<TKey, TValue>? node)
         {
             if (node == null)
             {
@@ -137,7 +141,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        internal static AVLNode<TKey, TValue> Get(AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer)
+        internal static AVLNode<TKey, TValue>? Get(AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -160,9 +164,9 @@ namespace Theraot.Collections.Specialized
             return node;
         }
 
-        internal static AVLNode<TKey, TValue> GetNearestLeft(AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer)
+        internal static AVLNode<TKey, TValue>? GetNearestLeft(AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
-            AVLNode<TKey, TValue> result = null;
+            AVLNode<TKey, TValue>? result = null;
             while (node != null)
             {
                 var compare = comparer.Compare(key, node.Key);
@@ -182,9 +186,9 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
-        internal static AVLNode<TKey, TValue> GetNearestRight(AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer)
+        internal static AVLNode<TKey, TValue>? GetNearestRight(AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
-            AVLNode<TKey, TValue> result = null;
+            AVLNode<TKey, TValue>? result = null;
             while (node != null)
             {
                 var compare = comparer.Compare(key, node.Key);
@@ -211,7 +215,7 @@ namespace Theraot.Collections.Specialized
         }
 #endif
 
-        internal static bool Remove(ref AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer)
+        internal static bool Remove(ref AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -228,8 +232,7 @@ namespace Theraot.Collections.Specialized
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
-                var result = RemoveExtracted(ref node);
-                return result;
+                return RemoveExtracted(ref node);
             }
 
             try
@@ -242,19 +245,19 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        internal static AVLNode<TKey, TValue> RemoveNearestLeft(ref AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer)
+        internal static AVLNode<TKey, TValue>? RemoveNearestLeft(ref AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
-            AVLNode<TKey, TValue> result = null;
+            AVLNode<TKey, TValue>? result = null;
             return RemoveNearestLeftExtracted(ref node, ref result, key, comparer);
         }
 
-        internal static AVLNode<TKey, TValue> RemoveNearestRight(ref AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer)
+        internal static AVLNode<TKey, TValue>? RemoveNearestRight(ref AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
-            AVLNode<TKey, TValue> result = null;
+            AVLNode<TKey, TValue>? result = null;
             return RemoveNearestRightExtracted(ref node, ref result, key, comparer);
         }
 
-        private static void AddExtracted(ref AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer, AVLNode<TKey, TValue> created)
+        private static void AddExtracted(ref AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer, AVLNode<TKey, TValue> created)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -287,7 +290,7 @@ namespace Theraot.Collections.Specialized
             MakeBalanced(ref node);
         }
 
-        private static bool AddNonDuplicateExtracted(ref AVLNode<TKey, TValue> node, TKey key, TValue value, IComparer<TKey> comparer, AVLNode<TKey, TValue> created)
+        private static bool AddNonDuplicateExtracted(ref AVLNode<TKey, TValue>? node, TKey key, TValue value, IComparer<TKey> comparer, AVLNode<TKey, TValue>? created)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -400,39 +403,39 @@ namespace Theraot.Collections.Specialized
         }
 #endif
 
-        private static void MakeBalanced(ref AVLNode<TKey, TValue> node)
+        private static void MakeBalanced(ref AVLNode<TKey, TValue>? node)
         {
             AVLNode<TKey, TValue> current;
             do
             {
-                current = node;
-                Update(node);
-                if (node._balance >= 2)
+                current = node!;
+                Update(current);
+                if (current._balance >= 2)
                 {
-                    if (node._right._balance <= 1)
+                    if (current._right!._balance <= 1)
                     {
-                        DoubleLeft(ref node);
+                        DoubleLeft(ref node!);
                     }
                     else
                     {
-                        RotateLeft(ref node);
+                        RotateLeft(ref node!);
                     }
                 }
-                else if (node._balance <= -2)
+                else if (current._balance <= -2)
                 {
-                    if (node._left._balance >= 1)
+                    if (current._left!._balance >= 1)
                     {
-                        DoubleRight(ref node);
+                        DoubleRight(ref node!);
                     }
                     else
                     {
-                        RotateRight(ref node);
+                        RotateRight(ref node!);
                     }
                 }
             } while (node != current);
         }
 
-        private static bool RemoveExtracted(ref AVLNode<TKey, TValue> node)
+        private static bool RemoveExtracted(ref AVLNode<TKey, TValue>? node)
         {
             if (node == null)
             {
@@ -488,7 +491,7 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        private static AVLNode<TKey, TValue> RemoveNearestLeftExtracted(ref AVLNode<TKey, TValue> node, ref AVLNode<TKey, TValue> result, TKey key, IComparer<TKey> comparer)
+        private static AVLNode<TKey, TValue>? RemoveNearestLeftExtracted(ref AVLNode<TKey, TValue>? node, ref AVLNode<TKey, TValue>? result, TKey key, IComparer<TKey> comparer)
         {
             if (node == null)
             {
@@ -496,7 +499,7 @@ namespace Theraot.Collections.Specialized
             }
 
             var compare = comparer.Compare(key, node.Key);
-            AVLNode<TKey, TValue> tmp;
+            AVLNode<TKey, TValue>? tmp;
             if (compare == 0)
             {
                 tmp = node;
@@ -530,7 +533,7 @@ namespace Theraot.Collections.Specialized
             return tmp;
         }
 
-        private static AVLNode<TKey, TValue> RemoveNearestRightExtracted(ref AVLNode<TKey, TValue> node, ref AVLNode<TKey, TValue> result, TKey key, IComparer<TKey> comparer)
+        private static AVLNode<TKey, TValue>? RemoveNearestRightExtracted(ref AVLNode<TKey, TValue>? node, ref AVLNode<TKey, TValue>? result, TKey key, IComparer<TKey> comparer)
         {
             if (node == null)
             {
@@ -538,7 +541,7 @@ namespace Theraot.Collections.Specialized
             }
 
             var compare = comparer.Compare(key, node.Key);
-            AVLNode<TKey, TValue> tmp;
+            AVLNode<TKey, TValue>? tmp;
             if (compare == 0)
             {
                 tmp = node;
@@ -581,8 +584,7 @@ namespace Theraot.Collections.Specialized
                 return;
             }
 
-            var rightLeft = right._left;
-            node._right = rightLeft;
+            node._right = right._left;
             right._left = root;
             node = right;
             Update(root);
@@ -598,8 +600,7 @@ namespace Theraot.Collections.Specialized
                 return;
             }
 
-            var leftRight = left._right;
-            node._left = leftRight;
+            node._left = left._right;
             left._right = root;
             node = left;
             Update(root);

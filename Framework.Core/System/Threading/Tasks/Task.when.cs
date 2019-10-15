@@ -61,7 +61,7 @@ namespace System.Threading.Tasks
 
                 return InternalWhenAll(taskArray);
             }
-            else if (tasks == null)
+            if (tasks == null)
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
@@ -198,7 +198,7 @@ namespace System.Threading.Tasks
 
                 return InternalWhenAll(taskArray);
             }
-            else if (tasks == null)
+            if (tasks == null)
             {
                 throw new ArgumentNullException(nameof(tasks));
             }

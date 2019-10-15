@@ -788,23 +788,23 @@ namespace System.Collections
                         break;
 
                     case _keyComparerName:
-                        EqualityComparer = (IEqualityComparer)siInfo.GetValue(_keyComparerName, typeof(IEqualityComparer));
+                        EqualityComparer = (IEqualityComparer)(siInfo.GetValue(_keyComparerName, typeof(IEqualityComparer)) ?? throw new SerializationException());
                         break;
 
                     case _comparerName:
-                        c = (IComparer)siInfo.GetValue(_comparerName, typeof(IComparer));
+                        c = (IComparer)(siInfo.GetValue(_comparerName, typeof(IComparer)) ?? throw new SerializationException());
                         break;
 
                     case _hashCodeProviderName:
-                        hashCodeProvider = (IHashCodeProvider)siInfo.GetValue(_hashCodeProviderName, typeof(IHashCodeProvider));
+                        hashCodeProvider = (IHashCodeProvider)(siInfo.GetValue(_hashCodeProviderName, typeof(IHashCodeProvider)) ?? throw new SerializationException());
                         break;
 
                     case _keysName:
-                        serKeys = (object[])siInfo.GetValue(_keysName, typeof(object[]));
+                        serKeys = (object[])(siInfo.GetValue(_keysName, typeof(object[])) ?? throw new SerializationException());
                         break;
 
                     case _valuesName:
-                        serValues = (object[])siInfo.GetValue(_valuesName, typeof(object[]));
+                        serValues = (object[])(siInfo.GetValue(_valuesName, typeof(object[])) ?? throw new SerializationException());
                         break;
 
                     default:

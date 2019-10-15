@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1066 // Implement IEquatable when overriding Object.Equals
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 
 // CancellationToken.cs
@@ -37,7 +38,7 @@ namespace System.Threading
     [DebuggerDisplay("IsCancellationRequested = {" + nameof(IsCancellationRequested) + "}")]
     public struct CancellationToken
     {
-        private readonly CancellationTokenSource _source;
+        private readonly CancellationTokenSource? _source;
 
         public CancellationToken(bool canceled)
             : this(canceled ? CancellationTokenSource.CanceledSource : null)
@@ -45,7 +46,7 @@ namespace System.Threading
             // Empty
         }
 
-        internal CancellationToken(CancellationTokenSource source)
+        internal CancellationToken(CancellationTokenSource? source)
         {
             _source = source;
         }
@@ -105,7 +106,7 @@ namespace System.Threading
             return _source?.Register(callback, useSynchronizationContext) ?? new CancellationTokenRegistration();
         }
 
-        public CancellationTokenRegistration Register(Action<object> callback, object state)
+        public CancellationTokenRegistration Register(Action<object?> callback, object? state)
         {
             if (callback == null)
             {
@@ -115,7 +116,7 @@ namespace System.Threading
             return Register(() => callback(state), false);
         }
 
-        public CancellationTokenRegistration Register(Action<object> callback, object? state, bool useSynchronizationContext)
+        public CancellationTokenRegistration Register(Action<object?> callback, object? state, bool useSynchronizationContext)
         {
             if (callback == null)
             {

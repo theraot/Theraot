@@ -13,15 +13,14 @@ namespace Theraot.Collections.Specialized
 
         public EnumerableFromDelegate(Func<IEnumerator> getEnumerator)
         {
-            // Specify the type arguments explicitly
             _getEnumerator = getEnumerator.ChainConversion(ConvertEnumerator);
 
-            IEnumerator<T> ConvertEnumerator(IEnumerator enumerator)
+            static IEnumerator<T> ConvertEnumerator(IEnumerator enumerator)
             {
                 switch (enumerator)
                 {
                     case null:
-                        return null;
+                        return EmptyCollection<T>.Instance.GetEnumerator();
                     case IEnumerator<T> genericEnumerator:
                         return genericEnumerator;
                     default:
@@ -29,7 +28,7 @@ namespace Theraot.Collections.Specialized
                 }
             }
 
-            IEnumerator<T> ConvertEnumeratorExtracted(IEnumerator enumerator)
+            static IEnumerator<T> ConvertEnumeratorExtracted(IEnumerator enumerator)
             {
                 try
                 {

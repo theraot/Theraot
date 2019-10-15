@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static readonly CacheDict<Type, Pool<Array>[]> _pools = new CacheDict<Type, Pool<Array>[]>(256);
 
-        public static Pool<Array> GetPool<T>(int index)
+        public static Pool<Array>? GetPool<T>(int index)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             var pools = _pools;
@@ -31,8 +31,7 @@ namespace Theraot.Collections.ThreadSafe
                 PopulatePools(poolArray);
             }
 
-            var pool = poolArray?[index];
-            return pool;
+            return poolArray?[index];
         }
 
         private static void PopulatePools(Pool<Array>[] poolArray)

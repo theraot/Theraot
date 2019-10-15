@@ -74,6 +74,10 @@ namespace System.Threading.Tasks
 
         protected bool TryExecuteTask(Task task)
         {
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
             if (task.ExecutingTaskScheduler != this)
             {
                 throw new InvalidOperationException("Wrong Task Scheduler");

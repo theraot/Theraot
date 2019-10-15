@@ -31,7 +31,7 @@ namespace System.Threading
     public struct CancellationTokenRegistration : IDisposable, IEquatable<CancellationTokenRegistration>
     {
         private readonly int _id;
-        private CancellationTokenSource _source;
+        private CancellationTokenSource? _source;
 
         internal CancellationTokenRegistration(int id, CancellationTokenSource source)
         {

@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NETSTANDARD13
+
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
 
@@ -11,19 +12,19 @@ namespace System.Threading
     public class Thread
     {
         [ThreadStatic]
-        private static Thread _currentThread;
+        private static Thread? _currentThread;
 
         private static int _lastId;
 
         [ThreadStatic]
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private static object _threadProbe;
+        private static object? _threadProbe;
 
-        private string _name;
+        private string? _name;
 
-        private readonly WeakReference<object> _probe;
-        private readonly ParameterizedThreadStart _start;
-        private Task _task;
+        private readonly WeakReference<object>? _probe;
+        private readonly ParameterizedThreadStart? _start;
+        private Task? _task;
 
         public Thread(ParameterizedThreadStart start)
         {
@@ -88,7 +89,7 @@ namespace System.Threading
 
         public static Thread CurrentThread => _currentThread ?? (_currentThread = new Thread());
 
-        public bool IsAlive => (_start == null && _probe.TryGetTarget(out _)) || (_task?.IsCompleted == false);
+        public bool IsAlive => (_start == null && _probe!.TryGetTarget(out _)) || (_task?.IsCompleted == false);
 
         public bool IsBackground
         {
@@ -100,7 +101,7 @@ namespace System.Threading
 
         public int ManagedThreadId { get; }
 
-        public string Name
+        public string? Name
         {
             get => _name;
             set
@@ -119,7 +120,7 @@ namespace System.Threading
             {
                 if (_start == null)
                 {
-                    return _probe.TryGetTarget(out _) ? ThreadState.Background : ThreadState.Stopped;
+                    return _probe!.TryGetTarget(out _) ? ThreadState.Background : ThreadState.Stopped;
                 }
                 if (_task == null)
                 {
@@ -179,7 +180,7 @@ namespace System.Threading
             }
             if (_start == null)
             {
-                if (_probe.TryGetTarget(out _))
+                if (_probe!.TryGetTarget(out _))
                 {
                     Wait();
                 }

@@ -2,6 +2,7 @@
 
 #pragma warning disable CA1036 // Override methods on comparable types
 #pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1066 // Implement IEquatable when overriding Object.Equals
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CC0074 // Make field readonly
@@ -379,8 +380,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`1" />
-        /// instance is equal to a specified <see cref="T:System.ValueTuple`1" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple`1" />
+        /// instance is equal to a specified <see cref="System.ValueTuple`1" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -546,7 +547,7 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`2" /> instance is equal to a specified <see cref="T:System.ValueTuple`2" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2}" /> instance is equal to a specified <see cref="System.ValueTuple{T1, T2}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -761,8 +762,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`3" />
-        /// instance is equal to a specified <see cref="T:System.ValueTuple`3" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3}" />
+        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -978,8 +979,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`4" />
-        /// instance is equal to a specified <see cref="T:System.ValueTuple`4" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4}" />
+        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -1219,8 +1220,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`5" />
-        /// instance is equal to a specified <see cref="T:System.ValueTuple`5" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5}" />
+        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -1484,8 +1485,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`6" />
-        /// instance is equal to a specified <see cref="T:System.ValueTuple`6" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6}" />
+        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -1773,8 +1774,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`7" />
-        /// instance is equal to a specified <see cref="T:System.ValueTuple`7" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple`7" />
+        /// instance is equal to a specified <see cref="System.ValueTuple`7" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -2092,8 +2093,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="T:System.ValueTuple`8" />
-        /// instance is equal to a specified <see cref="T:System.ValueTuple`8" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple`8" />
+        /// instance is equal to a specified <see cref="System.ValueTuple`8" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -2141,8 +2142,7 @@ namespace System
             }
 
             // In this case, the rest member has less than 8 elements so we need to combine some our elements with the elements in rest
-            var k = 8 - size;
-            switch (k)
+            switch (8 - size)
             {
                 case 1:
                     return ValueTuple.CombineHashCodes
@@ -2352,8 +2352,7 @@ namespace System
             }
 
             // In this case, the rest member has less than 8 elements so we need to combine some our elements with the elements in rest
-            var k = 8 - size;
-            switch (k)
+            switch (8 - size)
             {
                 case 1:
                     return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item7), rest.GetHashCode(comparer));

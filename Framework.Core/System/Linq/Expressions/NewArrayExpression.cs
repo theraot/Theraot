@@ -57,7 +57,11 @@ namespace System.Linq.Expressions
             }
 
             TypeUtils.ValidateType(type, nameof(type));
+            return NewArrayBoundsExtracted(type, bounds);
+        }
 
+        private static NewArrayExpression NewArrayBoundsExtracted(Type type, IEnumerable<Expression> bounds)
+        {
             var boundsList = bounds.ToReadOnlyCollection();
 
             var dimensions = boundsList.Count;
@@ -117,14 +121,18 @@ namespace System.Linq.Expressions
             }
 
             TypeUtils.ValidateType(type, nameof(type));
-            var initializerList = initializers.ToReadOnlyCollection();
+            return NewArrayInitExtracted(type, initializers, nameof(initializers));
+        }
 
+        private static NewArrayExpression NewArrayInitExtracted(Type type, IEnumerable<Expression> initializers, string initializersName)
+        {
+            var initializerList = initializers.ToReadOnlyCollection();
             Expression[]? newList = null;
             for (int i = 0, n = initializerList.Count; i < n; i++)
             {
                 var expr = initializerList[i];
-                ContractUtils.RequiresNotNull(expr, nameof(initializers), i);
-                ExpressionUtils.RequiresCanRead(expr, nameof(initializers), i);
+                ContractUtils.RequiresNotNull(expr, initializersName, i);
+                ExpressionUtils.RequiresCanRead(expr, initializersName, i);
 
                 if (!type.IsReferenceAssignableFromInternal(expr.Type))
                 {

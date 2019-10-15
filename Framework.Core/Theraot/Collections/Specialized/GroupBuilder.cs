@@ -6,14 +6,14 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
-    internal sealed class GroupBuilder<TKey, TSource, TElement>
+    internal sealed class GroupBuilder<TKey, TSource, TElement> : IDisposable
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly Func<TSource, TKey> _keySelector;
         private readonly ThreadSafeDictionary<TKey, ProxyObservable<TElement>> _proxies;
         private readonly ThreadSafeQueue<Grouping<TKey, TElement>> _results;
         private readonly Func<TSource, TElement> _resultSelector;
-        private IEnumerator<TSource> _enumerator;
+        private IEnumerator<TSource>? _enumerator;
 
         private GroupBuilder(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {
@@ -27,16 +27,18 @@ namespace Theraot.Collections.Specialized
 
         public static IEnumerable<IGrouping<TKey, TElement>> CreateGroups(IEnumerable<TSource> source, IEqualityComparer<TKey> comparer, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector)
         {
-            var instance = new GroupBuilder<TKey, TSource, TElement>(source, comparer, keySelector, resultSelector);
-            bool advanced;
-            do
+            using (var instance = new GroupBuilder<TKey, TSource, TElement>(source, comparer, keySelector, resultSelector))
             {
-                advanced = instance.MoveNext();
-                while (instance.GetPendingResults(out var pendingResult))
+                bool advanced;
+                do
                 {
-                    yield return pendingResult;
-                }
-            } while (advanced);
+                    advanced = instance.MoveNext();
+                    while (instance.GetPendingResults(out var pendingResult))
+                    {
+                        yield return pendingResult;
+                    }
+                } while (advanced);
+            }
         }
 
         private void Advance()
@@ -91,6 +93,12 @@ namespace Theraot.Collections.Specialized
 
             proxy.OnNext(element);
             return true;
+        }
+
+        public void Dispose()
+        {
+            _enumerator?.Dispose();
+            _cancellationTokenSource.Dispose();
         }
     }
 }

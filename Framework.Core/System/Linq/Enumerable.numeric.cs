@@ -44,7 +44,7 @@ namespace System.Linq
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
             {
-                sum += item.Value;
+                sum += item!.Value;
                 count++;
             }
             if (count == 0L)
@@ -94,7 +94,7 @@ namespace System.Linq
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
             {
-                sum += item.Value;
+                sum += item!.Value;
                 count++;
             }
             if (count == 0L)
@@ -144,7 +144,7 @@ namespace System.Linq
             var count = 0L;
             foreach (var nullable in Where(source, n => n.HasValue))
             {
-                sum += nullable.Value;
+                sum += nullable!.Value;
                 count++;
             }
             if (count == 0L)
@@ -194,7 +194,7 @@ namespace System.Linq
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
             {
-                sum += item.Value;
+                sum += item!.Value;
                 count++;
             }
             if (count == 0L)
@@ -244,7 +244,7 @@ namespace System.Linq
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
             {
-                sum += item.Value;
+                sum += item!.Value;
                 count++;
             }
             if (count == 0)
@@ -618,7 +618,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
             var comparer = Comparer<TSource>.Default;
-            var max = default(TSource);
+            var max = default(TSource)!;
             if (typeof(TSource).CanBeNull())
             {
                 foreach (var element in source)
@@ -1346,8 +1346,8 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
             var comparer = Comparer<TSource>.Default;
-            var min = default(TSource);
-            if (default(TSource) == null)
+            var min = default(TSource)!;
+            if (default(TSource)! == null)
             {
                 foreach (var element in source)
                 {

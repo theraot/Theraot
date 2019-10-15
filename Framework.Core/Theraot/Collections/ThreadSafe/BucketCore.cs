@@ -16,9 +16,9 @@ namespace Theraot.Collections.ThreadSafe
         private const int _capacityLog2 = 8;
         private const int _mask = _capacity - 1;
         private const int _maxLevel = 1 + (31 / _capacityLog2);
-        private object[] _arrayFirst;
-        private object[] _arraySecond;
-        private int[] _arrayUse;
+        private object[]? _arrayFirst;
+        private object[]? _arraySecond;
+        private int[]? _arrayUse;
         private readonly int _level;
 
         public BucketCore()
@@ -200,7 +200,7 @@ namespace Theraot.Collections.ThreadSafe
 
             return GetEnumeratorExtracted();
 
-            IEnumerator<object> Empty()
+            static IEnumerator<object> Empty()
             {
                 yield break;
             }
@@ -256,11 +256,11 @@ namespace Theraot.Collections.ThreadSafe
             try
             {
                 Interlocked.Increment(ref use);
-                return callback(ref first);
+                return callback(ref foundFirst);
             }
             finally
             {
-                DoLeave(ref use, ref first, ref second);
+                DoLeave(ref use, ref foundFirst, ref second);
             }
         }
 

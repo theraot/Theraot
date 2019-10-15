@@ -49,7 +49,7 @@ namespace System.Linq
             return _groupings.Values.Cast<IGrouping<TKey, TElement>>().GetEnumerator();
         }
 
-        internal static Lookup<TKey, TElement> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        internal static Lookup<TKey, TElement> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey>? comparer)
         {
             if (source == null)
             {
@@ -63,8 +63,9 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            var result = new Lookup<TKey, TElement>(comparer);
-            var collections = new NullAwareDictionary<TKey, List<TElement>>(comparer);
+            var nonNullComparer = comparer ?? (IEqualityComparer<TKey>)EqualityComparer<TSource>.Default;
+            var result = new Lookup<TKey, TElement>(nonNullComparer);
+            var collections = new NullAwareDictionary<TKey, List<TElement>>(nonNullComparer);
             foreach (var item in source)
             {
                 var key = keySelector(item);

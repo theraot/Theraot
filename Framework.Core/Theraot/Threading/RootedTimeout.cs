@@ -7,23 +7,26 @@ using System;
 using System.Threading;
 
 using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
     public sealed class RootedTimeout : IPromise
     {
-        private const int _canceled = 4;
+        private const int _canceled = 5;
 
-        private const int _canceling = 3;
+        private const int _canceling = 4;
 
         private const int _changing = 6;
 
         private const int _created = 0;
 
-        private const int _executed = 2;
+        private const int _executed = 3;
 
-        private const int _executing = 1;
+        private const int _executing = 2;
+
+        private const int _started = 1;
 
         private static readonly Bucket<RootedTimeout> _root = new Bucket<RootedTimeout>();
 
@@ -31,7 +34,7 @@ namespace Theraot.Threading
 
         private readonly int _hashcode;
 
-        private Action _callback;
+        private Action? _callback;
 
         private int _rootIndex = -1;
 
@@ -41,7 +44,7 @@ namespace Theraot.Threading
 
         private long _targetTime;
 
-        private Timer _wrapped;
+        private Timer? _wrapped;
 
         private RootedTimeout()
         {
@@ -70,6 +73,7 @@ namespace Theraot.Threading
             }
 
             var timeout = new RootedTimeout();
+            Root(timeout);
             timeout._callback = () =>
             {
                 try
@@ -81,16 +85,24 @@ namespace Theraot.Threading
                     UnRoot(timeout);
                 }
             };
-            Root(timeout);
             timeout.Start(dueTime);
             return timeout;
         }
 
         public static RootedTimeout Launch(Action callback, long dueTime, CancellationToken token)
         {
+            return Launch(callback, ActionHelper.GetNoopAction(), dueTime, token);
+        }
+
+        public static RootedTimeout Launch(Action callback, Action cancelledCallback, long dueTime, CancellationToken token)
+        {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
+            }
+            if (cancelledCallback == null)
+            {
+                throw new ArgumentNullException(nameof(cancelledCallback));
             }
 
             if (dueTime < -1)
@@ -99,12 +111,20 @@ namespace Theraot.Threading
             }
 
             var timeout = new RootedTimeout();
-            if (token.IsCancellationRequested)
+            if (token.CanBeCanceled)
             {
-                timeout._status = _canceled;
-                return timeout;
+                token.Register
+                (
+                    () =>
+                    {
+                        if (timeout.Cancel())
+                        {
+                            cancelledCallback();
+                        }
+                    }
+                );
             }
-
+            Root(timeout);
             timeout._callback = () =>
             {
                 try
@@ -116,8 +136,6 @@ namespace Theraot.Threading
                     UnRoot(timeout);
                 }
             };
-            token.Register(timeout.Cancel);
-            Root(timeout);
             timeout.Start(dueTime);
             return timeout;
         }
@@ -132,15 +150,22 @@ namespace Theraot.Threading
             return Launch(callback, (long)dueTime.TotalMilliseconds, token);
         }
 
-        public void Cancel()
+        public bool Cancel()
         {
-            if (Interlocked.CompareExchange(ref _status, _canceling, _created) != _created)
+            if
+            (
+                Interlocked.CompareExchange(ref _status, _canceling, _created) == _created
+                && Interlocked.CompareExchange(ref _status, _canceling, _started) == _started
+            )
             {
-                return;
+                Close();
             }
-
-            Close();
-            Volatile.Write(ref _status, _canceled);
+            if (Interlocked.CompareExchange(ref _status, _canceled, _canceling) == _canceled)
+            {
+                Volatile.Write(ref _status, _canceled);
+                return true;
+            }
+            return false;
         }
 
         public bool Change(long dueTime)
@@ -150,7 +175,7 @@ namespace Theraot.Threading
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
 
-            if (Interlocked.CompareExchange(ref _status, _changing, _created) != _created)
+            if (Interlocked.CompareExchange(ref _status, _changing, _started) != _started)
             {
                 return false;
             }
@@ -172,7 +197,7 @@ namespace Theraot.Threading
                 wrapped.Change(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
             }
 
-            Volatile.Write(ref _status, _created);
+            Volatile.Write(ref _status, _started);
             return true;
         }
 
@@ -230,15 +255,14 @@ namespace Theraot.Threading
 
         private void Close()
         {
-            Timer.Donate(_wrapped);
-            Volatile.Write(ref _callback, null);
+            Timer.Donate(ref _wrapped);
             GC.SuppressFinalize(this);
         }
 
         private void Finish()
         {
             ThreadingHelper.SpinWaitWhile(ref _status, _changing);
-            if (Interlocked.CompareExchange(ref _status, _executing, _created) != _created)
+            if (Interlocked.CompareExchange(ref _status, _executing, _started) != _started)
             {
                 return;
             }
@@ -261,9 +285,12 @@ namespace Theraot.Threading
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
 
-            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            _targetTime = dueTime == -1 ? -1 : _startTime + dueTime;
-            _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+            if (Interlocked.CompareExchange(ref _status, _created, _started) == _started)
+            {
+                _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+                _targetTime = dueTime == -1 ? -1 : _startTime + dueTime;
+                _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+            }
         }
     }
 }

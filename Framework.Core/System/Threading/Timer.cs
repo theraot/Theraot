@@ -5,18 +5,18 @@ namespace System.Threading
 {
     public sealed class Timer : IDisposable
     {
-        private TimerCallback _callback;
-        private CancellationTokenSource _changeSource;
-        private object _state;
+        private TimerCallback? _callback;
+        private CancellationTokenSource? _changeSource;
+        private object? _state;
 
-        public Timer(TimerCallback callback, object state, TimeSpan dueTime, TimeSpan period)
+        public Timer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
         {
             _callback = callback;
             _state = state;
             Change(dueTime, period);
         }
 
-        public Timer(TimerCallback callback, object state, int dueTime, int period)
+        public Timer(TimerCallback callback, object? state, int dueTime, int period)
         {
             _callback = callback;
             _state = state;
@@ -29,17 +29,18 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
+            var callback = _callback;
             Stop();
-            Task.Factory.StartNew(Function, TaskCreationOptions.LongRunning).Unwrap();
+            Task.Factory.StartNew(Function, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
             async Task Function()
             {
-                await Task.Delay(dueTime, _changeSource.Token).ConfigureAwait(false);
+                await Task.Delay(dueTime, _changeSource!.Token).ConfigureAwait(false);
                 if (_changeSource.IsCancellationRequested)
                 {
                     return;
                 }
 
-                _callback(_state);
+                callback(_state);
                 if (_changeSource.IsCancellationRequested)
                 {
                     return;
@@ -53,7 +54,7 @@ namespace System.Threading
                         return;
                     }
 
-                    _callback(_state);
+                    callback(_state);
                     if (_changeSource.IsCancellationRequested)
                     {
                         return;
@@ -68,6 +69,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
+            var callback = _callback;
             if (period < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(period));
@@ -79,17 +81,17 @@ namespace System.Threading
             Stop();
             if (dueTime != -1)
             {
-                Task.Factory.StartNew(Function, TaskCreationOptions.LongRunning).Unwrap();
+                Task.Factory.StartNew(Function, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
             }
             async Task Function()
             {
-                await Task.Delay(dueTime, _changeSource.Token).ConfigureAwait(false);
+                await Task.Delay(dueTime, _changeSource!.Token).ConfigureAwait(false);
                 if (_changeSource.IsCancellationRequested)
                 {
                     return;
                 }
 
-                _callback(_state);
+                callback(_state);
                 if (_changeSource.IsCancellationRequested)
                 {
                     return;
@@ -105,7 +107,7 @@ namespace System.Threading
                             return;
                         }
 
-                        _callback(_state);
+                        callback(_state);
                         if (_changeSource.IsCancellationRequested)
                         {
                             return;

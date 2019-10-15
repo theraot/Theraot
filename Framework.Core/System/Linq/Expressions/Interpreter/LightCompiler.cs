@@ -477,12 +477,10 @@ namespace System.Linq.Expressions.Interpreter
 
                             return new IndexMethodByRefUpdater(objTmp, indexLocals, indexNode.Indexer.GetSetMethod(), index);
                         }
-                        else
-                        {
-                            return indexNode.ArgumentCount == 1
-                                ? CompileArrayIndexAddress(indexNode.Object!, indexNode.GetArgument(0), index)
-                                : CompileMultiDimArrayAccess(indexNode.Object!, indexNode, index);
-                        }
+
+                        return indexNode.ArgumentCount == 1
+                            ? CompileArrayIndexAddress(indexNode.Object!, indexNode.GetArgument(0), index)
+                            : CompileMultiDimArrayAccess(indexNode.Object!, indexNode, index);
                     case ExpressionType.MemberAccess:
                         var member = (MemberExpression)node;
 

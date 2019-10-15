@@ -10,7 +10,7 @@ namespace Theraot.Collections.Specialized
     public sealed class AVLTree<TKey, TValue> : IEnumerable<AVLNode<TKey, TValue>>
     {
         private readonly IComparer<TKey> _comparer;
-        private AVLNode<TKey, TValue> _root;
+        private AVLNode<TKey, TValue>? _root;
 
         public AVLTree()
         {
@@ -26,7 +26,7 @@ namespace Theraot.Collections.Specialized
 
         public int Count { get; private set; }
 
-        public AVLNode<TKey, TValue> Root => _root;
+        public AVLNode<TKey, TValue>? Root => _root;
 
         public void Add(TKey key, TValue value)
         {
@@ -58,7 +58,7 @@ namespace Theraot.Collections.Specialized
             Count = 0;
         }
 
-        public AVLNode<TKey, TValue> Get(TKey key)
+        public AVLNode<TKey, TValue>? Get(TKey key)
         {
             return AVLNode<TKey, TValue>.Get(_root, key, _comparer);
         }
@@ -68,12 +68,12 @@ namespace Theraot.Collections.Specialized
             return AVLNode<TKey, TValue>.EnumerateRoot(_root).GetEnumerator();
         }
 
-        public AVLNode<TKey, TValue> GetNearestLeft(TKey key)
+        public AVLNode<TKey, TValue>? GetNearestLeft(TKey key)
         {
             return AVLNode<TKey, TValue>.GetNearestLeft(_root, key, _comparer);
         }
 
-        public AVLNode<TKey, TValue> GetNearestRight(TKey key)
+        public AVLNode<TKey, TValue>? GetNearestRight(TKey key)
         {
             return AVLNode<TKey, TValue>.GetNearestRight(_root, key, _comparer);
         }
@@ -115,12 +115,12 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        public AVLNode<TKey, TValue> RemoveNearestLeft(TKey key)
+        public AVLNode<TKey, TValue>? RemoveNearestLeft(TKey key)
         {
             return AVLNode<TKey, TValue>.RemoveNearestLeft(ref _root, key, _comparer);
         }
 
-        public AVLNode<TKey, TValue> RemoveNearestRight(TKey key)
+        public AVLNode<TKey, TValue>? RemoveNearestRight(TKey key)
         {
             return AVLNode<TKey, TValue>.RemoveNearestRight(ref _root, key, _comparer);
         }

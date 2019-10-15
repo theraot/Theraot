@@ -1,10 +1,13 @@
 ﻿// Needed for NET40
 
+#pragma warning disable RCS1169 // Make field read-only.
+
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -62,8 +65,8 @@ namespace Theraot.Collections.ThreadSafe
             var spinWait = new SpinWait();
             while (true)
             {
-                var tail = Volatile.Read(ref _tail);
-                if (tail.Value.TryAdd(item))
+                var tail = Volatile.Read(ref _tail!);
+                if (tail!.Value.TryAdd(item))
                 {
                     Interlocked.Increment(ref _count);
                     return;
@@ -73,7 +76,7 @@ namespace Theraot.Collections.ThreadSafe
                 var found = Interlocked.CompareExchange(ref tail.Link, node, null);
                 if (found == null)
                 {
-                    Volatile.Write(ref _tail, node);
+                    Volatile.Write(ref _tail!, node);
                 }
 
                 spinWait.SpinOnce();
@@ -88,24 +91,20 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="T:System.Collections.Generic.IEnumerator`1" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        ///     A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            var root = _root;
-            do
+            foreach (var root in SequenceHelper.ExploreSequenceUntilNull(_root, found => found.Link))
             {
                 foreach (var item in root.Value)
                 {
                     yield return item;
                 }
-
-                root = root.Link;
             }
-            while (root != null);
         }
 
         public T[] ToArray()
@@ -125,8 +124,8 @@ namespace Theraot.Collections.ThreadSafe
             var spinWait = new SpinWait();
             while (true)
             {
-                var root = Volatile.Read(ref _root);
-                if (root.Value.TryPeek(out item))
+                var root = Volatile.Read(ref _root!);
+                if (root!.Value.TryPeek(out item))
                 {
                     return true;
                 }
@@ -158,8 +157,8 @@ namespace Theraot.Collections.ThreadSafe
             var spinWait = new SpinWait();
             while (true)
             {
-                var root = Volatile.Read(ref _root);
-                if (root.Value.TryTake(out item))
+                var root = Volatile.Read(ref _root!);
+                if (root!.Value.TryTake(out item))
                 {
                     Interlocked.Decrement(ref _count);
                     return true;
@@ -170,7 +169,7 @@ namespace Theraot.Collections.ThreadSafe
                     return false;
                 }
 
-                var found = Interlocked.CompareExchange(ref _root, root.Link, root);
+                var found = Interlocked.CompareExchange(ref _root!, root.Link, root);
                 if (found == root)
                 {
                     Node<FixedSizeQueue<T>>.Donate(root);

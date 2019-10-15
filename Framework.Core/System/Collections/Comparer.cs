@@ -41,7 +41,7 @@ namespace System.Collections
             }
 
             No.Op(context);
-            _compareInfo = (CompareInfo)info.GetValue("CompareInfo", typeof(CompareInfo));
+            _compareInfo = (CompareInfo)(info.GetValue("CompareInfo", typeof(CompareInfo)) ?? throw new SerializationException());
         }
 
         // Compares two Objects by calling CompareTo.

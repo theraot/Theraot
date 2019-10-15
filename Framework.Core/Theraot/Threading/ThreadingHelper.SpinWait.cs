@@ -214,7 +214,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitWhileNull<T>(ref T check)
+        public static void SpinWaitWhileNull<T>(ref T? check)
             where T : class
         {
             var spinWait = new SpinWait();

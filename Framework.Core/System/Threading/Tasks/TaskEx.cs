@@ -372,7 +372,7 @@ namespace System.Threading.Tasks
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
 #if NET40
-            return WhenAllCore(tasks, (Action<Task[], TaskCompletionSource<object>>)((_, tcs) => tcs.TrySetResult(null)));
+            return WhenAllCore(tasks, (Action<Task[], TaskCompletionSource<object>>)((_, tcs) => tcs.TrySetResult(null!)));
 #else
             // Missing in .NET 4.0
             return Task.WhenAll(tasks);
@@ -530,7 +530,7 @@ namespace System.Threading.Tasks
         /// Adds the target exception to the list, initializing the list if it's null.
         /// </summary>
         /// <param name="targetList">The list to which to add the exception and initialize if the list is null.</param><param name="exception">The exception to add, and unwrap if it's an aggregate.</param>
-        private static void AddPotentiallyUnwrappedExceptions(ref List<Exception> targetList, Exception exception)
+        private static void AddPotentiallyUnwrappedExceptions(ref List<Exception>? targetList, Exception exception)
         {
             if (targetList == null)
             {
@@ -556,7 +556,7 @@ namespace System.Threading.Tasks
         /// <returns>
         /// A Task that represents the completion of all of the provided tasks.
         /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="T:System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
         private static Task<TResult> WhenAllCore<TResult>(IEnumerable<Task> tasks, Action<Task[], TaskCompletionSource<TResult>> setResultAction)
         {
 #if DEBUG
@@ -580,7 +580,7 @@ namespace System.Threading.Tasks
             {
                 Task.Factory.ContinueWhenAll(taskArray, completedTasks =>
                 {
-                    List<Exception> exceptions = null;
+                    List<Exception>? exceptions = null;
                     var canceled = false;
                     foreach (var task in completedTasks)
                     {
@@ -720,44 +720,11 @@ namespace System.Threading.Tasks
             }
             if (dueTime == 0)
             {
-                return _completedTask;
+                return CompletedTask;
             }
             var tcs = new TaskCompletionSource<bool>();
-            var timerBox = new Timer[] { null };
-            var registration = GetRegistrationToken();
-            var timer = new Timer(_ =>
-            {
-                registration.Dispose();
-                Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
-                tcs.TrySetResult(true);
-            }, null, Timeout.Infinite, Timeout.Infinite);
-            Volatile.Write(ref timerBox[0], timer);
-            try
-            {
-                timer.Change(dueTime, Timeout.Infinite);
-            }
-            catch (ObjectDisposedException exception)
-            {
-                No.Op(exception);
-            }
+            Theraot.Threading.RootedTimeout.Launch(() => tcs.TrySetResult(true), dueTime, cancellationToken);
             return tcs.Task;
-            CancellationTokenRegistration GetRegistrationToken()
-            {
-                if (!cancellationToken.CanBeCanceled)
-                {
-                    return default;
-                }
-
-                var newRegistration = cancellationToken.Register
-                (
-                    () =>
-                    {
-                        Interlocked.Exchange(ref timerBox[0], null)?.Dispose();
-                        tcs.TrySetCanceled();
-                    }
-                );
-                return newRegistration;
-            }
 #else
             // Missing in .NET 4.0
             return Task.Delay(dueTime, cancellationToken);

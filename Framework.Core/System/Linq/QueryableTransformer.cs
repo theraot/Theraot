@@ -82,7 +82,7 @@ namespace System.Linq
             return type == typeof(IQueryable) ? typeof(IEnumerable) : type;
         }
 
-        private static MethodInfo GetMatchingMethod(MethodInfo method, Type declaring)
+        private static MethodInfo? GetMatchingMethod(MethodInfo method, Type declaring)
         {
             return (
                 from candidate

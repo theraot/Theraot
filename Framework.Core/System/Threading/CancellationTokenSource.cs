@@ -216,9 +216,9 @@ namespace System.Threading
                 callbacks.Insert(id, callback);
                 // Check if the source was just canceled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
-                if (Volatile.Read(ref _cancelRequested) == 1 && callbacks.RemoveAt(id, out callback))
+                if (Volatile.Read(ref _cancelRequested) == 1 && callbacks.RemoveAt(id, out var recovered))
                 {
-                    callback();
+                    recovered!();
                 }
             }
 

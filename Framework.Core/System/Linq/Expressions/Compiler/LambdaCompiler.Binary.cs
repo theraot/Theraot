@@ -510,10 +510,8 @@ namespace System.Linq.Expressions.Compiler
                         // Guaranteed to fit within result type: no conversion
                         return;
                     }
-                    else
-                    {
-                        IL.Emit(leftType.IsFloatingPoint() ? OpCodes.Sub : OpCodes.Sub_Ovf);
-                    }
+
+                    IL.Emit(leftType.IsFloatingPoint() ? OpCodes.Sub : OpCodes.Sub_Ovf);
 
                     break;
 

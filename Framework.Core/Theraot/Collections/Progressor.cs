@@ -22,8 +22,8 @@ namespace Theraot.Collections
     [DebuggerTypeProxy(typeof(ProgressorProxy))]
     public sealed class Progressor<T> : IObservable<T>, IEnumerable<T>, IClosable
     {
-        private ProxyObservable<T> _proxy;
-        private TryTake<T> _tryTake;
+        private ProxyObservable<T>? _proxy;
+        private TryTake<T>? _tryTake;
 
         private Progressor(ProxyObservable<T> proxy, TryTake<T> tryTake)
         {
@@ -68,9 +68,11 @@ namespace Theraot.Collections
             var index = -1;
             var proxy = new ProxyObservable<T>();
 
-            bool Take(out T value)
+            return new Progressor<T>(proxy, (out T value) => Take(out value, array, ref index));
+
+            static bool Take(out T value, T[] array, ref int index)
             {
-                value = default;
+                value = default!;
                 var currentIndex = Interlocked.Increment(ref index);
                 if (currentIndex >= array.Length)
                 {
@@ -80,16 +82,17 @@ namespace Theraot.Collections
                 value = array[currentIndex];
                 return true;
             }
-
-            return new Progressor<T>(proxy, Take);
         }
 
         public static Progressor<T> CreateFromIEnumerable(IEnumerable<T> enumerable)
         {
+            if (enumerable == null)
+            {
+                throw new ArgumentNullException(nameof(enumerable));
+            }
+
             switch (enumerable)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(enumerable));
                 case T[] array:
                     return CreateFromArray(array);
 
@@ -104,9 +107,16 @@ namespace Theraot.Collections
             }
 
             var enumerator = enumerable.GetEnumerator();
-            var proxy = new ProxyObservable<T>();
+            return CreateFromIEnumerableExtracted(enumerator);
+        }
 
-            bool Take(out T value)
+        private static Progressor<T> CreateFromIEnumerableExtracted(IEnumerator<T> enumerator)
+        {
+            var proxy = new ProxyObservable<T>();
+            var enumeratorBox = new IEnumerator<T>?[]{ enumerator };
+            return new Progressor<T>(proxy, (out T value) => Take(out value, ref enumeratorBox[0]));
+
+            static bool Take(out T value, ref IEnumerator<T>? enumerator)
             {
                 // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
                 var enumeratorCopy = Volatile.Read(ref enumerator);
@@ -127,11 +137,9 @@ namespace Theraot.Collections
                     }
                 }
 
-                value = default;
+                value = default!;
                 return false;
             }
-
-            return new Progressor<T>(proxy, Take);
         }
 
         public static Progressor<T> CreateFromIList(IList<T> list)
@@ -144,9 +152,11 @@ namespace Theraot.Collections
             var index = -1;
             var proxy = new ProxyObservable<T>();
 
-            bool Take(out T value)
+            return new Progressor<T>(proxy, (out T value) => Take(out value, list, ref index));
+
+            static bool Take(out T value, IList<T> list, ref int index)
             {
-                value = default;
+                value = default!;
                 var currentIndex = Interlocked.Increment(ref index);
                 if (currentIndex >= list.Count)
                 {
@@ -156,11 +166,9 @@ namespace Theraot.Collections
                 value = list[currentIndex];
                 return true;
             }
-
-            return new Progressor<T>(proxy, Take);
         }
 
-        public static Progressor<T> CreateFromIObservable(IObservable<T> observable, Action exhaustedCallback = null, CancellationToken token = default)
+        public static Progressor<T> CreateFromIObservable(IObservable<T> observable, Action? exhaustedCallback = null, CancellationToken token = default)
         {
             if (observable == null)
             {
@@ -179,17 +187,20 @@ namespace Theraot.Collections
             var source = new CancellationTokenSource();
 #pragma warning restore IDE0067 // Desechar (Dispose) objetos antes de perder el ámbito
 #pragma warning restore CA2000 // Dispose objects before losing scope
-            var subscription = observable.Subscribe
-            (
-                new CustomObserver<T>
+            var subscription = new IDisposable?[]
+            {
+                observable.Subscribe
                 (
-                    source.Cancel,
-                    _ => source.Cancel(),
-                    OnNext
+                    new CustomObserver<T>
+                    (
+                        source.Cancel,
+                        _ => source.Cancel(),
+                        OnNext
+                    )
                 )
-            );
+            };
             var proxy = new ProxyObservable<T>();
-            var tryTake = new TryTake<T>[] { null };
+            var tryTake = new TryTake<T>[] { (out T val) => { val = default!; return false; } };
             tryTake[0] = TakeInitial;
 
             void OnNext(T item)
@@ -202,9 +213,9 @@ namespace Theraot.Collections
             {
                 if (source.IsCancellationRequested || token.IsCancellationRequested)
                 {
-                    if (Interlocked.CompareExchange(ref tryTake[0], TakeReplacement, tryTake[0]) == tryTake[0])
+                    if (Interlocked.CompareExchange(ref tryTake[0], (out T value1) => TakeReplacement(out value1, buffer), tryTake[0]) == tryTake[0])
                     {
-                        Interlocked.Exchange(ref subscription, null)?.Dispose();
+                        Interlocked.Exchange(ref subscription[0], null)?.Dispose();
                         semaphore.Dispose();
                         source.Dispose();
                     }
@@ -229,7 +240,7 @@ namespace Theraot.Collections
 
                 if (source.IsCancellationRequested || token.IsCancellationRequested)
                 {
-                    return TakeReplacement(out value);
+                    return TakeReplacement(out value, buffer);
                 }
 
                 try
@@ -241,18 +252,7 @@ namespace Theraot.Collections
                     No.Op(exception);
                 }
 
-                return TakeReplacement(out value);
-            }
-
-            bool TakeReplacement(out T value)
-            {
-                if (buffer.TryTake(out value))
-                {
-                    return true;
-                }
-
-                value = default;
-                return false;
+                return TakeReplacement(out value, buffer);
             }
 
             bool Take(out T value)
@@ -261,6 +261,17 @@ namespace Theraot.Collections
             }
 
             return new Progressor<T>(proxy, Take);
+
+            static bool TakeReplacement(out T value, ThreadSafeQueue<T> buffer)
+            {
+                if (buffer.TryTake(out value))
+                {
+                    return true;
+                }
+
+                value = default!;
+                return false;
+            }
         }
 
         public static Progressor<T> CreateFromIReadOnlyList(IReadOnlyList<T> list)
@@ -273,9 +284,11 @@ namespace Theraot.Collections
             var index = -1;
             var proxy = new ProxyObservable<T>();
 
-            bool Take(out T value)
+            return new Progressor<T>(proxy, (out T value) => Take(out value, list, ref index));
+
+            static bool Take(out T value, IReadOnlyList<T> list, ref int index)
             {
-                value = default;
+                value = default!;
                 var currentIndex = Interlocked.Increment(ref index);
                 if (currentIndex >= list.Count)
                 {
@@ -285,8 +298,6 @@ namespace Theraot.Collections
                 value = list[currentIndex];
                 return true;
             }
-
-            return new Progressor<T>(proxy, Take);
         }
 
         public void Close()
@@ -311,7 +322,7 @@ namespace Theraot.Collections
                 Close();
             }
 
-            item = default;
+            item = default!;
             return false;
         }
 

@@ -7,7 +7,7 @@ namespace System.Linq
 {
     public static partial class Enumerable
     {
-        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector, IEqualityComparer<TKey>? comparer)
         {
             if (outer == null)
             {
@@ -31,13 +31,13 @@ namespace System.Linq
             }
             if (comparer == null)
             {
-                comparer = EqualityComparer<TKey>.Default;
+                return CreateJoinIterator(EqualityComparer<TKey>.Default);
             }
-            return CreateJoinIterator();
+            return CreateJoinIterator(comparer);
 
-            IEnumerable<TResult> CreateJoinIterator()
+            IEnumerable<TResult> CreateJoinIterator(IEqualityComparer<TKey> notNullComparer)
             {
-                var innerKeys = ToLookup(inner, innerKeySelector, comparer);
+                var innerKeys = ToLookup(inner, innerKeySelector, notNullComparer);
 
                 foreach (var element in outer)
                 {

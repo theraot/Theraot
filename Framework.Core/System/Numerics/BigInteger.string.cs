@@ -277,235 +277,237 @@ namespace System.Numerics
         {
             if ((options & NumberStyles.AllowHexSpecifier) != NumberStyles.None)
             {
-                var allowLeadingWhite = (options & NumberStyles.AllowLeadingWhite) != NumberStyles.None;
-                var allowTrailingWhite = (options & NumberStyles.AllowTrailingWhite) != NumberStyles.None;
-                /*
-                // Assume validated
-                if (
-                    (options & NumberStyles.AllowCurrencySymbol) != NumberStyles.None
-                    || (options & NumberStyles.AllowLeadingSign) != NumberStyles.None
-                    || (options & NumberStyles.AllowParentheses) != NumberStyles.None
-                    || (options & NumberStyles.AllowThousands) != NumberStyles.None
-                    || (options & NumberStyles.AllowExponent) != NumberStyles.None
-                    || (options & NumberStyles.AllowTrailingSign) != NumberStyles.None
-                    )
-                {
-                    return false;
-                }*/
-                number.Negative = false;
-                if (allowLeadingWhite)
-                {
-                    reader.SkipWhile(CharHelper.IsClassicWhitespace);
-                }
-
-                while (true)
-                {
-                    var input =
-                        reader.ReadWhile
-                        (
-                            new[]
-                            {
-                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C',
-                                'D', 'E', 'F'
-                            }
-                        );
-                    if (input.Length == 0)
-                    {
-                        break;
-                    }
-
-                    number.Scale += input.Length;
-                    number.Digits.Append(input.ToUpperInvariant());
-                }
-
-                if (allowTrailingWhite)
-                {
-                    reader.SkipWhile(CharHelper.IsClassicWhitespace);
-                }
-
-                return reader.EndOfString;
+                return ParseNumberNotHex(reader, options, number);
             }
-            else
+            var allowCurrencySymbol = (options & NumberStyles.AllowCurrencySymbol) != NumberStyles.None;
+            var allowLeadingWhite = (options & NumberStyles.AllowLeadingWhite) != NumberStyles.None;
+            var allowLeadingSign = (options & NumberStyles.AllowLeadingSign) != NumberStyles.None;
+            var allowParentheses = (options & NumberStyles.AllowParentheses) != NumberStyles.None;
+            var allowThousands = (options & NumberStyles.AllowThousands) != NumberStyles.None;
+            var allowExponent = (options & NumberStyles.AllowExponent) != NumberStyles.None;
+            var allowTrailingWhite = (options & NumberStyles.AllowTrailingWhite) != NumberStyles.None;
+            var allowTrailingSign = (options & NumberStyles.AllowTrailingSign) != NumberStyles.None;
+            var allowDecimalPoint = (options & NumberStyles.AllowDecimalPoint) != NumberStyles.None;
+
+            var isCurrency = false;
+            number.Negative = false;
+            var waitingParentheses = false;
+            var positive = false;
+            // [ws][$][sign][digits,]digits[E[sign]exponential_digits][ws]
+            if (allowLeadingWhite)
             {
-                var allowCurrencySymbol = (options & NumberStyles.AllowCurrencySymbol) != NumberStyles.None;
-                var allowLeadingWhite = (options & NumberStyles.AllowLeadingWhite) != NumberStyles.None;
-                var allowLeadingSign = (options & NumberStyles.AllowLeadingSign) != NumberStyles.None;
-                var allowParentheses = (options & NumberStyles.AllowParentheses) != NumberStyles.None;
-                var allowThousands = (options & NumberStyles.AllowThousands) != NumberStyles.None;
-                var allowExponent = (options & NumberStyles.AllowExponent) != NumberStyles.None;
-                var allowTrailingWhite = (options & NumberStyles.AllowTrailingWhite) != NumberStyles.None;
-                var allowTrailingSign = (options & NumberStyles.AllowTrailingSign) != NumberStyles.None;
-                var allowDecimalPoint = (options & NumberStyles.AllowDecimalPoint) != NumberStyles.None;
+                reader.SkipWhile(CharHelper.IsClassicWhitespace);
+            }
+            // Percent intentionally not supported
+            // After testing with .NET the patterns are ignored... all patterns are welcome
 
-                var isCurrency = false;
-                number.Negative = false;
-                var waitingParentheses = false;
-                var positive = false;
-                // [ws][$][sign][digits,]digits[E[sign]exponential_digits][ws]
-                if (allowLeadingWhite)
+            var currencySymbol = info.CurrencySymbol;
+            // [$][sign][digits,]digits[E[sign]exponential_digits][ws]
+            if (allowCurrencySymbol && reader.Read(currencySymbol))
+            {
+                isCurrency = true;
+                reader.SkipWhile(CharHelper.IsClassicWhitespace);
+            }
+
+            var positiveSign = info.PositiveSign;
+            var negativeSign = info.NegativeSign;
+            // [sign][digits,]digits[E[sign]exponential_digits][ws
+            if (allowLeadingSign)
+            {
+                number.Negative |= reader.Read(negativeSign);
+                if (!number.Negative)
                 {
-                    reader.SkipWhile(CharHelper.IsClassicWhitespace);
+                    positive |= reader.Read(positiveSign);
                 }
-                // Percent intentionally not supported
-                // After testing with .NET the patterns are ignored... all patterns are welcome
+            }
 
-                var currencySymbol = info.CurrencySymbol;
-                // [$][sign][digits,]digits[E[sign]exponential_digits][ws]
-                if (allowCurrencySymbol && reader.Read(currencySymbol))
-                {
-                    isCurrency = true;
-                    reader.SkipWhile(CharHelper.IsClassicWhitespace);
-                }
+            if (!number.Negative && allowParentheses && reader.Read('('))
+            {
+                // Testing on .NET show that $(n) is allowed, even tho there is no CurrencyNegativePattern for it
+                number.Negative = true;
+                waitingParentheses = true;
+            }
 
-                var positiveSign = info.PositiveSign;
-                var negativeSign = info.NegativeSign;
-                // [sign][digits,]digits[E[sign]exponential_digits][ws
-                if (allowLeadingSign)
+            // ---
+            if (!isCurrency && allowCurrencySymbol && reader.Read(currencySymbol)) // If the currency symbol is after the negative sign
+            {
+                isCurrency = true;
+                reader.SkipWhile(CharHelper.IsClassicWhitespace);
+            }
+
+            // [digits,]digits[E[sign]exponential_digits][ws]
+            var failure = true;
+            var digits = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            var decimalFound = false;
+            while (true)
+            {
+                var input = reader.ReadWhile(digits);
+                if (input.Length == 0)
                 {
-                    number.Negative |= reader.Read(negativeSign);
-                    if (!number.Negative)
+                    if (allowDecimalPoint && !decimalFound)
                     {
-                        positive |= reader.Read(positiveSign);
-                    }
-                }
-
-                if (!number.Negative && allowParentheses && reader.Read('('))
-                {
-                    // Testing on .NET show that $(n) is allowed, even tho there is no CurrencyNegativePattern for it
-                    number.Negative = true;
-                    waitingParentheses = true;
-                }
-
-                // ---
-                if (!isCurrency && allowCurrencySymbol && reader.Read(currencySymbol)) // If the currency symbol is after the negative sign
-                {
-                    isCurrency = true;
-                    reader.SkipWhile(CharHelper.IsClassicWhitespace);
-                }
-
-                // [digits,]digits[E[sign]exponential_digits][ws]
-                var failure = true;
-                var digits = new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-                var decimalFound = false;
-                while (true)
-                {
-                    var input = reader.ReadWhile(digits);
-                    if (input.Length == 0)
-                    {
-                        if (allowDecimalPoint && !decimalFound)
+                        if (reader.Read(info.CurrencyDecimalSeparator))
                         {
-                            if (reader.Read(info.CurrencyDecimalSeparator))
-                            {
-                                decimalFound = true;
-                                continue;
-                            }
-
-                            if (reader.Read(info.NumberDecimalSeparator))
-                            {
-                                if (isCurrency)
-                                {
-                                    return false;
-                                }
-
-                                decimalFound = true;
-                                continue;
-                            }
+                            decimalFound = true;
+                            continue;
                         }
 
-                        break;
+                        if (reader.Read(info.NumberDecimalSeparator))
+                        {
+                            if (isCurrency)
+                            {
+                                return false;
+                            }
+
+                            decimalFound = true;
+                            continue;
+                        }
                     }
 
-                    failure = false;
-                    if (!decimalFound)
-                    {
-                        number.Scale += input.Length;
-                    }
-
-                    number.Digits.Append(input);
-                    if (!allowThousands)
-                    {
-                        continue;
-                    }
-
-                    var currencyGroupSeparator = info.CurrencyGroupSeparator.ToCharArray();
-                    // Testing on .NET show that combining currency and number group separators is allowed
-                    // But not if the currency symbol has already appeared
-                    reader.SkipWhile(currencyGroupSeparator);
-                    if (isCurrency)
-                    {
-                        continue;
-                    }
-
-                    var numberGroupSeparator = info.NumberGroupSeparator.ToCharArray();
-                    reader.SkipWhile(numberGroupSeparator);
+                    break;
                 }
 
-                if (failure)
+                failure = false;
+                if (!decimalFound)
                 {
-                    return false;
+                    number.Scale += input.Length;
                 }
 
-                // [E[sign]exponential_digits][ws]
-                if (allowExponent && (reader.Read('E') || reader.Read('e')))
+                number.Digits.Append(input);
+                if (!allowThousands)
                 {
-                    // [sign]exponential_digits
-                    // Testing on .NET show that no pattern is used here, also no parentheses nor group separators supported
-                    // The exponent can be big - but anything beyond 9999 is ignored
-                    var exponentNegative = reader.Read(negativeSign);
-                    if (!exponentNegative)
-                    {
-                        reader.Read(positiveSign);
-                    }
-
-                    var input = reader.ReadWhile(digits);
-                    var exponentMagnitude = int.Parse(input, CultureInfo.InvariantCulture);
-                    number.Scale += (exponentNegative ? -1 : 1) * (input.Length > 4 ? 9999 : exponentMagnitude);
-                    if (number.Scale < 0)
-                    {
-                        return false;
-                    }
+                    continue;
                 }
 
-                // ---
-                if (allowTrailingWhite)
+                var currencyGroupSeparator = info.CurrencyGroupSeparator.ToCharArray();
+                // Testing on .NET show that combining currency and number group separators is allowed
+                // But not if the currency symbol has already appeared
+                reader.SkipWhile(currencyGroupSeparator);
+                if (isCurrency)
                 {
-                    reader.SkipWhile(CharHelper.IsClassicWhitespace);
+                    continue;
                 }
 
-                if (!isCurrency && allowCurrencySymbol && reader.Read(currencySymbol))
-                {
-                    isCurrency = true;
-                }
-
-                // ---
-                if (!number.Negative && !positive && allowTrailingSign)
-                {
-                    number.Negative |= reader.Read(negativeSign);
-                    if (!number.Negative)
-                    {
-                        reader.Read(positiveSign);
-                    }
-                }
-
-                if (waitingParentheses && !reader.Read(')'))
-                {
-                    return false;
-                }
-
-                // ---
-                if (!isCurrency && allowCurrencySymbol && reader.Read(currencySymbol)) // If the currency symbol is after the negative sign
-                {
-                    /*isCurrency = true; // For completeness sake*/
-                }
-
-                // [ws]
-                if (allowTrailingWhite)
-                {
-                    reader.SkipWhile(CharHelper.IsClassicWhitespace);
-                }
-
-                return reader.EndOfString;
+                var numberGroupSeparator = info.NumberGroupSeparator.ToCharArray();
+                reader.SkipWhile(numberGroupSeparator);
             }
+
+            if (failure)
+            {
+                return false;
+            }
+
+            // [E[sign]exponential_digits][ws]
+            if (allowExponent && (reader.Read('E') || reader.Read('e')))
+            {
+                // [sign]exponential_digits
+                // Testing on .NET show that no pattern is used here, also no parentheses nor group separators supported
+                // The exponent can be big - but anything beyond 9999 is ignored
+                var exponentNegative = reader.Read(negativeSign);
+                if (!exponentNegative)
+                {
+                    reader.Read(positiveSign);
+                }
+
+                var input = reader.ReadWhile(digits);
+                var exponentMagnitude = int.Parse(input, CultureInfo.InvariantCulture);
+                number.Scale += (exponentNegative ? -1 : 1) * (input.Length > 4 ? 9999 : exponentMagnitude);
+                if (number.Scale < 0)
+                {
+                    return false;
+                }
+            }
+
+            // ---
+            if (allowTrailingWhite)
+            {
+                reader.SkipWhile(CharHelper.IsClassicWhitespace);
+            }
+
+            if (!isCurrency && allowCurrencySymbol && reader.Read(currencySymbol))
+            {
+                isCurrency = true;
+            }
+
+            // ---
+            if (!number.Negative && !positive && allowTrailingSign)
+            {
+                number.Negative |= reader.Read(negativeSign);
+                if (!number.Negative)
+                {
+                    reader.Read(positiveSign);
+                }
+            }
+
+            if (waitingParentheses && !reader.Read(')'))
+            {
+                return false;
+            }
+
+            // ---
+            if (!isCurrency && allowCurrencySymbol && reader.Read(currencySymbol)) // If the currency symbol is after the negative sign
+            {
+                /*isCurrency = true; // For completeness sake*/
+            }
+
+            // [ws]
+            if (allowTrailingWhite)
+            {
+                reader.SkipWhile(CharHelper.IsClassicWhitespace);
+            }
+
+            return reader.EndOfString;
+        }
+
+        private static bool ParseNumberNotHex(StringProcessor reader, NumberStyles options, BigNumberBuffer number)
+        {
+            var allowLeadingWhite = (options & NumberStyles.AllowLeadingWhite) != NumberStyles.None;
+            var allowTrailingWhite = (options & NumberStyles.AllowTrailingWhite) != NumberStyles.None;
+            /*
+            // Assume validated
+            if (
+                (options & NumberStyles.AllowCurrencySymbol) != NumberStyles.None
+                || (options & NumberStyles.AllowLeadingSign) != NumberStyles.None
+                || (options & NumberStyles.AllowParentheses) != NumberStyles.None
+                || (options & NumberStyles.AllowThousands) != NumberStyles.None
+                || (options & NumberStyles.AllowExponent) != NumberStyles.None
+                || (options & NumberStyles.AllowTrailingSign) != NumberStyles.None
+                )
+            {
+                return false;
+            }*/
+            number.Negative = false;
+            if (allowLeadingWhite)
+            {
+                reader.SkipWhile(CharHelper.IsClassicWhitespace);
+            }
+
+            while (true)
+            {
+                var input =
+                    reader.ReadWhile
+                    (
+                        new[]
+                        {
+                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C',
+                                'D', 'E', 'F'
+                        }
+                    );
+                if (input.Length == 0)
+                {
+                    break;
+                }
+
+                number.Scale += input.Length;
+                number.Digits.Append(input.ToUpperInvariant());
+            }
+
+            if (allowTrailingWhite)
+            {
+                reader.SkipWhile(CharHelper.IsClassicWhitespace);
+            }
+
+            return reader.EndOfString;
         }
 
         internal static bool TryParseBigInteger(string value, NumberStyles style, NumberFormatInfo info, out BigInteger result)

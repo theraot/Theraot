@@ -9,17 +9,17 @@ namespace Theraot.Collections.ThreadSafe
         where T : class
     {
         private readonly FixedSizeQueue<T> _entries;
-        private readonly Action<T> _recycler;
+        private readonly Action<T>? _recycler;
         private readonly UniqueId _reentryGuardId;
 
-        public Pool(int capacity, Action<T> recycler)
+        public Pool(int capacity, Action<T>? recycler)
         {
             _reentryGuardId = RuntimeUniqueIdProvider.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = recycler;
         }
 
-        internal bool Donate(T entry)
+        internal bool Donate(T? entry)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             if (entry != null && ReentryGuard.Enter(_reentryGuardId))

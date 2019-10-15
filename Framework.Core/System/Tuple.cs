@@ -776,7 +776,7 @@ namespace System
 
         public override string ToString()
         {
-            var restString = Rest.ToString();
+            var restString = Rest!.ToString();
             return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})", Item1, Item2, Item3, Item4, Item5, Item6, Item7, restString.Substring(1, restString.Length - 2));
         }
 

@@ -109,14 +109,12 @@ namespace System.Linq.Expressions
             {
                 return Property(instance, indexer, arguments);
             }
-            else
+            if (instance == null)
             {
-                if (instance == null)
-                {
-                    throw new ArgumentNullException(nameof(instance));
-                }
-                return ArrayAccess(instance, arguments);
+                throw new ArgumentNullException(nameof(instance));
             }
+
+            return ArrayAccess(instance, arguments);
         }
 
         /// <summary>

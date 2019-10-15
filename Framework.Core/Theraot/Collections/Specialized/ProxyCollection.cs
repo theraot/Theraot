@@ -16,7 +16,7 @@ namespace Theraot.Collections.Specialized
         public ProxyCollection(Func<ICollection<T>> wrapped)
         {
             _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            var wrapper = new EnumerationList<T>(this);
+            var wrapper = EnumerationList<T>.Create(this);
             AsIReadOnlyCollection = wrapper;
             AsReadOnlyICollection = wrapper;
         }

@@ -12,8 +12,8 @@ namespace System.Threading
     public class SemaphoreSlim : IDisposable
     {
         private readonly int? _maxCount;
-        private ThreadSafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
-        private ManualResetEventSlim _canEnter;
+        private ThreadSafeQueue<TaskCompletionSource<bool>>? _asyncWaiters;
+        private ManualResetEventSlim? _canEnter;
         private int _count;
         private bool _disposed;
         private int _syncRoot;
@@ -52,8 +52,8 @@ namespace System.Threading
         {
             get
             {
-                CheckDisposed();
-                return _canEnter.WaitHandle;
+                var canEnter = GetCanEnter();
+                return canEnter.WaitHandle;
             }
         }
 
@@ -73,7 +73,7 @@ namespace System.Threading
 
         public int Release(int releaseCount)
         {
-            CheckDisposed();
+            var canEnter = GetCanEnter();
             if (releaseCount < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(releaseCount), "releaseCount is less than 1");
@@ -82,7 +82,7 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
-                if (TryOffset(releaseCount, out var expected))
+                if (TryOffset(releaseCount, out var expected, canEnter, _asyncWaiters!))
                 {
                     return expected;
                 }
@@ -120,7 +120,8 @@ namespace System.Threading
 
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            CheckDisposed();
+            var asyncWaiters = _asyncWaiters;
+            var canEnter = GetCanEnter();
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
@@ -129,7 +130,7 @@ namespace System.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var spinWait = new SpinWait();
-            if (TryOffset(-1, out _))
+            if (TryOffset(-1, out _, canEnter, asyncWaiters!))
             {
                 return true;
             }
@@ -138,9 +139,9 @@ namespace System.Threading
             {
                 while (true)
                 {
-                    _canEnter.Wait(-1, cancellationToken);
+                    canEnter.Wait(-1, cancellationToken);
                     // The thread is not allowed here unless there is room in the semaphore
-                    if (TryOffset(-1, out _))
+                    if (TryOffset(-1, out _, canEnter, asyncWaiters!))
                     {
                         return true;
                     }
@@ -151,10 +152,10 @@ namespace System.Threading
 
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            while (_canEnter.Wait(remaining, cancellationToken))
+            while (canEnter.Wait(remaining, cancellationToken))
             {
                 // The thread is not allowed here unless there is room in the semaphore
-                if (TryOffset(-1, out _))
+                if (TryOffset(-1, out _, canEnter, asyncWaiters!))
                 {
                     return true;
                 }
@@ -201,7 +202,8 @@ namespace System.Threading
 
         public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            CheckDisposed();
+            var asyncWaiters = _asyncWaiters;
+            var canEnter = GetCanEnter();
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
@@ -213,7 +215,7 @@ namespace System.Threading
             }
 
             var source = new TaskCompletionSource<bool>();
-            if (_canEnter.Wait(0, cancellationToken) && TryOffset(-1, out var dummy))
+            if (canEnter.Wait(0, cancellationToken) && TryOffset(-1, out _, canEnter, asyncWaiters!))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -233,11 +235,6 @@ namespace System.Threading
                         No.Op(exception);
                     }
                 },
-                millisecondsTimeout,
-                cancellationToken
-            );
-            cancellationToken.Register
-            (
                 () =>
                 {
                     try
@@ -249,9 +246,11 @@ namespace System.Threading
                         // Already timeout
                         No.Op(exception);
                     }
-                }
+                },
+                millisecondsTimeout,
+                cancellationToken
             );
-            AddWaiter(source);
+            asyncWaiters!.Add(source);
             return source.Task;
         }
 
@@ -260,40 +259,15 @@ namespace System.Threading
             // This is a protected method, the parameter should be kept
             No.Op(disposing);
             _disposed = true;
-            _canEnter.Dispose();
+            _canEnter?.Dispose();
             _asyncWaiters = null;
             _canEnter = null;
         }
 
-        private void AddWaiter(TaskCompletionSource<bool> source)
+        private ManualResetEventSlim GetCanEnter()
         {
-            _asyncWaiters.Add(source);
-        }
-
-        private void Awake(ThreadSafeQueue<TaskCompletionSource<bool>> asyncWaiters)
-        {
-            var spinWait = new SpinWait();
-            while (asyncWaiters.TryTake(out var waiter))
-            {
-                if (waiter.Task.IsCompleted)
-                {
-                    // Skip - either canceled or timed out
-                    continue;
-                }
-
-                if (TryOffset(-1, out var _))
-                {
-                    waiter.SetResult(true);
-                }
-                else
-                {
-                    // Add it back
-                    _asyncWaiters.Add(waiter);
-                    break;
-                }
-
-                spinWait.SpinOnce();
-            }
+            CheckDisposed();
+            return _canEnter!;
         }
 
         private void CheckDisposed()
@@ -304,56 +278,7 @@ namespace System.Threading
             }
         }
 
-        private void SyncWaitHandle()
-        {
-            var awake = false;
-            if (Volatile.Read(ref _count) == 0 == _canEnter.IsSet && Interlocked.CompareExchange(ref _syncRoot, 1, 0) == 0)
-            {
-                try
-                {
-                    awake = SyncWaitHandleExtracted();
-                }
-                finally
-                {
-                    Volatile.Write(ref _syncRoot, 0);
-                }
-            }
-
-            if (awake)
-            {
-                var asyncWaiters = _asyncWaiters;
-                ThreadPool.QueueUserWorkItem(_ => Awake(asyncWaiters));
-            }
-
-            bool SyncWaitHandleExtracted()
-            {
-                int found;
-                var canEnter = _canEnter;
-                if (canEnter == null)
-                {
-                    return false;
-                }
-
-                if ((found = Volatile.Read(ref _count)) == 0 != canEnter.IsSet)
-                {
-                    return false;
-                }
-
-                if (found == 0)
-                {
-                    canEnter.Reset();
-                }
-                else
-                {
-                    canEnter.Set();
-                    return true;
-                }
-
-                return false;
-            }
-        }
-
-        private bool TryOffset(int releaseCount, out int previous)
+        private bool TryOffset(int releaseCount, out int previous, ManualResetEventSlim canEnter, ThreadSafeQueue<TaskCompletionSource<bool>> asyncWaiters)
         {
             var expected = Volatile.Read(ref _count);
             previous = expected;
@@ -376,6 +301,80 @@ namespace System.Threading
 
             SyncWaitHandle();
             return true;
+
+            void SyncWaitHandle()
+            {
+                var awake = false;
+                if (Volatile.Read(ref _count) == 0 == canEnter.IsSet && Interlocked.CompareExchange(ref _syncRoot, 1, 0) == 0)
+                {
+                    try
+                    {
+                        awake = SyncWaitHandleExtracted();
+                    }
+                    finally
+                    {
+                        Volatile.Write(ref _syncRoot, 0);
+                    }
+                }
+
+                if (awake)
+                {
+                    ThreadPool.QueueUserWorkItem(_ => Awake(asyncWaiters));
+                }
+
+                bool SyncWaitHandleExtracted()
+                {
+                    int found;
+                    var canEnter = _canEnter;
+                    if (canEnter == null)
+                    {
+                        return false;
+                    }
+
+                    if ((found = Volatile.Read(ref _count)) == 0 != canEnter.IsSet)
+                    {
+                        return false;
+                    }
+
+                    if (found == 0)
+                    {
+                        canEnter.Reset();
+                    }
+                    else
+                    {
+                        canEnter.Set();
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+
+            void Awake(ThreadSafeQueue<TaskCompletionSource<bool>> asyncWaiters)
+            {
+                var spinWait = new SpinWait();
+                while (asyncWaiters.TryTake(out var waiter))
+                {
+                    if (waiter.Task.IsCompleted)
+                    {
+                        // Skip - either canceled or timed out
+                        continue;
+                    }
+
+                    if (TryOffset(-1, out _, canEnter, asyncWaiters))
+                    {
+                        waiter.SetResult(true);
+                    }
+                    else
+                    {
+                        // Add it back
+                        asyncWaiters.Add(waiter);
+                        break;
+                    }
+
+                    spinWait.SpinOnce();
+                }
+            }
         }
     }
 }
