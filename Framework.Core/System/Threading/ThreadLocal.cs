@@ -12,7 +12,7 @@ namespace System.Threading
     public sealed class ThreadLocal<T> : IDisposable
     {
         private int _disposing;
-        private IThreadLocal<T> _wrapped;
+        private IThreadLocal<T>? _wrapped;
 
         public ThreadLocal()
             : this(FuncHelper.GetDefaultFunc<T>(), false)
@@ -46,12 +46,13 @@ namespace System.Threading
         {
             get
             {
+                var wrapped = _wrapped;
                 if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
 
-                return _wrapped.IsValueCreated;
+                return wrapped!.IsValueCreated;
             }
         }
 
@@ -59,27 +60,53 @@ namespace System.Threading
         {
             get
             {
+                var wrapped = _wrapped;
                 if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
 
-                return _wrapped.Value;
+                return wrapped!.Value;
             }
             set
             {
+                var wrapped = _wrapped;
                 if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(nameof(ThreadLocal<T>));
                 }
 
-                _wrapped.Value = value;
+                _wrapped!.Value = value;
             }
         }
 
-        public IList<T> Values => _wrapped.Values;
+        public IList<T> Values
+        {
+            get
+            {
+                var wrapped = _wrapped;
+                if (Volatile.Read(ref _disposing) == 1)
+                {
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
+                }
 
-        internal T ValueForDebugDisplay => _wrapped.ValueForDebugDisplay;
+                return wrapped!.Values;
+            }
+        }
+
+        internal T ValueForDebugDisplay
+        {
+            get
+            {
+                var wrapped = _wrapped;
+                if (Volatile.Read(ref _disposing) == 1)
+                {
+                    throw new ObjectDisposedException(nameof(ThreadLocal<T>));
+                }
+
+                return wrapped!.ValueForDebugDisplay;
+            }
+        }
 
         [DebuggerNonUserCode]
         public void Dispose()
@@ -125,7 +152,7 @@ namespace System.Threading
                 return;
             }
 
-            _wrapped.Dispose();
+            _wrapped?.Dispose();
             _wrapped = null;
         }
     }
