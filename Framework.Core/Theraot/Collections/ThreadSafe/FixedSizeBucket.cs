@@ -5,7 +5,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Threading;
 
@@ -444,7 +443,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal bool ExchangeInternal(int index, T item, [MaybeNull] out T previous)
+        internal bool ExchangeInternal(int index, T item, out T previous)
         {
             previous = default!;
             var found = Interlocked.Exchange(ref _entries[index], (object?)item ?? BucketHelper.Null);

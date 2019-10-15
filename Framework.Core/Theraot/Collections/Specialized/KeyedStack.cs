@@ -22,7 +22,7 @@ namespace Theraot.Collections.Specialized
             stack.Push(item);
         }
 
-        public bool TryTake(TKey key, [MaybeNullWhen(false)] out TValue item)
+        public bool TryTake(TKey key, out TValue item)
         {
             if (_data.TryGetValue(key, out var stack))
             {

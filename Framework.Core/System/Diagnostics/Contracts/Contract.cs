@@ -533,7 +533,7 @@ namespace System.Diagnostics.Contracts
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         [return: MaybeNull]
-        public static T ValueAtReturn<T>([MaybeNull] out T value)
+        public static T ValueAtReturn<T>(out T value)
         {
             value = default!;
             return value;

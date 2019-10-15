@@ -151,7 +151,7 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        public bool RemoveAt(int index, [MaybeNull] out T previous)
+        public bool RemoveAt(int index, out T previous)
         {
             var found = BucketHelper.Null;
             previous = default!;

@@ -280,7 +280,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public bool TryGetValue([AllowNull] TKey key, [MaybeNullWhen(false)] out TValue value)
+        public bool TryGetValue([AllowNull] TKey key, out TValue value)
         {
             // key can be null
             if (key != null)
@@ -298,7 +298,7 @@ namespace Theraot.Collections.Specialized
             return false;
         }
 
-        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
         {
             return TryGetValue(key, out value);
         }

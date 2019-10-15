@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace System.Collections.Generic
 {
@@ -33,7 +32,6 @@ namespace System.Collections.Generic
         }
 
         /// <summary>Gets the current underlying array.</summary>
-        [NotNull]
         private T[] Buffer { get; set; }
 
         /// <summary>

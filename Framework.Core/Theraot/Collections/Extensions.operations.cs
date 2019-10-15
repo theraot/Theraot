@@ -274,7 +274,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static ICollection<T> WrapAsICollection<T>([NotNull] this IEnumerable<T> source)
+        public static ICollection<T> WrapAsICollection<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -291,7 +291,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IList<T> WrapAsIList<T>([NotNull] this IEnumerable<T> source)
+        public static IList<T> WrapAsIList<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -308,7 +308,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>([NotNull] this IEnumerable<T> source)
+        public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -335,7 +335,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IReadOnlyList<T> WrapAsIReadOnlyList<T>([NotNull] this IEnumerable<T> source)
+        public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(this IEnumerable<T> source)
         {
             switch (source)
             {
@@ -422,7 +422,7 @@ namespace Theraot.Collections
 
     public static partial class Extensions
     {
-        public static bool HasAtLeast<TSource>([NotNull] this IEnumerable<TSource> source, int count)
+        public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
         {
             if (source == null)
             {
@@ -460,7 +460,7 @@ namespace Theraot.Collections
         }
 
         [return: NotNull]
-        public static IEnumerable<T> Skip<T>([NotNull] this IEnumerable<T> source, Predicate<T>? predicateCount, int skipCount)
+        public static IEnumerable<T> Skip<T>(this IEnumerable<T> source, Predicate<T>? predicateCount, int skipCount)
         {
             if (source == null)
             {
@@ -471,7 +471,7 @@ namespace Theraot.Collections
         }
 
         [return: NotNull]
-        public static IEnumerable<T> Step<T>([NotNull] this IEnumerable<T> source, int stepCount)
+        public static IEnumerable<T> Step<T>(this IEnumerable<T> source, int stepCount)
         {
             if (source == null)
             {
@@ -499,7 +499,7 @@ namespace Theraot.Collections
         }
 
         [return: NotNull]
-        public static IEnumerable<T> Take<T>([NotNull] this IEnumerable<T> source, Predicate<T>? predicateCount, int takeCount)
+        public static IEnumerable<T> Take<T>(this IEnumerable<T> source, Predicate<T>? predicateCount, int takeCount)
         {
             if (source == null)
             {
@@ -510,7 +510,7 @@ namespace Theraot.Collections
         }
 
         [return: NotNull]
-        public static T[] ToArray<T>([NotNull] this IEnumerable<T> source, int count)
+        public static T[] ToArray<T>(this IEnumerable<T> source, int count)
         {
             if (source == null)
             {
@@ -543,7 +543,7 @@ namespace Theraot.Collections
             return result.ToArray();
         }
 
-        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, [NotNull] Predicate<T> predicateCount, int skipCount)
+        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
         {
             var count = 0;
             foreach (var item in source)
@@ -593,7 +593,7 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> TakeExtracted<T>(IEnumerable<T> source, [NotNull] Predicate<T> predicateCount, int takeCount)
+        private static IEnumerable<T> TakeExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
         {
             var count = 0;
             foreach (var item in source)
