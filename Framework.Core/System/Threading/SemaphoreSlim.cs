@@ -15,7 +15,7 @@ namespace System.Threading
         private ThreadSafeQueue<TaskCompletionSource<bool>>? _asyncWaiters;
         private ManualResetEventSlim? _canEnter;
         private int _count;
-        private bool _disposed;
+        private int _disposed;
         private int _syncRoot;
 
         public SemaphoreSlim(int initialCount)
@@ -258,7 +258,7 @@ namespace System.Threading
         {
             // This is a protected method, the parameter should be kept
             No.Op(disposing);
-            _disposed = true;
+            Volatile.Write(ref _disposed, 1);
             _canEnter?.Dispose();
             _asyncWaiters = null;
             _canEnter = null;
@@ -272,7 +272,7 @@ namespace System.Threading
 
         private void CheckDisposed()
         {
-            if (_disposed)
+            if (Volatile.Read(ref _disposed) != 0)
             {
                 throw new ObjectDisposedException(nameof(SemaphoreSlim));
             }
@@ -325,8 +325,7 @@ namespace System.Threading
                 bool SyncWaitHandleExtracted()
                 {
                     int found;
-                    var canEnter = _canEnter;
-                    if (canEnter == null)
+                    if (Volatile.Read(ref _disposed) != 0)
                     {
                         return false;
                     }
