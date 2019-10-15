@@ -551,6 +551,7 @@ namespace Theraot.Core
         ///     provided string is not included in the returned string.
         /// </remarks>
         /// <param name="target">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public string? ReadUntil(string target, bool greedy)
@@ -568,6 +569,7 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="target">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public string? ReadUntil(string target, StringComparison stringComparison, bool greedy)
@@ -600,6 +602,7 @@ namespace Theraot.Core
         ///     The provided character is not included in the returned string.
         /// </remarks>
         /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         public string? ReadUntil(char target, bool greedy)
         {
@@ -621,6 +624,7 @@ namespace Theraot.Core
         ///     string found is not included in the returned string.
         /// </remarks>
         /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -639,6 +643,7 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="targets">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -658,6 +663,7 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="targets">The string to look for.</param>
         /// <param name="found">The found string.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -677,6 +683,7 @@ namespace Theraot.Core
         /// <param name="targets">The string to look for.</param>
         /// <param name="found">The found string.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string if found; otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -695,6 +702,7 @@ namespace Theraot.Core
         ///     character found is not included in the returned string.
         /// </remarks>
         /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -713,6 +721,7 @@ namespace Theraot.Core
         ///     character found is not included in the returned string.
         /// </remarks>
         /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -749,6 +758,7 @@ namespace Theraot.Core
         /// </summary>
         /// <remarks>The provided string is included in the returned string.</remarks>
         /// <param name="target">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public string? ReadUntilAfter(string target, bool greedy)
@@ -763,6 +773,7 @@ namespace Theraot.Core
         /// <remarks>The provided string is included in the returned string.</remarks>
         /// <param name="target">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public string? ReadUntilAfter(string target, StringComparison stringComparison, bool greedy)
@@ -795,6 +806,7 @@ namespace Theraot.Core
         ///     The provided character is not included in the returned string.
         /// </remarks>
         /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns>The read string.</returns>
         public string? ReadUntilAfter(char target, bool greedy)
         {
@@ -896,6 +908,7 @@ namespace Theraot.Core
         ///     Greedy) to the start of the string is reached.
         /// </summary>
         /// <param name="target">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipBackBefore(string target, bool greedy)
@@ -909,6 +922,7 @@ namespace Theraot.Core
         /// </summary>
         /// <param name="target">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipBackBefore(string target, StringComparison stringComparison, bool greedy)
@@ -941,6 +955,7 @@ namespace Theraot.Core
         ///     Greedy) to the start of the string is reached.
         /// </summary>
         /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         public bool SkipBackBefore(char target, bool greedy)
         {
@@ -964,6 +979,7 @@ namespace Theraot.Core
         ///     Greedy) to the start of the string is reached.
         /// </summary>
         /// <param name="target">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipBackTo(string target, bool greedy)
@@ -977,6 +993,7 @@ namespace Theraot.Core
         /// </summary>
         /// <param name="target">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipBackTo(string target, StringComparison stringComparison, bool greedy)
@@ -1009,6 +1026,7 @@ namespace Theraot.Core
         ///     Greedy) to the start of the string is reached.
         /// </summary>
         /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         public bool SkipBackTo(char target, bool greedy)
         {
@@ -1043,6 +1061,7 @@ namespace Theraot.Core
         /// </summary>
         /// <remarks>If the end of the string is not reached, the provided string will be next thing to be read afterwards.</remarks>
         /// <param name="target">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipUntil(string target, bool greedy)
@@ -1057,6 +1076,7 @@ namespace Theraot.Core
         /// <remarks>If the end of the string is not reached, the provided string will be next thing to be read afterwards.</remarks>
         /// <param name="target">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipUntil(string target, StringComparison stringComparison, bool greedy)
@@ -1090,6 +1110,7 @@ namespace Theraot.Core
         /// </summary>
         /// <remarks>If the end of the string is not reached, the provided character will be the next thing to be read afterwards.</remarks>
         /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         public bool SkipUntil(char target, bool greedy)
         {
@@ -1113,6 +1134,7 @@ namespace Theraot.Core
         /// </summary>
         /// <remarks>If the end of the string is not reached, the string found will be the next thing to be read afterwards.</remarks>
         /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -1128,6 +1150,7 @@ namespace Theraot.Core
         /// <remarks>If the end of the string is not reached, the string found will be the next thing to be read afterwards.</remarks>
         /// <param name="targets">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -1181,6 +1204,7 @@ namespace Theraot.Core
         /// <remarks>If the end of the string is not reached, the string found will be the next thing to be read afterwards.</remarks>
         /// <param name="targets">The string to look for.</param>
         /// <param name="found">The found string.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -1197,6 +1221,7 @@ namespace Theraot.Core
         /// <param name="targets">The string to look for.</param>
         /// <param name="found">The found string.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -1251,6 +1276,7 @@ namespace Theraot.Core
         /// </summary>
         /// <remarks>If the end of the string is not reached, the character found will be the next thing to be read afterwards.</remarks>
         /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -1293,6 +1319,7 @@ namespace Theraot.Core
         /// </summary>
         /// <remarks>If the end of the string is not reached, the character found will be the next thing to be read afterwards.</remarks>
         /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
@@ -1353,6 +1380,7 @@ namespace Theraot.Core
         ///     Greedy) to the end of the string is reached.
         /// </summary>
         /// <param name="target">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipUntilAfter(string target, bool greedy)
@@ -1366,6 +1394,7 @@ namespace Theraot.Core
         /// </summary>
         /// <param name="target">The string to look for.</param>
         /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The target string is null.</exception>
         public bool SkipUntilAfter(string target, StringComparison stringComparison, bool greedy)
@@ -1399,6 +1428,7 @@ namespace Theraot.Core
         /// </summary>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
         public bool SkipUntilAfter(char target, bool greedy)
         {
             var position = String.IndexOf(target, _position);
