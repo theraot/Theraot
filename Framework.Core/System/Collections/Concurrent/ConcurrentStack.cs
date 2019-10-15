@@ -38,7 +38,7 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
-            Volatile.Write(ref _wrapped!, new ThreadSafeStack<T>());
+            Volatile.Write(ref _wrapped, new ThreadSafeStack<T>());
         }
 
         public void CopyTo(T[] array, int index)

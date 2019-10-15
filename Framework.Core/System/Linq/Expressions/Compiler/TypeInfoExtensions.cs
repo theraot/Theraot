@@ -28,7 +28,7 @@ namespace System.Linq.Expressions.Compiler
                 paramTypes[i + 1] = args[i].Type;
             }
 
-            return info.DelegateType = DelegateHelpers.MakeNewDelegate(paramTypes);
+            return info.DelegateType = DelegateHelpers.MakeNewDelegate(paramTypes)!;
         }
     }
 }

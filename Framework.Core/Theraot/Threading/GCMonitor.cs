@@ -88,8 +88,7 @@ namespace Theraot.Threading
 
         private static void Initialize()
         {
-            var check = Interlocked.CompareExchange(ref _status, _statusPending, _statusNotReady);
-            switch (check)
+            switch (Interlocked.CompareExchange(ref _status, _statusPending, _statusNotReady))
             {
                 case _statusNotReady:
                     GC.KeepAlive(new GCProbe());

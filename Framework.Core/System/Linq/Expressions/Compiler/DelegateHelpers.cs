@@ -39,7 +39,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal static Type MakeDeferredSiteDelegate(DynamicMetaObject[] args, Type returnType)
+        internal static Type? MakeDeferredSiteDelegate(DynamicMetaObject[] args, Type returnType)
         {
             lock (_delegateCache)
             {

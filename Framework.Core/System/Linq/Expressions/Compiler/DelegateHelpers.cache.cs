@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal static Type MakeDelegateType(Type[] types)
+        internal static Type? MakeDelegateType(Type[] types)
         {
             lock (_delegateCache)
             {
@@ -38,7 +38,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal static Type MakeNewDelegate(Type[] types)
+        internal static Type? MakeNewDelegate(Type[] types)
         {
             Debug.Assert(types.Length > 0);
 

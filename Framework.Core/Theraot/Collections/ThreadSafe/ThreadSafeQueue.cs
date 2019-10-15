@@ -76,7 +76,7 @@ namespace Theraot.Collections.ThreadSafe
                 var found = Interlocked.CompareExchange(ref tail.Link, node, null);
                 if (found == null)
                 {
-                    Volatile.Write(ref _tail!, node);
+                    Volatile.Write(ref _tail, node);
                 }
 
                 spinWait.SpinOnce();
