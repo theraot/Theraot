@@ -31,6 +31,10 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(delegateType));
             }
 
+            if (target == null)
+            {
+                return methodInfo.CreateDelegate(delegateType);
+            }
             return methodInfo.CreateDelegate(delegateType, target);
         }
 
@@ -59,7 +63,7 @@ namespace Theraot.Reflection
             }
 
             var parameterTypes = new List<Type>(parameters.Select(parameterInfo => parameterInfo.ParameterType));
-            Type delegateType;
+            Type? delegateType;
             if (returnType == typeof(void))
             {
                 var parameterTypeArray = parameterTypes.ToArray();
@@ -72,11 +76,24 @@ namespace Theraot.Reflection
                 delegateType = GetFuncType(parameterTypeArray);
             }
 
+            if (delegateType == null)
+            {
+                throw new ArgumentException("Could not infer delegate type", nameof(methodInfo));
+            }
+
+            if (target == null)
+            {
+                return methodInfo.CreateDelegate(delegateType);
+            }
             return methodInfo.CreateDelegate(delegateType, target);
         }
 
-        public static Type GetActionType(Type[] types)
+        public static Type? GetActionType(Type[] types)
         {
+            if (types == null)
+            {
+                throw new ArgumentNullException(nameof(types));
+            }
             switch (types.Length)
             {
                 case 0:
@@ -135,8 +152,12 @@ namespace Theraot.Reflection
             }
         }
 
-        public static Type GetFuncType(Type[] types)
+        public static Type? GetFuncType(Type[] types)
         {
+            if (types == null)
+            {
+                throw new ArgumentNullException(nameof(types));
+            }
             switch (types.Length)
             {
                 case 1:

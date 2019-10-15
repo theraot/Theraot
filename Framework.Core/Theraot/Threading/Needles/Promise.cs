@@ -42,7 +42,7 @@ namespace Theraot.Threading.Needles
             ReleaseWaitHandle(false);
         }
 
-        public Exception Exception { get; private set; }
+        public Exception? Exception { get; private set; }
 
         public bool IsCompleted
         {
@@ -55,7 +55,7 @@ namespace Theraot.Threading.Needles
 
         public bool IsFaulted => Exception != null;
 
-        protected ManualResetEventSlim WaitHandle
+        protected ManualResetEventSlim? WaitHandle
         {
             get;
             private set;

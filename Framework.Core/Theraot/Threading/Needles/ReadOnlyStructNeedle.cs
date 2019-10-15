@@ -30,16 +30,6 @@ namespace Theraot.Threading.Needles
 
         public T Value { get; }
 
-        public static explicit operator T(ReadOnlyStructNeedle<T> needle)
-        {
-            return needle.Value;
-        }
-
-        public static implicit operator ReadOnlyStructNeedle<T>(T field)
-        {
-            return new ReadOnlyStructNeedle<T>(field);
-        }
-
         public static bool operator !=(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
             var leftValue = left.Value;
@@ -66,40 +56,38 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is ReadOnlyStructNeedle<T> right)
+            if (obj is ReadOnlyStructNeedle<T> other)
             {
-                if (!right.IsAlive)
-                {
-                    return !IsAlive;
-                }
-
-                obj = right.Value;
+                return Equals(other);
             }
 
-            if (!(obj is T rightValue))
+            if (obj is T otherValue)
             {
-                return false;
+                return Equals(otherValue);
             }
 
+            return false;
+        }
+
+        private bool Equals(T otherValue)
+        {
             var value = Value;
-            return IsAlive && EqualityComparer<T>.Default.Equals(value, rightValue);
+            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
         }
 
         public bool Equals(ReadOnlyStructNeedle<T> other)
         {
-            var leftValue = Value;
-            if (!IsAlive)
+            if (other.TryGetValue(out var value))
             {
-                return !other.IsAlive;
+                return Equals(value);
             }
-
-            var rightValue = other.Value;
-            return other.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+            return !IsAlive;
         }
 
         public override string ToString()
         {
-            return IsAlive ? Value.ToString() : "<Dead Needle>";
+            var value = Value;
+            return IsAlive ? value!.ToString() : "<Dead Needle>";
         }
     }
 }

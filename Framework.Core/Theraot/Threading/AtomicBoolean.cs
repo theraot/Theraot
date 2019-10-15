@@ -40,19 +40,6 @@ namespace Theraot.Threading
             set => Exchange(value);
         }
 
-        public static implicit operator AtomicBoolean(bool value)
-        {
-            return new AtomicBoolean
-                   {
-                       Value = value
-                   };
-        }
-
-        public static implicit operator bool(AtomicBoolean atomicBoolean)
-        {
-            return atomicBoolean.Value;
-        }
-
         public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
         {
             if (left is null)

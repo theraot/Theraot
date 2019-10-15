@@ -10,7 +10,7 @@ namespace Theraot.Reflection
 {
     public static partial class TypeHelper
     {
-        public static MethodInfo GetUserDefinedConversionMethod(Type source, Type target, bool implicitOnly)
+        public static MethodInfo? GetUserDefinedConversionMethod(Type source, Type target, bool implicitOnly)
         {
             var nonNullableSource = source.GetNonNullable();
             var nonNullableTarget = target.GetNonNullable();

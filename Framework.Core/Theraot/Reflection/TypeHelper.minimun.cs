@@ -80,7 +80,7 @@ namespace Theraot.Reflection
             }
         }
 
-        public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
+        public static MethodInfo? FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
         {
             return
             (

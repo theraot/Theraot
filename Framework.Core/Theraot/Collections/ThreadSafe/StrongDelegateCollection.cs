@@ -13,8 +13,8 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly Action<object?[]> _invoke;
         private readonly Action<object?[]> _invokeAndClear;
-        private readonly Action<Action<Exception>, object?[]> _invokeAndClearWithException;
-        private readonly Action<Action<Exception>, object?[]> _invokeWithException;
+        private readonly Action<Action<Exception>?, object?[]> _invokeAndClearWithException;
+        private readonly Action<Action<Exception>?, object?[]> _invokeWithException;
         private readonly ThreadSafeCollection<Delegate> _wrapped;
 
         public StrongDelegateCollection(bool freeReentry)
@@ -92,7 +92,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public void Invoke(Action<Exception> onException, DelegateCollectionInvokeOptions options, params object?[] args)
+        public void Invoke(Action<Exception>? onException, DelegateCollectionInvokeOptions options, params object?[] args)
         {
             if ((options & DelegateCollectionInvokeOptions.RemoveDelegates) != DelegateCollectionInvokeOptions.None)
             {
@@ -120,7 +120,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private void InvokeExtracted(Action<Exception> onException, object?[] args)
+        private void InvokeExtracted(Action<Exception>? onException, object?[] args)
         {
             foreach (var handler in _wrapped)
             {
@@ -135,7 +135,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private void InvokeAndClearExtracted(Action<Exception> onException, object?[] args)
+        private void InvokeAndClearExtracted(Action<Exception>? onException, object?[] args)
         {
             foreach (var handler in _wrapped.ClearEnumerable())
             {

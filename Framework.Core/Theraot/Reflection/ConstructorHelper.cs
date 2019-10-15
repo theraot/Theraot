@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
 
@@ -12,7 +13,7 @@ namespace Theraot.Reflection
 {
     public static class ConstructorHelper
     {
-        private static readonly CacheDict<Type, object> _constructorCache = new CacheDict<Type, object>(256);
+        private static readonly CacheDict<Type, object?> _constructorCache = new CacheDict<Type, object?>(256);
 
         public static TReturn Create<TReturn>()
         {
@@ -29,13 +30,13 @@ namespace Theraot.Reflection
             return TryGetCreate<TReturn>(out var result) ? result() : default;
         }
 
-        public static bool TryGetCreate<TReturn>(out Func<TReturn> create)
+        public static bool TryGetCreate<TReturn>([NotNullWhen(true)] out Func<TReturn>? create)
         {
             var type = typeof(TReturn);
             var info = type.GetTypeInfo();
             if (info.IsValueType)
             {
-                create = () => default;
+                create = () => default!;
                 return true;
             }
 
@@ -70,7 +71,7 @@ namespace Theraot.Reflection
             return true;
         }
 
-        private static ConstructorInfo GetConstructor(Type type, Type[] typeArguments)
+        private static ConstructorInfo? GetConstructor(Type type, Type[] typeArguments)
         {
 #if GREATERTHAN_NETSTANDARD12
             foreach (var constructorInfo in type.GetTypeInfo().DeclaredConstructors)

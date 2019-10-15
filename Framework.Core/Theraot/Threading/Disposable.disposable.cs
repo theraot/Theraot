@@ -83,7 +83,7 @@ namespace Theraot.Threading
 
             if (whenNotDisposed == null)
             {
-                return default;
+                return default!;
             }
 
             if (!ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
@@ -106,6 +106,11 @@ namespace Theraot.Threading
         {
             No.Op(disposeManagedResources);
             if (!TakeDisposalExecution())
+            {
+                return;
+            }
+
+            if (_release == null)
             {
                 return;
             }

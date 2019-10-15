@@ -28,16 +28,6 @@ namespace Theraot.Threading.Needles
 
         public T Value => throw Exception;
 
-        public static explicit operator Exception(ExceptionStructNeedle<T> needle)
-        {
-            return needle.Exception;
-        }
-
-        public static implicit operator ExceptionStructNeedle<T>(Exception exception)
-        {
-            return new ExceptionStructNeedle<T>(exception);
-        }
-
         public static bool operator !=(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
             var leftException = left.Exception;

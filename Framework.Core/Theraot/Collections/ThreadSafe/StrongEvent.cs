@@ -37,7 +37,7 @@ namespace Theraot.Collections.ThreadSafe
             EventHandlers.Invoke(DelegateCollectionInvokeOptions.None, sender, eventArgs);
         }
 
-        public virtual void Invoke(Action<Exception> onException, object? sender, TEventArgs eventArgs)
+        public virtual void Invoke(Action<Exception>? onException, object? sender, TEventArgs eventArgs)
         {
             EventHandlers.Invoke(onException, DelegateCollectionInvokeOptions.None, sender, eventArgs);
         }

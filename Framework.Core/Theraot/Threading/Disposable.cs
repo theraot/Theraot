@@ -9,7 +9,7 @@ namespace Theraot.Threading
     [DebuggerNonUserCode]
     public sealed partial class Disposable
     {
-        private Action _release;
+        private Action? _release;
 
         private Disposable(Action release)
         {

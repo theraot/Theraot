@@ -3,12 +3,13 @@
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public class PromiseNeedle<T> : Promise, IRecyclable<T>, ICacheNeedle<T>
+    public class PromiseNeedle<T> : Promise, IRecyclable, ICacheNeedle<T>
     {
         private readonly int _hashCode;
         private T _target;
@@ -16,14 +17,14 @@ namespace Theraot.Threading.Needles
         public PromiseNeedle(bool done)
             : base(done)
         {
-            _target = default;
+            _target = default!;
             _hashCode = base.GetHashCode();
         }
 
         public PromiseNeedle(Exception exception)
             : base(exception)
         {
-            _target = default;
+            _target = default!;
             _hashCode = exception.GetHashCode();
         }
 
@@ -44,7 +45,7 @@ namespace Theraot.Threading.Needles
         public override void Free()
         {
             base.Free();
-            _target = default;
+            _target = default!;
         }
 
         public bool IsAlive => _target != null;
@@ -73,16 +74,6 @@ namespace Theraot.Threading.Needles
             return new PromiseNeedle<T>(target);
         }
 
-        public static explicit operator T(PromiseNeedle<T> needle)
-        {
-            if (needle == null)
-            {
-                throw new ArgumentNullException(nameof(needle));
-            }
-
-            return needle.Value;
-        }
-
         public static bool operator !=(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
             if (left is null)
@@ -95,7 +86,7 @@ namespace Theraot.Threading.Needles
                 return true;
             }
 
-            return !left._target.Equals(right._target);
+            return !EqualityComparer<T>.Default.Equals(left._target, right._target);
         }
 
         public static bool operator ==(PromiseNeedle<T> left, PromiseNeedle<T> right)
@@ -105,22 +96,46 @@ namespace Theraot.Threading.Needles
                 return right is null;
             }
 
-            return !(right is null) && left._target.Equals(right._target);
+            if (right is null)
+            {
+                return false;
+            }
+
+            return EqualityComparer<T>.Default.Equals(left._target, right._target);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is PromiseNeedle<T> needle)
+            if (obj is PromiseNeedle<T> other)
             {
-                return _target.Equals(needle._target);
+                return Equals(other);
             }
 
-            return IsCompleted && Value.Equals(obj);
+            if (obj is T otherValue)
+            {
+                return Equals(otherValue);
+            }
+
+            return false;
+        }
+
+        private bool Equals(T otherValue)
+        {
+            var value = Value;
+            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
         }
 
         public bool Equals(PromiseNeedle<T> other)
         {
-            return !(other is null) && _target.Equals(other._target);
+            if (other is null)
+            {
+                return false;
+            }
+            if (other.TryGetValue(out var value))
+            {
+                return Equals(value);
+            }
+            return !IsAlive;
         }
 
         public override int GetHashCode()
@@ -130,9 +145,10 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
+            var target = _target;
             return IsCompleted
                 ? Exception == null
-                    ? _target.ToString()
+                    ? target!.ToString()
                     : Exception.ToString()
                 : "[Not Created]";
         }

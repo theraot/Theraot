@@ -17,9 +17,9 @@ namespace Theraot.Threading
     public sealed class ReentryGuard
     {
         [ThreadStatic]
-        private static HashSet<UniqueId> _guard;
+        private static HashSet<UniqueId>? _guard;
 
-        private ThreadSafeQueue<Action> _workQueue;
+        private ThreadSafeQueue<Action>? _workQueue;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ReentryGuard" /> class.

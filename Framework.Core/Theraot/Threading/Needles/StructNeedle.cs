@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclable<T>
+    public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclable
     {
         public StructNeedle(T target)
         {
@@ -22,16 +22,6 @@ namespace Theraot.Threading.Needles
         public bool IsAlive => Value != null;
 
         public T Value { get; set; }
-
-        public static explicit operator T(StructNeedle<T> needle)
-        {
-            return needle.Value;
-        }
-
-        public static implicit operator StructNeedle<T>(T field)
-        {
-            return new StructNeedle<T>(field);
-        }
 
         public static bool operator !=(StructNeedle<T> left, StructNeedle<T> right)
         {
@@ -59,46 +49,44 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is StructNeedle<T> right)
+            if (obj is StructNeedle<T> other)
             {
-                if (!right.IsAlive)
-                {
-                    return !IsAlive;
-                }
-
-                obj = right.Value;
+                return Equals(other);
             }
 
-            if (!(obj is T rightValue))
+            if (obj is T otherValue)
             {
-                return false;
+                return Equals(otherValue);
             }
 
+            return false;
+        }
+
+        private bool Equals(T otherValue)
+        {
             var value = Value;
-            return IsAlive && EqualityComparer<T>.Default.Equals(value, rightValue);
+            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
         }
 
         public bool Equals(StructNeedle<T> other)
         {
-            var leftValue = Value;
-            if (!IsAlive)
+            var value = other.Value;
+            if (other.IsAlive)
             {
-                return !other.IsAlive;
+                return Equals(value);
             }
-
-            var rightValue = other.Value;
-            return other.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
+            return !IsAlive;
         }
 
-        void IRecyclable<T>.Free()
+        void IRecyclable.Free()
         {
-            Value = default;
+            Value = default!;
         }
 
         public override string ToString()
         {
             var target = Value;
-            return IsAlive ? target.ToString() : "<Dead Needle>";
+            return IsAlive ? target!.ToString() : "<Dead Needle>";
         }
     }
 }

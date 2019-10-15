@@ -12,8 +12,8 @@ namespace Theraot.Threading
 #endif
         IDisposable
     {
-        private Action _release;
-        private StrongBox<UniqueId> _threadUniqueId;
+        private Action? _release;
+        private StrongBox<UniqueId>? _threadUniqueId;
 
         private DisposableAkin(Action release, UniqueId threadUniqueId)
         {
@@ -66,6 +66,11 @@ namespace Theraot.Threading
                 return false;
             }
 
+            if (_release == null)
+            {
+                return true;
+            }
+
             try
             {
                 _release.Invoke();
@@ -99,6 +104,11 @@ namespace Theraot.Threading
                 {
                     return;
                 }
+            }
+
+            if (_release == null)
+            {
+                return;
             }
 
             try

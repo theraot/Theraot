@@ -172,7 +172,7 @@ namespace Theraot.Core
 
     public static partial class SequenceHelper
     {
-        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T endCondition, Func<T, T?> next)
+        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T? endCondition, Func<T, T?> next)
             where T : class
         {
             if (next == null)
@@ -183,7 +183,7 @@ namespace Theraot.Core
             return ExploreSequenceExtractedUntilNull(initial, endCondition, next, FuncHelper.GetIdentityFunc<T>(), EqualityComparer<T>.Default);
         }
 
-        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T endCondition, Func<T, T?> next, IEqualityComparer<T>? comparer)
+        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T? endCondition, Func<T, T?> next, IEqualityComparer<T>? comparer)
             where T : class
         {
             if (next == null)
@@ -195,7 +195,7 @@ namespace Theraot.Core
             return ExploreSequenceExtractedUntilNull(initial, endCondition, next, FuncHelper.GetIdentityFunc<T>(), comparer);
         }
 
-        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T endCondition, Func<T, T?> next)
+        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T? endCondition, Func<T, T?> next)
             where T : struct
         {
             if (next == null)
@@ -206,7 +206,7 @@ namespace Theraot.Core
             return ExploreSequenceExtractedUntilNull(initial, endCondition, next, FuncHelper.GetIdentityFunc<T>(), EqualityComparer<T>.Default);
         }
 
-        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T endCondition, Func<T, T?> next, IEqualityComparer<T>? comparer)
+        public static IEnumerable<T> ExploreSequenceUntilNull<T>(T? initial, T? endCondition, Func<T, T?> next, IEqualityComparer<T>? comparer)
             where T : struct
         {
             if (next == null)
@@ -284,7 +284,7 @@ namespace Theraot.Core
             return ExploreSequenceExtractedUntilNull(initial, endCondition, next, resultSelector, comparer);
         }
 
-        private static IEnumerable<TOutput> ExploreSequenceExtractedUntilNull<TInput, TOutput>(TInput? initial, TInput endCondition, Func<TInput, TInput?> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
+        private static IEnumerable<TOutput> ExploreSequenceExtractedUntilNull<TInput, TOutput>(TInput? initial, TInput? endCondition, Func<TInput, TInput?> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
             where TInput : class
         {
             var current = initial;
@@ -294,7 +294,7 @@ namespace Theraot.Core
                 {
                     yield return resultSelector!(current);
                     var found = next!(current);
-                    if (found == null || comparer.Equals(found, endCondition))
+                    if (found == null || (endCondition != null && comparer.Equals(found, endCondition)))
                     {
                         break;
                     }
@@ -304,7 +304,7 @@ namespace Theraot.Core
             }
         }
 
-        private static IEnumerable<TOutput> ExploreSequenceExtractedUntilNull<TInput, TOutput>(TInput? initial, TInput endCondition, Func<TInput, TInput?> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
+        private static IEnumerable<TOutput> ExploreSequenceExtractedUntilNull<TInput, TOutput>(TInput? initial, TInput? endCondition, Func<TInput, TInput?> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
             where TInput : struct
         {
             var current = initial;
@@ -314,7 +314,12 @@ namespace Theraot.Core
                 {
                     yield return resultSelector!(current.Value);
                     var found = next!(current.Value);
-                    if (!found.HasValue || comparer.Equals(found.Value, endCondition))
+                    if (!found.HasValue)
+                    {
+                        break;
+                    }
+
+                    if (endCondition != null && comparer.Equals((TInput)found.Value, (TInput)endCondition))
                     {
                         break;
                     }
@@ -404,7 +409,7 @@ namespace Theraot.Core
 
     public static partial class SequenceHelper
     {
-        public static T CommonNode<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T>? comparer)
+        public static T? CommonNode<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T>? comparer)
             where T : class
         {
             if (next == null)
@@ -434,7 +439,7 @@ namespace Theraot.Core
             return CommonNodeExtracted(first, second, next, comparer);
         }
 
-        public static T CommonNode<T>(T first, T second, Func<T, T?> next)
+        public static T? CommonNode<T>(T first, T second, Func<T, T?> next)
             where T : class
         {
             if (next == null)
@@ -445,7 +450,7 @@ namespace Theraot.Core
             return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
         }
 
-        private static T CommonNodeExtracted<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T> comparer)
+        private static T? CommonNodeExtracted<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T> comparer)
             where T : class
         {
             if (comparer.Equals(first, second))

@@ -84,16 +84,6 @@ namespace Theraot.Threading.Needles
             return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
-        public static explicit operator T?(WeakNeedle<T> needle)
-        {
-            return needle?.Value;
-        }
-
-        public static implicit operator WeakNeedle<T>(T? field)
-        {
-            return new WeakNeedle<T>(field);
-        }
-
         public static bool operator !=(WeakNeedle<T> left, WeakNeedle<T> right)
         {
             if (left is null)

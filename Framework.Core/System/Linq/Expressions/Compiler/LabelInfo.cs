@@ -286,7 +286,7 @@ namespace System.Linq.Expressions.Compiler
             _opCode = CanReturn ? OpCodes.Ret : OpCodes.Br;
 
             // Validate that we aren't jumping across a finally
-            foreach (var j in SequenceHelper.ExploreSequence(reference, common, found => found.Parent!))
+            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(reference, common, found => found.Parent!))
             {
                 switch (j.Kind)
                 {

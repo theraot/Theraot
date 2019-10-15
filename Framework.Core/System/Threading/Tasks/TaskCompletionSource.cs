@@ -46,7 +46,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public TaskCompletionSource()
         {
-            _task = new Task<TResult>();
+            _task = new StructNeedle<Task<TResult>>(new Task<TResult>());
         }
 
         /// <inheritdoc />
@@ -107,7 +107,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public TaskCompletionSource(object? state, TaskCreationOptions creationOptions)
         {
-            _task = new Task<TResult>(state, creationOptions);
+            _task = new StructNeedle<Task<TResult>>(new Task<TResult>(state, creationOptions));
         }
 
         /// <summary>

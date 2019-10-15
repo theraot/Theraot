@@ -1,7 +1,10 @@
 ﻿// Needed for Workaround
 
+#pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable
+
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Theraot.Reflection;
 
@@ -21,7 +24,7 @@ namespace Theraot.Threading.Needles
             // Empty
         }
 
-        public MethodInfo Method
+        public MethodInfo? Method
         {
             get
             {
@@ -80,7 +83,7 @@ namespace Theraot.Threading.Needles
             return true;
         }
 
-        public bool TryInvoke(object[] args, out object result)
+        public bool TryInvoke(object[] args, [NotNullWhen(true)] out object? result)
         {
             if (TryGetValue(out var value))
             {
@@ -100,7 +103,7 @@ namespace Theraot.Threading.Needles
                 return true;
             }
 
-            result = default;
+            result = default!;
             return false;
         }
     }
