@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
@@ -209,20 +208,6 @@ namespace System.Linq.Expressions.Compiler
 
                 // Track items in case we need to copy or spill stack.
                 _expressions[_expressionsCount++] = exp.Node;
-            }
-
-            /// <summary>
-            ///     Adds child <paramref name="expressions" /> to the rewriter, causing
-            ///     them to be rewritten using the parent stack spiller, and the evaluation
-            ///     stack state and rewrite action to be updated accordingly.
-            /// </summary>
-            /// <param name="expressions">The child expressions to add.</param>
-            internal void Add(ReadOnlyCollection<Expression> expressions)
-            {
-                for (int i = 0, count = expressions.Count; i < count; i++)
-                {
-                    Add(expressions[i]);
-                }
             }
 
             /// <summary>

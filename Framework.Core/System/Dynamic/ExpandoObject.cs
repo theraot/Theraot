@@ -52,11 +52,10 @@ namespace System.Dynamic
         private static readonly MethodInfo _expandoTrySetValue =
             typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.ExpandoTrySetValue));
 
+        private readonly IEvent<PropertyChangedEventArgs> _propertyChanged;
         private int _count;
 
         private ExpandoData _data; // the data currently being held by the Expando object
-
-        private readonly IEvent<PropertyChangedEventArgs> _propertyChanged;
         // the count of available members
 
         // A marker object used to identify that a value is uninitialized.
@@ -110,6 +109,106 @@ namespace System.Dynamic
                 // Pass null to the class, which forces lookup.
                 TrySetValue(null, -1, value, key, false, false);
             }
+        }
+
+        void IDictionary<string, object>.Add(string key, object value)
+        {
+            TryAddMember(key, value);
+        }
+
+        void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
+        {
+            TryAddMember(item.Key, item.Value);
+        }
+
+        void ICollection<KeyValuePair<string, object>>.Clear()
+        {
+            // We remove both class and data!
+            ExpandoData data;
+            lock (LockObject)
+            {
+                data = _data;
+                _data = ExpandoData.Empty;
+                _count = 0;
+            }
+
+            // Notify property changed for all properties.
+            for (int i = 0, n = data.Class.Keys.Length; i < n; i++)
+            {
+                if (data[i] != Uninitialized)
+                {
+                    _propertyChanged.Invoke(this, new PropertyChangedEventArgs(data.Class.Keys[i]));
+                }
+            }
+        }
+
+        bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
+        {
+            return TryGetValueForKey(item.Key, out var value) && Equals(value, item.Value);
+        }
+
+        bool IDictionary<string, object>.ContainsKey(string key)
+        {
+            ContractUtils.RequiresNotNull(key, nameof(key));
+
+            var data = _data;
+            var index = data.Class.GetValueIndexCaseSensitive(key, LockObject);
+            return index >= 0 && data[index] != Uninitialized;
+        }
+
+        void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            ContractUtils.RequiresNotNull(array, nameof(array));
+
+            // We want this to be atomic and not throw, though we must do the range checks inside this lock.
+            lock (LockObject)
+            {
+                ContractUtils.RequiresArrayRange(array, arrayIndex, _count, nameof(arrayIndex), nameof(ICollection<KeyValuePair<string, object>>.Count));
+                foreach (var item in this)
+                {
+                    array[arrayIndex++] = item;
+                }
+            }
+        }
+
+        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+        {
+            var data = _data;
+            return GetExpandoEnumerator(data, data.Version);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            var data = _data;
+            return GetExpandoEnumerator(data, data.Version);
+        }
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+        {
+            return new MetaExpando(parameter, this);
+        }
+
+        bool IDictionary<string, object>.Remove(string key)
+        {
+            ContractUtils.RequiresNotNull(key, nameof(key));
+            // Pass null to the class, which forces lookup.
+            return TryDeleteValue(null, -1, key, false, Uninitialized);
+        }
+
+        bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
+        {
+            return TryDeleteValue(null, -1, item.Key, false, item.Value);
+        }
+
+        bool IDictionary<string, object>.TryGetValue(string key, out object value)
+        {
+            if (TryGetValueForKey(key, out var tmp))
+            {
+                value = tmp;
+                return true;
+            }
+            value = null!;
+            return false;
         }
 
         internal bool IsDeletedMember(int index)
@@ -296,84 +395,12 @@ namespace System.Dynamic
             _propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        void IDictionary<string, object>.Add(string key, object value)
-        {
-            TryAddMember(key, value);
-        }
-
-        void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
-        {
-            TryAddMember(item.Key, item.Value);
-        }
-
-        void ICollection<KeyValuePair<string, object>>.Clear()
-        {
-            // We remove both class and data!
-            ExpandoData data;
-            lock (LockObject)
-            {
-                data = _data;
-                _data = ExpandoData.Empty;
-                _count = 0;
-            }
-
-            // Notify property changed for all properties.
-            for (int i = 0, n = data.Class.Keys.Length; i < n; i++)
-            {
-                if (data[i] != Uninitialized)
-                {
-                    _propertyChanged.Invoke(this, new PropertyChangedEventArgs(data.Class.Keys[i]));
-                }
-            }
-        }
-
-        bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
-        {
-            return TryGetValueForKey(item.Key, out var value) && Equals(value, item.Value);
-        }
-
-        bool IDictionary<string, object>.ContainsKey(string key)
-        {
-            ContractUtils.RequiresNotNull(key, nameof(key));
-
-            var data = _data;
-            var index = data.Class.GetValueIndexCaseSensitive(key, LockObject);
-            return index >= 0 && data[index] != Uninitialized;
-        }
-
-        void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
-            ContractUtils.RequiresNotNull(array, nameof(array));
-
-            // We want this to be atomic and not throw, though we must do the range checks inside this lock.
-            lock (LockObject)
-            {
-                ContractUtils.RequiresArrayRange(array, arrayIndex, _count, nameof(arrayIndex), nameof(ICollection<KeyValuePair<string, object>>.Count));
-                foreach (var item in this)
-                {
-                    array[arrayIndex++] = item;
-                }
-            }
-        }
-
         private bool ExpandoContainsKey(string key)
         {
             lock (LockObject)
             {
                 return _data.Class.GetValueIndexCaseSensitive(key, LockObject) >= 0;
             }
-        }
-
-        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
-        {
-            var data = _data;
-            return GetExpandoEnumerator(data, data.Version);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            var data = _data;
-            return GetExpandoEnumerator(data, data.Version);
         }
 
         // Note: takes the data and version as parameters so they will be
@@ -400,11 +427,6 @@ namespace System.Dynamic
             }
         }
 
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-        {
-            return new MetaExpando(parameter, this);
-        }
-
         private ExpandoData PromoteClassCore(ExpandoClass oldClass, ExpandoClass newClass)
         {
             lock (LockObject)
@@ -421,34 +443,11 @@ namespace System.Dynamic
             }
         }
 
-        bool IDictionary<string, object>.Remove(string key)
-        {
-            ContractUtils.RequiresNotNull(key, nameof(key));
-            // Pass null to the class, which forces lookup.
-            return TryDeleteValue(null, -1, key, false, Uninitialized);
-        }
-
-        bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
-        {
-            return TryDeleteValue(null, -1, item.Key, false, item.Value);
-        }
-
         private void TryAddMember(string key, object value)
         {
             ContractUtils.RequiresNotNull(key, nameof(key));
             // Pass null to the class, which forces lookup.
             TrySetValue(null, -1, value, key, false, true);
-        }
-
-        bool IDictionary<string, object>.TryGetValue(string key, out object value)
-        {
-            if (TryGetValueForKey(key, out var tmp))
-            {
-                value = tmp;
-                return true;
-            }
-            value = null!;
-            return false;
         }
 
         private bool TryGetValueForKey(string key, [NotNullWhen(true)] out object? value)
@@ -624,14 +623,14 @@ namespace System.Dynamic
                 }
             }
 
-            public bool Remove(string item)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            public bool Remove(string item)
+            {
+                throw new NotSupportedException("Collection is read-only.");
             }
 
             private void CheckVersion()
@@ -1031,14 +1030,14 @@ namespace System.Dynamic
                 }
             }
 
-            public bool Remove(object item)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
-
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            public bool Remove(object item)
+            {
+                throw new NotSupportedException("Collection is read-only.");
             }
 
             private void CheckVersion()

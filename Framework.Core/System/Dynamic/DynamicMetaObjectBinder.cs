@@ -236,7 +236,7 @@ namespace System.Dynamic
             // we go directly to DynamicExpression.Make to avoid a bunch of unnecessary argument validation
             return new DynamicMetaObject
             (
-                DynamicExpression.Make(ReturnType, delegateType, this, expressions),
+                DynamicExpression.Make(ReturnType, delegateType!, this, expressions),
                 rs
             );
         }

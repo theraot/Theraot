@@ -70,6 +70,12 @@ namespace System.Linq.Expressions.Compiler
         internal readonly bool IsMethod;
 
         /// <summary>
+        ///     The expression node for this scope
+        ///     Can be LambdaExpression, BlockExpression, or CatchBlock
+        /// </summary>
+        internal readonly object Node;
+
+        /// <summary>
         ///     <para>Scopes whose variables were merged into this one</para>
         ///     <para>Created lazily as we create hundreds of compiler scopes w/o merging scopes when compiling rules.</para>
         /// </summary>
@@ -83,16 +89,16 @@ namespace System.Linq.Expressions.Compiler
         internal bool NeedsClosure;
 
         /// <summary>
-        ///     The expression node for this scope
-        ///     Can be LambdaExpression, BlockExpression, or CatchBlock
-        /// </summary>
-        internal readonly object Node;
-
-        /// <summary>
         ///     Each variable referenced within this scope, and how often it was referenced
         ///     Populated by VariableBinder
         /// </summary>
         internal Dictionary<ParameterExpression, int>? ReferenceCount;
+
+        /// <summary>
+        ///     Mutable dictionary that maps non-hoisted variables to either local
+        ///     slots or argument slots
+        /// </summary>
+        private readonly Dictionary<ParameterExpression, Storage> _locals = new Dictionary<ParameterExpression, Storage>();
 
         /// <summary>
         ///     The closed over hoisted locals
@@ -104,12 +110,6 @@ namespace System.Linq.Expressions.Compiler
         ///     Provides storage for variables that are referenced from nested lambdas
         /// </summary>
         private HoistedLocals? _hoistedLocals;
-
-        /// <summary>
-        ///     Mutable dictionary that maps non-hoisted variables to either local
-        ///     slots or argument slots
-        /// </summary>
-        private readonly Dictionary<ParameterExpression, Storage> _locals = new Dictionary<ParameterExpression, Storage>();
 
         /// <summary>
         ///     parent scope, if any

@@ -47,9 +47,20 @@ namespace System.Collections.Concurrent
             Extensions.CopyTo(this, array, index);
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            this.DeprecatedCopyTo(array, index);
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public void Push(T item)
@@ -101,6 +112,12 @@ namespace System.Collections.Concurrent
         public T[] ToArray()
         {
             return _wrapped.ToArray();
+        }
+
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
+        {
+            Push(item);
+            return true;
         }
 
         public bool TryPeek(out T result)
@@ -164,23 +181,6 @@ namespace System.Collections.Concurrent
             }
 
             return index;
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        bool IProducerConsumerCollection<T>.TryAdd(T item)
-        {
-            Push(item);
-            return true;
         }
 
         bool IProducerConsumerCollection<T>.TryTake(out T item)

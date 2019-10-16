@@ -16,8 +16,8 @@ namespace System.ComponentModel.DataAnnotations
     /// </summary>
     internal class LocalizableString
     {
-        private Func<string?>? _cachedResult;
         private readonly string _propertyName;
+        private Func<string?>? _cachedResult;
         private string? _propertyValue;
         private Type? _resourceType;
 
@@ -100,6 +100,15 @@ namespace System.ComponentModel.DataAnnotations
             return cachedResult();
         }
 
+        /// <summary>
+        ///     Clears any cached values, forcing <see cref="GetLocalizableValue" /> to
+        ///     perform evaluation.
+        /// </summary>
+        private void ClearCache()
+        {
+            _cachedResult = null;
+        }
+
         private Func<string?> GetCachedResult()
         {
             // If the property value is null, then just cache that value
@@ -131,15 +140,6 @@ namespace System.ComponentModel.DataAnnotations
                 var getter = property.GetGetMethod();
                 return getter?.IsPublic == true && getter.IsStatic;
             }
-        }
-
-        /// <summary>
-        ///     Clears any cached values, forcing <see cref="GetLocalizableValue" /> to
-        ///     perform evaluation.
-        /// </summary>
-        private void ClearCache()
-        {
-            _cachedResult = null;
         }
     }
 }

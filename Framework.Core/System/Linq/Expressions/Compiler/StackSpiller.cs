@@ -37,6 +37,15 @@ namespace System.Linq.Expressions.Compiler
             _startingStack = stack;
         }
 
+        /// <summary>
+        ///     Indicates whether the evaluation stack is empty.
+        /// </summary>
+        private enum Stack
+        {
+            Empty,
+            NonEmpty
+        }
+
         internal static LambdaExpression AnalyzeLambda(LambdaExpression lambda)
         {
             return lambda.AcceptStackSpiller(new StackSpiller(Stack.Empty));
@@ -148,6 +157,56 @@ namespace System.Linq.Expressions.Compiler
                 node.Type.IsReferenceAssignableFromInternal(result.Node!.Type),
                 "rewritten object must be reference assignable to the original type"
             );
+        }
+
+        private RewriteAction ProcessHandlers(Result body, ref CatchBlock[] handlers)
+        {
+            var action = body.Action;
+
+            CatchBlock[]? clone = null;
+            for (var index = 0; index < handlers.Length; index++)
+            {
+                var curAction = body.Action;
+
+                var handler = handlers[index];
+
+                var filter = handler.Filter;
+                if (handler.Filter != null)
+                {
+                    // Our code gen saves the incoming filter value and provides it as a variable so the stack is empty
+                    var catchFilter = RewriteExpression(handler.Filter, Stack.Empty);
+                    action |= catchFilter.Action;
+                    curAction |= catchFilter.Action;
+                    filter = catchFilter.Node;
+                }
+
+                // Catch block starts with an empty stack (guaranteed by TryStatement).
+                var catchBody = RewriteExpression(handler.Body, Stack.Empty);
+                action |= catchBody.Action;
+                curAction |= catchBody.Action;
+
+                if (curAction != RewriteAction.None)
+                {
+                    handler = Expression.MakeCatchBlock(handler.Test, handler.Variable, catchBody.Node, filter);
+
+                    if (clone == null)
+                    {
+                        clone = Clone(handlers, index);
+                    }
+                }
+
+                if (clone != null)
+                {
+                    clone[index] = handler;
+                }
+            }
+
+            if (clone != null)
+            {
+                handlers = clone;
+            }
+
+            return action;
         }
 
         private Result RewriteAssignBinaryExpression(Expression expr, Stack stack)
@@ -279,14 +338,6 @@ namespace System.Linq.Expressions.Compiler
             return cr.Finish(cr.Rewrite ? node.Rewrite(cr[0, -1]) : expr);
         }
 
-        private Result RewriteExpressionFreeTempsNotNull(Expression expression, Stack stack)
-        {
-            var mark = Mark();
-            var result = RewriteExpression(expression, stack);
-            Free(mark);
-            return result;
-        }
-
         private Result? RewriteExpressionFreeTemps(Expression? expression, Stack stack)
         {
             if (expression != null)
@@ -295,6 +346,14 @@ namespace System.Linq.Expressions.Compiler
             }
 
             return null;
+        }
+
+        private Result RewriteExpressionFreeTempsNotNull(Expression expression, Stack stack)
+        {
+            var mark = Mark();
+            var result = RewriteExpression(expression, stack);
+            Free(mark);
+            return result;
         }
 
         private Result RewriteExtensionAssignment(BinaryExpression node, Stack stack)
@@ -996,56 +1055,6 @@ namespace System.Linq.Expressions.Compiler
             return new Result(action, expr);
         }
 
-        private RewriteAction ProcessHandlers(Result body, ref CatchBlock[] handlers)
-        {
-            var action = body.Action;
-
-            CatchBlock[]? clone = null;
-            for (var index = 0; index < handlers.Length; index++)
-            {
-                var curAction = body.Action;
-
-                var handler = handlers[index];
-
-                var filter = handler.Filter;
-                if (handler.Filter != null)
-                {
-                    // Our code gen saves the incoming filter value and provides it as a variable so the stack is empty
-                    var catchFilter = RewriteExpression(handler.Filter, Stack.Empty);
-                    action |= catchFilter.Action;
-                    curAction |= catchFilter.Action;
-                    filter = catchFilter.Node;
-                }
-
-                // Catch block starts with an empty stack (guaranteed by TryStatement).
-                var catchBody = RewriteExpression(handler.Body, Stack.Empty);
-                action |= catchBody.Action;
-                curAction |= catchBody.Action;
-
-                if (curAction != RewriteAction.None)
-                {
-                    handler = Expression.MakeCatchBlock(handler.Test, handler.Variable, catchBody.Node, filter);
-
-                    if (clone == null)
-                    {
-                        clone = Clone(handlers, index);
-                    }
-                }
-
-                if (clone != null)
-                {
-                    clone[index] = handler;
-                }
-            }
-
-            if (clone != null)
-            {
-                handlers = clone;
-            }
-
-            return action;
-        }
-
         private Result RewriteTypeBinaryExpression(Expression expr, Stack stack)
         {
             var node = (TypeBinaryExpression)expr;
@@ -1107,15 +1116,6 @@ namespace System.Linq.Expressions.Compiler
             }
 
             return new Result(right.Action, node);
-        }
-
-        /// <summary>
-        ///     Indicates whether the evaluation stack is empty.
-        /// </summary>
-        private enum Stack
-        {
-            Empty,
-            NonEmpty
         }
 
         /// <summary>

@@ -105,6 +105,11 @@ namespace System.Dynamic.Utils
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public int IndexOf(T item)
         {
             if (First == item)
@@ -139,11 +144,6 @@ namespace System.Dynamic.Utils
         }
 
         protected abstract T GetElement(int index);
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }
 

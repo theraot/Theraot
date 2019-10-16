@@ -237,22 +237,6 @@ namespace System.Dynamic.Utils
             return SameElementsInCollection(replacement, current);
         }
 
-        internal static bool SameElementsWithPossibleNulls<T>(ICollection<T?>? replacement, T?[] current)
-            where T : class
-        {
-            if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
-            {
-                return true;
-            }
-
-            if (replacement == null) // Treat null as empty.
-            {
-                return current.Length == 0;
-            }
-
-            return SameElementsInCollectionWithPossibleNulls(replacement, current);
-        }
-
         internal static bool SameElements<T>([NotNullIfNotNull("replacement")] ref IEnumerable<T>? replacement, T[] current)
             where T : class
         {
@@ -277,31 +261,7 @@ namespace System.Dynamic.Utils
             return SameElementsInCollection(replacementCol, current);
         }
 
-        internal static bool SameElementsWithPossibleNulls<T>(ref IEnumerable<T?>? replacement, T?[] current)
-            where T : class
-        {
-            if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
-            {
-                return true;
-            }
-
-            if (replacement == null) // Treat null as empty.
-            {
-                return current.Length == 0;
-            }
-
-            // Ensure arguments is safe to enumerate twice.
-            // If we have to build a collection, build a ArrayReadOnlyCollection<T>
-            // so it won't be built a second time if used.
-            if (!(replacement is ICollection<T?> replacementCol))
-            {
-                replacement = replacementCol = replacement.ToReadOnlyCollection();
-            }
-
-            return SameElementsInCollectionWithPossibleNulls(replacementCol, current);
-        }
-
-        private static bool SameElementsInCollection<T>(ICollection<T> replacement, T[] current)
+        internal static bool SameElementsInCollectionWithPossibleNulls<T>(ICollection<T?> replacement, T?[] current)
             where T : class
         {
             var count = current.Length;
@@ -329,7 +289,47 @@ namespace System.Dynamic.Utils
             return true;
         }
 
-        internal static bool SameElementsInCollectionWithPossibleNulls<T>(ICollection<T?> replacement, T?[] current)
+        internal static bool SameElementsWithPossibleNulls<T>(ICollection<T?>? replacement, T?[] current)
+                            where T : class
+        {
+            if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
+            {
+                return true;
+            }
+
+            if (replacement == null) // Treat null as empty.
+            {
+                return current.Length == 0;
+            }
+
+            return SameElementsInCollectionWithPossibleNulls(replacement, current);
+        }
+
+        internal static bool SameElementsWithPossibleNulls<T>(ref IEnumerable<T?>? replacement, T?[] current)
+            where T : class
+        {
+            if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
+            {
+                return true;
+            }
+
+            if (replacement == null) // Treat null as empty.
+            {
+                return current.Length == 0;
+            }
+
+            // Ensure arguments is safe to enumerate twice.
+            // If we have to build a collection, build a ArrayReadOnlyCollection<T>
+            // so it won't be built a second time if used.
+            if (!(replacement is ICollection<T?> replacementCol))
+            {
+                replacement = replacementCol = replacement.ToReadOnlyCollection();
+            }
+
+            return SameElementsInCollectionWithPossibleNulls(replacementCol, current);
+        }
+
+        private static bool SameElementsInCollection<T>(ICollection<T> replacement, T[] current)
             where T : class
         {
             var count = current.Length;

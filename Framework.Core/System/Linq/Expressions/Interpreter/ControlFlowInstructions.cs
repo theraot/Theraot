@@ -34,9 +34,9 @@ namespace System.Linq.Expressions.Interpreter
 
     internal class BranchInstruction : OffsetInstruction
     {
-        private static Instruction[][][]? _caches;
         internal readonly bool HasResult;
         internal readonly bool HasValue;
+        private static Instruction[][][]? _caches;
 
         public BranchInstruction(bool hasResult, bool hasValue)
         {

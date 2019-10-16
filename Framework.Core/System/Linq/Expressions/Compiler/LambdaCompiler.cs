@@ -128,6 +128,8 @@ namespace System.Linq.Expressions.Compiler
             _boundConstants = parent._boundConstants;
         }
 
+        private delegate void WriteBack(LambdaCompiler compiler);
+
         internal bool CanEmitBoundConstants => _method is DynamicMethod;
 
         internal ILGenerator IL { get; }
@@ -234,8 +236,6 @@ namespace System.Linq.Expressions.Compiler
             AddReturnLabel(_lambda);
             _boundConstants.EmitCacheConstants(this);
         }
-
-        private delegate void WriteBack(LambdaCompiler compiler);
     }
 }
 

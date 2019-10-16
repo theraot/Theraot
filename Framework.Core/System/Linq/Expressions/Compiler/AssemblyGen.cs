@@ -16,9 +16,8 @@ namespace System.Linq.Expressions.Compiler
     internal sealed class AssemblyGen
     {
         private static AssemblyGen? _assembly;
-        private int _index;
-
         private readonly ModuleBuilder _myModule;
+        private int _index;
 
         private AssemblyGen()
         {

@@ -101,18 +101,15 @@ namespace System.Linq.Expressions.Interpreter
         private const int _pushIntMaxCachedValue = 100;
         private const int _pushIntMinCachedValue = -100;
 
+        private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
+        private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
         private static Instruction[]? _assignLocal;
 
         private static Instruction[]? _assignLocalBoxed;
 
         private static Instruction[]? _assignLocalToClosure;
-
-        private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
         private static Instruction? _false;
         private static Instruction[]? _ints;
-
-        private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
-
         private static Instruction[]? _loadLocal;
 
         private static Instruction[]? _loadLocalBoxed;
@@ -128,11 +125,11 @@ namespace System.Linq.Expressions.Interpreter
         private static Instruction[]? _storeLocalBoxed;
         private static Instruction? _true;
 
+        private readonly List<Instruction> _instructions = new List<Instruction>();
+
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
         private List<KeyValuePair<int, object?>>? _debugCookies;
-
-        private readonly List<Instruction> _instructions = new List<Instruction>();
 
         private List<BranchLabel>? _labels;
         private int _maxContinuationDepth;

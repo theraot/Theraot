@@ -29,9 +29,8 @@ namespace System.Linq.Expressions.Interpreter
         [ThreadStatic]
         private static InterpretedFrame? _currentFrame;
 
-        private int _continuationIndex;
-
         private readonly int[] _continuations;
+        private int _continuationIndex;
         private int _pendingContinuation;
         private object? _pendingValue;
 #if FEATURE_THREAD_ABORT

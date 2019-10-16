@@ -87,16 +87,20 @@ namespace System.Collections.Generic
         public IComparer<T> Comparer { get; }
 
         public int Count => GetCount();
-        public T Max => GetMax();
-        public T Min => GetMin();
-
         bool ICollection<T>.IsReadOnly => false;
         bool ICollection.IsSynchronized => false;
+        public T Max => GetMax();
+        public T Min => GetMin();
         object ICollection.SyncRoot => this;
 
         public bool Add(T item)
         {
             return AddExtracted(item);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            AddExtracted(item);
         }
 
         public virtual void Clear()
@@ -143,6 +147,17 @@ namespace System.Collections.Generic
             return GetEnumeratorExtracted();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            GetObjectData(info, context);
+        }
+
         public virtual SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
         {
             if (Comparer.Compare(lowerValue, upperValue) <= 0)
@@ -176,6 +191,11 @@ namespace System.Collections.Generic
         public bool IsSupersetOf(IEnumerable<T> other)
         {
             return Extensions.IsSupersetOf(this, other);
+        }
+
+        void IDeserializationCallback.OnDeserialization(object sender)
+        {
+            No.Op(sender);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -281,27 +301,6 @@ namespace System.Collections.Generic
         protected virtual bool RemoveExtracted(T item)
         {
             return _wrapped.Remove(item);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            AddExtracted(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            GetObjectData(info, context);
-        }
-
-        void IDeserializationCallback.OnDeserialization(object sender)
-        {
-            No.Op(sender);
         }
 
         [Serializable]

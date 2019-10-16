@@ -13,6 +13,94 @@ namespace System.Linq.Expressions.Compiler
     // break, continue, return, exceptions, etc
     internal partial class LambdaCompiler
     {
+        private static (LabelScopeInfo parent, LabelScopeKind kind, IList<Expression>? nodes)? GetLabelScopeChangeInfo(bool emitStart, LabelScopeInfo labelBlock, Expression node)
+        {
+            if (!emitStart)
+            {
+                return null;
+            }
+
+            // Anything that is "statement-like" -- e.g. has no associated
+            // stack state can be jumped into, with the exception of try-blocks
+            // We indicate this by a "Block"
+            //
+            // Otherwise, we push an "Expression" to indicate that it can't be
+            // jumped into
+            switch (node.NodeType)
+            {
+                default:
+                    if (labelBlock.Kind == LabelScopeKind.Expression)
+                    {
+                        return null;
+                    }
+
+                    return (labelBlock, LabelScopeKind.Expression, null);
+
+                case ExpressionType.Label:
+                    // LabelExpression is a bit special, if it's directly in a
+                    // block it becomes associate with the block's scope. Same
+                    // thing if it's in a switch case body.
+                    if (labelBlock.Kind != LabelScopeKind.Block)
+                    {
+                        return (labelBlock, LabelScopeKind.Statement, null);
+                    }
+
+                    var label = ((LabelExpression)node).Target;
+                    if (labelBlock.ContainsTarget(label))
+                    {
+                        return null;
+                    }
+
+                    if (labelBlock.Parent?.Kind == LabelScopeKind.Switch && labelBlock.Parent.ContainsTarget(label))
+                    {
+                        return null;
+                    }
+
+                    return (labelBlock, LabelScopeKind.Statement, null);
+
+                case ExpressionType.Block:
+                    if (node is SpilledExpressionBlock)
+                    {
+                        // treat it as an expression
+                        goto default;
+                    }
+
+                    return labelBlock.Parent?.Kind != LabelScopeKind.Switch
+                        ? (labelBlock, LabelScopeKind.Block, new[] { node })
+                        : (labelBlock, LabelScopeKind.Block, null);
+
+                case ExpressionType.Switch:
+                    var nodes = new List<Expression>();
+                    var @switch = (SwitchExpression)node;
+                    foreach (var c in @switch.Cases)
+                    {
+                        nodes.Add(c.Body);
+                    }
+
+                    if (@switch.DefaultBody != null)
+                    {
+                        nodes.Add(@switch.DefaultBody);
+                    }
+
+                    return (labelBlock, LabelScopeKind.Switch, nodes);
+
+                // Remove this when Convert(Void) goes away.
+                case ExpressionType.Convert:
+                    if (node.Type != typeof(void))
+                    {
+                        // treat it as an expression
+                        goto default;
+                    }
+
+                    return (labelBlock, LabelScopeKind.Statement, null);
+
+                case ExpressionType.Conditional:
+                case ExpressionType.Loop:
+                case ExpressionType.Goto:
+                    return (labelBlock, LabelScopeKind.Statement, null);
+            }
+        }
+
         // See if this lambda has a return label
         // If so, we'll create it now and mark it as allowing the "ret" opcode
         // This allows us to generate better IL
@@ -205,94 +293,6 @@ namespace System.Linq.Expressions.Compiler
             var result = EnsureLabel(node);
             result.Reference(_labelBlock);
             return result;
-        }
-
-        private static (LabelScopeInfo parent, LabelScopeKind kind, IList<Expression>? nodes)? GetLabelScopeChangeInfo(bool emitStart, LabelScopeInfo labelBlock, Expression node)
-        {
-            if (!emitStart)
-            {
-                return null;
-            }
-
-            // Anything that is "statement-like" -- e.g. has no associated
-            // stack state can be jumped into, with the exception of try-blocks
-            // We indicate this by a "Block"
-            //
-            // Otherwise, we push an "Expression" to indicate that it can't be
-            // jumped into
-            switch (node.NodeType)
-            {
-                default:
-                    if (labelBlock.Kind == LabelScopeKind.Expression)
-                    {
-                        return null;
-                    }
-
-                    return (labelBlock, LabelScopeKind.Expression, null);
-
-                case ExpressionType.Label:
-                    // LabelExpression is a bit special, if it's directly in a
-                    // block it becomes associate with the block's scope. Same
-                    // thing if it's in a switch case body.
-                    if (labelBlock.Kind != LabelScopeKind.Block)
-                    {
-                        return (labelBlock, LabelScopeKind.Statement, null);
-                    }
-
-                    var label = ((LabelExpression)node).Target;
-                    if (labelBlock.ContainsTarget(label))
-                    {
-                        return null;
-                    }
-
-                    if (labelBlock.Parent?.Kind == LabelScopeKind.Switch && labelBlock.Parent.ContainsTarget(label))
-                    {
-                        return null;
-                    }
-
-                    return (labelBlock, LabelScopeKind.Statement, null);
-
-                case ExpressionType.Block:
-                    if (node is SpilledExpressionBlock)
-                    {
-                        // treat it as an expression
-                        goto default;
-                    }
-
-                    return labelBlock.Parent?.Kind != LabelScopeKind.Switch
-                        ? (labelBlock, LabelScopeKind.Block, new[] { node })
-                        : (labelBlock, LabelScopeKind.Block, null);
-
-                case ExpressionType.Switch:
-                    var nodes = new List<Expression>();
-                    var @switch = (SwitchExpression)node;
-                    foreach (var c in @switch.Cases)
-                    {
-                        nodes.Add(c.Body);
-                    }
-
-                    if (@switch.DefaultBody != null)
-                    {
-                        nodes.Add(@switch.DefaultBody);
-                    }
-
-                    return (labelBlock, LabelScopeKind.Switch, nodes);
-
-                // Remove this when Convert(Void) goes away.
-                case ExpressionType.Convert:
-                    if (node.Type != typeof(void))
-                    {
-                        // treat it as an expression
-                        goto default;
-                    }
-
-                    return (labelBlock, LabelScopeKind.Statement, null);
-
-                case ExpressionType.Conditional:
-                case ExpressionType.Loop:
-                case ExpressionType.Goto:
-                    return (labelBlock, LabelScopeKind.Statement, null);
-            }
         }
     }
 }

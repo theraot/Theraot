@@ -58,6 +58,38 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
+        private static void CheckRethrow(LabelScopeInfo labelBlock)
+        {
+            // Rethrow is only valid inside a catch.
+            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(labelBlock, found => found.Parent))
+            {
+                if (j.Kind == LabelScopeKind.Catch)
+                {
+                    return;
+                }
+
+                if (j.Kind == LabelScopeKind.Finally)
+                {
+                    // Rethrow from inside finally is not verifiable
+                    break;
+                }
+            }
+
+            throw new InvalidOperationException("Rethrow statement is valid only inside a Catch block.");
+        }
+
+        private static void CheckTry(LabelScopeInfo labelBlock)
+        {
+            // Try inside a filter is not verifiable
+            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(labelBlock, found => found.Parent))
+            {
+                if (j.Kind == LabelScopeKind.Filter)
+                {
+                    throw new InvalidOperationException("Try expression is not allowed inside a filter body.");
+                }
+            }
+        }
+
         private static decimal ConvertSwitchValue(object? value)
         {
             if (value is char c)
@@ -125,38 +157,6 @@ namespace System.Linq.Expressions.Compiler
                 // Merge them
                 first.AddRange(second);
                 buckets.RemoveAt(buckets.Count - 1);
-            }
-        }
-
-        private static void CheckRethrow(LabelScopeInfo labelBlock)
-        {
-            // Rethrow is only valid inside a catch.
-            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(labelBlock, found => found.Parent))
-            {
-                if (j.Kind == LabelScopeKind.Catch)
-                {
-                    return;
-                }
-
-                if (j.Kind == LabelScopeKind.Finally)
-                {
-                    // Rethrow from inside finally is not verifiable
-                    break;
-                }
-            }
-
-            throw new InvalidOperationException("Rethrow statement is valid only inside a Catch block.");
-        }
-
-        private static void CheckTry(LabelScopeInfo labelBlock)
-        {
-            // Try inside a filter is not verifiable
-            foreach (var j in SequenceHelper.ExploreSequenceUntilNull(labelBlock, found => found.Parent))
-            {
-                if (j.Kind == LabelScopeKind.Filter)
-                {
-                    throw new InvalidOperationException("Try expression is not allowed inside a filter body.");
-                }
             }
         }
 
