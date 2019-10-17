@@ -153,15 +153,15 @@ namespace System.Linq.Expressions.Interpreter
             var labelScopeChangeInfo = GetLabelScopeChangeInfo(_labelBlock, expr);
             if (labelScopeChangeInfo.HasValue)
             {
-                _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
-                DefineBlockLabels(labelScopeChangeInfo.Value.nodes);
+                _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.Parent, labelScopeChangeInfo.Value.Kind);
+                DefineBlockLabels(labelScopeChangeInfo.Value.Nodes);
             }
 
             CompileNoLabelPush(expr);
 
             if (labelScopeChangeInfo.HasValue)
             {
-                _labelBlock = labelScopeChangeInfo.Value.parent;
+                _labelBlock = labelScopeChangeInfo.Value.Parent;
             }
         }
 
@@ -372,8 +372,8 @@ namespace System.Linq.Expressions.Interpreter
             var labelScopeChangeInfo = GetLabelScopeChangeInfo(_labelBlock, expr);
             if (labelScopeChangeInfo.HasValue)
             {
-                _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
-                DefineBlockLabels(labelScopeChangeInfo.Value.nodes);
+                _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.Parent, labelScopeChangeInfo.Value.Kind);
+                DefineBlockLabels(labelScopeChangeInfo.Value.Nodes);
             }
 
             var startingStackDepth = Instructions.CurrentStackDepth;
@@ -411,7 +411,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (labelScopeChangeInfo.HasValue)
             {
-                _labelBlock = labelScopeChangeInfo.Value.parent;
+                _labelBlock = labelScopeChangeInfo.Value.Parent;
             }
         }
 
@@ -2888,7 +2888,7 @@ namespace System.Linq.Expressions.Interpreter
             return local;
         }
 
-        private static (LabelScopeInfo parent, LabelScopeKind kind, IList<Expression>? nodes)? GetLabelScopeChangeInfo(LabelScopeInfo labelBlock, Expression node)
+        private static LabelScopeChangeInfo? GetLabelScopeChangeInfo(LabelScopeInfo labelBlock, Expression node)
         {
             // Anything that is "statement-like" -- e.g. has no associated
             // stack state can be jumped into, with the exception of try-blocks
