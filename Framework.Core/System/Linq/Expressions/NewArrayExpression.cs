@@ -60,32 +60,6 @@ namespace System.Linq.Expressions
             return NewArrayBoundsExtracted(type, bounds);
         }
 
-        private static NewArrayExpression NewArrayBoundsExtracted(Type type, IEnumerable<Expression> bounds)
-        {
-            var boundsList = bounds.ToReadOnlyCollection();
-
-            var dimensions = boundsList.Count;
-            if (dimensions <= 0)
-            {
-                throw new ArgumentException("Bounds count cannot be less than 1", nameof(bounds));
-            }
-
-            for (var i = 0; i < dimensions; i++)
-            {
-                var expr = boundsList[i];
-                ContractUtils.RequiresNotNull(expr, nameof(bounds), i);
-                ExpressionUtils.RequiresCanRead(expr, nameof(bounds), i);
-                if (!expr.Type.IsInteger())
-                {
-                    throw new ArgumentException("Argument must be of an integer type", i >= 0 ? $"{nameof(bounds)}[{i}]" : nameof(bounds));
-                }
-            }
-
-            var arrayType = dimensions == 1 ? type.MakeArrayType() : type.MakeArrayType(dimensions);
-
-            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
-        }
-
         /// <summary>
         ///     Creates a <see cref="NewArrayExpression" /> of the specified type from the provided initializers.
         /// </summary>
@@ -122,6 +96,32 @@ namespace System.Linq.Expressions
 
             TypeUtils.ValidateType(type, nameof(type));
             return NewArrayInitExtracted(type, initializers, nameof(initializers));
+        }
+
+        private static NewArrayExpression NewArrayBoundsExtracted(Type type, IEnumerable<Expression> bounds)
+        {
+            var boundsList = bounds.ToReadOnlyCollection();
+
+            var dimensions = boundsList.Count;
+            if (dimensions <= 0)
+            {
+                throw new ArgumentException("Bounds count cannot be less than 1", nameof(bounds));
+            }
+
+            for (var i = 0; i < dimensions; i++)
+            {
+                var expr = boundsList[i];
+                ContractUtils.RequiresNotNull(expr, nameof(bounds), i);
+                ExpressionUtils.RequiresCanRead(expr, nameof(bounds), i);
+                if (!expr.Type.IsInteger())
+                {
+                    throw new ArgumentException("Argument must be of an integer type", i >= 0 ? $"{nameof(bounds)}[{i}]" : nameof(bounds));
+                }
+            }
+
+            var arrayType = dimensions == 1 ? type.MakeArrayType() : type.MakeArrayType(dimensions);
+
+            return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, boundsList);
         }
 
         private static NewArrayExpression NewArrayInitExtracted(Type type, IEnumerable<Expression> initializers, string initializersName)

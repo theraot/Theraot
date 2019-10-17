@@ -71,28 +71,6 @@ namespace System.Linq.Expressions
             return ArrayAccessExtracted(array, indexes, arrayType);
         }
 
-        private static IndexExpression ArrayAccessExtracted(Expression array, IEnumerable<Expression> indexes, Type arrayType)
-        {
-            var indexList = indexes.AsArrayInternal();
-
-            if (arrayType.GetArrayRank() != indexList.Length)
-            {
-                throw new ArgumentException("Incorrect number of indexes");
-            }
-
-            foreach (var e in indexList)
-            {
-                ContractUtils.RequiresNotNull(e, nameof(indexes));
-                ExpressionUtils.RequiresCanRead(e, nameof(indexes));
-                if (e.Type != typeof(int))
-                {
-                    throw new ArgumentException("Argument for array index must be of type Int32", nameof(indexes));
-                }
-            }
-
-            return new IndexExpression(array, null, indexList);
-        }
-
         /// <summary>
         ///     Creates an <see cref="IndexExpression" /> that represents accessing an indexed property in an object.
         /// </summary>
@@ -162,6 +140,28 @@ namespace System.Linq.Expressions
         public static IndexExpression Property(Expression? instance, PropertyInfo indexer, IEnumerable<Expression>? arguments)
         {
             return MakeIndexProperty(instance, indexer, nameof(indexer), arguments.AsArrayInternal());
+        }
+
+        private static IndexExpression ArrayAccessExtracted(Expression array, IEnumerable<Expression> indexes, Type arrayType)
+        {
+            var indexList = indexes.AsArrayInternal();
+
+            if (arrayType.GetArrayRank() != indexList.Length)
+            {
+                throw new ArgumentException("Incorrect number of indexes");
+            }
+
+            foreach (var e in indexList)
+            {
+                ContractUtils.RequiresNotNull(e, nameof(indexes));
+                ExpressionUtils.RequiresCanRead(e, nameof(indexes));
+                if (e.Type != typeof(int))
+                {
+                    throw new ArgumentException("Argument for array index must be of type Int32", nameof(indexes));
+                }
+            }
+
+            return new IndexExpression(array, null, indexList);
         }
 
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)
@@ -376,6 +376,24 @@ namespace System.Linq.Expressions
             }
         }
 
+        private static (ParameterInfo[] parameters, MethodInfo methodInfo)? ValidateIndexedGetter(Expression? instance, PropertyInfo indexer, string paramName, ref Expression[] argList)
+        {
+            var getter = indexer.GetGetMethod(true);
+            if (getter == null)
+            {
+                return null;
+            }
+
+            if (getter.ReturnType != indexer.PropertyType)
+            {
+                throw new ArgumentException("Property type must match the value type of getter", paramName);
+            }
+
+            var getParameters = getter.GetParameters();
+            ValidateAccessor(instance, getter, getParameters, ref argList, paramName);
+            return (getParameters, getter);
+        }
+
         // CTS places no restrictions on properties (see ECMA-335 8.11.3),
         // so we validate that the property conforms to CLS rules here.
         //
@@ -455,24 +473,6 @@ namespace System.Linq.Expressions
                 throw new ArgumentException($"The property '{indexer}' has no 'get' or 'set' accessors", paramName);
             }
         }
-
-        private static (ParameterInfo[] parameters, MethodInfo methodInfo)? ValidateIndexedGetter(Expression? instance, PropertyInfo indexer, string paramName, ref Expression[] argList)
-        {
-            var getter = indexer.GetGetMethod(true);
-            if (getter == null)
-            {
-                return null;
-            }
-
-            if (getter.ReturnType != indexer.PropertyType)
-            {
-                throw new ArgumentException("Property type must match the value type of getter", paramName);
-            }
-
-            var getParameters = getter.GetParameters();
-            ValidateAccessor(instance, getter, getParameters, ref argList, paramName);
-            return (getParameters, getter);
-        }
     }
 
     /// <summary>
@@ -499,6 +499,11 @@ namespace System.Linq.Expressions
             _arguments = arguments;
             _argumentsAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_arguments);
         }
+
+        /// <summary>
+        ///     Gets the number of argument expressions of the node.
+        /// </summary>
+        public int ArgumentCount => _arguments.Length;
 
         /// <summary>
         ///     Gets the arguments to be used to index the property or array.
@@ -533,11 +538,6 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => Indexer != null ? Indexer.PropertyType : Object!.Type.GetElementType();
-
-        /// <summary>
-        ///     Gets the number of argument expressions of the node.
-        /// </summary>
-        public int ArgumentCount => _arguments.Length;
 
         /// <summary>
         ///     Gets the argument expression with the specified <paramref name="index" />.
@@ -594,4 +594,3 @@ namespace System.Linq.Expressions
 }
 
 #endif
-

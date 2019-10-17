@@ -112,14 +112,6 @@ namespace System.Linq.Expressions
             return NewExtracted(constructor, arguments, members);
         }
 
-        private static NewExpression NewExtracted(ConstructorInfo constructor, IEnumerable<Expression> arguments, IEnumerable<MemberInfo> members)
-        {
-            var memberList = members.ToReadOnlyCollection();
-            var argList = arguments.AsArrayInternal();
-            ValidateNewArgs(constructor, ref argList, ref memberList);
-            return new NewExpression(constructor, argList, memberList);
-        }
-
         /// <summary>
         ///     Creates a new <see cref="NewExpression" /> that represents calling the specified constructor with the specified
         ///     arguments. The members that access the constructor initialized fields are specified.
@@ -178,6 +170,14 @@ namespace System.Linq.Expressions
             }
 
             return New(ci);
+        }
+
+        private static NewExpression NewExtracted(ConstructorInfo constructor, IEnumerable<Expression> arguments, IEnumerable<MemberInfo> members)
+        {
+            var memberList = members.ToReadOnlyCollection();
+            var argList = arguments.AsArrayInternal();
+            ValidateNewArgs(constructor, ref argList, ref memberList);
+            return new NewExpression(constructor, argList, memberList);
         }
 
         private static void ValidateAnonymousTypeMember(ref MemberInfo member, out Type memberType, string paramName, int index)
@@ -334,6 +334,11 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
+        ///     Gets the number of argument expressions of the node.
+        /// </summary>
+        public int ArgumentCount => _arguments.Length;
+
+        /// <summary>
         ///     Gets the arguments to the constructor.
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments => _argumentsAsReadOnlyCollection;
@@ -363,11 +368,6 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => Constructor!.DeclaringType;
-
-        /// <summary>
-        ///     Gets the number of argument expressions of the node.
-        /// </summary>
-        public int ArgumentCount => _arguments.Length;
 
         /// <summary>
         ///     Gets the argument expression with the specified <paramref name="index" />.

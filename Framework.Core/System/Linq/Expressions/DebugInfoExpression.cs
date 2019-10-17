@@ -82,53 +82,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class ClearDebugInfoExpression : DebugInfoExpression
-    {
-        internal ClearDebugInfoExpression(SymbolDocumentInfo document)
-            : base(document)
-        {
-            // Empty
-        }
-
-        public override int EndColumn => 0;
-        public override int EndLine => 0xfeefee;
-        public override bool IsClear => true;
-
-        public override int StartColumn => 0;
-        public override int StartLine => 0xfeefee;
-    }
-
-    internal sealed class SpanDebugInfoExpression : DebugInfoExpression
-    {
-        internal SpanDebugInfoExpression(SymbolDocumentInfo document, int startLine, int startColumn, int endLine, int endColumn)
-            : base(document)
-        {
-            StartLine = startLine;
-            StartColumn = startColumn;
-            EndLine = endLine;
-            EndColumn = endColumn;
-        }
-
-        public override int EndColumn { get; }
-
-        public override int EndLine { get; }
-
-        public override bool IsClear => false;
-        public override int StartColumn { get; }
-
-        public override int StartLine { get; }
-
-        protected internal override Expression Accept(ExpressionVisitor visitor)
-        {
-            if (visitor == null)
-            {
-                throw new ArgumentNullException(nameof(visitor));
-            }
-
-            return visitor.VisitDebugInfo(this);
-        }
-    }
-
     public partial class Expression
     {
         /// <summary>
@@ -201,6 +154,53 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException("Start and End must be well ordered");
             }
+        }
+    }
+
+    internal sealed class ClearDebugInfoExpression : DebugInfoExpression
+    {
+        internal ClearDebugInfoExpression(SymbolDocumentInfo document)
+            : base(document)
+        {
+            // Empty
+        }
+
+        public override int EndColumn => 0;
+        public override int EndLine => 0xfeefee;
+        public override bool IsClear => true;
+
+        public override int StartColumn => 0;
+        public override int StartLine => 0xfeefee;
+    }
+
+    internal sealed class SpanDebugInfoExpression : DebugInfoExpression
+    {
+        internal SpanDebugInfoExpression(SymbolDocumentInfo document, int startLine, int startColumn, int endLine, int endColumn)
+            : base(document)
+        {
+            StartLine = startLine;
+            StartColumn = startColumn;
+            EndLine = endLine;
+            EndColumn = endColumn;
+        }
+
+        public override int EndColumn { get; }
+
+        public override int EndLine { get; }
+
+        public override bool IsClear => false;
+        public override int StartColumn { get; }
+
+        public override int StartLine { get; }
+
+        protected internal override Expression Accept(ExpressionVisitor visitor)
+        {
+            if (visitor == null)
+            {
+                throw new ArgumentNullException(nameof(visitor));
+            }
+
+            return visitor.VisitDebugInfo(this);
         }
     }
 }

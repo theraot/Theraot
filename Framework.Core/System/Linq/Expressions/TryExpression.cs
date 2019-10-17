@@ -40,33 +40,6 @@ namespace System.Linq.Expressions
             return MakeTryExtracted(type, body, @finally, fault, handlers);
         }
 
-        private static TryExpression MakeTryExtracted(Type? type, Expression body, Expression? @finally, Expression? fault, IEnumerable<CatchBlock> handlers)
-        {
-            var @catch = handlers.AsArrayInternal();
-            ContractUtils.RequiresNotNullItems(@catch, nameof(handlers));
-            ValidateTryAndCatchHaveSameType(type, body, @catch);
-
-            if (fault != null)
-            {
-                if (@finally != null || @catch.Length > 0)
-                {
-                    throw new ArgumentException("fault cannot be used with catch or finally clauses", nameof(fault));
-                }
-
-                ExpressionUtils.RequiresCanRead(fault, nameof(fault));
-            }
-            else if (@finally != null)
-            {
-                ExpressionUtils.RequiresCanRead(@finally, nameof(@finally));
-            }
-            else if (@catch.Length == 0)
-            {
-                throw new ArgumentException("try must have at least one catch, finally, or fault clause");
-            }
-
-            return new TryExpression(type ?? body.Type, body, @finally, fault, @catch);
-        }
-
         /// <summary>
         ///     Creates a <see cref="TryExpression" /> representing a try block with any number of catch statements and neither a
         ///     fault nor finally block.
@@ -118,6 +91,33 @@ namespace System.Linq.Expressions
         public static TryExpression TryFinally(Expression body, Expression @finally)
         {
             return MakeTry(null, body, @finally, null, null);
+        }
+
+        private static TryExpression MakeTryExtracted(Type? type, Expression body, Expression? @finally, Expression? fault, IEnumerable<CatchBlock> handlers)
+        {
+            var @catch = handlers.AsArrayInternal();
+            ContractUtils.RequiresNotNullItems(@catch, nameof(handlers));
+            ValidateTryAndCatchHaveSameType(type, body, @catch);
+
+            if (fault != null)
+            {
+                if (@finally != null || @catch.Length > 0)
+                {
+                    throw new ArgumentException("fault cannot be used with catch or finally clauses", nameof(fault));
+                }
+
+                ExpressionUtils.RequiresCanRead(fault, nameof(fault));
+            }
+            else if (@finally != null)
+            {
+                ExpressionUtils.RequiresCanRead(@finally, nameof(@finally));
+            }
+            else if (@catch.Length == 0)
+            {
+                throw new ArgumentException("try must have at least one catch, finally, or fault clause");
+            }
+
+            return new TryExpression(type ?? body.Type, body, @finally, fault, @catch);
         }
 
         //Validate that the body of the try expression must have the same type as the body of every try block.

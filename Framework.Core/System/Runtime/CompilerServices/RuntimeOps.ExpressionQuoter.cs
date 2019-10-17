@@ -6,7 +6,6 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Linq.Expressions.Compiler;
@@ -170,7 +169,7 @@ namespace System.Runtime.CompilerServices
             {
                 if (node.Variable != null)
                 {
-                    _shadowedVars.Push(new HashSet<ParameterExpression> {node.Variable});
+                    _shadowedVars.Push(new HashSet<ParameterExpression> { node.Variable });
                 }
 
                 var b = Visit(node.Body);

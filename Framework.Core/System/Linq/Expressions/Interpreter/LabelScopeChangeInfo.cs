@@ -39,6 +39,14 @@ namespace System.Linq.Expressions.Interpreter
             return obj is LabelScopeChangeInfo other && Equals(other);
         }
 
+        public bool Equals(LabelScopeChangeInfo other)
+        {
+            var (parent, kind, nodes) = other;
+            return EqualityComparer<LabelScopeInfo>.Default.Equals(Parent, parent)
+                   && Kind == kind
+                   && EqualityComparer<IList<Expression>?>.Default.Equals(Nodes, nodes);
+        }
+
         public override int GetHashCode()
         {
             var hashCode = 1209964386;
@@ -46,14 +54,6 @@ namespace System.Linq.Expressions.Interpreter
             hashCode = (hashCode * -1521134295) + Kind.GetHashCode();
             hashCode = (hashCode * -1521134295) + EqualityComparer<IList<Expression>?>.Default.GetHashCode(Nodes);
             return hashCode;
-        }
-
-        public bool Equals(LabelScopeChangeInfo other)
-        {
-            var (parent, kind, nodes) = other;
-            return EqualityComparer<LabelScopeInfo>.Default.Equals(Parent, parent)
-                   && Kind == kind
-                   && EqualityComparer<IList<Expression>?>.Default.Equals(Nodes, nodes);
         }
     }
 }

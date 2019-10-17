@@ -65,18 +65,6 @@ namespace System.Linq.Expressions
             return ListInitExtracted(newExpression, initializers);
         }
 
-        private static ListInitExpression ListInitExtracted(NewExpression newExpression, IEnumerable<Expression> initializers)
-        {
-            var initializerList = initializers.ToReadOnlyCollection();
-            if (initializerList.Count == 0)
-            {
-                return new ListInitExpression(newExpression, EmptyCollection<ElementInit>.Instance);
-            }
-
-            var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializerList[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            return ListInit(newExpression, addMethod, initializerList);
-        }
-
         /// <summary>
         ///     Creates a <see cref="ListInitExpression" /> that uses a specified method to add elements to a collection.
         /// </summary>
@@ -135,18 +123,6 @@ namespace System.Linq.Expressions
             }
 
             return ListInitExtracted(newExpression, addMethod, initializers);
-        }
-
-        private static ListInitExpression ListInitExtracted(NewExpression newExpression, MethodInfo addMethod, IEnumerable<Expression> initializers)
-        {
-            var initializerList = initializers.ToReadOnlyCollection();
-            var initList = new ElementInit[initializerList.Count];
-            for (var i = 0; i < initializerList.Count; i++)
-            {
-                initList[i] = ElementInit(addMethod, initializerList[i]);
-            }
-
-            return ListInit(newExpression, ReadOnlyCollectionEx.Create(initList));
         }
 
         /// <summary>
@@ -208,6 +184,30 @@ namespace System.Linq.Expressions
                 throw new ArgumentNullException(nameof(initializers));
             }
             return ListInitExtracted(newExpression, initializers);
+        }
+
+        private static ListInitExpression ListInitExtracted(NewExpression newExpression, IEnumerable<Expression> initializers)
+        {
+            var initializerList = initializers.ToReadOnlyCollection();
+            if (initializerList.Count == 0)
+            {
+                return new ListInitExpression(newExpression, EmptyCollection<ElementInit>.Instance);
+            }
+
+            var addMethod = FindMethod(newExpression.Type, "Add", null, new[] { initializerList[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            return ListInit(newExpression, addMethod, initializerList);
+        }
+
+        private static ListInitExpression ListInitExtracted(NewExpression newExpression, MethodInfo addMethod, IEnumerable<Expression> initializers)
+        {
+            var initializerList = initializers.ToReadOnlyCollection();
+            var initList = new ElementInit[initializerList.Count];
+            for (var i = 0; i < initializerList.Count; i++)
+            {
+                initList[i] = ElementInit(addMethod, initializerList[i]);
+            }
+
+            return ListInit(newExpression, ReadOnlyCollectionEx.Create(initList));
         }
 
         private static ListInitExpression ListInitExtracted(NewExpression newExpression, IEnumerable<ElementInit> initializers)

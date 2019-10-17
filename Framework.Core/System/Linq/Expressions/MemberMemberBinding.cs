@@ -54,14 +54,6 @@ namespace System.Linq.Expressions
             return MemberBindExtracted(member, bindings);
         }
 
-        private static MemberMemberBinding MemberBindExtracted(MemberInfo member, IEnumerable<MemberBinding> bindings)
-        {
-            var bindingsArray = bindings.AsArrayInternal();
-            ValidateGettableFieldOrPropertyMember(member, out var memberType);
-            ValidateMemberInitArgs(memberType, bindingsArray);
-            return new MemberMemberBinding(member, bindingsArray);
-        }
-
         /// <summary>
         ///     Creates a <see cref="MemberMemberBinding" /> that represents the recursive initialization of members of a member
         ///     that is accessed by using a property accessor method.
@@ -103,6 +95,14 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(propertyAccessor, nameof(propertyAccessor));
             return MemberBind(GetProperty(propertyAccessor, nameof(propertyAccessor)), bindings);
+        }
+
+        private static MemberMemberBinding MemberBindExtracted(MemberInfo member, IEnumerable<MemberBinding> bindings)
+        {
+            var bindingsArray = bindings.AsArrayInternal();
+            ValidateGettableFieldOrPropertyMember(member, out var memberType);
+            ValidateMemberInitArgs(memberType, bindingsArray);
+            return new MemberMemberBinding(member, bindingsArray);
         }
 
         private static void ValidateGettableFieldOrPropertyMember(MemberInfo member, out Type memberType)

@@ -47,40 +47,6 @@ namespace System.Linq.Expressions
             return ArrayIndexExtracted(array, indexes);
         }
 
-        private static MethodCallExpression ArrayIndexExtracted(Expression array, IEnumerable<Expression> indexes)
-        {
-            var arrayType = array.Type;
-            if (!arrayType.IsArray)
-            {
-                throw new ArgumentException("Argument must be array", nameof(array));
-            }
-
-            var indexList = indexes.ToReadOnlyCollection();
-            return ArrayIndexExtracted(array, nameof(indexes), arrayType, indexList);
-        }
-
-        private static MethodCallExpression ArrayIndexExtracted(Expression array, string paramName, Type arrayType, ReadOnlyCollectionEx<Expression> indexList)
-        {
-            if (arrayType.GetArrayRank() != indexList.Count)
-            {
-                throw new ArgumentException("Incorrect number of indexes");
-            }
-
-            for (int i = 0, n = indexList.Count; i < n; i++)
-            {
-                var e = indexList[i];
-                ContractUtils.RequiresNotNull(e, paramName, i);
-                ExpressionUtils.RequiresCanRead(e, paramName, i);
-                if (e.Type != typeof(int))
-                {
-                    throw new ArgumentException("Argument for array index must be of type Int32", i >= 0 ? $"{paramName}[{i}]" : paramName);
-                }
-            }
-
-            var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
-            return Call(array, mi, indexList);
-        }
-
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static method that takes one argument.</summary>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="MethodCallExpression.Method"/> property equal to.</param>
@@ -389,63 +355,6 @@ namespace System.Linq.Expressions
             return CallExtracted(instance, method, arguments);
         }
 
-        private static MethodCallExpression CallExtracted(Expression? instance, MethodInfo method, IEnumerable<Expression>? arguments)
-        {
-            var argumentList = arguments.AsArrayInternal();
-            return CallExtracted(instance, method, argumentList);
-        }
-
-        private static MethodCallExpression CallExtracted(Expression? instance, MethodInfo method, Expression[] argumentList)
-        {
-            var argCount = argumentList.Length;
-
-            switch (argCount)
-            {
-                case 0:
-                    return Call(instance, method);
-
-                case 1:
-                    return Call(instance, method, argumentList[0]);
-
-                case 2:
-                    return Call(instance, method, argumentList[0], argumentList[1]);
-
-                case 3:
-                    return Call(instance, method, argumentList[0], argumentList[1], argumentList[2]);
-
-                default:
-                    break;
-            }
-
-            if (instance == null)
-            {
-                switch (argCount)
-                {
-                    case 4:
-                        return Call(method, argumentList[0], argumentList[1], argumentList[2], argumentList[3]);
-
-                    case 5:
-                        return Call(method, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
-
-                    default:
-                        break;
-                }
-            }
-
-            ContractUtils.RequiresNotNull(method, nameof(method));
-
-            ValidateMethodInfo(method, nameof(method));
-            ValidateStaticOrInstanceMethod(instance, method);
-            ValidateArgumentTypes(method, ExpressionType.Call, ref argumentList, nameof(method));
-
-            if (instance == null)
-            {
-                return new MethodCallExpressionN(method, argumentList);
-            }
-
-            return new InstanceMethodCallExpressionN(method, instance, argumentList);
-        }
-
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static method that takes no arguments.</summary>
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         /// <param name="method">A <see cref="MethodInfo"/> to set the <see cref="MethodCallExpression.Method"/> property equal to.</param>
@@ -510,6 +419,97 @@ namespace System.Linq.Expressions
             }
 
             return null;
+        }
+
+        private static MethodCallExpression ArrayIndexExtracted(Expression array, IEnumerable<Expression> indexes)
+        {
+            var arrayType = array.Type;
+            if (!arrayType.IsArray)
+            {
+                throw new ArgumentException("Argument must be array", nameof(array));
+            }
+
+            var indexList = indexes.ToReadOnlyCollection();
+            return ArrayIndexExtracted(array, nameof(indexes), arrayType, indexList);
+        }
+
+        private static MethodCallExpression ArrayIndexExtracted(Expression array, string paramName, Type arrayType, ReadOnlyCollectionEx<Expression> indexList)
+        {
+            if (arrayType.GetArrayRank() != indexList.Count)
+            {
+                throw new ArgumentException("Incorrect number of indexes");
+            }
+
+            for (int i = 0, n = indexList.Count; i < n; i++)
+            {
+                var e = indexList[i];
+                ContractUtils.RequiresNotNull(e, paramName, i);
+                ExpressionUtils.RequiresCanRead(e, paramName, i);
+                if (e.Type != typeof(int))
+                {
+                    throw new ArgumentException("Argument for array index must be of type Int32", i >= 0 ? $"{paramName}[{i}]" : paramName);
+                }
+            }
+
+            var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
+            return Call(array, mi, indexList);
+        }
+
+        private static MethodCallExpression CallExtracted(Expression? instance, MethodInfo method, IEnumerable<Expression>? arguments)
+        {
+            var argumentList = arguments.AsArrayInternal();
+            return CallExtracted(instance, method, argumentList);
+        }
+
+        private static MethodCallExpression CallExtracted(Expression? instance, MethodInfo method, Expression[] argumentList)
+        {
+            var argCount = argumentList.Length;
+
+            switch (argCount)
+            {
+                case 0:
+                    return Call(instance, method);
+
+                case 1:
+                    return Call(instance, method, argumentList[0]);
+
+                case 2:
+                    return Call(instance, method, argumentList[0], argumentList[1]);
+
+                case 3:
+                    return Call(instance, method, argumentList[0], argumentList[1], argumentList[2]);
+
+                default:
+                    break;
+            }
+
+            if (instance == null)
+            {
+                switch (argCount)
+                {
+                    case 4:
+                        return Call(method, argumentList[0], argumentList[1], argumentList[2], argumentList[3]);
+
+                    case 5:
+                        return Call(method, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
+
+                    default:
+                        break;
+                }
+            }
+
+            ContractUtils.RequiresNotNull(method, nameof(method));
+
+            ValidateMethodInfo(method, nameof(method));
+            ValidateStaticOrInstanceMethod(instance, method);
+            ValidateArgumentTypes(method, ExpressionType.Call, ref argumentList, nameof(method));
+
+            if (instance == null)
+            {
+                return new MethodCallExpressionN(method, argumentList);
+            }
+
+            return new InstanceMethodCallExpressionN(method, instance, argumentList);
         }
 
         private static MethodInfo FindMethod(Type type, string methodName, Type[]? typeArgs, Expression[] args, BindingFlags flags)
@@ -873,9 +873,8 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression2 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-
         private readonly Expression _arg1;
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 2nd argument
 
         public InstanceMethodCallExpression2(MethodInfo method, Expression instance, Expression arg0, Expression arg1)
@@ -938,9 +937,8 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression3 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-
         private readonly Expression _arg1, _arg2;
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 2nd - 3rd argument
 
         public InstanceMethodCallExpression3(MethodInfo method, Expression instance, Expression arg0, Expression arg1, Expression arg2)
@@ -1131,9 +1129,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression2 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-
         private readonly Expression _arg1;
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 2nd arg
 
         public MethodCallExpression2(MethodInfo method, Expression arg0, Expression arg1)
@@ -1196,9 +1193,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression3 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-
         private readonly Expression _arg1, _arg2;
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 2nd - 3rd args.
 
         public MethodCallExpression3(MethodInfo method, Expression arg0, Expression arg1, Expression arg2)
@@ -1269,9 +1265,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression4 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-
         private readonly Expression _arg1, _arg2, _arg3;
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 2nd - 4th args.
 
         public MethodCallExpression4(MethodInfo method, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
@@ -1350,9 +1345,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression5 : MethodCallExpression, IArgumentProvider
     {
-        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-
         private readonly Expression _arg1, _arg2, _arg3, _arg4;
+        private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
         // storage for the 2nd - 5th args.
 
         public MethodCallExpression5(MethodInfo method, Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)

@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET45
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace System.Threading
 {
     public static class Volatile

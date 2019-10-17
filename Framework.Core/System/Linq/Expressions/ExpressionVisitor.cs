@@ -195,20 +195,6 @@ namespace System.Linq.Expressions
             return VisitBinaryExtracted(node);
         }
 
-        private Expression VisitBinaryExtracted(BinaryExpression node)
-        {
-            return ValidateBinary
-            (
-                node,
-                node.Update
-                (
-                    Visit(node.Left),
-                    node.Conversion == null ? null : VisitAndConvert(node.Conversion, nameof(VisitBinary)),
-                    Visit(node.Right)
-                )
-            );
-        }
-
         /// <summary>
         ///     Visits the children of the <see cref="BlockExpression" />.
         /// </summary>
@@ -225,19 +211,6 @@ namespace System.Linq.Expressions
             }
 
             return VisitBlockExtracted(node);
-        }
-
-        private Expression VisitBlockExtracted(BlockExpression node)
-        {
-            var nodes = ExpressionVisitorUtils.VisitBlockExpressions(this, node);
-            var v = VisitAndConvert(node.Variables, nameof(VisitBlock));
-
-            if (v == node.Variables && nodes == null)
-            {
-                return node;
-            }
-
-            return node.Rewrite(v, nodes);
         }
 
         /// <summary>
@@ -649,15 +622,6 @@ namespace System.Linq.Expressions
             return VisitSwitchExtracted(node);
         }
 
-        private Expression VisitSwitchExtracted(SwitchExpression node)
-        {
-            var visitedSwitchValue = node.SwitchValue;
-            var visitedCases = Visit(node.Cases, VisitSwitchCase);
-            var visitedDefaultBody = Visit(node.DefaultBody);
-            var updated = node.Update(visitedSwitchValue, visitedCases, visitedDefaultBody);
-            return ValidateSwitch(node, updated);
-        }
-
         /// <summary>
         ///     Visits the children of the <see cref="TryExpression" />.
         /// </summary>
@@ -718,13 +682,6 @@ namespace System.Linq.Expressions
             return VisitUnaryExtracted(node);
         }
 
-        private Expression VisitUnaryExtracted(UnaryExpression node)
-        {
-            var visited = Visit(node.Operand);
-            var updated = node.Update(visited);
-            return ValidateUnary(node, updated);
-        }
-
         /// <summary>
         ///     Visits the children of the <see cref="CatchBlock" />.
         /// </summary>
@@ -741,11 +698,6 @@ namespace System.Linq.Expressions
             }
 
             return VisitCatchBlockExtracted(node);
-        }
-
-        private CatchBlock VisitCatchBlockExtracted(CatchBlock node)
-        {
-            return node.Update(node.Variable == null ? null : VisitAndConvert(node.Variable, nameof(VisitCatchBlock)), Visit(node.Filter), Visit(node.Body));
         }
 
         /// <summary>
@@ -968,12 +920,59 @@ namespace System.Linq.Expressions
             return ExpressionVisitorUtils.VisitArguments(this, nodes);
         }
 
+        private Expression VisitBinaryExtracted(BinaryExpression node)
+        {
+            return ValidateBinary
+            (
+                node,
+                node.Update
+                (
+                    Visit(node.Left),
+                    node.Conversion == null ? null : VisitAndConvert(node.Conversion, nameof(VisitBinary)),
+                    Visit(node.Right)
+                )
+            );
+        }
+
+        private Expression VisitBlockExtracted(BlockExpression node)
+        {
+            var nodes = ExpressionVisitorUtils.VisitBlockExpressions(this, node);
+            var v = VisitAndConvert(node.Variables, nameof(VisitBlock));
+
+            if (v == node.Variables && nodes == null)
+            {
+                return node;
+            }
+
+            return node.Rewrite(v, nodes);
+        }
+
+        private CatchBlock VisitCatchBlockExtracted(CatchBlock node)
+        {
+            return node.Update(node.Variable == null ? null : VisitAndConvert(node.Variable, nameof(VisitCatchBlock)), Visit(node.Filter), Visit(node.Body));
+        }
+
         private ParameterExpression[]? VisitParameters(IParameterProvider nodes, string callerName)
         {
             return ExpressionVisitorUtils.VisitParameters(this, nodes, callerName);
+        }
+
+        private Expression VisitSwitchExtracted(SwitchExpression node)
+        {
+            var visitedSwitchValue = node.SwitchValue;
+            var visitedCases = Visit(node.Cases, VisitSwitchCase);
+            var visitedDefaultBody = Visit(node.DefaultBody);
+            var updated = node.Update(visitedSwitchValue, visitedCases, visitedDefaultBody);
+            return ValidateSwitch(node, updated);
+        }
+
+        private Expression VisitUnaryExtracted(UnaryExpression node)
+        {
+            var visited = Visit(node.Operand);
+            var updated = node.Update(visited);
+            return ValidateUnary(node, updated);
         }
     }
 }
 
 #endif
-

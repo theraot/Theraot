@@ -76,14 +76,6 @@ namespace System.Linq.Expressions
             return ListBindExtracted(member, initializers);
         }
 
-        private static MemberListBinding ListBindExtracted(MemberInfo member, IEnumerable<ElementInit> initializers)
-        {
-            ValidateGettableFieldOrPropertyMember(member, out var memberType);
-            var initList = initializers.ToReadOnlyCollection();
-            ValidateListInitArgs(memberType, initList, nameof(member));
-            return new MemberListBinding(member, initList);
-        }
-
         /// <summary>Creates a <see cref="MemberListBinding" /> object based on a specified property accessor method.</summary>
         /// <returns>
         ///     A <see cref="MemberListBinding" /> that has the <see cref="MemberBinding.BindingType" /> property equal to
@@ -135,6 +127,14 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(propertyAccessor, nameof(propertyAccessor));
             ContractUtils.RequiresNotNull(initializers, nameof(initializers));
             return ListBind(GetProperty(propertyAccessor, nameof(propertyAccessor)), initializers);
+        }
+
+        private static MemberListBinding ListBindExtracted(MemberInfo member, IEnumerable<ElementInit> initializers)
+        {
+            ValidateGettableFieldOrPropertyMember(member, out var memberType);
+            var initList = initializers.ToReadOnlyCollection();
+            ValidateListInitArgs(memberType, initList, nameof(member));
+            return new MemberListBinding(member, initList);
         }
 
         private static void ValidateListInitArgs(Type listType, ReadOnlyCollection<ElementInit> initializers, string listTypeParamName)

@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,100 +14,6 @@ namespace System.Linq.Expressions.Interpreter
     internal interface IBoxableInstruction
     {
         Instruction? BoxIfIndexMatches(int index);
-    }
-
-    internal abstract class LocalAccessInstruction : Instruction
-    {
-        internal readonly int Index;
-
-        protected LocalAccessInstruction(int index)
-        {
-            Index = index;
-        }
-
-        public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
-        {
-            return cookie == null ? InstructionName + "(" + Index + ")" : InstructionName + "(" + cookie + ": " + Index + ")";
-        }
-    }
-
-    internal sealed class LoadLocalBoxedInstruction : LocalAccessInstruction
-    {
-        internal LoadLocalBoxedInstruction(int index)
-            : base(index)
-        {
-            // Empty
-        }
-
-        public override string InstructionName => "LoadLocalBox";
-        public override int ProducedStack => 1;
-
-        public override int Run(InterpretedFrame frame)
-        {
-            var box = (IStrongBox)frame.Data[Index]!;
-            frame.Data[frame.StackIndex++] = box.Value;
-            return 1;
-        }
-    }
-
-    internal sealed class LoadLocalFromClosureBoxedInstruction : LocalAccessInstruction
-    {
-        internal LoadLocalFromClosureBoxedInstruction(int index)
-            : base(index)
-        {
-            // Empty
-        }
-
-        public override string InstructionName => "LoadLocal";
-        public override int ProducedStack => 1;
-
-        public override int Run(InterpretedFrame frame)
-        {
-            frame.Data[frame.StackIndex++] = (frame.Closure![Index]);
-            return 1;
-        }
-    }
-
-    internal sealed class LoadLocalFromClosureInstruction : LocalAccessInstruction
-    {
-        internal LoadLocalFromClosureInstruction(int index)
-            : base(index)
-        {
-            // Empty
-        }
-
-        public override string InstructionName => "LoadLocalClosure";
-        public override int ProducedStack => 1;
-
-        public override int Run(InterpretedFrame frame)
-        {
-            var box = frame.Closure![Index];
-            frame.Data[frame.StackIndex++] = box.Value;
-            return 1;
-        }
-    }
-
-    internal sealed class LoadLocalInstruction : LocalAccessInstruction, IBoxableInstruction
-    {
-        internal LoadLocalInstruction(int index)
-            : base(index)
-        {
-            // Empty
-        }
-
-        public override string InstructionName => "LoadLocal";
-        public override int ProducedStack => 1;
-
-        public Instruction? BoxIfIndexMatches(int index)
-        {
-            return index == Index ? InstructionList.LoadLocalBoxed(index) : null;
-        }
-
-        public override int Run(InterpretedFrame frame)
-        {
-            frame.Data[frame.StackIndex++] = frame.Data[Index];
-            return 1;
-        }
     }
 
     internal sealed class AssignLocalBoxedInstruction : LocalAccessInstruction
@@ -171,64 +76,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             var box = frame.Closure![Index];
             box.Value = frame.Peek();
-            return 1;
-        }
-    }
-
-    internal sealed class StoreLocalBoxedInstruction : LocalAccessInstruction
-    {
-        internal StoreLocalBoxedInstruction(int index)
-            : base(index)
-        {
-            // Empty
-        }
-
-        public override int ConsumedStack => 1;
-        public override string InstructionName => "StoreLocalBox";
-
-        public override int Run(InterpretedFrame frame)
-        {
-            var box = (IStrongBox)frame.Data[Index]!;
-            box.Value = frame.Data[--frame.StackIndex];
-            return 1;
-        }
-    }
-
-    internal sealed class StoreLocalInstruction : LocalAccessInstruction, IBoxableInstruction
-    {
-        internal StoreLocalInstruction(int index)
-            : base(index)
-        {
-            // Empty
-        }
-
-        public override int ConsumedStack => 1;
-        public override string InstructionName => "StoreLocal";
-
-        public Instruction? BoxIfIndexMatches(int index)
-        {
-            return index == Index ? InstructionList.StoreLocalBoxed(index) : null;
-        }
-
-        public override int Run(InterpretedFrame frame)
-        {
-            frame.Data[Index] = frame.Pop();
-            return 1;
-        }
-    }
-
-    internal sealed class ValueTypeCopyInstruction : Instruction
-    {
-        public static readonly ValueTypeCopyInstruction Instruction = new ValueTypeCopyInstruction();
-
-        public override int ConsumedStack => 1;
-        public override string InstructionName => "ValueTypeCopy";
-        public override int ProducedStack => 1;
-
-        public override int Run(InterpretedFrame frame)
-        {
-            var o = frame.Pop();
-            frame.Push(o == null ? null : RuntimeHelpers.GetObjectValue(o));
             return 1;
         }
     }
@@ -430,6 +277,100 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
+    internal sealed class LoadLocalBoxedInstruction : LocalAccessInstruction
+    {
+        internal LoadLocalBoxedInstruction(int index)
+            : base(index)
+        {
+            // Empty
+        }
+
+        public override string InstructionName => "LoadLocalBox";
+        public override int ProducedStack => 1;
+
+        public override int Run(InterpretedFrame frame)
+        {
+            var box = (IStrongBox)frame.Data[Index]!;
+            frame.Data[frame.StackIndex++] = box.Value;
+            return 1;
+        }
+    }
+
+    internal sealed class LoadLocalFromClosureBoxedInstruction : LocalAccessInstruction
+    {
+        internal LoadLocalFromClosureBoxedInstruction(int index)
+            : base(index)
+        {
+            // Empty
+        }
+
+        public override string InstructionName => "LoadLocal";
+        public override int ProducedStack => 1;
+
+        public override int Run(InterpretedFrame frame)
+        {
+            frame.Data[frame.StackIndex++] = (frame.Closure![Index]);
+            return 1;
+        }
+    }
+
+    internal sealed class LoadLocalFromClosureInstruction : LocalAccessInstruction
+    {
+        internal LoadLocalFromClosureInstruction(int index)
+            : base(index)
+        {
+            // Empty
+        }
+
+        public override string InstructionName => "LoadLocalClosure";
+        public override int ProducedStack => 1;
+
+        public override int Run(InterpretedFrame frame)
+        {
+            var box = frame.Closure![Index];
+            frame.Data[frame.StackIndex++] = box.Value;
+            return 1;
+        }
+    }
+
+    internal sealed class LoadLocalInstruction : LocalAccessInstruction, IBoxableInstruction
+    {
+        internal LoadLocalInstruction(int index)
+            : base(index)
+        {
+            // Empty
+        }
+
+        public override string InstructionName => "LoadLocal";
+        public override int ProducedStack => 1;
+
+        public Instruction? BoxIfIndexMatches(int index)
+        {
+            return index == Index ? InstructionList.LoadLocalBoxed(index) : null;
+        }
+
+        public override int Run(InterpretedFrame frame)
+        {
+            frame.Data[frame.StackIndex++] = frame.Data[Index];
+            return 1;
+        }
+    }
+
+    internal abstract class LocalAccessInstruction : Instruction
+    {
+        internal readonly int Index;
+
+        protected LocalAccessInstruction(int index)
+        {
+            Index = index;
+        }
+
+        public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
+        {
+            return cookie == null ? InstructionName + "(" + Index + ")" : InstructionName + "(" + cookie + ": " + Index + ")";
+        }
+    }
+
     internal sealed class RuntimeVariablesInstruction : Instruction
     {
         public RuntimeVariablesInstruction(int count)
@@ -450,6 +391,64 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             frame.Push(RuntimeVariables.Create(ret));
+            return 1;
+        }
+    }
+
+    internal sealed class StoreLocalBoxedInstruction : LocalAccessInstruction
+    {
+        internal StoreLocalBoxedInstruction(int index)
+            : base(index)
+        {
+            // Empty
+        }
+
+        public override int ConsumedStack => 1;
+        public override string InstructionName => "StoreLocalBox";
+
+        public override int Run(InterpretedFrame frame)
+        {
+            var box = (IStrongBox)frame.Data[Index]!;
+            box.Value = frame.Data[--frame.StackIndex];
+            return 1;
+        }
+    }
+
+    internal sealed class StoreLocalInstruction : LocalAccessInstruction, IBoxableInstruction
+    {
+        internal StoreLocalInstruction(int index)
+            : base(index)
+        {
+            // Empty
+        }
+
+        public override int ConsumedStack => 1;
+        public override string InstructionName => "StoreLocal";
+
+        public Instruction? BoxIfIndexMatches(int index)
+        {
+            return index == Index ? InstructionList.StoreLocalBoxed(index) : null;
+        }
+
+        public override int Run(InterpretedFrame frame)
+        {
+            frame.Data[Index] = frame.Pop();
+            return 1;
+        }
+    }
+
+    internal sealed class ValueTypeCopyInstruction : Instruction
+    {
+        public static readonly ValueTypeCopyInstruction Instruction = new ValueTypeCopyInstruction();
+
+        public override int ConsumedStack => 1;
+        public override string InstructionName => "ValueTypeCopy";
+        public override int ProducedStack => 1;
+
+        public override int Run(InterpretedFrame frame)
+        {
+            var o = frame.Pop();
+            frame.Push(o == null ? null : RuntimeHelpers.GetObjectValue(o));
             return 1;
         }
     }

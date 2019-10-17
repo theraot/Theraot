@@ -33,14 +33,14 @@ namespace System.Linq.Expressions
         public MethodInfo AddMethod { get; }
 
         /// <summary>
-        ///     Gets the list of elements to be added to the object.
-        /// </summary>
-        public ReadOnlyCollection<Expression> Arguments => _argumentsAsReadOnlyCollection;
-
-        /// <summary>
         ///     Gets the number of argument expressions of the node.
         /// </summary>
         public int ArgumentCount => Arguments.Count;
+
+        /// <summary>
+        ///     Gets the list of elements to be added to the object.
+        /// </summary>
+        public ReadOnlyCollection<Expression> Arguments => _argumentsAsReadOnlyCollection;
 
         /// <summary>
         ///     Gets the argument expression with the specified <paramref name="index" />.
@@ -144,4 +144,3 @@ namespace System.Linq.Expressions
 }
 
 #endif
-

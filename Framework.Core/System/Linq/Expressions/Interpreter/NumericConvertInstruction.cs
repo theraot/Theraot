@@ -10,8 +10,8 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class NumericConvertInstruction : Instruction
     {
-        private readonly bool _isLiftedToNull;
         internal readonly TypeCode From, To;
+        private readonly bool _isLiftedToNull;
 
         protected NumericConvertInstruction(TypeCode from, TypeCode to, bool isLiftedToNull)
         {

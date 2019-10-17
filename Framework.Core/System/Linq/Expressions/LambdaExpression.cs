@@ -163,6 +163,14 @@ namespace System.Linq.Expressions
 
     public partial class Expression
     {
+        private enum TryGetFuncActionArgsResult
+        {
+            Valid,
+            ArgumentNull,
+            ByRef,
+            PointerOrVoid
+        }
+
         /// <summary>
         ///     Creates a <see cref="System.Type" /> object that represents a generic System.Action delegate type that has specific
         ///     type arguments.
@@ -379,12 +387,6 @@ namespace System.Linq.Expressions
             return LambdaExtracted<TDelegate>(body, name, tailCall, parameterList);
         }
 
-        private static Expression<TDelegate> LambdaExtracted<TDelegate>(Expression body, string? name, bool tailCall, ParameterExpression[] parameterList)
-        {
-            ValidateLambdaArgs(typeof(TDelegate), ref body, parameterList, nameof(TDelegate));
-            return (Expression<TDelegate>)CreateLambda(typeof(TDelegate), body, name, tailCall, parameterList);
-        }
-
         /// <summary>
         ///     Creates a <see cref="LambdaExpression" /> by first constructing a delegate type.
         /// </summary>
@@ -596,34 +598,6 @@ namespace System.Linq.Expressions
             return LambdaExtracted(body, name, tailCall, parameters);
         }
 
-        private static LambdaExpression LambdaExtracted(Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression> parameters)
-        {
-            var parameterList = parameters.AsArrayInternal();
-
-            var paramCount = parameterList.Length;
-            var typeArgs = new Type[paramCount + 1];
-            if (paramCount > 0)
-            {
-                var set = new HashSet<ParameterExpression>();
-                for (var i = 0; i < paramCount; i++)
-                {
-                    var param = parameterList[i];
-                    ContractUtils.RequiresNotNull(param, "parameter");
-                    typeArgs[i] = param.IsByRef ? param.Type.MakeByRefType() : param.Type;
-                    if (!set.Add(param))
-                    {
-                        throw new ArgumentException($"Found duplicate parameter '{param}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{nameof(parameters)}[{i}]" : nameof(parameters));
-                    }
-                }
-            }
-
-            typeArgs[paramCount] = body.Type;
-
-            var delegateType = DelegateHelpers.MakeDelegateType(typeArgs);
-
-            return CreateLambda(delegateType, body, name, tailCall, parameterList);
-        }
-
         /// <summary>
         ///     Creates a <see cref="LambdaExpression" /> by first constructing a delegate type.
         /// </summary>
@@ -647,13 +621,6 @@ namespace System.Linq.Expressions
                 return LambdaExtracted(delegateType, ref body, name, ArrayEx.Empty<ParameterExpression>());
             }
             return LambdaExtracted(delegateType, ref body, name, parameters);
-        }
-
-        private static LambdaExpression LambdaExtracted(Type delegateType, ref Expression body, string name, IEnumerable<ParameterExpression> parameters)
-        {
-            var paramList = parameters.AsArrayInternal();
-            ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
-            return CreateLambda(delegateType, body, name, false, paramList);
         }
 
         /// <summary>
@@ -683,13 +650,6 @@ namespace System.Linq.Expressions
                 return LambdaExtracted(delegateType, ref body, name, tailCall, ArrayEx.Empty<ParameterExpression>());
             }
             return LambdaExtracted(delegateType, ref body, name, tailCall, parameters);
-        }
-
-        private static LambdaExpression LambdaExtracted(Type delegateType, ref Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression> parameters)
-        {
-            var paramList = parameters.AsArrayInternal();
-            ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
-            return CreateLambda(delegateType, body, name, tailCall, paramList);
         }
 
         /// <summary>
@@ -773,6 +733,54 @@ namespace System.Linq.Expressions
                 );
 
             return fastPath(body, name, tailCall, parameters);
+        }
+
+        private static Expression<TDelegate> LambdaExtracted<TDelegate>(Expression body, string? name, bool tailCall, ParameterExpression[] parameterList)
+        {
+            ValidateLambdaArgs(typeof(TDelegate), ref body, parameterList, nameof(TDelegate));
+            return (Expression<TDelegate>)CreateLambda(typeof(TDelegate), body, name, tailCall, parameterList);
+        }
+
+        private static LambdaExpression LambdaExtracted(Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression> parameters)
+        {
+            var parameterList = parameters.AsArrayInternal();
+
+            var paramCount = parameterList.Length;
+            var typeArgs = new Type[paramCount + 1];
+            if (paramCount > 0)
+            {
+                var set = new HashSet<ParameterExpression>();
+                for (var i = 0; i < paramCount; i++)
+                {
+                    var param = parameterList[i];
+                    ContractUtils.RequiresNotNull(param, "parameter");
+                    typeArgs[i] = param.IsByRef ? param.Type.MakeByRefType() : param.Type;
+                    if (!set.Add(param))
+                    {
+                        throw new ArgumentException($"Found duplicate parameter '{param}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{nameof(parameters)}[{i}]" : nameof(parameters));
+                    }
+                }
+            }
+
+            typeArgs[paramCount] = body.Type;
+
+            var delegateType = DelegateHelpers.MakeDelegateType(typeArgs);
+
+            return CreateLambda(delegateType, body, name, tailCall, parameterList);
+        }
+
+        private static LambdaExpression LambdaExtracted(Type delegateType, ref Expression body, string name, IEnumerable<ParameterExpression> parameters)
+        {
+            var paramList = parameters.AsArrayInternal();
+            ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
+            return CreateLambda(delegateType, body, name, false, paramList);
+        }
+
+        private static LambdaExpression LambdaExtracted(Type delegateType, ref Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression> parameters)
+        {
+            var paramList = parameters.AsArrayInternal();
+            ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
+            return CreateLambda(delegateType, body, name, tailCall, paramList);
         }
 
         private static void ValidateLambdaArgs(Type delegateType, ref Expression body, ParameterExpression[] parameters, string paramName)
@@ -874,14 +882,6 @@ namespace System.Linq.Expressions
 
             return TryGetFuncActionArgsResult.Valid;
         }
-
-        private enum TryGetFuncActionArgsResult
-        {
-            Valid,
-            ArgumentNull,
-            ByRef,
-            PointerOrVoid
-        }
     }
 
     /// <summary>
@@ -918,6 +918,8 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Lambda;
 
+        int IParameterProvider.ParameterCount => ParameterCount;
+
         /// <summary>
         ///     Gets the parameters of the lambda expression.
         /// </summary>
@@ -952,13 +954,6 @@ namespace System.Linq.Expressions
         internal abstract Type PublicType { get; }
         internal virtual bool TailCallCore => false;
         internal abstract Type TypeCore { get; }
-
-        int IParameterProvider.ParameterCount => ParameterCount;
-
-        ParameterExpression IParameterProvider.GetParameter(int index)
-        {
-            return GetParameter(index);
-        }
 
         /// <summary>
         ///     Produces a delegate that represents the lambda expression.
@@ -1017,6 +1012,11 @@ namespace System.Linq.Expressions
             }
 
             LambdaCompiler.Compile(this, method);
+        }
+
+        ParameterExpression IParameterProvider.GetParameter(int index)
+        {
+            return GetParameter(index);
         }
 
         internal abstract LambdaExpression AcceptStackSpiller(StackSpiller spiller);

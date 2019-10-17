@@ -124,6 +124,63 @@ namespace System.Linq.Expressions
             }
         }
 
+        protected virtual Expression VisitConstant(ConstantExpression constant)
+        {
+            return constant;
+        }
+
+        protected virtual Expression VisitLambda(LambdaExpression lambda)
+        {
+            var body = Visit(lambda.Body);
+            return body != lambda.Body ? Expression.Lambda(lambda.Type, body, lambda.Parameters) : lambda;
+        }
+
+        protected virtual Expression VisitMethodCall(MethodCallExpression methodCall)
+        {
+            var obj = methodCall.Object == null ? null : Visit(methodCall.Object);
+            var args = VisitExpressionList(methodCall.Arguments);
+            if (obj != methodCall.Object || args != methodCall.Arguments)
+            {
+                return Expression.Call(obj, methodCall.Method, args);
+            }
+
+            return methodCall;
+        }
+
+        private static IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
+            where TElement : class
+        {
+#if DEBUG
+            if (visit == null)
+            {
+                throw new ArgumentNullException(nameof(visit));
+            }
+#endif
+
+            List<TElement>? list = null;
+            var count = original.Count;
+            for (var index = 0; index < count; index++)
+            {
+                var element = visit(original[index]);
+                if (list != null)
+                {
+                    list.Add(element);
+                }
+                else if (!EqualityComparer<TElement>.Default.Equals(element, original[index]))
+                {
+                    list = new List<TElement>(count);
+                    for (var subIndex = 0; subIndex < index; subIndex++)
+                    {
+                        list.Add(original[subIndex]);
+                    }
+
+                    list.Add(element);
+                }
+            }
+
+            return (IList<TElement>?)list ?? original;
+        }
+
         private Expression VisitBinary(BinaryExpression b)
         {
             var left = Visit(b.Left);
@@ -175,11 +232,6 @@ namespace System.Linq.Expressions
             return c;
         }
 
-        protected virtual Expression VisitConstant(ConstantExpression constant)
-        {
-            return constant;
-        }
-
         private ElementInit VisitElementInitializer(ElementInit initializer)
         {
             var arguments = VisitExpressionList(initializer.Arguments);
@@ -202,12 +254,6 @@ namespace System.Linq.Expressions
             var args = VisitExpressionList(iv.Arguments);
             var expr = Visit(iv.Expression);
             return args != iv.Arguments || expr != iv.Expression ? Expression.Invoke(expr, args) : iv;
-        }
-
-        protected virtual Expression VisitLambda(LambdaExpression lambda)
-        {
-            var body = Visit(lambda.Body);
-            return body != lambda.Body ? Expression.Lambda(lambda.Type, body, lambda.Parameters) : lambda;
         }
 
         private Expression VisitListInit(ListInitExpression init)
@@ -248,18 +294,6 @@ namespace System.Linq.Expressions
             return bindings != binding.Bindings ? Expression.MemberBind(binding.Member, bindings) : binding;
         }
 
-        protected virtual Expression VisitMethodCall(MethodCallExpression methodCall)
-        {
-            var obj = methodCall.Object == null ? null : Visit(methodCall.Object);
-            var args = VisitExpressionList(methodCall.Arguments);
-            if (obj != methodCall.Object || args != methodCall.Arguments)
-            {
-                return Expression.Call(obj, methodCall.Method, args);
-            }
-
-            return methodCall;
-        }
-
         private NewExpression VisitNew(NewExpression nex)
         {
             var args = VisitExpressionList(nex.Arguments);
@@ -295,40 +329,6 @@ namespace System.Linq.Expressions
         {
             var operand = Visit(u.Operand!);
             return operand != u.Operand ? Expression.MakeUnary(u.NodeType, operand, u.Type, u.Method) : u;
-        }
-
-        private static IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
-            where TElement : class
-        {
-#if DEBUG
-            if (visit == null)
-            {
-                throw new ArgumentNullException(nameof(visit));
-            }
-#endif
-
-            List<TElement>? list = null;
-            var count = original.Count;
-            for (var index = 0; index < count; index++)
-            {
-                var element = visit(original[index]);
-                if (list != null)
-                {
-                    list.Add(element);
-                }
-                else if (!EqualityComparer<TElement>.Default.Equals(element, original[index]))
-                {
-                    list = new List<TElement>(count);
-                    for (var subIndex = 0; subIndex < index; subIndex++)
-                    {
-                        list.Add(original[subIndex]);
-                    }
-
-                    list.Add(element);
-                }
-            }
-
-            return (IList<TElement>?)list ?? original;
         }
     }
 }

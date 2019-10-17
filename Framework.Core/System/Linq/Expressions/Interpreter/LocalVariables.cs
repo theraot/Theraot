@@ -32,6 +32,11 @@ namespace System.Linq.Expressions.Interpreter
             return false;
         }
 
+        public bool Equals(LocalDefinition other)
+        {
+            return other.Index == Index && other.Parameter == Parameter;
+        }
+
         public override int GetHashCode()
         {
             if (Parameter == null)
@@ -41,18 +46,13 @@ namespace System.Linq.Expressions.Interpreter
 
             return Parameter.GetHashCode() ^ Index.GetHashCode();
         }
-
-        public bool Equals(LocalDefinition other)
-        {
-            return other.Index == Index && other.Parameter == Parameter;
-        }
     }
 
     internal sealed class LocalVariable
     {
+        public readonly int Index;
         private const int _inClosureFlag = 2;
         private const int _isBoxedFlag = 1;
-        public readonly int Index;
         private int _flags;
 
         internal LocalVariable(int index, bool closure)
@@ -203,4 +203,3 @@ namespace System.Linq.Expressions.Interpreter
 }
 
 #endif
-

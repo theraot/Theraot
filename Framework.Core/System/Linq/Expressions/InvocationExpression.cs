@@ -86,42 +86,6 @@ namespace System.Linq.Expressions
             return InvokeExtracted(expression, arguments);
         }
 
-        private static InvocationExpression InvokeExtracted(Expression expression, IEnumerable<Expression> arguments)
-        {
-            var argumentList = arguments.AsArrayInternal();
-
-            switch (argumentList.Length)
-            {
-                case 0:
-                    return Invoke(expression);
-
-                case 1:
-                    return Invoke(expression, argumentList[0]);
-
-                case 2:
-                    return Invoke(expression, argumentList[0], argumentList[1]);
-
-                case 3:
-                    return Invoke(expression, argumentList[0], argumentList[1], argumentList[2]);
-
-                case 4:
-                    return Invoke(expression, argumentList[0], argumentList[1], argumentList[2], argumentList[3]);
-
-                case 5:
-                    return Invoke(expression, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
-
-                default:
-                    break;
-            }
-
-            ContractUtils.RequiresNotNull(expression, nameof(expression));
-            ExpressionUtils.RequiresCanRead(expression, nameof(expression));
-
-            var mi = GetInvokeMethod(expression);
-            ValidateArgumentTypes(mi, ExpressionType.Invoke, ref argumentList, nameof(expression));
-            return new InvocationExpressionN(expression, argumentList, mi.ReturnType);
-        }
-
         /// <summary>
         ///     Gets the delegate's Invoke method; used by InvocationExpression.
         /// </summary>
@@ -440,6 +404,42 @@ namespace System.Linq.Expressions
 
             return new InvocationExpression5(expression, method.ReturnType, arg0, arg1, arg2, arg3, arg4);
         }
+
+        private static InvocationExpression InvokeExtracted(Expression expression, IEnumerable<Expression> arguments)
+        {
+            var argumentList = arguments.AsArrayInternal();
+
+            switch (argumentList.Length)
+            {
+                case 0:
+                    return Invoke(expression);
+
+                case 1:
+                    return Invoke(expression, argumentList[0]);
+
+                case 2:
+                    return Invoke(expression, argumentList[0], argumentList[1]);
+
+                case 3:
+                    return Invoke(expression, argumentList[0], argumentList[1], argumentList[2]);
+
+                case 4:
+                    return Invoke(expression, argumentList[0], argumentList[1], argumentList[2], argumentList[3]);
+
+                case 5:
+                    return Invoke(expression, argumentList[0], argumentList[1], argumentList[2], argumentList[3], argumentList[4]);
+
+                default:
+                    break;
+            }
+
+            ContractUtils.RequiresNotNull(expression, nameof(expression));
+            ExpressionUtils.RequiresCanRead(expression, nameof(expression));
+
+            var mi = GetInvokeMethod(expression);
+            ValidateArgumentTypes(mi, ExpressionType.Invoke, ref argumentList, nameof(expression));
+            return new InvocationExpressionN(expression, argumentList, mi.ReturnType);
+        }
     }
 
     /// <summary>
@@ -453,6 +453,11 @@ namespace System.Linq.Expressions
             Expression = expression;
             Type = returnType;
         }
+
+        /// <summary>
+        ///     Gets the number of argument expressions of the node.
+        /// </summary>
+        public virtual int ArgumentCount => throw ContractUtils.Unreachable;
 
         /// <summary>
         ///     Gets the arguments that the delegate or lambda expression is applied to.
@@ -483,11 +488,6 @@ namespace System.Linq.Expressions
         internal LambdaExpression? LambdaOperand => Expression.NodeType == ExpressionType.Quote
             ? (LambdaExpression)((UnaryExpression)Expression).Operand!
             : Expression as LambdaExpression;
-
-        /// <summary>
-        ///     Gets the number of argument expressions of the node.
-        /// </summary>
-        public virtual int ArgumentCount => throw ContractUtils.Unreachable;
 
         /// <summary>
         ///     Gets the argument expression with the specified <paramref name="index" />.

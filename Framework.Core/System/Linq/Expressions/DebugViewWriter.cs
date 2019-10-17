@@ -20,6 +20,8 @@ namespace System.Linq.Expressions
 
         private const int _tab = 4;
 
+        private readonly TextWriter _out;
+        private readonly Stack<int> _stack = new Stack<int>();
         private int _column;
         private Flow _flow;
 
@@ -37,14 +39,10 @@ namespace System.Linq.Expressions
         // the lambda definitions.
         private Queue<LambdaExpression>? _lambdas;
 
-        private readonly TextWriter _out;
-
         // Associate every unique anonymous parameter or variable in the tree with an integer.
         // The id is used to create a name for the anonymous parameter or variable.
         //
         private Dictionary<ParameterExpression, int>? _paramIds;
-
-        private readonly Stack<int> _stack = new Stack<int>();
 
         private DebugViewWriter(TextWriter file)
         {
