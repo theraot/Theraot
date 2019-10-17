@@ -2351,7 +2351,7 @@ namespace System.Linq.Expressions.Interpreter
                 var gotoEnd = Instructions.MakeLabel();
                 var tryStart = Instructions.Count;
 
-                var @finally = StartFinally(node);
+                var @finally = StartFinally();
 
                 var exHandlers = new List<ExceptionHandler>();
                 var enterTryInstr = (EnterTryCatchFinallyInstruction)Instructions.GetInstruction(tryStart);
@@ -2463,19 +2463,19 @@ namespace System.Linq.Expressions.Interpreter
 
                 _labelBlock = parent;
             }
-        }
 
-        private (BranchLabel start, Expression node)? StartFinally(TryExpression node)
-        {
-            if (node.Finally != null)
+            (BranchLabel start, Expression node)? StartFinally()
             {
-                var startOfFinally = Instructions.MakeLabel();
-                Instructions.EmitEnterTryFinally(startOfFinally);
-                return (startOfFinally, node.Finally);
-            }
+                if (node.Finally != null)
+                {
+                    var startOfFinally = Instructions.MakeLabel();
+                    Instructions.EmitEnterTryFinally(startOfFinally);
+                    return (startOfFinally, node.Finally);
+                }
 
-            Instructions.EmitEnterTryCatch();
-            return null;
+                Instructions.EmitEnterTryCatch();
+                return null;
+            }
         }
 
         private void CompileTryFaultExpression(TryExpression expr)
