@@ -8,12 +8,9 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
-using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot;
 using Theraot.Core;
 using Theraot.Reflection;
 using AstUtils = System.Linq.Expressions.Utils;
@@ -83,22 +80,6 @@ namespace System.Linq.Expressions.Interpreter
                     throw new InvalidOperationException("MemberNotFieldOrProperty");
             }
         }
-
-#if DEBUG
-
-        private static bool IsNullComparison(Expression left, Expression right)
-        {
-            return IsNullConstant(left)
-                ? !IsNullConstant(right) && right.Type.IsNullable()
-                : IsNullConstant(right) && left.Type.IsNullable();
-        }
-
-        private static bool IsNullConstant(Expression e)
-        {
-            return e is ConstantExpression c && c.Value == null;
-        }
-
-#endif
 
         private static bool MaybeMutableValueType(Type type)
         {
@@ -1085,9 +1066,6 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileEqual(Expression left, Expression right, bool liftedToNull)
         {
-#if DEBUG
-            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || (!left.Type.IsValueType && !right.Type.IsValueType));
-#endif
             Compile(left);
             Compile(right);
             Instructions.EmitEqual(left.Type, liftedToNull);
@@ -2071,9 +2049,6 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)
         {
-#if DEBUG
-            Debug.Assert(IsNullComparison(left, right) || left.Type == right.Type || (!left.Type.IsValueType && !right.Type.IsValueType));
-#endif
             Compile(left);
             Compile(right);
             Instructions.EmitNotEqual(left.Type, liftedToNull);
