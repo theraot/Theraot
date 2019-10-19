@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
@@ -154,6 +153,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public bool Remove(T? item)
         {
             var check = Check(item);
@@ -189,11 +193,6 @@ namespace Theraot.Collections.ThreadSafe
 
                 removed.Free();
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         protected void Add(TNeedle needle)

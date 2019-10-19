@@ -11,7 +11,6 @@ namespace Theraot.Threading.Needles
 
     public interface IPromise<out T> : IPromise, IReadOnlyNeedle<T>
     {
-        // Empty
     }
 
     public interface IWaitablePromise : IPromise
@@ -23,6 +22,5 @@ namespace Theraot.Threading.Needles
 
     public interface IWaitablePromise<out T> : IPromise<T>, IWaitablePromise
     {
-        // Empty
     }
 }

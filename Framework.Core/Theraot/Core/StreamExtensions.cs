@@ -51,6 +51,7 @@ namespace Theraot.Core
                     throw new ArgumentNullException(nameof(stream));
                 case MemoryStream streamAsMemoryStream:
                     return streamAsMemoryStream.ToArray();
+
                 default:
                     using (var memoryStream = new MemoryStream())
                     {

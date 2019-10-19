@@ -17,8 +17,8 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     public sealed class FixedSizeBucket<T> : IBucket<T>
     {
-        private int _count;
         private readonly object[] _entries;
+        private int _count;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FixedSizeBucket{T}" /> class.
@@ -61,6 +61,19 @@ namespace Theraot.Collections.ThreadSafe
 
                 _entries[_count] = (object?)item ?? BucketHelper.Null;
                 _count++;
+            }
+        }
+
+        ~FixedSizeBucket()
+        {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            if (!GCMonitor.FinalizingForUnload)
+            {
+                var entries = _entries;
+                if (entries != null)
+                {
+                    ArrayReservoir<object>.DonateArray(entries);
+                }
             }
         }
 
@@ -167,6 +180,11 @@ namespace Theraot.Collections.ThreadSafe
                     }
                 }
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -421,24 +439,6 @@ namespace Theraot.Collections.ThreadSafe
                             index++;
                         }
                     }
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        ~FixedSizeBucket()
-        {
-            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (!GCMonitor.FinalizingForUnload)
-            {
-                var entries = _entries;
-                if (entries != null)
-                {
-                    ArrayReservoir<object>.DonateArray(entries);
                 }
             }
         }

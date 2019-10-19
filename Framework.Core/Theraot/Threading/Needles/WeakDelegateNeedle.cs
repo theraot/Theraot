@@ -15,13 +15,11 @@ namespace Theraot.Threading.Needles
     {
         public WeakDelegateNeedle()
         {
-            // Empty
         }
 
         public WeakDelegateNeedle(Delegate handler)
             : base(handler)
         {
-            // Empty
         }
 
         public MethodInfo? Method
@@ -36,6 +34,11 @@ namespace Theraot.Threading.Needles
         {
             var method = other.GetMethodInfo();
             return !(other is null) && Equals(method, other.Target);
+        }
+
+        public bool Equals(MethodInfo method, object target)
+        {
+            return TryGetValue(out var value) && value.DelegateEquals(method, target);
         }
 
         public bool Equals(WeakDelegateNeedle other)
@@ -60,11 +63,6 @@ namespace Theraot.Threading.Needles
 
             var method = otherValue.GetMethodInfo();
             return value.GetMethodInfo().Equals(method) && value.Target != otherValue.Target;
-        }
-
-        public bool Equals(MethodInfo method, object target)
-        {
-            return TryGetValue(out var value) && value.DelegateEquals(method, target);
         }
 
         public void Invoke(object[] args)

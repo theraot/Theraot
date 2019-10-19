@@ -62,12 +62,6 @@ namespace Theraot.Threading.Needles
             return false;
         }
 
-        private bool Equals(T otherValue)
-        {
-            var value = Value;
-            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
-        }
-
         public bool Equals(StructNeedle<T> other)
         {
             var value = other.Value;
@@ -87,6 +81,12 @@ namespace Theraot.Threading.Needles
         {
             var target = Value;
             return IsAlive ? target!.ToString() : "<Dead Needle>";
+        }
+
+        private bool Equals(T otherValue)
+        {
+            var value = Value;
+            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
         }
     }
 }

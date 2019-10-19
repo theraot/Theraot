@@ -8,18 +8,6 @@ namespace Theraot.Threading
     {
         private int _disposeStatus;
 
-        public bool IsDisposed
-        {
-            [DebuggerNonUserCode] get => _disposeStatus == -1;
-        }
-
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         [DebuggerNonUserCode]
         ~Disposable()
         {
@@ -39,6 +27,19 @@ namespace Theraot.Threading
                     No.Op(exception);
                 }
             }
+        }
+
+        public bool IsDisposed
+        {
+            [DebuggerNonUserCode]
+            get => _disposeStatus == -1;
+        }
+
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         [DebuggerNonUserCode]

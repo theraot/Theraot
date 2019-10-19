@@ -18,6 +18,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class Bucket<T> : IBucket<T>
     {
         private readonly BucketCore _bucketCore;
+
         private int _count;
 
         public Bucket()
@@ -88,6 +89,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 yield return value == BucketHelper.Null ? default : (T)value;
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public bool Insert(int index, T item)
@@ -347,11 +353,6 @@ namespace Theraot.Collections.ThreadSafe
                     index++;
                 }
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

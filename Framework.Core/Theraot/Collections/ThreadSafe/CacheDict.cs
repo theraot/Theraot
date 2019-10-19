@@ -15,7 +15,7 @@ namespace Theraot.Collections.ThreadSafe
     ///     number of elements specified at construction time.
     /// </summary>
     public sealed class CacheDict<TKey, TValue>
-        where TKey: class
+        where TKey : class
     {
         private readonly Entry[] _entries;
 

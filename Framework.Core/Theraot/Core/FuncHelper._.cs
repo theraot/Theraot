@@ -42,49 +42,5 @@ namespace Theraot.Core
                 return target;
             }
         }
-
-#if FAT
-        public static Predicate<T> GetNotNullPredicate<T>()
-            where T : class
-        {
-            return NotNullHelper<T>.Instance;
-        }
-
-        public static Predicate<T> GetNullPredicate<T>()
-            where T : class
-        {
-            return NullHelper<T>.Instance;
-        }
-
-        private static class NotNullHelper<T>
-        {
-            static NotNullHelper()
-            {
-                Instance = NotNullPredicate;
-            }
-
-            public static Predicate<T> Instance { get; }
-
-            private static bool NotNullPredicate(T target)
-            {
-                return target != null;
-            }
-        }
-
-        private static class NullHelper<T>
-        {
-            static NullHelper()
-            {
-                Instance = NullPredicate;
-            }
-
-            public static Predicate<T> Instance { get; }
-
-            private static bool NullPredicate(T target)
-            {
-                return target == null;
-            }
-        }
-#endif
     }
 }

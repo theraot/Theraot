@@ -8,10 +8,15 @@ namespace Theraot.Collections.ThreadSafe
     internal static class ArrayReservoir
     {
         internal const int CapacityCount = 1 + MaxCapacityLog2 - MinCapacityLog2;
+
         internal const int MaxCapacity = 1 << MaxCapacityLog2;
+
         internal const int MaxCapacityLog2 = 16;
+
         internal const int MinCapacity = 1 << MinCapacityLog2;
+
         internal const int MinCapacityLog2 = 3;
+
         internal const int PoolSize = 16;
 
         private static readonly CacheDict<Type, Pool<Array>[]> _pools = new CacheDict<Type, Pool<Array>[]>(256);
@@ -46,9 +51,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         var currentCapacity = MinCapacity << currentIndex;
                         Array.Clear(item, 0, currentCapacity);
-                    }
-
-                );
+                    });
             }
         }
     }

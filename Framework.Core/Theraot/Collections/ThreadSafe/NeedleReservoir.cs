@@ -9,6 +9,7 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : class, IRecyclable, INeedle<T>
     {
         private readonly Func<T, TNeedle> _needleFactory;
+
         private readonly Pool<TNeedle> _pool;
 
         public NeedleReservoir(Func<T, TNeedle> needleFactory)

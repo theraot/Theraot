@@ -17,24 +17,24 @@ namespace Theraot.Threading.Needles
 
         public bool IsCompleted => _promised.IsCompleted;
 
-        public void OnCompleted(Action continuation)
-        {
-            _promised.OnCompleted(continuation);
-        }
-
-        public void Wait()
-        {
-            _promised.Wait();
-        }
-
         public override int GetHashCode()
         {
             return _promised.GetHashCode();
         }
 
+        public void OnCompleted(Action continuation)
+        {
+            _promised.OnCompleted(continuation);
+        }
+
         public override string ToString()
         {
             return $"{{Promise: {_promised}}}";
+        }
+
+        public void Wait()
+        {
+            _promised.Wait();
         }
     }
 }

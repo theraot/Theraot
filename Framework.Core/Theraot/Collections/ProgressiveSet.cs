@@ -14,31 +14,26 @@ namespace Theraot.Collections
         public ProgressiveSet(IEnumerable<T> enumerable)
             : this(Progressor<T>.CreateFromIEnumerable(enumerable), new HashSetEx<T>(), null)
         {
-            // Empty
-        }
-
-        public ProgressiveSet(IObservable<T> observable)
-            : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(), null)
-        {
-            // Empty
         }
 
         public ProgressiveSet(IEnumerable<T> enumerable, IEqualityComparer<T>? comparer)
             : this(Progressor<T>.CreateFromIEnumerable(enumerable), new HashSetEx<T>(comparer), null)
         {
-            // Empty
+        }
+
+        public ProgressiveSet(IObservable<T> observable)
+            : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(), null)
+        {
         }
 
         public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T>? comparer)
             : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(comparer), null)
         {
-            // Empty
         }
 
         protected ProgressiveSet(Progressor<T> progressor, ISet<T> cache, IEqualityComparer<T>? comparer)
             : base(progressor, cache, comparer)
         {
-            // Empty
         }
 
         bool ICollection<T>.IsReadOnly => true;
@@ -117,13 +112,5 @@ namespace Theraot.Collections
         {
             throw new NotSupportedException();
         }
-
-#if FAT
-        internal static new ProgressiveSet<T> Create<TSet>(Progressor<T> progressor, IEqualityComparer<T> comparer)
-            where TSet : ISet<T>, new()
-        {
-            return new ProgressiveSet<T>(progressor, new TSet(), comparer);
-        }
-#endif
     }
 }

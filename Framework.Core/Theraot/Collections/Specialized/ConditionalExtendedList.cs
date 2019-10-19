@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
@@ -60,6 +59,16 @@ namespace Theraot.Collections.Specialized
         {
             get => this[index];
             set => throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
         }
 
         public bool Contains(T item)
@@ -121,6 +130,11 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public int IndexOf(T item)
         {
             var offset = 0;
@@ -147,21 +161,6 @@ namespace Theraot.Collections.Specialized
             }
 
             return -1;
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         void IList<T>.Insert(int index, T item)

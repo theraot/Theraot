@@ -30,6 +30,21 @@ namespace Theraot.Core
             return (int)GCD((uint)left, (uint)right);
         }
 
+        public static long GCD(long left, long right)
+        {
+            if (left < 0)
+            {
+                left = -left;
+            }
+
+            if (right < 0)
+            {
+                right = -right;
+            }
+
+            return (long)GCD((ulong)left, (ulong)right);
+        }
+
         [CLSCompliant(false)]
         public static uint GCD(uint left, uint right)
         {
@@ -46,7 +61,7 @@ namespace Theraot.Core
                     return left;
                 }
 
-                for (var cv = cvMax;;)
+                for (var cv = cvMax; ;)
                 {
                     left -= right;
                     if (left < right)
@@ -67,21 +82,6 @@ namespace Theraot.Core
             }
         }
 
-        public static long GCD(long left, long right)
-        {
-            if (left < 0)
-            {
-                left = -left;
-            }
-
-            if (right < 0)
-            {
-                right = -right;
-            }
-
-            return (long)GCD((ulong)left, (ulong)right);
-        }
-
         [CLSCompliant(false)]
         public static ulong GCD(ulong uu1, ulong uu2)
         {
@@ -98,7 +98,7 @@ namespace Theraot.Core
                     return uu1;
                 }
 
-                for (var cv = cvMax;;)
+                for (var cv = cvMax; ;)
                 {
                     uu1 -= uu2;
                     if (uu1 < uu2)
@@ -132,6 +132,17 @@ namespace Theraot.Core
             return Log2(unchecked((uint)number));
         }
 
+        [DebuggerNonUserCode]
+        public static int Log2(long number)
+        {
+            if (number < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
+            }
+
+            return Log2(unchecked((ulong)number));
+        }
+
         [CLSCompliant(false)]
         [DebuggerNonUserCode]
         public static int Log2(uint number)
@@ -147,17 +158,6 @@ namespace Theraot.Core
             number |= number >> 8;
             number |= number >> 16;
             return PopulationCount(number >> 1);
-        }
-
-        [DebuggerNonUserCode]
-        public static int Log2(long number)
-        {
-            if (number < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(number), "The logarithm of a negative number is imaginary.");
-            }
-
-            return Log2(unchecked((ulong)number));
         }
 
         [CLSCompliant(false)]

@@ -26,6 +26,7 @@ namespace Theraot.Collections
         internal class PartitionEnumerable<T> : IEnumerable<IEnumerable<T>>
         {
             private readonly int _partitionSize;
+
             private readonly IEnumerable<T> _source;
 
             public PartitionEnumerable(IEnumerable<T> source, int partitionSize)

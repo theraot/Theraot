@@ -9,35 +9,6 @@ namespace Theraot.Reflection
 {
     public static class DelegateBuilder
     {
-        public static Delegate BuildDelegate(Type delegateType, MethodInfo methodInfo, object target)
-        {
-            if (methodInfo == null)
-            {
-                throw new ArgumentNullException(nameof(methodInfo));
-            }
-
-            if (methodInfo.IsStatic != (target == null))
-            {
-                if (target == null)
-                {
-                    throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
-                }
-
-                throw new ArgumentException("target is not null and the method is static", nameof(target));
-            }
-
-            if (delegateType == null)
-            {
-                throw new ArgumentNullException(nameof(delegateType));
-            }
-
-            if (target == null)
-            {
-                return methodInfo.CreateDelegate(delegateType);
-            }
-            return methodInfo.CreateDelegate(delegateType, target);
-        }
-
         public static Delegate BuildDelegate(MethodInfo methodInfo, object target)
         {
             if (methodInfo == null)
@@ -79,6 +50,35 @@ namespace Theraot.Reflection
             if (delegateType == null)
             {
                 throw new ArgumentException("Could not infer delegate type", nameof(methodInfo));
+            }
+
+            if (target == null)
+            {
+                return methodInfo.CreateDelegate(delegateType);
+            }
+            return methodInfo.CreateDelegate(delegateType, target);
+        }
+
+        public static Delegate BuildDelegate(Type delegateType, MethodInfo methodInfo, object target)
+        {
+            if (methodInfo == null)
+            {
+                throw new ArgumentNullException(nameof(methodInfo));
+            }
+
+            if (methodInfo.IsStatic != (target == null))
+            {
+                if (target == null)
+                {
+                    throw new ArgumentNullException(nameof(target), "target is null and the method is not static.");
+                }
+
+                throw new ArgumentException("target is not null and the method is static", nameof(target));
+            }
+
+            if (delegateType == null)
+            {
+                throw new ArgumentNullException(nameof(delegateType));
             }
 
             if (target == null)

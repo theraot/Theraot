@@ -21,8 +21,10 @@ namespace Theraot.Collections.Specialized
                 {
                     case null:
                         return EmptyCollection<T>.Instance.GetEnumerator();
+
                     case IEnumerator<T> genericEnumerator:
                         return genericEnumerator;
+
                     default:
                         return ConvertEnumeratorExtracted(enumerator);
                 }

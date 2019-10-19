@@ -17,6 +17,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class CircularBucket<T> : IEnumerable<T>
     {
         private readonly FixedSizeBucket<T> _entries;
+
         private int _index;
 
         /// <summary>
@@ -40,6 +41,18 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public int Count => _entries.Count;
 
+        /// <summary>
+        ///     Adds the specified item. May overwrite an existing item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>Returns the position where the item was added.</returns>
+        public int Add(T item)
+        {
+            var index = Interlocked.Increment(ref _index) & (Capacity - 1);
+            _entries.SetInternal(index, item, out _);
+            return index;
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
@@ -55,18 +68,6 @@ namespace Theraot.Collections.ThreadSafe
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        /// <summary>
-        ///     Adds the specified item. May overwrite an existing item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>Returns the position where the item was added.</returns>
-        public int Add(T item)
-        {
-            var index = Interlocked.Increment(ref _index) & (Capacity - 1);
-            _entries.SetInternal(index, item, out _);
-            return index;
         }
 
         /// <summary>

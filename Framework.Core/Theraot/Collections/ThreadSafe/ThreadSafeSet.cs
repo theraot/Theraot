@@ -13,7 +13,9 @@ namespace Theraot.Collections.ThreadSafe
     public class ThreadSafeSet<T> : ISet<T>
     {
         private const int _defaultProbing = 1;
+
         private Bucket<T> _bucket;
+
         private int _probing;
 
         /// <inheritdoc />
@@ -23,18 +25,6 @@ namespace Theraot.Collections.ThreadSafe
         public ThreadSafeSet()
             : this(EqualityComparer<T>.Default, _defaultProbing)
         {
-            // Empty
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
-        /// </summary>
-        /// <param name="initialProbing">The number of steps in linear probing.</param>
-        public ThreadSafeSet(int initialProbing)
-            : this(EqualityComparer<T>.Default, initialProbing)
-        {
-            // Empty
         }
 
         /// <inheritdoc />
@@ -45,7 +35,6 @@ namespace Theraot.Collections.ThreadSafe
         public ThreadSafeSet(IEqualityComparer<T> comparer)
             : this(comparer, _defaultProbing)
         {
-            // Empty
         }
 
         /// <summary>
@@ -58,6 +47,16 @@ namespace Theraot.Collections.ThreadSafe
             Comparer = comparer ?? EqualityComparer<T>.Default;
             _bucket = new Bucket<T>();
             _probing = initialProbing;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
+        /// </summary>
+        /// <param name="initialProbing">The number of steps in linear probing.</param>
+        public ThreadSafeSet(int initialProbing)
+            : this(EqualityComparer<T>.Default, initialProbing)
+        {
         }
 
         public IEqualityComparer<T> Comparer { get; }
@@ -84,6 +83,34 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            AddNew(item);
+        }
+
+        /// <summary>
+        ///     Adds the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <exception cref="ArgumentException">the value is already present</exception>
+        public void AddNew(T value)
+        {
+            var hashCode = Comparer.GetHashCode(value);
+            for (var attempts = 0; ; attempts++)
+            {
+                ExtendProbingIfNeeded(attempts);
+                if (_bucket.Insert(hashCode + attempts, value, out var found))
+                {
+                    return;
+                }
+
+                if (Comparer.Equals(found, value))
+                {
+                    throw new ArgumentException("the value is already present");
+                }
+            }
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Removes all the elements.
@@ -91,6 +118,41 @@ namespace Theraot.Collections.ThreadSafe
         public void Clear()
         {
             _bucket = new Bucket<T>();
+        }
+
+        /// <summary>
+        ///     Removes all the elements.
+        /// </summary>
+        /// <returns>Returns the removed pairs.</returns>
+        public IEnumerable<T> ClearEnumerable()
+        {
+            return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<T>());
+        }
+
+        /// <summary>
+        ///     Determines whether the specified value is contained.
+        /// </summary>
+        /// <param name="hashCode">The hash code to look for.</param>
+        /// <param name="check">The value predicate.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified value is contained; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Contains(int hashCode, Predicate<T> check)
+        {
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
+            }
+
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.GetHashCode(found) == hashCode && check(found))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <inheritdoc />
@@ -148,6 +210,26 @@ namespace Theraot.Collections.ThreadSafe
             return _bucket.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        ///     Gets the pairs contained in this object.
+        /// </summary>
+        /// <returns>The pairs contained in this object</returns>
+        public IList<T> GetValues()
+        {
+            var result = new List<T>(_bucket.Count);
+            foreach (var pair in _bucket)
+            {
+                result.Add(pair);
+            }
+
+            return result;
+        }
+
         public void IntersectWith(IEnumerable<T> other)
         {
             Extensions.IntersectWith(this, other);
@@ -176,185 +258,6 @@ namespace Theraot.Collections.ThreadSafe
         public bool Overlaps(IEnumerable<T> other)
         {
             return Extensions.Overlaps(this, other);
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Removes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Remove(T value)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            var hashCode = Comparer.GetHashCode(value);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                var done = false;
-                var result = _bucket.RemoveAt
-                (
-                    hashCode + attempts,
-                    found =>
-                    {
-                        if (!Comparer.Equals(found, value))
-                        {
-                            return false;
-                        }
-
-                        done = true;
-                        return true;
-                    }
-                );
-                if (done)
-                {
-                    return result;
-                }
-            }
-
-            return false;
-        }
-
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            return Extensions.SetEquals(this, other);
-        }
-
-        public void SymmetricExceptWith(IEnumerable<T> other)
-        {
-            Extensions.SymmetricExceptWith(this, other);
-        }
-
-        public void UnionWith(IEnumerable<T> other)
-        {
-            Extensions.UnionWith(this, other);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            AddNew(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        /// <summary>
-        ///     Adds the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <exception cref="ArgumentException">the value is already present</exception>
-        public void AddNew(T value)
-        {
-            var hashCode = Comparer.GetHashCode(value);
-            for (var attempts = 0; ; attempts++)
-            {
-                ExtendProbingIfNeeded(attempts);
-                if (_bucket.Insert(hashCode + attempts, value, out var found))
-                {
-                    return;
-                }
-
-                if (Comparer.Equals(found, value))
-                {
-                    throw new ArgumentException("the value is already present");
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Removes all the elements.
-        /// </summary>
-        /// <returns>Returns the removed pairs.</returns>
-        public IEnumerable<T> ClearEnumerable()
-        {
-            return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<T>());
-        }
-
-        /// <summary>
-        ///     Determines whether the specified value is contained.
-        /// </summary>
-        /// <param name="hashCode">The hash code to look for.</param>
-        /// <param name="check">The value predicate.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified value is contained; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Contains(int hashCode, Predicate<T> check)
-        {
-            if (check == null)
-            {
-                throw new ArgumentNullException(nameof(check));
-            }
-
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.GetHashCode(found) == hashCode && check(found))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        ///     Gets the pairs contained in this object.
-        /// </summary>
-        /// <returns>The pairs contained in this object</returns>
-        public IList<T> GetValues()
-        {
-            var result = new List<T>(_bucket.Count);
-            foreach (var pair in _bucket)
-            {
-                result.Add(pair);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        ///     Removes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="previous">The found value that was removed.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Remove(T value, out T previous)
-        {
-            var hashCode = Comparer.GetHashCode(value);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                var done = false;
-                var tmp = default(T)!;
-                var result = _bucket.RemoveAt
-                (
-                    hashCode + attempts,
-                    found =>
-                    {
-                        tmp = found;
-                        if (!Comparer.Equals(found, value))
-                        {
-                            return false;
-                        }
-
-                        done = true;
-                        return true;
-                    }
-                );
-                if (!done)
-                {
-                    continue;
-                }
-
-                previous = tmp;
-                return result;
-            }
-
-            previous = default!;
-            return false;
         }
 
         /// <summary>
@@ -402,6 +305,87 @@ namespace Theraot.Collections.ThreadSafe
                 return result;
             }
 
+            return false;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Removes the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(T value)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            var hashCode = Comparer.GetHashCode(value);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var done = false;
+                var result = _bucket.RemoveAt
+                (
+                    hashCode + attempts,
+                    found =>
+                    {
+                        if (!Comparer.Equals(found, value))
+                        {
+                            return false;
+                        }
+
+                        done = true;
+                        return true;
+                    }
+                );
+                if (done)
+                {
+                    return result;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Removes the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="previous">The found value that was removed.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(T value, out T previous)
+        {
+            var hashCode = Comparer.GetHashCode(value);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var done = false;
+                var tmp = default(T)!;
+                var result = _bucket.RemoveAt
+                (
+                    hashCode + attempts,
+                    found =>
+                    {
+                        tmp = found;
+                        if (!Comparer.Equals(found, value))
+                        {
+                            return false;
+                        }
+
+                        done = true;
+                        return true;
+                    }
+                );
+                if (!done)
+                {
+                    continue;
+                }
+
+                previous = tmp;
+                return result;
+            }
+
+            previous = default!;
             return false;
         }
 
@@ -457,6 +441,16 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public bool SetEquals(IEnumerable<T> other)
+        {
+            return Extensions.SetEquals(this, other);
+        }
+
+        public void SymmetricExceptWith(IEnumerable<T> other)
+        {
+            Extensions.SymmetricExceptWith(this, other);
+        }
+
         /// <summary>
         ///     Tries to retrieve the value by hash code and value predicate.
         /// </summary>
@@ -486,6 +480,11 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             return false;
+        }
+
+        public void UnionWith(IEnumerable<T> other)
+        {
+            Extensions.UnionWith(this, other);
         }
 
         /// <summary>

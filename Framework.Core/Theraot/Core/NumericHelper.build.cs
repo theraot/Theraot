@@ -71,22 +71,23 @@ namespace Theraot.Core
             switch (exp)
             {
                 case 0:
-                {
-                    // Denormalized number.
-                    finite = true;
-                    if (man != 0)
                     {
-                        exp = -1074;
-                    }
+                        // Denormalized number.
+                        finite = true;
+                        if (man != 0)
+                        {
+                            exp = -1074;
+                        }
 
-                    break;
-                }
+                        break;
+                    }
 
                 case 0x7FF:
                     // NaN or Infinite.
                     finite = false;
                     exp = int.MaxValue;
                     break;
+
                 default:
                     finite = true;
                     man |= 0x0010000000000000;
@@ -95,42 +96,10 @@ namespace Theraot.Core
             }
         }
 
-        public static void GetParts(long value, out int lo, out int hi)
+        public static void GetParts(double value, out int sign, out long mantissa, out int exponent, out bool finite)
         {
-            unchecked
-            {
-                lo = (int)value;
-                hi = (int)((ulong)value >> 32);
-            }
-        }
-
-        public static void GetParts(int value, out short lo, out short hi)
-        {
-            unchecked
-            {
-                lo = (short)value;
-                hi = (short)(value >> 16);
-            }
-        }
-
-        [CLSCompliant(false)]
-        public static void GetParts(ulong value, out uint lo, out uint hi)
-        {
-            unchecked
-            {
-                lo = (uint)value;
-                hi = (uint)(value >> 32);
-            }
-        }
-
-        [CLSCompliant(false)]
-        public static void GetParts(uint value, out ushort lo, out ushort hi)
-        {
-            unchecked
-            {
-                lo = (ushort)value;
-                hi = (ushort)(value >> 16);
-            }
+            GetDoubleParts(value, out sign, out exponent, out var tmpMantissa, out finite);
+            mantissa = (long)tmpMantissa;
         }
 
         public static void GetParts(float value, out int sign, out int mantissa, out int exponent, out bool finite)
@@ -187,10 +156,42 @@ namespace Theraot.Core
             }
         }
 
-        public static void GetParts(double value, out int sign, out long mantissa, out int exponent, out bool finite)
+        public static void GetParts(int value, out short lo, out short hi)
         {
-            GetDoubleParts(value, out sign, out exponent, out var tmpMantissa, out finite);
-            mantissa = (long)tmpMantissa;
+            unchecked
+            {
+                lo = (short)value;
+                hi = (short)(value >> 16);
+            }
+        }
+
+        public static void GetParts(long value, out int lo, out int hi)
+        {
+            unchecked
+            {
+                lo = (int)value;
+                hi = (int)((ulong)value >> 32);
+            }
+        }
+
+        [CLSCompliant(false)]
+        public static void GetParts(uint value, out ushort lo, out ushort hi)
+        {
+            unchecked
+            {
+                lo = (ushort)value;
+                hi = (ushort)(value >> 16);
+            }
+        }
+
+        [CLSCompliant(false)]
+        public static void GetParts(ulong value, out uint lo, out uint hi)
+        {
+            unchecked
+            {
+                lo = (uint)value;
+                hi = (uint)(value >> 32);
+            }
         }
 
         internal static int CbitHighZero(uint u)

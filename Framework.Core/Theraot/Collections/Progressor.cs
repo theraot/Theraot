@@ -26,6 +26,7 @@ namespace Theraot.Collections
     public sealed class Progressor<T> : IObservable<T>, IEnumerable<T>, IClosable
     {
         private ProxyObservable<T>? _proxy;
+
         private TryTake<T>? _tryTake;
 
         private Progressor(ProxyObservable<T> proxy, TryTake<T> tryTake)
@@ -293,32 +294,6 @@ namespace Theraot.Collections
             return false;
         }
 
-        public IEnumerable<T> While(Predicate<T> condition)
-        {
-            if (condition == null)
-            {
-                throw new ArgumentNullException(nameof(condition));
-            }
-
-            return WhileExtracted();
-
-            IEnumerable<T> WhileExtracted()
-            {
-                while (true)
-                {
-                    var tryTake = Volatile.Read(ref _tryTake);
-                    if (tryTake != null && tryTake(out var item) && condition(item))
-                    {
-                        yield return item;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
         public IEnumerable<T> While(Func<bool> condition)
         {
             if (condition == null)
@@ -334,6 +309,32 @@ namespace Theraot.Collections
                 {
                     var tryTake = Volatile.Read(ref _tryTake);
                     if (tryTake != null && tryTake(out var item) && condition())
+                    {
+                        yield return item;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<T> While(Predicate<T> condition)
+        {
+            if (condition == null)
+            {
+                throw new ArgumentNullException(nameof(condition));
+            }
+
+            return WhileExtracted();
+
+            IEnumerable<T> WhileExtracted()
+            {
+                while (true)
+                {
+                    var tryTake = Volatile.Read(ref _tryTake);
+                    if (tryTake != null && tryTake(out var item) && condition(item))
                     {
                         yield return item;
                     }

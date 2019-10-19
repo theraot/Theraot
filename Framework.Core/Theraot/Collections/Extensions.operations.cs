@@ -244,6 +244,37 @@ namespace Theraot.Collections
             yield return source;
         }
 
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source)
+        {
+            switch (source)
+            {
+                case null:
+                    return new HashSet<T>();
+
+                case HashSet<T> hashSet:
+                    return hashSet;
+
+                default:
+                    return new HashSet<T>(source);
+            }
+        }
+
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
+        {
+            comparer ??= EqualityComparer<T>.Default;
+            switch (source)
+            {
+                case null:
+                    return new HashSet<T>(comparer);
+
+                case HashSet<T> hashSet when hashSet.Comparer.Equals(comparer):
+                    return hashSet;
+
+                default:
+                    return new HashSet<T>(source, comparer);
+            }
+        }
+
         [return: NotNull]
         public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T>? enumerable)
         {
@@ -387,37 +418,6 @@ namespace Theraot.Collections
                     return new List<T>(source).ToArray();
             }
         }
-
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source)
-        {
-            switch (source)
-            {
-                case null:
-                    return new HashSet<T>();
-
-                case HashSet<T> hashSet:
-                    return hashSet;
-
-                default:
-                    return new HashSet<T>(source);
-            }
-        }
-
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
-        {
-            comparer ??= EqualityComparer<T>.Default;
-            switch (source)
-            {
-                case null:
-                    return new HashSet<T>(comparer);
-
-                case HashSet<T> hashSet when hashSet.Comparer.Equals(comparer):
-                    return hashSet;
-
-                default:
-                    return new HashSet<T>(source, comparer);
-            }
-        }
     }
 
     public static partial class Extensions
@@ -543,6 +543,22 @@ namespace Theraot.Collections
             return result.ToArray();
         }
 
+        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, int skipCount)
+        {
+            var count = 0;
+            foreach (var item in source)
+            {
+                if (count < skipCount)
+                {
+                    count++;
+                }
+                else
+                {
+                    yield return item;
+                }
+            }
+        }
+
         private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
         {
             var count = 0;
@@ -554,22 +570,6 @@ namespace Theraot.Collections
                     {
                         count++;
                     }
-                }
-                else
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        private static IEnumerable<T> SkipExtracted<T>(IEnumerable<T> source, int skipCount)
-        {
-            var count = 0;
-            foreach (var item in source)
-            {
-                if (count < skipCount)
-                {
-                    count++;
                 }
                 else
                 {

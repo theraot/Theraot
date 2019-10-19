@@ -12,7 +12,9 @@ namespace Theraot.Core
     public class OrderedEnumerable<TElement, TKey> : IOrderedEnumerable<TElement>
     {
         private readonly IComparer<TKey> _comparer;
+
         private readonly Func<TElement, TKey> _keySelector;
+
         private readonly IEnumerable<TElement> _source;
 
         public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey>? comparer)

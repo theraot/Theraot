@@ -30,15 +30,12 @@ namespace Theraot.Threading
     public class AtomicBoolean
     {
         private const int _set = 1;
+
         private const int _unset = 0;
+
         private int _value;
 
-        public bool Value
-        {
-            get => _value == _set;
-
-            set => Exchange(value);
-        }
+        public bool Value { get => _value == _set; set => Exchange(value); }
 
         public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
         {

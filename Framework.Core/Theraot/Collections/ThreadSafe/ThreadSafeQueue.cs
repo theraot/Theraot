@@ -89,6 +89,12 @@ namespace Theraot.Collections.ThreadSafe
             this.DeprecatedCopyTo(array, index);
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            Extensions.CanCopyTo(Count, array, index);
+            this.DeprecatedCopyTo(array, index);
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
@@ -107,9 +113,20 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public T[] ToArray()
         {
             return this.ToArray(Count);
+        }
+
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
+        {
+            Add(item);
+            return true;
         }
 
         /// <summary>
@@ -177,23 +194,6 @@ namespace Theraot.Collections.ThreadSafe
 
                 spinWait.SpinOnce();
             }
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            Extensions.CanCopyTo(Count, array, index);
-            this.DeprecatedCopyTo(array, index);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        bool IProducerConsumerCollection<T>.TryAdd(T item)
-        {
-            Add(item);
-            return true;
         }
     }
 }

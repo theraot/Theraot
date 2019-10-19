@@ -10,13 +10,12 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     internal sealed class Node<T>
     {
-        private static readonly Pool<Node<T>> _pool = new Pool<Node<T>>(64, Recycle);
         public Node<T>? Link;
         public T Value = default!;
+        private static readonly Pool<Node<T>> _pool = new Pool<Node<T>>(64, Recycle);
 
         private Node()
         {
-            // Empty
         }
 
         public static void Recycle(Node<T> node)

@@ -63,10 +63,8 @@ namespace Theraot.Collections
 
         public IReadOnlyCollection<TKey> Keys { get; }
 
-        protected IEqualityComparer<T> ItemComparer { get; }
-
         protected IEqualityComparer<TKey> Comparer { get; }
-
+        protected IEqualityComparer<T> ItemComparer { get; }
         private Progressor<IGrouping<TKey, T>> Progressor { get; }
 
         public IEnumerable<T> this[TKey key]

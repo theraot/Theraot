@@ -73,6 +73,25 @@ namespace Theraot.Core
         public string String { get; }
 
         /// <summary>
+        ///     Reads the underlying string advancing the current position until afterwards the provided character is found.
+        /// </summary>
+        /// <param name="found">The found string.</param>
+        /// <param name="target">The character to look for. The delimiter.</param>
+        /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
+        public bool ExtractUntil([NotNullWhen(true)] out string? found, char target)
+        {
+            var position = String.IndexOf(target, _position);
+            if (position != -1)
+            {
+                found = PrivateReadToPosition(position);
+                return true;
+            }
+
+            found = null;
+            return false;
+        }
+
+        /// <summary>
         ///     Reads the underlying string advancing the current position until afterwards the provided string is found.
         /// </summary>
         /// <param name="found">The found string.</param>
@@ -117,12 +136,12 @@ namespace Theraot.Core
         /// <param name="found">The found string.</param>
         /// <param name="target">The character to look for. The delimiter.</param>
         /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntil([NotNullWhen(true)] out string? found, char target)
+        public bool ExtractUntilAfter([NotNullWhen(true)] out string? found, char target)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
             {
-                found = PrivateReadToPosition(position);
+                found = PrivateReadToPosition(position + 1);
                 return true;
             }
 
@@ -170,25 +189,6 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Reads the underlying string advancing the current position until afterwards the provided character is found.
-        /// </summary>
-        /// <param name="found">The found string.</param>
-        /// <param name="target">The character to look for. The delimiter.</param>
-        /// <returns><c>true</c> if the target was found; otherwise <c>false</c></returns>
-        public bool ExtractUntilAfter([NotNullWhen(true)] out string? found, char target)
-        {
-            var position = String.IndexOf(target, _position);
-            if (position != -1)
-            {
-                found = PrivateReadToPosition(position + 1);
-                return true;
-            }
-
-            found = null;
-            return false;
-        }
-
-        /// <summary>
         ///     Reads the next character from the underlying string.
         /// </summary>
         /// <returns>The next character from the underlying string, or -1 if no more characters are available.</returns>
@@ -200,25 +200,6 @@ namespace Theraot.Core
             }
 
             return String[_position];
-        }
-
-        /// <summary>
-        ///     Checks if the next characters from underlying string matches the input string.
-        /// </summary>
-        /// <param name="target">The string to check against.</param>
-        /// <returns>
-        ///     <c>true</c> if the strings match; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool Peek(string target)
-        {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target), "The target string is null.");
-            }
-
-            var length = target.Length;
-            return _position + length <= _length && string.CompareOrdinal(target, 0, String, _position, length) == 0;
         }
 
         /// <summary>
@@ -264,6 +245,25 @@ namespace Theraot.Core
         }
 
         /// <summary>
+        ///     Checks if the next characters from underlying string matches the input string.
+        /// </summary>
+        /// <param name="target">The string to check against.</param>
+        /// <returns>
+        ///     <c>true</c> if the strings match; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">The target string is null.</exception>
+        public bool Peek(string target)
+        {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
+            }
+
+            var length = target.Length;
+            return _position + length <= _length && string.CompareOrdinal(target, 0, String, _position, length) == 0;
+        }
+
+        /// <summary>
         ///     Checks the next character from the string.
         /// </summary>
         /// <exception cref="IndexOutOfRangeException">Reached the end of the string.</exception>
@@ -295,6 +295,31 @@ namespace Theraot.Core
             var character = String[_position];
             _position++;
             return character;
+        }
+
+        /// <summary>
+        ///     Checks if the next character from underlying string matches the input character, if so advances the character
+        ///     position one character.
+        /// </summary>
+        /// <param name="target">The character to check against.</param>
+        /// <returns>
+        ///     <c>true</c> if the characters match; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Read(char target)
+        {
+            if (_position == _length)
+            {
+                return false;
+            }
+
+            var result = String[_position];
+            if (result != target)
+            {
+                return false;
+            }
+
+            _position++;
+            return true;
         }
 
         /// <summary>
@@ -352,72 +377,17 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Checks if the next characters from underlying string matches the input string, if so advances the character
-        ///     position by the length of the string.
+        ///     Reads the next character from the underlying string if it passes the predicate. If successful advances the
+        ///     character position by one character.
         /// </summary>
-        /// <param name="target">The string to check against.</param>
-        /// <returns>
-        ///     <c>true</c> if the strings match; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool Read(string target)
+        /// <param name="predicate">The predicate to test the characters.</param>
+        /// <returns>The read string.</returns>
+        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
+        public string Read(Func<char, bool> predicate)
         {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target), "The target string is null.");
-            }
-
-            var length = target.Length;
-            if (_position + length > _length || string.CompareOrdinal(target, 0, String, _position, length) != 0)
-            {
-                return false;
-            }
-
-            _position += length;
-            return true;
-        }
-
-        /// <summary>
-        ///     Checks if the next character from underlying string matches the input character, if so advances the character
-        ///     position one character.
-        /// </summary>
-        /// <param name="target">The character to check against.</param>
-        /// <returns>
-        ///     <c>true</c> if the characters match; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Read(char target)
-        {
-            if (_position == _length)
-            {
-                return false;
-            }
-
-            var result = String[_position];
-            if (result != target)
-            {
-                return false;
-            }
-
-            _position++;
-            return true;
-        }
-
-        /// <summary>
-        ///     Reads the next characters from the underlying string, if there are enough. If successful advances the character
-        ///     position by the given length.
-        /// </summary>
-        /// <param name="length">The number of characters to read.</param>
-        /// <returns>The read string if there was enough characters left; otherwise null.</returns>
-        public string? Read(int length)
-        {
-            if (_position + length > _length)
-            {
-                return null;
-            }
-
-            var result = String.Substring(_position, length);
-            _position += length;
-            return result;
+            var oldPosition = _position;
+            Skip(predicate);
+            return String.Substring(oldPosition, _position - oldPosition);
         }
 
         /// <summary>
@@ -468,17 +438,47 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Reads the next character from the underlying string if it passes the predicate. If successful advances the
-        ///     character position by one character.
+        ///     Reads the next characters from the underlying string, if there are enough. If successful advances the character
+        ///     position by the given length.
         /// </summary>
-        /// <param name="predicate">The predicate to test the characters.</param>
-        /// <returns>The read string.</returns>
-        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
-        public string Read(Func<char, bool> predicate)
+        /// <param name="length">The number of characters to read.</param>
+        /// <returns>The read string if there was enough characters left; otherwise null.</returns>
+        public string? Read(int length)
         {
-            var oldPosition = _position;
-            Skip(predicate);
-            return String.Substring(oldPosition, _position - oldPosition);
+            if (_position + length > _length)
+            {
+                return null;
+            }
+
+            var result = String.Substring(_position, length);
+            _position += length;
+            return result;
+        }
+
+        /// <summary>
+        ///     Checks if the next characters from underlying string matches the input string, if so advances the character
+        ///     position by the length of the string.
+        /// </summary>
+        /// <param name="target">The string to check against.</param>
+        /// <returns>
+        ///     <c>true</c> if the strings match; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">The target string is null.</exception>
+        public bool Read(string target)
+        {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
+            }
+
+            var length = target.Length;
+            if (_position + length > _length || string.CompareOrdinal(target, 0, String, _position, length) != 0)
+            {
+                return false;
+            }
+
+            _position += length;
+            return true;
         }
 
         /// <summary>
@@ -543,6 +543,165 @@ namespace Theraot.Core
         }
 
         /// <summary>
+        ///     Reads the underlying string advancing the current position until the provided character is found or (if Greedy) to
+        ///     the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the provided character will be the next thing to be read afterwards.
+        ///     The provided character is not included in the returned string.
+        /// </remarks>
+        /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
+        public string? ReadUntil(char target, bool greedy)
+        {
+            var position = String.IndexOf(target, _position);
+            if (position != -1)
+            {
+                return PrivateReadToPosition(position);
+            }
+
+            return greedy ? ReadToEnd() : null;
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until any of the provided characters is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the character found will be the next thing to be read afterwards. The
+        ///     character found is not included in the returned string.
+        /// </remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns>The read string.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public string? ReadUntil(char[] targets, bool greedy)
+        {
+            if (targets == null)
+            {
+                throw new ArgumentNullException(nameof(targets));
+            }
+
+            return PrivateReadUntil(targets, greedy);
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until a character passes the provided predicate or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the character that passes the predicate will be the next thing to be
+        ///     read afterwards. The character that passes the predicate is not included in the returned string.
+        /// </remarks>
+        /// <param name="predicate">The predicate to test the characters.</param>
+        /// <returns>The read string.</returns>
+        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
+        public string? ReadUntil(Func<char, bool> predicate)
+        {
+            var oldPosition = _position;
+            return SkipUntil(predicate) ? String.Substring(oldPosition, _position - oldPosition) : null;
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until any of the provided characters is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the character found will be the next thing to be read afterwards. The
+        ///     character found is not included in the returned string.
+        /// </remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns>The read string.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public string? ReadUntil(IEnumerable<char> targets, bool greedy)
+        {
+            var oldPosition = _position;
+            return SkipUntil(targets, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
+        ///     string found is not included in the returned string.
+        /// </remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public string? ReadUntil(IEnumerable<string> targets, bool greedy)
+        {
+            return ReadUntil(targets, StringComparison.Ordinal, greedy);
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
+        ///     string found is not included in the returned string.
+        /// </remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="found">The found string.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public string? ReadUntil(IEnumerable<string> targets, out string? found, bool greedy)
+        {
+            return ReadUntil(targets, out found, StringComparison.Ordinal, greedy);
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
+        ///     string found is not included in the returned string.
+        /// </remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="found">The found string.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public string? ReadUntil(IEnumerable<string> targets, out string? found, StringComparison stringComparison, bool greedy)
+        {
+            var oldPosition = _position;
+            return SkipUntil(targets, out found, stringComparison, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
+        ///     string found is not included in the returned string.
+        /// </remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public string? ReadUntil(IEnumerable<string> targets, StringComparison stringComparison, bool greedy)
+        {
+            var oldPosition = _position;
+            return SkipUntil(targets, stringComparison, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
+        }
+
+        /// <summary>
         ///     Reads the underlying string advancing the current position until the provided string is found or (if Greedy) to the
         ///     end of the string is reached.
         /// </summary>
@@ -594,8 +753,8 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Reads the underlying string advancing the current position until the provided character is found or (if Greedy) to
-        ///     the end of the string is reached.
+        ///     Reads the underlying string advancing the current position until afterwards the provided character is found or (if
+        ///     Greedy) to the end of the string is reached.
         /// </summary>
         /// <remarks>
         ///     If the end of the string is not reached, the provided character will be the next thing to be read afterwards.
@@ -603,153 +762,16 @@ namespace Theraot.Core
         /// </remarks>
         /// <param name="target">The character to look for.</param>
         /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
-        public string? ReadUntil(char target, bool greedy)
+        /// <returns>The read string.</returns>
+        public string? ReadUntilAfter(char target, bool greedy)
         {
             var position = String.IndexOf(target, _position);
             if (position != -1)
             {
-                return PrivateReadToPosition(position);
+                return PrivateReadToPosition(position + 1);
             }
 
             return greedy ? ReadToEnd() : null;
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
-        ///     string found is not included in the returned string.
-        /// </remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets, bool greedy)
-        {
-            return ReadUntil(targets, StringComparison.Ordinal, greedy);
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
-        ///     string found is not included in the returned string.
-        /// </remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets, StringComparison stringComparison, bool greedy)
-        {
-            var oldPosition = _position;
-            return SkipUntil(targets, stringComparison, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
-        ///     string found is not included in the returned string.
-        /// </remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <param name="found">The found string.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets, out string? found, bool greedy)
-        {
-            return ReadUntil(targets, out found, StringComparison.Ordinal, greedy);
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position until any of the provided strings is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the string found will be the next thing to be read afterwards. The
-        ///     string found is not included in the returned string.
-        /// </remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <param name="found">The found string.</param>
-        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string if found; otherwise <c>null</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<string> targets, out string? found, StringComparison stringComparison, bool greedy)
-        {
-            var oldPosition = _position;
-            return SkipUntil(targets, out found, stringComparison, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position until any of the provided characters is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the character found will be the next thing to be read afterwards. The
-        ///     character found is not included in the returned string.
-        /// </remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(IEnumerable<char> targets, bool greedy)
-        {
-            var oldPosition = _position;
-            return SkipUntil(targets, greedy) ? String.Substring(oldPosition, _position - oldPosition) : null;
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position until any of the provided characters is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the character found will be the next thing to be read afterwards. The
-        ///     character found is not included in the returned string.
-        /// </remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public string? ReadUntil(char[] targets, bool greedy)
-        {
-            if (targets == null)
-            {
-                throw new ArgumentNullException(nameof(targets));
-            }
-
-            return PrivateReadUntil(targets, greedy);
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position until a character passes the provided predicate or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the character that passes the predicate will be the next thing to be
-        ///     read afterwards. The character that passes the predicate is not included in the returned string.
-        /// </remarks>
-        /// <param name="predicate">The predicate to test the characters.</param>
-        /// <returns>The read string.</returns>
-        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
-        public string? ReadUntil(Func<char, bool> predicate)
-        {
-            var oldPosition = _position;
-            return SkipUntil(predicate) ? String.Substring(oldPosition, _position - oldPosition) : null;
         }
 
         /// <summary>
@@ -798,28 +820,6 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Reads the underlying string advancing the current position until afterwards the provided character is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the provided character will be the next thing to be read afterwards.
-        ///     The provided character is not included in the returned string.
-        /// </remarks>
-        /// <param name="target">The character to look for.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns>The read string.</returns>
-        public string? ReadUntilAfter(char target, bool greedy)
-        {
-            var position = String.IndexOf(target, _position);
-            if (position != -1)
-            {
-                return PrivateReadToPosition(position + 1);
-            }
-
-            return greedy ? ReadToEnd() : null;
-        }
-
-        /// <summary>
         ///     Reads the underlying string advancing the current position as long as all the read characters match the provided
         ///     character.
         /// </summary>
@@ -834,6 +834,23 @@ namespace Theraot.Core
         {
             var oldPosition = _position;
             SkipWhile(target);
+            return String.Substring(oldPosition, _position - oldPosition);
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position as long as the characters pass the provided predicate.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the character that doesn't pass the predicate will be the next thing
+        ///     to be read afterwards. The character that doesn't pass the predicate is not included in the returned string.
+        /// </remarks>
+        /// <param name="predicate">The predicate to test the characters.</param>
+        /// <returns>The read string.</returns>
+        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
+        public string ReadWhile(Func<char, bool> predicate)
+        {
+            var oldPosition = _position;
+            SkipWhile(predicate);
             return String.Substring(oldPosition, _position - oldPosition);
         }
 
@@ -854,23 +871,6 @@ namespace Theraot.Core
         {
             var oldPosition = _position;
             SkipWhile(targets);
-            return String.Substring(oldPosition, _position - oldPosition);
-        }
-
-        /// <summary>
-        ///     Reads the underlying string advancing the current position as long as the characters pass the provided predicate.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the character that doesn't pass the predicate will be the next thing
-        ///     to be read afterwards. The character that doesn't pass the predicate is not included in the returned string.
-        /// </remarks>
-        /// <param name="predicate">The predicate to test the characters.</param>
-        /// <returns>The read string.</returns>
-        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
-        public string ReadWhile(Func<char, bool> predicate)
-        {
-            var oldPosition = _position;
-            SkipWhile(predicate);
             return String.Substring(oldPosition, _position - oldPosition);
         }
 
@@ -901,6 +901,30 @@ namespace Theraot.Core
 
             _position++;
             return true;
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until afterwards the provided character is found or (if
+        ///     Greedy) to the start of the string is reached.
+        /// </summary>
+        /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
+        public bool SkipBackBefore(char target, bool greedy)
+        {
+            var position = String.LastIndexOf(target, _position);
+            if (position != -1)
+            {
+                _position = position;
+                return true;
+            }
+
+            if (greedy)
+            {
+                _position = 0;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -957,12 +981,12 @@ namespace Theraot.Core
         /// <param name="target">The character to look for.</param>
         /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        public bool SkipBackBefore(char target, bool greedy)
+        public bool SkipBackTo(char target, bool greedy)
         {
             var position = String.LastIndexOf(target, _position);
             if (position != -1)
             {
-                _position = position;
+                _position = position + 1;
                 return true;
             }
 
@@ -1022,30 +1046,6 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Reads the underlying string advancing the current position until afterwards the provided character is found or (if
-        ///     Greedy) to the start of the string is reached.
-        /// </summary>
-        /// <param name="target">The character to look for.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        public bool SkipBackTo(char target, bool greedy)
-        {
-            var position = String.LastIndexOf(target, _position);
-            if (position != -1)
-            {
-                _position = position + 1;
-                return true;
-            }
-
-            if (greedy)
-            {
-                _position = 0;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         ///     Skips a line from the underlying string. If not Greedy will require a new line at the end of the string to be
         ///     able to reach it.
         /// </summary>
@@ -1053,55 +1053,6 @@ namespace Theraot.Core
         public bool SkipLine()
         {
             return PrivateSkipUntil(new[] { '\r', '\n' }, true) || Read('\r') || Read('\n');
-        }
-
-        /// <summary>
-        ///     Skips the underlying string advancing the current position until the provided string is found or (if Greedy) to the
-        ///     end of the string is reached.
-        /// </summary>
-        /// <remarks>If the end of the string is not reached, the provided string will be next thing to be read afterwards.</remarks>
-        /// <param name="target">The string to look for.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipUntil(string target, bool greedy)
-        {
-            return SkipUntil(target, StringComparison.Ordinal, greedy);
-        }
-
-        /// <summary>
-        ///     Skips the underlying string advancing the current position until the provided string is found or (if Greedy) to the
-        ///     end of the string is reached.
-        /// </summary>
-        /// <remarks>If the end of the string is not reached, the provided string will be next thing to be read afterwards.</remarks>
-        /// <param name="target">The string to look for.</param>
-        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">The target string is null.</exception>
-        public bool SkipUntil(string target, StringComparison stringComparison, bool greedy)
-        {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target), "The target string is null.");
-            }
-
-            if (target.Length != 0)
-            {
-                var position = String.IndexOf(target, _position, stringComparison);
-                if (position != -1)
-                {
-                    _position = position;
-                    return true;
-                }
-            }
-
-            if (greedy)
-            {
-                _position = _length;
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -1129,53 +1080,89 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Skips the underlying string advancing the current position until any of the provided strings is found or (if
+        ///     Skips the underlying string advancing the current position until any of the provided characters is found or (if
         ///     Greedy) to the end of the string is reached.
         /// </summary>
-        /// <remarks>If the end of the string is not reached, the string found will be the next thing to be read afterwards.</remarks>
+        /// <remarks>If the end of the string is not reached, the character found will be the next thing to be read afterwards.</remarks>
         /// <param name="targets">The string to look for.</param>
         /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets, bool greedy)
-        {
-            return SkipUntil(targets, StringComparison.Ordinal, greedy);
-        }
-
-        /// <summary>
-        ///     Skips the underlying string advancing the current position until any of the provided strings is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <remarks>If the end of the string is not reached, the string found will be the next thing to be read afterwards.</remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<string> targets, StringComparison stringComparison, bool greedy)
+        public bool SkipUntil(char[] targets, bool greedy)
         {
             if (targets == null)
             {
-                throw new ArgumentNullException(nameof(targets), "The targets collection is null.");
+                throw new ArgumentNullException(nameof(targets));
+            }
+
+            return PrivateSkipUntil(targets, greedy);
+        }
+
+        /// <summary>
+        ///     Skips the underlying string advancing the current position until a character passes the provided predicate or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the character that passes the predicate will be the next thing to be
+        ///     read afterwards.
+        /// </remarks>
+        /// <param name="predicate">The predicate to test the characters.</param>
+        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
+        public bool SkipUntil(Func<char, bool> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate), "The predicate is null.");
+            }
+
+            if (_position == _length)
+            {
+                return false;
+            }
+
+            var result = false;
+            while (true)
+            {
+                if (_position == _length)
+                {
+                    return result;
+                }
+
+                var character = String[_position];
+                if (predicate(character))
+                {
+                    return result;
+                }
+
+                _position++;
+                result = true;
+            }
+        }
+
+        /// <summary>
+        ///     Skips the underlying string advancing the current position until any of the provided characters is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>If the end of the string is not reached, the character found will be the next thing to be read afterwards.</remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public bool SkipUntil(IEnumerable<char> targets, bool greedy)
+        {
+            if (targets == null)
+            {
+                throw new ArgumentNullException(nameof(targets));
             }
 
             var bestPosition = 0;
             var result = false;
             foreach (var target in targets)
             {
-                if (target == null)
-                {
-                    throw new ArgumentException("Found nulls in the targets collection.", nameof(targets));
-                }
-
-                if (target.Length == 0)
-                {
-                    continue;
-                }
-
-                var position = String.IndexOf(target, _position, stringComparison);
+                var position = String.IndexOf(target, _position);
                 if (position == -1 || (result && position >= bestPosition))
                 {
                     continue;
@@ -1271,27 +1258,53 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Skips the underlying string advancing the current position until any of the provided characters is found or (if
+        ///     Skips the underlying string advancing the current position until any of the provided strings is found or (if
         ///     Greedy) to the end of the string is reached.
         /// </summary>
-        /// <remarks>If the end of the string is not reached, the character found will be the next thing to be read afterwards.</remarks>
+        /// <remarks>If the end of the string is not reached, the string found will be the next thing to be read afterwards.</remarks>
         /// <param name="targets">The string to look for.</param>
         /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
         /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(IEnumerable<char> targets, bool greedy)
+        public bool SkipUntil(IEnumerable<string> targets, bool greedy)
+        {
+            return SkipUntil(targets, StringComparison.Ordinal, greedy);
+        }
+
+        /// <summary>
+        ///     Skips the underlying string advancing the current position until any of the provided strings is found or (if
+        ///     Greedy) to the end of the string is reached.
+        /// </summary>
+        /// <remarks>If the end of the string is not reached, the string found will be the next thing to be read afterwards.</remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public bool SkipUntil(IEnumerable<string> targets, StringComparison stringComparison, bool greedy)
         {
             if (targets == null)
             {
-                throw new ArgumentNullException(nameof(targets));
+                throw new ArgumentNullException(nameof(targets), "The targets collection is null.");
             }
 
             var bestPosition = 0;
             var result = false;
             foreach (var target in targets)
             {
-                var position = String.IndexOf(target, _position);
+                if (target == null)
+                {
+                    throw new ArgumentException("Found nulls in the targets collection.", nameof(targets));
+                }
+
+                if (target.Length == 0)
+                {
+                    continue;
+                }
+
+                var position = String.IndexOf(target, _position, stringComparison);
                 if (position == -1 || (result && position >= bestPosition))
                 {
                     continue;
@@ -1314,65 +1327,76 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Skips the underlying string advancing the current position until any of the provided characters is found or (if
-        ///     Greedy) to the end of the string is reached.
+        ///     Skips the underlying string advancing the current position until the provided string is found or (if Greedy) to the
+        ///     end of the string is reached.
         /// </summary>
-        /// <remarks>If the end of the string is not reached, the character found will be the next thing to be read afterwards.</remarks>
-        /// <param name="targets">The string to look for.</param>
+        /// <remarks>If the end of the string is not reached, the provided string will be next thing to be read afterwards.</remarks>
+        /// <param name="target">The string to look for.</param>
         /// <param name="greedy">Whether or not to do a Greedy search.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipUntil(char[] targets, bool greedy)
+        /// <exception cref="ArgumentNullException">The target string is null.</exception>
+        public bool SkipUntil(string target, bool greedy)
         {
-            if (targets == null)
-            {
-                throw new ArgumentNullException(nameof(targets));
-            }
-
-            return PrivateSkipUntil(targets, greedy);
+            return SkipUntil(target, StringComparison.Ordinal, greedy);
         }
 
         /// <summary>
-        ///     Skips the underlying string advancing the current position until a character passes the provided predicate or (if
+        ///     Skips the underlying string advancing the current position until the provided string is found or (if Greedy) to the
+        ///     end of the string is reached.
+        /// </summary>
+        /// <remarks>If the end of the string is not reached, the provided string will be next thing to be read afterwards.</remarks>
+        /// <param name="target">The string to look for.</param>
+        /// <param name="stringComparison">One of the enumeration values that specifies the rules for the search.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">The target string is null.</exception>
+        public bool SkipUntil(string target, StringComparison stringComparison, bool greedy)
+        {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target), "The target string is null.");
+            }
+
+            if (target.Length != 0)
+            {
+                var position = String.IndexOf(target, _position, stringComparison);
+                if (position != -1)
+                {
+                    _position = position;
+                    return true;
+                }
+            }
+
+            if (greedy)
+            {
+                _position = _length;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Reads the underlying string advancing the current position until afterwards the provided character is found or (if
         ///     Greedy) to the end of the string is reached.
         /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the character that passes the predicate will be the next thing to be
-        ///     read afterwards.
-        /// </remarks>
-        /// <param name="predicate">The predicate to test the characters.</param>
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">The predicate is null.</exception>
-        public bool SkipUntil(Func<char, bool> predicate)
+        /// <param name="target">The character to look for.</param>
+        /// <param name="greedy">Whether or not to do a Greedy search.</param>
+        public bool SkipUntilAfter(char target, bool greedy)
         {
-            if (predicate == null)
+            var position = String.IndexOf(target, _position);
+            if (position != -1)
             {
-                throw new ArgumentNullException(nameof(predicate), "The predicate is null.");
+                _position = position + 1;
+                return true;
             }
 
-            if (_position == _length)
+            if (greedy)
             {
-                return false;
+                _position = _length;
             }
 
-            var result = false;
-            while (true)
-            {
-                if (_position == _length)
-                {
-                    return result;
-                }
-
-                var character = String[_position];
-                if (predicate(character))
-                {
-                    return result;
-                }
-
-                _position++;
-                result = true;
-            }
+            return false;
         }
 
         /// <summary>
@@ -1423,30 +1447,6 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        ///     Reads the underlying string advancing the current position until afterwards the provided character is found or (if
-        ///     Greedy) to the end of the string is reached.
-        /// </summary>
-        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        /// <param name="target">The character to look for.</param>
-        /// <param name="greedy">Whether or not to do a Greedy search.</param>
-        public bool SkipUntilAfter(char target, bool greedy)
-        {
-            var position = String.IndexOf(target, _position);
-            if (position != -1)
-            {
-                _position = position + 1;
-                return true;
-            }
-
-            if (greedy)
-            {
-                _position = _length;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         ///     Skips the underlying string advancing the current position as long as all the read characters match the provided
         ///     character.
         /// </summary>
@@ -1480,33 +1480,6 @@ namespace Theraot.Core
                 _position++;
                 result = true;
             }
-        }
-
-        /// <summary>
-        ///     Skips the underlying string advancing the current position as long as the read characters match the provided
-        ///     characters.
-        /// </summary>
-        /// <remarks>
-        ///     If the end of the string is not reached, the first character not found will be the the next thing to be read
-        ///     afterwards.
-        /// </remarks>
-        /// <param name="targets">The string to look for.</param>
-        /// <returns><c>true</c>if the character position advanced; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool SkipWhile(IEnumerable<char> targets)
-        {
-            if (targets == null)
-            {
-                throw new ArgumentNullException(nameof(targets));
-            }
-
-            if (_position == _length)
-            {
-                return false;
-            }
-
-            return SkipWhileExtracted(targets);
         }
 
         /// <summary>
@@ -1548,6 +1521,33 @@ namespace Theraot.Core
                 _position++;
                 result = true;
             }
+        }
+
+        /// <summary>
+        ///     Skips the underlying string advancing the current position as long as the read characters match the provided
+        ///     characters.
+        /// </summary>
+        /// <remarks>
+        ///     If the end of the string is not reached, the first character not found will be the the next thing to be read
+        ///     afterwards.
+        /// </remarks>
+        /// <param name="targets">The string to look for.</param>
+        /// <returns><c>true</c>if the character position advanced; otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
+        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
+        public bool SkipWhile(IEnumerable<char> targets)
+        {
+            if (targets == null)
+            {
+                throw new ArgumentNullException(nameof(targets));
+            }
+
+            if (_position == _length)
+            {
+                return false;
+            }
+
+            return SkipWhileExtracted(targets);
         }
 
         /// <summary>

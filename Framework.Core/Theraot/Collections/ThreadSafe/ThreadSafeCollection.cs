@@ -14,6 +14,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class ThreadSafeCollection<T> : ICollection<T>
     {
         private int _maxIndex;
+
         private Bucket<T> _wrapped;
 
         /// <inheritdoc />
@@ -23,7 +24,6 @@ namespace Theraot.Collections.ThreadSafe
         public ThreadSafeCollection()
             : this(EqualityComparer<T>.Default)
         {
-            // Empty
         }
 
         /// <summary>
@@ -55,6 +55,22 @@ namespace Theraot.Collections.ThreadSafe
         public void Clear()
         {
             _wrapped = new Bucket<T>();
+        }
+
+        /// <summary>
+        ///     Removes all the elements.
+        /// </summary>
+        /// <returns>Returns the removed pairs.</returns>
+        public IEnumerable<T> ClearEnumerable()
+        {
+            var replacement = new Bucket<T>();
+            Interlocked.Exchange(ref _wrapped, replacement);
+            return replacement;
+        }
+
+        public bool Contains(Predicate<T> itemCheck)
+        {
+            return _wrapped.Where(itemCheck).Any();
         }
 
         /// <inheritdoc />
@@ -103,6 +119,11 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Removes the specified value.
@@ -119,27 +140,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return Comparer.Equals(input, item);
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        /// <summary>
-        ///     Removes all the elements.
-        /// </summary>
-        /// <returns>Returns the removed pairs.</returns>
-        public IEnumerable<T> ClearEnumerable()
-        {
-            var replacement = new Bucket<T>();
-            Interlocked.Exchange(ref _wrapped, replacement);
-            return replacement;
-        }
-
-        public bool Contains(Predicate<T> itemCheck)
-        {
-            return _wrapped.Where(itemCheck).Any();
         }
 
         /// <summary>

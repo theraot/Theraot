@@ -28,14 +28,14 @@ namespace Theraot.Threading.Needles
 
         public bool IsCompleted => _promise.IsCompleted;
 
-        public void OnCompleted(Action continuation)
-        {
-            _promise.OnCompleted(continuation);
-        }
-
         public void GetResult()
         {
             _promise.Wait();
+        }
+
+        public void OnCompleted(Action continuation)
+        {
+            _promise.OnCompleted(continuation);
         }
     }
 
@@ -51,14 +51,14 @@ namespace Theraot.Threading.Needles
 
         public bool IsCompleted => _promise.IsCompleted;
 
-        public void OnCompleted(Action continuation)
-        {
-            _promise.OnCompleted(continuation);
-        }
-
         public T GetResult()
         {
             return _promise.Value;
+        }
+
+        public void OnCompleted(Action continuation)
+        {
+            _promise.OnCompleted(continuation);
         }
     }
 }

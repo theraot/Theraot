@@ -214,6 +214,18 @@ namespace Theraot.Collections.Specialized
             this.CopyTo(array);
         }
 
+        public void Deconstruct(out KeyValuePair<TKey, TValue>[] dictionary)
+        {
+            var result = _wrapped as IEnumerable<KeyValuePair<TKey, TValue>>;
+            if (_hasNull)
+            {
+                // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
+                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new[] { new KeyValuePair<TKey, TValue>(default!, _valueForNull[0]) }, result);
+            }
+
+            dictionary = result.ToArray();
+        }
+
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             if (_hasNull)
@@ -280,6 +292,25 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        public bool TryAdd([AllowNull] TKey key, TValue value)
+        {
+            // key could  be null
+            if (key == null)
+            {
+                if (_hasNull)
+                {
+                    return false;
+                }
+
+                SetForNull(value);
+            }
+            else
+            {
+                return _wrapped.TryAdd(key, value);
+            }
+            return true;
+        }
+
         public bool TryGetValue([AllowNull] TKey key, out TValue value)
         {
             // key can be null
@@ -303,18 +334,6 @@ namespace Theraot.Collections.Specialized
             return TryGetValue(key, out value);
         }
 
-        public void Deconstruct(out KeyValuePair<TKey, TValue>[] dictionary)
-        {
-            var result = _wrapped as IEnumerable<KeyValuePair<TKey, TValue>>;
-            if (_hasNull)
-            {
-                // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new[] { new KeyValuePair<TKey, TValue>(default!, _valueForNull[0]) }, result);
-            }
-
-            dictionary = result.ToArray();
-        }
-
         private void ClearForNull()
         {
             _hasNull = false;
@@ -325,25 +344,6 @@ namespace Theraot.Collections.Specialized
         {
             _valueForNull[0] = value;
             _hasNull = true;
-        }
-
-        public bool TryAdd([AllowNull] TKey key, TValue value)
-        {
-            // key could  be null
-            if (key == null)
-            {
-                if (_hasNull)
-                {
-                    return false;
-                }
-
-                SetForNull(value);
-            }
-            else
-            {
-                return _wrapped.TryAdd(key, value);
-            }
-            return true;
         }
     }
 }

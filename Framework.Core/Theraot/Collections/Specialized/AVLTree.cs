@@ -10,6 +10,7 @@ namespace Theraot.Collections.Specialized
     public sealed class AVLTree<TKey, TValue> : IEnumerable<AVLNode<TKey, TValue>>
     {
         private readonly IComparer<TKey> _comparer;
+
         private AVLNode<TKey, TValue>? _root;
 
         public AVLTree()
@@ -68,6 +69,11 @@ namespace Theraot.Collections.Specialized
             return AVLNode<TKey, TValue>.EnumerateRoot(_root).GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public AVLNode<TKey, TValue>? GetNearestLeft(TKey key)
         {
             return AVLNode<TKey, TValue>.GetNearestLeft(_root, key, _comparer);
@@ -123,11 +129,6 @@ namespace Theraot.Collections.Specialized
         public AVLNode<TKey, TValue>? RemoveNearestRight(TKey key)
         {
             return AVLNode<TKey, TValue>.RemoveNearestRight(ref _root, key, _comparer);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

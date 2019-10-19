@@ -88,11 +88,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count => _bucket.Count;
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
         public ICollection<TKey> Keys => TypeHelper.LazyCreate(ref _keyCollection, () => new KeyCollection<TKey, TValue>(this));
 
         public ICollection<TValue> Values => TypeHelper.LazyCreate(ref _valueCollection, () => new ValueCollection<TKey, TValue>(this));
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
         public TValue this[TKey key]
         {
@@ -109,131 +108,6 @@ namespace Theraot.Collections.ThreadSafe
             set => Set(key, value);
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Removes all the elements.
-        /// </summary>
-        public void Clear()
-        {
-            Interlocked.Exchange(ref _bucket, _bucket = new Bucket<KeyValuePair<TKey, TValue>>());
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Determines whether the specified key is contained.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
-        /// </returns>
-        public bool ContainsKey(TKey key)
-        {
-            var hashCode = GetHashCode(key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, key))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="ArgumentNullException">array</exception>
-        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-            _bucket.CopyTo(array, arrayIndex);
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
-        /// </summary>
-        /// <returns>
-        ///     An <see cref="IEnumerator{T}" /> object that can be used to iterate through the
-        ///     collection.
-        /// </returns>
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            return _bucket.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Removes the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Remove(TKey key)
-        {
-            var hashCode = GetHashCode(key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                var done = false;
-
-                bool Check(KeyValuePair<TKey, TValue> found)
-                {
-                    if (!Comparer.Equals(found.Key, key))
-                    {
-                        return false;
-                    }
-
-                    done = true;
-                    return true;
-                }
-
-                var result = _bucket.RemoveAt
-                (
-                    hashCode + attempts,
-                    Check
-                );
-                if (done)
-                {
-                    return result;
-                }
-            }
-
-            return false;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Tries to retrieve the value associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            value = default!;
-            var hashCode = GetHashCode(key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                if (!_bucket.TryGet(hashCode + attempts, out var found) || !Comparer.Equals(found.Key, key))
-                {
-                    continue;
-                }
-
-                value = found.Value;
-                return true;
-            }
-
-            return false;
-        }
-
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             AddNew(item.Key, item.Value);
@@ -242,54 +116,6 @@ namespace Theraot.Collections.ThreadSafe
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             AddNew(key, value);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            var hashCode = GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, item.Key))
-                {
-                    return _valueComparer.Equals(found.Value, item.Value);
-                }
-            }
-
-            return false;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            var hashCode = GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                var done = false;
-                var result = _bucket.RemoveAt
-                (
-                    hashCode + attempts,
-                    found =>
-                    {
-                        if (!Comparer.Equals(found.Key, item.Key))
-                        {
-                            return false;
-                        }
-
-                        done = true;
-                        return _valueComparer.Equals(found.Value, item.Value);
-                    }
-                );
-                if (done)
-                {
-                    return result;
-                }
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -317,6 +143,15 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Removes all the elements.
+        /// </summary>
+        public void Clear()
+        {
+            Interlocked.Exchange(ref _bucket, _bucket = new Bucket<KeyValuePair<TKey, TValue>>());
+        }
+
         /// <summary>
         ///     Removes all the elements.
         /// </summary>
@@ -324,6 +159,42 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
         {
             return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<KeyValuePair<TKey, TValue>>());
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            var hashCode = GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, item.Key))
+                {
+                    return _valueComparer.Equals(found.Value, item.Value);
+                }
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Determines whether the specified key is contained.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
+        /// </returns>
+        public bool ContainsKey(TKey key)
+        {
+            var hashCode = GetHashCode(key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found.Key, key))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -384,6 +255,38 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="arrayIndex">Index of the array.</param>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            _bucket.CopyTo(array, arrayIndex);
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
+        /// </summary>
+        /// <returns>
+        ///     An <see cref="IEnumerator{T}" /> object that can be used to iterate through the
+        ///     collection.
+        /// </returns>
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            return _bucket.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
             if (valueFactory == null)
@@ -435,6 +338,75 @@ namespace Theraot.Collections.ThreadSafe
             var result = new List<KeyValuePair<TKey, TValue>>(_bucket.Count);
             result.AddRange(_bucket);
             return result;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Removes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        ///     <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(TKey key)
+        {
+            var hashCode = GetHashCode(key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var done = false;
+
+                bool Check(KeyValuePair<TKey, TValue> found)
+                {
+                    if (!Comparer.Equals(found.Key, key))
+                    {
+                        return false;
+                    }
+
+                    done = true;
+                    return true;
+                }
+
+                var result = _bucket.RemoveAt
+                (
+                    hashCode + attempts,
+                    Check
+                );
+                if (done)
+                {
+                    return result;
+                }
+            }
+
+            return false;
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            var hashCode = GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var done = false;
+                var result = _bucket.RemoveAt
+                (
+                    hashCode + attempts,
+                    found =>
+                    {
+                        if (!Comparer.Equals(found.Key, item.Key))
+                        {
+                            return false;
+                        }
+
+                        done = true;
+                        return _valueComparer.Equals(found.Value, item.Value);
+                    }
+                );
+                if (done)
+                {
+                    return result;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -868,6 +840,33 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Tries to retrieve the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            value = default!;
+            var hashCode = GetHashCode(key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                if (!_bucket.TryGet(hashCode + attempts, out var found) || !Comparer.Equals(found.Key, key))
+                {
+                    continue;
+                }
+
+                value = found.Value;
+                return true;
+            }
+
+            return false;
+        }
+
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
             var hashCode = GetHashCode(key);
@@ -1290,48 +1289,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
-        {
-            if (updateValueFactory == null)
-            {
-                throw new ArgumentNullException(nameof(updateValueFactory));
-            }
-
-            var hashCode = GetHashCode(key);
-            var attempts = 0;
-            var insertPair = new KeyValuePair<TKey, TValue>(key, addValue);
-            var updatePair = default(KeyValuePair<TKey, TValue>);
-            while (true)
-            {
-                ExtendProbingIfNeeded(attempts);
-
-                KeyValuePair<TKey, TValue> UpdateFactory(KeyValuePair<TKey, TValue> found)
-                {
-                    return updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
-                }
-
-                bool Check(KeyValuePair<TKey, TValue> found)
-                {
-                    return Comparer.Equals(key, found.Key);
-                }
-
-                var result = _bucket.InsertOrUpdateChecked
-                (
-                    hashCode + attempts,
-                    insertPair,
-                    UpdateFactory,
-                    Check,
-                    out var isNew
-                );
-                if (result)
-                {
-                    return isNew ? insertPair.Value : updatePair.Value;
-                }
-
-                attempts++;
-            }
-        }
-
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory, out bool isNew)
         {
             if (addValueFactory == null)
@@ -1374,6 +1331,48 @@ namespace Theraot.Collections.ThreadSafe
                     UpdateFactory,
                     Check,
                     out isNew
+                );
+                if (result)
+                {
+                    return isNew ? insertPair.Value : updatePair.Value;
+                }
+
+                attempts++;
+            }
+        }
+
+        public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException(nameof(updateValueFactory));
+            }
+
+            var hashCode = GetHashCode(key);
+            var attempts = 0;
+            var insertPair = new KeyValuePair<TKey, TValue>(key, addValue);
+            var updatePair = default(KeyValuePair<TKey, TValue>);
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+
+                KeyValuePair<TKey, TValue> UpdateFactory(KeyValuePair<TKey, TValue> found)
+                {
+                    return updatePair = new KeyValuePair<TKey, TValue>(key, updateValueFactory(found.Key, found.Value));
+                }
+
+                bool Check(KeyValuePair<TKey, TValue> found)
+                {
+                    return Comparer.Equals(key, found.Key);
+                }
+
+                var result = _bucket.InsertOrUpdateChecked
+                (
+                    hashCode + attempts,
+                    insertPair,
+                    UpdateFactory,
+                    Check,
+                    out var isNew
                 );
                 if (result)
                 {

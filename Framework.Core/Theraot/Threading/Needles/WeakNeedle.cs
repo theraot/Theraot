@@ -21,7 +21,6 @@ namespace Theraot.Threading.Needles
         public WeakNeedle()
             : this(false)
         {
-            // Empty
         }
 
         public WeakNeedle(bool trackResurrection)
@@ -33,7 +32,6 @@ namespace Theraot.Threading.Needles
         public WeakNeedle(T? target)
             : this(target, false)
         {
-            // Empty
         }
 
         public WeakNeedle(T? target, bool trackResurrection)
@@ -95,11 +93,6 @@ namespace Theraot.Threading.Needles
             return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
-        public bool Equals(WeakNeedle<T> other)
-        {
-            return !(other is null) && EqualsExtractedExtracted(this, other);
-        }
-
         public sealed override bool Equals(object obj)
         {
             if (obj is WeakNeedle<T> needle)
@@ -113,6 +106,11 @@ namespace Theraot.Threading.Needles
             }
 
             return false;
+        }
+
+        public bool Equals(WeakNeedle<T> other)
+        {
+            return !(other is null) && EqualsExtractedExtracted(this, other);
         }
 
         public void Free()

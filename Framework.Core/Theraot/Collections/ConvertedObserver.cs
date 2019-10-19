@@ -7,6 +7,7 @@ namespace Theraot.Collections
     public sealed class ConvertedObserver<TInput, TOutput> : IObserver<TInput>
     {
         private readonly Func<TInput, TOutput> _converter;
+
         private readonly IObserver<TOutput> _observer;
 
         public ConvertedObserver(IObserver<TOutput> observer, Func<TInput, TOutput> converter)

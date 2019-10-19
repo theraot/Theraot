@@ -15,8 +15,11 @@ namespace Theraot.Collections.Specialized
     public sealed class AVLNode<TKey, TValue>
     {
         private int _balance;
+
         private int _depth;
+
         private AVLNode<TKey, TValue>? _left;
+
         private AVLNode<TKey, TValue>? _right;
 
         private AVLNode(TKey key, TValue value)

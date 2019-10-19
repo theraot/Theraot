@@ -17,27 +17,11 @@ namespace Theraot.Collections.Specialized
 
         public int Count => _wrapped.Count;
 
+        bool ICollection<TKey>.IsReadOnly => true;
+
         bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
 
         object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
-
-        bool ICollection<TKey>.IsReadOnly => true;
-
-        public void CopyTo(TKey[] array, int arrayIndex)
-        {
-            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            _wrapped.ConvertProgressive(pair => pair.Key).CopyTo(array, arrayIndex);
-        }
-
-        public IEnumerator<TKey> GetEnumerator()
-        {
-            return _wrapped.ConvertProgressive(pair => pair.Key).GetEnumerator();
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            ((ICollection)_wrapped).CopyTo(array, index);
-        }
 
         void ICollection<TKey>.Add(TKey item)
         {
@@ -53,6 +37,22 @@ namespace Theraot.Collections.Specialized
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
+        }
+
+        public void CopyTo(TKey[] array, int arrayIndex)
+        {
+            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
+            _wrapped.ConvertProgressive(pair => pair.Key).CopyTo(array, arrayIndex);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            ((ICollection)_wrapped).CopyTo(array, index);
+        }
+
+        public IEnumerator<TKey> GetEnumerator()
+        {
+            return _wrapped.ConvertProgressive(pair => pair.Key).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

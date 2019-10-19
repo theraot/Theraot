@@ -108,15 +108,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public static EnumerationList<T> Create(IEnumerable<T> wrapped)
-        {
-            if (wrapped == null)
-            {
-                throw new ArgumentNullException(nameof(wrapped));
-            }
-            return new EnumerationList<T>(wrapped);
-        }
-
         public int Count => _count();
 
         bool ICollection<T>.IsReadOnly => true;
@@ -127,6 +118,25 @@ namespace Theraot.Collections.Specialized
         {
             get => this[index];
             set => throw new NotSupportedException();
+        }
+
+        public static EnumerationList<T> Create(IEnumerable<T> wrapped)
+        {
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException(nameof(wrapped));
+            }
+            return new EnumerationList<T>(wrapped);
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
         }
 
         public bool Contains(T item)
@@ -145,24 +155,14 @@ namespace Theraot.Collections.Specialized
             return _getEnumerator();
         }
 
-        public int IndexOf(T item)
-        {
-            return _indexOf(item);
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public int IndexOf(T item)
+        {
+            return _indexOf(item);
         }
 
         void IList<T>.Insert(int index, T item)

@@ -21,11 +21,6 @@ namespace Theraot.Threading
             return x.Equals(y);
         }
 
-        public bool Equals(UniqueId other)
-        {
-            return other._id == _id;
-        }
-
         public override bool Equals(object obj)
         {
             if (obj is UniqueId id)
@@ -34,6 +29,11 @@ namespace Theraot.Threading
             }
 
             return false;
+        }
+
+        public bool Equals(UniqueId other)
+        {
+            return other._id == _id;
         }
 
         public override int GetHashCode()

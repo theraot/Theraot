@@ -14,7 +14,9 @@ namespace Theraot.Reflection
     public static partial class TypeExtraExtensions
     {
         private static readonly CacheDict<Type, bool> _binaryPortableCache = new CacheDict<Type, bool>(256);
+
         private static readonly CacheDict<Type, bool> _blittableCache = new CacheDict<Type, bool>(256);
+
         private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new CacheDict<Type, bool>(256);
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -646,7 +648,7 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static StructLayoutAttribute GetStructLayoutAttribute(this Type type)
         {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
             var attributes = type.GetAttributes<StructLayoutAttribute>(false);
             return attributes.FirstOrDefault();
 
@@ -658,7 +660,7 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Type GetUnderlyingSystemType(this Type type)
         {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
             return type;
 #else
             return type.UnderlyingSystemType;

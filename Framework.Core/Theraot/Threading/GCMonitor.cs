@@ -4,11 +4,6 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-using System.Runtime.ConstrainedExecution;
-
-#endif
-
 namespace Theraot.Threading
 {
     [DebuggerNonUserCode]
@@ -18,23 +13,6 @@ namespace Theraot.Threading
         private const int _statusPending = -1;
         private const int _statusReady = 0;
         private static int _status = _statusNotReady;
-
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-        private const int _statusFinished = 1;
-
-        static GCMonitor()
-        {
-            var currentAppDomain = AppDomain.CurrentDomain;
-            currentAppDomain.ProcessExit += ReportApplicationDomainExit;
-            currentAppDomain.DomainUnload += ReportApplicationDomainExit;
-        }
-
-        private static void ReportApplicationDomainExit(object sender, EventArgs e)
-        {
-            Volatile.Write(ref _status, _statusFinished);
-        }
-
-#endif
 
         public static event EventHandler Collected
         {
@@ -79,12 +57,17 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool FinalizingForUnload =>
+        public static bool FinalizingForUnload
+        {
+            get
+            {
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-                AppDomain.CurrentDomain.IsFinalizingForUnload();
+                return AppDomain.CurrentDomain.IsFinalizingForUnload();
 #else
-                false;
+                return false;
 #endif
+            }
+        }
 
         private static void Initialize()
         {
@@ -100,37 +83,26 @@ namespace Theraot.Threading
                     break;
             }
         }
+    }
 
-        [DebuggerNonUserCode]
-        private sealed class GCProbe
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-            : CriticalFinalizerObject
-#endif
+
+    public static partial class GCMonitor
+    {
+        private const int _statusFinished = 1;
+
+        static GCMonitor()
         {
-            ~GCProbe()
-            {
-                try
-                {
-                    // Empty
-                }
-                finally
-                {
-                    try
-                    {
-                        var check = Volatile.Read(ref _status);
-                        if (check == _statusReady)
-                        {
-                            GC.ReRegisterForFinalize(this);
-                            Internal.Invoke();
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        // Catch them all - there shouldn't be exceptions here, yet we really don't want them
-                        No.Op(exception);
-                    }
-                }
-            }
+            var currentAppDomain = AppDomain.CurrentDomain;
+            currentAppDomain.ProcessExit += ReportApplicationDomainExit;
+            currentAppDomain.DomainUnload += ReportApplicationDomainExit;
+        }
+
+        private static void ReportApplicationDomainExit(object sender, EventArgs e)
+        {
+            Volatile.Write(ref _status, _statusFinished);
         }
     }
+
+#endif
 }

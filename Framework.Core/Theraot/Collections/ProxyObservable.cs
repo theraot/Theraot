@@ -10,6 +10,7 @@ namespace Theraot.Collections
     public sealed class ProxyObservable<T> : IProxyObservable<T>
     {
         private readonly Bucket<IObserver<T>> _observers;
+
         private int _index;
 
         public ProxyObservable()

@@ -2,7 +2,6 @@
 
 using System;
 using System.Threading;
-
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading
@@ -52,6 +51,12 @@ namespace Theraot.Threading
             _callback = callback;
         }
 
+        void IDisposable.Dispose()
+        {
+            _timer.Dispose();
+            _callback = null;
+        }
+
         public void Stop()
         {
             var timer = _timer;
@@ -61,12 +66,6 @@ namespace Theraot.Threading
             }
 
             timer.Change(Timeout.Infinite, Timeout.Infinite);
-            _callback = null;
-        }
-
-        void IDisposable.Dispose()
-        {
-            _timer.Dispose();
             _callback = null;
         }
 

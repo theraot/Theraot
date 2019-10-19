@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
 using Theraot.Threading.Needles;
@@ -41,13 +40,12 @@ namespace Theraot.Threading
         /// <summary>
         ///     Executes an operation-
         /// </summary>
-        /// <typeparam name="T">The return value of the operation.</typeparam>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>Returns a promise to finish the execution.</returns>
-        public IPromise<T> Execute<T>(Func<T> operation)
+        public IPromise Execute(Action operation)
         {
             var workQueue = WorkQueue;
-            var result = AddExecution(operation, WorkQueue);
+            var result = AddExecution(operation, workQueue);
             ExecutePending(workQueue, Id);
             return result;
         }
@@ -55,12 +53,13 @@ namespace Theraot.Threading
         /// <summary>
         ///     Executes an operation-
         /// </summary>
+        /// <typeparam name="T">The return value of the operation.</typeparam>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>Returns a promise to finish the execution.</returns>
-        public IPromise Execute(Action operation)
+        public IPromise<T> Execute<T>(Func<T> operation)
         {
             var workQueue = WorkQueue;
-            var result = AddExecution(operation, workQueue);
+            var result = AddExecution(operation, WorkQueue);
             ExecutePending(workQueue, Id);
             return result;
         }
@@ -122,9 +121,7 @@ namespace Theraot.Threading
                     {
                         promised.SetError(exception);
                     }
-                }
-
-            );
+                });
             return result;
         }
 
@@ -144,9 +141,7 @@ namespace Theraot.Threading
                     {
                         promised.SetError(exception);
                     }
-                }
-
-            );
+                });
             return result;
         }
 

@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading.Needles

@@ -9,7 +9,9 @@ namespace Theraot.Collections.ThreadSafe
         where T : class
     {
         private readonly FixedSizeQueue<T> _entries;
+
         private readonly Action<T>? _recycler;
+
         private readonly UniqueId _reentryGuardId;
 
         public Pool(int capacity, Action<T>? recycler)

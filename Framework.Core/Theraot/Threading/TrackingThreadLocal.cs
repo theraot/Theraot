@@ -16,7 +16,9 @@ namespace Theraot.Threading
         private const int _maxProbingHint = 4;
 
         private int _disposing;
+
         private ThreadSafeDictionary<UniqueId, INeedle<T>>? _slots;
+
         private Func<T>? _valueFactory;
 
         public TrackingThreadLocal(Func<T> valueFactory)
@@ -25,29 +27,9 @@ namespace Theraot.Threading
             _slots = new ThreadSafeDictionary<UniqueId, INeedle<T>>(_maxProbingHint);
         }
 
-        public bool TryGetValue(out T value)
-        {
-            return TryGetValue(ThreadUniqueId.CurrentThreadId, out value);
-        }
-
         bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
 
         bool IPromise.IsCompleted => IsValueCreated;
-
-        void IObserver<T>.OnCompleted()
-        {
-            // Empty
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            SetError(ThreadUniqueId.CurrentThreadId, error);
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
-        }
 
         public bool IsValueCreated
         {
@@ -68,12 +50,9 @@ namespace Theraot.Threading
             }
         }
 
-        public T Value
-        {
-            get => GetValue(ThreadUniqueId.CurrentThreadId);
+        public T Value { get => GetValue(ThreadUniqueId.CurrentThreadId); set => SetValue(ThreadUniqueId.CurrentThreadId, value); }
 
-            set => SetValue(ThreadUniqueId.CurrentThreadId, value);
-        }
+        T IThreadLocal<T>.ValueForDebugDisplay => TryGetValue(ThreadUniqueId.CurrentThreadId, out var target) ? target : default;
 
         public IList<T> Values
         {
@@ -87,8 +66,6 @@ namespace Theraot.Threading
                 return slots!.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
             }
         }
-
-        T IThreadLocal<T>.ValueForDebugDisplay => TryGetValue(ThreadUniqueId.CurrentThreadId, out var target) ? target : default;
 
         [DebuggerNonUserCode]
         public void Dispose()
@@ -107,27 +84,28 @@ namespace Theraot.Threading
             EraseValue(ThreadUniqueId.CurrentThreadId);
         }
 
+        void IObserver<T>.OnCompleted()
+        {
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            SetError(ThreadUniqueId.CurrentThreadId, error);
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
         public override string ToString()
         {
             return Value?.ToString() ?? string.Empty;
         }
 
-        private bool TryGetValue(UniqueId threadUniqueId, out T target)
+        public bool TryGetValue(out T value)
         {
-            var slots = _slots;
-            if (Volatile.Read(ref _disposing) == 1)
-            {
-                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
-            }
-
-            if (slots!.TryGetValue(threadUniqueId, out var tmp))
-            {
-                target = tmp.Value;
-                return true;
-            }
-
-            target = default!;
-            return false;
+            return TryGetValue(ThreadUniqueId.CurrentThreadId, out value);
         }
 
         private void EraseValue(UniqueId threadUniqueId)
@@ -191,6 +169,24 @@ namespace Theraot.Threading
             }
 
             slots!.Set(threadUniqueId, new ReadOnlyStructNeedle<T>(value));
+        }
+
+        private bool TryGetValue(UniqueId threadUniqueId, out T target)
+        {
+            var slots = _slots;
+            if (Volatile.Read(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
+            }
+
+            if (slots!.TryGetValue(threadUniqueId, out var tmp))
+            {
+                target = tmp.Value;
+                return true;
+            }
+
+            target = default!;
+            return false;
         }
     }
 }

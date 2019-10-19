@@ -19,14 +19,9 @@ namespace Theraot.Threading.Needles
 
         public bool IsAlive => false;
 
-        T INeedle<T>.Value
-        {
-            get => throw Exception;
-
-            set => throw new NotSupportedException();
-        }
-
         public T Value => throw Exception;
+
+        T INeedle<T>.Value { get => throw Exception; set => throw new NotSupportedException(); }
 
         public static bool operator !=(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
@@ -52,6 +47,11 @@ namespace Theraot.Threading.Needles
             return leftException.Equals(rightException);
         }
 
+        public bool Equals(ExceptionStructNeedle<T> other)
+        {
+            return this == other;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is ExceptionStructNeedle<T> needle)
@@ -60,11 +60,6 @@ namespace Theraot.Threading.Needles
             }
 
             return obj is Exception exc && exc.Equals(Exception);
-        }
-
-        public bool Equals(ExceptionStructNeedle<T> other)
-        {
-            return this == other;
         }
 
         public override string ToString()

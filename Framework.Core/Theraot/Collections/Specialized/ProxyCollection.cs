@@ -46,14 +46,14 @@ namespace Theraot.Collections.Specialized
             return Instance.Contains(item);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            Instance.CopyTo(array, arrayIndex);
-        }
-
         public void CopyTo(T[] array)
         {
             Instance.CopyTo(array, 0);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            Instance.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
@@ -76,6 +76,11 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public bool Remove(T item)
         {
             return Instance.Remove(item);
@@ -96,11 +101,6 @@ namespace Theraot.Collections.Specialized
             var array = new T[Instance.Count];
             Instance.CopyTo(array, 0);
             return array;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

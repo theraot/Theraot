@@ -98,9 +98,7 @@ namespace Theraot.Collections
 
                     found = true;
                     return false;
-                }
-
-            ).Consume();
+                }).Consume();
             if (found)
             {
                 return index;

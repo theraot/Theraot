@@ -7,6 +7,7 @@ namespace Theraot.Collections
     public sealed class FilteredObserver<T> : IObserver<T>
     {
         private readonly Predicate<T> _filter;
+
         private readonly IObserver<T> _observer;
 
         public FilteredObserver(IObserver<T> observer, Predicate<T> filter)

@@ -35,14 +35,14 @@ namespace Theraot.Collections.ThreadSafe
             EventHandlers.Add(value);
         }
 
-        public virtual void Invoke(object? sender, TEventArgs eventArgs)
-        {
-            EventHandlers.Invoke(DelegateCollectionInvokeOptions.None, sender, eventArgs);
-        }
-
         public virtual void Invoke(Action<Exception> onException, object? sender, TEventArgs eventArgs)
         {
             EventHandlers.Invoke(onException, DelegateCollectionInvokeOptions.None, sender, eventArgs);
+        }
+
+        public virtual void Invoke(object? sender, TEventArgs eventArgs)
+        {
+            EventHandlers.Invoke(DelegateCollectionInvokeOptions.None, sender, eventArgs);
         }
 
         public void Remove(EventHandler<TEventArgs> value)

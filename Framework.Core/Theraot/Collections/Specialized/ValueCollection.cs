@@ -18,27 +18,11 @@ namespace Theraot.Collections.Specialized
 
         public int Count => _wrapped.Count;
 
+        bool ICollection<TValue>.IsReadOnly => true;
+
         bool ICollection.IsSynchronized => ((ICollection)_wrapped).IsSynchronized;
 
         object ICollection.SyncRoot => ((ICollection)_wrapped).SyncRoot;
-
-        bool ICollection<TValue>.IsReadOnly => true;
-
-        public void CopyTo(TValue[] array, int arrayIndex)
-        {
-            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            _wrapped.ConvertProgressive(pair => pair.Value).CopyTo(array, arrayIndex);
-        }
-
-        public IEnumerator<TValue> GetEnumerator()
-        {
-            return _wrapped.ConvertProgressive(pair => pair.Value).GetEnumerator();
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            ((ICollection)_wrapped).CopyTo(array, index);
-        }
 
         void ICollection<TValue>.Add(TValue item)
         {
@@ -53,6 +37,22 @@ namespace Theraot.Collections.Specialized
         bool ICollection<TValue>.Contains(TValue item)
         {
             return _wrapped.Where(pair => EqualityComparer<TValue>.Default.Equals(item, pair.Value)).HasAtLeast(1);
+        }
+
+        public void CopyTo(TValue[] array, int arrayIndex)
+        {
+            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
+            _wrapped.ConvertProgressive(pair => pair.Value).CopyTo(array, arrayIndex);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            ((ICollection)_wrapped).CopyTo(array, index);
+        }
+
+        public IEnumerator<TValue> GetEnumerator()
+        {
+            return _wrapped.ConvertProgressive(pair => pair.Value).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

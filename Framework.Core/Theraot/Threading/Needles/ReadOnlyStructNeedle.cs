@@ -21,14 +21,9 @@ namespace Theraot.Threading.Needles
 
         public bool IsAlive => Value != null;
 
-        T INeedle<T>.Value
-        {
-            get => Value;
-
-            set => throw new NotSupportedException();
-        }
-
         public T Value { get; }
+
+        T INeedle<T>.Value { get => Value; set => throw new NotSupportedException(); }
 
         public static bool operator !=(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
@@ -69,12 +64,6 @@ namespace Theraot.Threading.Needles
             return false;
         }
 
-        private bool Equals(T otherValue)
-        {
-            var value = Value;
-            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
-        }
-
         public bool Equals(ReadOnlyStructNeedle<T> other)
         {
             if (other.TryGetValue(out var value))
@@ -88,6 +77,12 @@ namespace Theraot.Threading.Needles
         {
             var value = Value;
             return IsAlive ? value!.ToString() : "<Dead Needle>";
+        }
+
+        private bool Equals(T otherValue)
+        {
+            var value = Value;
+            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
         }
     }
 }

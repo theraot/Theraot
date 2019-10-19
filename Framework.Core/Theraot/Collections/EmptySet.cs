@@ -7,14 +7,14 @@ namespace Theraot.Collections
     [DebuggerNonUserCode]
     public sealed class EmptySet<T> : ProgressiveSet<T>
     {
-        private EmptySet()
-            : base(ArrayEx.Empty<T>())
+        internal EmptySet(IEqualityComparer<T>? comparer)
+            : base(ArrayEx.Empty<T>(), comparer)
         {
             ConsumeAll();
         }
 
-        internal EmptySet(IEqualityComparer<T>? comparer)
-            : base(ArrayEx.Empty<T>(), comparer)
+        private EmptySet()
+            : base(ArrayEx.Empty<T>())
         {
             ConsumeAll();
         }

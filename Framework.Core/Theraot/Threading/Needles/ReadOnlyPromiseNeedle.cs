@@ -20,22 +20,7 @@ namespace Theraot.Threading.Needles
 
         public T Value => _promised.Value;
 
-        T INeedle<T>.Value
-        {
-            get => _promised.Value;
-
-            set => throw new NotSupportedException();
-        }
-
-        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
-        {
-            if (left is null)
-            {
-                return right is null;
-            }
-
-            return !(right is null) && left._promised.Equals(right._promised);
-        }
+        T INeedle<T>.Value { get => _promised.Value; set => throw new NotSupportedException(); }
 
         public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
@@ -52,9 +37,14 @@ namespace Theraot.Threading.Needles
             return !left._promised.Equals(right._promised);
         }
 
-        public bool Equals(ReadOnlyPromiseNeedle<T> other)
+        public static bool operator ==(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            return !(other is null) && _promised.Equals(other._promised);
+            if (left is null)
+            {
+                return right is null;
+            }
+
+            return !(right is null) && left._promised.Equals(right._promised);
         }
 
         public override bool Equals(object obj)
@@ -77,6 +67,11 @@ namespace Theraot.Threading.Needles
             }
 
             return hasValue && obj.Equals(value);
+        }
+
+        public bool Equals(ReadOnlyPromiseNeedle<T> other)
+        {
+            return !(other is null) && _promised.Equals(other._promised);
         }
 
         public override int GetHashCode()

@@ -12,6 +12,7 @@ namespace Theraot.Threading.Needles
     public class PromiseNeedle<T> : Promise, IRecyclable, ICacheNeedle<T>
     {
         private readonly int _hashCode;
+
         private T _target;
 
         public PromiseNeedle(bool done)
@@ -33,19 +34,6 @@ namespace Theraot.Threading.Needles
         {
             _target = target;
             _hashCode = target == null ? base.GetHashCode() : target.GetHashCode();
-        }
-
-        public bool TryGetValue(out T value)
-        {
-            var result = IsCompleted;
-            value = _target;
-            return result;
-        }
-
-        public override void Free()
-        {
-            base.Free();
-            _target = default!;
         }
 
         public bool IsAlive => _target != null;
@@ -119,12 +107,6 @@ namespace Theraot.Threading.Needles
             return false;
         }
 
-        private bool Equals(T otherValue)
-        {
-            var value = Value;
-            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
-        }
-
         public bool Equals(PromiseNeedle<T> other)
         {
             if (other is null)
@@ -136,6 +118,12 @@ namespace Theraot.Threading.Needles
                 return Equals(value);
             }
             return !IsAlive;
+        }
+
+        public override void Free()
+        {
+            base.Free();
+            _target = default!;
         }
 
         public override int GetHashCode()
@@ -151,6 +139,19 @@ namespace Theraot.Threading.Needles
                     ? target!.ToString()
                     : Exception.ToString()
                 : "[Not Created]";
+        }
+
+        public bool TryGetValue(out T value)
+        {
+            var result = IsCompleted;
+            value = _target;
+            return result;
+        }
+
+        private bool Equals(T otherValue)
+        {
+            var value = Value;
+            return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);
         }
     }
 }

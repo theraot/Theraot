@@ -10,6 +10,7 @@ namespace Theraot.Collections.Specialized
     public class ConversionEqualityComparer<TInput, TOutput> : IEqualityComparer<TInput>
     {
         private readonly IEqualityComparer<TOutput> _comparer;
+
         private readonly Func<TInput, TOutput> _converter;
 
         public ConversionEqualityComparer(IEqualityComparer<TOutput> comparer, Func<TInput, TOutput> converter)

@@ -23,12 +23,6 @@ namespace Theraot.Reflection
             );
         }
 
-        public static TTarget As<TTarget>(object source, TTarget def)
-            where TTarget : class
-        {
-            return As(source, () => def);
-        }
-
         public static TTarget As<TTarget>(object source, Func<TTarget> alternative)
             where TTarget : class
         {
@@ -45,6 +39,12 @@ namespace Theraot.Reflection
             return sourceAsTarget;
         }
 
+        public static TTarget As<TTarget>(object source, TTarget def)
+            where TTarget : class
+        {
+            return As(source, () => def);
+        }
+
         public static TTarget Cast<TTarget>(object source)
         {
             return Cast
@@ -55,11 +55,6 @@ namespace Theraot.Reflection
                     () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name)
                 )
             );
-        }
-
-        public static TTarget Cast<TTarget>(object source, TTarget def)
-        {
-            return Cast(source, () => def);
         }
 
         public static TTarget Cast<TTarget>(object source, Func<TTarget> alternative)
@@ -78,6 +73,11 @@ namespace Theraot.Reflection
                 No.Op(exception);
                 return alternative();
             }
+        }
+
+        public static TTarget Cast<TTarget>(object source, TTarget def)
+        {
+            return Cast(source, () => def);
         }
 
         public static MethodInfo? FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
@@ -252,22 +252,6 @@ namespace Theraot.Reflection
         }
 
         [return: NotNull]
-        public static T LazyCreate<T>([NotNull] ref T? target, object syncRoot)
-            where T : class
-        {
-            var found = target;
-            if (found != null)
-            {
-                return found;
-            }
-
-            lock (syncRoot)
-            {
-                return LazyCreate(ref target);
-            }
-        }
-
-        [return: NotNull]
         public static T LazyCreate<T>([NotNull] ref T? target, Func<T> valueFactory)
             where T : class
         {
@@ -304,6 +288,22 @@ namespace Theraot.Reflection
             lock (syncRoot)
             {
                 return LazyCreate(ref target, valueFactory);
+            }
+        }
+
+        [return: NotNull]
+        public static T LazyCreate<T>([NotNull] ref T? target, object syncRoot)
+            where T : class
+        {
+            var found = target;
+            if (found != null)
+            {
+                return found;
+            }
+
+            lock (syncRoot)
+            {
+                return LazyCreate(ref target);
             }
         }
 

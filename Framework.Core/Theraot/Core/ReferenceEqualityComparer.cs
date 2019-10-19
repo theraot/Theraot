@@ -14,10 +14,14 @@ namespace Theraot.Core
     {
         private ReferenceEqualityComparer()
         {
-            // Empty
         }
 
         public static ReferenceEqualityComparer<T> Instance { get; } = new ReferenceEqualityComparer<T>();
+
+        bool IEqualityComparer<T>.Equals(T x, T y)
+        {
+            return ReferenceEquals(x, y);
+        }
 
         public int GetHashCode(T obj)
         {
@@ -26,11 +30,6 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(obj));
             }
             return obj.GetHashCode();
-        }
-
-        bool IEqualityComparer<T>.Equals(T x, T y)
-        {
-            return ReferenceEquals(x, y);
         }
     }
 }

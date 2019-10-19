@@ -6,7 +6,9 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
+
 #if LESSTHAN_NET40
+
 using System.Collections.Generic;
 
 #endif
@@ -15,9 +17,9 @@ namespace Theraot.Core
 {
     public static class PathHelper
     {
-        public static string AltDirectorySeparatorString { get; } = new string(new[] {Path.AltDirectorySeparatorChar});
-        public static string DirectorySeparatorString { get; } = new string(new[] {Path.DirectorySeparatorChar});
-        public static string VolumeSeparatorString { get; } = new string(new[] {Path.VolumeSeparatorChar});
+        public static string AltDirectorySeparatorString { get; } = new string(new[] { Path.AltDirectorySeparatorChar });
+        public static string DirectorySeparatorString { get; } = new string(new[] { Path.DirectorySeparatorChar });
+        public static string VolumeSeparatorString { get; } = new string(new[] { Path.VolumeSeparatorChar });
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Combine(params string[] paths)

@@ -1,6 +1,7 @@
 ﻿// Needed for NET35 (ThreadLocal)
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,44 +31,8 @@ namespace Theraot.Threading
             _slot = Thread.AllocateDataSlot();
         }
 
-        internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default;
-
         bool IReadOnlyNeedle<T>.IsAlive => IsValueCreated;
-
         bool IPromise.IsCompleted => IsValueCreated;
-
-        public bool TryGetValue(out T value)
-        {
-            var bundle = Thread.GetData(_slot);
-            if (!(bundle is INeedle<T> container))
-            {
-                value = default!;
-                return false;
-            }
-
-            value = container.Value;
-            return true;
-        }
-
-        void IObserver<T>.OnCompleted()
-        {
-            GC.KeepAlive(Value);
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            if (Volatile.Read(ref _disposing) == 1)
-            {
-                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
-            }
-
-            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
-        }
 
         public bool IsValueCreated
         {
@@ -126,9 +91,9 @@ namespace Theraot.Threading
             }
         }
 
-        T IThreadLocal<T>.ValueForDebugDisplay => ValueForDebugDisplay;
-
         IList<T> IThreadLocal<T>.Values => throw new InvalidOperationException();
+        T IThreadLocal<T>.ValueForDebugDisplay => ValueForDebugDisplay;
+        internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default;
 
         [DebuggerNonUserCode]
         public void Dispose()
@@ -152,9 +117,42 @@ namespace Theraot.Threading
             Thread.SetData(_slot, null);
         }
 
+        void IObserver<T>.OnCompleted()
+        {
+            GC.KeepAlive(Value);
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            if (Volatile.Read(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
+            }
+
+            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
         public override string ToString()
         {
             return Value?.ToString() ?? string.Empty;
+        }
+
+        public bool TryGetValue(out T value)
+        {
+            var bundle = Thread.GetData(_slot);
+            if (!(bundle is INeedle<T> container))
+            {
+                value = default!;
+                return false;
+            }
+
+            value = container.Value;
+            return true;
         }
     }
 }
