@@ -9,7 +9,7 @@ namespace System.Collections.Generic
     [ComVisible(false)]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>
+    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
     {
         public DictionaryEx()
         {
@@ -46,15 +46,16 @@ namespace System.Collections.Generic
             : base(info, context)
 
 #else
-
         [Obsolete("This target platform does not support binary serialization.")]
         protected DictionaryEx(SerializationInfo info, StreamingContext context)
-
 #endif
-
         {
             No.Op(info);
             No.Op(context);
         }
+
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
+
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
     }
 }
