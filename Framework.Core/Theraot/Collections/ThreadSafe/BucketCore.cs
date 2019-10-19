@@ -232,7 +232,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        DoLeave(ref arrayUse[subIndex], ref arrayFirst[subIndex], ref arraySecond[subIndex]);
+                        DoLeave(ref arrayUse![subIndex], ref arrayFirst[subIndex], ref arraySecond![subIndex]);
                     }
                 }
             }
