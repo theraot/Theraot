@@ -229,7 +229,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             var queue = Setup();
             queue.TryPeek(out var value);
             Assert.AreEqual(0, value, "#1");
-            Assert.IsTrue(queue.TryDequeue(out value), "#2");
+            Assert.IsTrue(queue.TryDequeue(out _), "#2");
             Assert.IsTrue(queue.TryDequeue(out value), "#3");
             Assert.AreEqual(1, value, "#4");
         }

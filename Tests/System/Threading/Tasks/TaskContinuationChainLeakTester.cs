@@ -40,8 +40,7 @@ namespace MonoTests.System.Threading.Tasks
 
         public void Verify()
         {
-            Task task;
-            Assert.IsFalse(_headTaskWeakRef.TryGetTarget(out task));
+            Assert.IsFalse(_headTaskWeakRef.TryGetTarget(out _));
         }
 
         private void DummyWorker()

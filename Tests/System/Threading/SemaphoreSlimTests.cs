@@ -34,6 +34,46 @@ namespace System.Threading.Tests
         }
 
         [Test]
+        public static void LockCancellationTest()
+        {
+            LockCancellationTestAsync().Wait();
+        }
+
+        public static async Task LockCancellationTestAsync()
+        {
+            var asyncLock = new AsyncLock();
+            var holdTime = TimeSpan.FromSeconds(2);
+            var delayTime = TimeSpan.FromMilliseconds(200);
+
+            var lock1Started = new ManualResetEventSlim(false);
+
+            var lock1 = TryTakeAndHold(asyncLock, holdTime, callback: () => lock1Started.Set());
+            lock1Started.Wait();
+
+            var cts2 = new CancellationTokenSource();
+            var sw2 = Stopwatch.StartNew();
+            var lock2 = TryTakeAndHold(asyncLock, holdTime, cts2.Token);
+            await TaskEx.Delay(delayTime);
+            cts2.Cancel();
+            var lock2Taken = await lock2;
+            sw2.Stop();
+
+            var sw3 = Stopwatch.StartNew();
+            var lock3 = TryTakeAndHold(asyncLock, delayTime);
+            await TaskEx.Delay(delayTime);
+            var lock3Taken = await lock3;
+            sw3.Stop();
+
+            var lock1Taken = await lock1;
+
+            Assert.IsTrue(lock1Taken);
+            Assert.IsFalse(lock2Taken);
+            Assert.Less(sw2.Elapsed, holdTime - delayTime);
+            Assert.IsFalse(lock3Taken);
+            Assert.Less(sw3.Elapsed, holdTime - delayTime);
+        }
+
+        [Test]
         public static void RunSemaphoreSlimTest0_Ctor()
         {
             RunSemaphoreSlimTest0_Ctor(0, 10, null);
@@ -103,6 +143,57 @@ namespace System.Threading.Tests
                (10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
+        /// <summary>
+        /// Test SemaphoreSlim WaitAsync
+        /// The test verifies that SemaphoreSlim.Release() does not execute any user code synchronously.
+        /// </summary>
+        [Test]
+        public static void RunSemaphoreSlimTest1_WaitAsync2()
+        {
+            using (var semaphore = new SemaphoreSlim(1))
+            {
+                using (var counter = new ThreadLocal<int>(() => 0))
+                {
+                    using (var mre = new ManualResetEvent(false))
+                    {
+                        var semaphores = new[] { semaphore };
+                        var counters = new[] { counter };
+                        var manualResetEvents = new[] { mre };
+                        var nonZeroObserved = false;
+
+                        const int asyncActions = 20;
+                        var remAsyncActions = asyncActions;
+                        Func<int, Task> doWorkAsync = async _ =>
+                        {
+                            await semaphores[0].WaitAsync();
+                            nonZeroObserved |= counters[0].Value > 0;
+
+                            counters[0].Value = counters[0].Value + 1;
+                            semaphores[0].Release();
+                            counters[0].Value = counters[0].Value - 1;
+
+                            if (Interlocked.Decrement(ref remAsyncActions) == 0)
+                            {
+                                manualResetEvents[0].Set();
+                            }
+                        };
+
+                        semaphore.Wait();
+                        for (var i = 0; i < asyncActions; i++)
+                        {
+                            doWorkAsync.Invoke(i);
+                        }
+                        semaphore.Release();
+
+                        mre.WaitOne();
+
+                        Assert.False(nonZeroObserved,
+                            "RunSemaphoreSlimTest1_WaitAsync2:  FAILED.  SemaphoreSlim.Release() seems to have synchronously invoked a continuation.");
+                    }
+                }
+            }
+        }
+
         [Test]
         public static void RunSemaphoreSlimTest2_Release()
         {
@@ -163,6 +254,58 @@ namespace System.Threading.Tests
             RunSemaphoreSlimTest7_AvailableWaitHandle(1, 10, SemaphoreSlimActions.WaitAsync, false);
             RunSemaphoreSlimTest7_AvailableWaitHandle(5, 10, SemaphoreSlimActions.WaitAsync, true);
             RunSemaphoreSlimTest7_AvailableWaitHandle(0, 10, SemaphoreSlimActions.Release, true);
+        }
+
+        /// <summary>
+        /// Call specific SemaphoreSlim method or property
+        /// </summary>
+        /// <param name="semaphore">The SemaphoreSlim instance</param>
+        /// <param name="action">The action name</param>
+        /// <param name="param">The action parameter, null if it takes no parameters</param>
+        /// <returns>The action return value, null if the action returns void</returns>
+        private static object CallSemaphoreAction
+            (SemaphoreSlim semaphore, SemaphoreSlimActions? action, object param)
+        {
+            if (action == SemaphoreSlimActions.Wait)
+            {
+                if (param is TimeSpan timeSpan)
+                {
+                    return semaphore.Wait(timeSpan);
+                }
+                if (param is int milliseconds)
+                {
+                    return semaphore.Wait(milliseconds);
+                }
+                semaphore.Wait();
+                return null;
+            }
+            if (action == SemaphoreSlimActions.WaitAsync)
+            {
+                if (param is TimeSpan timeSpan)
+                {
+                    return semaphore.WaitAsync(timeSpan).Result;
+                }
+                if (param is int milliseconds)
+                {
+                    return semaphore.WaitAsync(milliseconds).Result;
+                }
+                semaphore.WaitAsync().Wait();
+                return null;
+            }
+            if (action == SemaphoreSlimActions.Release)
+            {
+                return param != null ? semaphore.Release((int)param) : semaphore.Release();
+            }
+            if (action == SemaphoreSlimActions.Dispose)
+            {
+                semaphore.Dispose();
+                return null;
+            }
+            if (action == SemaphoreSlimActions.CurrentCount)
+            {
+                return semaphore.CurrentCount;
+            }
+            return action == SemaphoreSlimActions.AvailableWaitHandle ? semaphore.AvailableWaitHandle : null;
         }
 
         /// <summary>
@@ -254,57 +397,6 @@ namespace System.Threading.Tests
         }
 
         /// <summary>
-        /// Test SemaphoreSlim WaitAsync
-        /// The test verifies that SemaphoreSlim.Release() does not execute any user code synchronously.
-        /// </summary>
-        [Test]
-        public static void RunSemaphoreSlimTest1_WaitAsync2()
-        {
-            using (var semaphore = new SemaphoreSlim(1))
-            {
-                using (var counter = new ThreadLocal<int>(() => 0))
-                {
-                    using (var mre = new ManualResetEvent(false))
-                    {
-                        var semaphores = new[] { semaphore };
-                        var counters = new[] { counter };
-                        var manualResetEvents = new[] { mre };
-                        var nonZeroObserved = false;
-
-                        const int asyncActions = 20;
-                        var remAsyncActions = asyncActions;
-                        Func<int, Task> doWorkAsync = async _ =>
-                        {
-                            await semaphores[0].WaitAsync();
-                            nonZeroObserved |= counters[0].Value > 0;
-
-                            counters[0].Value = counters[0].Value + 1;
-                            semaphores[0].Release();
-                            counters[0].Value = counters[0].Value - 1;
-
-                            if (Interlocked.Decrement(ref remAsyncActions) == 0)
-                            {
-                                manualResetEvents[0].Set();
-                            }
-                        };
-
-                        semaphore.Wait();
-                        for (var i = 0; i < asyncActions; i++)
-                        {
-                            doWorkAsync.Invoke(i);
-                        }
-                        semaphore.Release();
-
-                        mre.WaitOne();
-
-                        Assert.False(nonZeroObserved,
-                            "RunSemaphoreSlimTest1_WaitAsync2:  FAILED.  SemaphoreSlim.Release() seems to have synchronously invoked a continuation.");
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Test SemaphoreSlim Release
         /// </summary>
         /// <param name="initial">The initial semaphore count</param>
@@ -330,58 +422,6 @@ namespace System.Threading.Tests
                     Assert.IsTrue(exceptionType.IsInstanceOfType(ex));
                 }
             }
-        }
-
-        /// <summary>
-        /// Call specific SemaphoreSlim method or property
-        /// </summary>
-        /// <param name="semaphore">The SemaphoreSlim instance</param>
-        /// <param name="action">The action name</param>
-        /// <param name="param">The action parameter, null if it takes no parameters</param>
-        /// <returns>The action return value, null if the action returns void</returns>
-        private static object CallSemaphoreAction
-            (SemaphoreSlim semaphore, SemaphoreSlimActions? action, object param)
-        {
-            if (action == SemaphoreSlimActions.Wait)
-            {
-                if (param is TimeSpan timeSpan)
-                {
-                    return semaphore.Wait(timeSpan);
-                }
-                if (param is int milliseconds)
-                {
-                    return semaphore.Wait(milliseconds);
-                }
-                semaphore.Wait();
-                return null;
-            }
-            if (action == SemaphoreSlimActions.WaitAsync)
-            {
-                if (param is TimeSpan timeSpan)
-                {
-                    return semaphore.WaitAsync(timeSpan).Result;
-                }
-                if (param is int milliseconds)
-                {
-                    return semaphore.WaitAsync(milliseconds).Result;
-                }
-                semaphore.WaitAsync().Wait();
-                return null;
-            }
-            if (action == SemaphoreSlimActions.Release)
-            {
-                return param != null ? semaphore.Release((int)param) : semaphore.Release();
-            }
-            if (action == SemaphoreSlimActions.Dispose)
-            {
-                semaphore.Dispose();
-                return null;
-            }
-            if (action == SemaphoreSlimActions.CurrentCount)
-            {
-                return semaphore.CurrentCount;
-            }
-            return action == SemaphoreSlimActions.AvailableWaitHandle ? semaphore.AvailableWaitHandle : null;
         }
 
         /// <summary>
@@ -447,77 +487,10 @@ namespace System.Threading.Tests
             Assert.AreEqual(state, semaphore.AvailableWaitHandle.WaitOne(0));
         }
 
-        #region Lock cancellation
-
-        [Test]
-        public static void LockCancellationTest()
-        {
-            LockCancellationTestAsync().Wait();
-        }
-
-        public static async Task LockCancellationTestAsync()
-        {
-            var asyncLock = new AsyncLock();
-            var holdTime = TimeSpan.FromSeconds(2);
-            var delayTime = TimeSpan.FromMilliseconds(200);
-
-            var lock1Started = new ManualResetEventSlim(false);
-
-            var lock1 = TryTakeAndHold(asyncLock, holdTime, callback: () => lock1Started.Set());
-            lock1Started.Wait();
-
-            var cts2 = new CancellationTokenSource();
-            var sw2 = Stopwatch.StartNew();
-            var lock2 = TryTakeAndHold(asyncLock, holdTime, cts2.Token);
-            await TaskEx.Delay(delayTime);
-            cts2.Cancel();
-            var lock2Taken = await lock2;
-            sw2.Stop();
-
-            var sw3 = Stopwatch.StartNew();
-            var lock3 = TryTakeAndHold(asyncLock, delayTime);
-            await TaskEx.Delay(delayTime);
-            var lock3Taken = await lock3;
-            sw3.Stop();
-
-            var lock1Taken = await lock1;
-
-            Assert.IsTrue(lock1Taken);
-            Assert.IsFalse(lock2Taken);
-            Assert.Less(sw2.Elapsed, holdTime - delayTime);
-            Assert.IsFalse(lock3Taken);
-            Assert.Less(sw3.Elapsed, holdTime - delayTime);
-        }
-
-        private class AsyncLock
-        {
-            private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-
-            public async Task<IDisposable> AcquireAsync(TimeSpan timeout, CancellationToken cancellation)
-            {
-                var succeeded = await _semaphore.WaitAsync(timeout, cancellation);
-                if (succeeded)
-                {
-                    return new DisposableSemaphore(_semaphore);
-                }
-
-                cancellation.ThrowIfCancellationRequested();
-                throw new TimeoutException($"Attempt to take lock timed out in {timeout}.");
-
-            }
-
-            private class DisposableSemaphore : IDisposable
-            {
-                private readonly SemaphoreSlim _s;
-                public DisposableSemaphore(SemaphoreSlim s) => _s = s;
-                public void Dispose() => _s.Dispose();
-            }
-        }
-
         private static async Task<bool> TryTakeAndHold(
             AsyncLock asyncLock,
             TimeSpan holdTime,
-            CancellationToken cancellation = default(CancellationToken),
+            CancellationToken cancellation = default,
             Action callback = null)
         {
             try
@@ -540,6 +513,30 @@ namespace System.Threading.Tests
             }
         }
 
-        #endregion
+        private class AsyncLock
+        {
+            private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+            public async Task<IDisposable> AcquireAsync(TimeSpan timeout, CancellationToken cancellation)
+            {
+                var succeeded = await _semaphore.WaitAsync(timeout, cancellation);
+                if (succeeded)
+                {
+                    return new DisposableSemaphore(_semaphore);
+                }
+
+                cancellation.ThrowIfCancellationRequested();
+                throw new TimeoutException($"Attempt to take lock timed out in {timeout}.");
+            }
+
+            private class DisposableSemaphore : IDisposable
+            {
+                private readonly SemaphoreSlim _s;
+
+                public DisposableSemaphore(SemaphoreSlim s) => _s = s;
+
+                public void Dispose() => _s.Dispose();
+            }
+        }
     }
 }

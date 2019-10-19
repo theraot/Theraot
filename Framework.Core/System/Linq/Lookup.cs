@@ -1,4 +1,6 @@
 ﻿#if LESSTHAN_NET35
+
+#pragma warning disable CA1710 // IdentifiersShouldHaveCorrectSuffix
 #pragma warning disable CC0031 // Check for null before calling a delegate
 
 using System.Collections;
@@ -68,7 +70,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            var nonNullComparer = comparer ?? (IEqualityComparer<TKey>)EqualityComparer<TKey>.Default;
+            var nonNullComparer = comparer ?? EqualityComparer<TKey>.Default;
             var result = new Lookup<TKey, TElement>(nonNullComparer);
             var collections = new NullAwareDictionary<TKey, List<TElement>>(nonNullComparer);
             foreach (var item in source)

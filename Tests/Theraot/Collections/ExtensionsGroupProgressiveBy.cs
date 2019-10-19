@@ -15,7 +15,7 @@ using Theraot.Core;
 namespace Tests.Theraot.Collections
 {
     [TestFixture]
-    class ExtensionsGroupProgressiveBy
+    internal class ExtensionsGroupProgressiveBy
     {
         public static void AssertException<T>(Action action) where T : Exception
         {
@@ -86,6 +86,44 @@ namespace Tests.Theraot.Collections
         }
 
         [Test]
+        public void GroupProgressiveByIsDeferred()
+        {
+            var src = new IterateAndCount(10);
+            var a = src.GroupProgressiveBy(i => i > 5, null);
+            var b = src.GroupProgressiveBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var c = src.GroupProgressiveBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
+            var d = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
+            Assert.AreEqual(src.Total, 0);
+            a.Consume();
+            b.Consume();
+            c.Consume();
+            d.Consume();
+            Assert.AreEqual(src.Total, 40);
+        }
+
+        [Test]
+        public void GroupProgressiveByIsDeferredToGetEnumerator()
+        {
+            var src = new IterateAndCount(10);
+            var a = src.GroupProgressiveBy(i => i > 5, null);
+            Assert.AreEqual(src.Total, 0);
+            using (var enumerator = a.GetEnumerator())
+            {
+                // GroupProgressiveBy is truly deferred
+                GC.KeepAlive(enumerator);
+                Assert.AreEqual(src.Total, 0);
+            }
+            Assert.AreEqual(src.Total, 0);
+            using (var enumerator = a.GetEnumerator())
+            {
+                // GroupProgressiveBy is truly deferred
+                GC.KeepAlive(enumerator);
+                Assert.AreEqual(src.Total, 0);
+            }
+            Assert.AreEqual(src.Total, 0);
+        }
+
+        [Test]
         public void GroupProgressiveByLastNullGroup()
         {
             var values = new List<Data>
@@ -122,43 +160,6 @@ namespace Tests.Theraot.Collections
                 count++;
             }
             Assert.AreEqual(3, count);
-        }
-
-        [Test]
-        public void GroupProgressiveByIsDeferred()
-        {
-            var src = new IterateAndCount(10);
-            var a = src.GroupProgressiveBy(i => i > 5, null);
-            var b = src.GroupProgressiveBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var c = src.GroupProgressiveBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
-            var d = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
-            Assert.AreEqual(src.Total, 0);
-            a.Consume();
-            b.Consume();
-            c.Consume();
-            d.Consume();
-            Assert.AreEqual(src.Total, 40);
-        }
-        [Test]
-        public void GroupProgressiveByIsDeferredToGetEnumerator()
-        {
-            var src = new IterateAndCount(10);
-            var a = src.GroupProgressiveBy(i => i > 5, null);
-            Assert.AreEqual(src.Total, 0);
-            using (var enumerator = a.GetEnumerator())
-            {
-                // GroupProgressiveBy is truly deferred
-                GC.KeepAlive(enumerator);
-                Assert.AreEqual(src.Total, 0);
-            }
-            Assert.AreEqual(src.Total, 0);
-            using (var enumerator = a.GetEnumerator())
-            {
-                // GroupProgressiveBy is truly deferred
-                GC.KeepAlive(enumerator);
-                Assert.AreEqual(src.Total, 0);
-            }
-            Assert.AreEqual(src.Total, 0);
         }
 
         [Test]
@@ -304,8 +305,9 @@ namespace Tests.Theraot.Collections
 
         private class Data
         {
-            public readonly string String;
             public readonly int Number;
+            public readonly string String;
+
             public Data(int number, string str)
             {
                 Number = number;

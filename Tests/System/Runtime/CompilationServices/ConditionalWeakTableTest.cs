@@ -340,7 +340,7 @@ namespace MonoTests.System.Runtime.CompilerServices
                 Theraot.No.Op(ex);
             }
 
-            Assert.IsFalse(cwt.TryGetValue("foo", out res), "#1");
+            Assert.IsFalse(cwt.TryGetValue("foo", out _), "#1");
             Assert.IsTrue(cwt.TryGetValue(c, out res), "#2");
             Assert.AreEqual("foo", res, "#3");
         }

@@ -44,187 +44,9 @@ namespace MonoTests.System.Linq
     public class EnumerableTest
     {
         [Test]
-        public void TestSimpleExcept()
+        public void EmptyRangeStartingAtMinInt32()
         {
-            int[] first = { 0, 1, 2, 3, 4, 5 };
-            int[] second = { 2, 4, 6 };
-            int[] result = { 0, 1, 3, 5 };
-
-            AssertAreSame(result, first.Except(second));
-        }
-
-        [Test]
-        public void TestSimpleIntersect()
-        {
-            int[] first = { 0, 1, 2, 3, 4, 5 };
-            int[] second = { 2, 4, 6 };
-            int[] result = { 2, 4 };
-
-            AssertAreSame(result, first.Intersect(second));
-        }
-
-        [Test]
-        public void TestSimpleUnion()
-        {
-            int[] first = { 0, 1, 2, 3, 4, 5 };
-            int[] second = { 2, 4, 6 };
-            int[] result = { 0, 1, 2, 3, 4, 5, 6 };
-
-            AssertAreSame(result, first.Union(second));
-        }
-
-        private class Foo
-        {
-            // Empty
-        }
-
-        private class Bar : Foo
-        {
-            // Empty
-        }
-
-        [Test]
-        public void TestCast()
-        {
-            var a = new Bar();
-            var b = new Bar();
-            var c = new Bar();
-
-            var foos = new Foo[] { a, b, c };
-            var result = new[] { a, b, c };
-
-            AssertAreSame(result, foos.Cast<Bar>());
-        }
-
-        private class Bingo : IEnumerable<int>, IEnumerable<string>
-        {
-            IEnumerator<int> IEnumerable<int>.GetEnumerator()
-            {
-                yield return 42;
-                yield return 12;
-            }
-
-            IEnumerator<string> IEnumerable<string>.GetEnumerator()
-            {
-                yield return "foo";
-                yield return "bar";
-            }
-
-            public IEnumerator GetEnumerator()
-            {
-                return (this as IEnumerable<int>).GetEnumerator();
-            }
-        }
-
-        [Test]
-        public void TestCastToImplementedType()
-        {
-            var ints = new[] { 42, 12 };
-            var strs = new[] { "foo", "bar" };
-
-            var bingo = new Bingo();
-
-            // Note: we are testing Cast
-            AssertAreSame(ints, bingo.Cast<int>());
-            AssertAreSame(strs, bingo.Cast<string>());
-        }
-
-        [Test]
-        public void TestLast()
-        {
-            int[] data = { 1, 2, 3 };
-
-            Assert.AreEqual(3, data.Last());
-        }
-
-        [Test]
-        public void TestLastOrDefault()
-        {
-            int[] data = { };
-
-            Assert.AreEqual(default(int), data.LastOrDefault());
-        }
-
-        [Test]
-        public void TestFirst()
-        {
-            int[] data = { 1, 2, 3 };
-
-            Assert.AreEqual(1, data.First());
-        }
-
-        [Test]
-        public void TestFirstOrDefault()
-        {
-            int[] data = { };
-
-            Assert.AreEqual(default(int), data.FirstOrDefault());
-        }
-
-        [Test]
-        public void TestSequenceEqual()
-        {
-            int[] first = { 0, 1, 2, 3, 4, 5 };
-            int[] second = { 0, 1, 2 };
-            int[] third = { 0, 1, 2, 3, 4, 5 };
-
-            Assert.IsFalse(first.SequenceEqual(second));
-            Assert.IsTrue(first.SequenceEqual(third));
-        }
-
-        [Test]
-        public void TestSkip()
-        {
-            int[] data = { 0, 1, 2, 3, 4, 5 };
-            int[] result = { 3, 4, 5 };
-
-            AssertAreSame(result, data.Skip(3));
-        }
-
-        [Test]
-        public void TestSkipWhile()
-        {
-            int[] data = { 0, 1, 2, 3, 4, 5 };
-            int[] result = { 3, 4, 5 };
-
-            AssertAreSame(result, data.SkipWhile(i => i < 3));
-        }
-
-        [Test]
-        public void TestTake()
-        {
-            int[] data = { 0, 1, 2, 3, 4, 5 };
-            int[] result = { 0, 1, 2 };
-
-            AssertAreSame(result, data.Take(3));
-        }
-
-        [Test]
-        public void TestTakeWhile()
-        {
-            int[] data = { 0, 1, 2, 3, 4, 5 };
-            int[] result = { 0, 1, 2 };
-
-            AssertAreSame(result, data.TakeWhile(i => i < 3));
-        }
-
-        [Test]
-        public void TestSelect()
-        {
-            int[] data = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            int[] result = { 1, 3, 5, 7, 9 };
-
-            AssertAreSame(result, data.Where(i => i % 2 != 0));
-        }
-
-        [Test]
-        public void TestReverse()
-        {
-            int[] data = { 0, 1, 2, 3, 4 };
-            int[] result = { 4, 3, 2, 1, 0 };
-
-            AssertAreSame(result, data.Reverse());
-            AssertAreSame(result, Enumerable.Range(0, 5).Reverse());
+            AssertAreSame(new int[0], Enumerable.Range(int.MinValue, 0));
         }
 
         [Test]
@@ -248,11 +70,9 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void TestSum()
+        public void SingleValueOfMaxInt32()
         {
-            int[] data = { 1, 2, 3, 4 };
-
-            Assert.AreEqual(10, data.Sum());
+            AssertAreSame(new[] { int.MaxValue }, Enumerable.Range(int.MaxValue, 1));
         }
 
         [Test]
@@ -261,6 +81,113 @@ namespace MonoTests.System.Linq
             int[] data = { };
 
             Assert.AreEqual(0, data.Sum());
+        }
+
+        [Test]
+        public void TestAverageInt32()
+        {
+            // This does not overflow, computation is done with longs
+            var x = new[] { int.MaxValue, int.MaxValue };
+            Assert.AreEqual((double)int.MaxValue, x.Average());
+        }
+
+        [Test]
+        public void TestAverageOnInt32()
+        {
+            Assert.AreEqual(23.25, (new[] { 24, 7, 28, 34 }).Average());
+        }
+
+        [Test]
+        public void TestAverageOnInt64()
+        {
+            Assert.AreEqual(23.25, (new long[] { 24, 7, 28, 34 }).Average());
+        }
+
+        [Test]
+        public void TestAverageOnLongNullable()
+        {
+            var list = new List<long?>
+            {
+                2,
+                3
+            };
+            Assert.AreEqual(2.5d, list.Average());
+        }
+
+        [Test]
+        [Category("NotDotNet")] // Mirosoft is failing at this, from .NET 3.5 on :/
+        [Ignore("Not working")]
+        public void TestAverageOverflowOnInt64()
+        {
+            var x = new[] { long.MaxValue, long.MaxValue };
+            x.Average();
+        }
+
+        [Test]
+        public void TestCast()
+        {
+            var a = new Bar();
+            var b = new Bar();
+            var c = new Bar();
+
+            var foos = new Foo[] { a, b, c };
+            var result = new[] { a, b, c };
+
+            AssertAreSame(result, foos.Cast<Bar>());
+        }
+
+        [Test]
+        public void TestCastToImplementedType()
+        {
+            var ints = new[] { 42, 12 };
+            var strs = new[] { "foo", "bar" };
+
+            var bingo = new Bingo();
+
+            // Note: we are testing Cast
+            AssertAreSame(ints, bingo.Cast<int>());
+            AssertAreSame(strs, bingo.Cast<string>());
+        }
+
+        [Test]
+        public void TestFirst()
+        {
+            int[] data = { 1, 2, 3 };
+
+            Assert.AreEqual(1, data.First());
+        }
+
+        [Test]
+        public void TestFirstOrDefault()
+        {
+            int[] data = { };
+
+            Assert.AreEqual(default(int), data.FirstOrDefault());
+        }
+
+        [Test]
+        public void TestIntersect()
+        {
+            int[] left = { 1, 1 }, right = { 1, 1 };
+            int[] result = { 1 };
+
+            AssertAreSame(result, left.Intersect(right));
+        }
+
+        [Test]
+        public void TestLast()
+        {
+            int[] data = { 1, 2, 3 };
+
+            Assert.AreEqual(3, data.Last());
+        }
+
+        [Test]
+        public void TestLastOrDefault()
+        {
+            int[] data = { };
+
+            Assert.AreEqual(default(int), data.LastOrDefault());
         }
 
         [Test]
@@ -281,6 +208,12 @@ namespace MonoTests.System.Linq
             data = new int?[] { null, 1, 2 };
 
             Assert.AreEqual(-1, data.Max(x => -x));
+        }
+
+        [Test]
+        public void TestMaxStringEmpty()
+        {
+            Assert.IsNull((new string[0]).Max());
         }
 
         [Test]
@@ -310,138 +243,6 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void TestMaxStringEmpty()
-        {
-            Assert.IsNull((new string[0]).Max());
-        }
-
-        [Test]
-        public void TestToList()
-        {
-            int[] data = { 3, 5, 2 };
-
-            var list = data.ToList();
-
-            AssertAreSame(data, list);
-
-            Assert.AreEqual(typeof(List<int>), list.GetType());
-        }
-
-        [Test]
-        public void TestToArray()
-        {
-            ICollection<int> coll = new List<int>
-            {
-                0,
-                1,
-                2
-            };
-            int[] result = { 0, 1, 2 };
-
-            var array = coll.ToArray();
-
-            AssertAreSame(result, array);
-
-            Assert.AreEqual(typeof(int[]), array.GetType());
-        }
-
-        [Test]
-        public void TestIntersect()
-        {
-            int[] left = { 1, 1 }, right = { 1, 1 };
-            int[] result = { 1 };
-
-            AssertAreSame(result, left.Intersect(right));
-        }
-
-        [Test]
-        public void TestAverageOnInt32()
-        {
-            Assert.AreEqual(23.25, (new[] { 24, 7, 28, 34 }).Average());
-        }
-
-        [Test]
-        public void TestAverageOnInt64()
-        {
-            Assert.AreEqual(23.25, (new long[] { 24, 7, 28, 34 }).Average());
-        }
-
-        [Test]
-        public void TestAverageInt32()
-        {
-            // This does not overflow, computation is done with longs
-            var x = new[] { int.MaxValue, int.MaxValue };
-            Assert.AreEqual((double)int.MaxValue, x.Average());
-        }
-
-        [Test]
-        [Category("NotDotNet")] // Mirosoft is failing at this, from .NET 3.5 on :/
-        [Ignore("Not working")]
-        public void TestAverageOverflowOnInt64()
-        {
-            var x = new[] { long.MaxValue, long.MaxValue };
-            x.Average();
-        }
-
-        [Test]
-        public void TestAverageOnLongNullable()
-        {
-            var list = new List<long?>
-            {
-                2,
-                3
-            };
-            Assert.AreEqual(2.5d, list.Average());
-        }
-
-        [Test]
-        public void TestRange()
-        {
-            AssertAreSame(new[] { 1, 2, 3, 4 }, Enumerable.Range(1, 4));
-            AssertAreSame(new[] { 0, 1, 2, 3 }, Enumerable.Range(0, 4));
-        }
-
-        [Test]
-        public void SingleValueOfMaxInt32()
-        {
-            AssertAreSame(new[] { int.MaxValue }, Enumerable.Range(int.MaxValue, 1));
-        }
-
-        [Test]
-        public void EmptyRangeStartingAtMinInt32()
-        {
-            AssertAreSame(new int[0], Enumerable.Range(int.MinValue, 0));
-        }
-
-        [Test]
-        public void TestTakeTakesProperNumberOfItems()
-        {
-            var stream = new MemoryStream(new byte[] { 1, 2, 3, 4, 0 });
-
-            Assert.AreEqual(0, stream.Position);
-
-            foreach (var b in AsEnumerable(stream).Take(2))
-            {
-                GC.KeepAlive(b);
-            }
-
-            Assert.AreEqual(2, stream.Position);
-        }
-
-        private static IEnumerable<byte> AsEnumerable(Stream stream)
-        {
-            while (true)
-            {
-                var b = stream.ReadByte();
-                if (b < 0)
-                {
-                    break;
-                }
-                yield return (byte)b;
-            }
-        }
-
-        [Test]
         public void TestOrderBy()
         {
             int[] array = { 14, 53, 3, 9, 11, 14, 5, 32, 2 };
@@ -449,63 +250,6 @@ namespace MonoTests.System.Linq
                     orderby i
                     select i;
             AssertIsOrdered(q);
-        }
-
-        private class Baz
-        {
-            private readonly string _name;
-            private readonly int _age;
-
-            public string Name
-            {
-                get
-                {
-                    if (string.IsNullOrEmpty(_name))
-                    {
-                        return Age.ToString();
-                    }
-
-                    return _name + " (" + Age.ToString() + ")";
-                }
-            }
-
-            public int Age => _age + 1;
-
-            public Baz(string name, int age)
-            {
-                _name = name;
-                _age = age;
-            }
-
-            public override int GetHashCode()
-            {
-                return Age ^ Name.GetHashCode();
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is Baz b))
-                {
-                    return false;
-                }
-                return b.Age == Age && b.Name == Name;
-            }
-
-            public override string ToString()
-            {
-                return Name;
-            }
-        }
-
-        private static IEnumerable<Baz> CreateBazCollection()
-        {
-            return new[] {
-                new Baz ("jb", 25),
-                new Baz ("ana", 20),
-                new Baz ("reg", 28),
-                new Baz ("ro", 25),
-                new Baz ("jb", 7),
-            };
         }
 
         [Test]
@@ -524,43 +268,6 @@ namespace MonoTests.System.Linq
             };
 
             AssertAreSame(expected, q);
-        }
-
-        private class Data
-        {
-            public int Id { get; set; }
-
-            public string Name { get; set; }
-
-            public override string ToString()
-            {
-                return Id.ToString() + " " + Name;
-            }
-        }
-
-        private IEnumerable<Data> CreateData()
-        {
-            return new[] {
-                new Data { Id = 10, Name = "bcd" },
-                new Data { Id = 20, Name = "Abcd" },
-                new Data { Id = 20, Name = "Ab" },
-                new Data { Id = 10, Name = "Zyx" },
-            };
-        }
-
-        [Test]
-        public void TestOrderByIdDescendingThenByNameAscending()
-        {
-            var q = from d in CreateData()
-                    orderby d.Id descending, d.Name ascending
-                    select d;
-
-            var list = new List<Data>(q);
-
-            Assert.AreEqual("Ab", list[0].Name);
-            Assert.AreEqual("Abcd", list[1].Name);
-            Assert.AreEqual("bcd", list[2].Name);
-            Assert.AreEqual("Zyx", list[3].Name);
         }
 
         [Test]
@@ -595,13 +302,187 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected, data.OrderByDescending(x => x.Key));
         }
 
-        private static void AssertIsOrdered(IEnumerable<int> e)
+        [Test]
+        public void TestOrderByIdDescendingThenByNameAscending()
         {
-            var f = int.MinValue;
-            foreach (var i in e)
+            var q = from d in CreateData()
+                    orderby d.Id descending, d.Name ascending
+                    select d;
+
+            var list = new List<Data>(q);
+
+            Assert.AreEqual("Ab", list[0].Name);
+            Assert.AreEqual("Abcd", list[1].Name);
+            Assert.AreEqual("bcd", list[2].Name);
+            Assert.AreEqual("Zyx", list[3].Name);
+        }
+
+        [Test]
+        public void TestRange()
+        {
+            AssertAreSame(new[] { 1, 2, 3, 4 }, Enumerable.Range(1, 4));
+            AssertAreSame(new[] { 0, 1, 2, 3 }, Enumerable.Range(0, 4));
+        }
+
+        [Test]
+        public void TestReverse()
+        {
+            int[] data = { 0, 1, 2, 3, 4 };
+            int[] result = { 4, 3, 2, 1, 0 };
+
+            AssertAreSame(result, data.Reverse());
+            AssertAreSame(result, Enumerable.Range(0, 5).Reverse());
+        }
+
+        [Test]
+        public void TestSelect()
+        {
+            int[] data = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            int[] result = { 1, 3, 5, 7, 9 };
+
+            AssertAreSame(result, data.Where(i => i % 2 != 0));
+        }
+
+        [Test]
+        public void TestSequenceEqual()
+        {
+            int[] first = { 0, 1, 2, 3, 4, 5 };
+            int[] second = { 0, 1, 2 };
+            int[] third = { 0, 1, 2, 3, 4, 5 };
+
+            Assert.IsFalse(first.SequenceEqual(second));
+            Assert.IsTrue(first.SequenceEqual(third));
+        }
+
+        [Test]
+        public void TestSimpleExcept()
+        {
+            int[] first = { 0, 1, 2, 3, 4, 5 };
+            int[] second = { 2, 4, 6 };
+            int[] result = { 0, 1, 3, 5 };
+
+            AssertAreSame(result, first.Except(second));
+        }
+
+        [Test]
+        public void TestSimpleIntersect()
+        {
+            int[] first = { 0, 1, 2, 3, 4, 5 };
+            int[] second = { 2, 4, 6 };
+            int[] result = { 2, 4 };
+
+            AssertAreSame(result, first.Intersect(second));
+        }
+
+        [Test]
+        public void TestSimpleUnion()
+        {
+            int[] first = { 0, 1, 2, 3, 4, 5 };
+            int[] second = { 2, 4, 6 };
+            int[] result = { 0, 1, 2, 3, 4, 5, 6 };
+
+            AssertAreSame(result, first.Union(second));
+        }
+
+        [Test]
+        public void TestSkip()
+        {
+            int[] data = { 0, 1, 2, 3, 4, 5 };
+            int[] result = { 3, 4, 5 };
+
+            AssertAreSame(result, data.Skip(3));
+        }
+
+        [Test]
+        public void TestSkipWhile()
+        {
+            int[] data = { 0, 1, 2, 3, 4, 5 };
+            int[] result = { 3, 4, 5 };
+
+            AssertAreSame(result, data.SkipWhile(i => i < 3));
+        }
+
+        [Test]
+        public void TestSum()
+        {
+            int[] data = { 1, 2, 3, 4 };
+
+            Assert.AreEqual(10, data.Sum());
+        }
+
+        [Test]
+        public void TestTake()
+        {
+            int[] data = { 0, 1, 2, 3, 4, 5 };
+            int[] result = { 0, 1, 2 };
+
+            AssertAreSame(result, data.Take(3));
+        }
+
+        [Test]
+        public void TestTakeTakesProperNumberOfItems()
+        {
+            var stream = new MemoryStream(new byte[] { 1, 2, 3, 4, 0 });
+
+            Assert.AreEqual(0, stream.Position);
+
+            foreach (var b in AsEnumerable(stream).Take(2))
             {
-                Assert.IsTrue(f <= i);
-                f = i;
+                GC.KeepAlive(b);
+            }
+
+            Assert.AreEqual(2, stream.Position);
+        }
+
+        [Test]
+        public void TestTakeWhile()
+        {
+            int[] data = { 0, 1, 2, 3, 4, 5 };
+            int[] result = { 0, 1, 2 };
+
+            AssertAreSame(result, data.TakeWhile(i => i < 3));
+        }
+
+        [Test]
+        public void TestToArray()
+        {
+            ICollection<int> coll = new List<int>
+            {
+                0,
+                1,
+                2
+            };
+            int[] result = { 0, 1, 2 };
+
+            var array = coll.ToArray();
+
+            AssertAreSame(result, array);
+
+            Assert.AreEqual(typeof(int[]), array.GetType());
+        }
+
+        [Test]
+        public void TestToList()
+        {
+            int[] data = { 3, 5, 2 };
+
+            var list = data.ToList();
+
+            AssertAreSame(data, list);
+
+            Assert.AreEqual(typeof(List<int>), list.GetType());
+        }
+
+        private static IEnumerable<byte> AsEnumerable(Stream stream)
+        {
+            while (true)
+            {
+                var b = stream.ReadByte();
+                if (b < 0)
+                {
+                    break;
+                }
+                yield return (byte)b;
             }
         }
 
@@ -615,8 +496,8 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = Extensions.AsArray(expected);
-            var ea = Extensions.AsArray(actual);
+            var ee = expected.AsArray();
+            var ea = actual.AsArray();
 
             if (ee.Length != ea.Length)
             {
@@ -627,6 +508,125 @@ namespace MonoTests.System.Linq
             {
                 Assert.AreEqual(ee[index], ea[index]);
             }
+        }
+
+        private static void AssertIsOrdered(IEnumerable<int> e)
+        {
+            var f = int.MinValue;
+            foreach (var i in e)
+            {
+                Assert.IsTrue(f <= i);
+                f = i;
+            }
+        }
+
+        private static IEnumerable<Baz> CreateBazCollection()
+        {
+            return new[] {
+                new Baz ("jb", 25),
+                new Baz ("ana", 20),
+                new Baz ("reg", 28),
+                new Baz ("ro", 25),
+                new Baz ("jb", 7),
+            };
+        }
+
+        private IEnumerable<Data> CreateData()
+        {
+            return new[] {
+                new Data { Id = 10, Name = "bcd" },
+                new Data { Id = 20, Name = "Abcd" },
+                new Data { Id = 20, Name = "Ab" },
+                new Data { Id = 10, Name = "Zyx" },
+            };
+        }
+
+        private class Bar : Foo
+        {
+            // Empty
+        }
+
+        private class Baz
+        {
+            private readonly int _age;
+            private readonly string _name;
+
+            public Baz(string name, int age)
+            {
+                _name = name;
+                _age = age;
+            }
+
+            public int Age => _age + 1;
+
+            public string Name
+            {
+                get
+                {
+                    if (string.IsNullOrEmpty(_name))
+                    {
+                        return Age.ToString();
+                    }
+
+                    return _name + " (" + Age.ToString() + ")";
+                }
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj is Baz b))
+                {
+                    return false;
+                }
+                return b.Age == Age && b.Name == Name;
+            }
+
+            public override int GetHashCode()
+            {
+                return Age ^ Name.GetHashCode();
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
+        private class Bingo : IEnumerable<int>, IEnumerable<string>
+        {
+            IEnumerator<int> IEnumerable<int>.GetEnumerator()
+            {
+                yield return 42;
+                yield return 12;
+            }
+
+            IEnumerator<string> IEnumerable<string>.GetEnumerator()
+            {
+                yield return "foo";
+                yield return "bar";
+            }
+
+            public IEnumerator GetEnumerator()
+            {
+                return (this as IEnumerable<int>).GetEnumerator();
+            }
+        }
+
+        private class Data
+        {
+            public int Id { get; set; }
+
+            public string Name { get; set; }
+
+            public override string ToString()
+            {
+                return Id.ToString() + " " + Name;
+            }
+        }
+
+        private class Foo
+        {
+            // Empty
         }
     }
 }

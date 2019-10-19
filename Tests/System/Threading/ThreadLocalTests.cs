@@ -49,7 +49,7 @@ namespace MonoTests.System.Threading
                 using (var local2 = new ThreadLocal<object>())
                 {
                     Assert.AreEqual(default(DateTime), local.Value);
-                    Assert.AreEqual(default(object), local2.Value);
+                    Assert.AreEqual(default, local2.Value);
                 }
             }
         }

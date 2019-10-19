@@ -36,9 +36,39 @@ namespace MonoTests.System
     public class WeakReferenceTest
     {
         [Test]
+        public void WeakReference_IsAlive_Finalized()
+        {
+            GC.KeepAlive(new Foo());
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Assert.IsFalse(Foo.Failed);
+        }
+
+        [Test]
+        public void WeakReference_Object()
+        {
+            using (var s = Stream.Null)
+            {
+                var wr = new WeakReference(s);
+                Assert.IsTrue(wr.IsAlive, "IsAlive");
+                Assert.AreSame(s, wr.Target, "Target");
+                Assert.IsFalse(wr.TrackResurrection, "TrackResurrection");
+            }
+        }
+
+        [Test]
         public void WeakReference_Object_Null()
         {
             var wr = new WeakReference(null);
+            Assert.IsFalse(wr.IsAlive, "IsAlive");
+            Assert.IsNull(wr.Target, "Target");
+            Assert.IsFalse(wr.TrackResurrection, "TrackResurrection");
+        }
+
+        [Test]
+        public void WeakReference_Object_Null_TrackResurrection_False()
+        {
+            var wr = new WeakReference(null, false);
             Assert.IsFalse(wr.IsAlive, "IsAlive");
             Assert.IsNull(wr.Target, "Target");
             Assert.IsFalse(wr.TrackResurrection, "TrackResurrection");
@@ -54,20 +84,11 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void WeakReference_Object_Null_TrackResurrection_False()
-        {
-            var wr = new WeakReference(null, false);
-            Assert.IsFalse(wr.IsAlive, "IsAlive");
-            Assert.IsNull(wr.Target, "Target");
-            Assert.IsFalse(wr.TrackResurrection, "TrackResurrection");
-        }
-
-        [Test]
-        public void WeakReference_Object()
+        public void WeakReference_Object_TrackResurrection_False()
         {
             using (var s = Stream.Null)
             {
-                var wr = new WeakReference(s);
+                var wr = new WeakReference(s, false);
                 Assert.IsTrue(wr.IsAlive, "IsAlive");
                 Assert.AreSame(s, wr.Target, "Target");
                 Assert.IsFalse(wr.TrackResurrection, "TrackResurrection");
@@ -87,22 +108,16 @@ namespace MonoTests.System
         }
 
         [Test]
-        public void WeakReference_Object_TrackResurrection_False()
+        public void WeakReferenceT_TryGetTarget_NullTarget()
         {
-            using (var s = Stream.Null)
-            {
-                var wr = new WeakReference(s, false);
-                Assert.IsTrue(wr.IsAlive, "IsAlive");
-                Assert.AreSame(s, wr.Target, "Target");
-                Assert.IsFalse(wr.TrackResurrection, "TrackResurrection");
-            }
+            var r = new WeakReference<object>(null);
+            Assert.IsFalse(r.TryGetTarget(out _), "#1");
         }
 
         private class Foo
         {
-            private readonly WeakReference _wr;
-
             public static bool Failed;
+            private readonly WeakReference _wr;
 
             public Foo()
             {
@@ -120,23 +135,6 @@ namespace MonoTests.System
                     Failed = true;
                 }
             }
-        }
-
-        [Test]
-        public void WeakReference_IsAlive_Finalized()
-        {
-            GC.KeepAlive(new Foo());
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            Assert.IsFalse(Foo.Failed);
-        }
-
-        [Test]
-        public void WeakReferenceT_TryGetTarget_NullTarget()
-        {
-            var r = new WeakReference<object>(null);
-            object obj;
-            Assert.IsFalse(r.TryGetTarget(out obj), "#1");
         }
     }
 }

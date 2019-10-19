@@ -2,23 +2,23 @@
 
 namespace Tests.System
 {
-	[TestFixture]
-	class ValueTupleTest
-	{
-		[Test]
-		public void SameHashCode()
-		{
-			var a = ("abc", "cde");
-			var b = ("abc", "cde");
-			Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
-		}
+    [TestFixture]
+    internal class ValueTupleTest
+    {
+        [Test]
+        public void Equals()
+        {
+            var a = ("abc", "cde");
+            var b = ("abc", "cde");
+            Assert.AreEqual(a, b);
+        }
 
-		[Test]
-		public void Equals()
-		{
-			var a = ("abc", "cde");
-			var b = ("abc", "cde");
-			Assert.AreEqual(a, b);
-		}
-	}
+        [Test]
+        public void SameHashCode()
+        {
+            var a = ("abc", "cde");
+            var b = ("abc", "cde");
+            Assert.AreEqual(a.GetHashCode(), b.GetHashCode());
+        }
+    }
 }

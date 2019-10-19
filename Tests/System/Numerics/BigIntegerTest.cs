@@ -1169,11 +1169,11 @@ namespace MonoTests.System.Numerics
         {
             Assert.IsFalse(BigInteger.TryParse(null, out var x), "#1");
             Assert.AreEqual(0, (int)x, "#1a");
-            Assert.IsFalse(BigInteger.TryParse("", out x), "#2");
-            Assert.IsFalse(BigInteger.TryParse(" ", out x), "#3");
-            Assert.IsFalse(BigInteger.TryParse(" -", out x), "#4");
-            Assert.IsFalse(BigInteger.TryParse(" +", out x), "#5");
-            Assert.IsFalse(BigInteger.TryParse(" FF", out x), "#6");
+            Assert.IsFalse(BigInteger.TryParse("", out _), "#2");
+            Assert.IsFalse(BigInteger.TryParse(" ", out _), "#3");
+            Assert.IsFalse(BigInteger.TryParse(" -", out _), "#4");
+            Assert.IsFalse(BigInteger.TryParse(" +", out _), "#5");
+            Assert.IsFalse(BigInteger.TryParse(" FF", out _), "#6");
 
             Assert.IsTrue(BigInteger.TryParse(" 99", out x), "#7");
             Assert.AreEqual(99, (int)x, "#8");
@@ -1188,10 +1188,10 @@ namespace MonoTests.System.Numerics
 
             Assert.IsFalse(BigInteger.TryParse("null", NumberStyles.None, null, out x), "#13");
             Assert.AreEqual(0, (int)x, "#14");
-            Assert.IsFalse(BigInteger.TryParse("-10", NumberStyles.None, null, out x), "#15");
-            Assert.IsFalse(BigInteger.TryParse("(10)", NumberStyles.None, null, out x), "#16");
-            Assert.IsFalse(BigInteger.TryParse(" 10", NumberStyles.None, null, out x), "#17");
-            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out x), "#18");
+            Assert.IsFalse(BigInteger.TryParse("-10", NumberStyles.None, null, out _), "#15");
+            Assert.IsFalse(BigInteger.TryParse("(10)", NumberStyles.None, null, out _), "#16");
+            Assert.IsFalse(BigInteger.TryParse(" 10", NumberStyles.None, null, out _), "#17");
+            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out _), "#18");
 
             Assert.IsTrue(BigInteger.TryParse("-10", NumberStyles.AllowLeadingSign, null, out x), "#19");
             Assert.AreEqual(-10, (int)x, "#20");
@@ -1202,16 +1202,16 @@ namespace MonoTests.System.Numerics
             Assert.IsTrue(BigInteger.TryParse("10 ", NumberStyles.AllowTrailingWhite, null, out x), "#25");
             Assert.AreEqual(10, (int)x, "#26");
 
-            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, null, out x), "#26");
-            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, _nfi, out x), "#27");
-            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.None, _nfi, out x), "#28");
-            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out x), "#29");
+            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, null, out _), "#26");
+            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, _nfi, out _), "#27");
+            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.None, _nfi, out _), "#28");
+            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out _), "#29");
 
             Assert.IsTrue(BigInteger.TryParse("10", NumberStyles.None, null, out x), "#30");
             Assert.AreEqual(10, (int)x, "#31");
             Assert.IsTrue(BigInteger.TryParse(_nfi.CurrencySymbol + "10", NumberStyles.AllowCurrencySymbol, _nfi, out x), "#32");
             Assert.AreEqual(10, (int)x, "#33");
-            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.AllowCurrencySymbol, _nfi, out x), "#34");
+            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.AllowCurrencySymbol, _nfi, out _), "#34");
         }
 
         [Test]

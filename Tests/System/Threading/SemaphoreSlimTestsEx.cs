@@ -62,10 +62,10 @@ namespace Tests.System.Threading
 
         private static void WaitAsyncWaitCorrectlyExtracted(int maxCount, int maxTasks)
         {
-        // Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
-        retry:
-            var log = new CircularBucket<string>(maxTasks * 4 + 2);
-            var logCount = new CircularBucket<int>(maxTasks * 2 + 2);
+// Note: if WaitAsync takes to long, "x" can happen before the chunk of "a" has completed.
+retry:
+            var log = new CircularBucket<string>((maxTasks * 4) + 2);
+            var logCount = new CircularBucket<int>((maxTasks * 2) + 2);
             using (var source = new CancellationTokenSource(TimeSpan.FromSeconds(100)))
             {
                 using (var semaphore = new SemaphoreSlim(0, maxCount))
