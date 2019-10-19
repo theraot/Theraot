@@ -12,10 +12,8 @@ namespace System.Threading
     public class SemaphoreSlim : IDisposable
     {
         private readonly int? _maxCount;
-        private ThreadSafeQueue<TaskCompletionSource<bool>>? _asyncWaiters;
-        private ManualResetEventSlim? _canEnter;
         private int _count;
-        private int _disposed;
+        private SemaphoreSlimState? _state;
         private int _syncRoot;
 
         public SemaphoreSlim(int initialCount)
@@ -43,17 +41,16 @@ namespace System.Threading
             }
 
             _maxCount = maxCount;
-            _asyncWaiters = new ThreadSafeQueue<TaskCompletionSource<bool>>();
             _count = initialCount;
-            _canEnter = new ManualResetEventSlim(_count > 0);
+            _state = new SemaphoreSlimState(_count > 0);
         }
 
         public WaitHandle AvailableWaitHandle
         {
             get
             {
-                var canEnter = GetCanEnter();
-                return canEnter.WaitHandle;
+                var state = GetState();
+                return state.CanEnter.WaitHandle;
             }
         }
 
@@ -73,7 +70,7 @@ namespace System.Threading
 
         public int Release(int releaseCount)
         {
-            var canEnter = GetCanEnter();
+            var state = GetState();
             if (releaseCount < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(releaseCount), "releaseCount is less than 1");
@@ -82,7 +79,7 @@ namespace System.Threading
             var spinWait = new SpinWait();
             while (true)
             {
-                if (TryOffset(releaseCount, out var expected, canEnter, _asyncWaiters!))
+                if (TryOffset(releaseCount, out var expected, state))
                 {
                     return expected;
                 }
@@ -98,7 +95,7 @@ namespace System.Threading
 
         public bool Wait(TimeSpan timeout)
         {
-            CheckDisposed();
+            GetState();
             return Wait((int)timeout.TotalMilliseconds, CancellationToken.None);
         }
 
@@ -114,14 +111,13 @@ namespace System.Threading
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            CheckDisposed();
+            GetState();
             return Wait((int)timeout.TotalMilliseconds, cancellationToken);
         }
 
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var asyncWaiters = _asyncWaiters;
-            var canEnter = GetCanEnter();
+            var state = GetState();
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
@@ -130,7 +126,7 @@ namespace System.Threading
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var spinWait = new SpinWait();
-            if (TryOffset(-1, out _, canEnter, asyncWaiters!))
+            if (TryOffset(-1, out _, state))
             {
                 return true;
             }
@@ -139,9 +135,9 @@ namespace System.Threading
             {
                 while (true)
                 {
-                    canEnter.Wait(-1, cancellationToken);
+                    state.CanEnter.Wait(-1, cancellationToken);
                     // The thread is not allowed here unless there is room in the semaphore
-                    if (TryOffset(-1, out _, canEnter, asyncWaiters!))
+                    if (TryOffset(-1, out _, state))
                     {
                         return true;
                     }
@@ -152,10 +148,10 @@ namespace System.Threading
 
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            while (canEnter.Wait(remaining, cancellationToken))
+            while (state.CanEnter.Wait(remaining, cancellationToken))
             {
                 // The thread is not allowed here unless there is room in the semaphore
-                if (TryOffset(-1, out _, canEnter, asyncWaiters!))
+                if (TryOffset(-1, out _, state))
                 {
                     return true;
                 }
@@ -190,20 +186,19 @@ namespace System.Threading
 
         public Task<bool> WaitAsync(TimeSpan timeout)
         {
-            CheckDisposed();
+            GetState();
             return WaitAsync((int)timeout.TotalMilliseconds, CancellationToken.None);
         }
 
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            CheckDisposed();
+            GetState();
             return WaitAsync((int)timeout.TotalMilliseconds, cancellationToken);
         }
 
         public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            var asyncWaiters = _asyncWaiters;
-            var canEnter = GetCanEnter();
+            var state = GetState();
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
@@ -215,7 +210,7 @@ namespace System.Threading
             }
 
             var source = new TaskCompletionSource<bool>();
-            if (canEnter.Wait(0, cancellationToken) && TryOffset(-1, out _, canEnter, asyncWaiters!))
+            if (state.CanEnter.Wait(0, cancellationToken) && TryOffset(-1, out var dummy, state))
             {
                 source.SetResult(true);
                 return source.Task;
@@ -235,6 +230,11 @@ namespace System.Threading
                         No.Op(exception);
                     }
                 },
+                millisecondsTimeout,
+                cancellationToken
+            );
+            cancellationToken.Register
+            (
                 () =>
                 {
                     try
@@ -246,11 +246,9 @@ namespace System.Threading
                         // Already timeout
                         No.Op(exception);
                     }
-                },
-                millisecondsTimeout,
-                cancellationToken
+                }
             );
-            asyncWaiters!.Add(source);
+            state.AsyncWaiters.Add(source);
             return source.Task;
         }
 
@@ -258,27 +256,91 @@ namespace System.Threading
         {
             // This is a protected method, the parameter should be kept
             No.Op(disposing);
-            Volatile.Write(ref _disposed, 1);
-            _canEnter?.Dispose();
-            _asyncWaiters = null;
-            _canEnter = null;
+            var state = Interlocked.Exchange(ref _state, null);
+            state?.Dispose();
         }
 
-        private void CheckDisposed()
+        private void Awake(SemaphoreSlimState state)
         {
-            if (Volatile.Read(ref _disposed) != 0)
+            var spinWait = new SpinWait();
+            while (state.AsyncWaiters.TryTake(out var waiter))
             {
-                throw new ObjectDisposedException(nameof(SemaphoreSlim));
+                if (waiter.Task.IsCompleted)
+                {
+                    // Skip - either canceled or timed out
+                    continue;
+                }
+
+                if (TryOffset(-1, out var _, state))
+                {
+                    waiter.SetResult(true);
+                }
+                else
+                {
+                    // Add it back
+                    state.AsyncWaiters.Add(waiter);
+                    break;
+                }
+
+                spinWait.SpinOnce();
             }
         }
 
-        private ManualResetEventSlim GetCanEnter()
+        private SemaphoreSlimState GetState()
         {
-            CheckDisposed();
-            return _canEnter!;
+            var state = Volatile.Read(ref _state);
+            if (state == null)
+            {
+                throw new ObjectDisposedException(nameof(SemaphoreSlim));
+            }
+            return state;
         }
 
-        private bool TryOffset(int releaseCount, out int previous, ManualResetEventSlim canEnter, ThreadSafeQueue<TaskCompletionSource<bool>> asyncWaiters)
+        private void SyncWaitHandle(SemaphoreSlimState state)
+        {
+            var awake = false;
+            if (Volatile.Read(ref _count) == 0 == state.CanEnter.IsSet && Interlocked.CompareExchange(ref _syncRoot, 1, 0) == 0)
+            {
+                try
+                {
+                    awake = SyncWaitHandleExtracted();
+                }
+                finally
+                {
+                    Volatile.Write(ref _syncRoot, 0);
+                }
+            }
+
+            if (awake)
+            {
+                ThreadPool.QueueUserWorkItem(_ => Awake(state));
+            }
+
+            bool SyncWaitHandleExtracted()
+            {
+                int found;
+                var canEnter = state.CanEnter;
+
+                if ((found = Volatile.Read(ref _count)) == 0 != canEnter.IsSet)
+                {
+                    return false;
+                }
+
+                if (found == 0)
+                {
+                    canEnter.Reset();
+                }
+                else
+                {
+                    canEnter.Set();
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        private bool TryOffset(int releaseCount, out int previous, SemaphoreSlimState state)
         {
             var expected = Volatile.Read(ref _count);
             previous = expected;
@@ -293,86 +355,30 @@ namespace System.Threading
                 return false;
             }
 
-            var foundCount = Interlocked.CompareExchange(ref _count, result, expected);
-            if (foundCount != expected)
+            var found = Interlocked.CompareExchange(ref _count, result, expected);
+            if (found != expected)
             {
                 return false;
             }
 
-            SyncWaitHandle();
+            SyncWaitHandle(state);
             return true;
+        }
 
-            void SyncWaitHandle()
+        private sealed class SemaphoreSlimState : IDisposable
+        {
+            public readonly ThreadSafeQueue<TaskCompletionSource<bool>> AsyncWaiters;
+            public readonly ManualResetEventSlim CanEnter;
+
+            public SemaphoreSlimState(bool state)
             {
-                var awake = false;
-                if (Volatile.Read(ref _count) == 0 == canEnter.IsSet && Interlocked.CompareExchange(ref _syncRoot, 1, 0) == 0)
-                {
-                    try
-                    {
-                        awake = SyncWaitHandleExtracted();
-                    }
-                    finally
-                    {
-                        Volatile.Write(ref _syncRoot, 0);
-                    }
-                }
-
-                if (awake)
-                {
-                    ThreadPool.QueueUserWorkItem(_ => Awake());
-                }
-
-                bool SyncWaitHandleExtracted()
-                {
-                    int found;
-                    if (Volatile.Read(ref _disposed) != 0)
-                    {
-                        return false;
-                    }
-
-                    if ((found = Volatile.Read(ref _count)) == 0 != canEnter.IsSet)
-                    {
-                        return false;
-                    }
-
-                    if (found == 0)
-                    {
-                        canEnter.Reset();
-                    }
-                    else
-                    {
-                        canEnter.Set();
-                        return true;
-                    }
-
-                    return false;
-                }
+                AsyncWaiters = new ThreadSafeQueue<TaskCompletionSource<bool>>();
+                CanEnter = new ManualResetEventSlim(state);
             }
 
-            void Awake()
+            public void Dispose()
             {
-                var spinWait = new SpinWait();
-                while (asyncWaiters.TryTake(out var waiter))
-                {
-                    if (waiter.Task.IsCompleted)
-                    {
-                        // Skip - either canceled or timed out
-                        continue;
-                    }
-
-                    if (TryOffset(-1, out _, canEnter, asyncWaiters))
-                    {
-                        waiter.SetResult(true);
-                    }
-                    else
-                    {
-                        // Add it back
-                        asyncWaiters.Add(waiter);
-                        break;
-                    }
-
-                    spinWait.SpinOnce();
-                }
+                CanEnter.Dispose();
             }
         }
     }
