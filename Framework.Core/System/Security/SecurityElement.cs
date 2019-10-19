@@ -217,7 +217,7 @@ namespace System.Security
                     return sb.ToString();
                 }
 
-                (sb ?? (sb = new StringBuilder())).Append(str, newIndex, index - newIndex);
+                (sb ??= new StringBuilder()).Append(str, newIndex, index - newIndex);
                 sb.Append(GetEscapeSequence(str[index]));
 
                 newIndex = index + 1;
@@ -303,7 +303,7 @@ namespace System.Security
                 throw new ArgumentNullException(nameof(child));
             }
 
-            (_children ?? (_children = new ArrayList(_childrenTypical))).Add(child);
+            (_children ??= new ArrayList(_childrenTypical)).Add(child);
         }
 
         public string? Attribute(string name)
@@ -625,7 +625,7 @@ namespace System.Security
                     return sb.ToString();
                 }
 
-                (sb ?? (sb = new StringBuilder())).Append(str, newIndex, index - newIndex);
+                (sb ??= new StringBuilder()).Append(str, newIndex, index - newIndex);
                 sb.Append(GetUnescapeSequence(str, index, out newIndex)); // updates the newIndex too
             }
         }

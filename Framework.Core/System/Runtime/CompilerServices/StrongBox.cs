@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1051 // Do not declare visible instance fields
+
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Runtime.CompilerServices
 {
