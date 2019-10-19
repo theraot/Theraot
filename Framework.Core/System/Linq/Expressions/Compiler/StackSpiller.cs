@@ -738,12 +738,23 @@ namespace System.Linq.Expressions.Compiler
             var node = (MemberExpression)expr;
 
             // Expression is emitted on top of the stack in current state.
-            var expression = RewriteExpression(node.Expression!, stack);
 
-            switch (expression.Action)
+            Result? expression = null;
+
+            if (node.Expression != null)
+            {
+                expression = RewriteExpression(node.Expression!, stack);
+            }
+
+            if (expression == null)
+            {
+                return new Result(RewriteAction.None, expr);
+            }
+
+            switch (expression.Value.Action)
             {
                 case RewriteAction.None:
-                    return new Result(expression.Action, expr);
+                    return new Result(expression.Value.Action, expr);
 
                 case RewriteAction.SpillStack when node.Member is PropertyInfo:
                     // Only need to validate properties because reading a field
@@ -755,9 +766,9 @@ namespace System.Linq.Expressions.Compiler
                     break;
             }
 
-            expr = MemberExpression.Make(expression.Node, node.Member);
+            expr = MemberExpression.Make(expression.Value.Node, node.Member);
 
-            return new Result(expression.Action, expr);
+            return new Result(expression.Value.Action, expr);
         }
 
         private Result RewriteMemberInitExpression(Expression expr, Stack stack)
