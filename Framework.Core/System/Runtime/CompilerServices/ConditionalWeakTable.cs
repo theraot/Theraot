@@ -31,6 +31,13 @@ namespace System.Runtime.CompilerServices
         where TKey : class
         where TValue : class
     {
+        private readonly WeakDictionary<TKey, TValue> _wrapped;
+
+        public ConditionalWeakTable()
+        {
+            _wrapped = new WeakDictionary<TKey, TValue> { AutoRemoveDeadItems = true };
+        }
+
         /// <summary>
         ///     Represents a method that creates a non-default value to add as part of a key/value pair to a
         ///     <see cref="ConditionalWeakTable{TKey, TValue}" /> object.
@@ -38,13 +45,6 @@ namespace System.Runtime.CompilerServices
         /// <param name="key">The key that belongs to the value to create.</param>
         /// <returns>An instance of a reference type that represents the value to attach to the specified key.</returns>
         public delegate TValue CreateValueCallback(TKey key);
-
-        private readonly WeakDictionary<TKey, TValue> _wrapped;
-
-        public ConditionalWeakTable()
-        {
-            _wrapped = new WeakDictionary<TKey, TValue> {AutoRemoveDeadItems = true};
-        }
 
         internal ICollection<TKey> Keys => _wrapped.Keys;
 

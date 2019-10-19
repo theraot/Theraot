@@ -66,21 +66,6 @@ namespace System.Linq
 
         public IQueryProvider Provider => this;
 
-        public IEnumerable? GetEnumerable()
-        {
-            return _enumerable;
-        }
-
-        public IEnumerator<TElement> GetEnumerator()
-        {
-            return Execute<IEnumerable<TElement>>(Expression).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public IQueryable CreateQuery(Expression expression)
         {
             return (IQueryable)Activator.CreateInstance
@@ -108,6 +93,21 @@ namespace System.Linq
         {
             var lambda = Expression.Lambda<Func<TResult>>(TransformQueryable(expression));
             return lambda.Compile().Invoke();
+        }
+
+        public IEnumerable? GetEnumerable()
+        {
+            return _enumerable;
+        }
+
+        public IEnumerator<TElement> GetEnumerator()
+        {
+            return Execute<IEnumerable<TElement>>(Expression).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public override string ToString()

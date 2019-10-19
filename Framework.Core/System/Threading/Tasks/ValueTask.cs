@@ -53,7 +53,7 @@ namespace System.Threading.Tasks
     ///         <see cref="System.Threading.Tasks.Task{TResult}" /> using
     ///         <see cref="System.Threading.Tasks.ValueTask{TResult}.AsTask" />, which leads to an allocation that would have been
     ///         avoided if a cached
-    ///         <see cref="System.Threading.Tasks.Task`1" /> had been used in the first place.
+    ///         <see cref="System.Threading.Tasks.Task{TResult}" /> had been used in the first place.
     ///     </para>
     ///     <para>
     ///         As such, the default choice for any asynchronous method should be to return a

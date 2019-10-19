@@ -13,24 +13,23 @@ namespace System
     {
         public OperationCanceledExceptionEx()
         {
-            // Empty
         }
 
         public OperationCanceledExceptionEx(string message)
             : base(message)
         {
-            // Empty
         }
 
         public OperationCanceledExceptionEx(string message, Exception innerException)
             : base(message, innerException)
         {
-            // Empty
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
+
         protected OperationCanceledExceptionEx(SerializationInfo info, StreamingContext context)
             : base(info, context)
+
 #else
         [Obsolete("This target platform does not support binary serialization.")]
         protected OperationCanceledExceptionEx(SerializationInfo info, StreamingContext context)
@@ -71,19 +70,16 @@ namespace System
         public OperationCanceledExceptionEx(CancellationToken token)
             : base(token)
         {
-            // Empty
         }
 
         public OperationCanceledExceptionEx(string message, CancellationToken token)
             : base(message, token)
         {
-            // Empty
         }
 
         public OperationCanceledExceptionEx(string message, Exception innerException, CancellationToken token)
             : base(message, innerException, token)
         {
-            // Empty
         }
 
 #endif

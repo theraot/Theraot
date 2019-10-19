@@ -37,12 +37,12 @@ namespace System
             ProgressChanged += (_, args) => handler(args);
         }
 
+        public event EventHandlerEx<T>? ProgressChanged;
+
         public void Report(T value)
         {
             OnReport(value);
         }
-
-        public event EventHandlerEx<T>? ProgressChanged;
 
         protected virtual void OnReport(T value)
         {

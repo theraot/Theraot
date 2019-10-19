@@ -126,7 +126,7 @@ namespace System.Threading.Tasks
         /// </param>
         private static void TransferAsynchronously<TResult, TInner>(TaskCompletionSource<TResult> completionSource, Task<TInner> outer) where TInner : Task
         {
-            Action?[] callback = {null};
+            Action?[] callback = { null };
 
             // Create a continuation delegate.  For performance reasons, we reuse the same delegate/closure across multiple
             // continuations; by using .ConfigureAwait(false).GetAwaiter().UnsafeOnComplete(action), in most cases

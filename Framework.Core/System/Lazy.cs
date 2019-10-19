@@ -61,45 +61,45 @@ namespace System
             switch (mode)
             {
                 case LazyThreadSafetyMode.None:
-                {
-                    if (cacheExceptions)
                     {
-                        var threads = new HashSet<Thread>();
-                        _valueFactory =
-                            () => CachingNoneMode(threads);
+                        if (cacheExceptions)
+                        {
+                            var threads = new HashSet<Thread>();
+                            _valueFactory =
+                                () => CachingNoneMode(threads);
+                        }
+                        else
+                        {
+                            var threads = new HashSet<Thread>();
+                            _valueFactory =
+                                () => NoneMode(threads);
+                        }
                     }
-                    else
-                    {
-                        var threads = new HashSet<Thread>();
-                        _valueFactory =
-                            () => NoneMode(threads);
-                    }
-                }
                     break;
 
                 case LazyThreadSafetyMode.PublicationOnly:
-                {
-                    _valueFactory = PublicationOnlyMode;
-                }
+                    {
+                        _valueFactory = PublicationOnlyMode;
+                    }
                     break;
 
                 default: /*LazyThreadSafetyMode.ExecutionAndPublication*/
-                {
-                    if (cacheExceptions)
                     {
-                        Thread? thread = null;
-                        ManualResetEvent? manualResetEvent = null;
-                        _valueFactory =
-                            () => CachingFullMode(valueFactory, ref manualResetEvent, ref thread);
+                        if (cacheExceptions)
+                        {
+                            Thread? thread = null;
+                            ManualResetEvent? manualResetEvent = null;
+                            _valueFactory =
+                                () => CachingFullMode(valueFactory, ref manualResetEvent, ref thread);
+                        }
+                        else
+                        {
+                            Thread? thread = null;
+                            ManualResetEvent? manualResetEvent = null;
+                            _valueFactory =
+                                () => FullMode(valueFactory, ref manualResetEvent, ref thread);
+                        }
                     }
-                    else
-                    {
-                        Thread? thread = null;
-                        ManualResetEvent? manualResetEvent = null;
-                        _valueFactory =
-                            () => FullMode(valueFactory, ref manualResetEvent, ref thread);
-                    }
-                }
                     break;
             }
 
@@ -251,7 +251,7 @@ namespace System
             {
                 waitHandle = new ManualResetEvent(false);
             }
-            while(Volatile.Read(ref _isValueCreated) != 1)
+            while (Volatile.Read(ref _isValueCreated) != 1)
             {
                 var foundThread = Interlocked.CompareExchange(ref thread, Thread.CurrentThread, null);
                 if (foundThread == null)

@@ -11,122 +11,6 @@ namespace System
     public static partial class StringEx
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static string Concat(params string[] value)
-        {
-            return string.Concat(value);
-        }
-
-        public static string Concat(string[] array, int arrayIndex)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
-            }
-
-            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
-        }
-
-        public static string Concat(string[] array, int arrayIndex, int countLimit)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
-            }
-
-            if (countLimit < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
-            }
-
-            if (countLimit > array.Length - arrayIndex)
-            {
-                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
-            }
-
-            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, countLimit);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static string Concat(params object[] values)
-        {
-            return string.Concat(values);
-        }
-
-        public static string Concat(object[] array, int arrayIndex)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
-            }
-
-            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
-        }
-
-        public static string Concat(object[] array, int arrayIndex, int countLimit)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
-            }
-
-            if (countLimit < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
-            }
-
-            if (countLimit > array.Length - arrayIndex)
-            {
-                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
-            }
-
-            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, countLimit);
-        }
-
-        public static string Concat<T>(IEnumerable<T> values, Func<T, string> converter)
-        {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-
-            var stringList = new List<string>();
-            var length = 0;
-            foreach (var item in values)
-            {
-                var itemToString = converter.Invoke(item);
-                stringList.Add(itemToString);
-                length += itemToString.Length;
-            }
-
-            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Concat(IEnumerable<string> values)
         {
 #if LESSTHAN_NET40
@@ -176,6 +60,122 @@ namespace System
 #else
             return string.Concat(values);
 #endif
+        }
+
+        public static string Concat<T>(IEnumerable<T> values, Func<T, string> converter)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+
+            var stringList = new List<string>();
+            var length = 0;
+            foreach (var item in values)
+            {
+                var itemToString = converter.Invoke(item);
+                stringList.Add(itemToString);
+                length += itemToString.Length;
+            }
+
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+        }
+
+        public static string Concat(object[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
+            }
+
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
+        }
+
+        public static string Concat(object[] array, int arrayIndex, int countLimit)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
+            }
+
+            if (countLimit < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
+            }
+
+            if (countLimit > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
+            }
+
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, countLimit);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string Concat(params object[] values)
+        {
+            return string.Concat(values);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string Concat(params string[] value)
+        {
+            return string.Concat(value);
+        }
+
+        public static string Concat(string[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
+            }
+
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
+        }
+
+        public static string Concat(string[] array, int arrayIndex, int countLimit)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
+            }
+
+            if (countLimit < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(countLimit), "Non-negative number is required.");
+            }
+
+            if (countLimit > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", nameof(array));
+            }
+
+            return arrayIndex == array.Length ? string.Empty : ConcatExtracted(array, arrayIndex, countLimit);
         }
 
         private static string ConcatExtracted(object[] array, int startIndex, int count)
@@ -235,133 +235,67 @@ namespace System
 
     public static partial class StringEx
     {
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static string Join(string separator, IEnumerable<string> values)
+        public static string Implode(string separator, IEnumerable<string> values)
         {
-#if LESSTHAN_NET40
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            var stringList = new List<string>();
-            var length = 0;
-            var separatorLength = separator?.Length ?? 0;
-            foreach (var item in values)
-            {
-                if (item == null)
-                {
-                    continue;
-                }
-
-                if (length != 0 && separatorLength != 0)
-                {
-                    stringList.Add(separator!);
-                    length += separatorLength;
-                }
-
-                stringList.Add(item);
-                length += item.Length;
-            }
-
-            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
-#else
-            return string.Join(separator, values);
-#endif
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static string Join<T>(string separator, IEnumerable<T> values)
-        {
-#if LESSTHAN_NET40
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            var stringList = new List<string>();
-            var length = 0;
-            var separatorLength = separator?.Length ?? 0;
-            foreach (var item in values)
-            {
-                if (item == null)
-                {
-                    continue;
-                }
-
-                if (length != 0 && separatorLength != 0)
-                {
-                    stringList.Add(separator!);
-                    length += separatorLength;
-                }
-
-                var itemToString = item.ToString();
-                stringList.Add(itemToString);
-                length += itemToString.Length;
-            }
-
-            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
-#else
-            return string.Join(separator, values);
-#endif
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static string Join(string separator, params object[] values)
-        {
-#if LESSTHAN_NET40
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            var stringList = new List<string>();
-            var length = 0;
-            var separatorLength = separator?.Length ?? 0;
-            foreach (var item in values)
-            {
-                if (item == null)
-                {
-                    continue;
-                }
-
-                if (length != 0 && separatorLength != 0)
-                {
-                    stringList.Add(separator!);
-                    length += separatorLength;
-                }
-
-                var itemToString = item.ToString();
-                stringList.Add(itemToString);
-                length += itemToString.Length;
-            }
-
-            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
-#else
-            return string.Join(separator, values);
-#endif
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static string Join(string separator, params string[] values)
-        {
-            return string.Join(separator, values);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static string Join(string separator, string[] values, int startIndex, int count)
-        {
-            return string.Join(separator, values, startIndex, count);
-        }
-    }
-
-    public static partial class StringEx
-    {
-        public static string Implode(string separator, params object[] values)
-        {
             if (separator == null)
             {
-                return string.Concat(values);
+                return Concat(values);
+            }
+
+            var stringList = values.ToList();
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+        }
+
+        public static string Implode(string separator, IEnumerable<string> values, string start, string end)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (separator == null)
+            {
+                return Concat(values);
+            }
+
+            var stringList = values.ToList();
+
+            if (stringList.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            start ??= string.Empty;
+            end ??= string.Empty;
+            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+        }
+
+        public static string Implode<T>(string separator, IEnumerable<T> values)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (separator == null)
+            {
+                return Concat(values);
+            }
+
+            var stringList = values.Select(item => item?.ToString()).ToList();
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+        }
+
+        public static string Implode<T>(string separator, IEnumerable<T> values, Func<T, string> converter)
+        {
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
             }
 
             if (values == null)
@@ -369,14 +303,66 @@ namespace System
                 throw new ArgumentNullException(nameof(values));
             }
 
-            var array = new string?[values.Length];
-            var index = 0;
-            foreach (var item in values)
+            if (separator == null)
             {
-                array[index++] = item?.ToString();
+                return Concat(values, converter);
             }
 
-            return ImplodeExtracted(separator, array, 0, array.Length);
+            var stringList = values.Select(item => item?.ToString()).ToList();
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+        }
+
+        public static string Implode<T>(string separator, IEnumerable<T> values, Func<T, string> converter, string start, string end)
+        {
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (separator == null)
+            {
+                return Concat(values, converter);
+            }
+
+            var stringList = values.Select(item => item?.ToString()).ToList();
+
+            if (stringList.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            start ??= string.Empty;
+            end ??= string.Empty;
+            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+        }
+
+        public static string Implode<T>(string separator, IEnumerable<T> values, string start, string end)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (separator == null)
+            {
+                return Concat(values);
+            }
+
+            var stringList = values.Select(item => item?.ToString()).ToList();
+
+            if (stringList.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            start ??= string.Empty;
+            end ??= string.Empty;
+            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 
         public static string Implode(string separator, object[] array, int arrayIndex)
@@ -417,6 +403,28 @@ namespace System
             }
 
             return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
+        }
+
+        public static string Implode(string separator, params object[] values)
+        {
+            if (separator == null)
+            {
+                return string.Concat(values);
+            }
+
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            var array = new string?[values.Length];
+            var index = 0;
+            foreach (var item in values)
+            {
+                array[index++] = item?.ToString();
+            }
+
+            return ImplodeExtracted(separator, array, 0, array.Length);
         }
 
         public static string Implode(string separator, params string[] value)
@@ -467,136 +475,6 @@ namespace System
             }
 
             return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
-        }
-
-        public static string Implode(string separator, IEnumerable<string> values)
-        {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (separator == null)
-            {
-                return Concat(values);
-            }
-
-            var stringList = values.ToList();
-            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
-        }
-
-        public static string Implode<T>(string separator, IEnumerable<T> values)
-        {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (separator == null)
-            {
-                return Concat(values);
-            }
-
-            var stringList = values.Select(item => item?.ToString()).ToList();
-            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
-        }
-
-        public static string Implode<T>(string separator, IEnumerable<T> values, Func<T, string> converter)
-        {
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (separator == null)
-            {
-                return Concat(values, converter);
-            }
-
-            var stringList = values.Select(item => item?.ToString()).ToList();
-            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
-        }
-
-        public static string Implode(string separator, IEnumerable<string> values, string start, string end)
-        {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (separator == null)
-            {
-                return Concat(values);
-            }
-
-            var stringList = values.ToList();
-
-            if (stringList.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            start ??= string.Empty;
-            end ??= string.Empty;
-            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-        }
-
-        public static string Implode<T>(string separator, IEnumerable<T> values, string start, string end)
-        {
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (separator == null)
-            {
-                return Concat(values);
-            }
-
-            var stringList = values.Select(item => item?.ToString()).ToList();
-
-            if (stringList.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            start ??= string.Empty;
-            end ??= string.Empty;
-            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-        }
-
-        public static string Implode<T>(string separator, IEnumerable<T> values, Func<T, string> converter, string start, string end)
-        {
-            if (converter == null)
-            {
-                throw new ArgumentNullException(nameof(converter));
-            }
-
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (separator == null)
-            {
-                return Concat(values, converter);
-            }
-
-            var stringList = values.Select(item => item?.ToString()).ToList();
-
-            if (stringList.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            start ??= string.Empty;
-            end ??= string.Empty;
-            return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
         }
 
         private static string ImplodeExtracted(string separator, object[] array, int startIndex, int count)

@@ -628,10 +628,13 @@ namespace System.Threading.Tasks
             {
                 case TaskStatus.RanToCompletion:
                     return (condition & TaskContinuationOptions.NotOnRanToCompletion) == TaskContinuationOptions.None;
+
                 case TaskStatus.Canceled:
                     return (condition & TaskContinuationOptions.NotOnCanceled) == TaskContinuationOptions.None;
+
                 case TaskStatus.Faulted:
                     return (condition & TaskContinuationOptions.NotOnFaulted) == TaskContinuationOptions.None;
+
                 default:
                     return false;
             }

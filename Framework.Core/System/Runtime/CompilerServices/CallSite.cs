@@ -52,14 +52,14 @@ namespace System.Runtime.CompilerServices
         internal const string CallSiteTargetMethodName = "CallSite.Target";
 
         /// <summary>
-        ///     Cache of CallSite constructors for a given delegate type.
-        /// </summary>
-        private static volatile CacheDict<Type, Func<CallSiteBinder, CallSite>>? _siteCtors;
-
-        /// <summary>
         ///     Used by Matchmaker sites to indicate rule match.
         /// </summary>
         internal bool Match;
+
+        /// <summary>
+        ///     Cache of CallSite constructors for a given delegate type.
+        /// </summary>
+        private static volatile CacheDict<Type, Func<CallSiteBinder, CallSite>>? _siteCtors;
 
         // only CallSite<T> derives from this
         internal CallSite(CallSiteBinder? binder)
@@ -121,7 +121,10 @@ namespace System.Runtime.CompilerServices
     /// <typeparam name="T">The delegate type.</typeparam>
     public class CallSite<T> : CallSite where T : class
     {
-        private const int _maxRules = 10;
+        /// <summary>
+        ///     The Level 0 cache - a delegate specialized based on the site history.
+        /// </summary>
+        public T? Target;
 
         /// <summary>
         ///     an instance of matchmaker site to opportunistically reuse when site is polymorphic
@@ -133,10 +136,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         internal T[]? Rules;
 
-        /// <summary>
-        ///     The Level 0 cache - a delegate specialized based on the site history.
-        /// </summary>
-        public T? Target;
+        private const int _maxRules = 10;
 
         private CallSite()
             : base(null)
@@ -167,7 +167,7 @@ namespace System.Runtime.CompilerServices
             var rules = Rules;
             if (rules == null)
             {
-                Rules = new[] {newRule};
+                Rules = new[] { newRule };
                 return;
             }
 
@@ -198,13 +198,13 @@ namespace System.Runtime.CompilerServices
             var matchmaker = CachedMatchmaker;
             if (matchmaker == null)
             {
-                return matchmaker ?? new CallSite<T> {Match = true};
+                return matchmaker ?? new CallSite<T> { Match = true };
             }
 
             matchmaker = Interlocked.Exchange(ref CachedMatchmaker, null);
             Debug.Assert(matchmaker?.Match != false, "cached site should be set up for matchmaking");
 
-            return matchmaker ?? new CallSite<T> {Match = true};
+            return matchmaker ?? new CallSite<T> { Match = true };
         }
 
         // moves rule +2 up.

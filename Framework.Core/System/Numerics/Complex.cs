@@ -34,72 +34,10 @@ namespace System.Numerics
 {
     public struct Complex : IEquatable<Complex>, IFormattable
     {
-        public static explicit operator Complex(decimal value)
-        {
-            return new Complex((double)value, 0);
-        }
-
-        public static explicit operator Complex(BigInteger value)
-        {
-            return new Complex((double)value, 0);
-        }
-
-        public static implicit operator Complex(byte value)
-        {
-            return new Complex(value, 0);
-        }
-
-        public static implicit operator Complex(double value)
-        {
-            return new Complex(value, 0);
-        }
-
-        public static implicit operator Complex(short value)
-        {
-            return new Complex(value, 0);
-        }
-
-        public static implicit operator Complex(int value)
-        {
-            return new Complex(value, 0);
-        }
-
-        public static implicit operator Complex(long value)
-        {
-            return new Complex(value, 0);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator Complex(sbyte value)
-        {
-            return new Complex(value, 0);
-        }
-
-        public static implicit operator Complex(float value)
-        {
-            return new Complex(value, 0);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator Complex(ushort value)
-        {
-            return new Complex(value, 0);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator Complex(uint value)
-        {
-            return new Complex(value, 0);
-        }
-
-        [CLSCompliant(false)]
-        public static implicit operator Complex(ulong value)
-        {
-            return new Complex(value, 0);
-        }
-
         public static readonly Complex ImaginaryOne = new Complex(0, 1);
+
         public static readonly Complex One = new Complex(1, 0);
+
         public static readonly Complex Zero = new Complex(0, 0);
 
         public Complex(double real, double imaginary)
@@ -117,58 +55,6 @@ namespace System.Numerics
         public double Real { get; }
 
         private double MagnitudeSquared => (Imaginary * Imaginary) + (Real * Real);
-
-        public static Complex operator -(Complex left, Complex right)
-        {
-            return new Complex
-            (
-                left.Real - right.Real,
-                left.Imaginary - right.Imaginary
-            );
-        }
-
-        public static Complex operator -(Complex value)
-        {
-            return new Complex(-value.Real, -value.Imaginary);
-        }
-
-        public static bool operator !=(Complex left, Complex right)
-        {
-            return !left.Real.Equals(right.Real) || !left.Imaginary.Equals(right.Imaginary);
-        }
-
-        public static Complex operator *(Complex left, Complex right)
-        {
-            return new Complex
-            (
-                (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
-                (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
-            );
-        }
-
-        public static Complex operator /(Complex left, Complex right)
-        {
-            var d = (right.Real * right.Real) + (right.Imaginary * right.Imaginary);
-            return new Complex
-            (
-                ((left.Real * right.Real) + (left.Imaginary * right.Imaginary)) / d,
-                ((left.Imaginary * right.Real) - (left.Real * right.Imaginary)) / d
-            );
-        }
-
-        public static Complex operator +(Complex left, Complex right)
-        {
-            return new Complex
-            (
-                left.Real + right.Real,
-                left.Imaginary + right.Imaginary
-            );
-        }
-
-        public static bool operator ==(Complex left, Complex right)
-        {
-            return left.Real.Equals(right.Real) && left.Imaginary.Equals(right.Imaginary);
-        }
 
         public static double Abs(Complex value)
         {
@@ -242,6 +128,16 @@ namespace System.Numerics
             );
         }
 
+        public static explicit operator Complex(decimal value)
+        {
+            return new Complex((double)value, 0);
+        }
+
+        public static explicit operator Complex(BigInteger value)
+        {
+            return new Complex((double)value, 0);
+        }
+
         public static Complex FromPolarCoordinates(double magnitude, double phase)
         {
             return new Complex
@@ -249,6 +145,60 @@ namespace System.Numerics
                 magnitude * Math.Cos(phase),
                 magnitude * Math.Sin(phase)
             );
+        }
+
+        public static implicit operator Complex(byte value)
+        {
+            return new Complex(value, 0);
+        }
+
+        public static implicit operator Complex(double value)
+        {
+            return new Complex(value, 0);
+        }
+
+        public static implicit operator Complex(short value)
+        {
+            return new Complex(value, 0);
+        }
+
+        public static implicit operator Complex(int value)
+        {
+            return new Complex(value, 0);
+        }
+
+        public static implicit operator Complex(long value)
+        {
+            return new Complex(value, 0);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator Complex(sbyte value)
+        {
+            return new Complex(value, 0);
+        }
+
+        public static implicit operator Complex(float value)
+        {
+            return new Complex(value, 0);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator Complex(ushort value)
+        {
+            return new Complex(value, 0);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator Complex(uint value)
+        {
+            return new Complex(value, 0);
+        }
+
+        [CLSCompliant(false)]
+        public static implicit operator Complex(ulong value)
+        {
+            return new Complex(value, 0);
         }
 
         public static Complex Log(Complex value)
@@ -282,6 +232,58 @@ namespace System.Numerics
         public static Complex Negate(Complex value)
         {
             return -value;
+        }
+
+        public static Complex operator -(Complex left, Complex right)
+        {
+            return new Complex
+            (
+                left.Real - right.Real,
+                left.Imaginary - right.Imaginary
+            );
+        }
+
+        public static Complex operator -(Complex value)
+        {
+            return new Complex(-value.Real, -value.Imaginary);
+        }
+
+        public static bool operator !=(Complex left, Complex right)
+        {
+            return !left.Real.Equals(right.Real) || !left.Imaginary.Equals(right.Imaginary);
+        }
+
+        public static Complex operator *(Complex left, Complex right)
+        {
+            return new Complex
+            (
+                (left.Real * right.Real) - (left.Imaginary * right.Imaginary),
+                (left.Real * right.Imaginary) + (left.Imaginary * right.Real)
+            );
+        }
+
+        public static Complex operator /(Complex left, Complex right)
+        {
+            var d = (right.Real * right.Real) + (right.Imaginary * right.Imaginary);
+            return new Complex
+            (
+                ((left.Real * right.Real) + (left.Imaginary * right.Imaginary)) / d,
+                ((left.Imaginary * right.Real) - (left.Real * right.Imaginary)) / d
+            );
+        }
+
+        public static Complex operator +(Complex left, Complex right)
+        {
+            return new Complex
+            (
+                left.Real + right.Real,
+                left.Imaginary + right.Imaginary
+            );
+        }
+
+        public static bool operator ==(Complex left, Complex right)
+        {
+            return left.Real.Equals(right.Real) && left.Imaginary.Equals(right.Imaginary);
         }
 
         public static Complex Pow(Complex value, double power)

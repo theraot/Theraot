@@ -33,7 +33,7 @@ namespace System
         public AggregateException(string message, Exception exception)
             : base(message, exception ?? throw new ArgumentNullException(nameof(exception)))
         {
-            InnerExceptions = new ReadOnlyCollection<Exception>(new[] {exception});
+            InnerExceptions = new ReadOnlyCollection<Exception>(new[] { exception });
         }
 
         public AggregateException(params Exception[] innerExceptions)

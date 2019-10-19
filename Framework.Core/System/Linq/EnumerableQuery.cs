@@ -31,11 +31,6 @@ namespace System.Linq
 
         IQueryProvider IQueryable.Provider => _queryable;
 
-        public override string ToString()
-        {
-            return _queryable.ToString();
-        }
-
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
             if (expression == null)
@@ -84,6 +79,11 @@ namespace System.Linq
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return _queryable.GetEnumerator();
+        }
+
+        public override string ToString()
+        {
+            return _queryable.ToString();
         }
     }
 }

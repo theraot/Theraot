@@ -7,6 +7,7 @@ using Theraot;
 namespace System
 {
 #if LESSTHAN_NET40
+
     public static class EnumEx
     {
         public static bool TryParse<TEnum>(string value, out TEnum result)
@@ -47,23 +48,24 @@ namespace System
             }
         }
     }
+
 #else
     public static class EnumEx
     {
-        [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptionsEx.AggressiveInlining)]
-        public static bool TryParse<TEnum>(string value, out TEnum result)
-            where TEnum : struct
-        {
-            // Added in .NET 4.0
-            return Enum.TryParse(value, out result);
-        }
-
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptionsEx.AggressiveInlining)]
         public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result)
             where TEnum : struct
         {
             // Added in .NET 4.0
             return Enum.TryParse(value, ignoreCase, out result);
+        }
+
+        [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptionsEx.AggressiveInlining)]
+        public static bool TryParse<TEnum>(string value, out TEnum result)
+            where TEnum : struct
+        {
+            // Added in .NET 4.0
+            return Enum.TryParse(value, out result);
         }
     }
 #endif

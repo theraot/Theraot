@@ -25,14 +25,14 @@ namespace System.Threading.Tasks
     /// </summary>
     internal class TaskExceptionHolder
     {
+        /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
+        private static readonly bool _failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
+
         /// <summary>An event handler used to notify of domain unload.</summary>
         private static EventHandler? _adUnloadEventHandler;
 
         /// <summary>Whether the AppDomain has started to unload.</summary>
         private static volatile bool _domainUnloadStarted;
-
-        /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
-        private static readonly bool _failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
 
         /// <summary>The task with which this holder is associated.</summary>
         private readonly Task _task;
@@ -59,9 +59,6 @@ namespace System.Threading.Tasks
             EnsureAppDomainUnloadCallbackRegistered();
         }
 
-        /// <summary>Gets whether the exception holder is currently storing any exceptions for faults.</summary>
-        internal bool ContainsFaultList => _faultExceptions != null;
-
         /// <summary>
         ///     A finalizer that repropagates unhandled exceptions.
         /// </summary>
@@ -84,20 +81,21 @@ namespace System.Threading.Tasks
                 switch (edi.SourceException)
                 {
                     case AggregateException aggExp:
-                    {
-                        var flattenedAggExp = aggExp.Flatten();
-                        foreach (var innerExp in flattenedAggExp.InnerExceptions)
                         {
-                            if (innerExp is ThreadAbortException)
+                            var flattenedAggExp = aggExp.Flatten();
+                            foreach (var innerExp in flattenedAggExp.InnerExceptions)
                             {
-                                return;
+                                if (innerExp is ThreadAbortException)
+                                {
+                                    return;
+                                }
                             }
-                        }
 
-                        break;
-                    }
+                            break;
+                        }
                     case ThreadAbortException _:
                         return;
+
                     default:
                         break;
                 }
@@ -115,6 +113,9 @@ namespace System.Threading.Tasks
                 throw exceptionToThrow;
             }
         }
+
+        /// <summary>Gets whether the exception holder is currently storing any exceptions for faults.</summary>
+        internal bool ContainsFaultList => _faultExceptions != null;
 
         /// <summary>
         ///     Add an exception to the holder.  This will ensure the holder is
@@ -293,36 +294,36 @@ namespace System.Threading.Tasks
                     break;
                 // Handle enumerables of exceptions by capturing each of the contained exceptions into an EDI and storing it
                 case IEnumerable<Exception> exColl:
-                {
-#if DEBUG
-                    var numExceptions = 0;
-#endif
-                    foreach (var exc in exColl)
                     {
 #if DEBUG
-                        numExceptions++;
+                        var numExceptions = 0;
 #endif
-                        exceptions.Add(ExceptionDispatchInfo.Capture(exc));
-                    }
+                        foreach (var exc in exColl)
+                        {
 #if DEBUG
-                    Debug.Assert(numExceptions > 0, "Collection should contain at least one exception.");
+                            numExceptions++;
 #endif
-                    break;
-                }
+                            exceptions.Add(ExceptionDispatchInfo.Capture(exc));
+                        }
+#if DEBUG
+                        Debug.Assert(numExceptions > 0, "Collection should contain at least one exception.");
+#endif
+                        break;
+                    }
                 // Handle enumerables of EDIs by storing them directly
                 // Anything else is a programming error
                 case IEnumerable<ExceptionDispatchInfo> ediColl:
-                {
-                    exceptions.AddRange(ediColl);
-#if DEBUG
-                    Debug.Assert(exceptions.Count > 0, "There should be at least one dispatch info.");
-                    foreach (var tmp in exceptions)
                     {
-                        Debug.Assert(tmp != null, "No dispatch infos should be null");
-                    }
+                        exceptions.AddRange(ediColl);
+#if DEBUG
+                        Debug.Assert(exceptions.Count > 0, "There should be at least one dispatch info.");
+                        foreach (var tmp in exceptions)
+                        {
+                            Debug.Assert(tmp != null, "No dispatch infos should be null");
+                        }
 #endif
-                    break;
-                }
+                        break;
+                    }
                 default:
                     throw new ArgumentException("(Internal)Expected an Exception or an IEnumerable<Exception>", nameof(exceptionObject));
             }

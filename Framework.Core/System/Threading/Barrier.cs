@@ -180,29 +180,6 @@ namespace System.Threading
             }
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Releases all resources used by the current instance of <see cref="System.Threading.Barrier" />.
-        /// </summary>
-        /// <exception cref="System.InvalidOperationException">
-        ///     The method was invoked from within a post-phase action.
-        /// </exception>
-        /// <remarks>
-        ///     Unlike most of the members of <see cref="System.Threading.Barrier" />, Dispose is not thread-safe and may not be
-        ///     used concurrently with other members of this instance.
-        /// </remarks>
-        public void Dispose()
-        {
-            // in case of this is called from the PHA
-            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
-            {
-                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
-            }
-
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
         ///     Notifies the <see cref="Barrier" /> that there will be an additional participant.
         /// </summary>
@@ -349,6 +326,29 @@ namespace System.Threading
             }
 
             return newPhase;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        ///     Releases all resources used by the current instance of <see cref="System.Threading.Barrier" />.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">
+        ///     The method was invoked from within a post-phase action.
+        /// </exception>
+        /// <remarks>
+        ///     Unlike most of the members of <see cref="System.Threading.Barrier" />, Dispose is not thread-safe and may not be
+        ///     used concurrently with other members of this instance.
+        /// </remarks>
+        public void Dispose()
+        {
+            // in case of this is called from the PHA
+            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
+            {
+                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
+            }
+
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

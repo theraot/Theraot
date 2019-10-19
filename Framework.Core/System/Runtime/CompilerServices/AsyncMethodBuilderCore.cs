@@ -119,6 +119,11 @@ namespace System.Runtime.CompilerServices
         private sealed class MoveNextRunner
         {
             /// <summary>
+            ///     The state machine whose MoveNext method should be invoked.
+            /// </summary>
+            internal IAsyncStateMachine? StateMachine;
+
+            /// <summary>
             ///     Cached delegate used with ExecutionContext.Run.
             /// </summary>
             [SecurityCritical]
@@ -128,11 +133,6 @@ namespace System.Runtime.CompilerServices
             ///     The context with which to run MoveNext.
             /// </summary>
             private readonly ExecutionContext _context;
-
-            /// <summary>
-            ///     The state machine whose MoveNext method should be invoked.
-            /// </summary>
-            internal IAsyncStateMachine? StateMachine;
 
             /// <summary>
             ///     Initializes the runner.

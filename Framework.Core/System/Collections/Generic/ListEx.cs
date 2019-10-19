@@ -18,24 +18,21 @@ namespace System.Collections.Generic
 #endif
         class ListEx<T> : List<T>
 #if LESSTHAN_NET45
-        , IReadOnlyList<T>
+            , IReadOnlyList<T>
 #endif
     {
         public ListEx()
         {
-            // Empty
-        }
-
-        public ListEx(int capacity)
-            : base(capacity)
-        {
-            // Empty
         }
 
         public ListEx(IEnumerable<T> collection)
             : base(collection)
         {
-            // Empty
+        }
+
+        public ListEx(int capacity)
+            : base(capacity)
+        {
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

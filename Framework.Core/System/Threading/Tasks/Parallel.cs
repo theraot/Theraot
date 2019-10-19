@@ -18,10 +18,10 @@
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Runtime.ExceptionServices;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
@@ -2519,6 +2519,7 @@ namespace System.Threading.Tasks
                         localInit,
                         localFinally
                     );
+
                 case IList<TSource> sourceAsList:
                     // If we can index into the list, we can use a faster code-path that doesn't result in
                     // contention for the single, shared enumerator object.
@@ -2534,6 +2535,7 @@ namespace System.Threading.Tasks
                         localInit,
                         localFinally
                     );
+
                 default:
                     // This is an honest-to-goodness IEnumerable.  Wrap it in a Partitioner and defer to our
                     // ForEach(Partitioner) logic.

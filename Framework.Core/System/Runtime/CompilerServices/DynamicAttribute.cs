@@ -30,7 +30,7 @@ namespace System.Runtime.CompilerServices
         /// </remarks>
         public DynamicAttribute()
         {
-            _transformFlags = new[] {true};
+            _transformFlags = new[] { true };
         }
 
         /// <inheritdoc />

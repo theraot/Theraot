@@ -47,16 +47,19 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets or sets the <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
-        ///     associated with this <see cref="ParallelOptions" /> instance. Setting this property to null
-        ///     indicates that the current scheduler should be used.
+        ///     Gets or sets the <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        ///     associated with this <see cref="ParallelOptions" /> instance.
         /// </summary>
+        /// <remarks>
+        ///     Providing a <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        ///     to a <see cref="System.Threading.Tasks.Parallel">Parallel</see> method enables the operation to be
+        ///     exited early. Code external to the operation may cancel the token, and if the operation observes the
+        ///     token being set, it may exit early by throwing an
+        ///     <see cref="System.OperationCanceledExceptionEx" />.
+        /// </remarks>
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-        public TaskScheduler TaskScheduler { get; set; }
-
-        // Convenience property used by TPL logic
-        internal TaskScheduler EffectiveTaskScheduler => TaskScheduler ?? TaskScheduler.Current;
+        public CancellationToken CancellationToken { get; set; }
 
         /// <summary>
         ///     Gets or sets the maximum degree of parallelism enabled by this ParallelOptions instance.
@@ -87,19 +90,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets or sets the <see cref="System.Threading.CancellationToken">CancellationToken</see>
-        ///     associated with this <see cref="ParallelOptions" /> instance.
+        ///     Gets or sets the <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
+        ///     associated with this <see cref="ParallelOptions" /> instance. Setting this property to null
+        ///     indicates that the current scheduler should be used.
         /// </summary>
-        /// <remarks>
-        ///     Providing a <see cref="System.Threading.CancellationToken">CancellationToken</see>
-        ///     to a <see cref="System.Threading.Tasks.Parallel">Parallel</see> method enables the operation to be
-        ///     exited early. Code external to the operation may cancel the token, and if the operation observes the
-        ///     token being set, it may exit early by throwing an
-        ///     <see cref="System.OperationCanceledExceptionEx" />.
-        /// </remarks>
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-        public CancellationToken CancellationToken { get; set; }
+        public TaskScheduler TaskScheduler { get; set; }
 
         internal int EffectiveMaxConcurrencyLevel
         {
@@ -115,6 +112,9 @@ namespace System.Threading.Tasks
                 return result;
             }
         }
+
+        // Convenience property used by TPL logic
+        internal TaskScheduler EffectiveTaskScheduler => TaskScheduler ?? TaskScheduler.Current;
     }
 }
 

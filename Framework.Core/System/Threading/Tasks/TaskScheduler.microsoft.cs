@@ -34,31 +34,6 @@ namespace System.Threading.Tasks
         private static readonly IEvent<UnobservedTaskExceptionEventArgs> _unobservedTaskException = new StrongEvent<UnobservedTaskExceptionEventArgs>(true);
 
         /// <summary>
-        ///     Indicates the maximum concurrency level this
-        ///     <see cref="TaskScheduler" />  is able to support.
-        /// </summary>
-        public virtual int MaximumConcurrencyLevel => int.MaxValue;
-
-        /// <summary>
-        ///     Gets the <see cref="TaskScheduler">TaskScheduler</see>
-        ///     associated with the currently executing task.
-        /// </summary>
-        /// <remarks>
-        ///     When not called from within a task, <see cref="InternalCurrent" /> will return null.
-        /// </remarks>
-        internal static TaskScheduler? InternalCurrent
-        {
-            get
-            {
-                var currentTask = Task.InternalCurrent;
-                return currentTask != null
-                       && (currentTask.CreationOptions & TaskCreationOptions.HideScheduler) == 0
-                    ? currentTask.ExecutingTaskScheduler
-                    : null;
-            }
-        }
-
-        /// <summary>
         ///     Occurs when a faulted <see cref="Task" />'s unobserved exception is about to trigger exception escalation
         ///     policy, which, by default, would terminate the process.
         /// </summary>
@@ -85,6 +60,31 @@ namespace System.Threading.Tasks
                 {
                     _unobservedTaskException.Remove(value);
                 }
+            }
+        }
+
+        /// <summary>
+        ///     Indicates the maximum concurrency level this
+        ///     <see cref="TaskScheduler" />  is able to support.
+        /// </summary>
+        public virtual int MaximumConcurrencyLevel => int.MaxValue;
+
+        /// <summary>
+        ///     Gets the <see cref="TaskScheduler">TaskScheduler</see>
+        ///     associated with the currently executing task.
+        /// </summary>
+        /// <remarks>
+        ///     When not called from within a task, <see cref="InternalCurrent" /> will return null.
+        /// </remarks>
+        internal static TaskScheduler? InternalCurrent
+        {
+            get
+            {
+                var currentTask = Task.InternalCurrent;
+                return currentTask != null
+                       && (currentTask.CreationOptions & TaskCreationOptions.HideScheduler) == 0
+                    ? currentTask.ExecutingTaskScheduler
+                    : null;
             }
         }
 

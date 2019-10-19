@@ -42,13 +42,6 @@ namespace System.Threading
 
         public WaitHandle WaitHandle => GetEvent().WaitHandle;
 
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         public void AddCount()
         {
             AddCount(1);
@@ -60,6 +53,13 @@ namespace System.Threading
             {
                 throw new InvalidOperationException("Already Zero");
             }
+        }
+
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void Reset()

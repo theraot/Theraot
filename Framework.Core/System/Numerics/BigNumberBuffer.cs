@@ -6,12 +6,12 @@ namespace System.Numerics
 {
     internal sealed class BigNumberBuffer
     {
+        public readonly StringBuilder Digits;
+
         private BigNumberBuffer(StringBuilder digits)
         {
             Digits = digits;
         }
-
-        public readonly StringBuilder Digits;
 
         public bool Negative { get; set; }
 

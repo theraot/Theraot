@@ -21,18 +21,22 @@ namespace System.Threading.Tasks
     //
     internal sealed class TaskReplicator
     {
-        public delegate void ReplicableUserAction<TState>(ref TState replicaState, int timeout, out bool yieldedBeforeCompletion);
+        private const int _cooperativeMultitaskingTaskTimeoutIncrement = 50;
 
-        private const int _cooperativeMultitaskingTaskTimeoutIncrement = 50; // millisecond
+        private const int _cooperativeMultitaskingTaskTimeoutMin = 100;
 
-        private const int _cooperativeMultitaskingTaskTimeoutMin = 100; // millisecond
+        // millisecond
         private const int _cooperativeMultitaskingTaskTimeoutRootTask = int.MaxValue / 2;
 
+        // millisecond
         private readonly ConcurrentQueue<Replica> _pendingReplicas = new ConcurrentQueue<Replica>();
 
         private readonly TaskScheduler _scheduler;
+
         private readonly bool _stopOnFirstFailure;
+
         private ConcurrentQueue<Exception>? _exceptions;
+
         private bool _stopReplicating;
 
         private TaskReplicator(ParallelOptions options, bool stopOnFirstFailure)
@@ -40,6 +44,8 @@ namespace System.Threading.Tasks
             _scheduler = options.TaskScheduler ?? TaskScheduler.Current;
             _stopOnFirstFailure = stopOnFirstFailure;
         }
+
+        public delegate void ReplicableUserAction<TState>(ref TState replicaState, int timeout, out bool yieldedBeforeCompletion);
 
         public static void Run<TState>(ReplicableUserAction<TState> action, ParallelOptions options, bool stopOnFirstFailure)
         {
@@ -108,6 +114,10 @@ namespace System.Threading.Tasks
                 }
             }
 
+            protected abstract void CreateNewReplica();
+
+            protected abstract void ExecuteAction(out bool yieldedBeforeCompletion);
+
             private void Execute()
             {
                 try
@@ -142,10 +152,6 @@ namespace System.Threading.Tasks
                     PendingTask = null;
                 }
             }
-
-            protected abstract void CreateNewReplica();
-
-            protected abstract void ExecuteAction(out bool yieldedBeforeCompletion);
         }
 
         private sealed class Replica<TState> : Replica

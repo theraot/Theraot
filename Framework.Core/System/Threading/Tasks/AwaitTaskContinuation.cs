@@ -12,12 +12,12 @@ namespace System.Threading.Tasks
     /// <summary>Base task continuation class used for await continuations.</summary>
     internal class AwaitTaskContinuation : TaskContinuation, IThreadPoolWorkItem
     {
+        /// <summary>The action to invoke.</summary>
+        protected readonly Action Action;
+
         /// <summary>Cached delegate that invokes an Action passed as an object parameter.</summary>
         [SecurityCritical]
         private static ContextCallback? _invokeActionCallback;
-
-        /// <summary>The action to invoke.</summary>
-        protected readonly Action Action;
 
         /// <summary>The ExecutionContext with which to run the continuation.</summary>
         private ExecutionContext? _capturedContext;

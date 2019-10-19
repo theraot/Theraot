@@ -23,35 +23,34 @@ namespace System.Collections.Generic
     {
         public HashSetEx()
         {
-            // Empty
         }
 
         public HashSetEx(IEnumerable<T> collection)
             : base(collection)
         {
-            // Empty
-        }
-
-        public HashSetEx(IEqualityComparer<T>? comparer)
-            : base(comparer ?? EqualityComparer<T>.Default)
-        {
-            // Empty
         }
 
         public HashSetEx(IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : base(collection, comparer)
         {
-            // Empty
+        }
+
+        public HashSetEx(IEqualityComparer<T>? comparer)
+            : base(comparer ?? EqualityComparer<T>.Default)
+        {
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
 
         protected HashSetEx(SerializationInfo info, StreamingContext context)
             : base(info, context)
+
 #else
         [Obsolete("This target platform does not support binary serialization.")]
         protected HashSetEx(SerializationInfo info, StreamingContext context)
+
 #endif
+
         {
             No.Op(info);
             No.Op(context);

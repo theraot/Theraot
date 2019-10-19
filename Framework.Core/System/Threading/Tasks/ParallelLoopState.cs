@@ -23,6 +23,43 @@ using System.Diagnostics;
 namespace System.Threading.Tasks
 {
     /// <summary>
+    ///     Provides completion status on the execution of a <see cref="Parallel" /> loop.
+    /// </summary>
+    /// <remarks>
+    ///     If <see cref="IsCompleted" /> returns true, then the loop ran to completion, such that all iterations
+    ///     of the loop were executed. If <see cref="IsCompleted" /> returns false and
+    ///     <see cref="LowestBreakIteration" /> returns null, a call to
+    ///     <see cref="System.Threading.Tasks.ParallelLoopState.Stop" /> was used to end the loop prematurely. If
+    ///     <see cref="IsCompleted" /> returns false and <see cref="LowestBreakIteration" /> returns a non-null integral
+    ///     value, <see cref="System.Threading.Tasks.ParallelLoopState.Break()" /> was used to end the loop prematurely.
+    /// </remarks>
+    public struct ParallelLoopResult
+    {
+        // ReSharper disable once InconsistentNaming
+        internal bool _completed;
+
+        // ReSharper disable once InconsistentNaming
+        internal long? _lowestBreakIteration;
+
+        /// <summary>
+        ///     Gets whether the loop ran to completion, such that all iterations of the loop were executed
+        ///     and the loop didn't receive a request to end prematurely.
+        /// </summary>
+        public bool IsCompleted => _completed;
+
+        /// <summary>
+        ///     Gets the index of the lowest iteration from which
+        ///     <see cref="System.Threading.Tasks.ParallelLoopState.Break()" />
+        ///     was called.
+        /// </summary>
+        /// <remarks>
+        ///     If <see cref="System.Threading.Tasks.ParallelLoopState.Break()" /> was not employed, this property will
+        ///     return null.
+        /// </remarks>
+        public long? LowestBreakIteration => _lowestBreakIteration;
+    }
+
+    /// <summary>
     ///     Enables iterations of <see cref="System.Threading.Tasks.Parallel" /> loops to interact with
     ///     other iterations.
     /// </summary>
@@ -40,16 +77,23 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Internal/virtual support for ShouldExitCurrentIteration.
+        ///     Gets whether any iteration of the loop has thrown an exception that went unhandled by that
+        ///     iteration.
         /// </summary>
-        internal virtual bool InternalShouldExitCurrentIteration
-        {
-            get
-            {
-                DebugEx.Fail("This method is not supported.");
-                throw new NotSupportedException("This method is not supported.");
-            }
-        }
+        public bool IsExceptional => (_flagsBase.LoopStateFlags & ParallelLoopStateFlags.ParallelLoopStateExceptional) != 0;
+
+        /// <summary>
+        ///     Gets whether any iteration of the loop has called <see cref="Stop()" />.
+        /// </summary>
+        public bool IsStopped => (_flagsBase.LoopStateFlags & ParallelLoopStateFlags.ParallelLoopStateStopped) != 0;
+
+        /// <summary>
+        ///     Gets the lowest iteration of the loop from which <see cref="Break()" /> was called.
+        /// </summary>
+        /// <remarks>
+        ///     If no iteration of the loop called <see cref="Break()" />, this property will return null.
+        /// </remarks>
+        public long? LowestBreakIteration => InternalLowestBreakIteration;
 
         /// <summary>
         ///     Gets whether the current iteration of the loop should exit based
@@ -67,17 +111,6 @@ namespace System.Threading.Tasks
         public bool ShouldExitCurrentIteration => InternalShouldExitCurrentIteration;
 
         /// <summary>
-        ///     Gets whether any iteration of the loop has called <see cref="Stop()" />.
-        /// </summary>
-        public bool IsStopped => (_flagsBase.LoopStateFlags & ParallelLoopStateFlags.ParallelLoopStateStopped) != 0;
-
-        /// <summary>
-        ///     Gets whether any iteration of the loop has thrown an exception that went unhandled by that
-        ///     iteration.
-        /// </summary>
-        public bool IsExceptional => (_flagsBase.LoopStateFlags & ParallelLoopStateFlags.ParallelLoopStateExceptional) != 0;
-
-        /// <summary>
         ///     Internal/virtual support for LowestBreakIteration.
         /// </summary>
         internal virtual long? InternalLowestBreakIteration
@@ -90,44 +123,15 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets the lowest iteration of the loop from which <see cref="Break()" /> was called.
+        ///     Internal/virtual support for ShouldExitCurrentIteration.
         /// </summary>
-        /// <remarks>
-        ///     If no iteration of the loop called <see cref="Break()" />, this property will return null.
-        /// </remarks>
-        public long? LowestBreakIteration => InternalLowestBreakIteration;
-
-        /// <summary>
-        ///     Communicates that the <see cref="Parallel" /> loop should cease execution at the system's earliest
-        ///     convenience.
-        /// </summary>
-        /// <exception cref="System.InvalidOperationException">
-        ///     The <see cref="Break()" /> method was previously called.  <see cref="Break()" /> and
-        ///     <see cref="Stop()" /> may not be used in combination by iterations of the same loop.
-        /// </exception>
-        /// <remarks>
-        ///     <para>
-        ///         <see cref="Stop()" /> may be used to communicate to the loop that no other iterations need be run.
-        ///         For long-running iterations that may already be executing, <see cref="Stop()" /> causes
-        ///         <see cref="IsStopped" />
-        ///         to return true for all other iterations of the loop, such that another iteration may check
-        ///         <see cref="IsStopped" /> and exit early if it's observed to be true.
-        ///     </para>
-        ///     <para>
-        ///         <see cref="Stop()" /> is typically employed in search-based algorithms, where once a result is found,
-        ///         no other iterations need be executed.
-        ///     </para>
-        /// </remarks>
-        public void Stop()
+        internal virtual bool InternalShouldExitCurrentIteration
         {
-            _flagsBase.Stop();
-        }
-
-        // Internal/virtual support for Break().
-        internal virtual void InternalBreak()
-        {
-            DebugEx.Fail("This method is not supported.");
-            throw new NotSupportedException("This method is not supported.");
+            get
+            {
+                DebugEx.Fail("This method is not supported.");
+                throw new NotSupportedException("This method is not supported.");
+            }
         }
 
         /// <summary>
@@ -159,6 +163,32 @@ namespace System.Threading.Tasks
         public void Break()
         {
             InternalBreak();
+        }
+
+        /// <summary>
+        ///     Communicates that the <see cref="Parallel" /> loop should cease execution at the system's earliest
+        ///     convenience.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">
+        ///     The <see cref="Break()" /> method was previously called.  <see cref="Break()" /> and
+        ///     <see cref="Stop()" /> may not be used in combination by iterations of the same loop.
+        /// </exception>
+        /// <remarks>
+        ///     <para>
+        ///         <see cref="Stop()" /> may be used to communicate to the loop that no other iterations need be run.
+        ///         For long-running iterations that may already be executing, <see cref="Stop()" /> causes
+        ///         <see cref="IsStopped" />
+        ///         to return true for all other iterations of the loop, such that another iteration may check
+        ///         <see cref="IsStopped" /> and exit early if it's observed to be true.
+        ///     </para>
+        ///     <para>
+        ///         <see cref="Stop()" /> is typically employed in search-based algorithms, where once a result is found,
+        ///         no other iterations need be executed.
+        ///     </para>
+        /// </remarks>
+        public void Stop()
+        {
+            _flagsBase.Stop();
         }
 
         // Helper method to avoid repeating Break() logic between ParallelState32 and ParallelState32<TLocal>
@@ -254,6 +284,13 @@ namespace System.Threading.Tasks
                 }
             }
         }
+
+        // Internal/virtual support for Break().
+        internal virtual void InternalBreak()
+        {
+            DebugEx.Fail("This method is not supported.");
+            throw new NotSupportedException("This method is not supported.");
+        }
     }
 
     internal class ParallelLoopState32 : ParallelLoopState
@@ -281,16 +318,16 @@ namespace System.Threading.Tasks
         internal int CurrentIteration { get; set; }
 
         /// <summary>
-        ///     Returns true if we should be exiting from the current iteration
-        ///     due to Stop(), Break() or exception.
-        /// </summary>
-        internal override bool InternalShouldExitCurrentIteration => _sharedParallelStateFlags.ShouldExitLoop(CurrentIteration);
-
-        /// <summary>
         ///     Returns the lowest iteration at which Break() has been called, or
         ///     null if Break() has not yet been called.
         /// </summary>
         internal override long? InternalLowestBreakIteration => _sharedParallelStateFlags.NullableLowestBreakIteration;
+
+        /// <summary>
+        ///     Returns true if we should be exiting from the current iteration
+        ///     due to Stop(), Break() or exception.
+        /// </summary>
+        internal override bool InternalShouldExitCurrentIteration => _sharedParallelStateFlags.ShouldExitLoop(CurrentIteration);
 
         /// <summary>
         ///     Communicates that parallel tasks should stop when they reach a specified iteration element.
@@ -336,16 +373,16 @@ namespace System.Threading.Tasks
         internal long CurrentIteration { get; set; }
 
         /// <summary>
-        ///     Returns true if we should be exiting from the current iteration
-        ///     due to Stop(), Break() or exception.
-        /// </summary>
-        internal override bool InternalShouldExitCurrentIteration => _sharedParallelStateFlags.ShouldExitLoop(CurrentIteration);
-
-        /// <summary>
         ///     Returns the lowest iteration at which Break() has been called, or
         ///     null if Break() has not yet been called.
         /// </summary>
         internal override long? InternalLowestBreakIteration => _sharedParallelStateFlags.NullableLowestBreakIteration;
+
+        /// <summary>
+        ///     Returns true if we should be exiting from the current iteration
+        ///     due to Stop(), Break() or exception.
+        /// </summary>
+        internal override bool InternalShouldExitCurrentIteration => _sharedParallelStateFlags.ShouldExitLoop(CurrentIteration);
 
         /// <summary>
         ///     Communicates that parallel tasks should stop when they reach a specified iteration element.
@@ -369,12 +406,11 @@ namespace System.Threading.Tasks
     /// </summary>
     internal class ParallelLoopStateFlags
     {
-        internal const int ParallelLoopStateNone = 0;
-        internal const int ParallelLoopStateExceptional = 1;
         internal const int ParallelLoopStateBroken = 2;
-        internal const int ParallelLoopStateStopped = 4;
         internal const int ParallelLoopStateCanceled = 8;
-
+        internal const int ParallelLoopStateExceptional = 1;
+        internal const int ParallelLoopStateNone = 0;
+        internal const int ParallelLoopStateStopped = 4;
         private volatile int _loopStateFlags;
 
         internal int LoopStateFlags => _loopStateFlags;
@@ -405,6 +441,13 @@ namespace System.Threading.Tasks
             }
         }
 
+        // Returns true if StoppedBroken is updated to ParallelLoopStateCanceled.
+        internal bool Cancel()
+        {
+            // we can set the canceled flag regardless of the state of other bits.
+            return AtomicLoopStateUpdate(ParallelLoopStateCanceled, ParallelLoopStateNone);
+        }
+
         internal void SetExceptional()
         {
             // we can set the exceptional flag regardless of the state of other bits.
@@ -418,13 +461,6 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("SR.ParallelState_Stop_InvalidOperationException_StopAfterBreak");
             }
-        }
-
-        // Returns true if StoppedBroken is updated to ParallelLoopStateCanceled.
-        internal bool Cancel()
-        {
-            // we can set the canceled flag regardless of the state of other bits.
-            return AtomicLoopStateUpdate(ParallelLoopStateCanceled, ParallelLoopStateNone);
         }
     }
 
@@ -560,43 +596,6 @@ namespace System.Threading.Tasks
             var flags = LoopStateFlags;
             return flags != ParallelLoopStateNone && (flags & (ParallelLoopStateExceptional | ParallelLoopStateCanceled)) != 0;
         }
-    }
-
-    /// <summary>
-    ///     Provides completion status on the execution of a <see cref="Parallel" /> loop.
-    /// </summary>
-    /// <remarks>
-    ///     If <see cref="IsCompleted" /> returns true, then the loop ran to completion, such that all iterations
-    ///     of the loop were executed. If <see cref="IsCompleted" /> returns false and
-    ///     <see cref="LowestBreakIteration" /> returns null, a call to
-    ///     <see cref="System.Threading.Tasks.ParallelLoopState.Stop" /> was used to end the loop prematurely. If
-    ///     <see cref="IsCompleted" /> returns false and <see cref="LowestBreakIteration" /> returns a non-null integral
-    ///     value, <see cref="System.Threading.Tasks.ParallelLoopState.Break()" /> was used to end the loop prematurely.
-    /// </remarks>
-    public struct ParallelLoopResult
-    {
-        // ReSharper disable once InconsistentNaming
-        internal bool _completed;
-
-        // ReSharper disable once InconsistentNaming
-        internal long? _lowestBreakIteration;
-
-        /// <summary>
-        ///     Gets whether the loop ran to completion, such that all iterations of the loop were executed
-        ///     and the loop didn't receive a request to end prematurely.
-        /// </summary>
-        public bool IsCompleted => _completed;
-
-        /// <summary>
-        ///     Gets the index of the lowest iteration from which
-        ///     <see cref="System.Threading.Tasks.ParallelLoopState.Break()" />
-        ///     was called.
-        /// </summary>
-        /// <remarks>
-        ///     If <see cref="System.Threading.Tasks.ParallelLoopState.Break()" /> was not employed, this property will
-        ///     return null.
-        /// </remarks>
-        public long? LowestBreakIteration => _lowestBreakIteration;
     }
 }
 

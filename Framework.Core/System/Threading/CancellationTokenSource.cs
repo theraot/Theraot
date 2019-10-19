@@ -98,13 +98,6 @@ namespace System.Threading
             }
         }
 
-        [DebuggerNonUserCode]
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         public static CancellationTokenSource CreateLinkedTokenSource(CancellationToken token1, CancellationToken token2)
         {
             return CreateLinkedTokenSource(new[] { token1, token2 });
@@ -169,6 +162,13 @@ namespace System.Threading
             }
 
             _timeout.Change(millisecondsDelay);
+        }
+
+        [DebuggerNonUserCode]
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         internal void CheckDisposed()

@@ -264,18 +264,18 @@ namespace System.Threading
             _canEnter = null;
         }
 
-        private ManualResetEventSlim GetCanEnter()
-        {
-            CheckDisposed();
-            return _canEnter!;
-        }
-
         private void CheckDisposed()
         {
             if (Volatile.Read(ref _disposed) != 0)
             {
                 throw new ObjectDisposedException(nameof(SemaphoreSlim));
             }
+        }
+
+        private ManualResetEventSlim GetCanEnter()
+        {
+            CheckDisposed();
+            return _canEnter!;
         }
 
         private bool TryOffset(int releaseCount, out int previous, ManualResetEventSlim canEnter, ThreadSafeQueue<TaskCompletionSource<bool>> asyncWaiters)

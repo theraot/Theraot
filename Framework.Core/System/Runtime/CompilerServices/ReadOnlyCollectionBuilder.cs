@@ -113,9 +113,15 @@ namespace System.Runtime.CompilerServices
             }
         }
 
+        /// <summary>
+        ///     Returns number of elements in the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        /// </summary>
+        public int Count { get; private set; }
+
         bool IList.IsFixedSize => false;
         bool IList.IsReadOnly => false;
 
+        bool ICollection<T>.IsReadOnly => false;
         bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot => this;
@@ -140,87 +146,6 @@ namespace System.Runtime.CompilerServices
                 }
             }
         }
-
-        int IList.Add(object value)
-        {
-            if (value == null && !typeof(T).CanBeNull())
-            {
-                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-            var typedValue = value == null ? default : (T)value;
-            try
-            {
-                Add(typedValue);
-            }
-            catch (InvalidCastException)
-            {
-                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-
-            return Count - 1;
-        }
-
-        bool IList.Contains(object value)
-        {
-            return IsCompatibleObject(value) && Contains((T)value);
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (array.Rank != 1)
-            {
-                throw new ArgumentException(string.Empty, nameof(array));
-            }
-
-            Array.Copy(_items, 0, array, index, Count);
-        }
-
-        int IList.IndexOf(object value)
-        {
-            if (IsCompatibleObject(value))
-            {
-                return IndexOf((T)value);
-            }
-
-            return -1;
-        }
-
-        void IList.Insert(int index, object value)
-        {
-            if (value == null && !typeof(T).CanBeNull())
-            {
-                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-            var typedValue = value == null ? default : (T)value;
-            try
-            {
-                Insert(index, typedValue);
-            }
-            catch (InvalidCastException)
-            {
-                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
-            }
-        }
-
-        void IList.Remove(object value)
-        {
-            if (IsCompatibleObject(value))
-            {
-                Remove((T)value);
-            }
-        }
-
-        /// <summary>
-        ///     Returns number of elements in the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
-        /// </summary>
-        public int Count { get; private set; }
-
-        bool ICollection<T>.IsReadOnly => false;
 
         /// <inheritdoc />
         /// <summary>
@@ -249,6 +174,25 @@ namespace System.Runtime.CompilerServices
                 _items[index] = value;
                 _version++;
             }
+        }
+
+        int IList.Add(object value)
+        {
+            if (value == null && !typeof(T).CanBeNull())
+            {
+                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+            var typedValue = value == null ? default : (T)value;
+            try
+            {
+                Add(typedValue);
+            }
+            catch (InvalidCastException)
+            {
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+
+            return Count - 1;
         }
 
         /// <inheritdoc />
@@ -282,6 +226,11 @@ namespace System.Runtime.CompilerServices
             }
 
             _version++;
+        }
+
+        bool IList.Contains(object value)
+        {
+            return IsCompatibleObject(value) && Contains((T)value);
         }
 
         /// <inheritdoc />
@@ -324,6 +273,21 @@ namespace System.Runtime.CompilerServices
             return false;
         }
 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (array.Rank != 1)
+            {
+                throw new ArgumentException(string.Empty, nameof(array));
+            }
+
+            Array.Copy(_items, 0, array, index, Count);
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Copies the elements of the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> to an
@@ -353,6 +317,21 @@ namespace System.Runtime.CompilerServices
             return new Enumerator(this);
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        int IList.IndexOf(object value)
+        {
+            if (IsCompatibleObject(value))
+            {
+                return IndexOf((T)value);
+            }
+
+            return -1;
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Returns the index of the first occurrence of a given value in the builder.
@@ -362,6 +341,23 @@ namespace System.Runtime.CompilerServices
         public int IndexOf(T item)
         {
             return Array.IndexOf(_items, item, 0, Count);
+        }
+
+        void IList.Insert(int index, object value)
+        {
+            if (value == null && !typeof(T).CanBeNull())
+            {
+                throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
+            var typedValue = value == null ? default : (T)value;
+            try
+            {
+                Insert(index, typedValue);
+            }
+            catch (InvalidCastException)
+            {
+                throw new ArgumentException($"The value '{value?.GetType() as object ?? "null"}' is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
+            }
         }
 
         /// <inheritdoc />
@@ -394,6 +390,14 @@ namespace System.Runtime.CompilerServices
             _items[index] = item;
             Count++;
             _version++;
+        }
+
+        void IList.Remove(object value)
+        {
+            if (IsCompatibleObject(value))
+            {
+                Remove((T)value);
+            }
         }
 
         /// <inheritdoc />
@@ -443,11 +447,6 @@ namespace System.Runtime.CompilerServices
 
             _items[Count] = default!;
             _version++;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>

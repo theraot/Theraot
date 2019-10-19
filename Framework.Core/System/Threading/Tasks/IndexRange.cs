@@ -25,6 +25,7 @@ namespace System.Threading.Tasks
     {
         // the From and To values for this range. These do not change.
         internal long FromInclusive;
+
         internal long ToExclusive;
 
         // The shared index, stored as the offset from nFromInclusive. Using an offset rather than the actual

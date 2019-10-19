@@ -26,14 +26,14 @@ namespace System.Threading
         private const int _rwWaitUpgrade = 2;
         private const int _rwWrite = 4;
 
+        // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
+        private static readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+
         [ThreadStatic]
         private static Dictionary<int, ThreadLockState>? _currentThreadState;
 
         // Incremented when a new object is created, should not be readonly
         private static int _idPool = int.MinValue;
-
-        // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
-        private static readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
         private readonly ThreadLockState[] _fastStateCache;
         private readonly int _id;

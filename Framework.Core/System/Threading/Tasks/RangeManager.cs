@@ -27,9 +27,9 @@ namespace System.Threading.Tasks
     ///       and they keep interacting with that struct until the end of the loop
     internal class RangeManager
     {
-        internal int CurrentIndexRangeToAssign;
         internal readonly IndexRange[] IndexRanges;
         internal readonly long Step;
+        internal int CurrentIndexRangeToAssign;
 
         /// <summary>
         /// Initializes a RangeManager with the given loop parameters, and the desired number of outer ranges

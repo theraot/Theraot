@@ -14,16 +14,15 @@ namespace System.Threading.Tasks
         [ThreadStatic]
         internal static Task? InternalCurrent;
 
+        internal readonly object? State;
+        internal object? Action;
+        internal TaskScheduler ExecutingTaskScheduler;
         private static int _lastId;
         private readonly InternalTaskOptions _internalOptions;
         private readonly Task? _parent;
-        internal readonly object? State;
         private int _isDisposed;
         private int _status;
         private ManualResetEventSlim? _waitHandle;
-        internal object? Action;
-
-        internal TaskScheduler ExecutingTaskScheduler;
 
         public Task(Action action)
             : this(action, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
@@ -172,6 +171,11 @@ namespace System.Threading.Tasks
             }
         }
 
+        ~Task()
+        {
+            Dispose(false);
+        }
+
         public static int? CurrentId
         {
             get
@@ -182,6 +186,24 @@ namespace System.Threading.Tasks
         }
 
         public static TaskFactory Factory => TaskFactory.DefaultInstance;
+        public object? AsyncState => State;
+
+        WaitHandle IAsyncResult.AsyncWaitHandle
+        {
+            get
+            {
+                var waithandle = _waitHandle;
+
+                if (Volatile.Read(ref _isDisposed) == 1)
+                {
+                    throw new ObjectDisposedException(nameof(Task));
+                }
+
+                return waithandle!.WaitHandle;
+            }
+        }
+
+        bool IAsyncResult.CompletedSynchronously => false;
         public TaskCreationOptions CreationOptions { get; }
 
         public AggregateException? Exception
@@ -213,6 +235,15 @@ namespace System.Threading.Tasks
             {
                 var status = Volatile.Read(ref _status);
                 return status == (int)TaskStatus.Canceled;
+            }
+        }
+
+        public bool IsCompleted
+        {
+            get
+            {
+                var status = Status; // So PromiseCheck runs
+                return status == TaskStatus.RanToCompletion || status == TaskStatus.Faulted || status == TaskStatus.Canceled;
             }
         }
 
@@ -251,34 +282,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        public object? AsyncState => State;
-
-        public bool IsCompleted
-        {
-            get
-            {
-                var status = Status; // So PromiseCheck runs
-                return status == TaskStatus.RanToCompletion || status == TaskStatus.Faulted || status == TaskStatus.Canceled;
-            }
-        }
-
-        WaitHandle IAsyncResult.AsyncWaitHandle
-        {
-            get
-            {
-                var waithandle = _waitHandle;
-
-                if (Volatile.Read(ref _isDisposed) == 1)
-                {
-                    throw new ObjectDisposedException(nameof(Task));
-                }
-
-                return waithandle!.WaitHandle;
-            }
-        }
-
-        bool IAsyncResult.CompletedSynchronously => false;
-
         [DebuggerNonUserCode]
         public void Dispose()
         {
@@ -300,11 +303,6 @@ namespace System.Threading.Tasks
 
             HandleException(exception);
             FinishThreadAbortedTask(true, false);
-        }
-
-        ~Task()
-        {
-            Dispose(false);
         }
 
         public void RunSynchronously()

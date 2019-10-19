@@ -71,7 +71,7 @@ namespace System.Runtime.ExceptionServices
 
             static string BuildStackTrace(string trace)
             {
-                var items = trace.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+                var items = trace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 var newStackTrace = new StringBuilder();
                 var found = false;
                 foreach (var item in items)

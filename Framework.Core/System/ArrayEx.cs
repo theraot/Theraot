@@ -1,12 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
 
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
+
 using Theraot.Collections.ThreadSafe;
+
 #endif
 
 namespace System
 {
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
+
     public static class ArrayEx
     {
         private static readonly CacheDict<Type, Array> _emptyArrays = new CacheDict<Type, Array>(256);
@@ -28,6 +31,7 @@ namespace System
             return result;
         }
     }
+
 #else
     public static class ArrayEx
     {
@@ -37,5 +41,6 @@ namespace System
             return Array.Empty<T>();
         }
     }
+
 #endif
 }

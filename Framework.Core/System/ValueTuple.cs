@@ -201,6 +201,36 @@ namespace System
             return 0;
         }
 
+        int IComparable.CompareTo(object obj)
+        {
+            if (obj == null)
+            {
+                return 1;
+            }
+
+            if (!(obj is ValueTuple))
+            {
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+            }
+
+            return 0;
+        }
+
+        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            if (!(other is ValueTuple))
+            {
+                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+            }
+
+            return 0;
+        }
+
         /// <summary>
         /// Returns a value that indicates whether the current <see cref="ValueTuple"/> instance is equal to a specified object.
         /// </summary>
@@ -220,9 +250,24 @@ namespace System
             return true;
         }
 
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            return other is ValueTuple;
+        }
+
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
+        {
+            return 0;
+        }
+
+        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        {
+            return 0;
+        }
+
+        int ITupleInternal.GetHashCode(IEqualityComparer comparer)
         {
             return 0;
         }
@@ -237,6 +282,11 @@ namespace System
         public override string ToString()
         {
             return "()";
+        }
+
+        string ITupleInternal.ToStringEnd()
+        {
+            return ")";
         }
 
         internal static int CombineHashCodes(int h1, int h2)
@@ -272,56 +322,6 @@ namespace System
         internal static int CombineHashCodes(int h1, int h2, int h3, int h4, int h5, int h6, int h7, int h8)
         {
             return NumericsHelpers.CombineHash(CombineHashCodes(h1, h2, h3, h4, h5, h6, h7), h8);
-        }
-
-        int IComparable.CompareTo(object obj)
-        {
-            if (obj == null)
-            {
-                return 1;
-            }
-
-            if (!(obj is ValueTuple))
-            {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
-            }
-
-            return 0;
-        }
-
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
-        {
-            if (other == null)
-            {
-                return 1;
-            }
-
-            if (!(other is ValueTuple))
-            {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
-            }
-
-            return 0;
-        }
-
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            return other is ValueTuple;
-        }
-
-        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
-        {
-            return 0;
-        }
-
-        int ITupleInternal.GetHashCode(IEqualityComparer comparer)
-        {
-            return 0;
-        }
-
-        string ITupleInternal.ToStringEnd()
-        {
-            return ")";
         }
     }
 
@@ -360,63 +360,6 @@ namespace System
             return Comparer<T1>.Default.Compare(Item1, other.Item1);
         }
 
-        /// <summary>
-        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1}"/> instance is equal to a specified object.
-        /// </summary>
-        /// <param name="obj">The object to compare with this instance.</param>
-        /// <returns><see langword="true"/> if the current instance is equal to the specified object; otherwise, <see langword="false"/>.</returns>
-        /// <remarks>
-        /// The <paramref name="obj"/> parameter is considered to be equal to the current instance under the following conditions:
-        /// <list type="bullet">
-        ///     <item><description>It is a <see cref="ValueTuple{T1}"/> value type.</description></item>
-        ///     <item><description>Its components are of the same types as those of the current instance.</description></item>
-        ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
-        /// </list>
-        /// </remarks>
-        public override bool Equals(object obj)
-        {
-            return obj is ValueTuple<T1> valueTuple && Equals(valueTuple);
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple`1" />
-        /// instance is equal to a specified <see cref="System.ValueTuple`1" />.
-        /// </summary>
-        /// <param name="other">The tuple to compare with this instance.</param>
-        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
-        /// <remarks>
-        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its field
-        /// is equal to that of the current instance, using the default comparer for that field's type.
-        /// </remarks>
-        public bool Equals(ValueTuple<T1> other)
-        {
-            return EqualityComparer<T1>.Default.Equals(Item1, other.Item1);
-        }
-
-        /// <summary>
-        /// Returns the hash code for the current <see cref="ValueTuple{T1}"/> instance.
-        /// </summary>
-        /// <returns>A 32-bit signed integer hash code.</returns>
-        public override int GetHashCode()
-        {
-            return EqualityComparer<T1>.Default.GetHashCode(Item1);
-        }
-
-        /// <summary>
-        /// Returns a string that represents the value of this <see cref="ValueTuple{T1}"/> instance.
-        /// </summary>
-        /// <returns>The string representation of this <see cref="ValueTuple{T1}"/> instance.</returns>
-        /// <remarks>
-        /// The string returned by this method takes the form <c>(Item1)</c>,
-        /// where <c>Item1</c> represents the value of <see cref="Item1"/>. If the field is <see langword="null"/>,
-        /// it is represented as <see cref="string.Empty"/>.
-        /// </remarks>
-        public override string ToString()
-        {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ")";
-        }
-
         int IComparable.CompareTo(object obj)
         {
             if (obj == null)
@@ -451,6 +394,40 @@ namespace System
             return comparer.Compare(Item1, objTuple.Item1);
         }
 
+        /// <summary>
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1}"/> instance is equal to a specified object.
+        /// </summary>
+        /// <param name="obj">The object to compare with this instance.</param>
+        /// <returns><see langword="true"/> if the current instance is equal to the specified object; otherwise, <see langword="false"/>.</returns>
+        /// <remarks>
+        /// The <paramref name="obj"/> parameter is considered to be equal to the current instance under the following conditions:
+        /// <list type="bullet">
+        ///     <item><description>It is a <see cref="ValueTuple{T1}"/> value type.</description></item>
+        ///     <item><description>Its components are of the same types as those of the current instance.</description></item>
+        ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
+        /// </list>
+        /// </remarks>
+        public override bool Equals(object obj)
+        {
+            return obj is ValueTuple<T1> valueTuple && Equals(valueTuple);
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1}" />
+        /// instance is equal to a specified <see cref="System.ValueTuple{T1}" />.
+        /// </summary>
+        /// <param name="other">The tuple to compare with this instance.</param>
+        /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
+        /// <remarks>
+        /// The <paramref name="other" /> parameter is considered to be equal to the current instance if each of its field
+        /// is equal to that of the current instance, using the default comparer for that field's type.
+        /// </remarks>
+        public bool Equals(ValueTuple<T1> other)
+        {
+            return EqualityComparer<T1>.Default.Equals(Item1, other.Item1);
+        }
+
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
             if (other == null || !(other is ValueTuple<T1>))
@@ -463,6 +440,15 @@ namespace System
             return comparer.Equals(Item1, objTuple.Item1);
         }
 
+        /// <summary>
+        /// Returns the hash code for the current <see cref="ValueTuple{T1}"/> instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer hash code.</returns>
+        public override int GetHashCode()
+        {
+            return EqualityComparer<T1>.Default.GetHashCode(Item1);
+        }
+
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
         {
             return comparer.GetHashCode(Item1);
@@ -471,6 +457,20 @@ namespace System
         int ITupleInternal.GetHashCode(IEqualityComparer comparer)
         {
             return comparer.GetHashCode(Item1);
+        }
+
+        /// <summary>
+        /// Returns a string that represents the value of this <see cref="ValueTuple{T1}"/> instance.
+        /// </summary>
+        /// <returns>The string representation of this <see cref="ValueTuple{T1}"/> instance.</returns>
+        /// <remarks>
+        /// The string returned by this method takes the form <c>(Item1)</c>,
+        /// where <c>Item1</c> represents the value of <see cref="Item1"/>. If the field is <see langword="null"/>,
+        /// it is represented as <see cref="string.Empty"/>.
+        /// </remarks>
+        public override string ToString()
+        {
+            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ")";
         }
 
         string ITupleInternal.ToStringEnd()
@@ -1774,8 +1774,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple`7" />
-        /// instance is equal to a specified <see cref="System.ValueTuple`7" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7}" />
+        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -2093,8 +2093,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple`8" />
-        /// instance is equal to a specified <see cref="System.ValueTuple`8" />.
+        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}" />
+        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
