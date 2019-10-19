@@ -236,7 +236,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var node = (BinaryExpression)expr;
 
-            var cr = new ChildRewriter(this, stack, 3);
+            var cr = new NullAwareChildRewriter(this, stack, 3);
             // Left expression executes on the stack as left by parent
             cr.Add(node.Left);
             // Right expression always has non-empty stack (left is on it)
