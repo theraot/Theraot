@@ -255,11 +255,11 @@ namespace System.Linq.Expressions.Compiler
                     ? BinaryExpression.Create
                     (
                         node.NodeType,
-                        cr[0],
-                        cr[1],
+                        cr[0]!,
+                        cr[1]!,
                         node.Type,
                         node.Method,
-                        (LambdaExpression)cr[2]
+                        (LambdaExpression)cr[2]!
                     )
                     : expr
             );
@@ -640,9 +640,20 @@ namespace System.Linq.Expressions.Compiler
             // ... and so does the right one
             var right = RewriteExpression(node.Right, stack);
             //conversion is a lambda. stack state will be ignored.
-            var conversion = RewriteExpression(node.Conversion!, stack);
 
-            var action = left.Action | right.Action | conversion.Action;
+            Result? conversion = null;
+
+            if (node.Conversion != null)
+            {
+                conversion = RewriteExpression(node.Conversion, stack);
+            }
+
+            if (conversion == null)
+            {
+                return new Result(RewriteAction.None, expr);
+            }
+
+            var action = left.Action | right.Action | conversion.Value.Action;
 
             if (action != RewriteAction.None)
             {
@@ -657,7 +668,7 @@ namespace System.Linq.Expressions.Compiler
                     right.Node,
                     node.Type,
                     node.Method,
-                    (LambdaExpression)conversion.Node
+                    (LambdaExpression)conversion.Value.Node
                 );
             }
 
