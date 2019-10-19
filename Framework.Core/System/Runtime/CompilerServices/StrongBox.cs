@@ -23,7 +23,7 @@ namespace System.Runtime.CompilerServices
 
         object? IStrongBox.Value
         {
-            get => Value;
+            get => Value!;
 
             set => Value = value is T valueAsT ? valueAsT : default;
         }

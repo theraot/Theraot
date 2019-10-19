@@ -209,7 +209,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 for (var subIndex = 0; subIndex < _capacity; subIndex++)
                 {
-                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst[subIndex], null, null);
+                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], null, null);
                     if (foundFirst == null)
                     {
                         continue;
@@ -217,7 +217,7 @@ namespace Theraot.Collections.ThreadSafe
 
                     try
                     {
-                        Interlocked.Increment(ref arrayUse[subIndex]);
+                        Interlocked.Increment(ref arrayUse![subIndex]);
                         if (_level == 1)
                         {
                             yield return foundFirst;

@@ -127,11 +127,11 @@ namespace System.Runtime.CompilerServices
             void OnException(Exception exception)
             {
 #if LESSTHAN_NET40
-                eventArgs.ThrownDuringHandler = exception;
+                eventArgs!.ThrownDuringHandler = exception;
 #else
                 Theraot.No.Op(exception);
 #endif
-                eventArgs.SetUnwind();
+                eventArgs!.SetUnwind();
             }
         }
 

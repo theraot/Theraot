@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq
 {
@@ -54,7 +53,6 @@ namespace System.Linq
             throw new InvalidOperationException();
         }
 
-        [return: MaybeNull]
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null)

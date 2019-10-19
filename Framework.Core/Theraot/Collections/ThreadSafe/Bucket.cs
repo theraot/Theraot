@@ -115,7 +115,7 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        public bool Insert(int index, T item, [MaybeNullWhen(true)] out T previous)
+        public bool Insert(int index, T item, out T previous)
         {
             var found = BucketHelper.Null;
             previous = default!;
@@ -233,7 +233,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool TryGet(int index, [MaybeNullWhen(true)] out T value)
+        public bool TryGet(int index, out T value)
         {
             var found = BucketHelper.Null;
             value = default!;
