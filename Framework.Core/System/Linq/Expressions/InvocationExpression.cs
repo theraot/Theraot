@@ -78,6 +78,10 @@ namespace System.Linq.Expressions
         /// </exception>
         public static InvocationExpression Invoke(Expression expression, IEnumerable<Expression>? arguments)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
             if (arguments == null)
             {
                 return InvokeExtracted(expression, ArrayEx.Empty<Expression>());
