@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="rules" Description=" " ToolsVersion="16.0">
   <Rules AnalyzerId="CodeCracker.CSharp" RuleNamespace="CodeCracker.CSharp">
+    <Rule Id="CC0026" Action="None" />
     <Rule Id="CC0037" Action="None" />
     <Rule Id="CC0068" Action="Error" />
   </Rules>
