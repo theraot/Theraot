@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="rules" Description=" " ToolsVersion="16.0">
   <Rules AnalyzerId="CodeCracker.CSharp" RuleNamespace="CodeCracker.CSharp">
+    <Rule Id="CC0001" Action="None" />
     <Rule Id="CC0026" Action="None" />
     <Rule Id="CC0037" Action="None" />
     <Rule Id="CC0068" Action="Error" />
@@ -661,24 +662,15 @@
     <Rule Id="IDE0066" Action="None" />
     <Rule Id="IDE0066WithoutSuggestion" Action="None" />
   </Rules>
-  <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
-    <Rule Id="CA1000" Action="None" />
-    <Rule Id="CA1010" Action="None" />
-    <Rule Id="CA1710" Action="None" />
-    <Rule Id="CA1720" Action="None" />
-    <Rule Id="CA1721" Action="None" />
-  </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.CSharp.Analyzers" RuleNamespace="Microsoft.CodeQuality.CSharp.Analyzers">
     <Rule Id="CA1065" Action="None" />
-  </Rules>
-  <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
-    <Rule Id="CA1303" Action="None" />
   </Rules>
   <Rules AnalyzerId="RefactoringEssentials" RuleNamespace="RefactoringEssentials">
     <Rule Id="RECS0029" Action="None" />
   </Rules>
   <Rules AnalyzerId="Roslynator.CSharp.Analyzers" RuleNamespace="Roslynator.CSharp.Analyzers">
     <Rule Id="RCS1124" Action="Info" />
+    <Rule Id="RCS1196" Action="None" />
     <Rule Id="RCS1213" Action="Warning" />
   </Rules>
 </RuleSet>
