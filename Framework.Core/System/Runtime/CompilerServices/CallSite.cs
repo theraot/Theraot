@@ -59,7 +59,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     Cache of CallSite constructors for a given delegate type.
         /// </summary>
-        private static volatile CacheDict<Type, Func<CallSiteBinder, CallSite>>? _siteCtors;
+        private static volatile CacheDict<Type, Func<CallSiteBinder, CallSite>>? _siteConstructors;
 
         // only CallSite<T> derives from this
         internal CallSite(CallSiteBinder? binder)
@@ -87,14 +87,14 @@ namespace System.Runtime.CompilerServices
                 throw new ArgumentException("Type must be derived from System.Delegate");
             }
 
-            var ctors = _siteCtors;
-            if (ctors == null)
+            var constructors = _siteConstructors;
+            if (constructors == null)
             {
                 // It's okay to just set this, worst case we're just throwing away some data
-                _siteCtors = ctors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(100);
+                _siteConstructors = constructors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(100);
             }
 
-            if (ctors.TryGetValue(delegateType, out var ctor))
+            if (constructors.TryGetValue(delegateType, out var ctor))
             {
                 return ctor(binder);
             }
@@ -108,7 +108,7 @@ namespace System.Runtime.CompilerServices
                 }*/
 
             ctor = (Func<CallSiteBinder, CallSite>)method.CreateDelegate(typeof(Func<CallSiteBinder, CallSite>));
-            ctors.Add(delegateType, ctor);
+            constructors.Add(delegateType, ctor);
 
             return ctor(binder);
         }

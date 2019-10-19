@@ -80,7 +80,7 @@ namespace System.Threading.Tasks
                 CheckCount();
             }
 
-            public bool IsDone => Interlocked.CompareExchange<Action?>(ref _done, null, null) == null;
+            public bool IsDone => Interlocked.CompareExchange(ref _done, null, null) == null;
 
             public void Dispose()
             {

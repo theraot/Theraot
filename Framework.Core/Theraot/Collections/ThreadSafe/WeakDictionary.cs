@@ -83,12 +83,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count => Wrapped.Count;
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
         public ICollection<TKey> Keys => _keyCollection;
 
         public ICollection<TValue> Values => _valueCollection;
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
-
         protected ThreadSafeDictionary<WeakNeedle<TKey>, TValue> Wrapped { get; }
 
         public TValue this[TKey key]
@@ -104,6 +102,17 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             set => Set(key, value);
+        }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            AddNew(key, value);
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            AddNew(item.Key, item.Value);
         }
 
         /// <summary>
@@ -272,6 +281,17 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            bool Check(WeakNeedle<TKey> input)
+            {
+                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
+            }
+
+            return Wrapped.ContainsKey(Comparer.GetHashCode(item.Key), Check, input => EqualityComparer<TValue>.Default.Equals(input, item.Value));
+        }
+
         /// <inheritdoc />
         /// <summary>
         ///     Determines whether the specified key is contained.
@@ -360,10 +380,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{KeyValuePair{TKey, TValue}}" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{KeyValuePair}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     An <see cref="System.Collections.Generic.IEnumerator{KeyValuePair{TKey, TValue}}" /> object that can be used to iterate through the
+        ///     An <see cref="System.Collections.Generic.IEnumerator{KeyValuePair}" /> object that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -376,6 +396,11 @@ namespace Theraot.Collections.ThreadSafe
                     yield return new KeyValuePair<TKey, TValue>(foundKey, pair.Value);
                 }
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public TValue GetOrAdd(TKey key, TValue value)
@@ -521,6 +546,17 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             return Wrapped.Remove(hashCode, input => PrivateTryGetValue(input, out var foundKey) && keyCheck.Invoke(foundKey), valueCheck, out value);
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            bool Check(WeakNeedle<TKey> input)
+            {
+                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
+            }
+
+            return Wrapped.Remove(Comparer.GetHashCode(item.Key), Check, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
         }
 
         public int RemoveDeadItems()
@@ -852,44 +888,6 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             return Wrapped.WhereValue(valueCheck);
-        }
-
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            AddNew(key, value);
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            AddNew(item.Key, item.Value);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            bool Check(WeakNeedle<TKey> input)
-            {
-                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
-            }
-
-            return Wrapped.ContainsKey(Comparer.GetHashCode(item.Key), Check, input => EqualityComparer<TValue>.Default.Equals(input, item.Value));
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            bool Check(WeakNeedle<TKey> input)
-            {
-                return PrivateTryGetValue(input, out var foundKey) && Comparer.Equals(foundKey, item.Key);
-            }
-
-            return Wrapped.Remove(Comparer.GetHashCode(item.Key), Check, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
         }
 
         /// <summary>

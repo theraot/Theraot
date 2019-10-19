@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+// ReSharper disable once ConditionIsAlwaysTrueOrFalse
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -268,6 +270,7 @@ namespace System.Threading
             // We first try to obtain the upgradeable right
             try
             {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 while (!_upgradableEvent.IsSet || !taken)
                 {
                     try

@@ -82,6 +82,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="string" /> that represents the current <see cref="object" />.</returns>
         public override string ToString()
         {
+            // Reference source says "UnamedLabel"
             return Name == null || string.IsNullOrEmpty(Name) ? "UnamedLabel" : Name;
         }
     }

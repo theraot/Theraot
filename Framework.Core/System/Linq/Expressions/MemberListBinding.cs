@@ -27,7 +27,7 @@ namespace System.Linq.Expressions
         /// </param>
         /// <param name="initializers">
         ///     An array of
-        ///     <see cref="ElementInit(System.Reflection.MethodInfo,System.Linq.Expressions.Expression[])" /> objects to use to
+        ///     <see cref="ElementInit(MethodInfo,System.Linq.Expressions.Expression[])" /> objects to use to
         ///     populate the <see cref="MemberListBinding.Initializers" /> collection.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -55,7 +55,7 @@ namespace System.Linq.Expressions
         /// </param>
         /// <param name="initializers">
         ///     An <see cref="IEnumerable{T}" /> that contains
-        ///     <see cref="ElementInit(System.Reflection.MethodInfo,System.Linq.Expressions.Expression[])" /> objects to use to
+        ///     <see cref="ElementInit(MethodInfo,System.Linq.Expressions.Expression[])" /> objects to use to
         ///     populate the <see cref="MemberListBinding.Initializers" /> collection.
         /// </param>
         /// <exception cref="ArgumentNullException">

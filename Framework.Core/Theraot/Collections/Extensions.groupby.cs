@@ -92,7 +92,7 @@ namespace Theraot.Collections
 
             IEnumerable<TResult> CreateGroupByIterator()
             {
-                foreach (var group in (IEnumerable<IGrouping<TKey, TElement>>)GroupProgressiveBy(source, keySelector, elementSelector, comparer))
+                foreach (var group in GroupProgressiveBy(source, keySelector, elementSelector, comparer))
                 {
                     yield return resultSelector(group.Key, group);
                 }
@@ -125,7 +125,7 @@ namespace Theraot.Collections
 
             IEnumerable<TResult> CreateGroupByIterator()
             {
-                foreach (var group in (IEnumerable<IGrouping<TKey, TSource>>)GroupProgressiveBy(source, keySelector, comparer))
+                foreach (var group in GroupProgressiveBy(source, keySelector, comparer))
                 {
                     yield return resultSelector(group.Key, group);
                 }

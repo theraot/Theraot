@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    ///     Provides an awaitable object that allows for configured awaits on <see cref="System.Threading.Tasks.Task`1" />.
+    ///     Provides an awaitable object that allows for configured awaits on <see cref="System.Threading.Tasks.Task{TResult}" />.
     /// </summary>
     /// <remarks>
     ///     This type is intended for compiler use only.
@@ -22,9 +22,9 @@ namespace System.Runtime.CompilerServices
         private readonly ConfiguredTaskAwaiter _configuredTaskAwaiter;
 
         /// <summary>
-        ///     Initializes the <see cref="System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1" />.
+        ///     Initializes the <see cref="System.Runtime.CompilerServices.ConfiguredTaskAwaitable{TResult}" />.
         /// </summary>
-        /// <param name="task">The awaitable <see cref="System.Threading.Tasks.Task`1" />.</param>
+        /// <param name="task">The awaitable <see cref="System.Threading.Tasks.Task{TResult}" />.</param>
         /// <param name="continueOnCapturedContext">
         ///     true to attempt to marshal the continuation back to the original context captured; otherwise, false.
         /// </param>
@@ -45,7 +45,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Provides an awaiter for a <see cref="System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1" />.
+        ///     Provides an awaiter for a <see cref="System.Runtime.CompilerServices.ConfiguredTaskAwaitable{TResult}" />.
         /// </summary>
         /// <remarks>
         ///     This type is intended for compiler use only.
@@ -63,9 +63,9 @@ namespace System.Runtime.CompilerServices
             private readonly Task<TResult> _task;
 
             /// <summary>
-            ///     Initializes the <see cref="System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1.ConfiguredTaskAwaiter" />.
+            ///     Initializes the <see cref="System.Runtime.CompilerServices.ConfiguredTaskAwaitable{TResult}.ConfiguredTaskAwaiter" />.
             /// </summary>
-            /// <param name="task">The awaitable <see cref="System.Threading.Tasks.Task`1" />.</param>
+            /// <param name="task">The awaitable <see cref="System.Threading.Tasks.Task{TResult}" />.</param>
             /// <param name="continueOnCapturedContext">
             ///     true to attempt to marshal the continuation back to the original context captured; otherwise, false.
             /// </param>
@@ -85,10 +85,10 @@ namespace System.Runtime.CompilerServices
             public bool IsCompleted => _task.IsCompleted;
 
             /// <summary>
-            ///     Ends the await on the completed <see cref="System.Threading.Tasks.Task`1" />.
+            ///     Ends the await on the completed <see cref="System.Threading.Tasks.Task{TResult}" />.
             /// </summary>
             /// <returns>
-            ///     The result of the completed <see cref="System.Threading.Tasks.Task`1" />.
+            ///     The result of the completed <see cref="System.Threading.Tasks.Task{TResult}" />.
             /// </returns>
             /// <exception cref="System.NullReferenceException">The awaiter was not properly initialized.</exception>
             /// <exception cref="System.InvalidOperationException">The task was not yet completed.</exception>
@@ -220,7 +220,7 @@ namespace System.Runtime.CompilerServices
             ///     Ends the await on the completed <see cref="System.Threading.Tasks.Task" />.
             /// </summary>
             /// <returns>
-            ///     The result of the completed <see cref="System.Threading.Tasks.Task`1" />.
+            ///     The result of the completed <see cref="System.Threading.Tasks.Task{TResult}" />.
             /// </returns>
             /// <exception cref="System.NullReferenceException">The awaiter was not properly initialized.</exception>
             /// <exception cref="System.InvalidOperationException">The task was not yet completed.</exception>

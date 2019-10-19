@@ -43,11 +43,11 @@ namespace System.Linq.Expressions
 
     /// <inheritdoc />
     /// <summary>
-    ///     Represents a label, which can be placed in any <see cref="System.Linq.Expressions.Expression" /> context. If
+    ///     Represents a label, which can be placed in any <see cref="Expression" /> context. If
     ///     it is jumped to, it will get the value provided by the corresponding
-    ///     <see cref="System.Linq.Expressions.GotoExpression" />. Otherwise, it gets the value in
-    ///     <see cref="System.Linq.Expressions.LabelExpression.DefaultValue" />. If the
-    ///     <see cref="System.Linq.Expressions.LabelExpression.Type" /> equals System.Void, no value should be provided.
+    ///     <see cref="GotoExpression" />. Otherwise, it gets the value in
+    ///     <see cref="DefaultValue" />. If the
+    ///     <see cref="Type" /> equals System.Void, no value should be provided.
     /// </summary>
     [DebuggerTypeProxy(typeof(LabelExpressionProxy))]
     public sealed class LabelExpression : Expression
@@ -67,10 +67,10 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="Expression" />. (Inherited from
+        ///     <see cref="Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Label;
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
+        ///     (Inherited from <see cref="Expression" />.)
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => Target.Type;

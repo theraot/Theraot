@@ -293,8 +293,8 @@ namespace System.Threading
                 return false;
             }
 
-            var found = Interlocked.CompareExchange(ref _count, result, expected);
-            if (found != expected)
+            var foundCount = Interlocked.CompareExchange(ref _count, result, expected);
+            if (foundCount != expected)
             {
                 return false;
             }
@@ -319,7 +319,7 @@ namespace System.Threading
 
                 if (awake)
                 {
-                    ThreadPool.QueueUserWorkItem(_ => Awake(asyncWaiters));
+                    ThreadPool.QueueUserWorkItem(_ => Awake());
                 }
 
                 bool SyncWaitHandleExtracted()
@@ -349,7 +349,7 @@ namespace System.Threading
                 }
             }
 
-            void Awake(ThreadSafeQueue<TaskCompletionSource<bool>> asyncWaiters)
+            void Awake()
             {
                 var spinWait = new SpinWait();
                 while (asyncWaiters.TryTake(out var waiter))

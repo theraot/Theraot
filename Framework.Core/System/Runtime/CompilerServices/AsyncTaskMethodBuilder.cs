@@ -159,7 +159,7 @@ namespace System.Runtime.CompilerServices
     }
 
     /// <summary>
-    ///     Provides a builder for asynchronous methods that return <see cref="System.Threading.Tasks.Task`1" />.
+    ///     Provides a builder for asynchronous methods that return <see cref="System.Threading.Tasks.Task{TResult}" />.
     ///     This type is intended for compiler use only.
     /// </summary>
     /// <remarks>
@@ -198,10 +198,10 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Gets the <see cref="System.Threading.Tasks.Task`1" /> for this builder.
+        ///     Gets the <see cref="System.Threading.Tasks.Task{TResult}" /> for this builder.
         /// </summary>
         /// <returns>
-        ///     The <see cref="System.Threading.Tasks.Task`1" /> representing the builder's asynchronous operation.
+        ///     The <see cref="System.Threading.Tasks.Task{TResult}" /> representing the builder's asynchronous operation.
         /// </returns>
         public Task<TResult> Task => CompletionSource.Task;
 
@@ -284,7 +284,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Completes the <see cref="System.Threading.Tasks.Task`1" /> in the
+        ///     Completes the <see cref="System.Threading.Tasks.Task{TResult}" /> in the
         ///     <see cref="System.Threading.Tasks.TaskStatus">Faulted</see> state with the specified exception.
         /// </summary>
         /// <param name="exception">The <see cref="System.Exception" /> to use to fault the task.</param>
@@ -309,7 +309,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Completes the <see cref="System.Threading.Tasks.Task`1" /> in the
+        ///     Completes the <see cref="System.Threading.Tasks.Task{TResult}" /> in the
         ///     <see cref="System.Threading.Tasks.TaskStatus">RanToCompletion</see> state with the specified result.
         /// </summary>
         /// <param name="result">The result to use to complete the task.</param>

@@ -1,5 +1,7 @@
 ﻿// Needed for Workaround
 
+// ReSharper disable VirtualMemberNeverOverridden.Global
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -53,6 +55,7 @@ namespace Theraot.Threading.Needles
 
         public bool IsAlive => Exception == null && _handle?.TryGetTarget(out _) == true;
 
+        bool IPromise.IsCompleted => true;
         public bool IsFaulted => Exception != null;
 
         public virtual bool TrackResurrection => _trackResurrection;
@@ -72,7 +75,15 @@ namespace Theraot.Threading.Needles
             set => SetTargetValue(value);
         }
 
-        bool IPromise.IsCompleted => true;
+        public static bool operator !=(WeakNeedle<T> left, WeakNeedle<T> right)
+        {
+            if (left is null)
+            {
+                return !(right is null);
+            }
+
+            return right is null || !EqualsExtractedExtracted(left, right);
+        }
 
         public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
         {
@@ -82,16 +93,6 @@ namespace Theraot.Threading.Needles
             }
 
             return !(right is null) && EqualsExtractedExtracted(left, right);
-        }
-
-        public static bool operator !=(WeakNeedle<T> left, WeakNeedle<T> right)
-        {
-            if (left is null)
-            {
-                return !(right is null);
-            }
-
-            return right is null || !EqualsExtractedExtracted(left, right);
         }
 
         public bool Equals(WeakNeedle<T> other)

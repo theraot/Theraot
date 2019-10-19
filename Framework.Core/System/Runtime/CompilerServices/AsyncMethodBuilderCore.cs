@@ -25,11 +25,11 @@ namespace System.Runtime.CompilerServices
         ///     Associates the builder with the state machine it represents.
         /// </summary>
         /// <param name="stateMachine">The heap-allocated state machine object.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument was null (Nothing in
         ///     Visual Basic).
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">The builder is incorrectly initialized.</exception>
+        /// <exception cref="InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             if (StateMachine != null)
@@ -45,7 +45,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
         /// <param name="stateMachine">The state machine instance, passed by reference.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument is null (Nothing in
         ///     Visual Basic).
         /// </exception>

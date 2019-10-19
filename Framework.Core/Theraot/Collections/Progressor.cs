@@ -1,7 +1,10 @@
 ﻿// Needed for NET40
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
+#pragma warning disable IDE0067 // Disposable object is never disposed
 // ReSharper disable ConstantConditionalAccessQualifier
+// ReSharper disable RedundantExplicitArrayCreation
 
 using System;
 using System.Collections;
@@ -33,31 +36,6 @@ namespace Theraot.Collections
 
         public bool IsClosed => Volatile.Read(ref _tryTake) == null;
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            while (TryTake(out var item))
-            {
-                yield return item;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IDisposable Subscribe(IObserver<T> observer)
-        {
-            var proxy = Volatile.Read(ref _proxy);
-            if (proxy != null)
-            {
-                return proxy.Subscribe(observer);
-            }
-
-            observer?.OnCompleted();
-            return NoOpDisposable.Instance;
-        }
-
         public static Progressor<T> CreateFromArray(T[] array)
         {
             if (array == null)
@@ -68,9 +46,9 @@ namespace Theraot.Collections
             var index = -1;
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>(proxy, (out T value) => Take(out value, array, ref index));
+            return new Progressor<T>(proxy, (out T value) => Take(out value));
 
-            static bool Take(out T value, T[] array, ref int index)
+            bool Take(out T value)
             {
                 value = default!;
                 var currentIndex = Interlocked.Increment(ref index);
@@ -110,38 +88,6 @@ namespace Theraot.Collections
             return CreateFromIEnumerableExtracted(enumerator);
         }
 
-        private static Progressor<T> CreateFromIEnumerableExtracted(IEnumerator<T> enumerator)
-        {
-            var proxy = new ProxyObservable<T>();
-            var enumeratorBox = new IEnumerator<T>?[]{ enumerator };
-            return new Progressor<T>(proxy, (out T value) => Take(out value, ref enumeratorBox[0]));
-
-            static bool Take(out T value, ref IEnumerator<T>? enumerator)
-            {
-                // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
-                var enumeratorCopy = Volatile.Read(ref enumerator);
-                if (enumeratorCopy != null)
-                {
-                    lock (enumeratorCopy)
-                    {
-                        if (enumeratorCopy == Volatile.Read(ref enumerator))
-                        {
-                            if (enumeratorCopy.MoveNext())
-                            {
-                                value = enumeratorCopy.Current;
-                                return true;
-                            }
-
-                            Interlocked.Exchange(ref enumerator, null)?.Dispose();
-                        }
-                    }
-                }
-
-                value = default!;
-                return false;
-            }
-        }
-
         public static Progressor<T> CreateFromIList(IList<T> list)
         {
             if (list == null)
@@ -152,9 +98,9 @@ namespace Theraot.Collections
             var index = -1;
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>(proxy, (out T value) => Take(out value, list, ref index));
+            return new Progressor<T>(proxy, (out T value) => Take(out value));
 
-            static bool Take(out T value, IList<T> list, ref int index)
+            bool Take(out T value)
             {
                 value = default!;
                 var currentIndex = Interlocked.Increment(ref index);
@@ -181,12 +127,8 @@ namespace Theraot.Collections
             }
 
             var buffer = new ThreadSafeQueue<T>();
-#pragma warning disable CA2000 // Dispose objects before losing scope
-#pragma warning disable IDE0067 // Desechar (Dispose) objetos antes de perder el ámbito
             var semaphore = new SemaphoreSlim(0);
             var source = new CancellationTokenSource();
-#pragma warning restore IDE0067 // Desechar (Dispose) objetos antes de perder el ámbito
-#pragma warning restore CA2000 // Dispose objects before losing scope
             var subscription = new IDisposable?[]
             {
                 observable.Subscribe
@@ -213,7 +155,7 @@ namespace Theraot.Collections
             {
                 if (source.IsCancellationRequested || token.IsCancellationRequested)
                 {
-                    if (Interlocked.CompareExchange(ref tryTake[0], (out T value1) => TakeReplacement(out value1, buffer), tryTake[0]) == tryTake[0])
+                    if (Interlocked.CompareExchange(ref tryTake[0], (out T value1) => TakeReplacement(out value1), tryTake[0]) == tryTake[0])
                     {
                         Interlocked.Exchange(ref subscription[0], null)?.Dispose();
                         semaphore.Dispose();
@@ -240,7 +182,7 @@ namespace Theraot.Collections
 
                 if (source.IsCancellationRequested || token.IsCancellationRequested)
                 {
-                    return TakeReplacement(out value, buffer);
+                    return TakeReplacement(out value);
                 }
 
                 try
@@ -252,7 +194,7 @@ namespace Theraot.Collections
                     No.Op(exception);
                 }
 
-                return TakeReplacement(out value, buffer);
+                return TakeReplacement(out value);
             }
 
             bool Take(out T value)
@@ -262,7 +204,7 @@ namespace Theraot.Collections
 
             return new Progressor<T>(proxy, Take);
 
-            static bool TakeReplacement(out T value, ThreadSafeQueue<T> buffer)
+            bool TakeReplacement(out T value)
             {
                 if (buffer.TryTake(out value))
                 {
@@ -284,9 +226,9 @@ namespace Theraot.Collections
             var index = -1;
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>(proxy, (out T value) => Take(out value, list, ref index));
+            return new Progressor<T>(proxy, (out T value) => Take(out value));
 
-            static bool Take(out T value, IReadOnlyList<T> list, ref int index)
+            bool Take(out T value)
             {
                 value = default!;
                 var currentIndex = Interlocked.Increment(ref index);
@@ -305,6 +247,31 @@ namespace Theraot.Collections
             Volatile.Write(ref _tryTake, null);
             var proxy = Interlocked.Exchange(ref _proxy, null);
             proxy?.OnCompleted();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            while (TryTake(out var item))
+            {
+                yield return item;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            var proxy = Volatile.Read(ref _proxy);
+            if (proxy != null)
+            {
+                return proxy.Subscribe(observer);
+            }
+
+            observer?.OnCompleted();
+            return NoOpDisposable.Instance;
         }
 
         public bool TryTake(out T item)
@@ -375,6 +342,38 @@ namespace Theraot.Collections
                         break;
                     }
                 }
+            }
+        }
+
+        private static Progressor<T> CreateFromIEnumerableExtracted(IEnumerator<T> enumerator)
+        {
+            var proxy = new ProxyObservable<T>();
+            var enumeratorBox = new IEnumerator<T>?[] { enumerator };
+            return new Progressor<T>(proxy, (out T value) => Take(out value));
+
+            bool Take(out T value)
+            {
+                // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
+                var enumeratorCopy = Volatile.Read(ref enumeratorBox[0]);
+                if (enumeratorCopy != null)
+                {
+                    lock (enumeratorCopy)
+                    {
+                        if (enumeratorCopy == Volatile.Read(ref enumeratorBox[0]))
+                        {
+                            if (enumeratorCopy.MoveNext())
+                            {
+                                value = enumeratorCopy.Current;
+                                return true;
+                            }
+
+                            Interlocked.Exchange(ref enumeratorBox[0], null)?.Dispose();
+                        }
+                    }
+                }
+
+                value = default!;
+                return false;
             }
         }
     }

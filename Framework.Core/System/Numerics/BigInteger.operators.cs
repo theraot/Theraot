@@ -2,7 +2,6 @@
 
 #pragma warning disable CA2225 // Operator overloads have named alternates
 
-using System.Globalization;
 using Theraot.Core;
 
 namespace System.Numerics
@@ -224,8 +223,8 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Subtracts a <see cref="System.Numerics.BigInteger" /> value from another
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     Subtracts a <see cref="BigInteger" /> value from another
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>The result of subtracting <paramref name="right" /> from <paramref name="left" />.</returns>
         /// <param name="left">The value to subtract from (the minuend).</param>
@@ -266,7 +265,7 @@ namespace System.Numerics
             return new BigInteger(-value.InternalSign, value.InternalBits);
         }
 
-        /// <summary>Decrements a <see cref="System.Numerics.BigInteger" /> value by 1.</summary>
+        /// <summary>Decrements a <see cref="BigInteger" /> value by 1.</summary>
         /// <returns>The value of the <paramref name="value" /> parameter decremented by 1.</returns>
         /// <param name="value">The value to decrement.</param>
         public static BigInteger operator --(BigInteger value)
@@ -275,7 +274,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether two <see cref="System.Numerics.BigInteger" /> objects have different
+        ///     Returns a value that indicates whether two <see cref="BigInteger" /> objects have different
         ///     values.
         /// </summary>
         /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
@@ -287,7 +286,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value and a 64-bit signed
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value and a 64-bit signed
         ///     integer are not equal.
         /// </summary>
         /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
@@ -300,7 +299,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit signed integer and a
-        ///     <see cref="System.Numerics.BigInteger" /> value are not equal.
+        ///     <see cref="BigInteger" /> value are not equal.
         /// </summary>
         /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -311,7 +310,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value and a 64-bit
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value and a 64-bit
         ///     unsigned integer are not equal.
         /// </summary>
         /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
@@ -325,7 +324,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit unsigned integer and a
-        ///     <see cref="System.Numerics.BigInteger" /> value are not equal.
+        ///     <see cref="BigInteger" /> value are not equal.
         /// </summary>
         /// <returns>true if <paramref name="left" /> and <paramref name="right" /> are not equal; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -338,12 +337,12 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns the remainder that results from division with two specified
-        ///     <see cref="System.Numerics.BigInteger" /> values.
+        ///     <see cref="BigInteger" /> values.
         /// </summary>
         /// <returns>The remainder that results from the division.</returns>
         /// <param name="dividend">The value to be divided.</param>
         /// <param name="divisor">The value to divide by.</param>
-        /// <exception cref="System.DivideByZeroException">
+        /// <exception cref="DivideByZeroException">
         ///     <paramref name="divisor" /> is 0 (zero).
         /// </exception>
         public static BigInteger operator %(BigInteger dividend, BigInteger divisor)
@@ -356,7 +355,7 @@ namespace System.Numerics
             return regNum.GetInteger(signNUm);
         }
 
-        /// <summary>Performs a bitwise And operation on two <see cref="System.Numerics.BigInteger" /> values.</summary>
+        /// <summary>Performs a bitwise And operation on two <see cref="BigInteger" /> values.</summary>
         /// <returns>The result of the bitwise And operation.</returns>
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
@@ -381,7 +380,7 @@ namespace System.Numerics
             return new BigInteger(z);
         }
 
-        /// <summary>Multiplies two specified <see cref="System.Numerics.BigInteger" /> values.</summary>
+        /// <summary>Multiplies two specified <see cref="BigInteger" /> values.</summary>
         /// <returns>The product of <paramref name="left" /> and <paramref name="right" />.</returns>
         /// <param name="left">The first value to multiply.</param>
         /// <param name="right">The second value to multiply.</param>
@@ -395,13 +394,13 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Divides a specified <see cref="System.Numerics.BigInteger" /> value by another specified
-        ///     <see cref="System.Numerics.BigInteger" /> value by using integer division.
+        ///     Divides a specified <see cref="BigInteger" /> value by another specified
+        ///     <see cref="BigInteger" /> value by using integer division.
         /// </summary>
         /// <returns>The integral result of the division.</returns>
         /// <param name="dividend">The value to be divided.</param>
         /// <param name="divisor">The value to divide by.</param>
-        /// <exception cref="System.DivideByZeroException">
+        /// <exception cref="DivideByZeroException">
         ///     <paramref name="divisor" /> is 0 (zero).
         /// </exception>
         public static BigInteger operator /(BigInteger dividend, BigInteger divisor)
@@ -413,7 +412,7 @@ namespace System.Numerics
             return regNum.GetInteger(sign);
         }
 
-        /// <summary>Performs a bitwise exclusive Or (XOr) operation on two <see cref="System.Numerics.BigInteger" /> values.</summary>
+        /// <summary>Performs a bitwise exclusive Or (XOr) operation on two <see cref="BigInteger" /> values.</summary>
         /// <returns>The result of the bitwise Or operation.</returns>
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
@@ -433,7 +432,7 @@ namespace System.Numerics
             return new BigInteger(z);
         }
 
-        /// <summary>Performs a bitwise Or operation on two <see cref="System.Numerics.BigInteger" /> values.</summary>
+        /// <summary>Performs a bitwise Or operation on two <see cref="BigInteger" /> values.</summary>
         /// <returns>The result of the bitwise Or operation.</returns>
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
@@ -463,7 +462,7 @@ namespace System.Numerics
             return new BigInteger(z);
         }
 
-        /// <summary>Returns the bitwise one's complement of a <see cref="System.Numerics.BigInteger" /> value.</summary>
+        /// <summary>Returns the bitwise one's complement of a <see cref="BigInteger" /> value.</summary>
         /// <returns>The bitwise one's complement of <paramref name="value" />.</returns>
         /// <param name="value">An integer value.</param>
         public static BigInteger operator ~(BigInteger value)
@@ -471,7 +470,7 @@ namespace System.Numerics
             return -(value + One);
         }
 
-        /// <summary>Adds the values of two specified <see cref="System.Numerics.BigInteger" /> objects.</summary>
+        /// <summary>Adds the values of two specified <see cref="BigInteger" /> objects.</summary>
         /// <returns>The sum of <paramref name="left" /> and <paramref name="right" />.</returns>
         /// <param name="left">The first value to add.</param>
         /// <param name="right">The second value to add.</param>
@@ -504,7 +503,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns the value of the <see cref="System.Numerics.BigInteger" /> operand. (The sign of the operand is
+        ///     Returns the value of the <see cref="BigInteger" /> operand. (The sign of the operand is
         ///     unchanged.)
         /// </summary>
         /// <returns>The value of the <paramref name="value" /> operand.</returns>
@@ -514,7 +513,7 @@ namespace System.Numerics
             return value;
         }
 
-        /// <summary>Increments a <see cref="System.Numerics.BigInteger" /> value by 1.</summary>
+        /// <summary>Increments a <see cref="BigInteger" /> value by 1.</summary>
         /// <returns>The value of the <paramref name="value" /> parameter incremented by 1.</returns>
         /// <param name="value">The value to increment.</param>
         public static BigInteger operator ++(BigInteger value)
@@ -523,8 +522,8 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is less than
-        ///     another <see cref="System.Numerics.BigInteger" /> value.
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is less than
+        ///     another <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -535,7 +534,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is less than a
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is less than a
         ///     64-bit signed integer.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
@@ -548,7 +547,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit signed integer is less than a
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -559,7 +558,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is less than a
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is less than a
         ///     64-bit unsigned integer.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
@@ -573,7 +572,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit unsigned integer is less than a
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -584,7 +583,7 @@ namespace System.Numerics
             return right.CompareTo(left) > 0;
         }
 
-        /// <summary>Shifts a <see cref="System.Numerics.BigInteger" /> value a specified number of bits to the left.</summary>
+        /// <summary>Shifts a <see cref="BigInteger" /> value a specified number of bits to the left.</summary>
         /// <returns>A value that has been shifted to the left by the specified number of bits.</returns>
         /// <param name="value">The value whose bits are to be shifted.</param>
         /// <param name="shift">The number of bits to shift <paramref name="value" /> to the left.</param>
@@ -637,8 +636,8 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is less than or
-        ///     equal to another <see cref="System.Numerics.BigInteger" /> value.
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is less than or
+        ///     equal to another <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -649,7 +648,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is less than or
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is less than or
         ///     equal to a 64-bit signed integer.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
@@ -662,7 +661,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit signed integer is less than or equal to a
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -673,7 +672,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is less than or
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is less than or
         ///     equal to a 64-bit unsigned integer.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
@@ -687,7 +686,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit unsigned integer is less than or equal to a
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -699,7 +698,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether the values of two <see cref="System.Numerics.BigInteger" /> objects
+        ///     Returns a value that indicates whether the values of two <see cref="BigInteger" /> objects
         ///     are equal.
         /// </summary>
         /// <returns>
@@ -714,7 +713,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value and a signed long
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value and a signed long
         ///     integer value are equal.
         /// </summary>
         /// <returns>
@@ -730,7 +729,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a signed long integer value and a
-        ///     <see cref="System.Numerics.BigInteger" /> value are equal.
+        ///     <see cref="BigInteger" /> value are equal.
         /// </summary>
         /// <returns>
         ///     true if the <paramref name="left" /> and <paramref name="right" /> parameters have the same value; otherwise,
@@ -744,7 +743,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value and an unsigned
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value and an unsigned
         ///     long integer value are equal.
         /// </summary>
         /// <returns>
@@ -761,7 +760,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether an unsigned long integer value and a
-        ///     <see cref="System.Numerics.BigInteger" /> value are equal.
+        ///     <see cref="BigInteger" /> value are equal.
         /// </summary>
         /// <returns>
         ///     true if the <paramref name="left" /> and <paramref name="right" /> parameters have the same value; otherwise,
@@ -776,8 +775,8 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is greater than
-        ///     another <see cref="System.Numerics.BigInteger" /> value.
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is greater than
+        ///     another <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -788,7 +787,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> is greater than a 64-bit
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> is greater than a 64-bit
         ///     signed integer value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
@@ -801,7 +800,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit signed integer is greater than a
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -812,7 +811,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is greater than a
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is greater than a
         ///     64-bit unsigned integer.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
@@ -825,7 +824,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is greater than a
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is greater than a
         ///     64-bit unsigned integer.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
@@ -838,8 +837,8 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is greater than or
-        ///     equal to another <see cref="System.Numerics.BigInteger" /> value.
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is greater than or
+        ///     equal to another <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -850,7 +849,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is greater than or
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is greater than or
         ///     equal to a 64-bit signed integer value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
@@ -863,7 +862,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit signed integer is greater than or equal to a
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -874,7 +873,7 @@ namespace System.Numerics
         }
 
         /// <summary>
-        ///     Returns a value that indicates whether a <see cref="System.Numerics.BigInteger" /> value is greater than or
+        ///     Returns a value that indicates whether a <see cref="BigInteger" /> value is greater than or
         ///     equal to a 64-bit unsigned integer value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
@@ -888,7 +887,7 @@ namespace System.Numerics
 
         /// <summary>
         ///     Returns a value that indicates whether a 64-bit unsigned integer is greater than or equal to a
-        ///     <see cref="System.Numerics.BigInteger" /> value.
+        ///     <see cref="BigInteger" /> value.
         /// </summary>
         /// <returns>true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false.</returns>
         /// <param name="left">The first value to compare.</param>
@@ -899,7 +898,7 @@ namespace System.Numerics
             return right.CompareTo(left) <= 0;
         }
 
-        /// <summary>Shifts a <see cref="System.Numerics.BigInteger" /> value a specified number of bits to the right.</summary>
+        /// <summary>Shifts a <see cref="BigInteger" /> value a specified number of bits to the right.</summary>
         /// <returns>A value that has been shifted to the right by the specified number of bits.</returns>
         /// <param name="value">The value whose bits are to be shifted.</param>
         /// <param name="shift">The number of bits to shift <paramref name="value" /> to the right.</param>

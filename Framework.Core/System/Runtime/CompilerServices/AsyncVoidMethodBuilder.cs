@@ -42,7 +42,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Initializes the <see cref="System.Runtime.CompilerServices.AsyncVoidMethodBuilder" />.
+        ///     Initializes the <see cref="AsyncVoidMethodBuilder" />.
         /// </summary>
         /// <param name="synchronizationContext">The synchronizationContext associated with this operation. This may be null.</param>
         private AsyncVoidMethodBuilder(SynchronizationContext synchronizationContext)
@@ -54,10 +54,10 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Initializes a new <see cref="System.Runtime.CompilerServices.AsyncVoidMethodBuilder" />.
+        ///     Initializes a new <see cref="AsyncVoidMethodBuilder" />.
         /// </summary>
         /// <returns>
-        ///     The initialized <see cref="System.Runtime.CompilerServices.AsyncVoidMethodBuilder" />.
+        ///     The initialized <see cref="AsyncVoidMethodBuilder" />.
         /// </returns>
         public static AsyncVoidMethodBuilder Create()
         {
@@ -118,11 +118,11 @@ namespace System.Runtime.CompilerServices
         ///     Faults the method builder with an exception.
         /// </summary>
         /// <param name="exception">The exception that is the cause of this fault.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="exception" /> argument is null (Nothing in Visual
         ///     Basic).
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">The builder is not initialized.</exception>
+        /// <exception cref="InvalidOperationException">The builder is not initialized.</exception>
         public void SetException(Exception exception)
         {
             if (exception == null)
@@ -164,11 +164,11 @@ namespace System.Runtime.CompilerServices
         ///     Associates the builder with the state machine it represents.
         /// </summary>
         /// <param name="stateMachine">The heap-allocated state machine object.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument was null (Nothing in
         ///     Visual Basic).
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">The builder is incorrectly initialized.</exception>
+        /// <exception cref="InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             _coreState.SetStateMachine(stateMachine);
@@ -179,7 +179,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
         /// <param name="stateMachine">The state machine instance, passed by reference.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument was null (Nothing in
         ///     Visual Basic).
         /// </exception>

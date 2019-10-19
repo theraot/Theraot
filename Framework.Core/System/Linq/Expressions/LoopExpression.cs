@@ -86,12 +86,12 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Loop;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => BreakLabel == null ? typeof(void) : BreakLabel.Type;

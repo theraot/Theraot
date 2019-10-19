@@ -333,10 +333,10 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="System.Linq.Expressions.MemberExpression.Expression" />. (Inherited from
-        ///     <see cref="System.Linq.Expressions.MemberExpression.Expression" />.)
+        ///     Returns the node type of this <see cref="Expression" />. (Inherited from
+        ///     <see cref="Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.MemberAccess;
 
         /// <summary>

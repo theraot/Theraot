@@ -25,7 +25,7 @@ namespace System.Threading.Tasks
         private static class TrySetCanceledCachedDelegate<T>
         {
             public static Func<TaskCompletionSource<T>, CancellationToken, bool> TrySetCanceled =>
-                _trySetCanceled ?? (_trySetCanceled = CreateTrySetCanceledDelegate());
+                _trySetCanceled ??= CreateTrySetCanceledDelegate();
 
             private static Func<TaskCompletionSource<T>, CancellationToken, bool>? _trySetCanceled;
 
@@ -34,7 +34,7 @@ namespace System.Threading.Tasks
                 var trySetCanceled = typeof(TaskCompletionSource<T>).GetMethod(
                     nameof(TrySetCanceled),
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod,
-                    null, CallingConventions.Any, new[] {typeof(CancellationToken)}, null);
+                    null, CallingConventions.Any, new[] { typeof(CancellationToken) }, null);
 
                 Debug.Assert(trySetCanceled != null, nameof(trySetCanceled) + " != null");
                 return (Func<TaskCompletionSource<T>, CancellationToken, bool>)Delegate.CreateDelegate(

@@ -2,6 +2,7 @@
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CA1068 // CancellationToken parameters must come last
+// ReSharper disable VirtualMemberNeverOverridden.Global
 
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -192,14 +193,14 @@ namespace System.Threading.Tasks
         {
             get
             {
-                var waithandle = _waitHandle;
+                var waitHandle = _waitHandle;
 
                 if (Volatile.Read(ref _isDisposed) == 1)
                 {
                     throw new ObjectDisposedException(nameof(Task));
                 }
 
-                return waithandle!.WaitHandle;
+                return waitHandle!.WaitHandle;
             }
         }
 
@@ -569,12 +570,12 @@ namespace System.Threading.Tasks
 
             if (!cancelSucceeded)
             {
-                return cancelSucceeded;
+                return false;
             }
 
             MarkCompleted();
             FinishStageThree();
-            return cancelSucceeded;
+            return true;
         }
 
         internal bool InternalStart(TaskScheduler scheduler, bool inline, bool throwSchedulerExceptions)

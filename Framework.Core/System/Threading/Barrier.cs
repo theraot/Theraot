@@ -108,7 +108,7 @@ namespace System.Threading
         /// </summary>
         /// <param name="participantCount">The number of participating threads.</param>
         /// <param name="postPhaseAction">
-        ///     The <see cref="System.Action`1" /> to be executed after each
+        ///     The <see cref="System.Action{T}" /> to be executed after each
         ///     phase.
         /// </param>
         /// <exception cref="System.ArgumentOutOfRangeException">

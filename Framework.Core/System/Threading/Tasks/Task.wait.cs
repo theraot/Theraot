@@ -43,13 +43,13 @@ namespace System.Threading.Tasks
         /// <param name="tasks">
         ///     An array of <see cref="Task" /> instances on which to wait.
         /// </param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.AggregateException">
+        /// <exception cref="AggregateException">
         ///     At least one of the <see cref="Task" /> instances was canceled -or- an exception was thrown during
         ///     the execution of at least one of the <see cref="Task" /> instances.
         /// </exception>
@@ -80,17 +80,17 @@ namespace System.Threading.Tasks
         ///     A <see cref="TimeSpan" /> that represents the number of milliseconds to wait, or a <see cref="TimeSpan" /> that
         ///     represents -1 milliseconds to wait indefinitely.
         /// </param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.AggregateException">
+        /// <exception cref="AggregateException">
         ///     At least one of the <see cref="Task" /> instances was canceled -or- an exception was thrown during
         ///     the execution of at least one of the <see cref="Task" /> instances.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="timeout" /> is a negative number other than -1 milliseconds, which represents an
         ///     infinite time-out -or- timeout is greater than
         ///     <see cref="int.MaxValue" />.
@@ -121,17 +121,17 @@ namespace System.Threading.Tasks
         ///     The number of milliseconds to wait, or <see cref="Timeout.Infinite" /> (-1) to
         ///     wait indefinitely.
         /// </param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.AggregateException">
+        /// <exception cref="AggregateException">
         ///     At least one of the <see cref="Task" /> instances was canceled -or- an exception was thrown during
         ///     the execution of at least one of the <see cref="Task" /> instances.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="millisecondsTimeout" /> is a negative number other than -1, which represents an
         ///     infinite time-out.
         /// </exception>
@@ -154,17 +154,17 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">
         ///     A <see cref="CancellationToken" /> to observe while waiting for the tasks to complete.
         /// </param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.AggregateException">
+        /// <exception cref="AggregateException">
         ///     At least one of the <see cref="Task" /> instances was canceled -or- an exception was thrown during
         ///     the execution of at least one of the <see cref="Task" /> instances.
         /// </exception>
-        /// <exception cref="System.OperationCanceledException">
+        /// <exception cref="OperationCanceledException">
         ///     The <paramref name="cancellationToken" /> was canceled.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoOptimization)] // this is needed for the parallel debugger
@@ -190,21 +190,21 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">
         ///     A <see cref="CancellationToken" /> to observe while waiting for the tasks to complete.
         /// </param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.AggregateException">
+        /// <exception cref="AggregateException">
         ///     At least one of the <see cref="Task" /> instances was canceled -or- an exception was thrown during
         ///     the execution of at least one of the <see cref="Task" /> instances.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="millisecondsTimeout" /> is a negative number other than -1, which represents an
         ///     infinite time-out.
         /// </exception>
-        /// <exception cref="System.OperationCanceledException">
+        /// <exception cref="OperationCanceledException">
         ///     The <paramref name="cancellationToken" /> was canceled.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoOptimization)] // this is needed for the parallel debugger
@@ -266,7 +266,7 @@ namespace System.Threading.Tasks
 
             if (!allCompleted)
             {
-                return allCompleted;
+                return false;
             }
 
             {
@@ -309,7 +309,7 @@ namespace System.Threading.Tasks
                 // If one or more threw exceptions, aggregate and throw them.
                 if (!exceptionSeen && !cancellationSeen)
                 {
-                    return allCompleted;
+                    return true;
                 }
 
                 Contract.Assert(exceptions != null, "Should have seen at least one exception");
@@ -324,10 +324,10 @@ namespace System.Threading.Tasks
         ///     An array of <see cref="Task" /> instances on which to wait.
         /// </param>
         /// <returns>The index of the completed task in the <paramref name="tasks" /> array argument.</returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoOptimization)] // this is needed for the parallel debugger
@@ -356,13 +356,13 @@ namespace System.Threading.Tasks
         ///     The index of the completed task in the <paramref name="tasks" /> array argument, or -1 if the
         ///     timeout occurred.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="timeout" /> is a negative number other than -1 milliseconds, which represents an
         ///     infinite time-out -or- timeout is greater than
         ///     <see cref="int.MaxValue" />.
@@ -391,13 +391,13 @@ namespace System.Threading.Tasks
         /// <returns>
         ///     The index of the completed task in the <paramref name="tasks" /> array argument.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.OperationCanceledException">
+        /// <exception cref="OperationCanceledException">
         ///     The <paramref name="cancellationToken" /> was canceled.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoOptimization)] // this is needed for the parallel debugger
@@ -420,13 +420,13 @@ namespace System.Threading.Tasks
         ///     The index of the completed task in the <paramref name="tasks" /> array argument, or -1 if the
         ///     timeout occurred.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="millisecondsTimeout" /> is a negative number other than -1, which represents an
         ///     infinite time-out.
         /// </exception>
@@ -453,17 +453,17 @@ namespace System.Threading.Tasks
         ///     The index of the completed task in the <paramref name="tasks" /> array argument, or -1 if the
         ///     timeout occurred.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> argument contains a null element.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="millisecondsTimeout" /> is a negative number other than -1, which represents an
         ///     infinite time-out.
         /// </exception>
-        /// <exception cref="System.OperationCanceledException">
+        /// <exception cref="OperationCanceledException">
         ///     The <paramref name="cancellationToken" /> was canceled.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoOptimization)] // this is needed for the parallel debugger

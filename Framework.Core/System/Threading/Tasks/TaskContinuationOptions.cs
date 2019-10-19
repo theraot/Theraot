@@ -14,12 +14,12 @@ namespace System.Threading.Tasks
         /// <summary>
         ///     Default = "Continue on any, no task options, run asynchronously" Specifies that the default behavior should be
         ///     used. Continuations, by default, will be scheduled when the antecedent task completes, regardless of the task's
-        ///     final <see cref="System.Threading.Tasks.TaskStatus" />.
+        ///     final <see cref="TaskStatus" />.
         /// </summary>
         None = 0,
 
         /// <summary>
-        ///     A hint to a <see cref="System.Threading.Tasks.TaskScheduler" /> to schedule a task in as fair a manner as
+        ///     A hint to a <see cref="TaskScheduler" /> to schedule a task in as fair a manner as
         ///     possible, meaning that tasks scheduled sooner will be more likely to be run sooner, and tasks scheduled later will
         ///     be more likely to be run later.
         /// </summary>
@@ -27,7 +27,7 @@ namespace System.Threading.Tasks
 
         /// <summary>
         ///     Specifies that a task will be a long-running, course-grained operation. It provides a hint to the
-        ///     <see cref="System.Threading.Tasks.TaskScheduler" /> that oversubscription may be warranted.
+        ///     <see cref="TaskScheduler" /> that oversubscription may be warranted.
         /// </summary>
         LongRunning = 2,
 

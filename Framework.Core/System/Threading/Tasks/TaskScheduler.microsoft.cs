@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
+// ReSharper disable VirtualMemberNeverOverridden.Global
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -40,7 +41,7 @@ namespace System.Threading.Tasks
         /// <remarks>
         ///     This AppDomain-wide event provides a mechanism to prevent exception
         ///     escalation policy (which, by default, terminates the process) from triggering.
-        ///     Each handler is passed a <see cref="System.Threading.Tasks.UnobservedTaskExceptionEventArgs" />
+        ///     Each handler is passed a <see cref="UnobservedTaskExceptionEventArgs" />
         ///     instance, which may be used to examine the exception and to mark it as observed.
         /// </remarks>
         public static event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException
@@ -103,7 +104,7 @@ namespace System.Threading.Tasks
         ///     It should not be called by any other code paths.
         /// </remarks>
         /// <returns>An array of <see cref="Task">Task</see> instances.</returns>
-        /// <exception cref="System.NotSupportedException">
+        /// <exception cref="NotSupportedException">
         ///     This scheduler is unable to generate a list of queued tasks at this time.
         /// </exception>
         internal Task[]? GetScheduledTasksForDebugger()

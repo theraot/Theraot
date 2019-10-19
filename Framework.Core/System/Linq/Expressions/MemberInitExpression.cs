@@ -121,19 +121,19 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.MemberInit;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Reduces the <see cref="System.Linq.Expressions.MemberInitExpression" /> to a simpler expression.
+        ///     Reduces the <see cref="MemberInitExpression" /> to a simpler expression.
         ///     If CanReduce returns true, this should return a valid expression.
         ///     This method is allowed to return another node which itself
         ///     must be reduced.

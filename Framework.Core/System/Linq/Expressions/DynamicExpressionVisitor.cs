@@ -12,7 +12,7 @@ namespace System.Linq.Expressions
     {
         /// <inheritdoc />
         /// <summary>
-        ///     Visits the children of the <see cref="System.Linq.Expressions.DynamicExpression" />.
+        ///     Visits the children of the <see cref="DynamicExpression" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
         /// <returns>

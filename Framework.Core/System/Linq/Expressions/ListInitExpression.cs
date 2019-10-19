@@ -224,9 +224,9 @@ namespace System.Linq.Expressions
     /// </summary>
     /// <remarks>
     ///     Use the
-    ///     <see cref="System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression,System.Linq.Expressions.Expression[])" />
+    ///     <see cref="Expression.ListInit(Expressions.NewExpression,System.Linq.Expressions.Expression[])" />
     ///     factory methods to create a ListInitExpression.
-    ///     The value of the <see cref="System.Linq.Expressions.ListInitExpression.NodeType" /> property of a
+    ///     The value of the <see cref="NodeType" /> property of a
     ///     ListInitExpression is ListInit.
     /// </remarks>
     [DebuggerTypeProxy(typeof(ListInitExpressionProxy))]
@@ -256,16 +256,16 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="Expression" />. (Inherited from
+        ///     <see cref="Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.ListInit;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
+        ///     (Inherited from <see cref="Expression" />.)
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;

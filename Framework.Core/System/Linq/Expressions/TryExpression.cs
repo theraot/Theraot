@@ -172,7 +172,7 @@ namespace System.Linq.Expressions
     ///     <para>Represents a try/catch/finally/fault block.</para>
     ///     <para>
     ///         The body is protected by the try block.
-    ///         The handlers consist of a set of <see cref="System.Linq.Expressions.CatchBlock" />s that can either be catch
+    ///         The handlers consist of a set of <see cref="CatchBlock" />s that can either be catch
     ///         or filters.
     ///         The fault runs if an exception is thrown.
     ///         The finally runs regardless of how control exits the body.
@@ -218,16 +218,16 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="Expression" />. (Inherited from
+        ///     <see cref="Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Try;
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
+        ///     (Inherited from <see cref="Expression" />.)
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type { get; }

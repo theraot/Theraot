@@ -3,7 +3,6 @@
 #pragma warning disable RCS1231 // Make parameter ref read-only.
 
 using System.Runtime.CompilerServices;
-using Theraot;
 
 #if NET40
 
@@ -45,7 +44,7 @@ namespace System.Threading.Tasks
                 var completedTask = _completedTask;
                 if (completedTask == null)
                 {
-                    _completedTask = completedTask = FromResult(default(VoidStruct));
+                    _completedTask = completedTask = FromResult(default(Theraot.VoidStruct));
                 }
 
                 return completedTask;

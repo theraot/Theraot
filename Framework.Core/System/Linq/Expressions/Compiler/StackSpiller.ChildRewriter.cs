@@ -292,14 +292,6 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
 
-            internal void MarkRefInstance(Expression expr)
-            {
-                if (IsRefInstance(expr))
-                {
-                    MarkRef(0);
-                }
-            }
-
             /// <summary>
             ///     Checks whether the given <paramref name="expression" /> representing a
             ///     child expression should be saved in a temporary variable upon spilling

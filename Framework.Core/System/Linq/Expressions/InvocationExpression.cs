@@ -61,7 +61,7 @@ namespace System.Linq.Expressions
         ///     or lambda expression to be applied.
         /// </param>
         /// <param name="arguments">
-        ///     An <see cref="Collections.Generic.IEnumerable{TDelegate}" /> of <see cref="Expression" /> objects
+        ///     An <see cref="IEnumerable{TDelegate}" /> of <see cref="Expression" /> objects
         ///     that represent the arguments that the delegate or lambda expression is applied to.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -474,13 +474,13 @@ namespace System.Linq.Expressions
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> of the expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Invoke;
 
         /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this
-        ///     <see cref="System.Linq.Expressions.InvocationExpression.Expression" /> represents.
+        ///     <see cref="Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public sealed override Type Type { get; }

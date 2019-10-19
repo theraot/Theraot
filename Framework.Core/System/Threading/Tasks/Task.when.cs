@@ -36,10 +36,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task.
         /// </exception>
         public static Task WhenAll(IEnumerable<Task> tasks)
@@ -109,10 +109,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task.
         /// </exception>
         public static Task WhenAll(params Task[] tasks)
@@ -173,10 +173,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.  The returned TResult[] will be an array of 0 elements.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task.
         /// </exception>
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
@@ -251,10 +251,10 @@ namespace System.Threading.Tasks
         ///         state before it's returned to the caller.  The returned TResult[] will be an array of 0 elements.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task.
         /// </exception>
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
@@ -298,10 +298,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task, or was empty.
         /// </exception>
         public static Task<Task> WhenAny(params Task[] tasks)
@@ -345,10 +345,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task, or was empty.
         /// </exception>
         public static Task<Task> WhenAny(IEnumerable<Task> tasks)
@@ -395,10 +395,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> array contained a null task, or was empty.
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
@@ -427,10 +427,10 @@ namespace System.Threading.Tasks
         ///     with its Result set to the first task to complete.  This is true even if the first task to complete ended in the
         ///     Canceled or Faulted state.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="tasks" /> argument was null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The <paramref name="tasks" /> collection contained a null task, or was empty.
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)

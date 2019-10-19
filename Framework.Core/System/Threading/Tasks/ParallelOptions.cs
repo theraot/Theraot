@@ -17,7 +17,7 @@ namespace System.Threading.Tasks
 {
     /// <summary>
     ///     Stores options that configure the operation of methods on the
-    ///     <see cref="System.Threading.Tasks.Parallel">Parallel</see> class.
+    ///     <see cref="Parallel">Parallel</see> class.
     /// </summary>
     /// <remarks>
     ///     By default, methods on the Parallel class attempt to utilize all available processors, are non-cancelable, and
@@ -47,15 +47,15 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets or sets the <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        ///     Gets or sets the <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     associated with this <see cref="ParallelOptions" /> instance.
         /// </summary>
         /// <remarks>
-        ///     Providing a <see cref="System.Threading.CancellationToken">CancellationToken</see>
-        ///     to a <see cref="System.Threading.Tasks.Parallel">Parallel</see> method enables the operation to be
+        ///     Providing a <see cref="Threading.CancellationToken">CancellationToken</see>
+        ///     to a <see cref="Parallel">Parallel</see> method enables the operation to be
         ///     exited early. Code external to the operation may cancel the token, and if the operation observes the
         ///     token being set, it may exit early by throwing an
-        ///     <see cref="System.OperationCanceledExceptionEx" />.
+        ///     <see cref="OperationCanceledExceptionEx" />.
         /// </remarks>
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -66,12 +66,12 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <remarks>
         ///     The <see cref="MaxDegreeOfParallelism" /> limits the number of concurrent operations run by
-        ///     <see cref="System.Threading.Tasks.Parallel">Parallel</see> method calls that are passed this
+        ///     <see cref="Parallel">Parallel</see> method calls that are passed this
         ///     ParallelOptions instance to the set value, if it is positive.
         ///     If <see cref="MaxDegreeOfParallelism" /> is -1, then there is no limit placed on the number of concurrently
         ///     running operations.
         /// </remarks>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The exception that is thrown when this <see cref="MaxDegreeOfParallelism" /> is set to 0 or some
         ///     value less than -1.
         /// </exception>
@@ -90,7 +90,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets or sets the <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
+        ///     Gets or sets the <see cref="Tasks.TaskScheduler">TaskScheduler</see>
         ///     associated with this <see cref="ParallelOptions" /> instance. Setting this property to null
         ///     indicates that the current scheduler should be used.
         /// </summary>

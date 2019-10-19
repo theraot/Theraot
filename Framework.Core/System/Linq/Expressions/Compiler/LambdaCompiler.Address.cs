@@ -238,7 +238,7 @@ namespace System.Linq.Expressions.Compiler
                     @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
-                foreach (LocalBuilder arg in args)
+                foreach (var arg in args)
                 {
                     @this.IL.Emit(OpCodes.Ldloc, arg);
                     @this.FreeLocal(arg);

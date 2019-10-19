@@ -15,8 +15,8 @@ namespace System.Runtime.CompilerServices
     public sealed class AsyncMethodBuilderAttribute : Attribute
     {
         /// <inheritdoc />
-        /// <summary>Initializes the <see cref="System.Runtime.CompilerServices.AsyncMethodBuilderAttribute" />.</summary>
-        /// <param name="builderType">The <see cref="System.Type" /> of the associated builder.</param>
+        /// <summary>Initializes the <see cref="AsyncMethodBuilderAttribute" />.</summary>
+        /// <param name="builderType">The <see cref="Type" /> of the associated builder.</param>
         public AsyncMethodBuilderAttribute(Type builderType)
         {
             BuilderType = builderType;

@@ -54,7 +54,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ThreadSafe.ThreadSafeDictionary{TKey, TValue}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
         public ThreadSafeDictionary()
             : this(EqualityComparer<TKey>.Default, _defaultProbing)
@@ -64,7 +64,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ThreadSafe.ThreadSafeDictionary{TKey, TValue}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
         public ThreadSafeDictionary(int initialProbing)
@@ -75,7 +75,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ThreadSafe.ThreadSafeDictionary{TKey, TValue}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
         public ThreadSafeDictionary(IEqualityComparer<TKey> comparer)
@@ -146,9 +146,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);

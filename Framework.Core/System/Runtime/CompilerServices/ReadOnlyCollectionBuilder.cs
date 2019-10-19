@@ -114,7 +114,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Returns number of elements in the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     Returns number of elements in the <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         public int Count { get; private set; }
 
@@ -197,11 +197,11 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Adds an item to the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     Adds an item to the <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         /// <param name="item">
         ///     The object to add to the
-        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         public void Add(T item)
         {
@@ -215,7 +215,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Removes all items from the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     Removes all items from the <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         public void Clear()
         {
@@ -235,15 +235,15 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Determines whether the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> contains a
+        ///     Determines whether the <see cref="ReadOnlyCollectionBuilder{T}" /> contains a
         ///     specific value
         /// </summary>
         /// <param name="item">
         ///     the object to locate in the
-        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         /// <returns>
-        ///     true if item is found in the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />;
+        ///     true if item is found in the <see cref="ReadOnlyCollectionBuilder{T}" />;
         ///     otherwise, false.
         /// </returns>
         public bool Contains(T item)
@@ -290,13 +290,13 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Copies the elements of the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> to an
-        ///     <see cref="System.Array" />,
-        ///     starting at particular <see cref="System.Array" /> index.
+        ///     Copies the elements of the <see cref="ReadOnlyCollectionBuilder{T}" /> to an
+        ///     <see cref="Array" />,
+        ///     starting at particular <see cref="Array" /> index.
         /// </summary>
         /// <param name="array">
-        ///     The one-dimensional <see cref="System.Array" /> that is the destination of the elements copied
-        ///     from <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     The one-dimensional <see cref="Array" /> that is the destination of the elements copied
+        ///     from <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex)
@@ -309,7 +309,7 @@ namespace System.Runtime.CompilerServices
         ///     Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        ///     A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the
+        ///     A <see cref="IEnumerator{T}" /> that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
@@ -362,13 +362,13 @@ namespace System.Runtime.CompilerServices
 
         /// <inheritdoc />
         /// <summary>
-        ///     Inserts an item to the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> at the
+        ///     Inserts an item to the <see cref="ReadOnlyCollectionBuilder{T}" /> at the
         ///     specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which item should be inserted.</param>
         /// <param name="item">
         ///     The object to insert into the
-        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         public void Insert(int index, T item)
         {
@@ -403,17 +403,17 @@ namespace System.Runtime.CompilerServices
         /// <inheritdoc />
         /// <summary>
         ///     Removes the first occurrence of a specific object from the
-        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
         /// <param name="item">
         ///     The object to remove from the
-        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </param>
         /// <returns>
         ///     true if item was successfully removed from the
-        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />;
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />;
         ///     otherwise, false. This method also returns false if item is not found in the original
-        ///     <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" />.
+        ///     <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </returns>
         public bool Remove(T item)
         {
@@ -428,7 +428,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Removes the <see cref="System.Runtime.CompilerServices.ReadOnlyCollectionBuilder{T}" /> item at the specified
+        ///     Removes the <see cref="ReadOnlyCollectionBuilder{T}" /> item at the specified
         ///     index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>

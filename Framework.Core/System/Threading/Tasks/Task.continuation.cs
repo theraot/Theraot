@@ -32,7 +32,7 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction)
@@ -57,10 +57,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -85,10 +85,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, TaskScheduler scheduler)
@@ -116,12 +116,12 @@ namespace System.Threading.Tasks
         ///     not met, the continuation task will be canceled
         ///     instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         public Task ContinueWith(Action<Task> continuationAction, TaskContinuationOptions continuationOptions)
         {
@@ -155,17 +155,17 @@ namespace System.Threading.Tasks
         ///     completed. If the criteria specified through the <paramref name="continuationOptions" /> parameter
         ///     are not met, the continuation task will be canceled instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -188,7 +188,7 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state)
@@ -214,10 +214,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -243,10 +243,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, TaskScheduler scheduler)
@@ -275,12 +275,12 @@ namespace System.Threading.Tasks
         ///     not met, the continuation task will be canceled
         ///     instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         public Task ContinueWith(Action<Task, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
         {
@@ -315,17 +315,17 @@ namespace System.Threading.Tasks
         ///     completed. If the criteria specified through the <paramref name="continuationOptions" /> parameter
         ///     are not met, the continuation task will be canceled instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -350,7 +350,7 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction)
@@ -378,10 +378,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -409,10 +409,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, TaskScheduler scheduler)
@@ -443,12 +443,12 @@ namespace System.Threading.Tasks
         ///     not met, the continuation task will be canceled
         ///     instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, TaskContinuationOptions continuationOptions)
         {
@@ -485,17 +485,17 @@ namespace System.Threading.Tasks
         ///     completed. If the criteria specified through the <paramref name="continuationOptions" /> parameter
         ///     are not met, the continuation task will be canceled instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -521,7 +521,7 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state)
@@ -550,10 +550,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -582,10 +582,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
@@ -617,12 +617,12 @@ namespace System.Threading.Tasks
         ///     not met, the continuation task will be canceled
         ///     instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
@@ -660,17 +660,17 @@ namespace System.Threading.Tasks
         ///     completed. If the criteria specified through the <paramref name="continuationOptions" /> parameter
         ///     are not met, the continuation task will be canceled instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="Threading.CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1158,7 +1158,7 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1184,10 +1184,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1213,10 +1213,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1245,12 +1245,12 @@ namespace System.Threading.Tasks
         ///     not met, the continuation task will be canceled
         ///     instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskContinuationOptions continuationOptions)
@@ -1285,17 +1285,17 @@ namespace System.Threading.Tasks
         ///     completed. If the criteria specified through the <paramref name="continuationOptions" /> parameter
         ///     are not met, the continuation task will be canceled instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1319,7 +1319,7 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1346,10 +1346,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1376,10 +1376,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1409,12 +1409,12 @@ namespace System.Threading.Tasks
         ///     not met, the continuation task will be canceled
         ///     instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
@@ -1450,17 +1450,17 @@ namespace System.Threading.Tasks
         ///     completed. If the criteria specified through the <paramref name="continuationOptions" /> parameter
         ///     are not met, the continuation task will be canceled instead of scheduled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationAction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1486,7 +1486,7 @@ namespace System.Threading.Tasks
         ///     task has completed, whether it completes due to running to completion successfully, faulting due
         ///     to an unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1512,10 +1512,10 @@ namespace System.Threading.Tasks
         ///     task has completed, whether it completes due to running to completion successfully, faulting due
         ///     to an unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1544,10 +1544,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1585,12 +1585,12 @@ namespace System.Threading.Tasks
         ///         from the ContinueWith call.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskContinuationOptions continuationOptions)
@@ -1632,17 +1632,17 @@ namespace System.Threading.Tasks
         ///         ContinueWith call.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1669,7 +1669,7 @@ namespace System.Threading.Tasks
         ///     task has completed, whether it completes due to running to completion successfully, faulting due
         ///     to an unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1696,10 +1696,10 @@ namespace System.Threading.Tasks
         ///     task has completed, whether it completes due to running to completion successfully, faulting due
         ///     to an unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>
@@ -1729,10 +1729,10 @@ namespace System.Threading.Tasks
         ///     completed, whether it completes due to running to completion successfully, faulting due to an
         ///     unhandled exception, or exiting out early due to being canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
@@ -1771,12 +1771,12 @@ namespace System.Threading.Tasks
         ///         from the ContinueWith call.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
@@ -1819,17 +1819,17 @@ namespace System.Threading.Tasks
         ///         ContinueWith call.
         ///     </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="continuationFunction" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     The <paramref name="continuationOptions" /> argument specifies an invalid value for
-        ///     <see cref="System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        ///     <see cref="TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="scheduler" /> argument is null.
         /// </exception>
-        /// <exception cref="System.ObjectDisposedException">
+        /// <exception cref="ObjectDisposedException">
         ///     The provided <see cref="CancellationToken">CancellationToken</see>
         ///     has already been disposed.
         /// </exception>

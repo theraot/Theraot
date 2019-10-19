@@ -41,7 +41,7 @@ namespace System.Runtime.CompilerServices
             return new ConfiguredValueTaskAwaiter(_value, _continueOnCapturedContext);
         }
 
-        /// <summary>Provides an awaiter for a <see cref="System.Runtime.CompilerServices.ConfiguredValueTaskAwaitable{TResult}" />.</summary>
+        /// <summary>Provides an awaiter for a <see cref="ConfiguredValueTaskAwaitable{TResult}" />.</summary>
         [StructLayout(LayoutKind.Auto)]
         public struct ConfiguredValueTaskAwaiter : ICriticalNotifyCompletion
         {

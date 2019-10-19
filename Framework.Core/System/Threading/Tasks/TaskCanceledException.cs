@@ -20,7 +20,7 @@ namespace System.Threading.Tasks
         private readonly Task? _canceledTask; // The task which has been canceled.
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="System.Threading.Tasks.TaskCanceledException" /> class.
+        ///     Initializes a new instance of the <see cref="TaskCanceledException" /> class.
         /// </summary>
         public TaskCanceledException()
             : base("A task was canceled")
@@ -29,7 +29,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="System.Threading.Tasks.TaskCanceledException" />
+        ///     Initializes a new instance of the <see cref="TaskCanceledException" />
         ///     class with a specified error message.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
@@ -40,7 +40,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="System.Threading.Tasks.TaskCanceledException" />
+        ///     Initializes a new instance of the <see cref="TaskCanceledException" />
         ///     class with a specified error message and a reference to the inner exception that is the cause of
         ///     this exception.
         /// </summary>
@@ -53,8 +53,8 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="System.Threading.Tasks.TaskCanceledException" /> class
-        ///     with a reference to the <see cref="System.Threading.Tasks.Task" /> that has been canceled.
+        ///     Initializes a new instance of the <see cref="TaskCanceledException" /> class
+        ///     with a reference to the <see cref="Tasks.Task" /> that has been canceled.
         /// </summary>
         /// <param name="task">A task that has been canceled.</param>
         public TaskCanceledException(Task task) :
@@ -74,7 +74,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <remarks>
         ///     It is permissible for no Task to be associated with a
-        ///     <see cref="System.Threading.Tasks.TaskCanceledException" />, in which case
+        ///     <see cref="TaskCanceledException" />, in which case
         ///     this property will return null.
         /// </remarks>
         public Task? Task => _canceledTask;

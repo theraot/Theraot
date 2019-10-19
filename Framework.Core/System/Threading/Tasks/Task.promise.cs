@@ -187,12 +187,12 @@ namespace System.Threading.Tasks
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
             if (!succeeded)
             {
-                return succeeded;
+                return false;
             }
 
             MarkCompleted();
             FinishStageThree();
-            return succeeded;
+            return true;
         }
 
         internal bool TrySetException(IEnumerable<Exception> exceptions)
@@ -206,12 +206,12 @@ namespace System.Threading.Tasks
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
             if (!succeeded)
             {
-                return succeeded;
+                return false;
             }
 
             MarkCompleted();
             FinishStageThree();
-            return succeeded;
+            return true;
         }
 
         internal bool TrySetException(IEnumerable<ExceptionDispatchInfo> exceptions)
@@ -225,12 +225,12 @@ namespace System.Threading.Tasks
             var succeeded = status == (int)TaskStatus.WaitingForActivation;
             if (!succeeded)
             {
-                return succeeded;
+                return false;
             }
 
             MarkCompleted();
             FinishStageThree();
-            return succeeded;
+            return true;
         }
 
         private void PromiseCheck()

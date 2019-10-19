@@ -18,7 +18,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Theraot.Collections.ThreadSafe.ThreadSafeSet{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
         /// </summary>
         public ThreadSafeSet()
             : this(EqualityComparer<T>.Default, _defaultProbing)
@@ -28,7 +28,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Theraot.Collections.ThreadSafe.ThreadSafeSet{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
         /// </summary>
         /// <param name="initialProbing">The number of steps in linear probing.</param>
         public ThreadSafeSet(int initialProbing)
@@ -39,7 +39,7 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Theraot.Collections.ThreadSafe.ThreadSafeSet{T}" /> class.
+        ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
         public ThreadSafeSet(IEqualityComparer<T> comparer)
@@ -122,9 +122,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             _bucket.CopyTo(array, arrayIndex);
@@ -137,10 +137,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the
+        ///     An <see cref="IEnumerator{T}" /> object that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()

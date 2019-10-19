@@ -155,9 +155,9 @@ namespace System.Linq.Expressions
     ///     Represents initializing members of a member of a newly created object.
     /// </summary>
     /// <remarks>
-    ///     The value of the <see cref="System.Linq.Expressions.MemberBinding.BindingType" /> property of a
-    ///     <see cref="System.Linq.Expressions.MemberMemberBinding" /> object is
-    ///     <see cref="System.Linq.Expressions.MemberBinding" />.
+    ///     The value of the <see cref="MemberBinding.BindingType" /> property of a
+    ///     <see cref="MemberMemberBinding" /> object is
+    ///     <see cref="MemberBinding" />.
     /// </remarks>
     public sealed class MemberMemberBinding : MemberBinding
     {

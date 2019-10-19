@@ -598,7 +598,7 @@ namespace System.Threading.Tasks
         ///     Whether the exceptionObject is an OperationCanceledException representing
         ///     cancellation.
         /// </param>
-        internal void AddException(object exceptionObject, bool representsCancellation)
+        internal void AddException(object exceptionObject, bool representsCancellation = false)
         {
             //
             // WARNING: A great deal of care went into ensuring that
@@ -630,11 +630,6 @@ namespace System.Threading.Tasks
             {
                 exceptionsHolder.Add(exceptionObject, representsCancellation);
             }
-        }
-
-        private void AddException(object exceptionObject)
-        {
-            AddException(exceptionObject, /*representsCancellation:*/ false);
         }
     }
 }

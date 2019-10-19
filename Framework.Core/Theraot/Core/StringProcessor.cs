@@ -312,14 +312,14 @@ namespace Theraot.Core
         /// </param>
         /// <param name="destinationIndex">The starting index in the buffer. </param>
         /// <param name="count">The number of characters to read. </param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     <paramref name="destination" /> is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         ///     The buffer length minus <paramref name="destinationIndex" /> is less than
         ///     <paramref name="count" />.
         /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///     <paramref name="destinationIndex" /> or <paramref name="count" /> is negative.
         /// </exception>
         public int Read(char[] destination, int destinationIndex, int count)
@@ -506,7 +506,7 @@ namespace Theraot.Core
         /// <remarks>The string that is returned does not contain the terminating carriage return or line feed.</remarks>
         public string? ReadLine()
         {
-            var result = PrivateReadUntil(new[] {'\r', '\n'}, true);
+            var result = PrivateReadUntil(new[] { '\r', '\n' }, true);
             Read('\r');
             Read('\n');
             return result;
@@ -1052,7 +1052,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         public bool SkipLine()
         {
-            return PrivateSkipUntil(new[] {'\r', '\n'}, true) || Read('\r') || Read('\n');
+            return PrivateSkipUntil(new[] { '\r', '\n' }, true) || Read('\r') || Read('\n');
         }
 
         /// <summary>
@@ -1506,33 +1506,7 @@ namespace Theraot.Core
                 return false;
             }
 
-            if (targets == null)
-            {
-                return SkipWhileExtracted(ArrayEx.Empty<char>());
-            }
             return SkipWhileExtracted(targets);
-        }
-
-        private bool SkipWhileExtracted(IEnumerable<char> targets)
-        {
-            var container = targets.AsICollection();
-            var result = false;
-            while (true)
-            {
-                if (_position == _length)
-                {
-                    return result;
-                }
-
-                var character = String[_position];
-                if (!container.Contains(character))
-                {
-                    return result;
-                }
-
-                _position++;
-                result = true;
-            }
         }
 
         /// <summary>
@@ -1648,6 +1622,28 @@ namespace Theraot.Core
             }
 
             return result;
+        }
+
+        private bool SkipWhileExtracted(IEnumerable<char> targets)
+        {
+            var container = targets.AsICollection();
+            var result = false;
+            while (true)
+            {
+                if (_position == _length)
+                {
+                    return result;
+                }
+
+                var character = String[_position];
+                if (!container.Contains(character))
+                {
+                    return result;
+                }
+
+                _position++;
+                result = true;
+            }
         }
     }
 }

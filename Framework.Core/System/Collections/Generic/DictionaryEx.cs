@@ -3,12 +3,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Theraot;
 
-#if LESSTHAN_NET45
-
-using System.Runtime.CompilerServices;
-
-#endif
-
 namespace System.Collections.Generic
 {
     [Serializable]

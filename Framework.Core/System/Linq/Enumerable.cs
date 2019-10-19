@@ -592,14 +592,6 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            if (source is IOrderedEnumerable<TSource> oe)
-            {
-                if (comparer == null)
-                {
-                    return oe.CreateOrderedEnumerable(keySelector, Comparer<TKey>.Default, false);
-                }
-                return oe.CreateOrderedEnumerable(keySelector, comparer, false);
-            }
             if (comparer == null)
             {
                 return source.CreateOrderedEnumerable(keySelector, Comparer<TKey>.Default, false);

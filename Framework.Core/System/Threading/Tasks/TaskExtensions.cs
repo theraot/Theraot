@@ -21,7 +21,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <remarks>
         ///     It is often useful to be able to return a Task from a
-        ///     <see cref="Tasks.Task{TResult}">
+        ///     <see cref="Task{TResult}">
         ///         Task{TResult}
         ///     </see>
         ///     , where the inner Task represents work done as part of the outer Task{TResult}.  However,
@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
         ///     Task{Task}.
         /// </remarks>
         /// <param name="task">The Task{Task} to unwrap.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The exception that is thrown if the
         ///     <paramref name="task" /> argument is null.
         /// </exception>
@@ -57,7 +57,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Creates a proxy <see cref="Tasks.Task{TResult}">Task{TResult}</see> that represents the
+        ///     Creates a proxy <see cref="Task{TResult}">Task{TResult}</see> that represents the
         ///     asynchronous operation of a Task{Task{TResult}}.
         /// </summary>
         /// <remarks>
@@ -67,7 +67,7 @@ namespace System.Threading.Tasks
         ///     creating a proxy Task{TResult} that represents the entire asynchronous operation of such a Task{Task{TResult}}.
         /// </remarks>
         /// <param name="task">The Task{Task{TResult}} to unwrap.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The exception that is thrown if the
         ///     <paramref name="task" /> argument is null.
         /// </exception>

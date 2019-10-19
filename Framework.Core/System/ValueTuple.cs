@@ -414,8 +414,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1}" />
-        /// instance is equal to a specified <see cref="System.ValueTuple{T1}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1}" />
+        /// instance is equal to a specified <see cref="ValueTuple{T1}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -547,7 +547,7 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2}" /> instance is equal to a specified <see cref="System.ValueTuple{T1, T2}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2}" /> instance is equal to a specified <see cref="ValueTuple{T1, T2}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -762,8 +762,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3}" />
-        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3}" />
+        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -979,8 +979,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4}" />
-        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4}" />
+        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -1220,8 +1220,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5}" />
-        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5}" />
+        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -1485,8 +1485,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6}" />
-        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}" />
+        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -1774,8 +1774,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7}" />
-        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}" />
+        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>
@@ -2093,8 +2093,8 @@ namespace System
 
         /// <inheritdoc />
         /// <summary>
-        /// Returns a value that indicates whether the current <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}" />
-        /// instance is equal to a specified <see cref="System.ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}" />.
+        /// Returns a value that indicates whether the current <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}" />
+        /// instance is equal to a specified <see cref="ValueTuple{T1, T2, T3, T4, T5, T6, T7, TRest}" />.
         /// </summary>
         /// <param name="other">The tuple to compare with this instance.</param>
         /// <returns><see langword="true" /> if the current instance is equal to the specified tuple; otherwise, <see langword="false" />.</returns>

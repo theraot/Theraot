@@ -319,7 +319,7 @@ namespace Theraot.Core
                         break;
                     }
 
-                    if (endCondition != null && comparer.Equals((TInput)found.Value, (TInput)endCondition))
+                    if (endCondition != null && comparer.Equals(found.Value, (TInput)endCondition))
                     {
                         break;
                     }
@@ -450,19 +450,6 @@ namespace Theraot.Core
             return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
         }
 
-        private static T? CommonNodeExtracted<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T> comparer)
-            where T : class
-        {
-            if (comparer.Equals(first, second))
-            {
-                return first;
-            }
-
-            return ExploreSequenceUntilNull(first, next)
-                .Intersect(ExploreSequenceUntilNull(second, next), comparer)
-                .FirstOrDefault();
-        }
-
         public static T CommonNode<T>(T first, T second, Func<T, T?> next)
             where T : struct
         {
@@ -472,6 +459,19 @@ namespace Theraot.Core
             }
 
             return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
+        }
+
+        private static T? CommonNodeExtracted<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T> comparer)
+                    where T : class
+        {
+            if (comparer.Equals(first, second))
+            {
+                return first;
+            }
+
+            return ExploreSequenceUntilNull(first, next)
+                .Intersect(ExploreSequenceUntilNull(second, next), comparer)
+                .FirstOrDefault();
         }
 
         private static T CommonNodeExtracted<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T> comparer)

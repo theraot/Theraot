@@ -23,7 +23,7 @@ namespace System.Linq.Expressions
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Defines a <see cref="System.Linq.Expressions.Expression{TDelegate}"/> node.
+    ///     Defines a <see cref="Expression{TDelegate}"/> node.
     ///     This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
@@ -885,7 +885,7 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    ///     Creates a <see cref="System.Linq.Expressions.LambdaExpression" /> node.
+    ///     Creates a <see cref="LambdaExpression" /> node.
     ///     This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <remarks>
@@ -912,10 +912,10 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns the node type of this <see cref="System.Linq.Expressions.Expression" />. (Inherited from
-        ///     <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Returns the node type of this <see cref="Expression" />. (Inherited from
+        ///     <see cref="Expression" />.)
         /// </summary>
-        /// <returns>The <see cref="System.Linq.Expressions.ExpressionType" /> that represents this expression.</returns>
+        /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Lambda;
 
         int IParameterProvider.ParameterCount => ParameterCount;
@@ -938,11 +938,11 @@ namespace System.Linq.Expressions
 
         /// <inheritdoc />
         /// <summary>
-        ///     Gets the static type of the expression that this <see cref="System.Linq.Expressions.Expression" /> represents.
-        ///     (Inherited from <see cref="System.Linq.Expressions.Expression" />.)
+        ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
+        ///     (Inherited from <see cref="Expression" />.)
         /// </summary>
         /// <returns>
-        ///     The <see cref="System.Linq.Expressions.LambdaExpression.Type" /> that represents the static type of the
+        ///     The <see cref="Type" /> that represents the static type of the
         ///     expression.
         /// </returns>
         public sealed override Type Type => TypeCore;
@@ -1001,7 +1001,7 @@ namespace System.Linq.Expressions
         /// <summary>
         ///     Compiles the lambda into a method definition.
         /// </summary>
-        /// <param name="method">A <see cref="Reflection.Emit.MethodBuilder" /> which will be used to hold the lambda's IL.</param>
+        /// <param name="method">A <see cref="MethodBuilder" /> which will be used to hold the lambda's IL.</param>
         public void CompileToMethod(MethodBuilder method)
         {
             ContractUtils.RequiresNotNull(method, nameof(method));

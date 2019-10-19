@@ -22,7 +22,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets an awaiter used to await this <see cref="System.Threading.Tasks.Task" />.
+        ///     Gets an awaiter used to await this <see cref="Task" />.
         /// </summary>
         /// <returns>
         ///     An awaiter instance.
@@ -51,7 +51,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        ///     Gets an awaiter used to await this <see cref="System.Threading.Tasks.Task" />.
+        ///     Gets an awaiter used to await this <see cref="Task" />.
         /// </summary>
         /// <typeparam name="TResult">Specifies the type of data returned by the task.</typeparam>
         /// <returns>

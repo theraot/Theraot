@@ -29,9 +29,9 @@ namespace System.Threading.Tasks
     ///     If <see cref="IsCompleted" /> returns true, then the loop ran to completion, such that all iterations
     ///     of the loop were executed. If <see cref="IsCompleted" /> returns false and
     ///     <see cref="LowestBreakIteration" /> returns null, a call to
-    ///     <see cref="System.Threading.Tasks.ParallelLoopState.Stop" /> was used to end the loop prematurely. If
+    ///     <see cref="ParallelLoopState.Stop" /> was used to end the loop prematurely. If
     ///     <see cref="IsCompleted" /> returns false and <see cref="LowestBreakIteration" /> returns a non-null integral
-    ///     value, <see cref="System.Threading.Tasks.ParallelLoopState.Break()" /> was used to end the loop prematurely.
+    ///     value, <see cref="ParallelLoopState.Break()" /> was used to end the loop prematurely.
     /// </remarks>
     public struct ParallelLoopResult
     {
@@ -49,18 +49,18 @@ namespace System.Threading.Tasks
 
         /// <summary>
         ///     Gets the index of the lowest iteration from which
-        ///     <see cref="System.Threading.Tasks.ParallelLoopState.Break()" />
+        ///     <see cref="ParallelLoopState.Break()" />
         ///     was called.
         /// </summary>
         /// <remarks>
-        ///     If <see cref="System.Threading.Tasks.ParallelLoopState.Break()" /> was not employed, this property will
+        ///     If <see cref="ParallelLoopState.Break()" /> was not employed, this property will
         ///     return null.
         /// </remarks>
         public long? LowestBreakIteration => _lowestBreakIteration;
     }
 
     /// <summary>
-    ///     Enables iterations of <see cref="System.Threading.Tasks.Parallel" /> loops to interact with
+    ///     Enables iterations of <see cref="Parallel" /> loops to interact with
     ///     other iterations.
     /// </summary>
     [DebuggerDisplay("ShouldExitCurrentIteration = {" + nameof(ShouldExitCurrentIteration) + "}")]
@@ -138,7 +138,7 @@ namespace System.Threading.Tasks
         ///     Communicates that the <see cref="Parallel" /> loop should cease execution at the system's earliest
         ///     convenience of iterations beyond the current iteration.
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     The <see cref="Stop()" /> method was previously called. <see cref="Break()" /> and <see cref="Stop()" />
         ///     may not be used in combination by iterations of the same loop.
         /// </exception>
@@ -169,7 +169,7 @@ namespace System.Threading.Tasks
         ///     Communicates that the <see cref="Parallel" /> loop should cease execution at the system's earliest
         ///     convenience.
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         ///     The <see cref="Break()" /> method was previously called.  <see cref="Break()" /> and
         ///     <see cref="Stop()" /> may not be used in combination by iterations of the same loop.
         /// </exception>
@@ -333,7 +333,7 @@ namespace System.Threading.Tasks
         ///     Communicates that parallel tasks should stop when they reach a specified iteration element.
         ///     (which is CurrentIteration of the caller).
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">Break() called after Stop().</exception>
+        /// <exception cref="InvalidOperationException">Break() called after Stop().</exception>
         /// <remarks>
         ///     This is shared with all other concurrent threads in the system which are participating in the
         ///     loop's execution. After calling Break(), no additional iterations will be executed on
@@ -388,7 +388,7 @@ namespace System.Threading.Tasks
         ///     Communicates that parallel tasks should stop when they reach a specified iteration element.
         ///     (which is CurrentIteration of the caller).
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">Break() called after Stop().</exception>
+        /// <exception cref="InvalidOperationException">Break() called after Stop().</exception>
         /// <remarks>
         ///     Atomically sets shared StoppedBroken flag to BROKEN, then atomically sets shared
         ///     LowestBreakIteration to CurrentIteration, but only if CurrentIteration is less than

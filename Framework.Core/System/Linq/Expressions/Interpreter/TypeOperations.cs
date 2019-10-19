@@ -381,9 +381,9 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                var dflt = frame.Pop();
+                var @default = frame.Pop();
                 var obj = frame.Pop();
-                frame.Push(obj ?? dflt);
+                frame.Push(obj ?? @default);
                 return 1;
             }
         }
