@@ -498,28 +498,31 @@ namespace System.Threading
             }
 
             var start = ThreadingHelper.TicksNow();
-retry_longTimeout:
-            if (IsSet)
-            {
-                return true;
-            }
 
-            var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-            if (elapsed >= millisecondsTimeout)
+            while (true)
             {
-                return false;
-            }
+                if (IsSet)
+                {
+                    return true;
+                }
 
-            if (spinCount > 0)
-            {
-                spinCount--;
-                spinWait.SpinOnce();
-                goto retry_longTimeout;
-            }
+                var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                if (elapsed >= millisecondsTimeout)
+                {
+                    return false;
+                }
 
-            var handle = GetOrCreateWaitHandle();
-            var remaining = millisecondsTimeout - (int)elapsed;
-            return remaining > 0 && handle.WaitOne(remaining);
+                if (spinCount > 0)
+                {
+                    spinCount--;
+                    spinWait.SpinOnce();
+                    continue;
+                }
+
+                var handle = GetOrCreateWaitHandle();
+                var remaining = millisecondsTimeout - (int)elapsed;
+                return remaining > 0 && handle.WaitOne(remaining);
+            }
         }
 
         private bool WaitExtracted(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -532,46 +535,45 @@ retry_longTimeout:
             }
 
             var start = ThreadingHelper.TicksNow();
-retry_longTimeout:
-            if (IsSet)
-            {
-                return true;
-            }
 
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-            if (elapsed < millisecondsTimeout)
+            while (true)
             {
-                if (spinCount > 0)
+                if (IsSet)
                 {
-                    spinCount--;
-                    spinWait.SpinOnce();
-                    goto retry_longTimeout;
+                    return true;
                 }
 
-                var handle = GetOrCreateWaitHandle();
-                var remaining = millisecondsTimeout - (int)elapsed;
-                if (remaining > 0)
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                if (elapsed < millisecondsTimeout)
                 {
-                    var result = WaitHandle.WaitAny
-                    (
-                        new[]
-                        {
-                            handle,
-                            cancellationToken.WaitHandle
-                        },
-                        remaining
-                    );
-                    cancellationToken.ThrowIfCancellationRequested();
-                    GC.KeepAlive(cancellationToken.WaitHandle);
-                    return result != WaitHandle.WaitTimeout;
-                }
-            }
+                    if (spinCount > 0)
+                    {
+                        spinCount--;
+                        spinWait.SpinOnce();
+                        continue;
+                    }
 
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
-            return false;
+                    var handle = GetOrCreateWaitHandle();
+                    var remaining = millisecondsTimeout - (int)elapsed;
+                    if (remaining > 0)
+                    {
+                        var result = WaitHandle.WaitAny
+                        (
+                            new[] { handle, cancellationToken.WaitHandle },
+                            remaining
+                        );
+                        cancellationToken.ThrowIfCancellationRequested();
+                        GC.KeepAlive(cancellationToken.WaitHandle);
+                        return result != WaitHandle.WaitTimeout;
+                    }
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                return false;
+            }
         }
 
         private void WaitExtracted(CancellationToken cancellationToken)
