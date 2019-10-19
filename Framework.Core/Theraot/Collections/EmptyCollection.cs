@@ -12,6 +12,7 @@ namespace Theraot.Collections
         private EmptyCollection()
             : base(ArrayEx.Empty<T>())
         {
+            // Empty
         }
 
         public static EmptyCollection<T> Instance { get; } = new EmptyCollection<T>();

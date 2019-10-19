@@ -272,6 +272,7 @@ namespace System.Dynamic
             internal MetaDynamic(Expression expression, DynamicObject value)
                 : base(expression, BindingRestrictions.Empty, value)
             {
+                // Empty
             }
 
             private delegate DynamicMetaObject Fallback<in TBinder>(MetaDynamic @this, TBinder binder, DynamicMetaObject? errorSuggestion);

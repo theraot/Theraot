@@ -25,6 +25,7 @@ namespace Theraot.Collections.ThreadSafe
         public ThreadSafeSet()
             : this(EqualityComparer<T>.Default, _defaultProbing)
         {
+            // Empty
         }
 
         /// <inheritdoc />
@@ -35,6 +36,7 @@ namespace Theraot.Collections.ThreadSafe
         public ThreadSafeSet(IEqualityComparer<T> comparer)
             : this(comparer, _defaultProbing)
         {
+            // Empty
         }
 
         /// <summary>
@@ -57,6 +59,7 @@ namespace Theraot.Collections.ThreadSafe
         public ThreadSafeSet(int initialProbing)
             : this(EqualityComparer<T>.Default, initialProbing)
         {
+            // Empty
         }
 
         public IEqualityComparer<T> Comparer { get; }

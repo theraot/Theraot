@@ -13,16 +13,19 @@ namespace System
     {
         public OperationCanceledExceptionEx()
         {
+            // Empty
         }
 
         public OperationCanceledExceptionEx(string message)
             : base(message)
         {
+            // Empty
         }
 
         public OperationCanceledExceptionEx(string message, Exception innerException)
             : base(message, innerException)
         {
+            // Empty
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET
@@ -70,16 +73,19 @@ namespace System
         public OperationCanceledExceptionEx(CancellationToken token)
             : base(token)
         {
+            // Empty
         }
 
         public OperationCanceledExceptionEx(string message, CancellationToken token)
             : base(message, token)
         {
+            // Empty
         }
 
         public OperationCanceledExceptionEx(string message, Exception innerException, CancellationToken token)
             : base(message, innerException, token)
         {
+            // Empty
         }
 
 #endif

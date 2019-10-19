@@ -8,12 +8,14 @@ namespace Theraot.Threading
     {
         private NoOpDisposable()
         {
+            // Empty
         }
 
         public static IDisposable Instance { get; } = new NoOpDisposable();
 
         public void Dispose()
         {
+            // Empty
         }
     }
 }

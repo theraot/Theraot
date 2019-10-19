@@ -260,6 +260,7 @@ namespace System.Linq.Expressions.Interpreter
             internal Reference(int index)
                 : base(index)
             {
+                // Empty
             }
 
             public override string InstructionName => "InitRef";

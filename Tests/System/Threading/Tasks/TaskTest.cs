@@ -108,6 +108,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var task = new TaskFactory().StartNew(() =>
             {
+                // Empty
             });
             var ar = (IAsyncResult)task;
             Assert.IsFalse(ar.CompletedSynchronously, "#1");
@@ -179,6 +180,7 @@ namespace MonoTests.System.Threading.Tasks
             var t = Task.Factory.StartNew(ActionHelper.GetNoopAction()).
                 ContinueWith(r =>
                 {
+                    // Empty
                 }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler);
 
             Assert.IsTrue(t.Wait(5000));
@@ -197,6 +199,7 @@ namespace MonoTests.System.Threading.Tasks
 
                     var t = Task.Factory.StartNew(() => Task.Factory.StartNew(() =>
                     {
+                        // Empty
                     }, TaskCreationOptions.AttachedToParent));
 
                     using (var mre = new ManualResetEvent(false))
@@ -225,12 +228,15 @@ namespace MonoTests.System.Threading.Tasks
                 var task = Task.Factory.StartNew(() => mre.Wait(200));
                 var contFailed = task.ContinueWith(t =>
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnFaulted);
                 var contCanceled = task.ContinueWith(t =>
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnCanceled);
                 var contSuccess = task.ContinueWith(t =>
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
                 mre.Set();
@@ -1526,6 +1532,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 inner = TaskEx.Run(() => throw new ApplicationException()).ContinueWith(task =>
                  {
+                     // Empty
                  }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
             });
 

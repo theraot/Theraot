@@ -14,6 +14,7 @@ namespace Theraot.Core
     {
         private ReferenceEqualityComparer()
         {
+            // Empty
         }
 
         public static ReferenceEqualityComparer<T> Instance { get; } = new ReferenceEqualityComparer<T>();

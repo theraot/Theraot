@@ -95,22 +95,26 @@ namespace MonoTests.System.Threading.Tasks
         {
             public CustomException()
             {
+                // Empty
             }
 
             public CustomException(string message)
                 : base(message)
             {
+                // Empty
             }
 
             public CustomException(string message, Exception inner)
                 : base(message, inner)
             {
+                // Empty
             }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             protected CustomException(SerializationInfo info, StreamingContext context)
                 : base(info, context)
             {
+                // Empty
             }
 #endif
         }
@@ -120,22 +124,26 @@ namespace MonoTests.System.Threading.Tasks
         {
             public OtherException()
             {
+                // Empty
             }
 
             public OtherException(string message)
                 : base(message)
             {
+                // Empty
             }
 
             public OtherException(string message, Exception inner)
                 : base(message, inner)
             {
+                // Empty
             }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             protected OtherException(SerializationInfo info, StreamingContext context)
                 : base(info, context)
             {
+                // Empty
             }
 #endif
         }

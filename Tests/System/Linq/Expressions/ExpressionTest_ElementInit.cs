@@ -54,6 +54,7 @@ namespace MonoTests.System.Linq.Expressions
 
             public void Baz()
             {
+                // Empty
             }
         }
 
@@ -61,6 +62,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static void Add()
             {
+                // Empty
             }
         }
 

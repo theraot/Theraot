@@ -15,11 +15,13 @@ namespace Theraot.Threading.Needles
     {
         public WeakDelegateNeedle()
         {
+            // Empty
         }
 
         public WeakDelegateNeedle(Delegate handler)
             : base(handler)
         {
+            // Empty
         }
 
         public MethodInfo? Method

@@ -23,21 +23,25 @@ namespace System.Collections.Generic
     {
         public HashSetEx()
         {
+            // Empty
         }
 
         public HashSetEx(IEnumerable<T> collection)
             : base(collection)
         {
+            // Empty
         }
 
         public HashSetEx(IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : base(collection, comparer)
         {
+            // Empty
         }
 
         public HashSetEx(IEqualityComparer<T>? comparer)
             : base(comparer ?? EqualityComparer<T>.Default)
         {
+            // Empty
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET

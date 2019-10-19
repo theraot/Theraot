@@ -11,6 +11,7 @@ namespace Theraot.Collections.Specialized
         public ExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> append)
             : base(target, append)
         {
+            // Empty
         }
 
         public override IEnumerator<T> GetEnumerator()

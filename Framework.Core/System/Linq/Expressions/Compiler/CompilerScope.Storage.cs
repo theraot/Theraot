@@ -208,6 +208,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal virtual void FreeLocal()
             {
+                // Empty
             }
         }
     }

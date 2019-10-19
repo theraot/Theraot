@@ -16,6 +16,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private Node()
         {
+            // Empty
         }
 
         public static void Recycle(Node<T> node)

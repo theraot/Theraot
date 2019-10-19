@@ -13,31 +13,37 @@ namespace System.Collections.Generic
     {
         public DictionaryEx()
         {
+            // Empty
         }
 
         public DictionaryEx(IDictionary<TKey, TValue> dictionary)
             : base(dictionary)
         {
+            // Empty
         }
 
         public DictionaryEx(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
             : base(dictionary, comparer)
         {
+            // Empty
         }
 
         public DictionaryEx(IEqualityComparer<TKey> comparer)
             : base(comparer)
         {
+            // Empty
         }
 
         public DictionaryEx(int capacity)
             : base(capacity)
         {
+            // Empty
         }
 
         public DictionaryEx(int capacity, IEqualityComparer<TKey> comparer)
             : base(capacity, comparer)
         {
+            // Empty
         }
 
 #if GREATERTHAN_NETCOREAPP20 || NETSTANDARD2_0 || TARGETS_NET

@@ -1024,8 +1024,4 @@ namespace Theraot.Collections
             return source.Count(predicate);
         }
     }
-
-    public static partial class Extensions
-    {
-    }
 }

@@ -380,6 +380,7 @@ namespace MonoTests.System.Threading
                 // According to MSDN this should throw
                 token.Register(() =>
                 {
+                    // Empty
                 });
                 Assert.Fail("#3");
             }
@@ -622,6 +623,7 @@ namespace MonoTests.System.Threading
             {
                 token.Register(() =>
                 {
+                    // Empty
                 });
                 Assert.Fail("#3");
             }

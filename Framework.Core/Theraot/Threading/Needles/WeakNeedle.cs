@@ -21,6 +21,7 @@ namespace Theraot.Threading.Needles
         public WeakNeedle()
             : this(false)
         {
+            // Empty
         }
 
         public WeakNeedle(bool trackResurrection)
@@ -32,6 +33,7 @@ namespace Theraot.Threading.Needles
         public WeakNeedle(T? target)
             : this(target, false)
         {
+            // Empty
         }
 
         public WeakNeedle(T? target, bool trackResurrection)

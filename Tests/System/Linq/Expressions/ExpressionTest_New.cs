@@ -123,6 +123,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public EineKlass()
             {
+                // Empty
             }
 
             public EineKlass(string l, string r)

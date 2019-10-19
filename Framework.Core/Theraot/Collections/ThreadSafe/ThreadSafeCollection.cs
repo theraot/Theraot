@@ -24,6 +24,7 @@ namespace Theraot.Collections.ThreadSafe
         public ThreadSafeCollection()
             : this(EqualityComparer<T>.Default)
         {
+            // Empty
         }
 
         /// <summary>

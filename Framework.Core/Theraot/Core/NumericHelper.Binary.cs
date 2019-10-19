@@ -441,8 +441,4 @@ namespace Theraot.Core
             }
         }
     }
-
-    public static partial class NumericHelper
-    {
-    }
 }

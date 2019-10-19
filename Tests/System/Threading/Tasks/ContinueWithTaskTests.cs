@@ -29,6 +29,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 task.ContinueWith(delegate
                 {
+                    // Empty
                 }, null);
                 Assert.Fail("#2");
             }
@@ -41,6 +42,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 task.ContinueWith(delegate
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.NotOnCanceled);
                 Assert.Fail("#3");
             }
@@ -53,6 +55,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 task.ContinueWith(delegate
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnRanToCompletion);
                 Assert.Fail("#4");
             }
@@ -72,6 +75,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 var t = Task.Factory.StartNew(delegate
                 {
+                    // Empty
                 });
                 var cont = t.ContinueWith(delegate
                 {
@@ -95,6 +99,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 var t = Task.Factory.StartNew(delegate
                 {
+                    // Empty
                 });
                 var cont = t.ContinueWith(delegate
                 {
@@ -196,6 +201,7 @@ namespace MonoTests.System.Threading.Tasks
 
                 var t = Task.Factory.StartNew(() => Task.Factory.StartNew(() =>
                 {
+                    // Empty
                 }, TaskCreationOptions.AttachedToParent));
 
                 using (var mre = new ManualResetEvent(false))
@@ -225,12 +231,15 @@ namespace MonoTests.System.Threading.Tasks
                 var task = Task.Factory.StartNew(() => mre.Wait(200));
                 var contFailed = task.ContinueWith(t =>
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnFaulted);
                 var contCanceled = task.ContinueWith(t =>
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnCanceled);
                 var contSuccess = task.ContinueWith(t =>
                 {
+                    // Empty
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
                 mre.Set();
@@ -456,10 +465,12 @@ namespace MonoTests.System.Threading.Tasks
             var t = new Task(ActionHelper.GetNoopAction());
             var t2 = t.ContinueWith(delegate
             {
+                // Empty
             }, TaskContinuationOptions.ExecuteSynchronously, s);
 
             var t3 = t.ContinueWith(delegate
             {
+                // Empty
             }, TaskContinuationOptions.ExecuteSynchronously, s);
 
             t.Start();
@@ -542,9 +553,11 @@ namespace MonoTests.System.Threading.Tasks
             var scheduler = new NonInlineableScheduler();
             var t = Task.Factory.StartNew(delegate
             {
+                // Empty
             }).
                 ContinueWith(r =>
                 {
+                    // Empty
                 }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler);
 
             Assert.IsTrue(t.Wait(5000));

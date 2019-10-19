@@ -62,6 +62,7 @@ namespace System.Linq.Expressions.Interpreter
             public Checked(TypeCode from, TypeCode to, bool isLiftedToNull)
                 : base(from, to, isLiftedToNull)
             {
+                // Empty
             }
 
             public override string InstructionName => "CheckedConvert";

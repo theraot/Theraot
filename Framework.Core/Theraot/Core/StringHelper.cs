@@ -368,8 +368,4 @@ namespace Theraot.Core
             return length < characterCount ? text : text.Substring(0, characterCount);
         }
     }
-
-    public static partial class StringHelper
-    {
-    }
 }

@@ -86,6 +86,7 @@ namespace Theraot.Threading
 
         void IObserver<T>.OnCompleted()
         {
+            // Empty
         }
 
         void IObserver<T>.OnError(Exception error)

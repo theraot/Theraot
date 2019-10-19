@@ -85,6 +85,7 @@ namespace MonoTests.System.Linq
 
             public void Dispose()
             {
+                // Empty
             }
 
             object IEnumerator.Current

@@ -102,6 +102,7 @@ namespace System.Linq.Expressions.Interpreter
             public Ref(Type t)
                 : base(t)
             {
+                // Empty
             }
 
             protected override void ConvertNull(InterpretedFrame frame)
@@ -115,6 +116,7 @@ namespace System.Linq.Expressions.Interpreter
             public Value(Type t)
                 : base(t)
             {
+                // Empty
             }
 
             protected override void ConvertNull(InterpretedFrame frame)

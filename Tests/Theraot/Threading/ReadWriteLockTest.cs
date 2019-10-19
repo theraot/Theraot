@@ -489,6 +489,7 @@ namespace Tests.Theraot.Threading
                             {
                                 if (x.TryEnterRead(out engagement))
                                 {
+                                    // Empty
                                 }
                                 else
                                 {
@@ -535,6 +536,7 @@ namespace Tests.Theraot.Threading
                                 {
                                     if (x.TryEnterRead(out engagementB))
                                     {
+                                        // Empty
                                     }
                                     else
                                     {
@@ -747,6 +749,7 @@ namespace Tests.Theraot.Threading
                     // If a thread is a writer it can be also a reader
                     using (x.EnterRead())
                     {
+                        // Empty
                     }
                 }
             }

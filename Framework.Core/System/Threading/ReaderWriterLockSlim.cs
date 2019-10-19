@@ -275,6 +275,7 @@ namespace System.Threading
                 {
                     try
                     {
+                        // Empty
                     }
                     finally
                     {
@@ -363,6 +364,7 @@ namespace System.Threading
                 {
                     try
                     {
+                        // Empty
                     }
                     finally
                     {
@@ -387,6 +389,7 @@ namespace System.Threading
                     {
                         try
                         {
+                            // Empty
                         }
                         finally
                         {
@@ -417,6 +420,7 @@ namespace System.Threading
                         {
                             try
                             {
+                                // Empty
                             }
                             finally
                             {
@@ -615,6 +619,7 @@ namespace System.Threading
                 RuntimeHelpers.PrepareConstrainedRegions();
                 try
                 {
+                    // Empty
                 }
                 finally
                 {

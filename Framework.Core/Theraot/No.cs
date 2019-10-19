@@ -12,6 +12,7 @@ namespace Theraot
         [Conditional("THERAOT_NEVER")]
         public static void Op<T>(T arg)
         {
+            // Empty
         }
     }
 }

@@ -68,6 +68,7 @@ namespace MonoTests.System.Threading
         {
             using (new CountdownEvent(int.MaxValue))
             {
+                // Empty
             }
         }
 

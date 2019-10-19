@@ -175,6 +175,7 @@ namespace TestRunner
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class DataGeneratorAttribute : Attribute
     {
+        // Empty
     }
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]

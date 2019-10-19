@@ -23,16 +23,19 @@ namespace System.Collections.Generic
     {
         public ListEx()
         {
+            // Empty
         }
 
         public ListEx(IEnumerable<T> collection)
             : base(collection)
         {
+            // Empty
         }
 
         public ListEx(int capacity)
             : base(capacity)
         {
+            // Empty
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
