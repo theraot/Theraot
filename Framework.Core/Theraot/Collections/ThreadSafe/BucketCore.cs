@@ -261,11 +261,11 @@ namespace Theraot.Collections.ThreadSafe
             try
             {
                 Interlocked.Increment(ref use);
-                return callback(ref foundFirst);
+                return callback(ref first);
             }
             finally
             {
-                DoLeave(ref use, ref foundFirst, ref second);
+                DoLeave(ref use, ref first, ref second);
             }
         }
 
