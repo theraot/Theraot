@@ -154,7 +154,7 @@ namespace Theraot.Threading
             if
             (
                 Interlocked.CompareExchange(ref _status, _canceling, _created) == _created
-                && Interlocked.CompareExchange(ref _status, _canceling, _started) == _started
+                || Interlocked.CompareExchange(ref _status, _canceling, _started) == _started
             )
             {
                 Close();
@@ -273,8 +273,8 @@ namespace Theraot.Threading
             }
 
             callback.Invoke();
-            Close();
             Volatile.Write(ref _status, _executed);
+            Close();
         }
 
         private void Start(long dueTime)

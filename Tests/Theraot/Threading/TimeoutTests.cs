@@ -9,11 +9,15 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutCancel()
         {
-            again:
+again:
             var value = new[] { 0 };
             var timeout = RootedTimeout.Launch(() => value[0] = 1, 1000);
             Assert.IsFalse(timeout.IsCanceled);
             timeout.Cancel();
+            while (!timeout.IsCompleted && !timeout.IsCanceled)
+            {
+                // Empty
+            }
             if (timeout.IsCompleted)
             {
                 Assert.AreEqual(1, value[0]);
@@ -27,11 +31,15 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutCancelAndChange()
         {
-            again:
+again:
             var value = new[] { 0 };
             var timeout = RootedTimeout.Launch(() => value[0] = 1, 100);
             Assert.IsFalse(timeout.IsCanceled);
             timeout.Cancel();
+            while (!timeout.IsCompleted && !timeout.IsCanceled)
+            {
+                // Empty
+            }
             if (timeout.IsCompleted)
             {
                 Assert.AreEqual(1, value[0]);
@@ -49,7 +57,7 @@ namespace Theraot.Threading
         [Category("LongRunning")]
         public static void TimeoutChange()
         {
-            again:
+again:
             var now = DateTime.Now;
             var value = new[] { now };
             var timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 100);
@@ -109,7 +117,7 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutRemaining()
         {
-            again:
+again:
             var now = DateTime.Now;
             var value = new[] { now };
             var timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 500);
