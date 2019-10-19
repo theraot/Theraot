@@ -284,7 +284,7 @@ namespace Theraot.Threading
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
 
-            if (Interlocked.CompareExchange(ref _status, _created, _started) == _started)
+            if (Interlocked.CompareExchange(ref _status, _started, _created) == _created)
             {
                 _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
                 _targetTime = dueTime == -1 ? -1 : _startTime + dueTime;
