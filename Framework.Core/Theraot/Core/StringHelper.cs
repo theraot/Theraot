@@ -368,4 +368,92 @@ namespace Theraot.Core
             return length < characterCount ? text : text.Substring(0, characterCount);
         }
     }
+
+    public static partial class StringHelper
+    {
+#if LESSTHAN_NET45 || GREATERTHAN_NETCOREAPP11
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string EnsureEnd(this string text, string end)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            return !text.EndsWith(end, false, CultureInfo.CurrentCulture) ? text.Append(end) : text;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string EnsureEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            return !text.EndsWith(end, ignoreCase, culture) ? text.Append(end) : text;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string EnsureStart(this string text, string start, bool ignoreCase, CultureInfo culture)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            return !text.StartsWith(start, ignoreCase, culture) ? start.Append(text) : text;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string NeglectEnd(this string text, string end)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (end == null)
+            {
+                throw new ArgumentNullException(nameof(end));
+            }
+
+            return text.EndsWith(end, false, CultureInfo.CurrentCulture) ? text.ExceptEnd(end.Length) : text;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string NeglectEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (end == null)
+            {
+                throw new ArgumentNullException(nameof(end));
+            }
+
+            return text.EndsWith(end, ignoreCase, culture) ? text.ExceptEnd(end.Length) : text;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static string NeglectStart(this string text, string start, bool ignoreCase, CultureInfo culture)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (start == null)
+            {
+                throw new ArgumentNullException(nameof(start));
+            }
+
+            return text.StartsWith(start, ignoreCase, culture) ? text.ExceptStart(start.Length) : text;
+        }
+
+#endif
+    }
 }

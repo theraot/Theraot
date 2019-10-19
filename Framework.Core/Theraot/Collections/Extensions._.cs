@@ -1024,4 +1024,120 @@ namespace Theraot.Collections
             return source.Count(predicate);
         }
     }
+
+    public static partial class Extensions
+    {
+#if NET35
+        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+            var localComparer = EqualityComparer<T>.Default;
+            var localCollection = AsICollection(source);
+            return items.All(item => localCollection.Contains(item, localComparer));
+        }
+
+        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+            var localComparer = comparer ?? EqualityComparer<T>.Default;
+            var localCollection = AsICollection(source);
+            return items.All(item => localCollection.Contains(item, localComparer));
+        }
+
+#endif
+
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+
+        public static bool TryDequeue<T>(this Queue<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            try
+            {
+                item = source.Dequeue();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default!;
+                return false;
+            }
+        }
+
+        public static bool TryPeek<T>(this Stack<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            try
+            {
+                item = source.Peek();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default!;
+                return false;
+            }
+        }
+
+        public static bool TryPeek<T>(this Queue<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            try
+            {
+                item = source.Peek();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default!;
+                return false;
+            }
+        }
+
+        public static bool TryPop<T>(this Stack<T> source, out T item)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            try
+            {
+                item = source.Pop();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default!;
+                return false;
+            }
+        }
+
+#endif
+    }
 }
