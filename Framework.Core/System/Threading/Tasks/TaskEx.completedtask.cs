@@ -32,10 +32,8 @@ namespace System.Threading.Tasks
                 var completedTask = _completedTask;
                 if (completedTask == null)
                 {
-                    _completedTask = completedTask = new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
-                    {
-                        CancellationToken = default
-                    };
+                    _completedTask = completedTask =
+                        new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose);
                 }
 
                 return completedTask;
