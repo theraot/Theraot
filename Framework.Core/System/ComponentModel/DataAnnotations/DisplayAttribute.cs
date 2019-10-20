@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable CA1721 // Property names should not match get methods
+
 // BASEDON: https://github.com/dotnet/corefx/blob/master/src/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/DisplayAttribute.cs
 
 // Licensed to the .NET Foundation under one or more agreements.

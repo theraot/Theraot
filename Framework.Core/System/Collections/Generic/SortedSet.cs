@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA1721 // Property names should not match get methods
+
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -87,7 +89,9 @@ namespace System.Collections.Generic
         public IComparer<T> Comparer { get; }
 
         public int Count => GetCount();
+
         bool ICollection<T>.IsReadOnly => false;
+
         bool ICollection.IsSynchronized => false;
         public T Max => GetMax();
         public T Min => GetMin();
