@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="rules" Description=" " ToolsVersion="16.0">
   <Rules AnalyzerId="CodeCracker.CSharp" RuleNamespace="CodeCracker.CSharp">
-    <Rule Id="CC0001" Action="None" />
+    <Rule Id="CC0001" Action="Hidden" />
     <Rule Id="CC0026" Action="None" />
     <Rule Id="CC0037" Action="None" />
     <Rule Id="CC0068" Action="Error" />
@@ -659,6 +659,9 @@
     <Rule Id="C6993" Action="Warning" />
     <Rule Id="C6995" Action="Warning" />
     <Rule Id="C6997" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="AD0001" Action="Hidden" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0063" Action="None" />
