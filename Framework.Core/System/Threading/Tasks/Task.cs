@@ -266,7 +266,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal CancellationToken CancellationToken { get; set; }
+        internal CancellationToken CancellationToken { get; private set; }
 
         internal ExecutionContext? CapturedContext { get; set; }
 

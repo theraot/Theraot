@@ -26,17 +26,6 @@ namespace System.Threading.Tasks
 
             var task = new Task<TResult>();
             var value = task.TrySetCanceled(cancellationToken);
-            if (value || task.IsCompleted)
-            {
-                return task;
-            }
-
-            var sw = new SpinWait();
-            while (!task.IsCompleted)
-            {
-                sw.SpinOnce();
-            }
-
             return task;
 #endif
 #if (GREATERTHAN_NET35 && LESSTHAN_NET46) || LESSTHAN_NETSTANDARD13

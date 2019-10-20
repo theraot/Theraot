@@ -38,37 +38,20 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromCancellation<TResult>(CancellationToken token)
         {
-#if LESSTHAN_NET40
-            var result = new Task<TResult>(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
-            {
-                CancellationToken = token,
-                ExecutingTaskScheduler = TaskScheduler.Default
-            };
             if (token.IsCancellationRequested)
             {
-                result.InternalCancel(false);
+                return FromCanceled<TResult>(token);
             }
-            else if (token.CanBeCanceled)
-            {
-                token.Register(() => result.InternalCancel(false));
-            }
-
-            return result;
-#else
             var taskCompleteSource = new TaskCompletionSource<TResult>();
-            if (token.IsCancellationRequested)
-            {
-                taskCompleteSource.TrySetCanceled();
-                return taskCompleteSource.Task;
-            }
-
             if (token.CanBeCanceled)
             {
+#if LESSTHAN_NETSTANDARD13
                 token.Register(() => taskCompleteSource.TrySetCanceled());
-            }
-
-            return taskCompleteSource.Task;
+#else
+                token.Register(() => taskCompleteSource.TrySetCanceled(token));
 #endif
+            }
+            return taskCompleteSource.Task;
         }
 
         /// <summary>
