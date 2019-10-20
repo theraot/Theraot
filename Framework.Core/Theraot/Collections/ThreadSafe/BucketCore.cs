@@ -252,11 +252,6 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(callback));
             }
 #endif
-            var foundFirst = Interlocked.CompareExchange(ref first, null, null);
-            if (foundFirst == null)
-            {
-                return false;
-            }
 
             try
             {
