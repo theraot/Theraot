@@ -230,11 +230,6 @@ namespace System.Threading
                         No.Op(exception);
                     }
                 },
-                millisecondsTimeout,
-                cancellationToken
-            );
-            cancellationToken.Register
-            (
                 () =>
                 {
                     try
@@ -246,7 +241,9 @@ namespace System.Threading
                         // Already timeout
                         No.Op(exception);
                     }
-                }
+                },
+                millisecondsTimeout,
+                cancellationToken
             );
             state.AsyncWaiters.Add(source);
             return source.Task;

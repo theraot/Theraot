@@ -118,41 +118,12 @@ namespace System.Threading.Tasks
             {
                 var timeout = RootedTimeout.Launch
                 (
-                    () =>
-                    {
-                        try
-                        {
-                            source.SetResult(true);
-                        }
-                        catch (InvalidOperationException exception)
-                        {
-                            // Already canceled
-                            No.Op(exception);
-                        }
-                    },
+                    () => source.TrySetResult(true),
+                    () => source.TrySetCanceled(),
                     millisecondsDelay,
                     cancellationToken
                 );
                 source.Task.SetPromiseCheck(() => timeout.CheckRemaining());
-            }
-
-            if (cancellationToken.CanBeCanceled)
-            {
-                cancellationToken.Register
-                (
-                    () =>
-                    {
-                        try
-                        {
-                            source.SetCanceled();
-                        }
-                        catch (InvalidOperationException exception)
-                        {
-                            // Already timed out
-                            No.Op(exception);
-                        }
-                    }
-                );
             }
 
             return source.Task;

@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Theraot;
+using Theraot.Threading;
 
 #if NET40
 
@@ -330,96 +331,106 @@ namespace System.Threading.Tasks
         /// <summary>
         ///     Starts a Task that will complete after the specified due time.
         /// </summary>
-        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param>
+        /// <param name="millisecondsDelay">The delay in milliseconds before the returned task completes.</param>
         /// <returns>
         ///     The timed Task.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///     The <paramref name="millisecondsDelay" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task Delay(int dueTime)
+        public static Task Delay(int millisecondsDelay)
         {
-            return Delay(dueTime, CancellationToken.None);
+            return Delay(millisecondsDelay, CancellationToken.None);
         }
 
         /// <summary>
         ///     Starts a Task that will complete after the specified due time.
         /// </summary>
-        /// <param name="dueTime">The delay in milliseconds before the returned task completes.</param>
+        /// <param name="millisecondsDelay">The delay in milliseconds before the returned task completes.</param>
         /// <param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
         /// <returns>
         ///     The timed Task.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///     The <paramref name="millisecondsDelay" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task Delay(int dueTime, CancellationToken cancellationToken)
+        public static Task Delay(int millisecondsDelay, CancellationToken cancellationToken)
         {
 #if NET40
-            if (dueTime < -1)
+            if (millisecondsDelay < -1)
             {
-                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
+                throw new ArgumentOutOfRangeException(nameof(millisecondsDelay), "The value needs to be either -1 (signifying an infinite timeout), 0 or a positive integer.");
             }
             if (cancellationToken.IsCancellationRequested)
             {
                 return FromCanceled(cancellationToken);
             }
-            if (dueTime == 0)
+            if (millisecondsDelay == 0)
             {
                 return CompletedTask;
             }
-            var tcs = new TaskCompletionSource<bool>();
-            Theraot.Threading.RootedTimeout.Launch(() => tcs.TrySetResult(true), dueTime, cancellationToken);
-            return tcs.Task;
+            var source = new TaskCompletionSource<bool>();
+            if (millisecondsDelay > 0)
+            {
+                var timeout = RootedTimeout.Launch
+                (
+                    () => source.TrySetResult(true),
+                    () => source.TrySetCanceled(),
+                    millisecondsDelay,
+                    cancellationToken
+                );
+            }
+
+            return source.Task;
 #else
             // Missing in .NET 4.0
-            return Task.Delay(dueTime, cancellationToken);
+            return Task.Delay(millisecondsDelay, cancellationToken);
 #endif
         }
 
         /// <summary>
         ///     Starts a Task that will complete after the specified due time.
         /// </summary>
-        /// <param name="dueTime">The delay before the returned task completes.</param>
+        /// <param name="millisecondsDelay">The delay before the returned task completes.</param>
         /// <returns>
         ///     The timed Task.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///     The <paramref name="millisecondsDelay" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task Delay(TimeSpan dueTime)
+        public static Task Delay(TimeSpan millisecondsDelay)
         {
-            return Delay(dueTime, CancellationToken.None);
+            return Delay(millisecondsDelay, CancellationToken.None);
         }
 
         /// <summary>
         ///     Starts a Task that will complete after the specified due time.
         /// </summary>
-        /// <param name="dueTime">The delay before the returned task completes.</param>
+        /// <param name="millisecondsDelay">The delay before the returned task completes.</param>
         /// <param name="cancellationToken">A CancellationToken that may be used to cancel the task before the due time occurs.</param>
         /// <returns>
         ///     The timed Task.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        ///     The <paramref name="dueTime" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
+        ///     The <paramref name="millisecondsDelay" /> argument must be non-negative or -1 and less than or equal to Int32.MaxValue.
         /// </exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task Delay(TimeSpan dueTime, CancellationToken cancellationToken)
+        public static Task Delay(TimeSpan millisecondsDelay, CancellationToken cancellationToken)
         {
 #if NET40
-            var timeoutMs = (long)dueTime.TotalMilliseconds;
+            var timeoutMs = (long)millisecondsDelay.TotalMilliseconds;
             if (timeoutMs < Timeout.Infinite || timeoutMs > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException(nameof(dueTime), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
+                throw new ArgumentOutOfRangeException(nameof(millisecondsDelay), _argumentOutOfRangeTimeoutNonNegativeOrMinusOne);
             }
 
             return Delay((int)timeoutMs, cancellationToken);
 #else
             // Missing in .NET 4.0
-            return Task.Delay(dueTime, cancellationToken);
+            return Task.Delay(millisecondsDelay, cancellationToken);
 #endif
         }
     }
