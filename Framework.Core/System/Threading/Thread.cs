@@ -209,7 +209,7 @@ namespace System.Threading
                 source.Task.Wait();
                 void Handler(object sender, EventArgs args)
                 {
-                    if (probe.TryGetTarget(out _))
+                    if (probe!.TryGetTarget(out _))
                     {
                         return;
                     }
