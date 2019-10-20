@@ -137,7 +137,7 @@ namespace System.ComponentModel.DataAnnotations
             bool IsGetterPublicAndStatic()
             {
                 // Ensure the getter for the property is available as public static
-                var getter = property.GetGetMethod();
+                var getter = property!.GetGetMethod();
                 return getter?.IsPublic == true && getter.IsStatic;
             }
         }
