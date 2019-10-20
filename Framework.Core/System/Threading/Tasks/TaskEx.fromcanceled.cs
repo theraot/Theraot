@@ -25,7 +25,7 @@ namespace System.Threading.Tasks
             }
 
             var task = new Task<TResult>();
-            var value = task.TrySetCanceled(cancellationToken);
+            task.TrySetCanceled(cancellationToken);
             return task;
 #endif
 #if (GREATERTHAN_NET35 && LESSTHAN_NET46) || LESSTHAN_NETSTANDARD13

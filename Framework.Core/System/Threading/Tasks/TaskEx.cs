@@ -5,11 +5,11 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Theraot;
-using Theraot.Threading;
 
 #if NET40
 
 using System.Linq;
+using Theraot.Threading;
 
 #endif
 
@@ -355,7 +355,7 @@ namespace System.Threading.Tasks
                 return CompletedTask;
             }
             var source = new TaskCompletionSource<bool>();
-            var timeout = RootedTimeout.Launch
+            RootedTimeout.Launch
             (
                 () => source.TrySetResult(true),
                 () => source.TrySetCanceled(),
