@@ -372,16 +372,13 @@ namespace System.Threading.Tasks
                 return CompletedTask;
             }
             var source = new TaskCompletionSource<bool>();
-            if (millisecondsDelay > 0)
-            {
-                var timeout = RootedTimeout.Launch
-                (
-                    () => source.TrySetResult(true),
-                    () => source.TrySetCanceled(),
-                    millisecondsDelay,
-                    cancellationToken
-                );
-            }
+            var timeout = RootedTimeout.Launch
+            (
+                () => source.TrySetResult(true),
+                () => source.TrySetCanceled(),
+                millisecondsDelay,
+                cancellationToken
+            );
 
             return source.Task;
 #else

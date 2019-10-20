@@ -124,6 +124,12 @@ namespace Theraot.Threading
                 );
             }
             Root(timeout);
+
+            if (dueTime == -1)
+            {
+                return timeout;
+            }
+
             timeout._callback = () =>
             {
                 try
@@ -136,6 +142,7 @@ namespace Theraot.Threading
                 }
             };
             timeout.Start(dueTime);
+
             return timeout;
         }
 
@@ -159,7 +166,7 @@ namespace Theraot.Threading
             {
                 Close();
             }
-            if (Interlocked.CompareExchange(ref _status, _canceled, _canceling) == _canceled)
+            if (Interlocked.CompareExchange(ref _status, _canceled, _canceling) == _canceling)
             {
                 Volatile.Write(ref _status, _canceled);
                 return true;

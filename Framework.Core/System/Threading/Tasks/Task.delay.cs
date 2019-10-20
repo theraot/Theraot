@@ -114,17 +114,18 @@ namespace System.Threading.Tasks
             }
 
             var source = new TaskCompletionSource<bool>();
-            if (millisecondsDelay > 0)
+            if (cancellationToken.CanBeCanceled)
             {
-                var timeout = RootedTimeout.Launch
-                (
-                    () => source.TrySetResult(true),
-                    () => source.TrySetCanceled(),
-                    millisecondsDelay,
-                    cancellationToken
-                );
-                source.Task.SetPromiseCheck(() => timeout.CheckRemaining());
+                source.Task.AssignCancellationToken(cancellationToken, null, null);
             }
+            var timeout = RootedTimeout.Launch
+            (
+                () => source.TrySetResult(true),
+                () => source.TrySetCanceled(),
+                millisecondsDelay,
+                cancellationToken
+            );
+            source.Task.SetPromiseCheck(() => timeout.CheckRemaining());
 
             return source.Task;
         }
