@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 // ExpressionTransformer.cs
 //
 // Authors:
@@ -118,9 +120,7 @@ namespace System.Linq.Expressions
                     return VisitListInit((ListInitExpression)exp);
 
                 default:
-#pragma warning disable CA2201 // Do not raise reserved exception types
                     throw new Exception($"Unhandled expression type: '{exp.NodeType}'");
-#pragma warning restore CA2201 // Do not raise reserved exception types
             }
         }
 
@@ -150,18 +150,11 @@ namespace System.Linq.Expressions
         private static IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
             where TElement : class
         {
-#if DEBUG
-            if (visit == null)
-            {
-                throw new ArgumentNullException(nameof(visit));
-            }
-#endif
-
             List<TElement>? list = null;
             var count = original.Count;
             for (var index = 0; index < count; index++)
             {
-                var element = visit(original[index]);
+                var element = visit!(original[index]);
                 if (list != null)
                 {
                     list.Add(element);
@@ -208,9 +201,7 @@ namespace System.Linq.Expressions
                     return VisitMemberListBinding((MemberListBinding)binding);
 
                 default:
-#pragma warning disable CA2201 // Do not raise reserved exception types
                     throw new Exception($"Unhandled binding type '{binding.BindingType}'");
-#pragma warning restore CA2201 // Do not raise reserved exception types
             }
         }
 
