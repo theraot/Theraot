@@ -57,8 +57,8 @@ namespace System.Threading.Tasks
         ///     with a reference to the <see cref="Tasks.Task" /> that has been canceled.
         /// </summary>
         /// <param name="task">A task that has been canceled.</param>
-        public TaskCanceledException(Task task) :
-            base("A task was canceled", task?.CancellationToken ?? new CancellationToken())
+        public TaskCanceledException(Task? task) :
+            base("A task was canceled", task?.CancellationToken ?? new CancellationToken(false))
         {
             _canceledTask = task;
         }
