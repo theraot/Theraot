@@ -74,26 +74,14 @@ namespace System.Linq.Expressions
 
         public static void OnFieldOrProperty(this MemberInfo self, Action<FieldInfo> onField, Action<PropertyInfo> onProperty)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (onField == null)
-            {
-                throw new ArgumentNullException(nameof(onField));
-            }
-
-            if (onProperty == null)
-            {
-                throw new ArgumentNullException(nameof(onProperty));
-            }
-#endif
             switch (self.MemberType)
             {
                 case MemberTypes.Field:
-                    onField((FieldInfo)self);
+                    onField!((FieldInfo)self);
                     return;
 
                 case MemberTypes.Property:
-                    onProperty((PropertyInfo)self);
+                    onProperty!((PropertyInfo)self);
                     return;
 
                 default:
@@ -103,25 +91,13 @@ namespace System.Linq.Expressions
 
         public static T OnFieldOrProperty<T>(this MemberInfo self, Func<FieldInfo, T> onField, Func<PropertyInfo, T> onProperty)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (onField == null)
-            {
-                throw new ArgumentNullException(nameof(onField));
-            }
-
-            if (onProperty == null)
-            {
-                throw new ArgumentNullException(nameof(onProperty));
-            }
-#endif
             switch (self.MemberType)
             {
                 case MemberTypes.Field:
-                    return onField((FieldInfo)self);
+                    return onField!((FieldInfo)self);
 
                 case MemberTypes.Property:
-                    return onProperty((PropertyInfo)self);
+                    return onProperty!((PropertyInfo)self);
 
                 default:
                     throw new ArgumentException(string.Empty);

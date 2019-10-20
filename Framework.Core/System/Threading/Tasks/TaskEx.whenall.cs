@@ -73,6 +73,10 @@ namespace System.Threading.Tasks
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
 #if NET40
+            if (tasks == null)
+            {
+                throw new ArgumentNullException(nameof(tasks));
+            }
             return WhenAllCore(tasks, (Action<Task[], TaskCompletionSource<object>>)((_, tcs) => tcs.TrySetResult(null!)));
 #else
             // Missing in .NET 4.0
@@ -98,6 +102,10 @@ namespace System.Threading.Tasks
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
 #if NET40
+            if (tasks == null)
+            {
+                throw new ArgumentNullException(nameof(tasks));
+            }
             return WhenAllCore<TResult[]>(tasks, (completedTasks, tcs) =>
                                                  tcs.TrySetResult(completedTasks
                                                                       .Cast<Task<TResult>>()
@@ -148,22 +156,11 @@ namespace System.Threading.Tasks
         /// <exception cref="System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
         private static Task<TResult> WhenAllCore<TResult>(IEnumerable<Task> tasks, Action<Task[], TaskCompletionSource<TResult>> setResultAction)
         {
-#if DEBUG
-            if (setResultAction == null)
-            {
-                throw new ArgumentNullException(nameof(setResultAction));
-            }
-#endif
-            if (tasks == null)
-            {
-                throw new ArgumentNullException(nameof(tasks));
-            }
-
             var tcs = new TaskCompletionSource<TResult>();
             var taskArray = tasks as Task[] ?? tasks.ToArray();
             if (taskArray.Length == 0)
             {
-                setResultAction(taskArray, tcs);
+                setResultAction!(taskArray, tcs);
             }
             else
             {
@@ -192,7 +189,7 @@ namespace System.Threading.Tasks
                     }
                     else
                     {
-                        setResultAction(completedTasks, tcs);
+                        setResultAction!(completedTasks, tcs);
                     }
                 }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             }
