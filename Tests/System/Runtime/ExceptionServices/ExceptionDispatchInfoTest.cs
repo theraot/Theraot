@@ -1,4 +1,6 @@
-﻿//
+﻿#pragma warning disable CA2201 // Do not raise reserved exception types
+
+//
 // ExceptionDispatchInfoTest.cs
 //
 // Authors:
@@ -30,26 +32,13 @@ using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 
 namespace MonoTests.System.Runtime.ExceptionServices
 {
     [TestFixture]
     public class ExceptionDispatchInfoTest
     {
-        [Test]
-        public void Capture_InvalidArguments()
-        {
-            try
-            {
-                ExceptionDispatchInfo.Capture(null);
-                Assert.Fail();
-            }
-            catch (ArgumentNullException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-        }
-
         [Test]
         public void Capture()
         {
@@ -58,13 +47,72 @@ namespace MonoTests.System.Runtime.ExceptionServices
             Assert.AreEqual(e, edi.SourceException);
         }
 
-#if FAT
+        [Test]
+        public void CaptureInvalidArguments()
+        {
+            try
+            {
+                ExceptionDispatchInfo.Capture(null);
+                Assert.Fail();
+            }
+            catch (ArgumentNullException ex)
+            {
+                var _ = ex;
+            }
+        }
 
         [Test]
+        [Category("NotDotNet")] // Failing in .NET Core
+        public void LastThrowWins()
+        {
+            Exception e;
+            try
+            {
+                throw new Exception("test");
+            }
+            catch (Exception e2)
+            {
+                e = e2;
+            }
+
+            var edi = ExceptionDispatchInfo.Capture(e);
+
+            try
+            {
+                edi.Throw();
+            }
+            catch (Exception ex)
+            {
+                var _ = ex;
+            }
+
+            try
+            {
+                edi.Throw();
+            }
+            catch (Exception ex)
+            {
+                var _ = ex;
+            }
+
+            try
+            {
+                edi.Throw();
+            }
+            catch (Exception ex)
+            {
+                var split = ex.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                Assert.AreEqual(4, split.Length, "#1");
+                Assert.IsTrue(split[1].Contains("---"), "#2");
+            }
+        }
+
+        [Test]
+        [Category("NotDotNet")] // Failing in .NET Core
         public void Throw()
         {
             Exception orig = null;
-            var t = Task.Factory.StartNew(() =>
+            var t = TaskEx.Run(() =>
             {
                 try
                 {
@@ -93,73 +141,8 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
         }
 
-#endif
-
         [Test]
-        [Category("NotDotNet")] // Failing in .NET 4.5
-        public void ThrowWithEmptyFrames()
-        {
-            var edi = ExceptionDispatchInfo.Capture(new OperationCanceledException());
-            try
-            {
-                edi.Throw();
-                Assert.Fail("#0");
-            }
-            catch (OperationCanceledException e)
-            {
-                Assert.IsFalse(e.StackTrace.Contains("---"));
-                Assert.AreEqual(2, e.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Length);
-            }
-        }
-
-        [Test]
-        [Category("NotDotNet")] // Failing in .NET 4.5
-        public void LastThrowWins()
-        {
-            Exception e;
-            try
-            {
-                throw new Exception("test");
-            }
-            catch (Exception e2)
-            {
-                e = e2;
-            }
-
-            var edi = ExceptionDispatchInfo.Capture(e);
-
-            try
-            {
-                edi.Throw();
-            }
-            catch (Exception ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                edi.Throw();
-            }
-            catch (Exception ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                edi.Throw();
-            }
-            catch (Exception ex)
-            {
-                var split = ex.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                Assert.AreEqual(4, split.Length, "#1");
-                Assert.IsTrue(split[1].Contains("---"), "#2");
-            }
-        }
-
-        [Test]
-        [Category("NotDotNet")] // Failing in .NET 4.5
+        [Category("NotDotNet")] // Failing in .NET Core
         public void ThrowMultipleCaptures()
         {
             Exception e;
@@ -202,6 +185,23 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 Assert.AreEqual(7, split.Length, "#1");
                 Assert.IsTrue(split[1].Contains("---"), "#2");
                 Assert.IsTrue(split[4].Contains("---"), "#3");
+            }
+        }
+
+        [Test]
+        [Category("NotDotNet")] // Failing in .NET Core
+        public void ThrowWithEmptyFrames()
+        {
+            var edi = ExceptionDispatchInfo.Capture(new OperationCanceledException());
+            try
+            {
+                edi.Throw();
+                Assert.Fail("#0");
+            }
+            catch (OperationCanceledException e)
+            {
+                Assert.IsFalse(e.StackTrace.Contains("---"));
+                Assert.AreEqual(2, e.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Length);
             }
         }
     }
