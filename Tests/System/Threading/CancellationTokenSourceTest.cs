@@ -1,4 +1,6 @@
-﻿//
+﻿#pragma warning disable CA2201 // Do not raise reserved exception types
+
+//
 // CancellationTokenSourceTest.cs
 //
 // Authors:
@@ -44,11 +46,15 @@ namespace MonoTests.System.Threading
             using (var cts = new CancellationTokenSource())
             {
                 int[] called = { 0 };
-                cts.Token.Register(l =>
-                {
-                    Assert.AreEqual("v", l);
-                    ++called[0];
-                }, "v");
+                cts.Token.Register
+                (
+                    l =>
+                    {
+                        Assert.AreEqual("v", l);
+                        ++called[0];
+                    },
+                    "v"
+                );
                 cts.Cancel();
                 Assert.AreEqual(1, called[0], "#1");
 
@@ -60,7 +66,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_ExceptionOrder()
+        public void CancelExceptionOrder()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -83,7 +89,29 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_MultipleException_Recursive()
+        public void CancelLinkedTokenSource()
+        {
+            using (var cts = new CancellationTokenSource())
+            {
+                var canceled = false;
+                cts.Token.Register(() => canceled = true);
+
+                using (CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
+                {
+                    // Empty
+                }
+
+                Assert.IsFalse(canceled, "#1");
+                Assert.IsFalse(cts.IsCancellationRequested, "#2");
+
+                cts.Cancel();
+
+                Assert.IsTrue(canceled, "#3");
+            }
+        }
+
+        [Test]
+        public void CancelMultipleExceptionRecursive()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -107,7 +135,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_MultipleExceptions()
+        public void CancelMultipleExceptions()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -142,7 +170,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_MultipleExceptionsFirstThrows()
+        public void CancelMultipleExceptionsFirstThrows()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -165,7 +193,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_NoRegistration()
+        public void CancelNoRegistration()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -174,7 +202,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_Order()
+        public void CancelOrder()
         {
             var current = 0;
             void Action(object x)
@@ -192,7 +220,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_SingleException()
+        public void CancelSingleException()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -208,28 +236,6 @@ namespace MonoTests.System.Threading
                 }
 
                 cts.Cancel();
-            }
-        }
-
-        [Test]
-        public void CancelLinkedTokenSource()
-        {
-            using (var cts = new CancellationTokenSource())
-            {
-                var canceled = false;
-                cts.Token.Register(() => canceled = true);
-
-                using (CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
-                {
-                    // Empty
-                }
-
-                Assert.IsFalse(canceled, "#1");
-                Assert.IsFalse(cts.IsCancellationRequested, "#2");
-
-                cts.Cancel();
-
-                Assert.IsTrue(canceled, "#3");
             }
         }
 
@@ -253,45 +259,52 @@ namespace MonoTests.System.Threading
         [Category("LongRunning")]
         public void ConcurrentCancelLinkedTokenSourceWhileDisposing() // TODO: Review
         {
-            ParallelTestHelper.Repeat(delegate
-            {
-                using (var src = new CancellationTokenSource())
+            ParallelTestHelper.Repeat
+            (
+                () =>
                 {
-                    var linked = CancellationTokenSource.CreateLinkedTokenSource(src.Token);
-                    using (var cntd = new CountdownEvent(2))
+                    var src = new CancellationTokenSource[1];
+                    using (src[0] = new CancellationTokenSource())
                     {
-                        var t1 = new Thread(() =>
+                        var linked = CancellationTokenSource.CreateLinkedTokenSource(src[0].Token);
+                        var countdownEvent = new CountdownEvent[1];
+                        using (countdownEvent[0] = new CountdownEvent(2))
                         {
-                            if (!cntd.Signal())
-                            {
-                                cntd.Wait(200);
-                            }
+                            var t1 = new Thread
+                            (
+                                () =>
+                                {
+                                    if (!countdownEvent[0].Signal())
+                                    {
+                                        countdownEvent[0].Wait(200);
+                                    }
 
-                            src.Cancel();
-                        });
-                        var t2 = new Thread(() =>
-                        {
-                            if (!cntd.Signal())
-                            {
-                                cntd.Wait(200);
-                            }
+                                    src[0].Cancel();
+                                }
+                            );
+                            var t2 = new Thread
+                            (
+                                () =>
+                                {
+                                    if (!countdownEvent[0].Signal())
+                                    {
+                                        countdownEvent[0].Wait(200);
+                                    }
 
-                            linked.Dispose();
-                        });
+                                    linked.Dispose();
+                                }
+                            );
 
-                        t1.Start();
-                        t2.Start();
+                            t1.Start();
+                            t2.Start();
 
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-                        t1.Join(500);
-                        t2.Join(500);
-#else
-                        t1.Join();
-                        t2.Join();
-#endif
+                            t1.Join();
+                            t2.Join();
+                        }
                     }
-                }
-            }, 500);
+                },
+                500
+            );
         }
 
         [Test]
@@ -301,16 +314,20 @@ namespace MonoTests.System.Threading
             {
                 cts.Cancel();
 
-                var linked = CancellationTokenSource.CreateLinkedTokenSource(cts.Token);
-                Assert.IsTrue(linked.IsCancellationRequested, "#1");
+                using (var linked = CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
+                {
+                    Assert.IsTrue(linked.IsCancellationRequested, "#1");
+                }
 
-                linked = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken());
-                Assert.IsFalse(linked.IsCancellationRequested, "#2");
+                using (var linked = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken()))
+                {
+                    Assert.IsFalse(linked.IsCancellationRequested, "#2");
+                }
             }
         }
 
         [Test]
-        public void CreateLinkedTokenSource_InvalidArguments()
+        public void CreateLinkedTokenSourceInvalidArguments()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -318,8 +335,11 @@ namespace MonoTests.System.Threading
 
                 try
                 {
-                    CancellationTokenSource.CreateLinkedTokenSource(null);
-                    Assert.Fail("#1");
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    using (CancellationTokenSource.CreateLinkedTokenSource(null))
+                    {
+                        Assert.Fail("#1");
+                    }
                 }
                 catch (ArgumentNullException ex)
                 {
@@ -328,8 +348,10 @@ namespace MonoTests.System.Threading
 
                 try
                 {
-                    CancellationTokenSource.CreateLinkedTokenSource();
-                    Assert.Fail("#2");
+                    using (CancellationTokenSource.CreateLinkedTokenSource())
+                    {
+                        Assert.Fail("#2");
+                    }
                 }
                 catch (ArgumentException ex)
                 {
@@ -339,14 +361,9 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        [Category("NotDotNet")]
+        [Category("NotDotNet")] // Failing in .NET Core and .NET 4.6 or greater
         public void Dispose()
         {
-            // Failing in .NET 4.0 and .NET 4.5
-            // Not sure if a bug in the implementation or a bug in the documentation
-            // Likely the implementation changed.
-            // However,  was it intentional and they forgot to update the documentation
-            // ... or was the change unintentional and the documentation is right?
             var cts = new CancellationTokenSource();
             var token = cts.Token;
 
@@ -378,10 +395,13 @@ namespace MonoTests.System.Threading
             try
             {
                 // According to MSDN this should throw
-                token.Register(() =>
-                {
-                    // Empty
-                });
+                token.Register
+                (
+                    () =>
+                    {
+                        // Empty
+                    }
+                );
                 Assert.Fail("#3");
             }
             catch (ObjectDisposedException ex)
@@ -402,8 +422,10 @@ namespace MonoTests.System.Threading
             try
             {
                 // According to MSDN this should throw
-                CancellationTokenSource.CreateLinkedTokenSource(token);
-                Assert.Fail("#5");
+                using (CancellationTokenSource.CreateLinkedTokenSource(token))
+                {
+                    Assert.Fail("#5");
+                }
             }
             catch (ObjectDisposedException ex)
             {
@@ -445,14 +467,16 @@ namespace MonoTests.System.Threading
                 Debug.WriteLine("Test1");
                 var reg = token.Register(() => unregister = true);
                 token.Register(reg.Dispose);
-                token.Register(() =>
-                {
-                    Debug.WriteLine("Gnyah");
-                    token.Register(() => register = true);
-                });
+                token.Register
+                (
+                    () =>
+                    {
+                        token.Register(() => register = true);
+                    }
+                );
                 source.Cancel();
 
-#if GREATERTHAN_NETCOREAPP20
+#if GREATERTHAN_NETCOREAPP11
                 // Apparently callback execution order changed in .NET Core
                 // This would also mean we should not rely on it for portable code
                 Assert.IsTrue(unregister);
@@ -466,26 +490,30 @@ namespace MonoTests.System.Threading
         [Test]
         public void RegisterThenDispose()
         {
-            var cts1 = new CancellationTokenSource();
-            var reg1 = cts1.Token.Register(() => throw new ApplicationException());
-
-            var cts2 = new CancellationTokenSource();
-            cts2.Token.Register(() => throw new ApplicationException());
-
-            Assert.AreNotEqual(cts1, cts2, "#1");
-            Assert.AreNotSame(cts1, cts2, "#2");
-
-            reg1.Dispose();
-            cts1.Cancel();
-
-            try
+            var src = new CancellationTokenSource[2];
+            using (src[0] = new CancellationTokenSource())
             {
-                cts2.Cancel();
-                Assert.Fail("#3");
-            }
-            catch (AggregateException ex)
-            {
-                Theraot.No.Op(ex);
+                var reg1 = src[0].Token.Register(() => throw new ApplicationException());
+                using (src[1] = new CancellationTokenSource())
+                {
+                    src[1].Token.Register(() => throw new ApplicationException());
+
+                    Assert.AreNotEqual(src[0], src[1], "#1");
+                    Assert.AreNotSame(src[0], src[1], "#2");
+
+                    reg1.Dispose();
+                    src[0].Cancel();
+
+                    try
+                    {
+                        src[1].Cancel();
+                        Assert.Fail("#3");
+                    }
+                    catch (AggregateException ex)
+                    {
+                        Theraot.No.Op(ex);
+                    }
+                }
             }
         }
 
@@ -499,28 +527,6 @@ namespace MonoTests.System.Threading
                 Assert.IsNotNull(cts.Token.WaitHandle, "#3");
             }
         }
-
-        //[Test]
-        //public void RegisterWhileCancelling()
-        //{
-        //    cts.Token.Register(() =>
-        //    {
-        //        Assert.IsTrue(cts.IsCancellationRequested, "#10");
-        //        Assert.IsTrue(cts.Token.WaitHandle.WaitOne(0), "#11");
-        //        mre2.Set();
-        //        mre.WaitOne(3000);
-        //        called += 11;
-        //    });
-
-        //    Assert.IsTrue(mre2.WaitOne(1000), "#0");
-        //    cts.Token.Register(() => { called++; });
-        //    Assert.AreEqual(1, called, "#1");
-        //    Assert.IsFalse(t.IsCompleted, "#2");
-
-        //    mre.Set();
-        //    Assert.IsTrue(t.Wait(1000), "#3");
-        //    Assert.AreEqual(12, called, "#4");
-        //}
     }
 
     public partial class CancellationTokenSourceTest
@@ -530,20 +536,23 @@ namespace MonoTests.System.Threading
         public void CancelAfter()
         {
             var called = DateTime.Now.Ticks;
-            using (var mre = new ManualResetEvent(false))
+            var manualResetEventBox = new ManualResetEvent[1];
+            using (manualResetEventBox[0] = new ManualResetEvent(false))
             {
-                var mrea = new[] { mre };
                 long set;
                 using (var cts = new CancellationTokenSource())
                 {
-                    cts.Token.Register(() =>
-                    {
-                        called = DateTime.Now.Ticks;
-                        mrea[0].Set();
-                    });
+                    cts.Token.Register
+                    (
+                        () =>
+                        {
+                            called = DateTime.Now.Ticks;
+                            manualResetEventBox[0].Set();
+                        }
+                    );
                     set = DateTime.Now.Ticks;
                     cts.CancelAfter(50);
-                    if (!mre.WaitOne(1000))
+                    if (!manualResetEventBox[0].WaitOne(1000))
                     {
                         Assert.Fail();
                     }
@@ -559,7 +568,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("LongRunning")]
-        public void CancelAfter_Disposed()
+        public void CancelAfterDisposed()
         {
             var called = 0;
             var cts = new CancellationTokenSource();
@@ -571,7 +580,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void CancelAfter_Invalid()
+        public void CancelAfterInvalid()
         {
             using (var cts = new CancellationTokenSource())
             {
@@ -621,10 +630,13 @@ namespace MonoTests.System.Threading
 #if LESSTHAN_NET46
             try
             {
-                token.Register(() =>
-                {
-                    // Empty
-                });
+                token.Register
+                (
+                    () =>
+                    {
+                        // Empty
+                    }
+                );
                 Assert.Fail("#3");
             }
             catch (ObjectDisposedException ex)
@@ -646,8 +658,10 @@ namespace MonoTests.System.Threading
 #if LESSTHAN_NET46
             try
             {
-                CancellationTokenSource.CreateLinkedTokenSource(token);
-                Assert.Fail("#5");
+                using (CancellationTokenSource.CreateLinkedTokenSource(token))
+                {
+                    Assert.Fail("#5");
+                }
             }
             catch (ObjectDisposedException ex)
             {
@@ -679,7 +693,7 @@ namespace MonoTests.System.Threading
                 }
             }
         }
-        
+
         [Test]
         public void EmptyConstructorState()
         {
@@ -691,10 +705,11 @@ namespace MonoTests.System.Threading
     }
 
 #if !NET40
+
     public partial class CancellationTokenSourceTest
     {
         [Test]
-        public void Ctor_Invalid()
+        public void CtorInvalid()
         {
             try
             {
@@ -712,7 +727,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("RaceCondition")]
-        public void Ctor_Timeout()
+        public void CtorTimeout()
         {
             var called = 0;
             using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(10)))
@@ -723,5 +738,6 @@ namespace MonoTests.System.Threading
             }
         }
     }
+
 #endif
 }
