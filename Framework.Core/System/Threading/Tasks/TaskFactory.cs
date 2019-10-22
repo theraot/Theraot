@@ -462,21 +462,24 @@ namespace System.Threading.Tasks
         }
     }
 
-    // TODO: FromAsync<TArg1,TArg2,TArg3,TResult>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, TArg3, Object, TaskCreationOptions)
-    // TODO: FromAsync<TArg1,TArg2,TArg3,TResult>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, TArg3, Object)
-    // TODO: FromAsync<TArg1,TArg2,TArg3>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, TArg3, Object, TaskCreationOptions)
-    // TODO: FromAsync<TArg1,TArg2,TArg3>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, TArg3, Object)
-    // TODO: FromAsync<TArg1,TArg2,TResult>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, Object)
-    // TODO: FromAsync<TArg1,TArg2,TResult>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, Object, TaskCreationOptions)
-    // TODO: FromAsync<TArg1,TArg2>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, Object)
-    // TODO: FromAsync<TArg1,TArg2>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, Object, TaskCreationOptions)
-    // TODO: FromAsync<TArg1,TResult>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, Object)
-    // TODO: FromAsync<TArg1,TResult>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, Object, TaskCreationOptions)
-    // TODO: FromAsync<TArg1>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, Object, TaskCreationOptions)
-    // TODO: FromAsync<TArg1>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, Object)
-    // TODO: FromAsync<TResult>(IAsyncResult, Func<IAsyncResult,TResult>, TaskCreationOptions, TaskScheduler)
-    // TODO: FromAsync<TResult>(IAsyncResult, Func<IAsyncResult,TResult>, TaskCreationOptions)
-    // TODO: FromAsync<TResult>(IAsyncResult, Func<IAsyncResult,TResult>)
+    public partial class TaskFactory
+    {
+        // TODO: public Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state, TaskCreationOptions creationOptions)
+        // TODO: public Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state)
+        // TODO: public Task FromAsync<TArg1, TArg2, TArg3>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state, TaskCreationOptions creationOptions)
+        // TODO: public Task FromAsync<TArg1, TArg2, TArg3>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state)
+        // TODO: public Task<TResult> FromAsync<TArg1, TArg2, TResult>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, object state)
+        // TODO: public Task<TResult> FromAsync<TArg1, TArg2, TResult>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, object state, TaskCreationOptions creationOptions)
+        // TODO: public Task FromAsync<TArg1, TArg2>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, object state)
+        // TODO: public Task FromAsync<TArg1, TArg2>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, object state, TaskCreationOptions creationOptions)
+        // TODO: public Task<TResult> FromAsync<TArg1, TResult>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, object state)
+        // TODO: public Task<TResult> FromAsync<TArg1, TResult>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, object state, TaskCreationOptions creationOptions)
+        // TODO: public Task FromAsync<TArg1>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, object state, TaskCreationOptions creationOptions)
+        // TODO: public Task FromAsync<TArg1>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, object state)
+        // TODO: public Task<TResult> FromAsync<TResult>(IAsyncResult asyncResult, Func<IAsyncResult, TResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler)
+        // TODO: public Task<TResult> FromAsync<TResult>(IAsyncResult asyncResult, Func<IAsyncResult, TResult> endMethod, TaskCreationOptions creationOptions)
+        // TODO: public Task<TResult> FromAsync<TResult>(IAsyncResult asyncResult, Func<IAsyncResult, TResult> endMethod)
+    }
 
     public partial class TaskFactory
     {
