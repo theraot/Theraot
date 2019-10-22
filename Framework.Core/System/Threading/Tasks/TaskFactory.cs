@@ -3,6 +3,7 @@
 #pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 #pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CC0091 // Use static method
 
@@ -461,10 +462,26 @@ namespace System.Threading.Tasks
         }
     }
 
+    // TODO: FromAsync<TArg1,TArg2,TArg3,TResult>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, TArg3, Object, TaskCreationOptions)
+    // TODO: FromAsync<TArg1,TArg2,TArg3,TResult>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, TArg3, Object)
+    // TODO: FromAsync<TArg1,TArg2,TArg3>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, TArg3, Object, TaskCreationOptions)
+    // TODO: FromAsync<TArg1,TArg2,TArg3>(Func<TArg1,TArg2,TArg3,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, TArg3, Object)
+    // TODO: FromAsync<TArg1,TArg2,TResult>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, Object)
+    // TODO: FromAsync<TArg1,TArg2,TResult>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, TArg2, Object, TaskCreationOptions)
+    // TODO: FromAsync<TArg1,TArg2>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, Object)
+    // TODO: FromAsync<TArg1,TArg2>(Func<TArg1,TArg2,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, TArg2, Object, TaskCreationOptions)
+    // TODO: FromAsync<TArg1,TResult>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, Object)
+    // TODO: FromAsync<TArg1,TResult>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Func<IAsyncResult,TResult>, TArg1, Object, TaskCreationOptions)
+    // TODO: FromAsync<TArg1>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, Object, TaskCreationOptions)
+    // TODO: FromAsync<TArg1>(Func<TArg1,AsyncCallback,Object,IAsyncResult>, Action<IAsyncResult>, TArg1, Object)
+    // TODO: FromAsync<TResult>(IAsyncResult, Func<IAsyncResult,TResult>, TaskCreationOptions, TaskScheduler)
+    // TODO: FromAsync<TResult>(IAsyncResult, Func<IAsyncResult,TResult>, TaskCreationOptions)
+    // TODO: FromAsync<TResult>(IAsyncResult, Func<IAsyncResult,TResult>)
+
     public partial class TaskFactory
     {
         public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod)
-        {
+        {        // FromAsync(IAsyncResult,             Action<IAsyncResult>          )
             if (asyncResult == null)
             {
                 throw new ArgumentNullException(nameof(asyncResult));
@@ -479,7 +496,7 @@ namespace System.Threading.Tasks
         }
 
         public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
-        {
+        {        // FromAsync(Func<AsyncCallback, Object, IAsyncResult>,             Action<IAsyncResult>,           Object      )
             if (beginMethod == null)
             {
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -494,7 +511,7 @@ namespace System.Threading.Tasks
         }
 
         public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions)
-        {
+        {        // FromAsync(IAsyncResult,             Action<IAsyncResult>,           TaskCreationOptions                )
             if (asyncResult == null)
             {
                 throw new ArgumentNullException(nameof(asyncResult));
@@ -509,7 +526,7 @@ namespace System.Threading.Tasks
         }
 
         public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
-        {
+        {        // FromAsync(Func<AsyncCallback, Object, IAsyncResult>,             Action<IAsyncResult>,           Object,       TaskCreationOptions                 )
             if (beginMethod == null)
             {
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -524,7 +541,7 @@ namespace System.Threading.Tasks
         }
 
         public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-        {
+        {        // FromAsync(IAsyncResult,             Action<IAsyncResult>,           TaskCreationOptions,                 TaskScheduler          )
             if (asyncResult == null)
             {
                 throw new ArgumentNullException(nameof(asyncResult));
@@ -544,7 +561,7 @@ namespace System.Threading.Tasks
         }
 
         public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
-        {
+        {                 // FromAsync<TResult>(Func<AsyncCallback, Object, IAsyncResult>,             Func<IAsyncResult, TResult>,           Object,       TaskCreationOptions                )
             if (beginMethod == null)
             {
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -559,7 +576,7 @@ namespace System.Threading.Tasks
         }
 
         public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state)
-        {
+        {                 // FromAsync<TResult>(Func<AsyncCallback, Object, IAsyncResult>,             Func<IAsyncResult,TResult>,            Object      )
             if (beginMethod == null)
             {
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -573,8 +590,6 @@ namespace System.Threading.Tasks
             return FromAsyncInternal(beginMethod, endMethod, state, default);
         }
     }
-
-#pragma warning disable CC0031 // Check for null before calling a delegate
 
     public partial class TaskFactory
     {
