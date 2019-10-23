@@ -45,6 +45,12 @@ namespace System.Threading.Tasks
             // Empty
         }
 
+        internal Task(Func<TResult> function, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+            : this(function, null, parent, cancellationToken, creationOptions, internalOptions, scheduler)
+        {
+            CapturedContext = ExecutionContext.Capture();
+        }
+
         internal Task(Func<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
             : base(function, state, null, cancellationToken, creationOptions, InternalTaskOptions.None, scheduler)
         {
