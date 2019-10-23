@@ -201,7 +201,10 @@ namespace System.IO
             (
                 BeginRead,
                 stream.EndRead,
-                Tuple.Create(stream, buffer, offset, count)
+                buffer,
+                offset,
+                count,
+                stream
             );
         }
 
@@ -216,7 +219,10 @@ namespace System.IO
             (
                 BeginRead,
                 stream.EndRead,
-                Tuple.Create(stream, buffer, offset, count)
+                buffer,
+                offset,
+                count,
+                stream
             );
         }
 
@@ -232,7 +238,10 @@ namespace System.IO
             (
                 BeginWrite,
                 stream.EndWrite,
-                Tuple.Create(stream, buffer, offset, count)
+                buffer,
+                offset,
+                count,
+                stream
             );
         }
 
@@ -247,22 +256,23 @@ namespace System.IO
             (
                 BeginWrite,
                 stream.EndWrite,
-                Tuple.Create(stream, buffer, offset, count)
+                buffer,
+                offset,
+                count,
+                stream
             );
         }
 
-        private static IAsyncResult BeginRead(AsyncCallback callback, object state)
+        private static IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            // ReSharper disable once UseDeconstruction
-            var tuple = (Tuple<Stream, byte[], int, int>)state;
-            return tuple.Item1.BeginRead(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
+            var steam = (Stream)state;
+            return steam.BeginRead(buffer, offset, count, callback, count);
         }
 
-        private static IAsyncResult BeginWrite(AsyncCallback callback, object state)
+        private static IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            // ReSharper disable once UseDeconstruction
-            var tuple = (Tuple<Stream, byte[], int, int>)state;
-            return tuple.Item1.BeginWrite(tuple.Item2, tuple.Item3, tuple.Item4, callback, tuple.Item4);
+            var steam = (Stream)state;
+            return steam.BeginWrite(buffer, offset, count, callback, count);
         }
 
         private static async Task CopyToPrivateAsync(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
