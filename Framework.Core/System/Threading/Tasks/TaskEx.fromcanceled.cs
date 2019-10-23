@@ -24,7 +24,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentOutOfRangeException(nameof(cancellationToken));
             }
 
-            var task = new Task<TResult>();
+            var task = new Task<TResult>(TaskCreationOptions.None, null);
             task.TrySetCanceled(cancellationToken);
             return task;
 #endif

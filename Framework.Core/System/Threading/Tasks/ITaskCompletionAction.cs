@@ -20,6 +20,7 @@ namespace System.Threading.Tasks
             private ICollection<Task>? _tasks; // must track this for cleanup
 
             public CompleteOnInvokePromise(ICollection<Task> tasks)
+                : base(TaskCreationOptions.None, null)
             {
                 Contract.Requires(tasks.Count > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
@@ -231,6 +232,7 @@ namespace System.Threading.Tasks
             private int _ready;
 
             internal WhenAllPromise(Task[] tasks)
+                : base(TaskCreationOptions.None, null)
             {
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
@@ -368,6 +370,7 @@ namespace System.Threading.Tasks
             private int _ready;
 
             internal WhenAllPromise(Task<T>[] tasks)
+                : base(TaskCreationOptions.None, null)
             {
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;

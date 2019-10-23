@@ -73,11 +73,7 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> FromResult<TResult>(TResult result)
         {
-            return new Task<TResult>(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
-            {
-                CancellationToken = default,
-                InternalResult = result
-            };
+            return new Task<TResult>(result);
         }
 
         internal bool SetCompleted(bool preventDoubleExecution)
@@ -241,18 +237,13 @@ namespace System.Threading.Tasks
 
     public partial class Task<TResult>
     {
-        internal Task(TaskStatus taskStatus, InternalTaskOptions internalTaskOptions)
-            : base(taskStatus, internalTaskOptions)
+        internal Task(TResult result)
+            : base(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
         {
-            // Empty
+            InternalResult = result;
         }
 
-        internal Task()
-        {
-            // Empty
-        }
-
-        internal Task(object? state, TaskCreationOptions creationOptions)
+        internal Task(TaskCreationOptions creationOptions, object? state)
             : base(state, creationOptions)
         {
             // Empty

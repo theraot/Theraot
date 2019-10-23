@@ -24,7 +24,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            var task = new Task<TResult>();
+            var task = new Task<TResult>(TaskCreationOptions.None, null);
             var value = task.TrySetException(exception);
             if (value || task.IsCompleted)
             {
