@@ -7,6 +7,8 @@
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CC0091 // Use static method
 
+using Theraot;
+
 namespace System.Threading.Tasks
 {
     public partial class TaskFactory
@@ -545,7 +547,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncCore(beginMethod, endMethod, state);
+            return FromAsyncCore
+            (
+                beginMethod,
+                result =>
+                {
+                    endMethod(result);
+                    return default(VoidStruct);
+                },
+                state,
+                TaskCreationOptions.None
+            );
         }
 
         public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
@@ -560,7 +572,17 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncCore(beginMethod, endMethod, state, creationOptions);
+            return FromAsyncCore
+            (
+                beginMethod,
+                result =>
+                {
+                    endMethod(result);
+                    return default(VoidStruct);
+                },
+                state,
+                creationOptions
+            );
         }
 
         public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state)
@@ -613,42 +635,9 @@ namespace System.Threading.Tasks
             task.Dispose();
         }
 
-        private static async Task FromAsyncCore(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
-        {
-            endMethod(await FromBeginMethod(beginMethod, state).ConfigureAwait(false));
-        }
-
-        private static async Task FromAsyncCore(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
-        {
-            endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
-        }
-
         private static async Task<TResult> FromAsyncCore<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
         {
             return endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
-        }
-
-        private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state)
-        {
-            var source = new TaskCompletionSource<IAsyncResult>();
-            var canInvokeEnd = new[] { 0 };
-            var asyncResult = beginMethod(AsyncCallback, state);
-            if (asyncResult?.CompletedSynchronously == true)
-            {
-                AsyncCallback(asyncResult);
-            }
-
-            return source.Task;
-
-            void AsyncCallback(IAsyncResult r)
-            {
-                if (Interlocked.CompareExchange(ref canInvokeEnd[0], 1, 0) != 0)
-                {
-                    return;
-                }
-
-                source.TrySetResult(r);
-            }
         }
 
         private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state, TaskCreationOptions creationOptions)
