@@ -495,7 +495,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncInternal(asyncResult, endMethod, TaskCreationOptions.None, _scheduler);
+            return FromAsyncCore(asyncResult, endMethod, TaskCreationOptions.None, _scheduler);
         }
 
         public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions)
@@ -510,7 +510,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncInternal(asyncResult, endMethod, creationOptions, _scheduler);
+            return FromAsyncCore(asyncResult, endMethod, creationOptions, _scheduler);
         }
 
         public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
@@ -530,7 +530,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(scheduler));
             }
 
-            return FromAsyncInternal(asyncResult, endMethod, creationOptions, scheduler);
+            return FromAsyncCore(asyncResult, endMethod, creationOptions, scheduler);
         }
 
         public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
@@ -545,7 +545,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncInternal(beginMethod, endMethod, state);
+            return FromAsyncCore(beginMethod, endMethod, state);
         }
 
         public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
@@ -560,7 +560,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncInternal(beginMethod, endMethod, state, creationOptions);
+            return FromAsyncCore(beginMethod, endMethod, state, creationOptions);
         }
 
         public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state)
@@ -575,7 +575,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncInternal(beginMethod, endMethod, state, default);
+            return FromAsyncCore(beginMethod, endMethod, state, default);
         }
 
         public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
@@ -590,28 +590,13 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(endMethod));
             }
 
-            return FromAsyncInternal(beginMethod, endMethod, state, creationOptions);
+            return FromAsyncCore(beginMethod, endMethod, state, creationOptions);
         }
     }
 
     public partial class TaskFactory
     {
-        internal static async Task FromAsyncInternal(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
-        {
-            endMethod(await FromBeginMethod(beginMethod, state).ConfigureAwait(false));
-        }
-
-        internal static async Task FromAsyncInternal(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
-        {
-            endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
-        }
-
-        internal static async Task<TResult> FromAsyncInternal<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
-        {
-            return endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
-        }
-
-        internal static async Task FromAsyncInternal(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        private static async Task FromAsyncCore(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var task = new Task(() => endMethod(asyncResult), Task.InternalCurrentIfAttached(creationOptions), CancellationToken.None, creationOptions, InternalTaskOptions.None, scheduler);
             if (asyncResult.IsCompleted)
@@ -626,6 +611,21 @@ namespace System.Threading.Tasks
 
             await task.ConfigureAwait(false);
             task.Dispose();
+        }
+
+        private static async Task FromAsyncCore(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
+        {
+            endMethod(await FromBeginMethod(beginMethod, state).ConfigureAwait(false));
+        }
+
+        private static async Task FromAsyncCore(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
+        {
+            endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
+        }
+
+        private static async Task<TResult> FromAsyncCore<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
+        {
+            return endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
         }
 
         private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state)
