@@ -7,12 +7,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Theraot.Collections.ThreadSafe;
-
-#if !FEATURE_DYNAMIC_DELEGATE
-
 using System.Reflection.Emit;
-
-#endif
 
 namespace System.Dynamic.Utils
 {
@@ -27,14 +22,8 @@ namespace System.Dynamic.Utils
 
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object?> handler)
         {
-#if !FEATURE_DYNAMIC_DELEGATE
             return CreateObjectArrayDelegateRefEmit(delegateType, handler);
-#else
-            return Internal.Runtime.Augments.DynamicDelegateAugments.CreateObjectArrayDelegate(delegateType, handler);
-#endif
         }
-
-#if !FEATURE_DYNAMIC_DELEGATE
 
         private static Type ConvertToBoxableType(Type t)
         {
@@ -174,8 +163,6 @@ namespace System.Dynamic.Utils
 
             return thunkMethod.CreateDelegate(delegateType, handler);
         }
-
-#endif
     }
 }
 
