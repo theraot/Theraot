@@ -23,11 +23,6 @@ namespace System.Linq.Expressions.Interpreter
 
         internal Interpreter Interpreter { get; }
 
-        public Delegate CreateDelegate()
-        {
-            return CreateDelegate(null);
-        }
-
         internal Delegate CreateDelegate(IStrongBox[]? closure)
         {
             // we'll create an interpreted LightLambda
