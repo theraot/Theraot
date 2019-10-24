@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Theraot.Collections;
 using Theraot.Reflection;
 
@@ -87,6 +88,26 @@ namespace System.Linq.Expressions.Compiler
         {
             public Type? DelegateType;
             public Dictionary<Type, TypeInfo>? TypeChain;
+
+            public Type GetDelegateType(Type retType, params Expression[] args)
+            {
+                return DelegateType ??= MakeDelegateTypeExtracted(retType, args);
+            }
+
+            private Type MakeDelegateTypeExtracted(Type retType, IList<Expression> args)
+            {
+                // nope, go ahead and create it and spend the
+                // cost of creating the array.
+                var paramTypes = new Type[args.Count + 2];
+                paramTypes[0] = typeof(CallSite);
+                paramTypes[paramTypes.Length - 1] = retType;
+                for (var i = 0; i < args.Count; i++)
+                {
+                    paramTypes[i + 1] = args[i].Type;
+                }
+
+                return MakeNewDelegate(paramTypes)!;
+            }
         }
     }
 }
