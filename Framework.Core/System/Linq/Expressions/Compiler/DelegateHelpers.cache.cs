@@ -3,6 +3,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -26,8 +27,24 @@ namespace System.Linq.Expressions.Compiler
 
                 // see if we have the delegate already
                 // clone because MakeCustomDelegate can hold onto the array.
-                return curTypeInfo.DelegateType ?? (curTypeInfo.DelegateType = MakeNewDelegate((Type[])types.Clone()));
+                return curTypeInfo.DelegateType ??= curTypeInfo.DelegateType = MakeNewDelegate((Type[])types.Clone());
             }
+        }
+
+        private static Type MakeDelegateTypeExtracted(Type retType, int count, IEnumerable<Type> types)
+        {
+            // nope, go ahead and create it and spend the
+            // cost of creating the array.
+            var paramTypes = new Type[count + 2];
+            paramTypes[0] = typeof(CallSite);
+            paramTypes[count + 1] = retType;
+            var index = 0;
+            foreach (var type in types)
+            {
+                paramTypes[index + 1] = type;
+                index++;
+            }
+            return MakeNewDelegate(paramTypes)!;
         }
 
         private static Type MakeNewDelegate(Type[] types)
@@ -70,26 +87,6 @@ namespace System.Linq.Expressions.Compiler
         {
             public Type? DelegateType;
             public Dictionary<Type, TypeInfo>? TypeChain;
-
-            public Type GetDelegateType(Type retType, params Expression[] args)
-            {
-                return DelegateType ??= MakeDelegateTypeExtracted(retType, args);
-            }
-
-            private Type MakeDelegateTypeExtracted(Type retType, IList<Expression> args)
-            {
-                // nope, go ahead and create it and spend the
-                // cost of creating the array.
-                var paramTypes = new Type[args.Count + 2];
-                paramTypes[0] = typeof(CallSite);
-                paramTypes[paramTypes.Length - 1] = retType;
-                for (var i = 0; i < args.Count; i++)
-                {
-                    paramTypes[i + 1] = args[i].Type;
-                }
-
-                return MakeNewDelegate(paramTypes)!;
-            }
         }
     }
 }
