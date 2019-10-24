@@ -22,29 +22,19 @@ namespace System.Dynamic.Utils
 
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object?> handler)
         {
-            return CreateObjectArrayDelegateRefEmit(delegateType, handler);
-        }
-
-        private static Type ConvertToBoxableType(Type t)
-        {
-            return t.IsPointer ? typeof(IntPtr) : t;
-        }
-
-        // We will generate the following code:
-        //
-        // object ret;
-        // object[] args = new object[parameterCount];
-        // args[0] = param0;
-        // args[1] = param1;
-        //  ...
-        // try {
-        //      ret = handler.Invoke(args);
-        // } finally {
-        //      param0 = (T0)args[0];   // only generated for each byref argument
-        // }
-        // return (TRet)ret;
-        private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object?> handler)
-        {
+            // We will generate the following code:
+            //
+            // object ret;
+            // object[] args = new object[parameterCount];
+            // args[0] = param0;
+            // args[1] = param1;
+            //  ...
+            // try {
+            //      ret = handler.Invoke(args);
+            // } finally {
+            //      param0 = (T0)args[0];   // only generated for each byref argument
+            // }
+            // return (TRet)ret;
             if (_thunks.TryGetValue(delegateType, out var thunkMethod))
             {
                 return thunkMethod.CreateDelegate(delegateType, handler);
@@ -162,6 +152,11 @@ namespace System.Dynamic.Utils
             _thunks[delegateType] = thunkMethod;
 
             return thunkMethod.CreateDelegate(delegateType, handler);
+        }
+
+        private static Type ConvertToBoxableType(Type t)
+        {
+            return t.IsPointer ? typeof(IntPtr) : t;
         }
     }
 }
