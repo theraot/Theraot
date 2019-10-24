@@ -28,6 +28,61 @@ namespace TestRunner
 {
     public static class AvailabilityTests
     {
+        public static void MethodInfoMethodAvailability()
+        {
+            const MethodInfo methodInfo = null;
+            No.Op<Func<Type, Delegate>>(methodInfo.CreateDelegate);
+            No.Op<Func<Type, object, Delegate>>(methodInfo.CreateDelegate);
+        }
+
+        public static void StreamMethodAvailability()
+        {
+            // ReSharper disable once RedundantAssignment
+            var stream = Stream.Null;
+            No.Op<Action<Stream>>(stream.CopyTo);
+            No.Op<Action<Stream, int>>(stream.CopyTo);
+            No.Op<Func<Stream, Task>>(stream.CopyToAsync);
+            No.Op<Func<Stream, int, Task>>(stream.CopyToAsync);
+            No.Op<Func<Stream, int, CancellationToken, Task>>(stream.CopyToAsync);
+            No.Op<Func<Task>>(stream.FlushAsync);
+            No.Op<Func<CancellationToken, Task>>(stream.FlushAsync);
+            No.Op<Func<byte[], int, int, Task<int>>>(stream.ReadAsync);
+            No.Op<Func<byte[], int, int, CancellationToken, Task<int>>>(stream.ReadAsync);
+            No.Op<Func<byte[], int, int, Task>>(stream.WriteAsync);
+            No.Op<Func<byte[], int, int, CancellationToken, Task>>(stream.WriteAsync);
+            No.Op(stream);
+        }
+
+        public static void StringMethodAvailability()
+        {
+            No.Op<Func<string, string[], int, int, string>>(string.Join);
+            No.Op<Func<string, string[], string>>(string.Join);
+            No.Op<Func<string, object[], string>>(StringEx.Join);
+            No.Op<Func<string, IEnumerable<string>, string>>(StringEx.Join);
+            No.Op<Func<string, IEnumerable<int>, string>>(StringEx.Join);
+            No.Op<Func<IEnumerable<int>, string>>(StringEx.Concat);
+            No.Op<Func<object, string>>(string.Concat);
+            No.Op<Func<object, object, string>>(string.Concat);
+            No.Op<Func<object, object, object, string>>(string.Concat);
+            No.Op<Func<string, bool>>(StringEx.IsNullOrWhiteSpace);
+        }
+
+        public static void TaskCompletionSourceMethodAvailability()
+        {
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
+            const TaskCompletionSource<int> source = null;
+            No.Op<Func<bool>>(source.TrySetCanceled);
+            No.Op<Func<CancellationToken, bool>>(source.TrySetCanceled);
+#endif
+        }
+
+        public static void ToStringMethodAvailability()
+        {
+            No.Op<Func<IFormatProvider, string>>(provider => default(bool).ToString(provider));
+            No.Op<Func<IFormatProvider, string>>(provider => default(char).ToString(provider));
+            No.Op<Func<IFormatProvider, string>>(default(string).ToString);
+        }
+
         public static void TypeAvailability()
         {
             // System.Collections.Concurrent
@@ -216,45 +271,6 @@ namespace TestRunner
             No.Op(typeof(Queryable));
         }
 
-        public static void StringMethodAvailability()
-        {
-            No.Op<Func<string, string[], int, int, string>>(string.Join);
-            No.Op<Func<string, string[], string>>(string.Join);
-            No.Op<Func<string, object[], string>>(StringEx.Join);
-            No.Op<Func<string, IEnumerable<string>, string>>(StringEx.Join);
-            No.Op<Func<string, IEnumerable<int>, string>>(StringEx.Join);
-            No.Op<Func<IEnumerable<int>, string>>(StringEx.Concat);
-            No.Op<Func<object, string>>(string.Concat);
-            No.Op<Func<object, object, string>>(string.Concat);
-            No.Op<Func<object, object, object, string>>(string.Concat);
-            No.Op<Func<string, bool>>(StringEx.IsNullOrWhiteSpace);
-        }
-
-        public static void StreamMethodAvailability()
-        {
-            // ReSharper disable once RedundantAssignment
-            var stream = Stream.Null;
-            No.Op<Action<Stream>>(stream.CopyTo);
-            No.Op<Action<Stream, int>>(stream.CopyTo);
-            No.Op<Func<Stream, Task>>(stream.CopyToAsync);
-            No.Op<Func<Stream, int, Task>>(stream.CopyToAsync);
-            No.Op<Func<Stream, int, CancellationToken, Task>>(stream.CopyToAsync);
-            No.Op<Func<Task>>(stream.FlushAsync);
-            No.Op<Func<CancellationToken, Task>>(stream.FlushAsync);
-            No.Op<Func<byte[], int, int, Task<int>>>(stream.ReadAsync);
-            No.Op<Func<byte[], int, int, CancellationToken, Task<int>>>(stream.ReadAsync);
-            No.Op<Func<byte[], int, int, Task>>(stream.WriteAsync);
-            No.Op<Func<byte[], int, int, CancellationToken, Task>>(stream.WriteAsync);
-            No.Op(stream);
-        }
-
-        public static void MethodInfoMethodAvailability()
-        {
-            const MethodInfo methodInfo = null;
-            No.Op<Func<Type, Delegate>>(methodInfo.CreateDelegate);
-            No.Op<Func<Type, object, Delegate>>(methodInfo.CreateDelegate);
-        }
-
         public static void TypeMethodAvailability()
         {
             No.Op<Func<Type, TypeCode>>(TypeEx.GetTypeCode);
@@ -293,22 +309,6 @@ namespace TestRunner
             No.Op<Func<string, BindingFlags, PropertyInfo>>(type.GetProperty);
             No.Op<Func<Type, bool>>(type.IsAssignableFrom);
             No.Op<Func<object, bool>>(type.IsInstanceOfType);
-        }
-
-        public static void ToStringMethodAvailability()
-        {
-            No.Op<Func<IFormatProvider, string>>(provider => default(bool).ToString(provider));
-            No.Op<Func<IFormatProvider, string>>(provider => default(char).ToString(provider));
-            No.Op<Func<IFormatProvider, string>>(default(string).ToString);
-        }
-
-        public static void TaskCompletionSourceMethodAvailability()
-        {
-#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
-            const TaskCompletionSource<int> source = null;
-            No.Op<Func<bool>>(source.TrySetCanceled);
-            No.Op<Func<CancellationToken, bool>>(source.TrySetCanceled);
-#endif
         }
     }
 }
