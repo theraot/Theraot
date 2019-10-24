@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET35
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
 using Theraot.Reflection;
@@ -45,6 +46,17 @@ namespace System.Linq.Expressions.Compiler
                 index++;
             }
             return MakeNewDelegate(paramTypes)!;
+        }
+
+        private static Type MakeNewCustomDelegate(Type[] types)
+        {
+            var returnType = types[types.Length - 1];
+            var parameters = types.RemoveLast();
+
+            var builder = AssemblyGen.DefineDelegateType("Delegate" + types.Length);
+            builder.DefineConstructor(_ctorAttributes, CallingConventions.Standard, _delegateCtorSignature).SetImplementationFlags(_implAttributes);
+            builder.DefineMethod("Invoke", _invokeAttributes, returnType, parameters).SetImplementationFlags(_implAttributes);
+            return builder.CreateType();
         }
 
         private static Type MakeNewDelegate(Type[] types)
