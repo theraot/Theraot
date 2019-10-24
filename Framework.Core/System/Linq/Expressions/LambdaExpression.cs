@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -21,6 +21,7 @@ using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
 
 namespace System.Linq.Expressions
 {
+#if LESSTHAN_NET35
     /// <inheritdoc />
     /// <summary>
     ///     Defines a <see cref="Expression{TDelegate}"/> node.
@@ -160,7 +161,40 @@ namespace System.Linq.Expressions
             return visitor.VisitLambda(this);
         }
     }
+#endif
 
+#if LESSTHAN_NET35
+    public partial class Expression
+#else
+    public static partial class ExpressionEx
+#endif
+    {
+        /// <summary>
+        ///     Gets a <see cref="System.Type" /> object that represents a generic System.Func or System.Action delegate type that
+        ///     has specific type arguments.
+        ///     The last type argument determines the return type of the delegate. If no Func or Action is large enough, it will
+        ///     generate a custom
+        ///     delegate type.
+        /// </summary>
+        /// <param name="typeArgs">
+        ///     An array of <see cref="System.Type" /> objects that specify the type arguments of the delegate
+        ///     type.
+        /// </param>
+        /// <returns>The delegate type.</returns>
+        /// <remarks>
+        ///     As with Func, the last argument is the return type. It can be set
+        ///     to <see cref="System.Void" /> to produce an Action.
+        /// </remarks>
+        public static Type GetDelegateType(params Type[] typeArgs)
+        {
+            ContractUtils.RequiresNotNull(typeArgs, nameof(typeArgs));
+            ContractUtils.RequiresNotEmpty(typeArgs, nameof(typeArgs));
+            ContractUtils.RequiresNotNullItems(typeArgs, nameof(typeArgs));
+            return DelegateHelpers.MakeDelegateType(typeArgs);
+        }
+    }
+
+#if LESSTHAN_NET35
     public partial class Expression
     {
         private enum TryGetFuncActionArgsResult
@@ -200,30 +234,6 @@ namespace System.Linq.Expressions
 
                     return result;
             }
-        }
-
-        /// <summary>
-        ///     Gets a <see cref="System.Type" /> object that represents a generic System.Func or System.Action delegate type that
-        ///     has specific type arguments.
-        ///     The last type argument determines the return type of the delegate. If no Func or Action is large enough, it will
-        ///     generate a custom
-        ///     delegate type.
-        /// </summary>
-        /// <param name="typeArgs">
-        ///     An array of <see cref="System.Type" /> objects that specify the type arguments of the delegate
-        ///     type.
-        /// </param>
-        /// <returns>The delegate type.</returns>
-        /// <remarks>
-        ///     As with Func, the last argument is the return type. It can be set
-        ///     to <see cref="System.Void" /> to produce an Action.
-        /// </remarks>
-        public static Type GetDelegateType(params Type[] typeArgs)
-        {
-            ContractUtils.RequiresNotNull(typeArgs, nameof(typeArgs));
-            ContractUtils.RequiresNotEmpty(typeArgs, nameof(typeArgs));
-            ContractUtils.RequiresNotNullItems(typeArgs, nameof(typeArgs));
-            return DelegateHelpers.MakeDelegateType(typeArgs);
         }
 
         /// <summary>
@@ -1319,6 +1329,7 @@ namespace System.Linq.Expressions
         internal override string? NameCore { get; }
         internal override bool TailCallCore { get; }
     }
+#endif
 }
 
 #endif

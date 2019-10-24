@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET40
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -20,6 +20,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 
+#if LESSTHAN_NET35
         internal static Type MakeCallSiteDelegate(Expression[] types, Type returnType)
         {
             lock (_delegateCache)
@@ -98,6 +99,7 @@ namespace System.Linq.Expressions.Compiler
         {
             return mo.Expression is ParameterExpression pe && pe.IsByRef;
         }
+#endif
 
         private static Type MakeNewCustomDelegate(Type[] types)
         {
