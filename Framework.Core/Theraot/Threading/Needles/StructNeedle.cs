@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclable
+    public struct StructNeedle<T> : INeedle<T>, IEquatable<StructNeedle<T>>, IRecyclable
     {
         public StructNeedle(T target)
         {
