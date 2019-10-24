@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET35
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -71,11 +71,13 @@ namespace System.Linq.Expressions.Compiler
                 curTypeInfo.TypeChain = new Dictionary<Type, TypeInfo>();
             }
 
-            if (!curTypeInfo.TypeChain.TryGetValue(lookingUp, out var nextTypeInfo))
+            if (curTypeInfo.TypeChain.TryGetValue(lookingUp, out var nextTypeInfo))
             {
-                nextTypeInfo = new TypeInfo();
-                curTypeInfo.TypeChain[lookingUp] = nextTypeInfo;
+                return nextTypeInfo;
             }
+
+            nextTypeInfo = new TypeInfo();
+            curTypeInfo.TypeChain[lookingUp] = nextTypeInfo;
 
             return nextTypeInfo;
         }
