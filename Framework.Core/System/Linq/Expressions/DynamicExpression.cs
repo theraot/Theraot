@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
-using System.Linq.Expressions.Compiler;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
@@ -489,19 +488,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             ValidateDynamicArgument(arg0, nameof(arg0));
-
-            var info = DelegateHelpers.GetNextTypeInfo
-            (
-                returnType,
-                DelegateHelpers.GetNextTypeInfo
-                (
-                    arg0.Type,
-                    DelegateHelpers.NextTypeInfo(typeof(CallSite))
-                )
-            );
-
-            var delegateType = info.GetDelegateType(returnType, arg0);
-
+            var delegateType = DelegateHelpers.MakeDelegateType(typeof(CallSite), arg0.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0);
         }
 
@@ -528,23 +515,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             ValidateDynamicArgument(arg0, nameof(arg0));
             ValidateDynamicArgument(arg1, nameof(arg1));
-
-            var info = DelegateHelpers.GetNextTypeInfo
-            (
-                returnType,
-                DelegateHelpers.GetNextTypeInfo
-                (
-                    arg1.Type,
-                    DelegateHelpers.GetNextTypeInfo
-                    (
-                        arg0.Type,
-                        DelegateHelpers.NextTypeInfo(typeof(CallSite))
-                    )
-                )
-            );
-
-            var delegateType = info.GetDelegateType(returnType, arg0, arg1);
-
+            var delegateType = DelegateHelpers.MakeDelegateType(typeof(CallSite), arg0.Type, arg1.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1);
         }
 
@@ -573,27 +544,7 @@ namespace System.Linq.Expressions
             ValidateDynamicArgument(arg0, nameof(arg0));
             ValidateDynamicArgument(arg1, nameof(arg1));
             ValidateDynamicArgument(arg2, nameof(arg2));
-
-            var info = DelegateHelpers.GetNextTypeInfo
-            (
-                returnType,
-                DelegateHelpers.GetNextTypeInfo
-                (
-                    arg2.Type,
-                    DelegateHelpers.GetNextTypeInfo
-                    (
-                        arg1.Type,
-                        DelegateHelpers.GetNextTypeInfo
-                        (
-                            arg0.Type,
-                            DelegateHelpers.NextTypeInfo(typeof(CallSite))
-                        )
-                    )
-                )
-            );
-
-            var delegateType = info.GetDelegateType(returnType, arg0, arg1, arg2);
-
+            var delegateType = DelegateHelpers.MakeDelegateType(typeof(CallSite), arg0.Type, arg1.Type, arg2.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1, arg2);
         }
 
@@ -624,31 +575,7 @@ namespace System.Linq.Expressions
             ValidateDynamicArgument(arg1, nameof(arg1));
             ValidateDynamicArgument(arg2, nameof(arg2));
             ValidateDynamicArgument(arg3, nameof(arg3));
-
-            var info = DelegateHelpers.GetNextTypeInfo
-            (
-                returnType,
-                DelegateHelpers.GetNextTypeInfo
-                (
-                    arg3.Type,
-                    DelegateHelpers.GetNextTypeInfo
-                    (
-                        arg2.Type,
-                        DelegateHelpers.GetNextTypeInfo
-                        (
-                            arg1.Type,
-                            DelegateHelpers.GetNextTypeInfo
-                            (
-                                arg0.Type,
-                                DelegateHelpers.NextTypeInfo(typeof(CallSite))
-                            )
-                        )
-                    )
-                )
-            );
-
-            var delegateType = info.GetDelegateType(returnType, arg0, arg1, arg2, arg3);
-
+            var delegateType = DelegateHelpers.MakeDelegateType(typeof(CallSite), arg0.Type, arg1.Type, arg2.Type, arg3.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1, arg2, arg3);
         }
 

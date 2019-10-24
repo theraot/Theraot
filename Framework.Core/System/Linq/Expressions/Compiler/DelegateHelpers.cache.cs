@@ -17,15 +17,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static readonly TypeInfo _delegateCache = new TypeInfo();
 
-        internal static TypeInfo GetNextTypeInfo(Type initialArg, TypeInfo curTypeInfo)
-        {
-            lock (_delegateCache)
-            {
-                return NextTypeInfo(initialArg, curTypeInfo);
-            }
-        }
-
-        internal static Type MakeDelegateType(Type[] types)
+        internal static Type MakeDelegateType(params Type[] types)
         {
             lock (_delegateCache)
             {
@@ -35,14 +27,6 @@ namespace System.Linq.Expressions.Compiler
                 // see if we have the delegate already
                 // clone because MakeCustomDelegate can hold onto the array.
                 return curTypeInfo.DelegateType ?? (curTypeInfo.DelegateType = MakeNewDelegate((Type[])types.Clone()));
-            }
-        }
-
-        internal static TypeInfo NextTypeInfo(Type initialArg)
-        {
-            lock (_delegateCache)
-            {
-                return NextTypeInfo(initialArg, _delegateCache);
             }
         }
 
@@ -82,7 +66,7 @@ namespace System.Linq.Expressions.Compiler
             return nextTypeInfo;
         }
 
-        internal class TypeInfo
+        private class TypeInfo
         {
             public Type? DelegateType;
             public Dictionary<Type, TypeInfo>? TypeChain;
