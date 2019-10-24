@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -38,7 +38,15 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        internal static Type MakeNewDelegate(Type[] types)
+        internal static TypeInfo NextTypeInfo(Type initialArg)
+        {
+            lock (_delegateCache)
+            {
+                return NextTypeInfo(initialArg, _delegateCache);
+            }
+        }
+
+        private static Type MakeNewDelegate(Type[] types)
         {
             Debug.Assert(types.Length > 0);
 
@@ -53,14 +61,6 @@ namespace System.Linq.Expressions.Compiler
             }
 
             return types[types.Length - 1] == typeof(void) ? DelegateBuilder.GetActionType(types.RemoveLast())! : DelegateBuilder.GetFuncType(types)!;
-        }
-
-        internal static TypeInfo NextTypeInfo(Type initialArg)
-        {
-            lock (_delegateCache)
-            {
-                return NextTypeInfo(initialArg, _delegateCache);
-            }
         }
 
         private static TypeInfo NextTypeInfo(Type initialArg, TypeInfo curTypeInfo)
