@@ -12,12 +12,16 @@ namespace System.Linq
     {
         public static IEnumerable<TSource> Skip<TSource>(this IEnumerable<TSource> source, int count)
         {
-            if (count <= 0)
+            if (count > 0)
             {
-                return source;
+                return SkipWhile(source, (_, i) => i < count);
             }
 
-            return SkipWhile(source, (_, i) => i < count);
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            return source;
         }
 
         public static IEnumerable<TSource> SkipWhile<TSource>(this IEnumerable<TSource> source,
