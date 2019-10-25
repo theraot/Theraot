@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace System.Linq
 {
-    public static class EnumerableTheraotExtensions
+    public static partial class EnumerableTheraotExtensions
     {
 #if LESSTHAN_NET40
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)

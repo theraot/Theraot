@@ -466,55 +466,6 @@ namespace System.Linq
             }
         }
 
-        public static IEnumerable<TSource> Skip<TSource>(this IEnumerable<TSource> source, int count)
-        {
-            return SkipWhile(source, (_, i) => i < count);
-        }
-
-        public static IEnumerable<TSource> SkipWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            return SkipWhile(source, (item, _) => predicate(item));
-        }
-
-        public static IEnumerable<TSource> SkipWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return SkipWhileExtracted();
-
-            IEnumerable<TSource> SkipWhileExtracted()
-            {
-                var enumerator = source.GetEnumerator();
-                using (enumerator)
-                {
-                    for (var count = 0; enumerator.MoveNext(); count++)
-                    {
-                        if (!predicate(enumerator.Current, count))
-                        {
-                            while (true)
-                            {
-                                yield return enumerator.Current;
-                                if (!enumerator.MoveNext())
-                                {
-                                    yield break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         public static IEnumerable<TSource> Take<TSource>(this IEnumerable<TSource> source, int count)
         {
             if (source == null)
