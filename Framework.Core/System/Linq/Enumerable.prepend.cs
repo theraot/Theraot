@@ -6,7 +6,7 @@ namespace System.Linq
 {
     public static partial class Enumerable
     {
-        public static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource element)
+        public static IEnumerable<TSource> Prepend<TSource>(this IEnumerable<TSource> source, TSource element)
         {
             if (source == null)
             {
@@ -17,11 +17,11 @@ namespace System.Linq
 
             IEnumerable<TSource> Appended()
             {
+                yield return element;
                 foreach (var item in source)
                 {
                     yield return item;
                 }
-                yield return element;
             }
         }
     }

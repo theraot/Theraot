@@ -55,6 +55,25 @@ namespace System.Linq
 
             IEnumerable<TSource> Appended()
             {
+                foreach (var item in source)
+                {
+                    yield return item;
+                }
+                yield return element;
+            }
+        }
+
+        public static IEnumerable<TSource> Prepend<TSource>(this IEnumerable<TSource> source, TSource element)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return Appended();
+
+            IEnumerable<TSource> Appended()
+            {
                 yield return element;
                 foreach (var item in source)
                 {
