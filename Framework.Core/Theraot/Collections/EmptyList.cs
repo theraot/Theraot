@@ -7,17 +7,12 @@ namespace Theraot.Collections
     public sealed class EmptyList<T> : ProgressiveList<T>
     {
         private EmptyList()
-            : base(BuildEmptyEnumerable())
+            : base(Enumerable.Empty<T>())
         {
             ConsumeAll();
         }
 
         public static EmptyList<T> Instance { get; } = new EmptyList<T>();
-
-        private static IEnumerable<T> BuildEmptyEnumerable()
-        {
-            yield break;
-        }
     }
 }
 
