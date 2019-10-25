@@ -78,6 +78,26 @@ namespace TestRunner
             No.Op<Func<int, IEnumerable<TSource>>>(enumerable.SkipLast);
             No.Op<Func<Func<TSource, bool>, IEnumerable<TSource>>>(enumerable.SkipWhile);
             No.Op<Func<Func<TSource, int, bool>, IEnumerable<TSource>>>(enumerable.SkipWhile);
+            No.Op<Func<int, IEnumerable<TSource>>>(enumerable.Take);
+            No.Op<Func<int, IEnumerable<TSource>>>(enumerable.TakeLast);
+            No.Op<Func<Func<TSource, bool>, IEnumerable<TSource>>>(enumerable.TakeWhile);
+            No.Op<Func<Func<TSource, int, bool>, IEnumerable<TSource>>>(enumerable.TakeWhile);
+            No.Op<Func<TSource[]>>(enumerable.ToArray);
+            No.Op<Func<Func<TSource, TKey>, Dictionary<TKey, TSource>>>(enumerable.ToDictionary);
+            No.Op<Func<Func<TSource, TKey>, IEqualityComparer<TKey>, Dictionary<TKey, TSource>>>(enumerable.ToDictionary);
+            No.Op<Func<Func<TSource, TKey>, Func<TSource, TElement>, Dictionary<TKey, TElement>>>(enumerable.ToDictionary);
+            No.Op<Func<Func<TSource, TKey>, Func<TSource, TElement>, IEqualityComparer<TKey>, Dictionary<TKey, TElement>>>(enumerable.ToDictionary);
+            No.Op<Func<HashSet<TSource>>>(enumerable.ToHashSet);
+            No.Op<Func<IEqualityComparer<TSource>, HashSet<TSource>>>(enumerable.ToHashSet);
+            No.Op<Func<List<TSource>>>(enumerable.ToList);
+            No.Op<Func<Func<TSource, TKey>, ILookup<TKey, TSource>>>(enumerable.ToLookup);
+            No.Op<Func<Func<TSource, TKey>, IEqualityComparer<TKey>, ILookup<TKey, TSource>>>(enumerable.ToLookup);
+            No.Op<Func<Func<TSource, TKey>, Func<TSource, TElement>, ILookup<TKey, TElement>>>(enumerable.ToLookup);
+            No.Op<Func<Func<TSource, TKey>, Func<TSource, TElement>, IEqualityComparer<TKey>, ILookup<TKey, TElement>>>(enumerable.ToLookup);
+            No.Op<Func<IEnumerable<TSource>, IEnumerable<TSource>>>(enumerable.Union);
+            No.Op<Func<IEnumerable<TSource>, IEqualityComparer<TSource>, IEnumerable<TSource>>>(enumerable.Union);
+            No.Op<Func<Func<TSource, bool>, IEnumerable<TSource>>>(enumerable.Where);
+            No.Op<Func<Func<TSource, int, bool>, IEnumerable<TSource>>>(enumerable.Where);
             No.Op<Func<IEnumerable<TSecond>, Func<TSource, TSecond, TResult>, IEnumerable<TResult>>>(enumerable.Zip);
         }
 
@@ -180,6 +200,15 @@ namespace TestRunner
         {
             IEnumerable enumerable;
             No.Op<Func<IEnumerable<TResult>>>(enumerable.OfType<TResult>);
+        }
+
+        public static void OrderedEnumerableMethodAvailability()
+        {
+            IOrderedEnumerable<TSource> orderedEnumerable;
+            No.Op<Func<Func<TSource, TKey>, IOrderedEnumerable<TSource>>>(orderedEnumerable.ThenBy);
+            No.Op<Func<Func<TSource, TKey>, IComparer<TKey>, IOrderedEnumerable<TSource>>>(orderedEnumerable.ThenBy);
+            No.Op<Func<Func<TSource, TKey>, IOrderedEnumerable<TSource>>>(orderedEnumerable.ThenByDescending);
+            No.Op<Func<Func<TSource, TKey>, IComparer<TKey>, IOrderedEnumerable<TSource>>>(orderedEnumerable.ThenByDescending);
         }
 
         private class TAccumulate { }

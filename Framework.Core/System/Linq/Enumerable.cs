@@ -466,68 +466,6 @@ namespace System.Linq
             }
         }
 
-        public static IEnumerable<TSource> Take<TSource>(this IEnumerable<TSource> source, int count)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return TakeWhileExtracted();
-
-            IEnumerable<TSource> TakeWhileExtracted()
-            {
-                if (count > 0)
-                {
-                    var currentCount = 0;
-                    foreach (var item in source)
-                    {
-                        yield return item;
-                        currentCount++;
-                        if (currentCount == count)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            return TakeWhile(source, (item, _) => predicate(item));
-        }
-
-        public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate));
-            }
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-            return TakeWhileExtracted();
-
-            IEnumerable<TSource> TakeWhileExtracted()
-            {
-                var count = 0;
-                foreach (var item in source)
-                {
-                    if (!predicate(item, count))
-                    {
-                        break;
-                    }
-                    yield return item;
-                    count++;
-                }
-            }
-        }
-
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
             return ThenBy(source, keySelector, null);

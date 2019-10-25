@@ -244,37 +244,6 @@ namespace Theraot.Collections
             yield return source;
         }
 
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source)
-        {
-            switch (source)
-            {
-                case null:
-                    return new HashSet<T>();
-
-                case HashSet<T> hashSet:
-                    return hashSet;
-
-                default:
-                    return new HashSet<T>(source);
-            }
-        }
-
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
-        {
-            comparer ??= EqualityComparer<T>.Default;
-            switch (source)
-            {
-                case null:
-                    return new HashSet<T>(comparer);
-
-                case HashSet<T> hashSet when hashSet.Comparer.Equals(comparer):
-                    return hashSet;
-
-                default:
-                    return new HashSet<T>(source, comparer);
-            }
-        }
-
         [return: NotNull]
         public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T>? enumerable)
         {
