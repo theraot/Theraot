@@ -1,10 +1,12 @@
-﻿#if NET35
+﻿#if GREATERTHAN_NET30 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+
 using System.Collections.Generic;
 
 namespace System.Linq
 {
     public static class EnumerableTheraotExtensions
     {
+#if LESSTHAN_NET40
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
         {
             if (first == null)
@@ -40,6 +42,27 @@ namespace System.Linq
                 }
             }
         }
+#endif
+#if TARGETS_NET || LESSTHAN_NETSTANDARD16
+        public static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource element)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return Appended();
+
+            IEnumerable<TSource> Appended()
+            {
+                yield return element;
+                foreach (var item in source)
+                {
+                    yield return item;
+                }
+            }
+        }
+#endif
     }
 }
 
