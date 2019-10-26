@@ -15,7 +15,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
 using Theraot.Reflection;
-using DelegateHelper = System.Linq.Expressions.Compiler.DelegateHelper;
 
 namespace System.Linq.Expressions
 {

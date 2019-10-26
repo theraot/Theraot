@@ -17,7 +17,6 @@ using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
-using DelegateHelper = System.Linq.Expressions.Compiler.DelegateHelper;
 
 namespace System.Linq.Expressions
 {

@@ -14,7 +14,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
-using DelegateHelper = System.Linq.Expressions.Compiler.DelegateHelper;
+using Theraot.Reflection;
 
 namespace System.Dynamic
 {

@@ -4,15 +4,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions.Compiler;
 using System.Reflection;
 using Theraot.Collections;
-using Theraot.Reflection;
 
-namespace System.Linq.Expressions.Compiler
+namespace Theraot.Reflection
 {
-    internal static class DelegateHelper
+    public static class DelegateHelper
     {
         private const MethodAttributes _ctorAttributes = MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public;
 
