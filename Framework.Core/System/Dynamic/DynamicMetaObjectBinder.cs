@@ -10,6 +10,7 @@
 
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
@@ -230,7 +231,7 @@ namespace System.Dynamic
         {
             var expressions = DynamicMetaObject.GetExpressions(args);
 
-            var delegateType = DelegateHelpers.MakeDeferredSiteDelegate(args, ReturnType);
+            var delegateType = DelegateHelpers.MakeDelegateType(args.ConvertAll(ToType).Prepend(typeof(CallSite)).Append(ReturnType).ToArray());
 
             // Because we know the arguments match the delegate type (we just created the argument types)
             // we go directly to DynamicExpression.Make to avoid a bunch of unnecessary argument validation
@@ -239,6 +240,17 @@ namespace System.Dynamic
                 DynamicExpression.Make(ReturnType, delegateType, this, expressions),
                 rs
             );
+
+            static Type ToType(DynamicMetaObject arg)
+            {
+                var paramType = arg.Expression.Type;
+                if (arg.Expression is ParameterExpression pe && pe.IsByRef)
+                {
+                    paramType = paramType.MakeByRefType();
+                }
+
+                return paramType;
+            }
         }
     }
 }

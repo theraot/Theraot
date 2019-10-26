@@ -849,7 +849,7 @@ namespace System.Linq.Expressions
                 ValidateDynamicArgument(arg, nameof(arguments), i);
             }
 
-            var delegateType = DelegateHelpers.MakeCallSiteDelegate(arguments, returnType);
+            var delegateType = DelegateHelpers.MakeDelegateType(arguments.ConvertAll(exp => exp.Type).Prepend(typeof(CallSite)).Append(returnType).ToArray());
 
             // Since we made a delegate with argument types that exactly match,
             // we can skip delegate and argument validation

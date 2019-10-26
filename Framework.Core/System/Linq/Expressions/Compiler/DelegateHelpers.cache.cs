@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -7,7 +7,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Theraot.Collections;
 using Theraot.Reflection;
 
@@ -15,9 +14,17 @@ namespace System.Linq.Expressions.Compiler
 {
     internal static partial class DelegateHelpers
     {
+        private const MethodAttributes _ctorAttributes = MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public;
+
+        private const MethodImplAttributes _implAttributes = (MethodImplAttributes)((int)MethodImplAttributes.Runtime | (int)MethodImplAttributes.Managed);
+
+        private const MethodAttributes _invokeAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual;
+
         private const int _maximumArity = 17;
 
         private static readonly TypeInfo _delegateCache = new TypeInfo();
+
+        private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 
         internal static Type MakeDelegateType(params Type[] types)
         {
@@ -30,22 +37,6 @@ namespace System.Linq.Expressions.Compiler
                 // clone because MakeCustomDelegate can hold onto the array.
                 return curTypeInfo.DelegateType ??= curTypeInfo.DelegateType = MakeNewDelegate((Type[])types.Clone());
             }
-        }
-
-        private static Type MakeDelegateTypeExtracted(Type retType, int count, IEnumerable<Type> types)
-        {
-            // nope, go ahead and create it and spend the
-            // cost of creating the array.
-            var paramTypes = new Type[count + 2];
-            paramTypes[0] = typeof(CallSite);
-            paramTypes[count + 1] = retType;
-            var index = 0;
-            foreach (var type in types)
-            {
-                paramTypes[index + 1] = type;
-                index++;
-            }
-            return MakeNewDelegate(paramTypes)!;
         }
 
         private static Type MakeNewCustomDelegate(Type[] types)
