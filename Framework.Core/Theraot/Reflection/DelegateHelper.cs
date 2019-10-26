@@ -28,7 +28,7 @@ namespace Theraot.Reflection
 
         private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 
-        internal static Type MakeDelegateType(params Type[] types)
+        internal static Type MakeDelegateTypeInternal(params Type[] types)
         {
             lock (_delegateCache)
             {
