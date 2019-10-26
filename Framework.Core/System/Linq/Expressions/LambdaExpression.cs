@@ -219,10 +219,7 @@ namespace System.Linq.Expressions
         /// </remarks>
         public static Type GetDelegateType(params Type[] typeArgs)
         {
-            ContractUtils.RequiresNotNull(typeArgs, nameof(typeArgs));
-            ContractUtils.RequiresNotEmpty(typeArgs, nameof(typeArgs));
-            ContractUtils.RequiresNotNullItems(typeArgs, nameof(typeArgs));
-            return DelegateHelper.MakeDelegateType(typeArgs);
+            return DelegateHelper.GetDelegateType(typeArgs);
         }
 
         /// <summary>
@@ -763,7 +760,7 @@ namespace System.Linq.Expressions
 
             typeArgs[paramCount] = body.Type;
 
-            var delegateType = DelegateHelper.MakeDelegateType(typeArgs);
+            var delegateType = DelegateHelper.GetDelegateTypeInternal(typeArgs);
 
             return CreateLambda(delegateType, body, name, tailCall, parameterList);
         }

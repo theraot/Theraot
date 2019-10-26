@@ -487,7 +487,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             ValidateDynamicArgument(arg0, nameof(arg0));
-            var delegateType = DelegateHelper.MakeDelegateType(typeof(CallSite), arg0.Type, returnType);
+            var delegateType = DelegateHelper.GetDelegateTypeInternal(typeof(CallSite), arg0.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0);
         }
 
@@ -514,7 +514,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             ValidateDynamicArgument(arg0, nameof(arg0));
             ValidateDynamicArgument(arg1, nameof(arg1));
-            var delegateType = DelegateHelper.MakeDelegateType(typeof(CallSite), arg0.Type, arg1.Type, returnType);
+            var delegateType = DelegateHelper.GetDelegateTypeInternal(typeof(CallSite), arg0.Type, arg1.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1);
         }
 
@@ -543,7 +543,7 @@ namespace System.Linq.Expressions
             ValidateDynamicArgument(arg0, nameof(arg0));
             ValidateDynamicArgument(arg1, nameof(arg1));
             ValidateDynamicArgument(arg2, nameof(arg2));
-            var delegateType = DelegateHelper.MakeDelegateType(typeof(CallSite), arg0.Type, arg1.Type, arg2.Type, returnType);
+            var delegateType = DelegateHelper.GetDelegateTypeInternal(typeof(CallSite), arg0.Type, arg1.Type, arg2.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1, arg2);
         }
 
@@ -574,7 +574,7 @@ namespace System.Linq.Expressions
             ValidateDynamicArgument(arg1, nameof(arg1));
             ValidateDynamicArgument(arg2, nameof(arg2));
             ValidateDynamicArgument(arg3, nameof(arg3));
-            var delegateType = DelegateHelper.MakeDelegateType(typeof(CallSite), arg0.Type, arg1.Type, arg2.Type, arg3.Type, returnType);
+            var delegateType = DelegateHelper.GetDelegateTypeInternal(typeof(CallSite), arg0.Type, arg1.Type, arg2.Type, arg3.Type, returnType);
             return DynamicExpression.Make(returnType, delegateType, binder, arg0, arg1, arg2, arg3);
         }
 
@@ -848,7 +848,7 @@ namespace System.Linq.Expressions
                 ValidateDynamicArgument(arg, nameof(arguments), i);
             }
 
-            var delegateType = DelegateHelper.MakeDelegateType(arguments.ConvertAll(exp => exp.Type).Prepend(typeof(CallSite)).Append(returnType).ToArray());
+            var delegateType = DelegateHelper.GetDelegateTypeInternal(arguments.ConvertAll(exp => exp.Type).Prepend(typeof(CallSite)).Append(returnType).ToArray());
 
             // Since we made a delegate with argument types that exactly match,
             // we can skip delegate and argument validation

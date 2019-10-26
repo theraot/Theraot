@@ -28,7 +28,28 @@ namespace Theraot.Reflection
 
         private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 
-        internal static Type MakeDelegateTypeInternal(params Type[] types)
+        public static Type GetDelegateType(params Type[] types)
+        {
+            if (types == null)
+            {
+                throw new ArgumentNullException(nameof(types));
+            }
+            if (types.Length == 0)
+            {
+                throw new ArgumentException("Non-empty collection required", nameof(types));
+            }
+            for (var index = 0; index < types.Length; index++)
+            {
+                var type = types[index];
+                if (type == null)
+                {
+                    throw new ArgumentNullException($"{nameof(types)}[{index}]");
+                }
+            }
+            return GetDelegateTypeInternal(types);
+        }
+
+        internal static Type GetDelegateTypeInternal(params Type[] types)
         {
             lock (_delegateCache)
             {
