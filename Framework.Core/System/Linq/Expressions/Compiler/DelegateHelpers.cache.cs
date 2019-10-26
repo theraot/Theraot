@@ -12,7 +12,7 @@ using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
 {
-    internal static partial class DelegateHelpers
+    internal static class DelegateHelpers
     {
         private const MethodAttributes _ctorAttributes = MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public;
 
