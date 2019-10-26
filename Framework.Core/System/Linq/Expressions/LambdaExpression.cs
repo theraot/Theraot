@@ -17,7 +17,7 @@ using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
-using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
+using DelegateHelper = System.Linq.Expressions.Compiler.DelegateHelper;
 
 namespace System.Linq.Expressions
 {
@@ -223,7 +223,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(typeArgs, nameof(typeArgs));
             ContractUtils.RequiresNotEmpty(typeArgs, nameof(typeArgs));
             ContractUtils.RequiresNotNullItems(typeArgs, nameof(typeArgs));
-            return DelegateHelpers.MakeDelegateType(typeArgs);
+            return DelegateHelper.MakeDelegateType(typeArgs);
         }
 
         /// <summary>
@@ -764,7 +764,7 @@ namespace System.Linq.Expressions
 
             typeArgs[paramCount] = body.Type;
 
-            var delegateType = DelegateHelpers.MakeDelegateType(typeArgs);
+            var delegateType = DelegateHelper.MakeDelegateType(typeArgs);
 
             return CreateLambda(delegateType, body, name, tailCall, parameterList);
         }

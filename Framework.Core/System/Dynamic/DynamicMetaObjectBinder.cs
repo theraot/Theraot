@@ -14,7 +14,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
-using DelegateHelpers = System.Linq.Expressions.Compiler.DelegateHelpers;
+using DelegateHelper = System.Linq.Expressions.Compiler.DelegateHelper;
 
 namespace System.Dynamic
 {
@@ -231,7 +231,7 @@ namespace System.Dynamic
         {
             var expressions = DynamicMetaObject.GetExpressions(args);
 
-            var delegateType = DelegateHelpers.MakeDelegateType(args.ConvertAll(ToType).Prepend(typeof(CallSite)).Append(ReturnType).ToArray());
+            var delegateType = DelegateHelper.MakeDelegateType(args.ConvertAll(ToType).Prepend(typeof(CallSite)).Append(ReturnType).ToArray());
 
             // Because we know the arguments match the delegate type (we just created the argument types)
             // we go directly to DynamicExpression.Make to avoid a bunch of unnecessary argument validation
