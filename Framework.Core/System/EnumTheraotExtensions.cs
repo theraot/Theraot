@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40 || TARGETS_NETCORE || TARGETS_NETSTANDARD
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 
@@ -29,7 +29,7 @@ namespace System
                 throw new ArgumentException("Enum types don't match");
             }
 
-            switch (Type.GetTypeCode(type))
+            switch (TypeEx.GetTypeCode(type))
             {
                 case TypeCode.Byte:
                     var byteFlag = Convert.ToByte(flag, CultureInfo.InvariantCulture);
