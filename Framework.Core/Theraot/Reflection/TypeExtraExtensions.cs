@@ -29,7 +29,11 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool DelegateEquals(this Delegate @delegate, MethodInfo method, object target)
         {
-            return @delegate.GetMethodInfo().Equals(method) && @delegate.Target == target;
+            if (@delegate == null)
+            {
+                throw new ArgumentNullException(nameof(@delegate));
+            }
+            return DelegateEqualsExtracted(@delegate.GetMethodInfo(), @delegate.Target, method, target);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -97,7 +101,12 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Type GetNonNullable(this Type type)
         {
-            return type.IsNullable() ? Nullable.GetUnderlyingType(type) : type;
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            return Nullable.GetUnderlyingType(type) ?? type;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -109,9 +118,10 @@ namespace Theraot.Reflection
             }
 
             var parameterType = parameterInfo.ParameterType;
-            if (parameterType.IsByRef)
+            var elementType = parameterType.GetElementType();
+            if (elementType != null && parameterType.IsByRef)
             {
-                parameterType = parameterType.GetElementType();
+                parameterType = elementType;
             }
 
             return parameterType;
@@ -155,7 +165,7 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(methodInfo));
             }
 
-            return methodInfo.IsConstructor ? methodInfo.DeclaringType : ((MethodInfo)methodInfo).ReturnType;
+            return methodInfo.IsConstructor ? methodInfo.DeclaringType! : ((MethodInfo)methodInfo).ReturnType;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -488,7 +498,8 @@ namespace Theraot.Reflection
 
         internal static Type GetNonRefTypeInternal(this Type type)
         {
-            return type.IsByRef ? type.GetElementType() : type;
+            var elementType = type.GetElementType();
+            return elementType != null && type.IsByRef ? elementType : type;
         }
 
         internal static MethodInfo[] GetStaticMethodsInternal(this Type type)
@@ -541,6 +552,11 @@ namespace Theraot.Reflection
                    || type == typeof(ulong);
         }
 
+        private static bool DelegateEqualsExtracted(MethodInfo? delegateMethodInfo, object? delegateTarget, MethodInfo method, object target)
+        {
+            return method.Equals(delegateMethodInfo) && delegateTarget == target;
+        }
+
         private static bool GetBinaryPortableResult(Type type)
         {
             var info = type.GetTypeInfo();
@@ -562,7 +578,7 @@ namespace Theraot.Reflection
                 return false;
             }
 
-            return !info.IsAutoLayout && type.GetStructLayoutAttribute().Pack > 0;
+            return !info.IsAutoLayout && type.GetStructLayoutAttribute()?.Pack > 0;
         }
 
         private static bool GetBlittableResult(Type type)
@@ -646,7 +662,7 @@ namespace Theraot.Reflection
     public static partial class TypeExtraExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static StructLayoutAttribute GetStructLayoutAttribute(this Type type)
+        public static StructLayoutAttribute? GetStructLayoutAttribute(this Type type)
         {
 #if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
             var attributes = type.GetAttributes<StructLayoutAttribute>(false);
