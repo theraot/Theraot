@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -577,6 +578,79 @@ namespace Theraot.Collections
                 {
                     count++;
                 }
+            }
+        }
+    }
+
+    public static partial class Extensions
+    {
+        public static IEnumerable<TSource?> AsClassNullableEnumerable<TSource>(this IEnumerable<TSource> source)
+            where TSource : class
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return new ClassNullableEnumerable<TSource>(source);
+        }
+
+        public static IEnumerable<TSource?> AsStructNullableEnumerable<TSource>(this IEnumerable<TSource> source)
+            where TSource : struct
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return new StructNullableEnumerable<TSource>(source);
+        }
+
+        private class ClassNullableEnumerable<TSource> : IEnumerable<TSource?>
+            where TSource : class
+        {
+            private readonly IEnumerable<TSource> _source;
+
+            public ClassNullableEnumerable(IEnumerable<TSource> source)
+            {
+                _source = source;
+            }
+
+            public IEnumerator<TSource?> GetEnumerator()
+            {
+                foreach (var item in _source)
+                {
+                    yield return item;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        private class StructNullableEnumerable<TSource> : IEnumerable<TSource?>
+            where TSource : struct
+        {
+            private readonly IEnumerable<TSource> _source;
+
+            public StructNullableEnumerable(IEnumerable<TSource> source)
+            {
+                _source = source;
+            }
+
+            public IEnumerator<TSource?> GetEnumerator()
+            {
+                foreach (var item in _source)
+                {
+                    yield return item;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
     }
