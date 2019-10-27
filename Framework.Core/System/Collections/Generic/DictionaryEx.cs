@@ -10,6 +10,7 @@ namespace System.Collections.Generic
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+        where TKey : notnull
     {
         public DictionaryEx()
         {
@@ -20,6 +21,31 @@ namespace System.Collections.Generic
             : base(dictionary)
         {
             // Empty
+        }
+
+        public DictionaryEx(KeyValuePair<TKey, TValue>[] dictionary)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+            foreach (var pair in dictionary)
+            {
+                Add(pair.Key, pair.Value);
+            }
+        }
+
+        public DictionaryEx(KeyValuePair<TKey, TValue>[] dictionary, IEqualityComparer<TKey> comparer)
+            : base(comparer)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary));
+            }
+            foreach (var pair in dictionary)
+            {
+                Add(pair.Key, pair.Value);
+            }
         }
 
         public DictionaryEx(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
