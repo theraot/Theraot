@@ -3,12 +3,13 @@
 namespace Theraot.Collections.Specialized
 {
     public sealed class KeyedStack<TKey, TValue>
+        where TKey : notnull
     {
-        private readonly NullAwareDictionary<TKey, Stack<TValue>> _data;
+        private readonly Dictionary<TKey, Stack<TValue>> _data;
 
         public KeyedStack()
         {
-            _data = new NullAwareDictionary<TKey, Stack<TValue>>();
+            _data = new Dictionary<TKey, Stack<TValue>>();
         }
 
         public void Add(TKey key, TValue item)
