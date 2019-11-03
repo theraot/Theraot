@@ -66,9 +66,9 @@ namespace System.Collections.Generic
             }
 
             No.Op(context);
-            _wrapped = info.GetValue("dictionary", typeof(KeyValuePair<T, object?>[])) is KeyValuePair<T, object?>[] recovered
-                ? new NullAwareDictionary<T, object?>(recovered)
-                : new NullAwareDictionary<T, object?>();
+            var dictionary = (info.GetValue("dictionary", typeof(KeyValuePair<T, object?>[])) as KeyValuePair<T, object?>[]) ?? ArrayEx.Empty<KeyValuePair<T, object?>>();
+            var comparer = info.GetValue("comparer", typeof(IEqualityComparer<T>)) ?? EqualityComparer<T>.Default;
+            _wrapped = new NullAwareDictionary<T, object?>(dictionary, comparer);
         }
 
         public IEqualityComparer<T> Comparer => _wrapped.Comparer;
@@ -212,8 +212,9 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(info));
             }
 
-            _wrapped.Deconstruct(out var dictionary);
+            _wrapped.Deconstruct(out var dictionary, out var comparer);
             info.AddValue(nameof(dictionary), dictionary);
+            info.AddValue(nameof(comparer), comparer);
         }
 
         public void IntersectWith(IEnumerable<T> other)
