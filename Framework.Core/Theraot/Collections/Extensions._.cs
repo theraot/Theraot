@@ -193,6 +193,69 @@ namespace Theraot.Collections
             return items.Any(item => localCollection.Contains(item, comparer));
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, int sourceIndex, TExposed[] array)
+        {
+            ConvertedCopyTo(source.Skip(sourceIndex), convertion, array, 0);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, int sourceIndex, TExposed[] array, int arrayIndex)
+        {
+            ConvertedCopyTo(source.Skip(sourceIndex), convertion, array, arrayIndex);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, int sourceIndex, TExposed[] array, int arrayIndex, int countLimit)
+        {
+            ConvertedCopyTo(source.Skip(sourceIndex).Take(countLimit), convertion, array, arrayIndex);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, TExposed[] array)
+        {
+            ConvertedCopyTo(source, convertion, array, 0);
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, TExposed[] array, int arrayIndex)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (convertion == null)
+            {
+                throw new ArgumentNullException(nameof(convertion));
+            }
+
+            try
+            {
+                var index = arrayIndex;
+                foreach (var item in source)
+                {
+                    array[index] = convertion(item);
+                    index++;
+                }
+            }
+            catch (IndexOutOfRangeException exception)
+            {
+                throw new ArgumentException(exception.Message, nameof(array));
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, TExposed[] array, int arrayIndex, int countLimit)
+        {
+            ConvertedCopyTo(source.Take(countLimit), convertion, array, arrayIndex);
+        }
+
         public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)
         {
             if (source == null)

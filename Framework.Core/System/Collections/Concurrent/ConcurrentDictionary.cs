@@ -14,6 +14,7 @@ namespace System.Collections.Concurrent
 {
     [Serializable]
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
+        where TKey : notnull
     {
         private readonly ThreadSafeDictionary<TKey, TValue> _wrapped;
 

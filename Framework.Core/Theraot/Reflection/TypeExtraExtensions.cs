@@ -27,7 +27,7 @@ namespace Theraot.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static bool DelegateEquals(this Delegate @delegate, MethodInfo method, object target)
+        public static bool DelegateEquals(this Delegate @delegate, MethodInfo? method, object? target)
         {
             if (@delegate == null)
             {
@@ -552,9 +552,9 @@ namespace Theraot.Reflection
                    || type == typeof(ulong);
         }
 
-        private static bool DelegateEqualsExtracted(MethodInfo? delegateMethodInfo, object? delegateTarget, MethodInfo method, object target)
+        private static bool DelegateEqualsExtracted(MethodInfo? delegateMethodInfo, object? delegateTarget, MethodInfo? method, object? target)
         {
-            return method.Equals(delegateMethodInfo) && delegateTarget == target;
+            return EqualityComparer<MethodInfo?>.Default.Equals(method, delegateMethodInfo) && delegateTarget == target;
         }
 
         private static bool GetBinaryPortableResult(Type type)

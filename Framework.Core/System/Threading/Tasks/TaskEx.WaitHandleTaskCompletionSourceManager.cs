@@ -72,25 +72,23 @@ namespace System.Threading.Tasks
             {
                 var result = new WaitHandleTaskCompletionSourceManager(taskCompletionSource);
                 result._registeredWaitHandle[0] =
-                    ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, null, -1,
-                        true);
+                    ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, null, -1, true);
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle,
                 TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleTaskCompletionSourceManager(taskCompletionSource);
-                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle,
-                    result.CallbackWithTimeout, null, millisecondsTimeout, true);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, null, millisecondsTimeout, true);
             }
 
-            private void CallbackWithoutTimeout(object state, bool timeOut)
+            private void CallbackWithoutTimeout(object? state, bool timeOut)
             {
                 Unregister();
                 _taskCompletionSource.TrySetResult(true);
             }
 
-            private void CallbackWithTimeout(object state, bool timeOut)
+            private void CallbackWithTimeout(object? state, bool timeOut)
             {
                 Unregister();
                 if (timeOut)

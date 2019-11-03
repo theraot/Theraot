@@ -95,7 +95,7 @@ namespace Theraot.Threading.Needles
             return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
-        public sealed override bool Equals(object obj)
+        public sealed override bool Equals(object? obj)
         {
             if (obj is WeakNeedle<T> needle)
             {
@@ -132,7 +132,7 @@ namespace Theraot.Threading.Needles
                 return $"<Faulted: {Exception}>";
             }
 
-            return _handle != null && _handle.TryGetTarget(out var target) ? target.ToString() : "<Dead Needle>";
+            return _handle != null && _handle.TryGetTarget(out var target) ? target.ToString() ?? "<?>" : "<Dead Needle>";
         }
 
         public virtual bool TryGetValue(out T value)

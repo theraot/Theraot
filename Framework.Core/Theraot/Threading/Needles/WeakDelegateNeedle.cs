@@ -3,6 +3,7 @@
 #pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -38,7 +39,7 @@ namespace Theraot.Threading.Needles
             return !(other is null) && Equals(method, other.Target);
         }
 
-        public bool Equals(MethodInfo method, object target)
+        public bool Equals(MethodInfo? method, object? target)
         {
             return TryGetValue(out var value) && value.DelegateEquals(method, target);
         }
@@ -64,7 +65,7 @@ namespace Theraot.Threading.Needles
             }
 
             var method = otherValue.GetMethodInfo();
-            return value.GetMethodInfo().Equals(method) && value.Target != otherValue.Target;
+            return EqualityComparer<MethodInfo>.Default.Equals(value.GetMethodInfo(), method) && value.Target != otherValue.Target;
         }
 
         public void Invoke(object[] args)
@@ -99,7 +100,7 @@ namespace Theraot.Threading.Needles
         {
             if (TryGetValue(out var value))
             {
-                result = (TResult)value.DynamicInvoke(args);
+                result = (TResult)value.DynamicInvoke(args)!;
                 return true;
             }
 

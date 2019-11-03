@@ -209,7 +209,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 for (var subIndex = 0; subIndex < _capacity; subIndex++)
                 {
-                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], null, null);
+                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex]!, null, null);
                     if (foundFirst == null)
                     {
                         continue;
@@ -278,16 +278,16 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref use);
                 // May add - make sure second exists
                 // Read first
-                var foundFirst = Interlocked.CompareExchange(ref first, null, null);
+                var foundFirst = Interlocked.CompareExchange(ref first!, null, null);
                 // Try to restore second
-                var foundSecond = Interlocked.CompareExchange(ref second, foundFirst, null);
+                var foundSecond = Interlocked.CompareExchange(ref second!, foundFirst, null);
                 // second was set to first
                 if (foundSecond == null && foundFirst == null)
                 {
                     // We need to recreate the first
                     var result = factory();
                     // Try to set to first
-                    foundFirst = Interlocked.CompareExchange(ref first, result, null);
+                    foundFirst = Interlocked.CompareExchange(ref first!, result, null);
                     if (foundFirst == null)
                     {
                         // first was set to result
@@ -297,13 +297,13 @@ namespace Theraot.Collections.ThreadSafe
                         }
 
                         // Try to set to second
-                        Interlocked.CompareExchange(ref second, result, null);
+                        Interlocked.CompareExchange(ref second!, result, null);
                     }
                 }
             }
             finally
             {
-                DoLeave(ref use, ref first, ref second);
+                DoLeave(ref use, ref first, ref second!);
             }
         }
 
@@ -315,13 +315,13 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             // Erase second
-            Interlocked.Exchange(ref second, null);
+            Interlocked.Exchange(ref second!, null);
             // Erase first - second may have been restored by another thread
-            Interlocked.Exchange(ref first, null);
+            Interlocked.Exchange(ref first!, null);
             // Read second
-            var foundSecond = Interlocked.CompareExchange(ref second, null, null);
+            var foundSecond = Interlocked.CompareExchange(ref second!, null, null);
             // Set first to second - either erased or restored
-            Interlocked.CompareExchange(ref first, foundSecond, null);
+            Interlocked.CompareExchange(ref first!, foundSecond, null);
         }
 
         private static bool DoMayDecrement(ref int use, ref object first, ref object second, DoAction callback)
@@ -337,10 +337,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Increment(ref use);
                 // Read first
-                var foundFirst = Interlocked.CompareExchange(ref first, null, null);
+                var foundFirst = Interlocked.CompareExchange(ref first!, null, null);
                 // Try to restore second
-                Interlocked.CompareExchange(ref second, foundFirst, null);
-                if (callback(ref second))
+                Interlocked.CompareExchange(ref second!, foundFirst, null);
+                if (callback(ref second!))
                 {
                     Interlocked.Decrement(ref use);
                     return true;

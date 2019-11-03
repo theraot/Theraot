@@ -43,7 +43,8 @@ namespace Theraot.Threading
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
 
-                return Thread.GetData(_slot) is ReadOnlyStructNeedle<T>;
+                var slot = _slot;
+                return slot != null && Thread.GetData(slot) is ReadOnlyStructNeedle<T>;
             }
         }
 
@@ -57,24 +58,32 @@ namespace Theraot.Threading
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
 
-                var bundle = Thread.GetData(_slot);
-                if (bundle is INeedle<T> needle)
+                var slot = _slot;
+                if (slot != null)
                 {
-                    return needle.Value;
+                    var bundle = Thread.GetData(slot);
+                    if (bundle is INeedle<T> needle)
+                    {
+                        return needle.Value;
+                    }
+                }
+                else
+                {
+                    slot = InitializeSlot();
                 }
 
                 try
                 {
-                    Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
+                    Thread.SetData(slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
                     var result = valueFactory!.Invoke();
-                    Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
+                    Thread.SetData(slot, new ReadOnlyStructNeedle<T>(result));
                     return result;
                 }
                 catch (Exception exception)
                 {
                     if (exception != ThreadLocalHelper.RecursionGuardException)
                     {
-                        Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
+                        Thread.SetData(slot, new ExceptionStructNeedle<T>(exception));
                     }
 
                     throw;
@@ -87,12 +96,15 @@ namespace Theraot.Threading
                     throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
                 }
 
-                Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(value));
+                var slot = _slot ?? InitializeSlot();
+                Thread.SetData(slot, new ReadOnlyStructNeedle<T>(value));
             }
         }
 
-        IList<T> IThreadLocal<T>.Values => throw new InvalidOperationException();
         T IThreadLocal<T>.ValueForDebugDisplay => ValueForDebugDisplay;
+
+        IList<T> IThreadLocal<T>.Values => throw new InvalidOperationException();
+
         internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default;
 
         [DebuggerNonUserCode]
@@ -114,7 +126,8 @@ namespace Theraot.Threading
                 throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
             }
 
-            Thread.SetData(_slot, null);
+            var slot = _slot ?? InitializeSlot();
+            Thread.SetData(slot, null);
         }
 
         void IObserver<T>.OnCompleted()
@@ -129,7 +142,8 @@ namespace Theraot.Threading
                 throw new ObjectDisposedException(nameof(NoTrackingThreadLocal<T>));
             }
 
-            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
+            var slot = _slot ?? InitializeSlot();
+            Thread.SetData(slot, new ExceptionStructNeedle<T>(error));
         }
 
         void IObserver<T>.OnNext(T value)
@@ -144,7 +158,13 @@ namespace Theraot.Threading
 
         public bool TryGetValue(out T value)
         {
-            var bundle = Thread.GetData(_slot);
+            var slot = _slot;
+            if (slot == null)
+            {
+                value = default!;
+                return false;
+            }
+            var bundle = Thread.GetData(slot);
             if (!(bundle is INeedle<T> container))
             {
                 value = default!;
@@ -153,6 +173,18 @@ namespace Theraot.Threading
 
             value = container.Value;
             return true;
+        }
+
+        private LocalDataStoreSlot InitializeSlot()
+        {
+            var slot = Thread.AllocateDataSlot();
+            var found = Interlocked.CompareExchange(ref _slot, slot, null);
+            if (found != null)
+            {
+                slot = found;
+            }
+
+            return slot;
         }
     }
 }

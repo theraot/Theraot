@@ -93,7 +93,7 @@ namespace System.Threading.Tasks
                 cancellationToken.Register(() => result.Unregister());
             }
 
-            private void CallbackWithoutTimeout(object state, bool timeOut)
+            private void CallbackWithoutTimeout(object? state, bool timeOut)
             {
                 if (Unregister())
                 {
@@ -104,7 +104,7 @@ namespace System.Threading.Tasks
                 _taskCompletionSource.TrySetResult(true);
             }
 
-            private void CallbackWithTimeout(object state, bool timeOut)
+            private void CallbackWithTimeout(object? state, bool timeOut)
             {
                 if (Unregister())
                 {

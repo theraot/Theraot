@@ -7,6 +7,7 @@ using System.Collections.Generic;
 namespace Theraot.Collections.Specialized
 {
     public sealed class KeyCollection<TKey, TValue> : ICollection<TKey>, ICollection, IReadOnlyCollection<TKey>
+        where TKey : notnull
     {
         private readonly IDictionary<TKey, TValue> _wrapped;
 

@@ -8,6 +8,7 @@ using System.Linq;
 namespace Theraot.Collections.Specialized
 {
     public sealed class ValueCollection<TKey, TValue> : ICollection<TValue>, ICollection, IReadOnlyCollection<TValue>
+        where TKey : notnull
     {
         private readonly IDictionary<TKey, TValue> _wrapped;
 

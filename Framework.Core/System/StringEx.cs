@@ -192,6 +192,11 @@ namespace System
                 }
 
                 var itemToString = item.ToString();
+                if (itemToString == null)
+                {
+                    continue;
+                }
+
                 newArray[index - startIndex] = itemToString;
                 length += itemToString.Length;
             }
@@ -491,6 +496,11 @@ namespace System
                 }
 
                 var itemToString = item.ToString();
+                if (itemToString == null)
+                {
+                    continue;
+                }
+
                 newArray[index - startIndex] = itemToString;
                 length += itemToString.Length;
             }

@@ -25,6 +25,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     [Serializable]
     public sealed partial class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+        where TKey : notnull
     {
         private const int _defaultProbing = 1;
 

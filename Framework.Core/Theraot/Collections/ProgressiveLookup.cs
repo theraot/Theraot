@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +12,7 @@ namespace Theraot.Collections
     [DebuggerNonUserCode]
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
-        private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;
+        private readonly NullAwareDictionary<TKey, IGrouping<TKey, T>> _cache;
         private readonly IDisposable _subscription;
 
         public ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> enumerable)
@@ -37,11 +39,11 @@ namespace Theraot.Collections
             // Empty
         }
 
-        protected ProgressiveLookup(Progressor<IGrouping<TKey, T>> progressor, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey>? keyComparer, IEqualityComparer<T>? itemComparer)
+        protected ProgressiveLookup(Progressor<IGrouping<TKey, T>> progressor, NullAwareDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey>? keyComparer, IEqualityComparer<T>? itemComparer)
         {
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             Progressor = progressor ?? throw new ArgumentNullException(nameof(progressor));
-            _subscription = Progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
+            _subscription = Progressor.SubscribeAction(obj => _cache.Add(obj.Key, obj));
             Comparer = keyComparer ?? EqualityComparer<TKey>.Default;
             ItemComparer = itemComparer ?? EqualityComparer<T>.Default;
             Keys = EnumerationList<TKey>.Create(this.ConvertProgressive(input => input.Key));

@@ -9,6 +9,7 @@ using System.Security.Permissions;
 using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
+using Theraot.Threading.Needles;
 
 namespace System.Collections.Generic
 {
@@ -126,7 +127,7 @@ namespace System.Collections.Generic
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
 
-            _wrapped.Keys.CopyTo(array, arrayIndex);
+            _wrapped.Keys.ConvertedCopyTo(item => item.Value, array, arrayIndex);
         }
 
         public void CopyTo(T[] array)
@@ -141,7 +142,7 @@ namespace System.Collections.Generic
                 throw new ArgumentException("the Count property is larger than the size of the destination array.");
             }
 
-            _wrapped.Keys.CopyTo(array, 0);
+            _wrapped.Keys.ConvertedCopyTo(item => item.Value, array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex, int count)
@@ -383,7 +384,7 @@ namespace System.Collections.Generic
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly IEnumerator<KeyValuePair<T, object?>> _enumerator;
+            private readonly IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, object?>> _enumerator;
             private bool _valid;
 
             internal Enumerator(HashSet<T> hashSet)
@@ -423,7 +424,7 @@ namespace System.Collections.Generic
                 }
 
                 _valid = _enumerator.MoveNext();
-                Current = _enumerator.Current.Key;
+                Current = _enumerator.Current.Key.Value;
                 return _valid;
             }
 
@@ -436,7 +437,7 @@ namespace System.Collections.Generic
                     return;
                 }
 
-                Current = _enumerator.Current.Key;
+                Current = _enumerator.Current.Key.Value;
                 _enumerator.Reset();
             }
         }

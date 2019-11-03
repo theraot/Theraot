@@ -98,7 +98,7 @@ namespace Theraot.Threading
             currentAppDomain.DomainUnload += ReportApplicationDomainExit;
         }
 
-        private static void ReportApplicationDomainExit(object sender, EventArgs e)
+        private static void ReportApplicationDomainExit(object? sender, EventArgs e)
         {
             Volatile.Write(ref _status, _statusFinished);
         }

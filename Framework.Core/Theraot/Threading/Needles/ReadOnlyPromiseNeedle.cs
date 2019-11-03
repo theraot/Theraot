@@ -47,7 +47,7 @@ namespace Theraot.Threading.Needles
             return !(right is null) && left._promised.Equals(right._promised);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is ReadOnlyPromiseNeedle<T> needle)
             {

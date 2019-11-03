@@ -5,8 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Collections
 {
@@ -98,11 +100,11 @@ namespace Theraot.Collections
                 case null:
                     return ArrayEx.Empty<T>();
 
-                case ICollection<T> result:
-                    return result;
+                case ICollection<T> collection:
+                    return collection;
 
                 default:
-                    return new ProgressiveCollection<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 
@@ -128,7 +130,7 @@ namespace Theraot.Collections
                     return result;
 
                 default:
-                    return new ProgressiveList<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 
@@ -141,28 +143,54 @@ namespace Theraot.Collections
                 case null:
                     return EmptyCollection<T>.Instance;
 
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+                case T[] array:
+                    return Array.AsReadOnly(array);
+#endif
+
+                case ListEx<T> list:
+                    return list.AsReadOnly();
+
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+                case List<T> list:
+                    return list.AsReadOnly();
+#endif
+
                 case IReadOnlyCollection<T> result:
                     return result;
 
                 default:
-                    return new ProgressiveList<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IReadOnlyCollection<T> AsIReadOnlyList<T>(this IEnumerable<T>? source)
+        public static IReadOnlyList<T> AsIReadOnlyList<T>(this IEnumerable<T>? source)
         {
             switch (source)
             {
                 case null:
                     return EmptyCollection<T>.Instance;
 
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+                case T[] array:
+                    return Array.AsReadOnly(array);
+#endif
+
+                case ListEx<T> list:
+                    return list.AsReadOnly();
+
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+                case List<T> list:
+                    return list.AsReadOnly();
+#endif
+
                 case IReadOnlyList<T> result:
                     return result;
 
                 default:
-                    return new ProgressiveCollection<T>(source);
+                    return EnumerationList<T>.Create(source);
             }
         }
 
@@ -316,18 +344,20 @@ namespace Theraot.Collections
                 case null:
                     throw new ArgumentNullException(nameof(source));
 
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
                 case T[] array:
-#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NET45
-                    return EnumerationList<T>.Create(array);
-#else
                     return Array.AsReadOnly(array);
 #endif
+                case ListEx<T> list:
+                    return list.AsReadOnly();
+
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
                 case List<T> list:
-#if LESSTHAN_NETSTANDARD13 || LESSTHAN_NET45
-                    return EnumerationList<T>.Create(list);
-#else
                     return list.AsReadOnly();
 #endif
+
+                case IReadOnlyCollection<T> result:
+                    return result;
 
                 default:
                     return EnumerationList<T>.Create(source);
@@ -343,16 +373,44 @@ namespace Theraot.Collections
                 case null:
                     throw new ArgumentNullException(nameof(source));
 
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
                 case T[] array:
-#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NET45
-                    return EnumerationList<T>.Create(array);
-#else
                     return Array.AsReadOnly(array);
 #endif
+                case ListEx<T> list:
+                    return list.AsReadOnly();
+
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
                 case List<T> list:
-#if LESSTHAN_NETSTANDARD13 || LESSTHAN_NET45
-                    return EnumerationList<T>.Create(list);
-#else
+                    return list.AsReadOnly();
+#endif
+
+                case IReadOnlyList<T> result:
+                    return result;
+
+                default:
+                    return EnumerationList<T>.Create(source);
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: NotNull]
+        public static ICollection<T> WrapAsReadOnlyICollection<T>(this IEnumerable<T> source)
+        {
+            switch (source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+                case T[] array:
+                    return Array.AsReadOnly(array);
+#endif
+                case ListEx<T> list:
+                    return list.AsReadOnly();
+
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+                case List<T> list:
                     return list.AsReadOnly();
 #endif
 
@@ -584,18 +642,28 @@ namespace Theraot.Collections
 
     public static partial class Extensions
     {
-        public static IEnumerable<TSource?> AsClassNullableEnumerable<TSource>(this IEnumerable<TSource> source)
-            where TSource : class
+        public static IEnumerable<ReadOnlyStructNeedle<TSource>> AsNeedleEnumerable<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return new ClassNullableEnumerable<TSource>(source);
+            return new NeedleEnumerable<TSource>(source);
         }
 
-        public static IEnumerable<TSource?> AsStructNullableEnumerable<TSource>(this IEnumerable<TSource> source)
+        public static IEnumerable<TSource?> AsNullableClassEnumerable<TSource>(this IEnumerable<TSource> source)
+                    where TSource : class
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return new NullableClassEnumerable<TSource>(source);
+        }
+
+        public static IEnumerable<TSource?> AsNullableStructEnumerable<TSource>(this IEnumerable<TSource> source)
             where TSource : struct
         {
             if (source == null)
@@ -603,15 +671,38 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return new StructNullableEnumerable<TSource>(source);
+            return new NullableStructEnumerable<TSource>(source);
         }
 
-        private class ClassNullableEnumerable<TSource> : IEnumerable<TSource?>
-            where TSource : class
+        private class NeedleEnumerable<TSource> : IEnumerable<ReadOnlyStructNeedle<TSource>>
         {
             private readonly IEnumerable<TSource> _source;
 
-            public ClassNullableEnumerable(IEnumerable<TSource> source)
+            public NeedleEnumerable(IEnumerable<TSource> source)
+            {
+                _source = source;
+            }
+
+            public IEnumerator<ReadOnlyStructNeedle<TSource>> GetEnumerator()
+            {
+                foreach (var item in _source)
+                {
+                    yield return new ReadOnlyStructNeedle<TSource>(item);
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        private class NullableClassEnumerable<TSource> : IEnumerable<TSource?>
+                    where TSource : class
+        {
+            private readonly IEnumerable<TSource> _source;
+
+            public NullableClassEnumerable(IEnumerable<TSource> source)
             {
                 _source = source;
             }
@@ -630,12 +721,12 @@ namespace Theraot.Collections
             }
         }
 
-        private class StructNullableEnumerable<TSource> : IEnumerable<TSource?>
-            where TSource : struct
+        private class NullableStructEnumerable<TSource> : IEnumerable<TSource?>
+                    where TSource : struct
         {
             private readonly IEnumerable<TSource> _source;
 
-            public StructNullableEnumerable(IEnumerable<TSource> source)
+            public NullableStructEnumerable(IEnumerable<TSource> source)
             {
                 _source = source;
             }
@@ -651,6 +742,149 @@ namespace Theraot.Collections
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+        }
+    }
+
+    public static partial class Extensions
+    {
+        public static IReadOnlyCollection<TSource?> AsNullableClassReadOnlyCollection<TSource>(this IReadOnlyCollection<TSource> source)
+            where TSource : class
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return new ClassNullableCollection<TSource>(source);
+        }
+
+        public static IReadOnlyCollection<TSource?> AsNullableStructReadOnlyCollection<TSource>(this IReadOnlyCollection<TSource> source)
+            where TSource : struct
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            return new StructNullableCollection<TSource>(source);
+        }
+
+        private class ClassNullableCollection<TSource> : IReadOnlyCollection<TSource?>, ICollection<TSource?>
+            where TSource : class
+        {
+            private readonly IReadOnlyCollection<TSource> _source;
+
+            public ClassNullableCollection(IReadOnlyCollection<TSource> source)
+            {
+                _source = source;
+            }
+
+            public int Count => _source.Count;
+
+            bool ICollection<TSource?>.IsReadOnly => true;
+
+            void ICollection<TSource?>.Add(TSource? item)
+            {
+                throw new NotSupportedException();
+            }
+
+            void ICollection<TSource?>.Clear()
+            {
+                throw new NotSupportedException();
+            }
+
+            public bool Contains(TSource? item)
+            {
+                return item != null && ContainsExtracted(item);
+            }
+
+            public void CopyTo(TSource?[] array, int arrayIndex)
+            {
+                CanCopyTo(Count, array, arrayIndex);
+                Extensions.CopyTo(this, array, arrayIndex);
+            }
+
+            public IEnumerator<TSource?> GetEnumerator()
+            {
+                foreach (var item in _source)
+                {
+                    yield return item;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            bool ICollection<TSource?>.Remove(TSource? item)
+            {
+                throw new NotSupportedException();
+            }
+
+            private bool ContainsExtracted(TSource item)
+            {
+                return System.Linq.Enumerable.Contains<TSource>(_source, item);
+            }
+        }
+
+        private class StructNullableCollection<TSource> : IReadOnlyCollection<TSource?>, ICollection<TSource?>
+            where TSource : struct
+        {
+            private readonly IReadOnlyCollection<TSource> _source;
+
+            public StructNullableCollection(IReadOnlyCollection<TSource> source)
+            {
+                _source = source;
+            }
+
+            public int Count => _source.Count;
+
+            bool ICollection<TSource?>.IsReadOnly => true;
+
+            void ICollection<TSource?>.Add(TSource? item)
+            {
+                throw new NotSupportedException();
+            }
+
+            void ICollection<TSource?>.Clear()
+            {
+                throw new NotSupportedException();
+            }
+
+            public bool Contains(TSource? item)
+            {
+                return item.HasValue && ContainsExtracted(item.Value);
+            }
+
+            public void CopyTo(TSource?[] array, int arrayIndex)
+            {
+                CanCopyTo(Count, array, arrayIndex);
+                Extensions.CopyTo(this, array, arrayIndex);
+            }
+
+            public IEnumerator<TSource?> GetEnumerator()
+            {
+                foreach (var item in _source)
+                {
+                    yield return item;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            bool ICollection<TSource?>.Remove(TSource? item)
+            {
+                throw new NotSupportedException();
+            }
+
+            private bool ContainsExtracted(TSource item)
+            {
+                return System.Linq.Enumerable.Contains<TSource>(_source, item);
             }
         }
     }

@@ -92,7 +92,7 @@ namespace Theraot.Threading.Needles
             return EqualityComparer<T>.Default.Equals(left._target, right._target);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is PromiseNeedle<T> other)
             {
@@ -136,8 +136,8 @@ namespace Theraot.Threading.Needles
             var target = _target;
             return IsCompleted
                 ? Exception == null
-                    ? target!.ToString()
-                    : Exception.ToString()
+                    ? target!.ToString() ?? "[?]"
+                    : Exception.ToString() ?? "[?]"
                 : "[Not Created]";
         }
 

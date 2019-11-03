@@ -228,7 +228,7 @@ namespace Theraot.Collections.ThreadSafe
             return input => input.TryGetValue(out var value) && _comparer.Equals(item, value);
         }
 
-        private void GarbageCollected(object sender, EventArgs e)
+        private void GarbageCollected(object? sender, EventArgs e)
         {
             RemoveDeadItems();
         }

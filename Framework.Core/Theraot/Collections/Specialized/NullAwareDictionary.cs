@@ -1,24 +1,25 @@
 ﻿// Needed for NET30
 
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
-// ReSharper disable HeuristicUnreachableCode
+#pragma warning disable CA1043 // Use Integral Or String Argument For Indexers
+#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Theraot.Reflection;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<ReadOnlyStructNeedle<TKey>, TValue>, IDictionary<TKey, TValue>
     {
+        private readonly ICollection<TKey> _keys;
         private readonly IEqualityComparer<TValue> _valueComparer;
         private readonly DictionaryEx<TKey, TValue> _wrapped;
         private bool _hasNull;
@@ -32,16 +33,16 @@ namespace Theraot.Collections.Specialized
             _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey)! }, _wrapped.Keys, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
                 Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
             {
-                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
-                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
-
-            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
+            _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
+            AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
         }
 
         public NullAwareDictionary(IEqualityComparer<TKey> comparer)
@@ -52,16 +53,16 @@ namespace Theraot.Collections.Specialized
             _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey)! }, _wrapped.Keys, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
                 Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
             {
-                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
-                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
-
-            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
+            _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
+            AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
         }
 
         public NullAwareDictionary(KeyValuePair<TKey, TValue>[] dictionary)
@@ -77,44 +78,72 @@ namespace Theraot.Collections.Specialized
             _valueComparer = EqualityComparer<TValue>.Default;
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<TKey>(new[] { default(TKey)! }, _wrapped.Keys, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
                 Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
             }
             else
             {
-                Keys = new ProxyCollection<TKey>(() => _wrapped.Keys).AsReadOnlyICollection;
-                Values = new ProxyCollection<TValue>(() => _wrapped.Values).AsReadOnlyICollection;
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Values = _wrapped.Values.WrapAsReadOnlyICollection();
+            }
+            _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
+            AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
+            foreach (var pair in dictionary)
+            {
+                Add(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value);
+            }
+        }
+
+        public NullAwareDictionary(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>[] dictionary)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException(nameof(dictionary), "dictionary is null.");
             }
 
-            AsReadOnly = new ReadOnlyDictionary<TKey, TValue>(this);
+            _wrapped = new DictionaryEx<TKey, TValue>();
+            _hasNull = false;
+            _valueForNull = new[] { default(TValue)! };
+            _valueComparer = EqualityComparer<TValue>.Default;
+            if (typeof(TKey).CanBeNull())
+            {
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+            }
+            else
+            {
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Values = _wrapped.Values.WrapAsReadOnlyICollection();
+            }
+            _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
+            AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
             {
                 Add(pair.Key, pair.Value);
             }
         }
 
-        public IReadOnlyDictionary<TKey, TValue> AsReadOnly { get; }
+        public IReadOnlyDictionary<ReadOnlyStructNeedle<TKey>, TValue> AsReadOnly { get; }
 
         public IEqualityComparer<TKey> Comparer => _wrapped.Comparer;
 
         public int Count => _hasNull ? _wrapped.Count + 1 : _wrapped.Count;
 
+        bool ICollection<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>.IsReadOnly => false;
+
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
-        public ICollection<TKey> Keys { get; }
+        public ICollection<ReadOnlyStructNeedle<TKey>> Keys { get; }
 
-        public ICollection<TValue> Values { get; }
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys
+        {
+            get { return _keys; }
+        }
 
-        public TValue this[[AllowNull] TKey key]
+        public TValue ValueForNullKey
         {
             get
             {
-                // key could be null
-                if (key != null)
-                {
-                    return _wrapped[key];
-                }
-
                 if (_hasNull)
                 {
                     return _valueForNull[0];
@@ -122,46 +151,79 @@ namespace Theraot.Collections.Specialized
 
                 throw new KeyNotFoundException();
             }
+
             set
             {
-                // key could be null
-                if (key == null)
-                {
-                    SetForNull(value); // OK
-                }
-                else
-                {
-                    _wrapped[key] = value;
-                }
+                _valueForNull[0] = value;
+                _hasNull = true;
             }
         }
 
-        TValue IDictionary<TKey, TValue>.this[TKey key]
+        public ICollection<TValue> Values { get; }
+
+        public TValue this[[AllowNull] TKey key]
         {
-            get => this[key];
-            set => this[key] = value;
+            get
+            {
+                if (key == null)
+                {
+                    return ValueForNullKey;
+                }
+                return _wrapped[key];
+            }
+            set
+            {
+                _wrapped[key] = value;
+            }
+        }
+
+        public TValue this[ReadOnlyStructNeedle<TKey> key]
+        {
+            get
+            {
+                if (key.IsAlive)
+                {
+                    return _wrapped[key.Value];
+                }
+                return ValueForNullKey;
+            }
+            set
+            {
+                if (key.IsAlive)
+                {
+                    this[key.Value] = value;
+                }
+                else
+                {
+                    ValueForNullKey = value;
+                }
+            }
         }
 
         public void Add([AllowNull] TKey key, TValue value)
         {
-            // key could  be null
             if (key == null)
             {
-                if (_hasNull)
-                {
-                    throw new ArgumentException("An element for the null key already exists.", nameof(key));
-                }
-
-                SetForNull(value);
+                AddForNullKey(value);
+                return;
             }
-            else
-            {
-                _wrapped.Add(key, value);
-            }
+            _wrapped.Add(key, value);
         }
 
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        public void Add(ReadOnlyStructNeedle<TKey> key, TValue value)
         {
+            if (key.IsAlive)
+            {
+                _wrapped.Add(key.Value, value);
+                return;
+            }
+            AddForNullKey(value);
+        }
+
+        void ICollection<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>.Add(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue> item)
+        {
+            var key = item.Key;
+            var value = item.Value;
             Add(key, value);
         }
 
@@ -172,10 +234,45 @@ namespace Theraot.Collections.Specialized
             Add(key, value);
         }
 
+        public void AddForNullKey(TValue value)
+        {
+            if (_hasNull)
+            {
+                throw new ArgumentException("An element for the null key already exists.");
+            }
+
+            ValueForNullKey = value;
+        }
+
         public void Clear()
         {
-            ClearForNull();
+            ClearForNullKey();
             _wrapped.Clear();
+        }
+
+        public void ClearForNullKey()
+        {
+            _hasNull = false;
+            _valueForNull = new[] { default(TValue)! };
+        }
+
+        bool ICollection<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>.Contains(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue> item)
+        {
+            var key = item.Key;
+            var value = item.Value;
+            if (!key.IsAlive)
+            {
+                return _hasNull && _valueComparer.Equals(_valueForNull[0], value);
+            }
+
+            try
+            {
+                return _valueComparer.Equals(_wrapped[key.Value], value);
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
@@ -199,44 +296,64 @@ namespace Theraot.Collections.Specialized
 
         public bool ContainsKey([AllowNull] TKey key)
         {
-            // key could  be null
-            return key == null ? _hasNull : _wrapped.ContainsKey(key);
+            if (key == null)
+            {
+                return ContainsNullKey();
+            }
+            return _wrapped.ContainsKey(key);
         }
 
-        bool IDictionary<TKey, TValue>.ContainsKey(TKey key)
+        public bool ContainsKey(ReadOnlyStructNeedle<TKey> key)
         {
-            return ContainsKey(key);
+            if (key.IsAlive)
+            {
+                return _wrapped.ContainsKey(key.Value);
+            }
+            return _hasNull;
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        public bool ContainsNullKey()
+        {
+            return _hasNull;
+        }
+
+        public void CopyTo(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
-            this.CopyTo(array);
+            _wrapped.ConvertedCopyTo(pair => new KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value), array, arrayIndex);
         }
 
-        public void Deconstruct(out KeyValuePair<TKey, TValue>[] dictionary)
+        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            var result = _wrapped as IEnumerable<KeyValuePair<TKey, TValue>>;
+            Extensions.CanCopyTo(Count, array, arrayIndex);
+            this.CopyTo(array, arrayIndex);
+        }
+
+        public void Deconstruct(out KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>[] dictionary)
+        {
+            var output = new List<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>();
+            if (_hasNull)
+            {
+                output.Add(new KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>(default, _valueForNull[0]));
+            }
+            foreach (var pair in _wrapped)
+            {
+                output.Add(new KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value));
+            }
+            dictionary = output.ToArray();
+        }
+
+        public IEnumerator<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>> GetEnumerator()
+        {
             if (_hasNull)
             {
                 // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                result = new ExtendedEnumerable<KeyValuePair<TKey, TValue>>(new[] { new KeyValuePair<TKey, TValue>(default!, _valueForNull[0]) }, result);
+                yield return new KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>(default, _valueForNull[0]);
             }
 
-            dictionary = result.ToArray();
-        }
-
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-        {
-            if (_hasNull)
+            foreach (var pair in _wrapped)
             {
-                // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
-                yield return new KeyValuePair<TKey, TValue>(default!, _valueForNull[0]);
-            }
-
-            foreach (var item in _wrapped)
-            {
-                yield return item;
+                yield return new KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value);
             }
         }
 
@@ -245,26 +362,61 @@ namespace Theraot.Collections.Specialized
             return GetEnumerator();
         }
 
-        public bool Remove([AllowNull] TKey key)
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            // key can be null
-            if (key != null)
+            if (_hasNull)
             {
-                return _wrapped.Remove(key);
+                // if the dictionary has null, TKey can be null, if TKey can be null, the default of TKey is null
+                yield return new KeyValuePair<TKey, TValue>(default!, _valueForNull[0]);
             }
 
-            if (!_hasNull)
+            foreach (var pair in _wrapped)
+            {
+                yield return pair;
+            }
+        }
+
+        public bool Remove([AllowNull] TKey key)
+        {
+            if (key == null)
+            {
+                return RemoveNullKey();
+            }
+            return _wrapped.Remove(key);
+        }
+
+        public bool Remove(ReadOnlyStructNeedle<TKey> key)
+        {
+            if (key.IsAlive)
+            {
+                return _wrapped.Remove(key.Value);
+            }
+            return RemoveNullKey();
+        }
+
+        bool ICollection<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>.Remove(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue> item)
+        {
+            var key = item.Key;
+            var value = item.Value;
+            if (!key.IsAlive)
+            {
+                if (!_valueComparer.Equals(_valueForNull[0], value))
+                {
+                    return false;
+                }
+
+                ClearForNullKey();
+                return true;
+            }
+
+            try
+            {
+                return _valueComparer.Equals(_wrapped[key.Value], value) && _wrapped.Remove(key.Value);
+            }
+            catch (KeyNotFoundException)
             {
                 return false;
             }
-
-            ClearForNull();
-            return true;
-        }
-
-        bool IDictionary<TKey, TValue>.Remove(TKey key)
-        {
-            return Remove(key);
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
@@ -278,7 +430,7 @@ namespace Theraot.Collections.Specialized
                     return false;
                 }
 
-                ClearForNull();
+                ClearForNullKey();
                 return true;
             }
 
@@ -292,58 +444,72 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        public bool RemoveNullKey()
+        {
+            if (!_hasNull)
+            {
+                return false;
+            }
+
+            ClearForNullKey();
+            return true;
+        }
+
         public bool TryAdd([AllowNull] TKey key, TValue value)
         {
-            // key could  be null
             if (key == null)
             {
-                if (_hasNull)
-                {
-                    return false;
-                }
+                return TryAddNullKey(value);
+            }
+            return _wrapped.TryAdd(key, value);
+        }
 
-                SetForNull(value);
-            }
-            else
+        public bool TryAdd(ReadOnlyStructNeedle<TKey> key, TValue value)
+        {
+            if (key.IsAlive)
             {
-                return _wrapped.TryAdd(key, value);
+                return _wrapped.TryAdd(key.Value, value);
             }
+            return TryAddNullKey(value);
+        }
+
+        public bool TryAddNullKey(TValue value)
+        {
+            if (_hasNull)
+            {
+                return false;
+            }
+            ValueForNullKey = value;
             return true;
         }
 
         public bool TryGetValue([AllowNull] TKey key, out TValue value)
         {
-            // key can be null
-            if (key != null)
+            if (key == null)
             {
-                return _wrapped.TryGetValue(key, out value);
+                return TryGetValueForNullKey(out value);
             }
+            return _wrapped.TryGetValue(key, out value);
+        }
 
+        public bool TryGetValue(ReadOnlyStructNeedle<TKey> key, out TValue value)
+        {
+            if (key.IsAlive)
+            {
+                return _wrapped.TryGetValue(key.Value, out value);
+            }
+            return TryGetValueForNullKey(out value);
+        }
+
+        public bool TryGetValueForNullKey(out TValue value)
+        {
             if (_hasNull)
             {
                 value = _valueForNull[0];
                 return true;
             }
-
             value = default!;
             return false;
-        }
-
-        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
-        {
-            return TryGetValue(key, out value);
-        }
-
-        private void ClearForNull()
-        {
-            _hasNull = false;
-            _valueForNull = new[] { default(TValue)! };
-        }
-
-        private void SetForNull(TValue value)
-        {
-            _valueForNull[0] = value;
-            _hasNull = true;
         }
     }
 }

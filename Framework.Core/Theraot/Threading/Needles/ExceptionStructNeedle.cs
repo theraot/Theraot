@@ -52,7 +52,7 @@ namespace Theraot.Threading.Needles
             return this == other;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is ExceptionStructNeedle<T> needle)
             {

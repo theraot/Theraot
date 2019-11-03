@@ -49,7 +49,7 @@ namespace Theraot.Threading.Needles
             return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is ReadOnlyStructNeedle<T> other)
             {
@@ -76,7 +76,7 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             var value = Value;
-            return IsAlive ? value!.ToString() : "<Dead Needle>";
+            return IsAlive ? value!.ToString() ?? "<?>" : "<Dead Needle>";
         }
 
         private bool Equals(T otherValue)
