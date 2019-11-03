@@ -24,7 +24,7 @@ namespace Theraot.Collections.ThreadSafe
     ///     desired interface.
     /// </remarks>
     [Serializable]
-    public sealed partial class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public sealed partial class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IHasComparer<TKey>
     {
         private const int _defaultProbing = 1;
 

@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
     // TODO: this is actually a Weak Key dictionary useful to extend objects, there could also be Weak Value dictionaries useful for caches, and fully weak dictionary useful for the combination.
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IHasComparer<TKey>, ICloneable
         where TKey : class
     {
         private readonly KeyCollection<TKey, TValue> _keyCollection;
@@ -278,6 +278,16 @@ namespace Theraot.Collections.ThreadSafe
                 yield return new KeyValuePair<TKey, TValue>(foundKey, value);
                 _reservoir.DonateNeedle(item.Key);
             }
+        }
+
+        object ICloneable.Clone()
+        {
+            var result = new WeakDictionary<TKey, TValue>(Comparer);
+            foreach (var pair in this)
+            {
+                result.AddNew(pair.Key, pair.Value);
+            }
+            return result;
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)

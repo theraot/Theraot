@@ -1,4 +1,4 @@
-﻿// Needed for NET30
+// Needed for NET30
 
 #pragma warning disable CA1043 // Use Integral Or String Argument For Indexers
 #pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
@@ -17,7 +17,7 @@ namespace Theraot.Collections.Specialized
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<ReadOnlyStructNeedle<TKey>, TValue>, IDictionary<TKey, TValue>
+    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<ReadOnlyStructNeedle<TKey>, TValue>, IDictionary<TKey, TValue>, IHasComparer<TKey>
     {
         private readonly ICollection<TKey> _keys;
         private readonly IEqualityComparer<TValue> _valueComparer;

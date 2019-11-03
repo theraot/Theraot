@@ -1,7 +1,8 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Theraot;
+using Theraot.Collections.Specialized;
 
 namespace System.Collections.Generic
 {
@@ -9,7 +10,7 @@ namespace System.Collections.Generic
     [ComVisible(false)]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
+    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, IHasComparer<TKey>
     {
         public DictionaryEx()
         {
