@@ -1,5 +1,6 @@
-// Needed for NET40
+﻿// Needed for NET40
 
+#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
 #pragma warning disable RCS1212 // Remove redundant assignment.
 #pragma warning disable RCS1231 // Make parameter ref read-only.
 
