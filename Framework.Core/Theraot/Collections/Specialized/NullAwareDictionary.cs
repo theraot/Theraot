@@ -529,6 +529,11 @@ namespace Theraot.Collections.Specialized
             }
             set
             {
+                if (key == null)
+                {
+                    ValueForNullKey = value;
+                    return;
+                }
                 _wrapped[key] = value;
             }
         }
