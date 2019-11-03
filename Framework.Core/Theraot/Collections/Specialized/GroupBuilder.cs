@@ -7,7 +7,6 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Collections.Specialized
 {
     internal sealed class GroupBuilder<TKey, TSource, TElement> : IDisposable
-        where TKey : notnull
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
 

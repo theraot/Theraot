@@ -54,13 +54,11 @@ namespace Theraot.Collections
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
-            where TKey : notnull
         {
             return GroupProgressiveBy(source, keySelector, elementSelector, resultSelector, null);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey>? comparer)
-            where TKey : notnull
         {
             if (source == null)
             {
@@ -94,7 +92,6 @@ namespace Theraot.Collections
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> resultSelector, IEqualityComparer<TKey>? comparer)
-            where TKey : notnull
         {
             if (source == null)
             {
@@ -119,7 +116,6 @@ namespace Theraot.Collections
         }
 
         public static IEnumerable<IGrouping<TKey, TSource>> GroupProgressiveBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer)
-            where TKey : notnull
         {
             if (source == null)
             {

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
+
+using System.Collections.Generic;
 
 namespace Theraot.Collections.Specialized
 {
     public sealed class KeyedStack<TKey, TValue>
-        where TKey : notnull
     {
         private readonly Dictionary<TKey, Stack<TValue>> _data;
 
