@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Theraot.Core
+namespace Theraot
 {
     public static partial class Platform
     {
