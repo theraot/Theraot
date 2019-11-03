@@ -5,10 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
 using Theraot.Threading.Needles;
+using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
@@ -298,6 +300,50 @@ namespace Theraot.Collections
 
                 default:
                     return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: NotNull]
+        public static bool TryGetComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, [NotNullWhen(true)] out IEqualityComparer<TKey>? comparer)
+        {
+            switch (source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+                case IHasComparer<TKey> sourceHasComparer:
+                    comparer = sourceHasComparer.Comparer;
+                    return true;
+
+                case Dictionary<TKey, TValue> sourceAsDictionary:
+                    comparer = sourceAsDictionary.Comparer;
+                    return true;
+
+                default:
+                    comparer = null;
+                    return false;
+            }
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: NotNull]
+        public static IDictionary<TKey, TValue> WithComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, IEqualityComparer<TKey>? comparer)
+        {
+            comparer ??= EqualityComparer<TKey>.Default;
+            switch (source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+                case IHasComparer<TKey> sourceHasComparer when sourceHasComparer.Comparer.Equals(comparer):
+                    return source;
+
+                case Dictionary<TKey, TValue> sourceAsDictionary when sourceAsDictionary.Comparer.Equals(comparer):
+                    return sourceAsDictionary;
+
+                default:
+                    return new DictionaryEx<TKey, TValue>(source, comparer);
             }
         }
 
