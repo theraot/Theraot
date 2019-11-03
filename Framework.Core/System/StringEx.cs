@@ -186,12 +186,8 @@ namespace System
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (item == null)
-                {
-                    continue;
-                }
 
-                var itemToString = item.ToString();
+                var itemToString = item?.ToString();
                 if (itemToString == null)
                 {
                     continue;
@@ -490,12 +486,8 @@ namespace System
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (item == null)
-                {
-                    continue;
-                }
 
-                var itemToString = item.ToString();
+                var itemToString = item?.ToString();
                 if (itemToString == null)
                 {
                     continue;

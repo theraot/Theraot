@@ -7,12 +7,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Collections.Concurrent;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections.Specialized;
 using Theraot.Threading.Needles;
-using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
@@ -873,7 +870,7 @@ namespace Theraot.Collections
 
             private bool ContainsExtracted(TSource item)
             {
-                return System.Linq.Enumerable.Contains<TSource>(_source, item);
+                return System.Linq.Enumerable.Contains(_source, item);
             }
         }
 
@@ -932,7 +929,7 @@ namespace Theraot.Collections
 
             private bool ContainsExtracted(TSource item)
             {
-                return System.Linq.Enumerable.Contains<TSource>(_source, item);
+                return System.Linq.Enumerable.Contains(_source, item);
             }
         }
     }

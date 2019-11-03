@@ -194,31 +194,31 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, int sourceIndex, TExposed[] array)
+        public static void ConvertedCopyTo<TCovered, TUncovered>(this IEnumerable<TCovered> source, Func<TCovered, TUncovered> conversion, int sourceIndex, TUncovered[] array)
         {
-            ConvertedCopyTo(source.Skip(sourceIndex), convertion, array, 0);
+            ConvertedCopyTo(source.Skip(sourceIndex), conversion, array, 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, int sourceIndex, TExposed[] array, int arrayIndex)
+        public static void ConvertedCopyTo<TCovered, TUncovered>(this IEnumerable<TCovered> source, Func<TCovered, TUncovered> conversion, int sourceIndex, TUncovered[] array, int arrayIndex)
         {
-            ConvertedCopyTo(source.Skip(sourceIndex), convertion, array, arrayIndex);
+            ConvertedCopyTo(source.Skip(sourceIndex), conversion, array, arrayIndex);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, int sourceIndex, TExposed[] array, int arrayIndex, int countLimit)
+        public static void ConvertedCopyTo<TCovered, TUncovered>(this IEnumerable<TCovered> source, Func<TCovered, TUncovered> conversion, int sourceIndex, TUncovered[] array, int arrayIndex, int countLimit)
         {
-            ConvertedCopyTo(source.Skip(sourceIndex).Take(countLimit), convertion, array, arrayIndex);
+            ConvertedCopyTo(source.Skip(sourceIndex).Take(countLimit), conversion, array, arrayIndex);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, TExposed[] array)
+        public static void ConvertedCopyTo<TCovered, TUncovered>(this IEnumerable<TCovered> source, Func<TCovered, TUncovered> conversion, TUncovered[] array)
         {
-            ConvertedCopyTo(source, convertion, array, 0);
+            ConvertedCopyTo(source, conversion, array, 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, TExposed[] array, int arrayIndex)
+        public static void ConvertedCopyTo<TUnderlying, TUncovered>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TUncovered> conversion, TUncovered[] array, int arrayIndex)
         {
             if (source == null)
             {
@@ -230,9 +230,9 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(array));
             }
 
-            if (convertion == null)
+            if (conversion == null)
             {
-                throw new ArgumentNullException(nameof(convertion));
+                throw new ArgumentNullException(nameof(conversion));
             }
 
             try
@@ -240,7 +240,7 @@ namespace Theraot.Collections
                 var index = arrayIndex;
                 foreach (var item in source)
                 {
-                    array[index] = convertion(item);
+                    array[index] = conversion(item);
                     index++;
                 }
             }
@@ -251,9 +251,9 @@ namespace Theraot.Collections
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void ConvertedCopyTo<TUnderlying, TExposed>(this IEnumerable<TUnderlying> source, Func<TUnderlying, TExposed> convertion, TExposed[] array, int arrayIndex, int countLimit)
+        public static void ConvertedCopyTo<TCovered, TUncovered>(this IEnumerable<TCovered> source, Func<TCovered, TUncovered> conversion, TUncovered[] array, int arrayIndex, int countLimit)
         {
-            ConvertedCopyTo(source.Take(countLimit), convertion, array, arrayIndex);
+            ConvertedCopyTo(source.Take(countLimit), conversion, array, arrayIndex);
         }
 
         public static List<TOutput> ConvertFiltered<T, TOutput>(this IEnumerable<T> source, Func<T, TOutput> converter, Predicate<T> filter)

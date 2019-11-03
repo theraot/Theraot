@@ -14,7 +14,6 @@ using Theraot.Reflection;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represent a thread-safe lock-free hash based dictionary.
     /// </summary>

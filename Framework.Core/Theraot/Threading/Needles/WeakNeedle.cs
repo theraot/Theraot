@@ -1,6 +1,7 @@
 ﻿// Needed for Workaround
 
 // ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable ConstantNullCoalescingCondition
 
 using System;
 using System.Collections.Generic;

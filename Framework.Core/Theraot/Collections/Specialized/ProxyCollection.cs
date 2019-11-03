@@ -105,35 +105,35 @@ namespace Theraot.Collections.Specialized
     }
 
     [DebuggerNonUserCode]
-    public class ProxyCollection<TUnderlying, TExposed> : ICollection<TExposed>
+    public class ProxyCollection<TCovered, TUncovered> : ICollection<TUncovered>
     {
-        private readonly Func<TUnderlying, TExposed> _expose;
-        private readonly Func<TExposed, TUnderlying> _unexpose;
-        private readonly Func<ICollection<TUnderlying>> _wrapped;
+        private readonly Func<TUncovered, TCovered> _cover;
+        private readonly Func<TCovered, TUncovered> _uncover;
+        private readonly Func<ICollection<TCovered>> _wrapped;
 
-        public ProxyCollection(Func<ICollection<TUnderlying>> wrapped, Func<TUnderlying, TExposed> expose, Func<TExposed, TUnderlying> unexpose)
+        public ProxyCollection(Func<ICollection<TCovered>> wrapped, Func<TCovered, TUncovered> uncover, Func<TUncovered, TCovered> cover)
         {
-            _expose = expose ?? throw new ArgumentNullException(nameof(expose));
-            _unexpose = unexpose ?? throw new ArgumentNullException(nameof(unexpose));
+            _uncover = uncover ?? throw new ArgumentNullException(nameof(uncover));
+            _cover = cover ?? throw new ArgumentNullException(nameof(cover));
             _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
-            var wrapper = EnumerationList<TExposed>.Create(this);
+            var wrapper = EnumerationList<TUncovered>.Create(this);
             AsIReadOnlyCollection = wrapper;
             AsReadOnlyICollection = wrapper;
         }
 
-        public IReadOnlyCollection<TExposed> AsIReadOnlyCollection { get; }
+        public IReadOnlyCollection<TUncovered> AsIReadOnlyCollection { get; }
 
-        public ICollection<TExposed> AsReadOnlyICollection { get; }
+        public ICollection<TUncovered> AsReadOnlyICollection { get; }
 
         public int Count => Instance.Count;
 
         public bool IsReadOnly => Instance.IsReadOnly;
 
-        private ICollection<TUnderlying> Instance => _wrapped.Invoke() ?? ArrayEx.Empty<TUnderlying>();
+        private ICollection<TCovered> Instance => _wrapped.Invoke() ?? ArrayEx.Empty<TCovered>();
 
-        public void Add(TExposed item)
+        public void Add(TUncovered item)
         {
-            Instance.Add(_unexpose(item));
+            Instance.Add(_cover(item));
         }
 
         public void Clear()
@@ -141,30 +141,30 @@ namespace Theraot.Collections.Specialized
             Instance.Clear();
         }
 
-        public bool Contains(TExposed item)
+        public bool Contains(TUncovered item)
         {
-            return Instance.Contains(_unexpose(item));
+            return Instance.Contains(_cover(item));
         }
 
-        public void CopyTo(TExposed[] array)
+        public void CopyTo(TUncovered[] array)
         {
             Extensions.CanCopyTo(Count, array);
-            Instance.ConvertedCopyTo(_expose, array, 0);
+            Instance.ConvertedCopyTo(_uncover, array, 0);
         }
 
-        public void CopyTo(TExposed[] array, int arrayIndex)
+        public void CopyTo(TUncovered[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
-            Instance.ConvertedCopyTo(_expose, array, arrayIndex);
+            Instance.ConvertedCopyTo(_uncover, array, arrayIndex);
         }
 
-        public void CopyTo(TExposed[] array, int arrayIndex, int countLimit)
+        public void CopyTo(TUncovered[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Instance.ConvertedCopyTo(_expose, array, arrayIndex, countLimit);
+            Instance.ConvertedCopyTo(_uncover, array, arrayIndex, countLimit);
         }
 
-        public IEnumerator<TExposed> GetEnumerator()
+        public IEnumerator<TUncovered> GetEnumerator()
         {
             var collection = Instance;
             foreach (var item in collection)
@@ -174,7 +174,7 @@ namespace Theraot.Collections.Specialized
                     throw new InvalidOperationException();
                 }
 
-                yield return _expose(item);
+                yield return _uncover(item);
             }
         }
 
@@ -183,25 +183,25 @@ namespace Theraot.Collections.Specialized
             return GetEnumerator();
         }
 
-        public bool Remove(TExposed item)
+        public bool Remove(TUncovered item)
         {
-            return Instance.Remove(_unexpose(item));
+            return Instance.Remove(_cover(item));
         }
 
-        public bool Remove(TExposed item, IEqualityComparer<TExposed> comparer)
+        public bool Remove(TUncovered item, IEqualityComparer<TUncovered> comparer)
         {
             if (comparer == null)
             {
-                comparer = EqualityComparer<TExposed>.Default;
+                comparer = EqualityComparer<TUncovered>.Default;
             }
 
-            return Instance.RemoveWhereEnumerable(input => comparer.Equals(_expose(input), item)).Any();
+            return Instance.RemoveWhereEnumerable(input => comparer.Equals(_uncover(input), item)).Any();
         }
 
-        public TExposed[] ToArray()
+        public TUncovered[] ToArray()
         {
-            var array = new TExposed[Instance.Count];
-            Instance.ConvertedCopyTo(_expose, array, 0);
+            var array = new TUncovered[Instance.Count];
+            Instance.ConvertedCopyTo(_uncover, array, 0);
             return array;
         }
     }

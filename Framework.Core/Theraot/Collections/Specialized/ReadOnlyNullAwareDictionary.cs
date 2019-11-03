@@ -5,8 +5,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Theraot;
-using Theraot.Collections.Specialized;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized

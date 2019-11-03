@@ -2,13 +2,14 @@
 
 #pragma warning disable CA1043 // Use Integral Or String Argument For Indexers
 #pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable HeuristicUnreachableCode
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Theraot.Reflection;
 using Theraot.Threading.Needles;
 
@@ -39,7 +40,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -60,7 +61,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -86,7 +87,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -116,7 +117,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -146,7 +147,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -177,7 +178,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -216,7 +217,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -259,7 +260,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -286,7 +287,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -320,7 +321,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -362,7 +363,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -408,7 +409,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -438,7 +439,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
@@ -468,7 +469,7 @@ namespace Theraot.Collections.Specialized
             }
             else
             {
-                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection<TKey>, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
+                Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
