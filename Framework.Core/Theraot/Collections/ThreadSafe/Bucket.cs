@@ -58,12 +58,12 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Exchange(int index, T item, [MaybeNullWhen(true)] out T previous)
         {
-            var found = BucketHelper.Null;
+            object? found = BucketHelper.Null;
             previous = default!;
             var result = _bucketCore.DoMayIncrement
             (
                 index,
-                (ref object target) =>
+                (ref object? target) =>
                 {
                     found = Interlocked.Exchange(ref target, (object?)item ?? BucketHelper.Null);
                     return found == null;
@@ -101,9 +101,9 @@ namespace Theraot.Collections.ThreadSafe
             var result = _bucketCore.DoMayIncrement
             (
                 index,
-                (ref object target) =>
+                (ref object? target) =>
                 {
-                    var found = Interlocked.CompareExchange(ref target!, (object?)item ?? BucketHelper.Null, null);
+                    var found = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, null);
                     return found == null;
                 }
             );
@@ -122,9 +122,9 @@ namespace Theraot.Collections.ThreadSafe
             var result = _bucketCore.DoMayIncrement
             (
                 index,
-                (ref object target) =>
+                (ref object? target) =>
                 {
-                    found = Interlocked.CompareExchange(ref target!, (object?)item ?? BucketHelper.Null, null);
+                    found = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, null);
                     return found == null;
                 }
             );
@@ -147,7 +147,7 @@ namespace Theraot.Collections.ThreadSafe
             var result = _bucketCore.DoMayDecrement
             (
                 index,
-                (ref object target) => Interlocked.Exchange(ref target!, null) != null
+                (ref object? target) => Interlocked.Exchange(ref target, null) != null
             );
             if (result)
             {
@@ -159,14 +159,14 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool RemoveAt(int index, out T previous)
         {
-            var found = BucketHelper.Null;
+            object? found = BucketHelper.Null;
             previous = default!;
             var result = _bucketCore.DoMayDecrement
             (
                 index,
-                (ref object target) =>
+                (ref object? target) =>
                 {
-                    found = Interlocked.Exchange(ref target!, null);
+                    found = Interlocked.Exchange(ref target, null);
                     return found != null;
                 }
             );
@@ -194,9 +194,9 @@ namespace Theraot.Collections.ThreadSafe
             return _bucketCore.DoMayDecrement
             (
                 index,
-                (ref object target) =>
+                (ref object? target) =>
                 {
-                    var found = Interlocked.CompareExchange(ref target!, null, null);
+                    var found = Interlocked.CompareExchange(ref target, null, null);
                     if (found == null)
                     {
                         return false;
@@ -208,7 +208,7 @@ namespace Theraot.Collections.ThreadSafe
                         return false;
                     }
 
-                    var compare = Interlocked.CompareExchange(ref target!, null, found);
+                    var compare = Interlocked.CompareExchange(ref target, null, found);
                     if (found != compare)
                     {
                         return false;
@@ -225,7 +225,7 @@ namespace Theraot.Collections.ThreadSafe
             isNew = _bucketCore.DoMayIncrement
             (
                 index,
-                (ref object target) => Interlocked.Exchange(ref target, (object?)item ?? BucketHelper.Null) == null
+                (ref object? target) => Interlocked.Exchange(ref target, (object?)item ?? BucketHelper.Null) == null
             );
             if (isNew)
             {
@@ -240,9 +240,9 @@ namespace Theraot.Collections.ThreadSafe
             var done = _bucketCore.Do
             (
                 index,
-                (ref object target) =>
+                (ref object? target) =>
                 {
-                    found = Interlocked.CompareExchange(ref target!, null, null);
+                    found = Interlocked.CompareExchange(ref target, null, null);
                     return true;
                 }
             );
@@ -277,9 +277,9 @@ namespace Theraot.Collections.ThreadSafe
             var done = _bucketCore.Do
             (
                 index,
-                (ref object target) =>
+                (ref object? target) =>
                 {
-                    found = Interlocked.CompareExchange(ref target!, null, null);
+                    found = Interlocked.CompareExchange(ref target, null, null);
                     if (found == null)
                     {
                         return true;
@@ -292,7 +292,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
 
                     var item = itemUpdateFactory(comparisonItem);
-                    compare = Interlocked.CompareExchange(ref target!, (object?)item ?? BucketHelper.Null, found);
+                    compare = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, found);
                     result = found == compare;
                     return true;
                 }

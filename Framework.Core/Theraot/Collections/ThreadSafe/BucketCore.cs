@@ -17,8 +17,8 @@ namespace Theraot.Collections.ThreadSafe
         private const int _mask = _capacity - 1;
         private const int _maxLevel = 1 + (31 / _capacityLog2);
         private readonly int _level;
-        private object[]? _arrayFirst;
-        private object[]? _arraySecond;
+        private object?[]? _arrayFirst;
+        private object?[]? _arraySecond;
         private int[]? _arrayUse;
 
         public BucketCore()
@@ -43,14 +43,14 @@ namespace Theraot.Collections.ThreadSafe
                 var arrayFirst = _arrayFirst;
                 if (arrayFirst != null)
                 {
-                    ArrayReservoir<object>.DonateArray(arrayFirst);
+                    ArrayReservoir<object?>.DonateArray(arrayFirst);
                     _arrayFirst = null;
                 }
 
                 var arraySecond = _arraySecond;
                 if (arraySecond != null)
                 {
-                    ArrayReservoir<object>.DonateArray(arraySecond);
+                    ArrayReservoir<object?>.DonateArray(arraySecond);
                     _arraySecond = null;
                 }
 
@@ -93,7 +93,7 @@ namespace Theraot.Collections.ThreadSafe
                     ref arrayUse[subIndex],
                     ref arrayFirst[subIndex],
                     ref arraySecond[subIndex],
-                    (ref object target) => target is BucketCore core && core.Do(index, callback)
+                    (ref object? target) => target is BucketCore core && core.Do(index, callback)
                 );
             }
         }
@@ -128,7 +128,7 @@ namespace Theraot.Collections.ThreadSafe
                     ref arrayUse[subIndex],
                     ref arrayFirst[subIndex],
                     ref arraySecond[subIndex],
-                    (ref object target) => target is BucketCore core && core.DoMayDecrement(index, callback)
+                    (ref object? target) => target is BucketCore core && core.DoMayDecrement(index, callback)
                 );
             }
         }
@@ -165,7 +165,7 @@ namespace Theraot.Collections.ThreadSafe
                     ref arrayFirst[subIndex],
                     ref arraySecond[subIndex],
                     () => new BucketCore(_level - 1),
-                    (ref object target) => target is BucketCore core && core.DoMayIncrement(index, callback)
+                    (ref object? target) => target is BucketCore core && core.DoMayIncrement(index, callback)
                 );
             }
         }
@@ -209,7 +209,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 for (var subIndex = 0; subIndex < _capacity; subIndex++)
                 {
-                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex]!, null, null);
+                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], null, null);
                     if (foundFirst == null)
                     {
                         continue;
@@ -243,7 +243,7 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
-        private static bool Do(ref int use, ref object first, ref object second, DoAction callback)
+        private static bool Do(ref int use, ref object? first, ref object? second, DoAction callback)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -264,7 +264,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private static void DoEnsureSize(ref int use, ref object first, ref object second, Func<object> factory)
+        private static void DoEnsureSize(ref int use, ref object? first, ref object? second, Func<object> factory)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -278,16 +278,16 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref use);
                 // May add - make sure second exists
                 // Read first
-                var foundFirst = Interlocked.CompareExchange(ref first!, null, null);
+                var foundFirst = Interlocked.CompareExchange(ref first, null, null);
                 // Try to restore second
-                var foundSecond = Interlocked.CompareExchange(ref second!, foundFirst, null);
+                var foundSecond = Interlocked.CompareExchange(ref second, foundFirst, null);
                 // second was set to first
                 if (foundSecond == null && foundFirst == null)
                 {
                     // We need to recreate the first
                     var result = factory();
                     // Try to set to first
-                    foundFirst = Interlocked.CompareExchange(ref first!, result, null);
+                    foundFirst = Interlocked.CompareExchange(ref first, result, null);
                     if (foundFirst == null)
                     {
                         // first was set to result
@@ -297,17 +297,17 @@ namespace Theraot.Collections.ThreadSafe
                         }
 
                         // Try to set to second
-                        Interlocked.CompareExchange(ref second!, result, null);
+                        Interlocked.CompareExchange(ref second, result, null);
                     }
                 }
             }
             finally
             {
-                DoLeave(ref use, ref first, ref second!);
+                DoLeave(ref use, ref first, ref second);
             }
         }
 
-        private static void DoLeave(ref int use, ref object first, ref object second)
+        private static void DoLeave(ref int use, ref object? first, ref object? second)
         {
             if (Interlocked.Decrement(ref use) != 0)
             {
@@ -315,16 +315,16 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             // Erase second
-            Interlocked.Exchange(ref second!, null);
+            Interlocked.Exchange(ref second, null);
             // Erase first - second may have been restored by another thread
-            Interlocked.Exchange(ref first!, null);
+            Interlocked.Exchange(ref first, null);
             // Read second
-            var foundSecond = Interlocked.CompareExchange(ref second!, null, null);
+            var foundSecond = Interlocked.CompareExchange(ref second, null, null);
             // Set first to second - either erased or restored
-            Interlocked.CompareExchange(ref first!, foundSecond, null);
+            Interlocked.CompareExchange(ref first, foundSecond, null);
         }
 
-        private static bool DoMayDecrement(ref int use, ref object first, ref object second, DoAction callback)
+        private static bool DoMayDecrement(ref int use, ref object? first, ref object? second, DoAction callback)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
@@ -337,10 +337,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Increment(ref use);
                 // Read first
-                var foundFirst = Interlocked.CompareExchange(ref first!, null, null);
+                var foundFirst = Interlocked.CompareExchange(ref first, null, null);
                 // Try to restore second
-                Interlocked.CompareExchange(ref second!, foundFirst, null);
-                if (callback(ref second!))
+                Interlocked.CompareExchange(ref second, foundFirst, null);
+                if (callback(ref second))
                 {
                     Interlocked.Decrement(ref use);
                     return true;
@@ -354,7 +354,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        private static bool DoMayIncrement(ref int use, ref object first, ref object second, Func<object> factory, DoAction callback)
+        private static bool DoMayIncrement(ref int use, ref object? first, ref object? second, Func<object> factory, DoAction callback)
         {
 #if DEBUG
             // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons

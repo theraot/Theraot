@@ -17,7 +17,7 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     public sealed class FixedSizeBucket<T> : IBucket<T>
     {
-        private readonly object[] _entries;
+        private readonly object?[] _entries;
         private int _count;
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Theraot.Collections.ThreadSafe
                     if (old != null)
                     {
                         Array.Copy(old, 0, _entries, 0, _count);
-                        ArrayReservoir<object>.DonateArray(old);
+                        ArrayReservoir<object?>.DonateArray(old);
                     }
 
                     Capacity = _entries.Length;
@@ -72,7 +72,7 @@ namespace Theraot.Collections.ThreadSafe
                 var entries = _entries;
                 if (entries != null)
                 {
-                    ArrayReservoir<object>.DonateArray(entries);
+                    ArrayReservoir<object?>.DonateArray(entries);
                 }
             }
         }
@@ -251,7 +251,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentOutOfRangeException(nameof(index), "index must be greater or equal to 0 and less than capacity");
             }
 
-            var found = Interlocked.Exchange(ref _entries[index]!, null);
+            var found = Interlocked.Exchange(ref _entries[index], null);
             if (found == null)
             {
                 return false;
@@ -301,13 +301,13 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(check));
             }
 
-            var found = Interlocked.CompareExchange(ref _entries[index]!, null, null);
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found != null)
             {
                 var comparisonItem = found == BucketHelper.Null ? default : (T)found;
                 if (check(comparisonItem))
                 {
-                    var compare = Interlocked.CompareExchange(ref _entries[index]!, null, found);
+                    var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
                     if (found == compare)
                     {
                         Interlocked.Decrement(ref _count);
@@ -464,7 +464,7 @@ namespace Theraot.Collections.ThreadSafe
         internal bool InsertInternal(int index, T item, out T previous)
         {
             previous = default!;
-            var found = Interlocked.CompareExchange(ref _entries[index]!, (object?)item ?? BucketHelper.Null, null);
+            var found = Interlocked.CompareExchange(ref _entries[index], (object?)item ?? BucketHelper.Null, null);
             if (found == null)
             {
                 Interlocked.Increment(ref _count);
@@ -488,7 +488,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
 
-            var found = Interlocked.CompareExchange(ref entries[index]!, (object?)item ?? BucketHelper.Null, null);
+            var found = Interlocked.CompareExchange(ref entries[index], (object?)item ?? BucketHelper.Null, null);
             if (found == null)
             {
                 Interlocked.Increment(ref _count);
@@ -501,7 +501,7 @@ namespace Theraot.Collections.ThreadSafe
         internal bool RemoveAtInternal(int index, out T previous)
         {
             previous = default!;
-            var found = Interlocked.Exchange(ref _entries[index]!, null);
+            var found = Interlocked.Exchange(ref _entries[index], null);
             if (found == null)
             {
                 return false;
@@ -527,7 +527,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetInternal(int index, out T value)
         {
-            var found = Interlocked.CompareExchange(ref _entries[index]!, null, null);
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found == null)
             {
                 value = default!;
@@ -540,7 +540,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            var found = Interlocked.CompareExchange(ref _entries[index]!, null, null);
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             object? compare = BucketHelper.Null;
             var result = false;
             if (found != null)
@@ -549,7 +549,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (check!(comparisonItem))
                 {
                     var item = itemUpdateFactory!(comparisonItem);
-                    compare = Interlocked.CompareExchange(ref _entries[index]!, (object?)item ?? BucketHelper.Null, found);
+                    compare = Interlocked.CompareExchange(ref _entries[index], (object?)item ?? BucketHelper.Null, found);
                     result = found == compare;
                 }
             }
