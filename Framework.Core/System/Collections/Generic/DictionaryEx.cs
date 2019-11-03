@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Theraot;
@@ -10,7 +10,6 @@ namespace System.Collections.Generic
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>
-        where TKey : notnull
     {
         public DictionaryEx()
         {

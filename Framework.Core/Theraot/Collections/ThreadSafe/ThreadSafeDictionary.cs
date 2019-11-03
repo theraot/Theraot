@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+// Needed for NET40
 
 #pragma warning disable RCS1212 // Remove redundant assignment.
 #pragma warning disable RCS1231 // Make parameter ref read-only.
@@ -25,7 +25,6 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     [Serializable]
     public sealed partial class ThreadSafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
-        where TKey : notnull
     {
         private const int _defaultProbing = 1;
 
