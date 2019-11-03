@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
+
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Theraot;
