@@ -476,7 +476,7 @@ namespace MonoTests.System.Threading
                 );
                 source.Cancel();
 
-#if GREATERTHAN_NETCOREAPP11
+#if GREATERTHAN_NETCOREAPP11 && LESSTHAN_NETCOREAPP30
                 // Apparently callback execution order changed in .NET Core
                 // This would also mean we should not rely on it for portable code
                 Assert.IsTrue(unregister);
