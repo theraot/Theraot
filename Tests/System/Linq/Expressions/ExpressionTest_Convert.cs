@@ -250,7 +250,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.Constant(null, typeof(Bar)), typeof(Foo)
             );
-#if LESSTHAN_NETCOREAPP30
+#if TARGETS_NETCORE
             // Expressions in .NET Core also output the types
             Assert.AreEqual("Convert(null, Foo)", c.ToString());
 #else
@@ -284,7 +284,7 @@ namespace MonoTests.System.Linq.Expressions
             );
 
             Assert.AreEqual(ExpressionType.ConvertChecked, c.NodeType);
-#if LESSTHAN_NETCOREAPP30
+#if TARGETS_NETCORE
             // Expressions in .NET Core also output the types
             Assert.AreEqual("ConvertChecked(2, Int64)", c.ToString());
 #else

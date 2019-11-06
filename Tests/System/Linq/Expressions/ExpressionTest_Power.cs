@@ -58,7 +58,7 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual(ExpressionType.Power, p.NodeType, "Power#01");
             Assert.AreEqual(typeof(double), p.Type, "Add#02");
-#if LESSTHAN_NETCOREAPP30
+#if TARGETS_NETCORE
             // This changed for .NET Core
             Assert.AreEqual("(1 ** 2)", p.ToString());
 #else
