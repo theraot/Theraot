@@ -21,18 +21,6 @@ namespace System.Reflection
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static MethodInfo? GetSetMethod(this PropertyInfo property)
-        {
-            if (property == null)
-            {
-                throw new NullReferenceException(nameof(property));
-            }
-
-            var result = property.SetMethod;
-            return result?.IsPublic != true ? null : result;
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MethodInfo? GetGetMethod(this PropertyInfo property, bool nonPublic)
         {
             if (property == null)
@@ -46,6 +34,18 @@ namespace System.Reflection
                 return null;
             }
             return result;
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static MethodInfo? GetSetMethod(this PropertyInfo property)
+        {
+            if (property == null)
+            {
+                throw new NullReferenceException(nameof(property));
+            }
+
+            var result = property.SetMethod;
+            return result?.IsPublic != true ? null : result;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

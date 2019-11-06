@@ -80,6 +80,7 @@ namespace System.Collections.Generic
             : base(info, context)
 
 #else
+
         [Obsolete("This target platform does not support binary serialization.")]
         protected DictionaryEx(SerializationInfo info, StreamingContext context)
 #endif

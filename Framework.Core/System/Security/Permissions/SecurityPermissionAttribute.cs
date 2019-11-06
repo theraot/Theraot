@@ -1,8 +1,21 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Diagnostics;
 
 namespace System.Security.Permissions
 {
+    [Serializable]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
+    [Runtime.InteropServices.ComVisible(true)]
+    public abstract class CodeAccessSecurityAttribute : SecurityAttribute
+    {
+        protected CodeAccessSecurityAttribute(SecurityAction action)
+            : base(action)
+        {
+            // Empty
+        }
+    }
+
     [Serializable]
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
     [Runtime.InteropServices.ComVisible(true)]
@@ -20,15 +33,52 @@ namespace System.Security.Permissions
         public abstract IPermission? CreatePermission();
     }
 
-    [Serializable]
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-    [Runtime.InteropServices.ComVisible(true)]
-    public abstract class CodeAccessSecurityAttribute : SecurityAttribute
+    public sealed class SecurityPermission : CodeAccessPermission, IUnrestrictedPermission
     {
-        protected CodeAccessSecurityAttribute(SecurityAction action)
-            : base(action)
+        public SecurityPermission(PermissionState state)
         {
-            // Empty
+            Theraot.No.Op(state);
+        }
+
+        public SecurityPermission(SecurityPermissionFlag flag)
+        {
+            Theraot.No.Op(flag);
+        }
+
+        public SecurityPermissionFlag Flags { get; set; }
+
+        public override IPermission Copy()
+        {
+            return this;
+        }
+
+        public override void FromXml(SecurityElement securityElement)
+        {
+        }
+
+        public override IPermission? Intersect(IPermission target)
+        {
+            return default;
+        }
+
+        public override bool IsSubsetOf(IPermission target)
+        {
+            return false;
+        }
+
+        public bool IsUnrestricted()
+        {
+            return false;
+        }
+
+        public override SecurityElement? ToXml()
+        {
+            return default;
+        }
+
+        public override IPermission? Union(IPermission target)
+        {
+            return default;
         }
     }
 
@@ -133,28 +183,6 @@ namespace System.Security.Permissions
         {
             return Unrestricted ? new SecurityPermission(PermissionState.Unrestricted) : new SecurityPermission(Flags);
         }
-    }
-
-    public sealed class SecurityPermission : CodeAccessPermission, IUnrestrictedPermission
-    {
-        public SecurityPermission(PermissionState state)
-        {
-            Theraot.No.Op(state);
-        }
-
-        public SecurityPermission(SecurityPermissionFlag flag)
-        {
-            Theraot.No.Op(flag);
-        }
-
-        public SecurityPermissionFlag Flags { get; set; }
-        public override IPermission Copy() { return this; }
-        public override void FromXml(SecurityElement securityElement) { }
-        public override IPermission? Intersect(IPermission target) { return default; }
-        public override bool IsSubsetOf(IPermission target) { return false; }
-        public bool IsUnrestricted() { return false; }
-        public override SecurityElement? ToXml() { return default; }
-        public override IPermission? Union(IPermission target) { return default; }
     }
 }
 

@@ -34,6 +34,7 @@ namespace System
             : base(info, context)
 
 #else
+
         [Obsolete("This target platform does not support binary serialization.")]
         protected OperationCanceledExceptionEx(SerializationInfo info, StreamingContext context)
 #endif
@@ -70,6 +71,7 @@ namespace System
         public CancellationToken CancellationToken => _token ?? CancellationToken.None;
 
 #else
+
         public OperationCanceledExceptionEx(CancellationToken token)
             : base(token)
         {

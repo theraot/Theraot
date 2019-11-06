@@ -52,6 +52,7 @@ namespace System
         protected ApplicationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
 #else
+
         [Obsolete("This target platform does not support binary serialization.")]
         protected ApplicationException(SerializationInfo info, StreamingContext context)
 #endif

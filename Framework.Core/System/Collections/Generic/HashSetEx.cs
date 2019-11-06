@@ -17,7 +17,7 @@ namespace System.Collections.Generic
 #if NET35
         , ISet<T>
 #endif
-#if (LESSTHAN_NET46 && GREATERTHAN_NET30) || LESSTHAN_NETSTANDARD13
+#if (LESSTHAN_NET47 && GREATERTHAN_NET30) || LESSTHAN_NETSTANDARD13
         , IReadOnlyCollection<T>
 #endif
     {
@@ -50,6 +50,7 @@ namespace System.Collections.Generic
             : base(info, context)
 
 #else
+
         [Obsolete("This target platform does not support binary serialization.")]
         protected HashSetEx(SerializationInfo info, StreamingContext context)
 
@@ -130,10 +131,12 @@ namespace System.Collections.Generic
 #endif
 
 #if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
         public static IEqualityComparer<HashSet<T>> CreateSetComparer()
         {
             return HashSetEqualityComparer<T>.Instance;
         }
+
 #endif
     }
 }

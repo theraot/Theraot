@@ -11,6 +11,7 @@ using System.Linq;
 namespace System.Threading.Tasks
 {
 #if TARGETS_NETSTANDARD
+
     public static partial class TaskEx
     {
         private class WaitHandleCancellableTaskCompletionSourceManager

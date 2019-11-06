@@ -954,8 +954,6 @@ namespace System.Collections
                 _currentElement = null;
             }
 
-            public object Clone() => MemberwiseClone();
-
             public object? Current
             {
                 get
@@ -973,6 +971,8 @@ namespace System.Collections
                     return _currentElement;
                 }
             }
+
+            public object Clone() => MemberwiseClone();
 
             public bool MoveNext()
             {
@@ -1007,6 +1007,7 @@ namespace System.Collections
         {
             // this object is used to indicate enumeration has not started or has terminated
             private static readonly object _dummyObject = new object();
+
             private readonly bool _isArrayList;
             private readonly ArrayList _list;
             private readonly int _version;
@@ -1021,8 +1022,6 @@ namespace System.Collections
                 _isArrayList = list.GetType() == typeof(ArrayList);
                 _currentElement = _dummyObject;
             }
-
-            public object Clone() => MemberwiseClone();
 
             public object? Current
             {
@@ -1043,6 +1042,8 @@ namespace System.Collections
                     return temp;
                 }
             }
+
+            public object Clone() => MemberwiseClone();
 
             public bool MoveNext()
             {
@@ -1835,9 +1836,14 @@ namespace System.Collections
             private sealed class ListWrapperEnumWrapper : IEnumerator, ICloneable
             {
                 private readonly IEnumerator _enumerator;
+                private readonly int _initialCount;
+
+                // for reset
+                private readonly int _initialStartIndex;
+
                 private bool _firstCall; // firstCall to MoveNext
-                private readonly int _initialCount; // for reset
-                private readonly int _initialStartIndex; // for reset
+
+                // for reset
                 private int _remaining;
 
                 internal ListWrapperEnumWrapper(ListWrapper listWrapper, int startIndex, int count)
@@ -1863,11 +1869,6 @@ namespace System.Collections
                     _firstCall = prototype._firstCall;
                 }
 
-                public object Clone()
-                {
-                    return new ListWrapperEnumWrapper(this);
-                }
-
                 public object Current
                 {
                     get
@@ -1884,6 +1885,11 @@ namespace System.Collections
 
                         return _enumerator.Current;
                     }
+                }
+
+                public object Clone()
+                {
+                    return new ListWrapperEnumWrapper(this);
                 }
 
                 public bool MoveNext()

@@ -1,4 +1,5 @@
 ﻿#if TARGETS_NETSTANDARD
+
 namespace System
 {
     public class SystemException : Exception

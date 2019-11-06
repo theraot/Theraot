@@ -9,9 +9,8 @@ namespace System.Threading
     public static class ThreadPool
     {
         private static readonly Pool<ThreadPoolThread> _pool = new Pool<ThreadPoolThread>(1024, null);
-        private static int _threadCount;
-
         private static readonly ThreadSafeQueue<Action> _work = new ThreadSafeQueue<Action>();
+        private static int _threadCount;
 
         public static bool QueueUserWorkItem(WaitCallback callBack)
         {

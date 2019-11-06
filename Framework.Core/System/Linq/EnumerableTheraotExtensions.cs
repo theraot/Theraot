@@ -1,4 +1,4 @@
-﻿#if GREATERTHAN_NET30 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+﻿#if (GREATERTHAN_NET30 && LESSTHAN_NET48) || TARGETS_NETCORE || TARGETS_NETSTANDARD
 
 using System.Collections.Generic;
 
@@ -44,6 +44,7 @@ namespace System.Linq
         }
 #endif
 #if TARGETS_NET || LESSTHAN_NETSTANDARD16
+
         public static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource element)
         {
             if (source == null)
@@ -81,6 +82,7 @@ namespace System.Linq
                 }
             }
         }
+
 #endif
     }
 }

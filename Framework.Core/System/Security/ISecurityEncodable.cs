@@ -10,9 +10,20 @@ namespace System.Security
     [Runtime.InteropServices.ComVisible(true)]
     public interface ISecurityEncodable
     {
-        SecurityElement? ToXml();
-
         void FromXml(SecurityElement e);
+
+        SecurityElement? ToXml();
+    }
+
+    internal interface ISecurityElementFactory
+    {
+        string? Attribute(string attributeName);
+
+        object Copy();
+
+        SecurityElement CreateSecurityElement();
+
+        string GetTag();
     }
 
     public abstract class CodeAccessPermission : IPermission, IStackWalk
@@ -70,17 +81,6 @@ namespace System.Security
         {
             return null;
         }
-    }
-
-    internal interface ISecurityElementFactory
-    {
-        SecurityElement CreateSecurityElement();
-
-        object Copy();
-
-        string GetTag();
-
-        string? Attribute(string attributeName);
     }
 }
 

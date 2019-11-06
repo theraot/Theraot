@@ -17,10 +17,12 @@ namespace System.Runtime.Serialization
         private const int _defaultSize = 4;
         private readonly IFormatterConverter _converter;
 
+        private readonly Dictionary<string, int> _nameToIndex;
+
         // Even though we have a dictionary, we're still keeping all the arrays around for back-compat.
         // Otherwise we may run into potentially breaking behaviors like GetEnumerator() not returning entries in the same order they were added.
         private string[] _names;
-        private readonly Dictionary<string, int> _nameToIndex;
+
         private string _rootTypeAssemblyName;
         private string _rootTypeName;
         private Type[] _types;

@@ -8,6 +8,7 @@ using Theraot.Core;
 namespace Theraot.Threading
 {
 #if LESSTHAN_NETSTANDARD20
+
     public static partial class GCMonitor
     {
         private static partial class Internal

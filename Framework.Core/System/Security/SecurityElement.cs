@@ -344,6 +344,11 @@ namespace System.Security
             return null;
         }
 
+        string? ISecurityElementFactory.Attribute(string attributeName)
+        {
+            return Attribute(attributeName);
+        }
+
         public SecurityElement Copy()
         {
             return new SecurityElement(_tag, _text)
@@ -351,6 +356,16 @@ namespace System.Security
                 _children = _children == null ? null : new ArrayList(_children),
                 _attributes = _attributes == null ? null : new ArrayList(_attributes)
             };
+        }
+
+        object ISecurityElementFactory.Copy()
+        {
+            return Copy();
+        }
+
+        SecurityElement ISecurityElementFactory.CreateSecurityElement()
+        {
+            return this;
         }
 
         public bool Equal(SecurityElement other)
@@ -439,6 +454,11 @@ namespace System.Security
                 }
             }
             return true;
+        }
+
+        string ISecurityElementFactory.GetTag()
+        {
+            return Tag;
         }
 
         public SecurityElement? SearchForChildByTag(string tag)
@@ -628,26 +648,6 @@ namespace System.Security
                 (sb ??= new StringBuilder()).Append(str, newIndex, index - newIndex);
                 sb.Append(GetUnescapeSequence(str, index, out newIndex)); // updates the newIndex too
             }
-        }
-
-        string? ISecurityElementFactory.Attribute(string attributeName)
-        {
-            return Attribute(attributeName);
-        }
-
-        object ISecurityElementFactory.Copy()
-        {
-            return Copy();
-        }
-
-        SecurityElement ISecurityElementFactory.CreateSecurityElement()
-        {
-            return this;
-        }
-
-        string ISecurityElementFactory.GetTag()
-        {
-            return Tag;
         }
 
         private void ToString(object obj, Action<object, string?> write)

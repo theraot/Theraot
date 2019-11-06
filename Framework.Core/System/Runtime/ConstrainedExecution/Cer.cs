@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 namespace System.Runtime.ConstrainedExecution
 {
     public enum Cer

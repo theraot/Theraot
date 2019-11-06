@@ -20,10 +20,9 @@ namespace System.Threading
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static object? _threadProbe;
 
-        private string? _name;
-
         private readonly WeakReference<object>? _probe;
         private readonly ParameterizedThreadStart? _start;
+        private string? _name;
         private Task? _task;
 
         public Thread(ParameterizedThreadStart start)

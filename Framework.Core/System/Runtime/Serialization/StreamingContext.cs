@@ -12,6 +12,20 @@
 
 namespace System.Runtime.Serialization
 {
+    [Flags]
+    public enum StreamingContextStates
+    {
+        CrossProcess = 0x01,
+        CrossMachine = 0x02,
+        File = 0x04,
+        Persistence = 0x08,
+        Remoting = 0x10,
+        Other = 0x20,
+        Clone = 0x40,
+        CrossAppDomain = 0x80,
+        All = 0xFF,
+    }
+
     public readonly struct StreamingContext
     {
         public StreamingContext(StreamingContextStates state)
@@ -41,20 +55,6 @@ namespace System.Runtime.Serialization
         }
 
         public override int GetHashCode() => (int)State;
-    }
-
-    [Flags]
-    public enum StreamingContextStates
-    {
-        CrossProcess = 0x01,
-        CrossMachine = 0x02,
-        File = 0x04,
-        Persistence = 0x08,
-        Remoting = 0x10,
-        Other = 0x20,
-        Clone = 0x40,
-        CrossAppDomain = 0x80,
-        All = 0xFF,
     }
 }
 

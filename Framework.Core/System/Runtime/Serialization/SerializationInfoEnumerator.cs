@@ -27,12 +27,12 @@ namespace System.Runtime.Serialization
 
     public sealed class SerializationInfoEnumerator : IEnumerator
     {
-        private bool _current;
-        private int _currentItem;
         private readonly object?[] _data;
         private readonly string[] _members;
         private readonly int _numItems;
         private readonly Type[] _types;
+        private bool _current;
+        private int _currentItem;
 
         internal SerializationInfoEnumerator(string[] members, object?[] info, Type[] types, int numItems)
         {
@@ -63,6 +63,8 @@ namespace System.Runtime.Serialization
                 return new SerializationEntry(_members[_currentItem], _data[_currentItem], _types[_currentItem]);
             }
         }
+
+        object IEnumerator.Current => Current;
 
         public string Name
         {
@@ -99,8 +101,6 @@ namespace System.Runtime.Serialization
                 return _data[_currentItem];
             }
         }
-
-        object IEnumerator.Current => Current;
 
         public bool MoveNext()
         {

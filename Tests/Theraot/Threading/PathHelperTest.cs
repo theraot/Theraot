@@ -132,6 +132,30 @@ namespace Tests.Theraot.Threading
         }
 
         [Test]
+        public void Combine_Extra()
+        {
+            var source = new[] { "test", "/test", "\\test" };
+            const string Start = @"C:\test";
+            // tested this on Linux and Windows using Path.Combine...
+            foreach (var combination in source)
+            {
+                var result = PathHelper.Combine(Start, combination);
+                if
+                (
+                    combination.StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal)
+                    || combination.StartsWith(Path.AltDirectorySeparatorChar.ToString(), StringComparison.Ordinal)
+                )
+                {
+                    Assert.AreEqual(combination, result);
+                }
+                else
+                {
+                    Assert.AreEqual(StringEx.Join(Path.DirectorySeparatorChar.ToString(), Start, combination), result);
+                }
+            }
+        }
+
+        [Test]
         public void Combine_ManyParams()
         {
             var sep = Path.DirectorySeparatorChar.ToString();
@@ -205,30 +229,6 @@ namespace Tests.Theraot.Threading
                 PathHelper.Combine(sep + "one" + sep + sep, "two", "three", "four", "five"), "#A3");
 
             Assert.AreEqual("", PathHelper.Combine("", "", "", "", ""), "#A4");
-        }
-
-        [Test]
-        public void Combine_Extra()
-        {
-            var source = new[] { "test", "/test", "\\test" };
-            const string Start = @"C:\test";
-            // tested this on Linux and Windows using Path.Combine...
-            foreach (var combination in source)
-            {
-                var result = PathHelper.Combine(Start, combination);
-                if
-                (
-                    combination.StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal)
-                    || combination.StartsWith(Path.AltDirectorySeparatorChar.ToString(), StringComparison.Ordinal)
-                )
-                {
-                    Assert.AreEqual(combination, result);
-                }
-                else
-                {
-                    Assert.AreEqual(StringEx.Join(Path.DirectorySeparatorChar.ToString(), Start, combination), result);
-                }
-            }
         }
     }
 }

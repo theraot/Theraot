@@ -33,6 +33,7 @@ namespace System
     }
 
 #else
+
     public static class ArrayEx
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

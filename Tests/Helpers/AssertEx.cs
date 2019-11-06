@@ -21,18 +21,24 @@ namespace Tests.Helpers
 
         [DebuggerNonUserCode]
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void Throws<TException>(Func<object> code)
+        public static void AsyncThrows<TException>(Func<Task> func)
             where TException : Exception
         {
-            Assert.Throws<TException>(() => code());
-        }
-
-        [DebuggerNonUserCode]
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void Throws<TException, T>(Func<T> code)
-            where TException : Exception
-        {
-            Assert.Throws<TException>(() => code());
+            try
+            {
+                func.Invoke().Wait();
+            }
+            catch (AggregateException exception)
+            {
+                Assert.IsTrue(exception.InnerException?.GetType().IsSameOrSubclassOf(typeof(TException)));
+                return;
+            }
+            catch (Exception exception)
+            {
+                Assert.IsTrue(exception.GetType().IsSameOrSubclassOf(typeof(TException)));
+                return;
+            }
+            Assert.Fail();
         }
 
         [DebuggerNonUserCode]
@@ -61,24 +67,18 @@ namespace Tests.Helpers
 
         [DebuggerNonUserCode]
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void AsyncThrows<TException>(Func<Task> func)
+        public static void Throws<TException>(Func<object> code)
             where TException : Exception
         {
-            try
-            {
-                func.Invoke().Wait();
-            }
-            catch (AggregateException exception)
-            {
-                Assert.IsTrue(exception.InnerException?.GetType().IsSameOrSubclassOf(typeof(TException)));
-                return;
-            }
-            catch (Exception exception)
-            {
-                Assert.IsTrue(exception.GetType().IsSameOrSubclassOf(typeof(TException)));
-                return;
-            }
-            Assert.Fail();
+            Assert.Throws<TException>(() => code());
+        }
+
+        [DebuggerNonUserCode]
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void Throws<TException, T>(Func<T> code)
+            where TException : Exception
+        {
+            Assert.Throws<TException>(() => code());
         }
     }
 }
