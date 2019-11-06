@@ -44,22 +44,12 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestConvert
     {
+        private enum EineEnum
+        {
+            EineValue
+        }
+
         private interface IFoo
-        {
-            // Empty
-        }
-
-        private class Foo : IFoo
-        {
-            // Empty
-        }
-
-        private class Bar : Foo
-        {
-            // Empty
-        }
-
-        private class Baz
         {
             // Empty
         }
@@ -67,76 +57,6 @@ namespace MonoTests.System.Linq.Expressions
         private interface ITzap
         {
             // Empty
-        }
-
-        private struct EineStrukt
-        {
-            // Empty
-        }
-
-        private enum EineEnum
-        {
-            EineValue
-        }
-
-        private class Klang
-        {
-            private readonly int _i;
-
-            public Klang(int i)
-            {
-                _i = i;
-            }
-
-            public static explicit operator int(Klang k)
-            {
-                return k._i;
-            }
-        }
-
-        private struct Kling
-        {
-            private readonly int _i;
-
-            public Kling(int i)
-            {
-                _i = i;
-            }
-
-            public static implicit operator int(Kling k)
-            {
-                return k._i;
-            }
-        }
-
-        private struct ImplicitToShort
-        {
-            private readonly short _value;
-
-            public ImplicitToShort(short v)
-            {
-                _value = v;
-            }
-
-            public static implicit operator short(ImplicitToShort i)
-            {
-                return i._value;
-            }
-        }
-
-        private struct ImplicitToInt
-        {
-            private readonly int _value;
-
-            public ImplicitToInt(int v)
-            {
-                _value = v;
-            }
-
-            public static implicit operator int(ImplicitToInt i)
-            {
-                return i._value;
-            }
         }
 
         [Test]
@@ -330,7 +250,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 Expression.Constant(null, typeof(Bar)), typeof(Foo)
             );
-#if TARGETS_NETCORE
+#if LESSTHAN_NETCOREAPP30
             // Expressions in .NET Core also output the types
             Assert.AreEqual("Convert(null, Foo)", c.ToString());
 #else
@@ -364,7 +284,7 @@ namespace MonoTests.System.Linq.Expressions
             );
 
             Assert.AreEqual(ExpressionType.ConvertChecked, c.NodeType);
-#if TARGETS_NETCORE
+#if LESSTHAN_NETCOREAPP30
             // Expressions in .NET Core also output the types
             Assert.AreEqual("ConvertChecked(2, Int64)", c.ToString());
 #else
@@ -575,7 +495,7 @@ namespace MonoTests.System.Linq.Expressions
                     (
                         Expression.Constant((int?)0),
                         typeof(string),
-                        typeof(Convert).GetMethod("ToString", new[] {typeof(object)})
+                        typeof(Convert).GetMethod("ToString", new[] { typeof(object) })
                     );
                 }
             );
@@ -673,6 +593,86 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsFalse(c.IsLifted);
             Assert.IsFalse(c.IsLiftedToNull);
             Assert.IsNull(c.Method);
+        }
+
+        private struct EineStrukt
+        {
+            // Empty
+        }
+
+        private struct ImplicitToInt
+        {
+            private readonly int _value;
+
+            public ImplicitToInt(int v)
+            {
+                _value = v;
+            }
+
+            public static implicit operator int(ImplicitToInt i)
+            {
+                return i._value;
+            }
+        }
+
+        private struct ImplicitToShort
+        {
+            private readonly short _value;
+
+            public ImplicitToShort(short v)
+            {
+                _value = v;
+            }
+
+            public static implicit operator short(ImplicitToShort i)
+            {
+                return i._value;
+            }
+        }
+
+        private struct Kling
+        {
+            private readonly int _i;
+
+            public Kling(int i)
+            {
+                _i = i;
+            }
+
+            public static implicit operator int(Kling k)
+            {
+                return k._i;
+            }
+        }
+
+        private class Bar : Foo
+        {
+            // Empty
+        }
+
+        private class Baz
+        {
+            // Empty
+        }
+
+        private class Foo : IFoo
+        {
+            // Empty
+        }
+
+        private class Klang
+        {
+            private readonly int _i;
+
+            public Klang(int i)
+            {
+                _i = i;
+            }
+
+            public static explicit operator int(Klang k)
+            {
+                return k._i;
+            }
         }
     }
 }
