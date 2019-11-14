@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -11,7 +11,13 @@ namespace System.Threading
             ThreadingHelper.MemoryBarrier();
         }
 
+#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
+
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+#else
+
+        [MethodImpl(MethodImplOptionsEx.NoInlining)]
+#endif
         public static bool VolatileRead(ref bool location)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
@@ -159,7 +165,13 @@ namespace System.Threading
 #endif
         }
 
+#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
+
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+#else
+
+        [MethodImpl(MethodImplOptionsEx.NoInlining)]
+#endif
         public static void VolatileWrite(ref bool location, bool value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
