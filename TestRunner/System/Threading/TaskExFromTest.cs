@@ -15,7 +15,7 @@ namespace TestRunner.System.Threading
             using (var source = new CancellationTokenSource())
             {
                 source.Cancel();
-                var task = TaskEx.FromCanceled(source.Token);
+                var task = TaskExEx.FromCanceled(source.Token);
                 Assert.IsTrue(task.IsCanceled);
             }
         }
@@ -23,14 +23,14 @@ namespace TestRunner.System.Threading
         [Test]
         public static void TaskExFromCanceledThrowsOnNonCanceledToken()
         {
-            Assert.Throws<ArgumentOutOfRangeException, Task>(() => TaskEx.FromCanceled(CancellationToken.None));
+            Assert.Throws<ArgumentOutOfRangeException, Task>(() => TaskExEx.FromCanceled(CancellationToken.None));
         }
 
         [Test]
         public static void TaskExFromExceptionIsFaulted()
         {
             var exception = new Exception();
-            var task = TaskEx.FromException(exception);
+            var task = TaskExEx.FromException(exception);
             Assert.IsTrue(task.IsFaulted);
         }
 
@@ -38,7 +38,7 @@ namespace TestRunner.System.Threading
         public static void TaskExFromExceptionRespectsException()
         {
             var exception = new Exception();
-            var task = TaskEx.FromException(exception);
+            var task = TaskExEx.FromException(exception);
             // ReSharper disable once PossibleNullReferenceException
             Assert.AreEqual(exception, task.Exception.InnerException);
         }
@@ -65,7 +65,7 @@ namespace TestRunner.System.Threading
             using (var source = new CancellationTokenSource())
             {
                 source.Cancel();
-                var task = TaskEx.FromCanceled<bool>(source.Token);
+                var task = TaskExEx.FromCanceled<bool>(source.Token);
                 Assert.IsTrue(task.IsCanceled);
             }
         }
@@ -73,14 +73,14 @@ namespace TestRunner.System.Threading
         [Test]
         public static void TaskExGenericFromCanceledThrowsOnNonCanceledToken()
         {
-            Assert.Throws<ArgumentOutOfRangeException, Task<bool>>(() => TaskEx.FromCanceled<bool>(CancellationToken.None));
+            Assert.Throws<ArgumentOutOfRangeException, Task<bool>>(() => TaskExEx.FromCanceled<bool>(CancellationToken.None));
         }
 
         [Test]
         public static void TaskExGenericFromExceptionIsFaulted()
         {
             var exception = new Exception();
-            var task = TaskEx.FromException<bool>(exception);
+            var task = TaskExEx.FromException<bool>(exception);
             Assert.IsTrue(task.IsFaulted);
         }
 
@@ -88,7 +88,7 @@ namespace TestRunner.System.Threading
         public static void TaskExGenericFromExceptionRespectsException()
         {
             var exception = new Exception();
-            var task = TaskEx.FromException<bool>(exception);
+            var task = TaskExEx.FromException<bool>(exception);
             // ReSharper disable once PossibleNullReferenceException
             Assert.AreEqual(exception, task.Exception.InnerException);
         }

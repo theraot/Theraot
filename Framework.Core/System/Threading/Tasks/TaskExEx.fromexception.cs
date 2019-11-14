@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace System.Threading.Tasks
 {
-    public static partial class TaskEx
+    public static partial class TaskExEx
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromException<TResult>(Exception exception)

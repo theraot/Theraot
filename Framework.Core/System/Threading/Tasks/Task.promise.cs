@@ -53,22 +53,22 @@ namespace System.Threading.Tasks
 
         public static Task FromCanceled(CancellationToken cancellationToken)
         {
-            return TaskEx.FromCanceled(cancellationToken);
+            return TaskExEx.FromCanceled(cancellationToken);
         }
 
         public static Task<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
         {
-            return TaskEx.FromCanceled<TResult>(cancellationToken);
+            return TaskExEx.FromCanceled<TResult>(cancellationToken);
         }
 
         public static Task FromException(Exception exception)
         {
-            return TaskEx.FromException(exception);
+            return TaskExEx.FromException(exception);
         }
 
         public static Task<TResult> FromException<TResult>(Exception exception)
         {
-            return TaskEx.FromException<TResult>(exception);
+            return TaskExEx.FromException<TResult>(exception);
         }
 
         public static Task<TResult> FromResult<TResult>(TResult result)

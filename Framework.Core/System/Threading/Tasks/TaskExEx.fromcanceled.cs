@@ -3,6 +3,7 @@
 #pragma warning disable RCS1231 // Make parameter ref read-only.
 
 using System.Runtime.CompilerServices;
+using Theraot;
 
 #if NET40
 
@@ -12,8 +13,14 @@ using System.Linq;
 
 namespace System.Threading.Tasks
 {
-    public static partial class TaskEx
+    public static partial class TaskExEx
     {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Task FromCanceled(CancellationToken cancellationToken)
+        {
+            return FromCanceled<VoidStruct>(cancellationToken);
+        }
+
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
         {

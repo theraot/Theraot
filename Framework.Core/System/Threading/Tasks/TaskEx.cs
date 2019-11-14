@@ -1,4 +1,6 @@
-﻿#pragma warning disable CA1068 // CancellationToken parameters must come last
+﻿#if LESSTHAN_NET45 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
+#pragma warning disable CA1068 // CancellationToken parameters must come last
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable RCS1231 // Make parameter ref read-only.
 
@@ -24,12 +26,6 @@ namespace System.Threading.Tasks
     public static partial class TaskEx
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task FromCanceled(CancellationToken cancellationToken)
-        {
-            return FromCanceled<VoidStruct>(cancellationToken);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task FromCancellation(CancellationToken token)
         {
             return FromCancellation<VoidStruct>(token);
@@ -40,7 +36,7 @@ namespace System.Threading.Tasks
         {
             if (token.IsCancellationRequested)
             {
-                return FromCanceled<TResult>(token);
+                return TaskExEx.FromCanceled<TResult>(token);
             }
             var taskCompleteSource = new TaskCompletionSource<TResult>();
             if (token.CanBeCanceled)
@@ -348,7 +344,7 @@ namespace System.Threading.Tasks
             }
             if (cancellationToken.IsCancellationRequested)
             {
-                return FromCanceled(cancellationToken);
+                return TaskExEx.FromCanceled(cancellationToken);
             }
             if (millisecondsDelay == 0)
             {
@@ -493,7 +489,7 @@ namespace System.Threading.Tasks
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return FromCanceled<bool>(cancellationToken);
+                return TaskExEx.FromCanceled<bool>(cancellationToken);
             }
 
             var source = new TaskCompletionSource<bool>();
@@ -539,7 +535,7 @@ namespace System.Threading.Tasks
 
             if (cancellationToken.IsCancellationRequested)
             {
-                return FromCanceled<bool>(cancellationToken);
+                return TaskExEx.FromCanceled<bool>(cancellationToken);
             }
 
             var source = new TaskCompletionSource<bool>();
@@ -572,3 +568,5 @@ namespace System.Threading.Tasks
         }
     }
 }
+
+#endif
