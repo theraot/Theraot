@@ -19,26 +19,26 @@ namespace Theraot.Collections
         [return: NotNull]
         public static T[] AsArray<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return ArrayEx.Empty<T>();
-
-                case T[] array:
-                    return array;
-
-                case ICollection<T> collection:
-                    if (collection.Count == 0)
-                    {
-                        return ArrayEx.Empty<T>();
-                    }
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return result;
-
-                default:
-                    return new List<T>(source).ToArray();
+                return ArrayEx.Empty<T>();
             }
+            if (source is T[] array)
+            {
+                return array;
+            }
+            if (source is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return ArrayEx.Empty<T>();
+                }
+
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            return new List<T>(source).ToArray();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -46,22 +46,21 @@ namespace Theraot.Collections
         public static ICollection<T> AsDistinctICollection<T>(this IEnumerable<T>? source)
         {
 #if NET35
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return ArrayEx.Empty<T>();
-
-                case ISet<T> set:
-                    return set;
-
-                case HashSet<T> resultHashSet:
-                    // Workaround for .NET 3.5 when all you want is Contains and no duplicates
-                    // Remember that On .NET 3.5 HashSet is not an ISet
-                    return resultHashSet;
-
-                default:
-                    return new ProgressiveSet<T>(source);
+                return ArrayEx.Empty<T>();
             }
+            if (source is ISet<T> set)
+            {
+                return set;
+            }
+            if (source is HashSet<T> resultHashSet)
+            {
+                // Workaround for .NET 3.5 when all you want is Contains and no duplicates
+                // Remember that On .NET 3.5 HashSet is not an ISet
+                return resultHashSet;
+            }
+            return new ProgressiveSet<T>(source);
 #else
             return AsISet(source);
 #endif
@@ -73,20 +72,20 @@ namespace Theraot.Collections
         {
             comparer ??= EqualityComparer<T>.Default;
 #if NET35
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return new EmptySet<T>(comparer);
-
-                case HashSet<T> sourceAsHashSet when sourceAsHashSet.Comparer.Equals(comparer):
-                    return sourceAsHashSet;
-
-                case ProgressiveSet<T> sourceAsProgressiveSet when sourceAsProgressiveSet.Comparer.Equals(comparer):
-                    return sourceAsProgressiveSet;
-
-                default:
-                    return new ProgressiveSet<T>(source, comparer);
+                return new EmptySet<T>(comparer);
             }
+            if (source is HashSet<T> sourceAsHashSet && sourceAsHashSet.Comparer.Equals(comparer))
+            {
+                return sourceAsHashSet;
+            }
+            if (source is ProgressiveSet<T> sourceAsProgressiveSet &&
+                sourceAsProgressiveSet.Comparer.Equals(comparer))
+            {
+                return sourceAsProgressiveSet;
+            }
+            return new ProgressiveSet<T>(source, comparer);
 #else
             return AsISet(source, comparer);
 #endif
@@ -96,120 +95,118 @@ namespace Theraot.Collections
         [return: NotNull]
         public static ICollection<T> AsICollection<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return ArrayEx.Empty<T>();
-
-                case ICollection<T> collection:
-                    return collection;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                return ArrayEx.Empty<T>();
             }
+            if (source is ICollection<T> collection)
+            {
+                return collection;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static IList<T> AsIList<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return ArrayEx.Empty<T>();
-
-                case IList<T> list:
-                    return list;
-
-                case ICollection<T> collection:
-                    if (collection.Count == 0)
-                    {
-                        return ArrayEx.Empty<T>();
-                    }
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return result;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                return ArrayEx.Empty<T>();
             }
+            if (source is IList<T> list)
+            {
+                return list;
+            }
+            if (source is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return ArrayEx.Empty<T>();
+                }
+
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static IReadOnlyCollection<T> AsIReadOnlyCollection<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return EmptyCollection<T>.Instance;
-
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-                case T[] array:
-                    return Array.AsReadOnly(array);
-#endif
-
-                case ListEx<T> list:
-                    return list.AsReadOnly();
-
-#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
-                case List<T> list:
-                    return list.AsReadOnly();
-#endif
-
-                case IReadOnlyCollection<T> result:
-                    return result;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                return EmptyCollection<T>.Instance;
             }
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+            if (source is T[] array)
+            {
+                return Array.AsReadOnly(array);
+            }
+#endif
+            if (source is ListEx<T> listEx)
+            {
+                return listEx.AsReadOnly();
+            }
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+            if (source is List<T> list)
+            {
+                return list.AsReadOnly();
+            }
+#endif
+            if (source is IReadOnlyCollection<T> result)
+            {
+                return result;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static IReadOnlyList<T> AsIReadOnlyList<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return EmptyCollection<T>.Instance;
-
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-                case T[] array:
-                    return Array.AsReadOnly(array);
-#endif
-
-                case ListEx<T> list:
-                    return list.AsReadOnly();
-
-#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
-                case List<T> list:
-                    return list.AsReadOnly();
-#endif
-
-                case IReadOnlyList<T> result:
-                    return result;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                return EmptyCollection<T>.Instance;
             }
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+            if (source is T[] array)
+            {
+                return Array.AsReadOnly(array);
+            }
+#endif
+            if (source is ListEx<T> listEx)
+            {
+                return listEx.AsReadOnly();
+            }
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+            if (source is List<T> list)
+            {
+                return list.AsReadOnly();
+            }
+#endif
+            if (source is IReadOnlyList<T> result)
+            {
+                return result;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static ISet<T> AsISet<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return EmptySet<T>.Instance;
-
-                case ISet<T> resultISet:
-                    return resultISet;
-
-                default:
-                    return new ProgressiveSet<T>(source);
+                return EmptySet<T>.Instance;
             }
+            if (source is ISet<T> resultISet)
+            {
+                return resultISet;
+            }
+            return new ProgressiveSet<T>(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -217,54 +214,56 @@ namespace Theraot.Collections
         public static ISet<T> AsISet<T>(this IEnumerable<T>? source, IEqualityComparer<T>? comparer)
         {
             comparer ??= EqualityComparer<T>.Default;
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return EmptySet<T>.Instance;
-
-#if !NET35
-                case HashSet<T> sourceAsHashSet when sourceAsHashSet.Comparer.Equals(comparer):
-                    return sourceAsHashSet;
-#endif
-
-                case SortedSet<T> sourceAsSortedSet when sourceAsSortedSet.Comparer.Equals(comparer):
-                    return sourceAsSortedSet;
-
-                case ProgressiveSet<T> sourceAsProgressiveSet when sourceAsProgressiveSet.Comparer.Equals(comparer):
-                    return sourceAsProgressiveSet;
-
-                default:
-                    return new ProgressiveSet<T>(source, comparer);
+                return EmptySet<T>.Instance;
             }
+#if !NET35
+            if (source is HashSet<T> sourceAsHashSet && sourceAsHashSet.Comparer.Equals(comparer))
+            {
+                return sourceAsHashSet;
+            }
+#endif
+            if (source is SortedSet<T> sourceAsSortedSet && sourceAsSortedSet.Comparer.Equals(comparer))
+            {
+                return sourceAsSortedSet;
+            }
+
+            if (source is ProgressiveSet<T> sourceAsProgressiveSet && sourceAsProgressiveSet.Comparer.Equals(comparer))
+            {
+                return sourceAsProgressiveSet;
+            }
+            return new ProgressiveSet<T>(source, comparer);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static List<T> AsList<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return new List<T>();
-
-                case T[] array:
-                    return new List<T>(array);
-
-                case List<T> list:
-                    return list;
-
-                case ICollection<T> collection:
-                    if (collection.Count == 0)
-                    {
-                        return new List<T>();
-                    }
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return new List<T>(result);
-
-                default:
-                    return new List<T>(source);
+                return new List<T>();
             }
+            if (source is T[] array)
+            {
+                return new List<T>(array);
+            }
+            if (source is List<T> list)
+            {
+                return list;
+            }
+            if (source is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return new List<T>();
+                }
+
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return new List<T>(result);
+            }
+            return new List<T>(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -277,52 +276,52 @@ namespace Theraot.Collections
         [return: NotNull]
         public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T>? enumerable)
         {
-            switch (enumerable)
+            if (enumerable == null)
             {
-                case null:
-                    return EmptyCollection<T>.Instance;
-
-                case ReadOnlyCollectionEx<T> readOnlyCollectionEx:
-                    return readOnlyCollectionEx;
-
-                case T[] array:
-                    return array.Length == 0 ? EmptyCollection<T>.Instance : new ReadOnlyCollectionEx<T>(array);
-
-                case ICollection<T> collection:
-                    if (collection.Count == 0)
-                    {
-                        return EmptyCollection<T>.Instance;
-                    }
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return new ReadOnlyCollectionEx<T>(result);
-
-                default:
-                    return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
+                return EmptyCollection<T>.Instance;
             }
+            if (enumerable is ReadOnlyCollectionEx<T> readOnlyCollectionEx)
+            {
+                return readOnlyCollectionEx;
+            }
+            if (enumerable is T[] array)
+            {
+                return array.Length == 0 ? EmptyCollection<T>.Instance : new ReadOnlyCollectionEx<T>(array);
+            }
+            if (enumerable is ICollection<T> collection)
+            {
+                if (collection.Count == 0)
+                {
+                    return EmptyCollection<T>.Instance;
+                }
+
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return new ReadOnlyCollectionEx<T>(result);
+            }
+            return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static bool TryGetComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, [NotNullWhen(true)] out IEqualityComparer<TKey>? comparer)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-
-                case IHasComparer<TKey> sourceHasComparer:
-                    comparer = sourceHasComparer.Comparer;
-                    return true;
-
-                case Dictionary<TKey, TValue> sourceAsDictionary:
-                    comparer = sourceAsDictionary.Comparer;
-                    return true;
-
-                default:
-                    comparer = null;
-                    return false;
+                throw new ArgumentNullException(nameof(source));
             }
+            if (source is IHasComparer<TKey> sourceHasComparer)
+            {
+                comparer = sourceHasComparer.Comparer;
+                return true;
+            }
+            if (source is Dictionary<TKey, TValue> sourceAsDictionary)
+            {
+                comparer = sourceAsDictionary.Comparer;
+                return true;
+            }
+            comparer = null;
+            return false;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -330,166 +329,167 @@ namespace Theraot.Collections
         public static IDictionary<TKey, TValue> WithComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, IEqualityComparer<TKey>? comparer)
         {
             comparer ??= EqualityComparer<TKey>.Default;
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-
-                case IHasComparer<TKey> sourceHasComparer when sourceHasComparer.Comparer.Equals(comparer):
-                    return source;
-
-                case Dictionary<TKey, TValue> sourceAsDictionary when sourceAsDictionary.Comparer.Equals(comparer):
-                    return sourceAsDictionary;
-
-                default:
-                    return new DictionaryEx<TKey, TValue>(source, comparer);
+                throw new ArgumentNullException(nameof(source));
             }
+            if (source is IHasComparer<TKey> sourceHasComparer && sourceHasComparer.Comparer.Equals(comparer))
+            {
+                return source;
+            }
+            if (source is Dictionary<TKey, TValue> sourceAsDictionary && sourceAsDictionary.Comparer.Equals(comparer))
+            {
+                return sourceAsDictionary;
+            }
+            return new DictionaryEx<TKey, TValue>(source, comparer);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static ICollection<T> WrapAsICollection<T>(this IEnumerable<T> source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-
-                case ICollection<T> collection:
-                    return collection;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                throw new ArgumentNullException(nameof(source));
             }
+            if (source is ICollection<T> collection)
+            {
+                return collection;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static IList<T> WrapAsIList<T>(this IEnumerable<T> source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-
-                case IList<T> list:
-                    return list;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                throw new ArgumentNullException(nameof(source));
             }
+            if (source is IList<T> list)
+            {
+                return list;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static IReadOnlyCollection<T> WrapAsIReadOnlyCollection<T>(this IEnumerable<T> source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-                case T[] array:
-                    return Array.AsReadOnly(array);
-#endif
-                case ListEx<T> list:
-                    return list.AsReadOnly();
-
-#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
-                case List<T> list:
-                    return list.AsReadOnly();
-#endif
-
-                case IReadOnlyCollection<T> result:
-                    return result;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                throw new ArgumentNullException(nameof(source));
             }
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+            if (source is T[] array)
+            {
+                return Array.AsReadOnly(array);
+            }
+#endif
+            if (source is ListEx<T> listEx)
+            {
+                return listEx.AsReadOnly();
+            }
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+            if (source is List<T> list)
+            {
+                return list.AsReadOnly();
+            }
+#endif
+            if (source is IReadOnlyCollection<T> result)
+            {
+                return result;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static IReadOnlyList<T> WrapAsIReadOnlyList<T>(this IEnumerable<T> source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-                case T[] array:
-                    return Array.AsReadOnly(array);
-#endif
-                case ListEx<T> list:
-                    return list.AsReadOnly();
-
-#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
-                case List<T> list:
-                    return list.AsReadOnly();
-#endif
-
-                case IReadOnlyList<T> result:
-                    return result;
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                throw new ArgumentNullException(nameof(source));
             }
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+            if (source is T[] array)
+            {
+                return Array.AsReadOnly(array);
+            }
+#endif
+            if (source is ListEx<T> listEx)
+            {
+                return listEx.AsReadOnly();
+            }
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+            if (source is List<T> list)
+            {
+                return list.AsReadOnly();
+            }
+#endif
+            if (source is IReadOnlyList<T> result)
+            {
+                return result;
+            }
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static ICollection<T> WrapAsReadOnlyICollection<T>(this IEnumerable<T> source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(source));
-
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-                case T[] array:
-                    return Array.AsReadOnly(array);
-#endif
-                case ListEx<T> list:
-                    return list.AsReadOnly();
-
-#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
-                case List<T> list:
-                    return list.AsReadOnly();
-#endif
-
-                default:
-                    return EnumerationList<T>.Create(source);
+                throw new ArgumentNullException(nameof(source));
             }
+#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+            if (source is T[] array)
+            {
+                return Array.AsReadOnly(array);
+            }
+#endif
+            if (source is ListEx<T> listEx)
+            {
+                return listEx.AsReadOnly();
+            }
+#if GREATERTHAN_NET45 || TARGETS_NETCORE || TARGETS_NETSTANDARD
+            if (source is List<T> list)
+            {
+                return list.AsReadOnly();
+            }
+#endif
+            return EnumerationList<T>.Create(source);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         internal static T[] AsArrayInternal<T>(this IEnumerable<T>? source)
         {
-            switch (source)
+            if (source == null)
             {
-                case null:
-                    return ArrayEx.Empty<T>();
-
-                case T[] array:
-                    return array;
-
-                case ReadOnlyCollectionEx<T> readOnlyCollectionEx:
-                    return readOnlyCollectionEx.Wrapped is T[] wrappedArray ? wrappedArray : readOnlyCollectionEx.ToArray();
-
-                case ICollection<T> collection when collection.Count == 0:
-                    return ArrayEx.Empty<T>();
-
-                case ICollection<T> collection:
-                    var result = new T[collection.Count];
-                    collection.CopyTo(result, 0);
-                    return result;
-
-                default:
-                    return new List<T>(source).ToArray();
+                return ArrayEx.Empty<T>();
             }
+            if (source is T[] array)
+            {
+                return array;
+            }
+            if (source is ReadOnlyCollectionEx<T> readOnlyCollectionEx)
+            {
+                return readOnlyCollectionEx.Wrapped is T[] wrappedArray ? wrappedArray : readOnlyCollectionEx.ToArray();
+            }
+            if (source is ICollection<T> collection1 && collection1.Count == 0)
+            {
+                return ArrayEx.Empty<T>();
+            }
+            if (source is ICollection<T> collection2)
+            {
+                var result = new T[collection2.Count];
+                collection2.CopyTo(result, 0);
+                return result;
+            }
+            return new List<T>(source).ToArray();
         }
     }
 
@@ -501,17 +501,14 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             if (count == 0)
             {
                 return true;
             }
-
             if (source is ICollection<TSource> sourceAsCollection)
             {
                 return sourceAsCollection.Count >= count;
             }
-
             var result = 0;
             using (var item = source.GetEnumerator())
             {
@@ -528,7 +525,6 @@ namespace Theraot.Collections
                     }
                 }
             }
-
             return false;
         }
 
@@ -539,7 +535,6 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return predicateCount == null ? SkipExtracted(source, skipCount) : SkipExtracted(source, predicateCount, skipCount);
         }
 
@@ -550,9 +545,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return StepItemsExtracted();
-
             IEnumerable<T> StepItemsExtracted()
             {
                 var count = 0;
@@ -578,7 +571,6 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return predicateCount == null ? TakeExtracted(source, takeCount) : TakeExtracted(source, predicateCount, takeCount);
         }
 
@@ -589,19 +581,16 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             if (count < 0)
             {
                 throw new ArgumentNullException(nameof(count));
             }
-
             if (source is ICollection<T> collection && count >= collection.Count)
             {
                 var array = new T[collection.Count];
                 collection.CopyTo(array, 0);
                 return array;
             }
-
             var result = new List<T>(count);
             foreach (var item in source)
             {
@@ -612,7 +601,6 @@ namespace Theraot.Collections
 
                 result.Add(item);
             }
-
             return result.ToArray();
         }
 
@@ -693,18 +681,16 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return new NeedleEnumerable<TSource>(source);
         }
 
         public static IEnumerable<TSource?> AsNullableClassEnumerable<TSource>(this IEnumerable<TSource> source)
-                    where TSource : class
+            where TSource : class
         {
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return new NullableClassEnumerable<TSource>(source);
         }
 
@@ -715,7 +701,6 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return new NullableStructEnumerable<TSource>(source);
         }
 
@@ -743,7 +728,7 @@ namespace Theraot.Collections
         }
 
         private class NullableClassEnumerable<TSource> : IEnumerable<TSource?>
-                    where TSource : class
+            where TSource : class
         {
             private readonly IEnumerable<TSource> _source;
 
@@ -767,7 +752,7 @@ namespace Theraot.Collections
         }
 
         private class NullableStructEnumerable<TSource> : IEnumerable<TSource?>
-                    where TSource : struct
+            where TSource : struct
         {
             private readonly IEnumerable<TSource> _source;
 
@@ -800,7 +785,6 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return new ClassNullableCollection<TSource>(source);
         }
 
@@ -811,7 +795,6 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
             return new StructNullableCollection<TSource>(source);
         }
 

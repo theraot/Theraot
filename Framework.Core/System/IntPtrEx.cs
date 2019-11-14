@@ -10,17 +10,15 @@ namespace System
         public static IntPtr Add(IntPtr pointer, int offset)
         {
 #if LESSTHAN_NET40
-            switch (IntPtr.Size)
+            if (IntPtr.Size == 4)
             {
-                case 4:
-                    return new IntPtr(unchecked((int)pointer + offset));
-
-                case 8:
-                    return new IntPtr(unchecked((long)pointer + offset));
-
-                default:
-                    throw new NotSupportedException("Not supported platform");
+                return new IntPtr(unchecked((int)pointer + offset));
             }
+            if (IntPtr.Size == 8)
+            {
+                return new IntPtr(unchecked((long)pointer + offset));
+            }
+            throw new NotSupportedException("Not supported platform");
 #else
             return IntPtr.Add(pointer, offset);
 #endif
@@ -30,17 +28,15 @@ namespace System
         public static IntPtr Subtract(IntPtr pointer, int offset)
         {
 #if LESSTHAN_NET40
-            switch (IntPtr.Size)
+            if (IntPtr.Size == 4)
             {
-                case 4:
-                    return new IntPtr(unchecked((int)pointer - offset));
-
-                case 8:
-                    return new IntPtr(unchecked((long)pointer - offset));
-
-                default:
-                    throw new NotSupportedException("Not supported platform");
+                return new IntPtr(unchecked((int)pointer - offset));
             }
+            if (IntPtr.Size == 8)
+            {
+                return new IntPtr(unchecked((long)pointer - offset));
+            }
+            throw new NotSupportedException("Not supported platform");
 #else
             return IntPtr.Subtract(pointer, offset);
 #endif

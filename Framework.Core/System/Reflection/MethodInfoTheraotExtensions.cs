@@ -17,16 +17,15 @@ namespace System.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
-            switch (methodInfo)
+            if (methodInfo == null)
             {
-                case null:
-                    throw new NullReferenceException();
-                case DynamicMethod dynamicMethod:
-                    return dynamicMethod.CreateDelegate(delegateType);
-
-                default:
-                    return Delegate.CreateDelegate(delegateType, methodInfo);
+                throw new NullReferenceException();
             }
+            if (methodInfo is DynamicMethod dynamicMethod)
+            {
+                return dynamicMethod.CreateDelegate(delegateType);
+            }
+            return Delegate.CreateDelegate(delegateType, methodInfo);
         }
 
         /// <summary>
@@ -38,16 +37,15 @@ namespace System.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
-            switch (methodInfo)
+            if (methodInfo == null)
             {
-                case null:
-                    throw new NullReferenceException();
-                case DynamicMethod dynamicMethod:
-                    return dynamicMethod.CreateDelegate(delegateType, target);
-
-                default:
-                    return Delegate.CreateDelegate(delegateType, target, methodInfo);
+                throw new NullReferenceException();
             }
+            if (methodInfo is DynamicMethod dynamicMethod)
+            {
+                return dynamicMethod.CreateDelegate(delegateType, target);
+            }
+            return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
     }
 }
