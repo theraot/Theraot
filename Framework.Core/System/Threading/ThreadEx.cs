@@ -165,6 +165,16 @@ namespace System.Threading
 #endif
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static object VolatileRead(ref object location)
+        {
+#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
+            return Volatile.Read(ref location);
+#else
+            return Thread.VolatileRead(ref location);
+#endif
+        }
+
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -316,6 +326,16 @@ namespace System.Threading
             Volatile.Write(ref location, value);
 #else
             Interlocked.Exchange(ref location, value);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void VolatileWrite(ref object location, object value)
+        {
+#if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
+            Volatile.Write(ref location, value);
+#else
+            Thread.VolatileWrite(ref location, value);
 #endif
         }
     }
