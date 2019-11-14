@@ -1,10 +1,4 @@
-﻿#if LESSTHAN_NET45 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-
-#pragma warning disable CA1068 // CancellationToken parameters must come last
-#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
-#pragma warning disable RCS1231 // Make parameter ref read-only.
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 #if NET40
 
@@ -14,7 +8,7 @@ using System.Linq;
 
 namespace System.Threading.Tasks
 {
-    public static partial class TaskEx
+    public static partial class TaskExEx
     {
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
 
@@ -56,5 +50,3 @@ namespace System.Threading.Tasks
         }
     }
 }
-
-#endif

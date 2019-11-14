@@ -102,7 +102,7 @@ namespace System.Threading
             }
             while (true)
             {
-                await TaskEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle).ConfigureAwait(false);
+                await TaskExEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle).ConfigureAwait(false);
                 if (semaphore.Wait(0))
                 {
                     return true;
@@ -120,7 +120,7 @@ namespace System.Threading
             var timeout = millisecondsTimeout;
             while
             (
-                await TaskEx.FromWaitHandleInternal
+                await TaskExEx.FromWaitHandleInternal
                 (
                     semaphore.AvailableWaitHandle,
                     timeout
@@ -145,7 +145,7 @@ namespace System.Threading
             }
             while (true)
             {
-                await TaskEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle, cancellationToken).ConfigureAwait(false);
+                await TaskExEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle, cancellationToken).ConfigureAwait(false);
                 if (semaphore.Wait(0))
                 {
                     return true;
@@ -164,7 +164,7 @@ namespace System.Threading
             while
             (
                 timeout > 0
-                && await TaskEx.FromWaitHandleInternal
+                && await TaskExEx.FromWaitHandleInternal
                 (
                     semaphore.AvailableWaitHandle,
                     timeout,

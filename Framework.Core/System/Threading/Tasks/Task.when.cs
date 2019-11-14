@@ -463,7 +463,7 @@ namespace System.Threading.Tasks
         private static Task InternalWhenAll(Task[] tasks)
         {
             // take shortcut if there are no tasks upon which to wait
-            return tasks.Length == 0 ? TaskEx.CompletedTask : new WhenAllPromise(tasks);
+            return tasks.Length == 0 ? TaskExEx.CompletedTask : new WhenAllPromise(tasks);
         }
 
         // Some common logic to support WhenAll<TResult> methods

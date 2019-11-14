@@ -1,11 +1,9 @@
-﻿// ReSharper disable ClassNeverInstantiated.Local
-// ReSharper disable InconsistentNaming
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Theraot;
+using TestRunner.AuxiliaryTypes;
 
 namespace TestRunner
 {
@@ -212,46 +210,6 @@ namespace TestRunner
             No.Op<Func<Func<TSource, TKey>, IComparer<TKey>, IOrderedEnumerable<TSource>>>(orderedEnumerable.ThenBy);
             No.Op<Func<Func<TSource, TKey>, IOrderedEnumerable<TSource>>>(orderedEnumerable.ThenByDescending);
             No.Op<Func<Func<TSource, TKey>, IComparer<TKey>, IOrderedEnumerable<TSource>>>(orderedEnumerable.ThenByDescending);
-        }
-
-        private class TAccumulate
-        {
-            // Empty
-        }
-
-        private class TCollection
-        {
-            // Empty
-        }
-
-        private class TElement
-        {
-            // Empty
-        }
-
-        private class TInner
-        {
-            // Empty
-        }
-
-        private class TKey
-        {
-            // Empty
-        }
-
-        private class TResult
-        {
-            // Empty
-        }
-
-        private class TSecond
-        {
-            // Empty
-        }
-
-        private class TSource
-        {
-            // Empty
         }
     }
 }

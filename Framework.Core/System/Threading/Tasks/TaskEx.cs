@@ -1,12 +1,7 @@
 ﻿#if LESSTHAN_NET45 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
-#pragma warning disable CA1068 // CancellationToken parameters must come last
-#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
-#pragma warning disable RCS1231 // Make parameter ref read-only.
-
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Theraot;
 
 #if NET40
 
@@ -25,31 +20,6 @@ namespace System.Threading.Tasks
     /// </remarks>
     public static partial class TaskEx
     {
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task FromCancellation(CancellationToken token)
-        {
-            return FromCancellation<VoidStruct>(token);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Task<TResult> FromCancellation<TResult>(CancellationToken token)
-        {
-            if (token.IsCancellationRequested)
-            {
-                return TaskExEx.FromCanceled<TResult>(token);
-            }
-            var taskCompleteSource = new TaskCompletionSource<TResult>();
-            if (token.CanBeCanceled)
-            {
-#if LESSTHAN_NETSTANDARD13
-                token.Register(() => taskCompleteSource.TrySetCanceled());
-#else
-                token.Register(() => taskCompleteSource.TrySetCanceled(token));
-#endif
-            }
-            return taskCompleteSource.Task;
-        }
-
         /// <summary>
         ///     Creates an already completed <see cref="System.Threading.Tasks.Task{TResult}" /> from the specified result.
         /// </summary>
@@ -60,14 +30,7 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult> FromResult<TResult>(TResult result)
         {
-#if NET40
-            var completionSource = new TaskCompletionSource<TResult>();
-            completionSource.TrySetResult(result);
-            return completionSource.Task;
-#else
-            // Missing in .NET 4.0
-            return Task.FromResult(result);
-#endif
+            return TaskExEx.FromResult(result);
         }
 
         /// <summary>
@@ -348,7 +311,7 @@ namespace System.Threading.Tasks
             }
             if (millisecondsDelay == 0)
             {
-                return CompletedTask;
+                return TaskExEx.CompletedTask;
             }
             var source = new TaskCompletionSource<bool>();
             RootedTimeout.Launch
@@ -408,163 +371,6 @@ namespace System.Threading.Tasks
             // Missing in .NET 4.0
             return Task.Delay(millisecondsDelay, cancellationToken);
 #endif
-        }
-    }
-
-    public static partial class TaskEx
-    {
-        public static Task FromWaitHandle(WaitHandle waitHandle)
-        {
-            if (waitHandle == null)
-            {
-                throw new ArgumentNullException(nameof(waitHandle));
-            }
-
-            return FromWaitHandleInternal(waitHandle);
-        }
-
-        public static Task FromWaitHandle(WaitHandle waitHandle, CancellationToken cancellationToken)
-        {
-            if (waitHandle == null)
-            {
-                throw new ArgumentNullException(nameof(waitHandle));
-            }
-
-            return FromWaitHandleInternal(waitHandle, cancellationToken);
-        }
-
-        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, int millisecondsTimeout)
-        {
-            if (waitHandle == null)
-            {
-                throw new ArgumentNullException(nameof(waitHandle));
-            }
-
-            return FromWaitHandleInternal(waitHandle, millisecondsTimeout);
-        }
-
-        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-            if (waitHandle == null)
-            {
-                throw new ArgumentNullException(nameof(waitHandle));
-            }
-
-            return FromWaitHandleInternal(waitHandle, millisecondsTimeout, cancellationToken);
-        }
-
-        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, TimeSpan timeout)
-        {
-            if (waitHandle == null)
-            {
-                throw new ArgumentNullException(nameof(waitHandle));
-            }
-
-            return FromWaitHandleInternal(waitHandle, (int)timeout.TotalMilliseconds);
-        }
-
-        public static Task<bool> FromWaitHandle(WaitHandle waitHandle, TimeSpan timeout, CancellationToken cancellationToken)
-        {
-            if (waitHandle == null)
-            {
-                throw new ArgumentNullException(nameof(waitHandle));
-            }
-
-            return FromWaitHandleInternal(waitHandle, (int)timeout.TotalMilliseconds, cancellationToken);
-        }
-
-        internal static Task FromWaitHandleInternal(WaitHandle waitHandle)
-        {
-            var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
-            {
-                source.SetResult(true);
-            }
-
-            WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
-            return source.Task;
-        }
-
-        internal static Task FromWaitHandleInternal(WaitHandle waitHandle, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return TaskExEx.FromCanceled<bool>(cancellationToken);
-            }
-
-            var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
-            {
-                source.SetResult(true);
-            }
-
-            WaitHandleCancellableTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, cancellationToken, source);
-            return source.Task;
-        }
-
-        internal static Task<bool> FromWaitHandleInternal(WaitHandle waitHandle, int millisecondsTimeout)
-        {
-            if (millisecondsTimeout < -1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
-            }
-
-            var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
-            {
-                source.SetResult(true);
-            }
-            else if (millisecondsTimeout == -1)
-            {
-                WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
-            }
-            else
-            {
-                WaitHandleTaskCompletionSourceManager.CreateWithTimeout(waitHandle, source, millisecondsTimeout);
-            }
-
-            return source.Task;
-        }
-
-        internal static Task<bool> FromWaitHandleInternal(WaitHandle waitHandle, int millisecondsTimeout, CancellationToken cancellationToken)
-        {
-            if (millisecondsTimeout < -1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return TaskExEx.FromCanceled<bool>(cancellationToken);
-            }
-
-            var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
-            {
-                source.SetResult(true);
-            }
-            else if (millisecondsTimeout == -1)
-            {
-                WaitHandleCancellableTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, cancellationToken, source);
-            }
-            else
-            {
-                WaitHandleCancellableTaskCompletionSourceManager.CreateWithTimeout(waitHandle, cancellationToken, source, millisecondsTimeout);
-            }
-
-            return source.Task;
-        }
-
-        internal static Task FromWaitHandleInternal(WaitHandle waitHandle, TaskCreationOptions creationOptions)
-        {
-            var source = new TaskCompletionSource<bool>(creationOptions);
-            if (waitHandle.WaitOne(0))
-            {
-                source.SetResult(true);
-            }
-
-            WaitHandleTaskCompletionSourceManager.CreateWithoutTimeout(waitHandle, source);
-            return source.Task;
         }
     }
 }

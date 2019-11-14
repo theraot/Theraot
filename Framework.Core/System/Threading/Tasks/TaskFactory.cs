@@ -949,7 +949,7 @@ namespace System.Threading.Tasks
             }
             else
             {
-                await TaskEx.FromWaitHandleInternal(asyncResult.AsyncWaitHandle).ConfigureAwait(false);
+                await TaskExEx.FromWaitHandleInternal(asyncResult.AsyncWaitHandle).ConfigureAwait(false);
                 task.InternalStart(scheduler, false, true);
             }
 
