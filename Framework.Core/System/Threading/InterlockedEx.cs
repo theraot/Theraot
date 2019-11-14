@@ -8,7 +8,7 @@ namespace System.Threading
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void MemoryBarrier()
         {
-            ThreadingHelper.MemoryBarrier();
+            ThreadEx.MemoryBarrier();
         }
     }
 }

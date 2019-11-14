@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using Theraot.Threading;
 
 namespace System.Threading
 {
@@ -8,7 +7,11 @@ namespace System.Threading
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static void MemoryBarrier()
         {
-            ThreadingHelper.MemoryBarrier();
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+            Interlocked.MemoryBarrier();
+#else
+            Thread.MemoryBarrier();
+#endif
         }
 
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20

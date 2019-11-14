@@ -169,7 +169,7 @@ namespace TestRunner.System.Threading
             );
             ThreadingHelper.SpinWaitWhileNull(ref thread);
             Assert.IsTrue((thread.ThreadState & ThreadState.Background) != 0);
-            ThreadingHelper.MemoryBarrier();
+            ThreadEx.MemoryBarrier();
             Volatile.Write(ref signal[0], 1);
         }
 
