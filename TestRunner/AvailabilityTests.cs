@@ -1,4 +1,4 @@
-#pragma warning disable CC0037 // Remove commented code.
+﻿#pragma warning disable CC0037 // Remove commented code.
 // ReSharper disable StyleCop.SA1512
 // ReSharper disable StyleCop.SA1515
 
@@ -270,6 +270,7 @@ namespace TestRunner
             No.Op(typeof(Converter<int, int>));
             No.Op(typeof(Queryable));
             No.Op(typeof(BitOperations));
+            No.Op(typeof(HashCode));
         }
 
         public static void TypeMethodAvailability()
