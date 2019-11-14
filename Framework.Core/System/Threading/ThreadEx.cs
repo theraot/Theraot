@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace System.Threading
 {
@@ -169,7 +170,8 @@ namespace System.Threading
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static object VolatileRead(ref object location)
+        [return: NotNullIfNotNull("location")]
+        public static object? VolatileRead(ref object? location)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
             return Volatile.Read(ref location);
@@ -333,7 +335,7 @@ namespace System.Threading
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void VolatileWrite(ref object location, object value)
+        public static void VolatileWrite(ref object? location, object? value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
             Volatile.Write(ref location, value);
