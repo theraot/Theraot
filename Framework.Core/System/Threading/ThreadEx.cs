@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -188,7 +188,7 @@ namespace System.Threading
         public static void VolatileWrite(ref sbyte location, sbyte value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -198,7 +198,7 @@ namespace System.Threading
         public static void VolatileWrite(ref byte location, byte value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -219,7 +219,7 @@ namespace System.Threading
         public static void VolatileWrite(ref ushort location, ushort value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -229,7 +229,7 @@ namespace System.Threading
         public static void VolatileWrite(ref int location, int value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -240,7 +240,7 @@ namespace System.Threading
         public static void VolatileWrite(ref uint location, uint value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -250,7 +250,7 @@ namespace System.Threading
         public static void VolatileWrite(ref long location, long value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -261,7 +261,7 @@ namespace System.Threading
         public static void VolatileWrite(ref ulong location, ulong value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -271,7 +271,7 @@ namespace System.Threading
         public static void VolatileWrite(ref IntPtr location, IntPtr value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -282,7 +282,7 @@ namespace System.Threading
         public static void VolatileWrite(ref UIntPtr location, UIntPtr value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -292,7 +292,7 @@ namespace System.Threading
         public static void VolatileWrite(ref float location, float value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -302,7 +302,7 @@ namespace System.Threading
         public static void VolatileWrite(ref double location, double value)
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Thread.VolatileWrite(ref location, value);
 #endif
@@ -313,7 +313,7 @@ namespace System.Threading
             where T : class?
         {
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
-             Volatile.Write(ref location, value);
+            Volatile.Write(ref location, value);
 #else
             Interlocked.Exchange(ref location, value);
 #endif
