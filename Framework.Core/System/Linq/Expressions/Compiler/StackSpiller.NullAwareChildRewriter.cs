@@ -384,7 +384,7 @@ namespace System.Linq.Expressions.Compiler
                 var clone = _expressions;
                 var count = _lastSpillIndex + 1;
                 var comma = new List<Expression>(count + 1);
-                for (int index = 0; index < count; index++)
+                for (var index = 0; index < count; index++)
                 {
                     var current = clone[index];
                     if (current == null || !ShouldSaveToTemp(current))

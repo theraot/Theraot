@@ -51,8 +51,8 @@ namespace Theraot.Threading.Needles
                 return false;
             }
 
-            bool isAlive = TryGetValue(out var value);
-            bool isOtherAlive = TryGetValue(out var otherValue);
+            var isAlive = TryGetValue(out var value);
+            var isOtherAlive = TryGetValue(out var otherValue);
 
             if (!isAlive)
             {

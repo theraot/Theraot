@@ -80,7 +80,7 @@ namespace System.Threading.Tasks
             IndexRanges = new IndexRange[nNumRanges];
 
             var nCurrentIndex = fromInclusive;
-            for (int i = 0; i < nNumRanges; i++)
+            for (var i = 0; i < nNumRanges; i++)
             {
                 // the fromInclusive of the new index range is always on nCurrentIndex
                 IndexRanges[i].FromInclusive = nCurrentIndex;

@@ -49,7 +49,7 @@ namespace System.Numerics
         [CLSCompliant(false)]
         public static int LeadingZeroCount(ulong value)
         {
-            uint hi = (uint)(value >> 32);
+            var hi = (uint)(value >> 32);
 
             if (hi == 0)
             {
@@ -88,7 +88,7 @@ namespace System.Numerics
         [CLSCompliant(false)]
         public static int Log2(ulong value)
         {
-            uint hi = (uint)(value >> 32);
+            var hi = (uint)(value >> 32);
 
             if (hi == 0)
             {
@@ -233,7 +233,7 @@ namespace System.Numerics
         [CLSCompliant(false)]
         public static int TrailingZeroCount(ulong value)
         {
-            uint lo = (uint)value;
+            var lo = (uint)value;
 
             if (lo == 0)
             {
