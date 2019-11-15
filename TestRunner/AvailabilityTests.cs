@@ -229,6 +229,22 @@ namespace TestRunner
             No.Op(typeof(Tuple<int, int, int, int, int, int, int>));
             No.Op(typeof(Tuple<int, int, int, int, int, int, int, int>));
 
+            // System.Threading.Tasks.Extensions
+
+            No.Op(typeof(AsyncMethodBuilderAttribute));
+            No.Op(typeof(AsyncValueTaskMethodBuilder));
+            No.Op(typeof(AsyncValueTaskMethodBuilder<int>));
+            No.Op(typeof(ConfiguredValueTaskAwaitable));
+            No.Op(typeof(ConfiguredValueTaskAwaitable<int>));
+            No.Op(typeof(ValueTaskAwaiter));
+            No.Op(typeof(ValueTaskAwaiter<int>));
+            No.Op(typeof(ValueTask));
+            No.Op(typeof(ValueTask<int>));
+            No.Op(typeof(IValueTaskSource));
+            No.Op(typeof(IValueTaskSource<int>));
+            No.Op(typeof(ValueTaskSourceOnCompletedFlags));
+            No.Op(typeof(ValueTaskSourceStatus));
+
             No.Op(typeof(CallInfo));
             // No.Op(typeof(global::System.Runtime.CompilerServices.Closure));
             No.Op(typeof(CodeAccessPermission));
@@ -253,7 +269,6 @@ namespace TestRunner
             No.Op(typeof(Task));
             No.Op(typeof(TupleElementNamesAttribute));
             No.Op(typeof(TupleExtensions));
-            No.Op(typeof(ValueTask<int>));
             No.Op(typeof(ValueTuple));
             No.Op(typeof(Volatile));
             No.Op(typeof(ParallelOptions));
@@ -272,9 +287,6 @@ namespace TestRunner
             No.Op(typeof(Queryable));
             No.Op(typeof(BitOperations));
             No.Op(typeof(HashCode));
-            No.Op(typeof(ValueTaskSourceStatus));
-            No.Op(typeof(ValueTaskSourceOnCompletedFlags));
-            No.Op(typeof(IValueTaskSource));
         }
 
         public static void TypeMethodAvailability()
