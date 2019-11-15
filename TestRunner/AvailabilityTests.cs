@@ -274,6 +274,7 @@ namespace TestRunner
             No.Op(typeof(HashCode));
             No.Op(typeof(ValueTaskSourceStatus));
             No.Op(typeof(ValueTaskSourceOnCompletedFlags));
+            No.Op(typeof(IValueTaskSource));
         }
 
         public static void TypeMethodAvailability()
