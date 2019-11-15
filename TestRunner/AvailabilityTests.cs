@@ -22,6 +22,7 @@ using System.Security;
 using System.Security.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Sources;
 using Theraot;
 
 namespace TestRunner
@@ -271,6 +272,7 @@ namespace TestRunner
             No.Op(typeof(Queryable));
             No.Op(typeof(BitOperations));
             No.Op(typeof(HashCode));
+            No.Op(typeof(ValueTaskSourceStatus));
         }
 
         public static void TypeMethodAvailability()
