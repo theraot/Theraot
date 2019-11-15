@@ -245,6 +245,9 @@ namespace TestRunner
             No.Op(typeof(ValueTaskSourceOnCompletedFlags));
             No.Op(typeof(ValueTaskSourceStatus));
 
+            // Microsoft.Bcl.AsyncInterfaces
+            No.Op(typeof(IAsyncDisposable));
+
             No.Op(typeof(CallInfo));
             // No.Op(typeof(global::System.Runtime.CompilerServices.Closure));
             No.Op(typeof(CodeAccessPermission));
