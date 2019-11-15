@@ -3,8 +3,8 @@
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
-
 #pragma warning disable CS8653 // A default expression introduces a null value when 'T' is a non-nullable reference type.
+#pragma warning disable CS0649 // Field is never assigned
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -36,9 +36,7 @@ namespace System.Runtime.CompilerServices
         // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
         // There is no need to assign it
         // It should not be readonly
-#pragma warning disable 649
         private AsyncTaskMethodBuilder<VoidStruct> _builder;
-#pragma warning restore 649
 
         /// <summary>
         ///     Gets the <see cref="System.Threading.Tasks.Task" /> for this builder.
@@ -180,9 +178,7 @@ namespace System.Runtime.CompilerServices
         // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
         // There is no need to assign it
         // It should not be readonly
-#pragma warning disable 649
         private AsyncMethodBuilderCore _coreState;
-#pragma warning restore 649
 
         /// <summary>
         ///     The lazily-initialized task completion source.
