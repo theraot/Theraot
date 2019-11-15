@@ -273,6 +273,7 @@ namespace TestRunner
             No.Op(typeof(BitOperations));
             No.Op(typeof(HashCode));
             No.Op(typeof(ValueTaskSourceStatus));
+            No.Op(typeof(ValueTaskSourceOnCompletedFlags));
         }
 
         public static void TypeMethodAvailability()
