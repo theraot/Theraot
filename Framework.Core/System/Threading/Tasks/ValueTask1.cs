@@ -125,8 +125,6 @@ namespace System.Threading.Tasks
             return left.Equals(right);
         }
 
-        // TODO: Remove CreateAsyncMethodBuilder once the C# compiler relies on the AsyncBuilder attribute.
-
         /// <summary>Creates a method builder for use with an async method.</summary>
         /// <returns>The created builder.</returns>
         [EditorBrowsable(EditorBrowsableState.Never)] // intended only for compiler consumption
