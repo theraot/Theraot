@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -85,6 +85,23 @@ namespace System
             return newArray;
 #else
             return Array.ConvertAll(array, converter);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void Fill<T>(T[] array, T value)
+        {
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            for (int index = 0; index < array.Length; index++)
+            {
+                array[index] = value;
+            }
+#else
+            Array.Fill(array, value);
 #endif
         }
 
