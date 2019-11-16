@@ -306,7 +306,7 @@ namespace TestRunner
             // Empty
         }
 
-#if GREATERTHAN_NETCOREAPP11 || NETSTANDARD2_0 || TARGETS_NET
+#if GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16 || TARGETS_NET
 
         private AssertionFailedException(global::System.Runtime.Serialization.SerializationInfo serializationInfo, global::System.Runtime.Serialization.StreamingContext streamingContext)
             : base(serializationInfo, streamingContext)
