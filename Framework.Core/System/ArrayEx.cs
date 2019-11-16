@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -85,6 +85,42 @@ namespace System
             return newArray;
 #else
             return Array.ConvertAll(array, converter);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void Copy(Array sourceArray, Array destinationArray, long length)
+        {
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+            if (length > int.MaxValue || length < int.MinValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "Arrays larger than 2GB are not supported.");
+            }
+            Array.Copy(sourceArray, destinationArray, (int)length);
+#else
+            Array.Copy(sourceArray, destinationArray, length);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void Copy(Array sourceArray, long sourceIndex, Array destinationArray, long destinationIndex, long length)
+        {
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+            if (sourceIndex > int.MaxValue || sourceIndex < int.MinValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex), "Arrays larger than 2GB are not supported.");
+            }
+            if (destinationIndex > int.MaxValue || destinationIndex < int.MinValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(destinationIndex), "Arrays larger than 2GB are not supported.");
+            }
+            if (length > int.MaxValue || length < int.MinValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "Arrays larger than 2GB are not supported.");
+            }
+            Array.Copy(sourceArray, (int)sourceIndex, destinationArray, (int)destinationIndex, (int)length);
+#else
+            Array.Copy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
 #endif
         }
 
