@@ -199,7 +199,7 @@ namespace System.IO
             cancellationToken.ThrowIfCancellationRequested();
             return Task.Factory.FromAsync
             (
-                BeginRead,
+                BeginRead!,
                 stream.EndRead,
                 buffer,
                 offset,
@@ -217,7 +217,7 @@ namespace System.IO
             }
             return Task.Factory.FromAsync
             (
-                BeginRead,
+                BeginRead!,
                 stream.EndRead,
                 buffer,
                 offset,
@@ -236,7 +236,7 @@ namespace System.IO
             cancellationToken.ThrowIfCancellationRequested();
             return Task.Factory.FromAsync
             (
-                BeginWrite,
+                BeginWrite!,
                 stream.EndWrite,
                 buffer,
                 offset,
@@ -254,7 +254,7 @@ namespace System.IO
             }
             return Task.Factory.FromAsync
             (
-                BeginWrite,
+                BeginWrite!,
                 stream.EndWrite,
                 buffer,
                 offset,

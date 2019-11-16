@@ -77,7 +77,7 @@ namespace System.Linq.Expressions
             try
             {
                 // Using default scheduler rather than picking up the current scheduler.
-                var task = Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+                var task = Task.Factory.StartNew(action!, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
 
                 var awaiter = task.GetAwaiter();
 

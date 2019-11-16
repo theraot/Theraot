@@ -167,7 +167,7 @@ namespace System.Runtime.CompilerServices
                 {
                     Task.Factory.StartNew
                     (
-                        state => ((Action)state)(), continuation, CancellationToken.None,
+                        state => ((Action?)state)?.Invoke(), continuation, CancellationToken.None,
                         TaskCreationOptions.None, scheduler
                     );
                 }
@@ -193,7 +193,7 @@ namespace System.Runtime.CompilerServices
                             {
                                 Task.Factory.StartNew
                                 (
-                                    state => RunNoException((Action)state), continuation,
+                                    state => RunNoException((Action?)state), continuation,
                                     CancellationToken.None, TaskCreationOptions.None,
                                     TaskScheduler.Default
                                 );
@@ -288,7 +288,7 @@ namespace System.Runtime.CompilerServices
             ThrowForNonSuccess(task);
         }
 
-        private static void RunNoException(Action continuation)
+        private static void RunNoException(Action? continuation)
         {
             if (continuation == null)
             {

@@ -202,7 +202,7 @@ namespace System.Threading.Tasks
         /// <param name="state">The state to pass to the action. Must not be null.</param>
         /// <param name="scheduler">The scheduler to target.</param>
         /// <returns>The created task.</returns>
-        protected Task CreateTask(Action<object> action, object state, TaskScheduler scheduler)
+        protected Task CreateTask(Action<object?> action, object? state, TaskScheduler scheduler)
         {
             return new Task
             (
