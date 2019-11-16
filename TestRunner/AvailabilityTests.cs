@@ -247,6 +247,15 @@ namespace TestRunner
 
             // Microsoft.Bcl.AsyncInterfaces
             No.Op(typeof(IAsyncDisposable));
+            No.Op(typeof(IAsyncEnumerable<int>));
+            No.Op(typeof(IAsyncEnumerator<int>));
+            No.Op(typeof(AsyncIteratorMethodBuilder));
+            No.Op(typeof(AsyncIteratorStateMachineAttribute));
+            No.Op(typeof(ConfiguredAsyncDisposable));
+            No.Op(typeof(ConfiguredCancelableAsyncEnumerable<int>));
+            No.Op(typeof(EnumeratorCancellationAttribute));
+            No.Op(typeof(TaskAsyncEnumerableExtensions));
+            No.Op(typeof(ManualResetValueTaskSourceCore<int>));
 
             No.Op(typeof(CallInfo));
             // No.Op(typeof(global::System.Runtime.CompilerServices.Closure));
