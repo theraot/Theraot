@@ -907,7 +907,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object? state)
+        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object? state)
         {
             if (beginMethod == null)
             {
