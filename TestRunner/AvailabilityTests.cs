@@ -23,6 +23,7 @@ using System.Security.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
+using TestRunner.AuxiliaryTypes;
 using Theraot;
 
 namespace TestRunner
@@ -88,53 +89,53 @@ namespace TestRunner
         {
             // System.Collections.Concurrent
 
-            No.Op(typeof(BlockingCollection<int>));
-            No.Op(typeof(ConcurrentBag<int>));
-            No.Op(typeof(ConcurrentDictionary<int, int>));
-            No.Op(typeof(ConcurrentQueue<int>));
-            No.Op(typeof(ConcurrentStack<int>));
+            No.Op(typeof(BlockingCollection<T>));
+            No.Op(typeof(ConcurrentBag<T>));
+            No.Op(typeof(ConcurrentDictionary<TKey, TValue>));
+            No.Op(typeof(ConcurrentQueue<T>));
+            No.Op(typeof(ConcurrentStack<T>));
             No.Op(typeof(EnumerablePartitionerOptions));
-            No.Op(typeof(IProducerConsumerCollection<int>));
-            No.Op(typeof(OrderablePartitioner<int>));
+            No.Op(typeof(IProducerConsumerCollection<T>));
+            No.Op(typeof(OrderablePartitioner<TSource>));
             No.Op(typeof(Partitioner));
-            No.Op(typeof(Partitioner<int>));
+            No.Op(typeof(Partitioner<TSource>));
 
             // System.Collections.Generic
 
             No.Op(typeof(CollectionExtensions));
-            No.Op(typeof(Comparer<int>));
-            No.Op(typeof(Dictionary<int, int>));
-            No.Op(typeof(EqualityComparer<int>));
-            No.Op(typeof(HashSet<int>));
-            No.Op(typeof(ICollection<int>));
-            No.Op(typeof(IComparer<int>));
-            No.Op(typeof(IDictionary<int, int>));
-            No.Op(typeof(IEnumerable<int>));
-            No.Op(typeof(IEnumerator<int>));
-            No.Op(typeof(IEqualityComparer<int>));
-            No.Op(typeof(IList<int>));
-            No.Op(typeof(IReadOnlyCollection<int>));
-            No.Op(typeof(IReadOnlyDictionary<int, int>));
-            No.Op(typeof(IReadOnlyList<int>));
-            No.Op(typeof(ISet<int>));
+            No.Op(typeof(Comparer<T>));
+            No.Op(typeof(Dictionary<TKey, TValue>));
+            No.Op(typeof(EqualityComparer<T>));
+            No.Op(typeof(HashSet<T>));
+            No.Op(typeof(ICollection<T>));
+            No.Op(typeof(IComparer<T>));
+            No.Op(typeof(IDictionary<TKey, TValue>));
+            No.Op(typeof(IEnumerable<T>));
+            No.Op(typeof(IEnumerator<T>));
+            No.Op(typeof(IEqualityComparer<T>));
+            No.Op(typeof(IList<T>));
+            No.Op(typeof(IReadOnlyCollection<T>));
+            No.Op(typeof(IReadOnlyDictionary<TKey, TValue>));
+            No.Op(typeof(IReadOnlyList<T>));
+            No.Op(typeof(ISet<T>));
             No.Op(typeof(KeyNotFoundException));
-            No.Op(typeof(KeyValuePair<int, int>));
-            No.Op(typeof(LinkedList<int>));
-            No.Op(typeof(LinkedListNode<int>));
-            No.Op(typeof(List<int>));
-            No.Op(typeof(Queue<int>));
-            No.Op(typeof(SortedDictionary<int, int>));
+            No.Op(typeof(KeyValuePair<TKey, TValue>));
+            No.Op(typeof(LinkedList<T>));
+            No.Op(typeof(LinkedListNode<T>));
+            No.Op(typeof(List<T>));
+            No.Op(typeof(Queue<T>));
+            No.Op(typeof(SortedDictionary<TKey, TValue>));
             // No.Op(typeof(global::System.Collections.Generic.SortedList<int, int>));
-            No.Op(typeof(SortedSet<int>));
-            No.Op(typeof(Stack<int>));
+            No.Op(typeof(SortedSet<T>));
+            No.Op(typeof(Stack<T>));
 
             // System.Collections.ObjectModel
 
-            No.Op(typeof(Collection<int>));
-            No.Op(typeof(KeyedCollection<int, int>));
-            No.Op(typeof(ObservableCollection<int>));
-            No.Op(typeof(ReadOnlyCollection<int>));
-            No.Op(typeof(ReadOnlyDictionary<int, int>));
+            No.Op(typeof(Collection<T>));
+            No.Op(typeof(KeyedCollection<TKey, TItem>));
+            No.Op(typeof(ObservableCollection<T>));
+            No.Op(typeof(ReadOnlyCollection<T>));
+            No.Op(typeof(ReadOnlyDictionary<TKey, TValue>));
 
             // System.Collections.Specialized
 
@@ -185,77 +186,87 @@ namespace TestRunner
             // System
 
             No.Op(typeof(Action));
-            No.Op(typeof(Action<int>));
-            No.Op(typeof(Action<int, int>));
-            No.Op(typeof(Action<int, int, int>));
-            No.Op(typeof(Action<int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Action<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>));
+            No.Op(typeof(Action<T>));
+            No.Op(typeof(Action<T1, T2>));
+            No.Op(typeof(Action<T1, T2, T3>));
+            No.Op(typeof(Action<T1, T2, T3, T4>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>));
+            No.Op(typeof(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>));
 
-            No.Op(typeof(Func<int>));
-            No.Op(typeof(Func<int, int>));
-            No.Op(typeof(Func<int, int, int>));
-            No.Op(typeof(Func<int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>));
-            No.Op(typeof(Func<int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int>));
+            No.Op(typeof(Func<TResult>));
+            No.Op(typeof(Func<T, TResult>));
+            No.Op(typeof(Func<T1, T2, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TResult>));
+            No.Op(typeof(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TResult>));
 
             No.Op(typeof(Tuple));
-            No.Op(typeof(Tuple<int>));
-            No.Op(typeof(Tuple<int, int>));
-            No.Op(typeof(Tuple<int, int, int>));
-            No.Op(typeof(Tuple<int, int, int, int>));
-            No.Op(typeof(Tuple<int, int, int, int, int>));
-            No.Op(typeof(Tuple<int, int, int, int, int, int>));
-            No.Op(typeof(Tuple<int, int, int, int, int, int, int>));
-            No.Op(typeof(Tuple<int, int, int, int, int, int, int, int>));
+            No.Op(typeof(Tuple<T1>));
+            No.Op(typeof(Tuple<T1, T2>));
+            No.Op(typeof(Tuple<T1, T2, T3>));
+            No.Op(typeof(Tuple<T1, T2, T3, T4>));
+            No.Op(typeof(Tuple<T1, T2, T3, T4, T5>));
+            No.Op(typeof(Tuple<T1, T2, T3, T4, T5, T6>));
+            No.Op(typeof(Tuple<T1, T2, T3, T4, T5, T6, T7>));
+            No.Op(typeof(Tuple<T1, T2, T3, T4, T5, T6, T7, T8>));
+
+            No.Op(typeof(ValueTuple));
+            No.Op(typeof(ValueTuple<T1>));
+            No.Op(typeof(ValueTuple<T1, T2>));
+            No.Op(typeof(ValueTuple<T1, T2, T3>));
+            No.Op(typeof(ValueTuple<T1, T2, T3, T4>));
+            No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5>));
+            No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6>));
+            No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6, T7>));
+            No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>));
 
             // System.Threading.Tasks.Extensions
 
             No.Op(typeof(AsyncMethodBuilderAttribute));
             No.Op(typeof(AsyncValueTaskMethodBuilder));
-            No.Op(typeof(AsyncValueTaskMethodBuilder<int>));
+            No.Op(typeof(AsyncValueTaskMethodBuilder<TResult>));
             No.Op(typeof(ConfiguredValueTaskAwaitable));
-            No.Op(typeof(ConfiguredValueTaskAwaitable<int>));
+            No.Op(typeof(ConfiguredValueTaskAwaitable<TResult>));
             No.Op(typeof(ValueTaskAwaiter));
-            No.Op(typeof(ValueTaskAwaiter<int>));
+            No.Op(typeof(ValueTaskAwaiter<TResult>));
             No.Op(typeof(ValueTask));
-            No.Op(typeof(ValueTask<int>));
+            No.Op(typeof(ValueTask<TResult>));
             No.Op(typeof(IValueTaskSource));
-            No.Op(typeof(IValueTaskSource<int>));
+            No.Op(typeof(IValueTaskSource<TResult>));
             No.Op(typeof(ValueTaskSourceOnCompletedFlags));
             No.Op(typeof(ValueTaskSourceStatus));
 
             // Microsoft.Bcl.AsyncInterfaces
             No.Op(typeof(IAsyncDisposable));
-            No.Op(typeof(IAsyncEnumerable<int>));
-            No.Op(typeof(IAsyncEnumerator<int>));
+            No.Op(typeof(IAsyncEnumerable<T>));
+            No.Op(typeof(IAsyncEnumerator<T>));
             No.Op(typeof(AsyncIteratorMethodBuilder));
             No.Op(typeof(AsyncIteratorStateMachineAttribute));
             No.Op(typeof(ConfiguredAsyncDisposable));
-            No.Op(typeof(ConfiguredCancelableAsyncEnumerable<int>));
+            No.Op(typeof(ConfiguredCancelableAsyncEnumerable<T>));
             No.Op(typeof(EnumeratorCancellationAttribute));
             No.Op(typeof(TaskAsyncEnumerableExtensions));
-            No.Op(typeof(ManualResetValueTaskSourceCore<int>));
+            No.Op(typeof(ManualResetValueTaskSourceCore<TResult>));
 
             No.Op(typeof(CallInfo));
             // No.Op(typeof(global::System.Runtime.CompilerServices.Closure));
@@ -286,7 +297,7 @@ namespace TestRunner
             No.Op(typeof(ParallelOptions));
             No.Op(typeof(ContractFailedEventArgs));
             No.Op(typeof(ApplicationException));
-            No.Op(typeof(ConditionalWeakTable<object, object>));
+            No.Op(typeof(ConditionalWeakTable<TKey, TValue>));
             No.Op(typeof(BigInteger));
             No.Op(typeof(Thread));
             No.Op(typeof(ThreadPool));
@@ -295,7 +306,7 @@ namespace TestRunner
             No.Op(typeof(BindingFlags));
             No.Op(typeof(WaitCallback));
             No.Op(typeof(TypeCode));
-            No.Op(typeof(Converter<int, int>));
+            No.Op(typeof(Converter<TInput, TOutput>));
             No.Op(typeof(Queryable));
             No.Op(typeof(BitOperations));
             No.Op(typeof(HashCode));

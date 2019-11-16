@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using TestRunner.AuxiliaryTypes;
 using Theraot.Collections;
 
 namespace TestRunner
 {
-    public static class InterfaceTests
+    internal static class InterfaceTests
     {
-        public static readonly IReadOnlyDictionary<string, int> DictionaryExAsIReadOnlyDictionary = new DictionaryEx<string, int>();
-        public static readonly IReadOnlyList<string> EmptyCollectionAsIReadOnlyCollection = EmptyCollection<string>.Instance;
-        public static readonly IReadOnlyCollection<string> HashSetExAsIReadOnlyCollection = new HashSetEx<string>();
-        public static readonly ISet<string> HashSetExAsISet = new HashSetEx<string>();
-        public static readonly IReadOnlyCollection<int> ListExAsReadOnlyAsIReadOnlyCollection = (new ListEx<int>()).AsReadOnly();
-        public static readonly IReadOnlyList<int> ListExAsReadOnlyAsIReadOnlyList = (new ListEx<int>()).AsReadOnly();
-        public static readonly IReadOnlyList<string> ListExAsReadOnlyList = new ListEx<string>();
-        public static readonly IReadOnlyList<string> ReadOnlyCollectionExAsIReadOnlyList = new ReadOnlyCollectionEx<string>(ArrayEx.Empty<string>());
+        public static readonly IReadOnlyDictionary<TKey, TValue> DictionaryExAsIReadOnlyDictionary = new DictionaryEx<TKey, TValue>();
+        public static readonly IReadOnlyList<T> EmptyCollectionAsIReadOnlyCollection = EmptyCollection<T>.Instance;
+        public static readonly IReadOnlyCollection<T> HashSetExAsIReadOnlyCollection = new HashSetEx<T>();
+        public static readonly ISet<T> HashSetExAsISet = new HashSetEx<T>();
+        public static readonly IReadOnlyCollection<T> ListExAsReadOnlyAsIReadOnlyCollection = (new ListEx<T>()).AsReadOnly();
+        public static readonly IReadOnlyList<T> ListExAsReadOnlyAsIReadOnlyList = (new ListEx<T>()).AsReadOnly();
+        public static readonly IReadOnlyList<T> ListExAsReadOnlyList = new ListEx<T>();
+        public static readonly IReadOnlyList<T> ReadOnlyCollectionExAsIReadOnlyList = new ReadOnlyCollectionEx<T>(ArrayEx.Empty<T>());
     }
 }
