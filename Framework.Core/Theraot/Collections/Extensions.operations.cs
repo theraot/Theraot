@@ -140,12 +140,14 @@ namespace Theraot.Collections
             {
                 return EmptyCollection<T>.Instance;
             }
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             if (source is T[] array)
             {
-                return Array.AsReadOnly(array);
-            }
+#if LESSTHAN_NET45
+                return new ReadOnlyCollectionEx<T>(array);
+#else
+                return ArrayEx.AsReadOnly(array);
 #endif
+            }
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -171,12 +173,14 @@ namespace Theraot.Collections
             {
                 return EmptyCollection<T>.Instance;
             }
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             if (source is T[] array)
             {
-                return Array.AsReadOnly(array);
-            }
+#if LESSTHAN_NET45
+                return new ReadOnlyCollectionEx<T>(array);
+#else
+                return ArrayEx.AsReadOnly(array);
 #endif
+            }
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -382,12 +386,14 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             if (source is T[] array)
             {
-                return Array.AsReadOnly(array);
-            }
+#if LESSTHAN_NET45
+                return new ReadOnlyCollectionEx<T>(array);
+#else
+                return ArrayEx.AsReadOnly(array);
 #endif
+            }
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -413,12 +419,14 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             if (source is T[] array)
             {
-                return Array.AsReadOnly(array);
-            }
+#if LESSTHAN_NET45
+                return new ReadOnlyCollectionEx<T>(array);
+#else
+                return ArrayEx.AsReadOnly(array);
 #endif
+            }
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -444,12 +452,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
-#if GREATERTHAN_NET45 || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             if (source is T[] array)
             {
-                return Array.AsReadOnly(array);
+                return ArrayEx.AsReadOnly(array);
             }
-#endif
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();

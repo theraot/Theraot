@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
 
@@ -10,7 +12,7 @@ namespace System
 {
 #if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
 
-    public static class ArrayEx
+    public static partial class ArrayEx
     {
         private static readonly CacheDict<Type, Array> _emptyArrays = new CacheDict<Type, Array>(256);
 
@@ -34,7 +36,7 @@ namespace System
 
 #else
 
-    public static class ArrayEx
+    public static partial class ArrayEx
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static T[] Empty<T>()
@@ -44,4 +46,67 @@ namespace System
     }
 
 #endif
+
+    public static partial class ArrayEx
+    {
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: NotNull]
+        public static ReadOnlyCollection<T> AsReadOnly<T>(T[] array)
+        {
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            return new ReadOnlyCollection<T>(array);
+#else
+            return Array.AsReadOnly(array);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: NotNull]
+        public static TOutput[] ConvertAll<TInput, TOutput>(TInput[] array, Converter<TInput, TOutput> converter)
+        {
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+            var newArray = new TOutput[array.Length];
+            for (var index = 0; index < array.Length; index++)
+            {
+                newArray[index] = converter(array[index]);
+            }
+            return newArray;
+#else
+            return Array.ConvertAll(array, converter);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void ForEach<T>(T[] array, Action<T> action)
+        {
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+            foreach (var item in array)
+            {
+                action(item);
+            }
+#else
+            Array.ForEach(array, action);
+#endif
+        }
+    }
 }
