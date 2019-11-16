@@ -244,7 +244,7 @@ namespace TestRunner
             {
                 Type = type;
                 var testFixtureAttributes = type.GetAttributes<TestFixtureAttribute>(true);
-                if (testFixtureAttributes == null || testFixtureAttributes.Length <= 0)
+                if (testFixtureAttributes == null || testFixtureAttributes.Length == 0)
                 {
                     return;
                 }
@@ -266,7 +266,7 @@ namespace TestRunner
             {
                 Method = method;
                 var testAttributes = method.GetAttributes<TestAttribute>(true);
-                if (testAttributes == null || testAttributes.Length <= 0 || testAttributes[0].Ignore)
+                if (testAttributes == null || testAttributes.Length == 0 || testAttributes[0].Ignore)
                 {
                     return;
                 }
