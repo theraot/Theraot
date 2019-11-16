@@ -376,28 +376,28 @@ namespace System.Threading.Tasks
             return result;
         }
 
-        public Task StartNew(Action<object> action, object state)
+        public Task StartNew(Action<object?> action, object? state)
         {
             var result = new Task(action, state, null, CancellationToken.None, TaskCreationOptions.None, InternalTaskOptions.None, _scheduler);
             result.InternalStart(_scheduler, false, true);
             return result;
         }
 
-        public Task StartNew(Action<object> action, object state, CancellationToken cancellationToken)
+        public Task StartNew(Action<object?> action, object? state, CancellationToken cancellationToken)
         {
             var result = new Task(action, state, null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, _scheduler);
             result.InternalStart(_scheduler, false, true);
             return result;
         }
 
-        public Task StartNew(Action<object> action, object state, TaskCreationOptions creationOptions)
+        public Task StartNew(Action<object?> action, object? state, TaskCreationOptions creationOptions)
         {
             var result = new Task(action, state, Task.InternalCurrentIfAttached(creationOptions), CancellationToken.None, creationOptions, InternalTaskOptions.None, _scheduler);
             result.InternalStart(_scheduler, false, true);
             return result;
         }
 
-        public Task StartNew(Action<object> action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        public Task StartNew(Action<object?> action, object? state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             // Should not be static
             var result = new Task(action, state, Task.InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, scheduler);
@@ -434,28 +434,28 @@ namespace System.Threading.Tasks
             return result;
         }
 
-        public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state)
+        public Task<TResult> StartNew<TResult>(Func<object?, TResult> function, object? state)
         {
             var result = new Task<TResult>(function, state, CancellationToken.None, TaskCreationOptions.None, _scheduler);
             result.InternalStart(_scheduler, false, true);
             return result;
         }
 
-        public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state, CancellationToken cancellationToken)
+        public Task<TResult> StartNew<TResult>(Func<object?, TResult> function, object? state, CancellationToken cancellationToken)
         {
             var result = new Task<TResult>(function, state, cancellationToken, TaskCreationOptions.None, _scheduler);
             result.InternalStart(_scheduler, false, true);
             return result;
         }
 
-        public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state, TaskCreationOptions creationOptions)
+        public Task<TResult> StartNew<TResult>(Func<object?, TResult> function, object? state, TaskCreationOptions creationOptions)
         {
             var result = new Task<TResult>(function, state, CancellationToken.None, creationOptions, _scheduler);
             result.InternalStart(_scheduler, false, true);
             return result;
         }
 
-        public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        public Task<TResult> StartNew<TResult>(Func<object?, TResult> function, object? state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             // Should not be static
             var result = new Task<TResult>(function, state, cancellationToken, creationOptions, scheduler);
@@ -534,7 +534,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task FromAsync<TArg1>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, object state)
+        public Task FromAsync<TArg1>(Func<TArg1, AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, object? state)
         {
             if (beginMethod == null)
             {
@@ -559,7 +559,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task FromAsync<TArg1>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, object state, TaskCreationOptions creationOptions)
+        public Task FromAsync<TArg1>(Func<TArg1, AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -584,7 +584,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task<TResult> FromAsync<TArg1, TResult>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, object state)
+        public Task<TResult> FromAsync<TArg1, TResult>(Func<TArg1, AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, object? state)
         {
             if (beginMethod == null)
             {
@@ -599,7 +599,7 @@ namespace System.Threading.Tasks
             return FromAsyncCore((callback, obj) => beginMethod(arg1, callback, obj), endMethod, state, default);
         }
 
-        public Task<TResult> FromAsync<TArg1, TResult>(Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, object state, TaskCreationOptions creationOptions)
+        public Task<TResult> FromAsync<TArg1, TResult>(Func<TArg1, AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -614,7 +614,7 @@ namespace System.Threading.Tasks
             return FromAsyncCore((callback, obj) => beginMethod(arg1, callback, obj), endMethod, state, creationOptions);
         }
 
-        public Task FromAsync<TArg1, TArg2>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, object state)
+        public Task FromAsync<TArg1, TArg2>(Func<TArg1, TArg2, AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, object? state)
         {
             if (beginMethod == null)
             {
@@ -639,7 +639,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task FromAsync<TArg1, TArg2>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, object state, TaskCreationOptions creationOptions)
+        public Task FromAsync<TArg1, TArg2>(Func<TArg1, TArg2, AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -664,7 +664,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task<TResult> FromAsync<TArg1, TArg2, TResult>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, object state)
+        public Task<TResult> FromAsync<TArg1, TArg2, TResult>(Func<TArg1, TArg2, AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, object? state)
         {
             if (beginMethod == null)
             {
@@ -679,7 +679,7 @@ namespace System.Threading.Tasks
             return FromAsyncCore((callback, obj) => beginMethod(arg1, arg2, callback, obj), endMethod, state, default);
         }
 
-        public Task<TResult> FromAsync<TArg1, TArg2, TResult>(Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, object state, TaskCreationOptions creationOptions)
+        public Task<TResult> FromAsync<TArg1, TArg2, TResult>(Func<TArg1, TArg2, AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -694,7 +694,7 @@ namespace System.Threading.Tasks
             return FromAsyncCore((callback, obj) => beginMethod(arg1, arg2, callback, obj), endMethod, state, creationOptions);
         }
 
-        public Task FromAsync<TArg1, TArg2, TArg3>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state)
+        public Task FromAsync<TArg1, TArg2, TArg3>(Func<TArg1, TArg2, TArg3, AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object? state)
         {
             if (beginMethod == null)
             {
@@ -719,7 +719,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task FromAsync<TArg1, TArg2, TArg3>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state, TaskCreationOptions creationOptions)
+        public Task FromAsync<TArg1, TArg2, TArg3>(Func<TArg1, TArg2, TArg3, AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -744,7 +744,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state)
+        public Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(Func<TArg1, TArg2, TArg3, AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object? state)
         {
             if (beginMethod == null)
             {
@@ -759,7 +759,7 @@ namespace System.Threading.Tasks
             return FromAsyncCore((callback, obj) => beginMethod(arg1, arg2, arg3, callback, obj), endMethod, state, default);
         }
 
-        public Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object state, TaskCreationOptions creationOptions)
+        public Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(Func<TArg1, TArg2, TArg3, AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, TArg1 arg1, TArg2 arg2, TArg3 arg3, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -857,7 +857,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state)
+        public Task FromAsync(Func<AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object? state)
         {
             if (beginMethod == null)
             {
@@ -882,7 +882,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task FromAsync(Func<AsyncCallback, object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object state, TaskCreationOptions creationOptions)
+        public Task FromAsync(Func<AsyncCallback, object?, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -907,7 +907,7 @@ namespace System.Threading.Tasks
             );
         }
 
-        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state)
+        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object? state)
         {
             if (beginMethod == null)
             {
@@ -922,7 +922,7 @@ namespace System.Threading.Tasks
             return FromAsyncCore(beginMethod, endMethod, state, default);
         }
 
-        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
+        public Task<TResult> FromAsync<TResult>(Func<AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object? state, TaskCreationOptions creationOptions)
         {
             if (beginMethod == null)
             {
@@ -958,12 +958,12 @@ namespace System.Threading.Tasks
             return result;
         }
 
-        private static async Task<TResult> FromAsyncCore<TResult>(Func<AsyncCallback, object, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object state, TaskCreationOptions creationOptions)
+        private static async Task<TResult> FromAsyncCore<TResult>(Func<AsyncCallback, object?, IAsyncResult> beginMethod, Func<IAsyncResult, TResult> endMethod, object? state, TaskCreationOptions creationOptions)
         {
             return endMethod(await FromBeginMethod(beginMethod, state, creationOptions).ConfigureAwait(false));
         }
 
-        private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object, IAsyncResult> beginMethod, object state, TaskCreationOptions creationOptions)
+        private static Task<IAsyncResult> FromBeginMethod(Func<AsyncCallback, object?, IAsyncResult> beginMethod, object? state, TaskCreationOptions creationOptions)
         {
             var source = new TaskCompletionSource<IAsyncResult>(creationOptions);
             var canInvokeEnd = new[] { 0 };
