@@ -12,6 +12,7 @@ namespace TestRunner
             No.Op<Func<WaitCallback, object, bool>>(ThreadPoolEx.QueueUserWorkItem);
             No.Op<Func<Action<object>, object, bool, bool>>(ThreadPoolEx.QueueUserWorkItem);
             No.Op<Func<WaitCallback, object, bool>>(ThreadPoolEx.UnsafeQueueUserWorkItem);
+            No.Op<Func<Action<object>, object, bool, bool>>(ThreadPoolEx.UnsafeQueueUserWorkItem);
         }
 
         public static void TypeAvailability()
