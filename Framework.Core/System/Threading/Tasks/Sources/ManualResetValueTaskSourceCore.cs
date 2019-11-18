@@ -29,8 +29,10 @@ namespace System.Threading.Tasks.Sources
         private object? _continuationState;
 
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
+
         /// <summary><see cref="ExecutionContext"/> to flow to the callback, or null if no flowing is required.</summary>
         private ExecutionContext? _executionContext;
+
 #endif
 
         /// <summary>
