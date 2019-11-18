@@ -2,11 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-
-#if FAT
 using System.Linq;
-#endif
+using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -49,12 +46,10 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
-#if FAT
         public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
         {
             return _bucketCore.EnumerateRange(indexFrom, indexTo).Select(value => value == BucketHelper.Null ? default : (T)value);
         }
-#endif
 
         public bool Exchange(int index, T item, [MaybeNullWhen(true)] out T previous)
         {
