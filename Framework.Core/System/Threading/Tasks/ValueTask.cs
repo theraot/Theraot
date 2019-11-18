@@ -13,6 +13,7 @@ namespace System.Threading.Tasks
         internal readonly short Token;
         private static readonly Task _task = TaskExEx.FromCanceled(new CancellationToken(true));
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public ValueTask(Task task)
         {
             Obj = task ?? throw new ArgumentNullException(nameof(task));
@@ -20,6 +21,7 @@ namespace System.Threading.Tasks
             Token = 0;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public ValueTask(IValueTaskSource source, short token)
         {
             Obj = source ?? throw new ArgumentNullException(nameof(source));
@@ -27,6 +29,7 @@ namespace System.Threading.Tasks
             ContinueOnCapturedContext = true;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private ValueTask(object obj, short token, bool continueOnCapturedContext)
         {
             Obj = obj;
@@ -39,55 +42,51 @@ namespace System.Threading.Tasks
             get
             {
                 var obj = Obj;
-                switch (obj)
+                if (obj == null)
                 {
-                    case null:
-                        return false;
-
-                    case Task task:
-                        return task.IsCanceled;
-
-                    default:
-                        return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Canceled;
+                    return false;
                 }
+                if (obj is Task task)
+                {
+                    return task.IsCanceled;
+                }
+                return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Canceled;
             }
         }
 
         public bool IsCompleted
         {
+            [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             get
             {
                 var obj = Obj;
-                switch (obj)
+                if (obj == null)
                 {
-                    case null:
-                        return true;
-
-                    case Task task:
-                        return task.IsCompleted;
-
-                    default:
-                        return ((IValueTaskSource)obj).GetStatus(Token) != ValueTaskSourceStatus.Pending;
+                    return true;
                 }
+                if (obj is Task task)
+                {
+                    return task.IsCompleted;
+                }
+                return ((IValueTaskSource)obj).GetStatus(Token) != ValueTaskSourceStatus.Pending;
             }
         }
 
         public bool IsCompletedSuccessfully
         {
+            [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             get
             {
                 var obj = Obj;
-                switch (obj)
+                if (obj == null)
                 {
-                    case null:
-                        return true;
-
-                    case Task task:
-                        return task.Status == TaskStatus.RanToCompletion;
-
-                    default:
-                        return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Succeeded;
+                    return true;
                 }
+                if (obj is Task task)
+                {
+                    return task.Status == TaskStatus.RanToCompletion;
+                }
+                return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Succeeded;
             }
         }
 
@@ -96,17 +95,15 @@ namespace System.Threading.Tasks
             get
             {
                 var obj = Obj;
-                switch (obj)
+                if (obj == null)
                 {
-                    case null:
-                        return false;
-
-                    case Task task:
-                        return task.IsFaulted;
-
-                    default:
-                        return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Faulted;
+                    return false;
                 }
+                if (obj is Task task)
+                {
+                    return task.IsFaulted;
+                }
+                return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Faulted;
             }
         }
 
@@ -125,19 +122,18 @@ namespace System.Threading.Tasks
         public Task AsTask()
         {
             var obj = Obj;
-            switch (obj)
+            if (obj == null)
             {
-                case null:
-                    return CompletedTask;
-
-                case Task task:
-                    return task;
-
-                default:
-                    return GetTaskForValueTaskSource((IValueTaskSource)obj);
+                return CompletedTask;
             }
+            if (obj is Task task)
+            {
+                return task;
+            }
+            return GetTaskForValueTaskSource((IValueTaskSource)obj);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public ConfiguredValueTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)
         {
             return new ConfiguredValueTaskAwaitable(new ValueTask(Obj, Token, continueOnCapturedContext));
@@ -185,22 +181,20 @@ namespace System.Threading.Tasks
             return new ValueTask(AsTask());
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         internal void ThrowIfCompletedUnsuccessfully()
         {
             var obj = Obj;
-            switch (obj)
+            if (obj == null)
             {
-                case null:
-                    return;
-
-                case Task task:
-                    task.GetAwaiter().GetResult();
-                    return;
-
-                default:
-                    ((IValueTaskSource)obj).GetResult(Token);
-                    break;
+                return;
             }
+            if (obj is Task task)
+            {
+                task.GetAwaiter().GetResult();
+                return;
+            }
+            ((IValueTaskSource)obj).GetResult(Token);
         }
 
         private Task GetTaskForValueTaskSource(IValueTaskSource t)
