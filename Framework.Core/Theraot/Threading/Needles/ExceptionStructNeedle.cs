@@ -4,22 +4,38 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
     public struct ExceptionStructNeedle<T> : INeedle<T>, IEquatable<ExceptionStructNeedle<T>>
     {
+        private readonly ExceptionDispatchInfo _exceptionDispatchInfo;
+
         public ExceptionStructNeedle(Exception exception)
         {
-            Exception = exception;
+            _exceptionDispatchInfo = ExceptionDispatchInfo.Capture(exception);
         }
 
-        public Exception Exception { get; }
+        public Exception Exception
+        {
+            get
+            {
+                return _exceptionDispatchInfo.SourceException;
+            }
+        }
 
         public bool IsAlive => false;
 
-        public T Value => throw Exception;
+        public T Value
+        {
+            get
+            {
+                _exceptionDispatchInfo.Throw();
+                return default!;
+            }
+        }
 
         T INeedle<T>.Value { get => throw Exception; set => throw new NotSupportedException(); }
 
@@ -58,7 +74,10 @@ namespace Theraot.Threading.Needles
             {
                 return this == needle;
             }
-
+            if (obj is ExceptionDispatchInfo info)
+            {
+                return _exceptionDispatchInfo.Equals(info);
+            }
             return obj is Exception exc && exc.Equals(Exception);
         }
 
