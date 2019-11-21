@@ -7,9 +7,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks.Sources
 {
@@ -29,8 +29,10 @@ namespace System.Threading.Tasks.Sources
         private object? _continuationState;
 
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
+
         /// <summary><see cref="ExecutionContext"/> to flow to the callback, or null if no flowing is required.</summary>
         private ExecutionContext? _executionContext;
+
 #endif
 
         /// <summary>
@@ -39,14 +41,8 @@ namespace System.Threading.Tasks.Sources
         /// </summary>
         private object? _capturedContext;
 
-        /// <summary>Whether the current operation has completed.</summary>
-        private bool _completed;
-
         /// <summary>The result with which the operation succeeded, or the default value if it hasn't yet completed or failed.</summary>
-        [AllowNull, MaybeNull] private TResult _result;
-
-        /// <summary>The exception with which the operation failed, or null if it hasn't yet completed or completed successfully.</summary>
-        private ExceptionDispatchInfo? _error;
+        private INeedle<TResult>? _result;
 
         /// <summary>The current version of this value, used to help prevent misuse.</summary>
         private short _version;
@@ -60,9 +56,7 @@ namespace System.Threading.Tasks.Sources
         {
             // Reset/update state for the next use/await of this instance.
             _version++;
-            _completed = false;
-            _result = default;
-            _error = null;
+            _result = null;
             _capturedContext = null;
             _continuation = null;
             _continuationState = null;
@@ -75,7 +69,7 @@ namespace System.Threading.Tasks.Sources
         /// <param name="result">The result.</param>
         public void SetResult(TResult result)
         {
-            _result = result;
+            _result = new StructNeedle<TResult>(result);
             SignalCompletion();
         }
 
@@ -83,7 +77,7 @@ namespace System.Threading.Tasks.Sources
         /// <param name="error">The exception.</param>
         public void SetException(Exception error)
         {
-            _error = ExceptionDispatchInfo.Capture(error);
+            _result = new ExceptionStructNeedle<TResult>(error);
             SignalCompletion();
         }
 
@@ -96,10 +90,15 @@ namespace System.Threading.Tasks.Sources
         {
             ValidateToken(token);
             return
-                _continuation == null || !_completed ? ValueTaskSourceStatus.Pending :
-                _error == null ? ValueTaskSourceStatus.Succeeded :
-                _error.SourceException is OperationCanceledException ? ValueTaskSourceStatus.Canceled :
-                ValueTaskSourceStatus.Faulted;
+                _continuation == null
+                ||
+                    _result == null
+                        ? ValueTaskSourceStatus.Pending
+                        : _result is ExceptionStructNeedle<TResult> error
+                            ? error.Exception is OperationCanceledException
+                                ? ValueTaskSourceStatus.Canceled
+                                : ValueTaskSourceStatus.Faulted
+                            : ValueTaskSourceStatus.Succeeded;
         }
 
         /// <summary>Gets the result of the operation.</summary>
@@ -107,13 +106,12 @@ namespace System.Threading.Tasks.Sources
         public TResult GetResult(short token)
         {
             ValidateToken(token);
-            if (!_completed)
+            if (_result == null)
             {
                 throw new InvalidOperationException();
             }
 
-            _error?.Throw();
-            return _result;
+            return _result.Value;
         }
 
         /// <summary>Schedules the continuation action for this operation.</summary>
@@ -221,12 +219,6 @@ namespace System.Threading.Tasks.Sources
         /// <summary>Signals that the operation has completed.  Invoked after the result or error has been set.</summary>
         private void SignalCompletion()
         {
-            if (_completed)
-            {
-                throw new InvalidOperationException();
-            }
-            _completed = true;
-
             if (_continuation != null || Interlocked.CompareExchange(ref _continuation, ManualResetValueTaskSourceCoreShared.Sentinel, null) != null)
             {
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13

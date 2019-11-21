@@ -170,7 +170,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-#if FAT
         public IEnumerable<object> EnumerateRange(int indexFrom, int indexTo)
         {
             if (indexFrom < 0)
@@ -185,7 +184,6 @@ namespace Theraot.Collections.ThreadSafe
             var endSubIndex = SubIndex(indexTo);
             return PrivateEnumerableRange(indexFrom, indexTo, startSubIndex, endSubIndex);
         }
-#endif
 
         public IEnumerator<object> GetEnumerator()
         {
@@ -381,16 +379,18 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-#if FAT
         private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
         {
+            var arrayFirst = Volatile.Read(ref _arrayFirst);
+            var arraySecond = Volatile.Read(ref _arraySecond);
+            var arrayUse = Volatile.Read(ref _arrayUse);
             var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
             for (var subIndex = startSubIndex; subIndex < endSubIndex + 1; subIndex += step)
             {
                 try
                 {
-                    Interlocked.Increment(ref _arrayUse[subIndex]);
-                    var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subIndex], null, null);
+                    Interlocked.Increment(ref arrayUse![subIndex]);
+                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], null, null);
                     if (_level == 1)
                     {
                         if (foundFirst == null)
@@ -415,11 +415,10 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 finally
                 {
-                    DoLeave(ref _arrayUse[subIndex], ref _arrayFirst[subIndex], ref _arraySecond[subIndex]);
+                    DoLeave(ref arrayUse![subIndex], ref arrayFirst![subIndex], ref arraySecond![subIndex]);
                 }
             }
         }
-#endif
 
         private int SubIndex(int index)
         {
