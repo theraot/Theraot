@@ -86,6 +86,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
     public partial class ConcurrentDictionaryTestsEx
     {
 #if !NETCOREAPP2_0
+
         // We should not rely on ConcurrentDictionary ordering
         // .NET CORE 2.0 seems to be unstable
         [Test]
@@ -142,7 +143,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
             Assert.IsNull(value);
             var array = found.ToArray();
-            if (!array.IsSupersetOf(new[] {"0", "c"}))
+            if (!array.IsSupersetOf(new[] { "0", "c" }))
             {
                 foreach (var item in array)
                 {
@@ -164,9 +165,9 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         public void EditWhileIteratingThreaded()
         {
             var dictionary = new ConcurrentDictionary<string, string>();
-            Assert.IsTrue(dictionary.TryAdd("0", "1"));
-            Assert.IsTrue(dictionary.TryAdd("a", "b"));
-            int[] expectedCount = {2};
+            Assert.IsTrue(dictionary.TryAdd("original_key", "original_value"));
+            Assert.IsTrue(dictionary.TryAdd("original_key_to_remove", "original_value_to_remove"));
+            int[] expectedCount = { 2 };
             Assert.AreEqual(expectedCount[0], dictionary.Count);
             string value = null;
             var foundCount = 0;
@@ -176,7 +177,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
             void Remover()
             {
-                var removed = dictionary.TryRemove("a", out value);
+                var removed = dictionary.TryRemove("original_key_to_remove", out value);
                 if (Volatile.Read(ref didRemove) == 0 && removed)
                 {
                     expectedCount[0]--;
@@ -190,7 +191,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
             void Adder()
             {
-                var added = dictionary.TryAdd("c", "d");
+                var added = dictionary.TryAdd("added_key", "added_value");
                 if (Volatile.Read(ref didAdd) == 0 && added)
                 {
                     expectedCount[0]++;
@@ -214,6 +215,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     var t = new Thread(Remover);
                     t.Start();
                     t.Join();
+                    Assert.AreEqual(1, didRemove);
                 }
                 if (foundCount == 1)
                 {
@@ -230,6 +232,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     var t = new Thread(Adder);
                     t.Start();
                     t.Join();
+                    Assert.AreEqual(1, didAdd);
                 }
                 if (foundCount == 1)
                 {
@@ -243,24 +246,24 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                 Assert.AreEqual(expectedCount[0], dictionary.Count);
             }
 
-            Assert.IsNull(value);
             var array = found.ToArray();
-            if (!array.IsSupersetOf(new[] {"0", "c"}))
+            if (array[0] == "original_key")
             {
-                foreach (var item in array)
+                if (array.Length > 1 && array[1] == "added_key" && array.Length > 2)
                 {
-                    Debug.WriteLine(item);
+                    Assert.Fail();
                 }
-
+            }
+            else if (array[0] != "original_key_to_remove")
+            {
                 Assert.Fail();
             }
 
             Assert.AreEqual(2, expectedCount[0]);
-            Assert.AreEqual(1, didAdd);
-            Assert.AreEqual(1, didRemove);
             Assert.IsTrue(foundCount - expectedCount[0] < 2, "foundCount: {0}, expectedCount:{1}", foundCount, expectedCount[0]);
             Assert.AreEqual(expectedCount[0], dictionary.Count);
         }
+
 #endif
     }
 }
