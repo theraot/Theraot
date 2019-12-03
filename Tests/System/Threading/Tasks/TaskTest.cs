@@ -37,16 +37,18 @@ namespace MonoTests.System.Threading.Tasks
     [TestFixture]
     public partial class TaskTests
     {
-        private const int _max = 6;
-
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
         private int _completionPortThreads;
-
         private int _workerThreads;
 #endif
+    }
+
+    [TestFixture]
+    public partial class TaskTests
+    {
+        private const int _max = 6;
 
         private Task _parentWfc;
-
         private Task[] _tasks;
 
         public static void WaitAny_ManyExceptions() // TODO: Review
@@ -444,6 +446,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
         [Test]
         public void DisposeUnstartedTest()
         {
@@ -453,6 +456,7 @@ namespace MonoTests.System.Threading.Tasks
                 t.Dispose();
             });
         }
+
 #endif
 
         [Test]
@@ -524,9 +528,9 @@ namespace MonoTests.System.Threading.Tasks
             t.Start();
             Assert.IsTrue(t.Wait(5000), "#0");
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
-            Assert.IsTrue((bool)isTp, "#1");
+            Assert.IsTrue(isTp == true, "#1");
 #endif
-            Assert.IsTrue((bool)isBg, "#2");
+            Assert.IsTrue(isBg == true, "#2");
             isTp = null;
             isBg = null;
             var t2 = new Task(() =>
@@ -538,8 +542,8 @@ namespace MonoTests.System.Threading.Tasks
             }, TaskCreationOptions.LongRunning);
             t2.Start();
             Assert.IsTrue(t2.Wait(5000), "#10");
-            Assert.IsFalse((bool)isTp, "#11");
-            Assert.IsTrue((bool)isBg, "#12");
+            Assert.IsFalse(isTp == true, "#11");
+            Assert.IsTrue(isBg == true, "#12");
         }
 
         [Test]
@@ -634,6 +638,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
         [Test]
         public void Start_NullArgument()
         {
@@ -651,6 +656,7 @@ namespace MonoTests.System.Threading.Tasks
                 Theraot.No.Op(ex);
             }
         }
+
 #endif
 
         [Test]
@@ -784,7 +790,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 var taskA = new Task(cancelation.Cancel);
                 var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
-                var tasks = new[] {taskA, taskB};
+                var tasks = new[] { taskA, taskB };
 
                 tasks[0].Start();
 
@@ -836,7 +842,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
             );
 
-            Assert.IsTrue(Task.WaitAll(new[] {task1}, 1000), "#1");
+            Assert.IsTrue(Task.WaitAll(new[] { task1 }, 1000), "#1");
         }
 
         [Test]
@@ -943,7 +949,6 @@ namespace MonoTests.System.Threading.Tasks
         {
             using (var cancelation = new CancellationTokenSource())
             {
-
                 var taskA = new Task
                 (
                     () =>
@@ -953,13 +958,12 @@ namespace MonoTests.System.Threading.Tasks
                     }
                 );
 
-
                 var taskB = new Task
                 (
                     ActionHelper.GetNoopAction(),
                     cancelation.Token
                 );
-                var tasks = new[] {taskA, taskB};
+                var tasks = new[] { taskA, taskB };
 
                 tasks[0].Start();
 
@@ -1339,7 +1343,6 @@ namespace MonoTests.System.Threading.Tasks
                     task.RunSynchronously();
                 }
             );
-
 
             var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
             testTask.RunSynchronously();
@@ -1894,7 +1897,7 @@ namespace MonoTests.System.Threading.Tasks
             var ct = new CancellationToken(true);
             var t1 = new Task(ActionHelper.GetNoopAction(), ct);
             var t2 = TaskEx.Delay(3000);
-            Assert.IsFalse(Task.WaitAll(new[] {t1, t2}, 10));
+            Assert.IsFalse(Task.WaitAll(new[] { t1, t2 }, 10));
         }
 
         [Test]
@@ -1921,7 +1924,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var t1 = new Task(ActionHelper.GetNoopAction());
             var t2 = new Task(t1.Start);
-            var tasks = new[] {t1, t2};
+            var tasks = new[] { t1, t2 };
 
             var t = TaskEx.WhenAll(tasks);
             Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
@@ -1937,7 +1940,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
-                var tasks = new[] {taskA, taskB};
+                var tasks = new[] { taskA, taskB };
 
                 cancelation.Cancel();
 
@@ -1980,7 +1983,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
-                var tasks = new[] {taskA, taskB, tcs.Task, tcs2.Task};
+                var tasks = new[] { taskA, taskB, tcs.Task, tcs2.Task };
 
                 cancelation.Cancel();
 
@@ -2083,7 +2086,7 @@ namespace MonoTests.System.Threading.Tasks
                     }
                 );
 
-            var tasks = new[] {t1, t2};
+            var tasks = new[] { t1, t2 };
 
             var t = TaskEx.WhenAll(tasks);
             Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
@@ -2111,7 +2114,7 @@ namespace MonoTests.System.Threading.Tasks
                         cancelation.Token
                     );
 
-                var tasks = new[] {taskA, taskB};
+                var tasks = new[] { taskA, taskB };
 
                 cancelation.Cancel();
 
@@ -2207,7 +2210,7 @@ namespace MonoTests.System.Threading.Tasks
             // Here is is how: the fact that the task has completed was not visible to the thread that is disposing
             var t1 = new Task(ActionHelper.GetNoopAction());
             var t2 = new Task(t1.Start);
-            var tasks = new[] {t1, t2};
+            var tasks = new[] { t1, t2 };
 
             var t = TaskEx.WhenAny(tasks);
             Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1a");
@@ -2535,6 +2538,7 @@ namespace MonoTests.System.Threading.Tasks
     public partial class TaskTests
     {
 #if LESSTHAN_NET40
+
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
         public void DenyChildAttachTest() // TODO: Review
@@ -2612,6 +2616,7 @@ namespace MonoTests.System.Threading.Tasks
             t.Wait();
             Assert.IsTrue(ranOnDefaultScheduler, "#2");
         }
+
 #endif
     }
 }
