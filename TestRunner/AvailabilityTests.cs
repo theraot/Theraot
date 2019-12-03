@@ -71,9 +71,9 @@ namespace TestRunner
 
         public static void TaskCompletionSourceMethodAvailability()
         {
-#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
             const TaskCompletionSource<int> source = null;
             No.Op<Func<bool>>(source.TrySetCanceled);
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
             No.Op<Func<CancellationToken, bool>>(source.TrySetCanceled);
 #endif
         }
