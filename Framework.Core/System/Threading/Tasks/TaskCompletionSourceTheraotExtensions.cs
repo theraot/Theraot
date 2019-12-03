@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace System.Threading.Tasks
 {
-    public static class TaskCompletionSourceExtensions
+    public static class TaskCompletionSourceTheraotExtensions
     {
         public static bool TrySetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken token)
         {
