@@ -664,7 +664,8 @@
     <Rule Id="AD0001" Action="Hidden" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
-    <Rule Id="IDE0011" Action="Info" />
+    <Rule Id="IDE0011" Action="Warning" />
+    <Rule Id="IDE0011WithoutSuggestion" Action="Warning" />
     <Rule Id="IDE0063" Action="None" />
     <Rule Id="IDE0063WithoutSuggestion" Action="None" />
     <Rule Id="IDE0066" Action="None" />
