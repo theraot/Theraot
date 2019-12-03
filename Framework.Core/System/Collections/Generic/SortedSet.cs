@@ -14,44 +14,38 @@ namespace System.Collections.Generic
     [Serializable]
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
-        private readonly AVLTree<T, T> _wrapped;
+        private readonly AVLTree<T, VoidStruct> _wrapped;
 
         public SortedSet()
         {
             Comparer = Comparer<T>.Default;
-            _wrapped = new AVLTree<T, T>();
+            _wrapped = new AVLTree<T, VoidStruct>();
         }
 
         public SortedSet(IComparer<T> comparer)
         {
             Comparer = comparer ?? Comparer<T>.Default;
-            _wrapped = new AVLTree<T, T>(Comparer);
+            _wrapped = new AVLTree<T, VoidStruct>(Comparer);
         }
 
         public SortedSet(IEnumerable<T> collection)
         {
             Comparer = Comparer<T>.Default;
-            _wrapped = new AVLTree<T, T>();
+            _wrapped = new AVLTree<T, VoidStruct>();
             foreach (var item in collection ?? throw new ArgumentNullException(nameof(collection)))
             {
-                _wrapped.AddNonDuplicate(item, item);
+                _wrapped.AddNonDuplicate(item, default);
             }
         }
 
         public SortedSet(IEnumerable<T> collection, IComparer<T> comparer)
         {
             Comparer = comparer ?? Comparer<T>.Default;
-            _wrapped = new AVLTree<T, T>();
+            _wrapped = new AVLTree<T, VoidStruct>();
             foreach (var item in collection ?? throw new ArgumentNullException(nameof(collection)))
             {
-                _wrapped.AddNonDuplicate(item, item);
+                _wrapped.AddNonDuplicate(item, default);
             }
-        }
-
-        protected SortedSet(AVLTree<T, T> wrapped, IComparer<T> comparer)
-        {
-            _wrapped = wrapped ?? new AVLTree<T, T>();
-            Comparer = comparer ?? Comparer<T>.Default;
         }
 
         protected SortedSet(SerializationInfo info, StreamingContext context)
@@ -63,7 +57,7 @@ namespace System.Collections.Generic
 
             No.Op(context);
             Comparer = (IComparer<T>)info.GetValue(nameof(Comparer), typeof(IComparer<T>));
-            _wrapped = new AVLTree<T, T>(Comparer);
+            _wrapped = new AVLTree<T, VoidStruct>(Comparer);
             var count = info.GetInt32(nameof(Count));
             if (count != 0)
             {
@@ -84,6 +78,12 @@ namespace System.Collections.Generic
             {
                 throw new SerializationException();
             }
+        }
+
+        private SortedSet(AVLTree<T, VoidStruct> wrapped, IComparer<T> comparer)
+        {
+            _wrapped = wrapped ?? new AVLTree<T, VoidStruct>();
+            Comparer = comparer ?? Comparer<T>.Default;
         }
 
         public IComparer<T> Comparer { get; }
@@ -254,7 +254,7 @@ namespace System.Collections.Generic
 
         protected virtual bool AddExtracted(T item)
         {
-            return _wrapped.AddNonDuplicate(item, item);
+            return _wrapped.AddNonDuplicate(item, default);
         }
 
         protected virtual int GetCount()
