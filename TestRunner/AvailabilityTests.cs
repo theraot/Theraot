@@ -37,6 +37,13 @@ namespace TestRunner
             No.Op<Func<Type, object, Delegate>>(methodInfo.CreateDelegate);
         }
 
+        public static void SortedSetMethodAvailability()
+        {
+            const SortedSet<T> sortedSet = null;
+            No.Op<Func<T, IEnumerable<T>>>(sortedSet.Append);
+            No.Op<TryGetValue<T>>(sortedSet.TryGetValue);
+        }
+
         public static void StreamMethodAvailability()
         {
             // ReSharper disable once RedundantAssignment

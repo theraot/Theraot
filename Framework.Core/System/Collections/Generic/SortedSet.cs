@@ -93,8 +93,11 @@ namespace System.Collections.Generic
         bool ICollection<T>.IsReadOnly => false;
 
         bool ICollection.IsSynchronized => false;
+
         public T Max => GetMax();
+
         public T Min => GetMin();
+
         object ICollection.SyncRoot => this;
 
         public bool Add(T item)
@@ -230,6 +233,18 @@ namespace System.Collections.Generic
         public void SymmetricExceptWith(IEnumerable<T> other)
         {
             Extensions.SymmetricExceptWith(this, other);
+        }
+
+        public bool TryGetValue(T equalValue, out T actualValue)
+        {
+            var node = _wrapped.Get(equalValue);
+            if (node != null)
+            {
+                actualValue = node.Key;
+                return true;
+            }
+            actualValue = default!;
+            return false;
         }
 
         public void UnionWith(IEnumerable<T> other)
