@@ -115,7 +115,7 @@ namespace System.Threading.Tasks
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskExEx.FromCanceled<bool>(cancellationToken);
+                return FromCanceled<bool>(cancellationToken);
             }
 
             var source = new TaskCompletionSource<bool>();
@@ -161,7 +161,7 @@ namespace System.Threading.Tasks
 
             if (cancellationToken.IsCancellationRequested)
             {
-                return TaskExEx.FromCanceled<bool>(cancellationToken);
+                return FromCanceled<bool>(cancellationToken);
             }
 
             var source = new TaskCompletionSource<bool>();
