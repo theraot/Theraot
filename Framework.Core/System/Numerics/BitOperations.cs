@@ -245,12 +245,7 @@ namespace System.Numerics
 
         private static int Log2SoftwareFallback(uint value)
         {
-            if (value == 0)
-            {
-                return 0;
-            }
-
-            return NumericHelper.Log2(value);
+            return value == 0 ? 0 : NumericHelper.Log2(value);
         }
     }
 }
