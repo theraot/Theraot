@@ -57,7 +57,7 @@ namespace System.Threading
 
         public static T EnsureInitialized<T>(ref T target, ref bool initialized, ref object syncLock, Func<T> valueFactory)
         {
-            // MICROSOFT doens't do a null check for valueFactory
+            // MICROSOFT doesn't do a null check for valueFactory
             if (syncLock == null)
             {
                 Interlocked.CompareExchange(ref syncLock, new object(), null);
