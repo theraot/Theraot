@@ -16,11 +16,11 @@ namespace System.Collections.Generic
     [Serializable]
     public class HashSet<T> : ISet<T>, IReadOnlyCollection<T>, ISerializable
     {
-        private readonly NullAwareDictionary<T, object?> _wrapped;
+        private readonly NullAwareDictionary<T, T> _wrapped;
 
         public HashSet()
         {
-            _wrapped = new NullAwareDictionary<T, object?>();
+            _wrapped = new NullAwareDictionary<T, T>();
         }
 
         public HashSet(IEnumerable<T> collection)
@@ -30,16 +30,16 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(collection));
             }
 
-            _wrapped = new NullAwareDictionary<T, object?>();
+            _wrapped = new NullAwareDictionary<T, T>();
             foreach (var item in collection)
             {
-                _wrapped[item] = null;
+                _wrapped[item] = item;
             }
         }
 
         public HashSet(IEqualityComparer<T> comparer)
         {
-            _wrapped = new NullAwareDictionary<T, object?>(comparer);
+            _wrapped = new NullAwareDictionary<T, T>(comparer);
         }
 
         public HashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
@@ -49,10 +49,10 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(collection));
             }
 
-            _wrapped = new NullAwareDictionary<T, object?>(comparer);
+            _wrapped = new NullAwareDictionary<T, T>(comparer);
             foreach (var item in collection)
             {
-                _wrapped[item] = null;
+                _wrapped[item] = item;
             }
         }
 
@@ -66,9 +66,9 @@ namespace System.Collections.Generic
             }
 
             No.Op(context);
-            var dictionary = (info.GetValue("dictionary", typeof(KeyValuePair<T, object?>[])) as KeyValuePair<T, object?>[]) ?? ArrayEx.Empty<KeyValuePair<T, object?>>();
-            var comparer = info.GetValue("comparer", typeof(IEqualityComparer<T>)) ?? EqualityComparer<T>.Default;
-            _wrapped = new NullAwareDictionary<T, object?>(dictionary, comparer);
+            var dictionary = (info.GetValue("dictionary", typeof(KeyValuePair<T, T>[])) as KeyValuePair<T, T>[]) ?? ArrayEx.Empty<KeyValuePair<T, T>>();
+            var comparer = (info.GetValue("comparer", typeof(IEqualityComparer<T>)) as IEqualityComparer<T>) ?? EqualityComparer<T>.Default;
+            _wrapped = new NullAwareDictionary<T, T>(dictionary, comparer);
         }
 
         public IEqualityComparer<T> Comparer => _wrapped.Comparer;
@@ -89,7 +89,7 @@ namespace System.Collections.Generic
                 return false;
             }
 
-            _wrapped[item] = null;
+            _wrapped[item] = item;
             return true;
         }
 
@@ -305,7 +305,7 @@ namespace System.Collections.Generic
                 }
                 else
                 {
-                    _wrapped[item] = null;
+                    _wrapped[item] = item;
                 }
             }
         }
@@ -314,6 +314,16 @@ namespace System.Collections.Generic
         {
             // Should not be static
             // Empty
+        }
+
+        public bool TryGetValue(T equalValue, out T actualValue)
+        {
+            if (_wrapped.TryGetValue(equalValue, out actualValue))
+            {
+                return true;
+            }
+            actualValue = default!;
+            return false;
         }
 
         public void UnionWith(IEnumerable<T> other)
@@ -327,7 +337,7 @@ namespace System.Collections.Generic
             {
                 if (!_wrapped.ContainsKey(item))
                 {
-                    _wrapped[item] = null;
+                    _wrapped[item] = item;
                 }
             }
         }
@@ -385,7 +395,7 @@ namespace System.Collections.Generic
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, object?>> _enumerator;
+            private readonly IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, T>> _enumerator;
             private bool _valid;
 
             internal Enumerator(HashSet<T> hashSet)
