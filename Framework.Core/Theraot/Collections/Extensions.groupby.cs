@@ -108,11 +108,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(resultSelector));
             }
 
-            if (comparer == null)
-            {
-                return GroupBuilder<TKey, TSource, TElement>.CreateGroups(source, EqualityComparer<TKey>.Default, keySelector, resultSelector);
-            }
-            return GroupBuilder<TKey, TSource, TElement>.CreateGroups(source, comparer, keySelector, resultSelector);
+            return GroupBuilder<TKey, TSource, TElement>.CreateGroups(source, comparer ?? EqualityComparer<TKey>.Default, keySelector, resultSelector);
         }
 
         public static IEnumerable<IGrouping<TKey, TSource>> GroupProgressiveBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer)
@@ -127,11 +123,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            if (comparer == null)
-            {
-                return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, EqualityComparer<TKey>.Default, keySelector, FuncHelper.GetIdentityFunc<TSource>());
-            }
-            return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, comparer, keySelector, FuncHelper.GetIdentityFunc<TSource>());
+            return GroupBuilder<TKey, TSource, TSource>.CreateGroups(source, comparer ?? EqualityComparer<TKey>.Default, keySelector, FuncHelper.GetIdentityFunc<TSource>());
         }
     }
 }
