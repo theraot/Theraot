@@ -37,7 +37,7 @@ namespace System.Linq
 
         public IEnumerable<TResult> ApplyResultSelector<TResult>(Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
-            // MICROSFT does not null check resultSelector
+            // MICROSOFT does not null check resultSelector
             return _groupings.Values.Select(group => resultSelector(group.Key, group));
         }
 
