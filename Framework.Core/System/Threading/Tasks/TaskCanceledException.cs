@@ -16,9 +16,6 @@ namespace System.Threading.Tasks
     [Serializable]
     public class TaskCanceledException : OperationCanceledExceptionEx
     {
-        [NonSerialized]
-        private readonly Task? _canceledTask; // The task which has been canceled.
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="TaskCanceledException" /> class.
         /// </summary>
@@ -60,7 +57,7 @@ namespace System.Threading.Tasks
         public TaskCanceledException(Task? task) :
             base("A task was canceled", task?.CancellationToken ?? new CancellationToken(false))
         {
-            _canceledTask = task;
+            Task = task;
         }
 
         protected TaskCanceledException(SerializationInfo info, StreamingContext context)
@@ -77,7 +74,8 @@ namespace System.Threading.Tasks
         ///     <see cref="TaskCanceledException" />, in which case
         ///     this property will return null.
         /// </remarks>
-        public Task? Task => _canceledTask;
+        [field: NonSerialized]
+        public Task? Task { get; }
     }
 }
 

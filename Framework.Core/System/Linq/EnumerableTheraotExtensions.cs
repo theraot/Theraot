@@ -1,10 +1,18 @@
 ﻿#if (GREATERTHAN_NET30 && LESSTHAN_NET471) || TARGETS_NETCORE || TARGETS_NETSTANDARD
 
+#if TARGETS_NET || LESSTHAN_NETSTANDARD16
+
 using System.Collections.Generic;
+
+#endif
 
 namespace System.Linq
 {
-    public static partial class EnumerableTheraotExtensions
+    public static
+#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+        partial
+#endif
+        class EnumerableTheraotExtensions
     {
 #if LESSTHAN_NET40
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)

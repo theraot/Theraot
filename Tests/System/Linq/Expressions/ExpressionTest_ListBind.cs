@@ -41,23 +41,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestListBind
     {
-        public class Foo
-        {
-            public int Baz;
-            public string Str;
-
-            public List<string> List { get; } = new List<string>();
-
-            public string[] Bar { get; set; }
-
-            public int BarBar => 0;
-
-            public string[] Test()
-            {
-                return null;
-            }
-        }
-
         [Test]
         public void ArgNull()
         {
@@ -148,6 +131,21 @@ namespace MonoTests.System.Linq.Expressions
         public void PropertyAccessorNull()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.ListBind(null, new List<ElementInit>()));
+        }
+
+        public class Foo
+        {
+            public int Baz;
+            public string Str;
+
+            public string[] Bar { get; set; }
+            public int BarBar => 0;
+            public List<string> List { get; } = new List<string>();
+
+            public string[] Test()
+            {
+                return null;
+            }
         }
     }
 }

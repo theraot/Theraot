@@ -522,11 +522,7 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                if (key == null)
-                {
-                    return ValueForNullKey;
-                }
-                return _wrapped[key];
+                return key == null ? ValueForNullKey : _wrapped[key];
             }
             set
             {
@@ -543,11 +539,7 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                if (key.IsAlive)
-                {
-                    return _wrapped[key.Value];
-                }
-                return ValueForNullKey;
+                return key.IsAlive ? _wrapped[key.Value] : ValueForNullKey;
             }
             set
             {
@@ -658,20 +650,12 @@ namespace Theraot.Collections.Specialized
 
         public bool ContainsKey([AllowNull] TKey key)
         {
-            if (key == null)
-            {
-                return ContainsNullKey();
-            }
-            return _wrapped.ContainsKey(key);
+            return key == null ? ContainsNullKey() : _wrapped.ContainsKey(key);
         }
 
         public bool ContainsKey(ReadOnlyStructNeedle<TKey> key)
         {
-            if (key.IsAlive)
-            {
-                return _wrapped.ContainsKey(key.Value);
-            }
-            return _hasNull;
+            return key.IsAlive ? _wrapped.ContainsKey(key.Value) : _hasNull;
         }
 
         public bool ContainsNullKey()
@@ -741,20 +725,12 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove([AllowNull] TKey key)
         {
-            if (key == null)
-            {
-                return RemoveNullKey();
-            }
-            return _wrapped.Remove(key);
+            return key == null ? RemoveNullKey() : _wrapped.Remove(key);
         }
 
         public bool Remove(ReadOnlyStructNeedle<TKey> key)
         {
-            if (key.IsAlive)
-            {
-                return _wrapped.Remove(key.Value);
-            }
-            return RemoveNullKey();
+            return key.IsAlive ? _wrapped.Remove(key.Value) : RemoveNullKey();
         }
 
         bool ICollection<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>.Remove(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue> item)
@@ -820,20 +796,12 @@ namespace Theraot.Collections.Specialized
 
         public bool TryAdd([AllowNull] TKey key, TValue value)
         {
-            if (key == null)
-            {
-                return TryAddNullKey(value);
-            }
-            return _wrapped.TryAdd(key, value);
+            return key == null ? TryAddNullKey(value) : _wrapped.TryAdd(key, value);
         }
 
         public bool TryAdd(ReadOnlyStructNeedle<TKey> key, TValue value)
         {
-            if (key.IsAlive)
-            {
-                return _wrapped.TryAdd(key.Value, value);
-            }
-            return TryAddNullKey(value);
+            return key.IsAlive ? _wrapped.TryAdd(key.Value, value) : TryAddNullKey(value);
         }
 
         public bool TryAddNullKey(TValue value)
@@ -848,20 +816,12 @@ namespace Theraot.Collections.Specialized
 
         public bool TryGetValue([AllowNull] TKey key, out TValue value)
         {
-            if (key == null)
-            {
-                return TryGetValueForNullKey(out value);
-            }
-            return _wrapped.TryGetValue(key, out value);
+            return key == null ? TryGetValueForNullKey(out value) : _wrapped.TryGetValue(key, out value);
         }
 
         public bool TryGetValue(ReadOnlyStructNeedle<TKey> key, out TValue value)
         {
-            if (key.IsAlive)
-            {
-                return _wrapped.TryGetValue(key.Value, out value);
-            }
-            return TryGetValueForNullKey(out value);
+            return key.IsAlive ? _wrapped.TryGetValue(key.Value, out value) : TryGetValueForNullKey(out value);
         }
 
         public bool TryGetValueForNullKey(out TValue value)

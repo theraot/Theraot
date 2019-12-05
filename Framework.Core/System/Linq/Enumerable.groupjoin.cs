@@ -35,11 +35,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            if (comparer == null)
-            {
-                return CreateGroupJoinIterator(EqualityComparer<TKey>.Default);
-            }
-            return CreateGroupJoinIterator(comparer);
+            return CreateGroupJoinIterator(comparer ?? EqualityComparer<TKey>.Default);
 
             IEnumerable<TResult> CreateGroupJoinIterator(IEqualityComparer<TKey> notNullComparer)
             {

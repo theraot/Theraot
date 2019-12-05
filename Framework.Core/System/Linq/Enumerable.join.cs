@@ -30,11 +30,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
-            if (comparer == null)
-            {
-                return CreateJoinIterator(EqualityComparer<TKey>.Default);
-            }
-            return CreateJoinIterator(comparer);
+            return CreateJoinIterator(comparer ?? EqualityComparer<TKey>.Default);
 
             IEnumerable<TResult> CreateJoinIterator(IEqualityComparer<TKey> notNullComparer)
             {

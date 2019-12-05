@@ -457,7 +457,7 @@ namespace System.Linq.Expressions
         ///     This default implementation for <see cref="ExpressionType.Extension" />
         ///     nodes will call <see cref="ExpressionVisitor.VisitExtension" />.
         ///     Override this method to call into a more specific method on a derived
-        ///     visitor class of ExprressionVisitor. However, it should still
+        ///     visitor class of ExpressionVisitor. However, it should still
         ///     support unknown visitors by calling VisitExtension.
         /// </remarks>
         protected internal virtual Expression Accept(ExpressionVisitor visitor)

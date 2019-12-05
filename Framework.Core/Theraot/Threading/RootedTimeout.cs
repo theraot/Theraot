@@ -166,12 +166,14 @@ namespace Theraot.Threading
             {
                 Close();
             }
-            if (Interlocked.CompareExchange(ref _status, _canceled, _canceling) == _canceling)
+
+            if (Interlocked.CompareExchange(ref _status, _canceled, _canceling) != _canceling)
             {
-                Volatile.Write(ref _status, _canceled);
-                return true;
+                return false;
             }
-            return false;
+
+            Volatile.Write(ref _status, _canceled);
+            return true;
         }
 
         public bool Change(long dueTime)

@@ -10,6 +10,7 @@
 **
 ===========================================================*/
 
+using System.Runtime.CompilerServices;
 using System.Globalization;
 using System.Runtime.Serialization;
 using Theraot;
@@ -49,7 +50,7 @@ namespace System.Collections
         // If a implements IComparable, a.CompareTo(b) is returned.
         // If a doesn't implement IComparable and b does, -(b.CompareTo(a)) is returned.
         // Otherwise an exception is thrown.
-        //
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public int Compare(object x, object y)
         {
             if (x == y)

@@ -23,7 +23,7 @@ namespace System.Runtime.Serialization
         Other = 0x20,
         Clone = 0x40,
         CrossAppDomain = 0x80,
-        All = 0xFF,
+        All = 0xFF
     }
 
     public readonly struct StreamingContext

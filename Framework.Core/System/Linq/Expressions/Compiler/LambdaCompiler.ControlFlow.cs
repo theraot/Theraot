@@ -149,12 +149,13 @@ namespace System.Linq.Expressions.Compiler
 
         private void DefineBlockLabels(IList<Expression>? nodes)
         {
-            if (nodes != null)
+            if (nodes == null)
             {
-                foreach (var node in nodes)
-                {
-                    DefineBlockLabels(node);
-                }
+                return;
+            }
+            foreach (var node in nodes)
+            {
+                DefineBlockLabels(node);
             }
         }
 

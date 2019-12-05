@@ -103,14 +103,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitExpressionAsVoid(node.GetExpression(i));
             }
-
             EmitExpressionAndBranch(branch, node.GetExpression(count - 1), label);
-
-            if (innerScopeInfo.HasValue)
+            if (!innerScopeInfo.HasValue)
             {
-                innerScopeInfo.Value.child.Exit();
-                _scope = innerScopeInfo.Value.parent;
+                return;
             }
+            innerScopeInfo.Value.child.Exit();
+            _scope = innerScopeInfo.Value.parent;
         }
 
         private void EmitBranchComparison(bool branch, BinaryExpression node, Label label)

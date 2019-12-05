@@ -33,11 +33,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
-            if (handlers == null)
-            {
-                return MakeTryExtracted(type, body, @finally, fault, ArrayEx.Empty<CatchBlock>());
-            }
-            return MakeTryExtracted(type, body, @finally, fault, handlers);
+            return MakeTryExtracted(type, body, @finally, fault, handlers ?? ArrayEx.Empty<CatchBlock>());
         }
 
         /// <summary>

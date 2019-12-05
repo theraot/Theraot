@@ -253,7 +253,7 @@ namespace System.Runtime.Serialization
         public string? GetString(string name)
         {
             var value = GetElement(name, out var foundType);
-            return value == null ? default : ReferenceEquals(foundType, typeof(string)) || value == null ? null : _converter.ToString(value);
+            return value == null ? default : ReferenceEquals(foundType, typeof(string)) ? null : _converter.ToString(value);
         }
 
         [CLSCompliant(false)]
@@ -353,7 +353,7 @@ namespace System.Runtime.Serialization
                 return null;
             }
 
-            if (ReferenceEquals(foundType, type) || type.GetTypeInfo().IsAssignableFrom(foundType.GetTypeInfo()) || value == null)
+            if (ReferenceEquals(foundType, type) || type.GetTypeInfo().IsAssignableFrom(foundType.GetTypeInfo()))
             {
                 return value;
             }

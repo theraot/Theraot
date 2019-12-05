@@ -98,17 +98,17 @@ namespace Theraot.Threading.Needles
 
         public sealed override bool Equals(object? obj)
         {
-            if (obj is WeakNeedle<T> needle)
+            switch (obj)
             {
-                return EqualsExtractedExtracted(this, needle);
-            }
+                case WeakNeedle<T> needle:
+                    return EqualsExtractedExtracted(this, needle);
 
-            if (obj is T value && TryGetValue(out var target))
-            {
-                return EqualityComparer<T?>.Default.Equals(target, value);
-            }
+                case T value when TryGetValue(out var target):
+                    return EqualityComparer<T?>.Default.Equals(target, value);
 
-            return false;
+                default:
+                    return false;
+            }
         }
 
         public bool Equals(WeakNeedle<T> other)

@@ -21,7 +21,6 @@
 ===========================================================*/
 
 using System.Diagnostics;
-using Theraot;
 
 namespace System.Collections
 {
@@ -93,7 +92,8 @@ namespace System.Collections
         // and is for use only with SyncArrayList.
         internal ArrayList(bool trash)
         {
-            No.Op(trash);
+            _ = trash;
+            _items = null!;
         }
 
         // Gets and sets the capacity of this list.  The capacity is the size of

@@ -52,7 +52,7 @@ namespace System.Runtime.CompilerServices
                     return;
 
                 default:
-                    ((IValueTaskSource)obj).OnCompleted(ValueTaskAwaiter.InvokeActionDelegate, continuation, _value.Token, ValueTaskSourceOnCompletedFlags.UseSchedulingContext | ValueTaskSourceOnCompletedFlags.FlowExecutionContext);
+                    ((IValueTaskSource)obj).OnCompleted(InvokeActionDelegate, continuation, _value.Token, ValueTaskSourceOnCompletedFlags.UseSchedulingContext | ValueTaskSourceOnCompletedFlags.FlowExecutionContext);
                     break;
             }
         }
@@ -71,7 +71,7 @@ namespace System.Runtime.CompilerServices
                     return;
 
                 default:
-                    ((IValueTaskSource)obj).OnCompleted(ValueTaskAwaiter.InvokeActionDelegate, continuation, _value.Token, ValueTaskSourceOnCompletedFlags.UseSchedulingContext);
+                    ((IValueTaskSource)obj).OnCompleted(InvokeActionDelegate, continuation, _value.Token, ValueTaskSourceOnCompletedFlags.UseSchedulingContext);
                     break;
             }
         }

@@ -260,11 +260,11 @@ namespace System
             Add(comparer?.GetHashCode(value) ?? (value?.GetHashCode() ?? 0));
         }
 
-        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", error: true)]
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object? obj) => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes.");
 
-        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", error: true)]
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.");
 
@@ -362,6 +362,7 @@ namespace System
             return BitOperations.RotateLeft(hash + (input * _prime2), 13) * _prime1;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private void Add(int value)
         {
             // The original xxHash works as follows:

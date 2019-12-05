@@ -7,7 +7,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using Theraot.Threading.Needles;
 
@@ -44,9 +43,6 @@ namespace System.Threading.Tasks.Sources
         /// <summary>The result with which the operation succeeded, or the default value if it hasn't yet completed or failed.</summary>
         private INeedle<TResult>? _result;
 
-        /// <summary>The current version of this value, used to help prevent misuse.</summary>
-        private short _version;
-
         /// <summary>Gets or sets whether to force continuations to run asynchronously.</summary>
         /// <remarks>Continuations may run asynchronously if this is false, but they'll never run synchronously if this is true.</remarks>
         public bool RunContinuationsAsynchronously { get; set; }
@@ -55,7 +51,7 @@ namespace System.Threading.Tasks.Sources
         public void Reset()
         {
             // Reset/update state for the next use/await of this instance.
-            _version++;
+            Version++;
             _result = null;
             _capturedContext = null;
             _continuation = null;
@@ -82,7 +78,7 @@ namespace System.Threading.Tasks.Sources
         }
 
         /// <summary>Gets the operation version.</summary>
-        public short Version => _version;
+        public short Version { get; private set; }
 
         /// <summary>Gets the status of the operation.</summary>
         /// <param name="token">Opaque value that was provided to the <see cref="ValueTask"/>'s constructor.</param>
@@ -166,43 +162,45 @@ namespace System.Threading.Tasks.Sources
                 oldContinuation = Interlocked.CompareExchange(ref _continuation, continuation, null);
             }
 
-            if (oldContinuation != null)
+            if (oldContinuation == null)
             {
-                // Operation already completed, so we need to queue the supplied callback.
-                if (!ReferenceEquals(oldContinuation, ManualResetValueTaskSourceCoreShared.Sentinel))
-                {
-                    throw new InvalidOperationException();
-                }
+                return;
+            }
 
-                switch (_capturedContext)
-                {
-                    case null:
+            // Operation already completed, so we need to queue the supplied callback.
+            if (!ReferenceEquals(oldContinuation, ManualResetValueTaskSourceCoreShared.Sentinel))
+            {
+                throw new InvalidOperationException();
+            }
+
+            switch (_capturedContext)
+            {
+                case null:
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
-                        if (_executionContext != null)
-                        {
-                            ThreadPoolEx.QueueUserWorkItem(continuation, state, preferLocal: true);
-                            return;
-                        }
+                    if (_executionContext != null)
+                    {
+                        ThreadPoolEx.QueueUserWorkItem(continuation, state, true);
+                        return;
+                    }
 #endif
-                        ThreadPoolEx.UnsafeQueueUserWorkItem(continuation, state, preferLocal: true);
-                        return;
+                    ThreadPoolEx.UnsafeQueueUserWorkItem(continuation, state, true);
+                    return;
 
-                    case SynchronizationContext sc:
-                        sc.Post(s =>
-                        {
-                            var tuple = (Tuple<Action<object?>, object?>)s!;
-                            tuple.Item1(tuple.Item2);
-                        }, Tuple.Create(continuation, state));
-                        return;
+                case SynchronizationContext sc:
+                    sc.Post(s =>
+                    {
+                        var tuple = (Tuple<Action<object?>, object?>)s!;
+                        tuple.Item1(tuple.Item2);
+                    }, Tuple.Create(continuation, state));
+                    return;
 
-                    case TaskScheduler ts:
+                case TaskScheduler ts:
 #if NET40
-                        Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.None, ts);
+                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.None, ts);
 #else
-                        Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
+                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
 #endif
-                        return;
-                }
+                    return;
             }
         }
 
@@ -210,7 +208,7 @@ namespace System.Threading.Tasks.Sources
         /// <param name="token">The token supplied by <see cref="ValueTask"/>.</param>
         private void ValidateToken(short token)
         {
-            if (token != _version)
+            if (token != Version)
             {
                 throw new InvalidOperationException();
             }
@@ -219,23 +217,24 @@ namespace System.Threading.Tasks.Sources
         /// <summary>Signals that the operation has completed.  Invoked after the result or error has been set.</summary>
         private void SignalCompletion()
         {
-            if (_continuation != null || Interlocked.CompareExchange(ref _continuation, ManualResetValueTaskSourceCoreShared.Sentinel, null) != null)
+            if (_continuation == null && Interlocked.CompareExchange(ref _continuation, ManualResetValueTaskSourceCoreShared.Sentinel, null) == null)
             {
-#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
-                if (_executionContext != null)
-                {
-                    ExecutionContext.Run(_executionContext, s => ((ManualResetValueTaskSourceCore<TResult>)s).InvokeContinuation(), this);
-                    return;
-                }
-#endif
-                InvokeContinuation();
+                return;
             }
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
+            if (_executionContext != null)
+            {
+                ExecutionContext.Run(_executionContext, s => ((ManualResetValueTaskSourceCore<TResult>)s).InvokeContinuation(), this);
+                return;
+            }
+#endif
+            InvokeContinuation();
         }
 
         /// <summary>
         /// Invokes the continuation with the appropriate captured context / scheduler.
         /// This assumes that if <see cref="_executionContext"/> is not null we're already
-        /// running within that <see cref="ExecutionContext"/>.
+        /// running within that <see cref="Threading.ExecutionContext"/>.
         /// </summary>
         private void InvokeContinuation()
         {
@@ -250,11 +249,11 @@ namespace System.Threading.Tasks.Sources
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
                         if (_executionContext != null)
                         {
-                            ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, preferLocal: true);
+                            ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, true);
                             return;
                         }
 #endif
-                        ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, preferLocal: true);
+                        ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, true);
                         return;
                     }
 

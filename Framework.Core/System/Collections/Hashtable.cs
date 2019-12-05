@@ -327,12 +327,12 @@ namespace System.Collections
         // and is for use only with SyncHashtable.
         internal Hashtable(bool trash)
         {
-            Theraot.No.Op(trash);
+            _ = trash;
         }
 
         protected Hashtable(SerializationInfo info, StreamingContext context)
         {
-            Theraot.No.Op(context);
+            _ = context;
             //We can't do anything with the keys and values until the entire graph has been deserialized
             //and we have a reasonable estimate that GetHashCode is not going to fail.  For the time being,
             //we'll just cache this.  The graph is not valid until OnDeserialization has been called.
@@ -382,30 +382,32 @@ namespace System.Collections
         {
             get
             {
-                if (EqualityComparer is CompatibleComparer compatibleComparer)
+                switch (EqualityComparer)
                 {
-                    return compatibleComparer.Comparer;
-                }
+                    case null:
+                        return null;
 
-                if (EqualityComparer == null)
-                {
-                    return null;
+                    case CompatibleComparer compatibleComparer:
+                        return compatibleComparer.Comparer;
+
+                    default:
+                        throw new ArgumentException();
                 }
-                throw new ArgumentException();
             }
             set
             {
-                if (EqualityComparer is CompatibleComparer keyComparer)
+                switch (EqualityComparer)
                 {
-                    EqualityComparer = new CompatibleComparer(keyComparer.HashCodeProvider, value);
-                }
-                else if (EqualityComparer == null)
-                {
-                    EqualityComparer = new CompatibleComparer(null, value);
-                }
-                else
-                {
-                    throw new ArgumentException();
+                    case null:
+                        EqualityComparer = new CompatibleComparer(null, value);
+                        break;
+
+                    case CompatibleComparer keyComparer:
+                        EqualityComparer = new CompatibleComparer(keyComparer.HashCodeProvider, value);
+                        break;
+
+                    default:
+                        throw new ArgumentException();
                 }
             }
         }
@@ -417,30 +419,32 @@ namespace System.Collections
         {
             get
             {
-                if (EqualityComparer is CompatibleComparer compatibleComparer)
+                switch (EqualityComparer)
                 {
-                    return compatibleComparer.HashCodeProvider;
-                }
+                    case null:
+                        return null;
 
-                if (EqualityComparer == null)
-                {
-                    return null;
+                    case CompatibleComparer compatibleComparer:
+                        return compatibleComparer.HashCodeProvider;
+
+                    default:
+                        throw new ArgumentException();
                 }
-                throw new ArgumentException();
             }
             set
             {
-                if (EqualityComparer is CompatibleComparer keyComparer)
+                switch (EqualityComparer)
                 {
-                    EqualityComparer = new CompatibleComparer(value, keyComparer.Comparer);
-                }
-                else if (EqualityComparer == null)
-                {
-                    EqualityComparer = new CompatibleComparer(value, null);
-                }
-                else
-                {
-                    throw new ArgumentException();
+                    case null:
+                        EqualityComparer = new CompatibleComparer(value, null);
+                        break;
+
+                    case CompatibleComparer keyComparer:
+                        EqualityComparer = new CompatibleComparer(value, keyComparer.Comparer);
+                        break;
+
+                    default:
+                        throw new ArgumentException();
                 }
             }
         }
@@ -725,19 +729,21 @@ namespace System.Collections
                 // view of the _keyComparer so previous frameworks don't see the new types
                 var keyComparerForSerialization = EqualityComparer;
 
-                if (keyComparerForSerialization == null)
+                switch (keyComparerForSerialization)
                 {
-                    info.AddValue(_comparerName, null, typeof(IComparer));
-                    info.AddValue(_hashCodeProviderName, null, typeof(IHashCodeProvider));
-                }
-                else if (keyComparerForSerialization is CompatibleComparer c)
-                {
-                    info.AddValue(_comparerName, c.Comparer, typeof(IComparer));
-                    info.AddValue(_hashCodeProviderName, c.HashCodeProvider, typeof(IHashCodeProvider));
-                }
-                else
-                {
-                    info.AddValue(_keyComparerName, keyComparerForSerialization, typeof(IEqualityComparer));
+                    case null:
+                        info.AddValue(_comparerName, null, typeof(IComparer));
+                        info.AddValue(_hashCodeProviderName, null, typeof(IHashCodeProvider));
+                        break;
+
+                    case CompatibleComparer c:
+                        info.AddValue(_comparerName, c.Comparer, typeof(IComparer));
+                        info.AddValue(_hashCodeProviderName, c.HashCodeProvider, typeof(IHashCodeProvider));
+                        break;
+
+                    default:
+                        info.AddValue(_keyComparerName, keyComparerForSerialization, typeof(IEqualityComparer));
+                        break;
                 }
 
                 info.AddValue(_hashSizeName, _buckets.Length); //This is the length of the bucket array.
@@ -886,14 +892,7 @@ namespace System.Collections
                     _isWriterInProgress = true;
                     // Clear hash_coll field, then key, then value
                     _buckets[bn].HashColl &= unchecked((int)0x80000000);
-                    if (_buckets[bn].HashColl != 0)
-                    {
-                        _buckets[bn].Key = _buckets;
-                    }
-                    else
-                    {
-                        _buckets[bn].Key = null;
-                    }
+                    _buckets[bn].Key = _buckets[bn].HashColl != 0 ? _buckets : null;
                     _buckets[bn].Val = null;  // Free object references sooner & simplify ContainsValue.
                     _count--;
                     UpdateVersion();
@@ -931,12 +930,7 @@ namespace System.Collections
                 throw new NullReferenceException();
             }
 
-            if (EqualityComparer != null)
-            {
-                return EqualityComparer.GetHashCode(key);
-            }
-
-            return key.GetHashCode();
+            return EqualityComparer?.GetHashCode(key) ?? key.GetHashCode();
         }
 
         // Internal method to compare two keys.  If you have provided an IComparer
@@ -1316,17 +1310,17 @@ namespace System.Collections
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
 
-                    if (_getObjectRetType == Keys)
+                    switch (_getObjectRetType)
                     {
-                        return _currentKey;
-                    }
+                        case Keys:
+                            return _currentKey;
 
-                    if (_getObjectRetType == Values)
-                    {
-                        return _currentValue;
-                    }
+                        case Values:
+                            return _currentValue;
 
-                    return new DictionaryEntry(_currentKey, _currentValue);
+                        default:
+                            return new DictionaryEntry(_currentKey, _currentValue);
+                    }
                 }
             }
 

@@ -900,28 +900,48 @@ namespace System.Reflection
 
         private static bool GetIsPublic(MemberInfo memberInfo)
         {
-            return memberInfo is ConstructorInfo constructorInfo
-                ? constructorInfo.IsPublic
-                : memberInfo is EventInfo eventInfo
-                    ? eventInfo.AddMethod.IsPublic
-                    : memberInfo is FieldInfo fieldInfo
-                        ? fieldInfo.IsPublic
-                        : memberInfo is MethodInfo methodInfo
-                            ? methodInfo.IsPublic
-                            : memberInfo is PropertyInfo propertyInfo && (propertyInfo.GetGetMethod()?.IsPublic == true || propertyInfo.GetSetMethod()?.IsPublic == true);
+            switch (memberInfo)
+            {
+                case ConstructorInfo constructorInfo:
+                    return constructorInfo.IsPublic;
+
+                case EventInfo eventInfo:
+                    return eventInfo.AddMethod.IsPublic;
+
+                case FieldInfo fieldInfo:
+                    return fieldInfo.IsPublic;
+
+                case MethodInfo methodInfo:
+                    return methodInfo.IsPublic;
+
+                default:
+                    return memberInfo is PropertyInfo propertyInfo &&
+                            (propertyInfo.GetGetMethod()?.IsPublic == true ||
+                             propertyInfo.GetSetMethod()?.IsPublic == true);
+            }
         }
 
         private static bool GetIsStatic(MemberInfo memberInfo)
         {
-            return memberInfo is ConstructorInfo constructorInfo
-                ? constructorInfo.IsStatic
-                : memberInfo is EventInfo eventInfo
-                    ? eventInfo.AddMethod.IsStatic
-                    : memberInfo is FieldInfo fieldInfo
-                        ? fieldInfo.IsStatic
-                        : memberInfo is MethodInfo methodInfo
-                            ? methodInfo.IsStatic
-                            : memberInfo is PropertyInfo propertyInfo && (propertyInfo.GetGetMethod()?.IsStatic == true || propertyInfo.GetSetMethod()?.IsStatic == true);
+            switch (memberInfo)
+            {
+                case ConstructorInfo constructorInfo:
+                    return constructorInfo.IsStatic;
+
+                case EventInfo eventInfo:
+                    return eventInfo.AddMethod.IsStatic;
+
+                case FieldInfo fieldInfo:
+                    return fieldInfo.IsStatic;
+
+                case MethodInfo methodInfo:
+                    return methodInfo.IsStatic;
+
+                default:
+                    return memberInfo is PropertyInfo propertyInfo &&
+                           (propertyInfo.GetGetMethod()?.IsStatic == true ||
+                            propertyInfo.GetSetMethod()?.IsStatic == true);
+            }
         }
     }
 }

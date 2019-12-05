@@ -133,19 +133,21 @@ namespace Theraot.Core
             where TInput : class
         {
             var current = initial;
-            if (current != null)
+            if (current == null)
             {
-                while (true)
-                {
-                    yield return resultSelector!(current);
-                    var found = next!(current);
-                    if (found == null)
-                    {
-                        break;
-                    }
+                yield break;
+            }
 
-                    current = found;
+            while (true)
+            {
+                yield return resultSelector!(current);
+                var found = next!(current);
+                if (found == null)
+                {
+                    break;
                 }
+
+                current = found;
             }
         }
 
@@ -153,19 +155,21 @@ namespace Theraot.Core
             where TInput : struct
         {
             var current = initial;
-            if (current.HasValue)
+            if (!current.HasValue)
             {
-                while (true)
-                {
-                    yield return resultSelector!(current.Value);
-                    var found = next!(current.Value);
-                    if (!found.HasValue)
-                    {
-                        break;
-                    }
+                yield break;
+            }
 
-                    current = found.Value;
+            while (true)
+            {
+                yield return resultSelector!(current.Value);
+                var found = next!(current.Value);
+                if (!found.HasValue)
+                {
+                    break;
                 }
+
+                current = found.Value;
             }
         }
     }
@@ -288,19 +292,21 @@ namespace Theraot.Core
             where TInput : class
         {
             var current = initial;
-            if (current != null)
+            if (current == null)
             {
-                while (true)
-                {
-                    yield return resultSelector!(current);
-                    var found = next!(current);
-                    if (found == null || (endCondition != null && comparer.Equals(found, endCondition)))
-                    {
-                        break;
-                    }
+                yield break;
+            }
 
-                    current = found;
+            while (true)
+            {
+                yield return resultSelector!(current);
+                var found = next!(current);
+                if (found == null || (endCondition != null && comparer.Equals(found, endCondition)))
+                {
+                    break;
                 }
+
+                current = found;
             }
         }
 
@@ -308,24 +314,26 @@ namespace Theraot.Core
             where TInput : struct
         {
             var current = initial;
-            if (current.HasValue)
+            if (!current.HasValue)
             {
-                while (true)
+                yield break;
+            }
+
+            while (true)
+            {
+                yield return resultSelector!(current.Value);
+                var found = next!(current.Value);
+                if (!found.HasValue)
                 {
-                    yield return resultSelector!(current.Value);
-                    var found = next!(current.Value);
-                    if (!found.HasValue)
-                    {
-                        break;
-                    }
-
-                    if (endCondition != null && comparer.Equals(found.Value, (TInput)endCondition))
-                    {
-                        break;
-                    }
-
-                    current = found.Value;
+                    break;
                 }
+
+                if (endCondition != null && comparer.Equals(found.Value, (TInput)endCondition))
+                {
+                    break;
+                }
+
+                current = found.Value;
             }
         }
     }
@@ -462,7 +470,7 @@ namespace Theraot.Core
         }
 
         private static T? CommonNodeExtracted<T>(T first, T second, Func<T, T?> next, IEqualityComparer<T> comparer)
-                    where T : class
+            where T : class
         {
             if (comparer.Equals(first, second))
             {

@@ -36,60 +36,6 @@ namespace MonoTests.System.Threading
     {
         private SpinLock _sl;
 
-        [SetUp]
-        public void Setup()
-        {
-            _sl = new SpinLock(true);
-        }
-
-        [Test]
-        public void RecursionExceptionTest()
-        {
-            Assert.Throws<LockRecursionException>(() =>
-            {
-
-                _sl = new SpinLock(true);
-                var taken = false;
-                var taken2 = false;
-
-                _sl.Enter(ref taken);
-                Assert.IsTrue(taken, "#1");
-                _sl.Enter(ref taken2);
-            });
-        }
-
-        [Test]
-        public void SimpleEnterExitSchemeTest()
-        {
-            var taken = false;
-
-            for (var i = 0; i < 50000; i++)
-            {
-                _sl.Enter(ref taken);
-                Assert.IsTrue(taken, "#" + i.ToString());
-                _sl.Exit();
-                taken = false;
-            }
-        }
-
-        [Test]
-        public void SemanticCorrectnessTest()
-        {
-            _sl = new SpinLock(false);
-
-            var taken = false;
-            var taken2 = false;
-
-            _sl.Enter(ref taken);
-            Assert.IsTrue(taken, "#1");
-            _sl.TryEnter(ref taken2);
-            Assert.IsFalse(taken2, "#2");
-            _sl.Exit();
-
-            _sl.TryEnter(ref taken2);
-            Assert.IsTrue(taken2, "#3");
-        }
-
         [Test]
         public void FirstTakenParameterTest()
         {
@@ -102,19 +48,20 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void SecondTakenParameterTest()
+        public void IsHeldByCurrentThreadTest()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var taken = true;
+            var lockTaken = false;
 
-                _sl.TryEnter(ref taken);
-            });
-        }
+            _sl.Enter(ref lockTaken);
+            Assert.IsTrue(lockTaken, "#1");
+            Assert.IsTrue(_sl.IsHeldByCurrentThread, "#2");
 
-        internal class SpinLockWrapper
-        {
-            public SpinLock Lock = new SpinLock(false);
+            lockTaken = false;
+            _sl = new SpinLock(true);
+
+            _sl.Enter(ref lockTaken);
+            Assert.IsTrue(lockTaken, "#3");
+            Assert.IsTrue(_sl.IsHeldByCurrentThread, "#4");
         }
 
         [Test]
@@ -153,20 +100,72 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void IsHeldByCurrentThreadTest()
+        public void RecursionExceptionTest()
         {
-            var lockTaken = false;
+            Assert.Throws<LockRecursionException>(() =>
+            {
+                _sl = new SpinLock(true);
+                var taken = false;
+                var taken2 = false;
 
-            _sl.Enter(ref lockTaken);
-            Assert.IsTrue(lockTaken, "#1");
-            Assert.IsTrue(_sl.IsHeldByCurrentThread, "#2");
+                _sl.Enter(ref taken);
+                Assert.IsTrue(taken, "#1");
+                _sl.Enter(ref taken2);
+            });
+        }
 
-            lockTaken = false;
+        [Test]
+        public void SecondTakenParameterTest()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var taken = true;
+
+                _sl.TryEnter(ref taken);
+            });
+        }
+
+        [Test]
+        public void SemanticCorrectnessTest()
+        {
+            _sl = new SpinLock(false);
+
+            var taken = false;
+            var taken2 = false;
+
+            _sl.Enter(ref taken);
+            Assert.IsTrue(taken, "#1");
+            _sl.TryEnter(ref taken2);
+            Assert.IsFalse(taken2, "#2");
+            _sl.Exit();
+
+            _sl.TryEnter(ref taken2);
+            Assert.IsTrue(taken2, "#3");
+        }
+
+        [SetUp]
+        public void Setup()
+        {
             _sl = new SpinLock(true);
+        }
 
-            _sl.Enter(ref lockTaken);
-            Assert.IsTrue(lockTaken, "#3");
-            Assert.IsTrue(_sl.IsHeldByCurrentThread, "#4");
+        [Test]
+        public void SimpleEnterExitSchemeTest()
+        {
+            var taken = false;
+
+            for (var i = 0; i < 50000; i++)
+            {
+                _sl.Enter(ref taken);
+                Assert.IsTrue(taken, "#" + i.ToString());
+                _sl.Exit();
+                taken = false;
+            }
+        }
+
+        internal class SpinLockWrapper
+        {
+            public SpinLock Lock = new SpinLock(false);
         }
     }
 }

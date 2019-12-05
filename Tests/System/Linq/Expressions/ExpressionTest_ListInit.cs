@@ -47,33 +47,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestListInit
     {
-        public class Foo
-        {
-            // Empty
-        }
-
-        public class Bar : IEnumerable
-        {
-            public IEnumerator GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public class Baz : Bar
-        {
-            public void Add(object a, object b)
-            {
-                No.Op(a);
-                No.Op(b);
-            }
-        }
-
-        private static NewExpression CreateNewList()
-        {
-            return Expression.New(typeof(List<string>));
-        }
-
         [Test]
         [Category("NotDotNet")]
         public void CompileArrayListOfStringsInit()
@@ -173,7 +146,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullElementInitializer()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new ElementInit[] {null}));
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new ElementInit[] { null }));
         }
 
         [Test]
@@ -185,7 +158,34 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullExpressionInitializer()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new Expression[] {null}));
+            Assert.Throws<ArgumentNullException>(() => Expression.ListInit(CreateNewList(), new Expression[] { null }));
+        }
+
+        private static NewExpression CreateNewList()
+        {
+            return Expression.New(typeof(List<string>));
+        }
+
+        public class Bar : IEnumerable
+        {
+            public IEnumerator GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class Baz : Bar
+        {
+            public void Add(object a, object b)
+            {
+                No.Op(a);
+                No.Op(b);
+            }
+        }
+
+        public class Foo
+        {
+            // Empty
         }
     }
 }

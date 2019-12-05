@@ -43,7 +43,6 @@ namespace System.Threading.Tasks
         internal bool IsChildReplica => (_internalOptions & InternalTaskOptions.ChildReplica) != 0;
 
         /// <summary>
-        ///     Checks whether the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag is set,
         ///     This will only be used by the implicit wait to prevent double throws
         /// </summary>
         internal bool IsExceptionObservedByParent => Volatile.Read(ref _exceptionObservedByParent) == 1;
@@ -332,7 +331,7 @@ namespace System.Threading.Tasks
         /// <summary>
         ///     <para>
         ///         Checks whether this is an attached task, and whether we are being called by the parent task.
-        ///         And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
+        ///         And sets IsExceptionObservedByParent based on that.
         ///     </para>
         ///     <para>
         ///         This is meant to be used internally when throwing an exception, and when WaitAll is gathering

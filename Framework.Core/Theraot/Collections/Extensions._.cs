@@ -521,11 +521,9 @@ namespace Theraot.Collections
             }
 
             var currentIndex = 0;
-            if (comparer == null)
-            {
-                return IndexOfExtracted(source, item, EqualityComparer<T>.Default, ref currentIndex);
-            }
-            return IndexOfExtracted(source, item, comparer, ref currentIndex);
+            return comparer == null
+                ? IndexOfExtracted(source, item, EqualityComparer<T>.Default, ref currentIndex)
+                : IndexOfExtracted(source, item, comparer, ref currentIndex);
         }
 
         public static int IntersectWith<T>(this ICollection<T> source, IEnumerable<T> other)

@@ -1363,7 +1363,7 @@ namespace System
     }
 
     /// <summary>
-    /// Represents a 6-tuple, or sixtuple, as a value type.
+    /// Represents a 6-tuple, or sextuple, as a value type.
     /// </summary>
     /// <typeparam name="T1">The type of the tuple's first component.</typeparam>
     /// <typeparam name="T2">The type of the tuple's second component.</typeparam>
@@ -1638,7 +1638,7 @@ namespace System
     }
 
     /// <summary>
-    /// Represents a 7-tuple, or sentuple, as a value type.
+    /// Represents a 7-tuple, or septuple, as a value type.
     /// </summary>
     /// <typeparam name="T1">The type of the tuple's first component.</typeparam>
     /// <typeparam name="T2">The type of the tuple's second component.</typeparam>

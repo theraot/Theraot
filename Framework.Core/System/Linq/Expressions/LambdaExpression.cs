@@ -587,11 +587,7 @@ namespace System.Linq.Expressions
         public static LambdaExpression Lambda(Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression>? parameters)
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            if (parameters == null)
-            {
-                return LambdaExtracted(body, name, tailCall, ArrayEx.Empty<ParameterExpression>());
-            }
-            return LambdaExtracted(body, name, tailCall, parameters);
+            return LambdaExtracted(body, name, tailCall, parameters ?? ArrayEx.Empty<ParameterExpression>());
         }
 
         /// <summary>
@@ -612,11 +608,7 @@ namespace System.Linq.Expressions
         public static LambdaExpression Lambda(Type delegateType, Expression body, string name, IEnumerable<ParameterExpression>? parameters)
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            if (parameters == null)
-            {
-                return LambdaExtracted(delegateType, ref body, name, ArrayEx.Empty<ParameterExpression>());
-            }
-            return LambdaExtracted(delegateType, ref body, name, parameters);
+            return LambdaExtracted(delegateType, ref body, name, parameters ?? ArrayEx.Empty<ParameterExpression>());
         }
 
         /// <summary>
@@ -641,11 +633,7 @@ namespace System.Linq.Expressions
         public static LambdaExpression Lambda(Type delegateType, Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression>? parameters)
         {
             ContractUtils.RequiresNotNull(body, nameof(body));
-            if (parameters == null)
-            {
-                return LambdaExtracted(delegateType, ref body, name, tailCall, ArrayEx.Empty<ParameterExpression>());
-            }
-            return LambdaExtracted(delegateType, ref body, name, tailCall, parameters);
+            return LambdaExtracted(delegateType, ref body, name, tailCall, parameters ?? ArrayEx.Empty<ParameterExpression>());
         }
 
         /// <summary>

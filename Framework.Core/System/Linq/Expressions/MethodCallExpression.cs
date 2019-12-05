@@ -348,11 +348,7 @@ namespace System.Linq.Expressions
         /// <paramref name="instance"/>.Type is not assignable to the declaring type of the method represented by <paramref name="method"/>.-or-The number of elements in <paramref name="arguments"/> does not equal the number of parameters for the method represented by <paramref name="method"/>.-or-One or more of the elements of <paramref name="arguments"/> is not assignable to the corresponding parameter for the method represented by <paramref name="method"/>.</exception>
         public static MethodCallExpression Call(Expression? instance, MethodInfo method, IEnumerable<Expression>? arguments)
         {
-            if (arguments == null)
-            {
-                return Call(instance, method);
-            }
-            return CallExtracted(instance, method, arguments);
+            return arguments == null ? Call(instance, method) : CallExtracted(instance, method, arguments);
         }
 
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a call to a static method that takes no arguments.</summary>

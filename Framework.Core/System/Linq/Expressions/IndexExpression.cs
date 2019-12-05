@@ -58,17 +58,17 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Argument must be array", nameof(array));
             }
 
-            if (indexes == null)
+            if (indexes != null)
             {
-                if (arrayType.GetArrayRank() != 0)
-                {
-                    throw new ArgumentException("Incorrect number of indexes");
-                }
-
-                return new IndexExpression(array, null, ArrayEx.Empty<Expression>());
+                return ArrayAccessExtracted(array, indexes, arrayType);
             }
 
-            return ArrayAccessExtracted(array, indexes, arrayType);
+            if (arrayType.GetArrayRank() != 0)
+            {
+                throw new ArgumentException("Incorrect number of indexes");
+            }
+
+            return new IndexExpression(array, null, ArrayEx.Empty<Expression>());
         }
 
         /// <summary>

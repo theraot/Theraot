@@ -807,11 +807,13 @@ namespace Theraot.Collections.ThreadSafe
                     return true;
                 }
 
-                if (Comparer.Equals(storedPair.Key, key))
+                if (!Comparer.Equals(storedPair.Key, key))
                 {
-                    stored = storedPair.Value;
-                    return false;
+                    continue;
                 }
+
+                stored = storedPair.Value;
+                return false;
             }
         }
 
@@ -832,11 +834,13 @@ namespace Theraot.Collections.ThreadSafe
                     return true;
                 }
 
-                if (Comparer.Equals(storedPair.Key, key))
+                if (!Comparer.Equals(storedPair.Key, key))
                 {
-                    stored = storedPair.Value;
-                    return false;
+                    continue;
                 }
+
+                stored = storedPair.Value;
+                return false;
             }
         }
 
@@ -1192,12 +1196,14 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     // InsertOrUpdate will add if no item is found, otherwise it calls check
                     _bucket.InsertOrUpdateChecked(hashCode + attempts, insertPair, Check, out var isNew);
-                    if (isNew)
+                    if (!isNew)
                     {
-                        // It added a new item
-                        stored = value;
-                        return true;
+                        continue;
                     }
+
+                    // It added a new item
+                    stored = value;
+                    return true;
                 }
                 catch (ArgumentException)
                 {
@@ -1497,12 +1503,14 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     // InsertOrUpdate will add if no item is found, otherwise it calls check
                     _bucket.InsertOrUpdateChecked(hashCode + attempts, created, Check, out var isNew);
-                    if (isNew)
+                    if (!isNew)
                     {
-                        // It added a new item
-                        stored = created;
-                        return true;
+                        continue;
                     }
+
+                    // It added a new item
+                    stored = created;
+                    return true;
                 }
                 catch (ArgumentException)
                 {
@@ -1551,12 +1559,14 @@ namespace Theraot.Collections.ThreadSafe
                 try
                 {
                     _bucket.InsertOrUpdate(hashCode + attempts, ItemFactory, ItemUpdateFactory, out var isNew);
-                    if (isNew)
+                    if (!isNew)
                     {
-                        // It added a new item
-                        stored = value;
-                        return true;
+                        continue;
                     }
+
+                    // It added a new item
+                    stored = value;
+                    return true;
                 }
                 catch (ArgumentException)
                 {

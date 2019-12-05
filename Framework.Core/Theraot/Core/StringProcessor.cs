@@ -1542,12 +1542,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(targets));
             }
 
-            if (_position == _length)
-            {
-                return false;
-            }
-
-            return SkipWhileExtracted(targets);
+            return _position != _length && SkipWhileExtracted(targets);
         }
 
         /// <summary>

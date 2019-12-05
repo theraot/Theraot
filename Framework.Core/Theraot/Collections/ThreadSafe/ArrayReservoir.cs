@@ -30,13 +30,15 @@ namespace Theraot.Collections.ThreadSafe
                 return null;
             }
 
-            if (!pools.TryGetValue(typeof(T), out var poolArray))
+            if (pools.TryGetValue(typeof(T), out var poolArray))
             {
-                poolArray = pools[typeof(T)] = new Pool<Array>[CapacityCount];
-                PopulatePools(poolArray);
+                return poolArray?[index];
             }
 
-            return poolArray?[index];
+            poolArray = pools[typeof(T)] = new Pool<Array>[CapacityCount];
+            PopulatePools(poolArray);
+
+            return poolArray[index];
         }
 
         private static void PopulatePools(Pool<Array>[] poolArray)

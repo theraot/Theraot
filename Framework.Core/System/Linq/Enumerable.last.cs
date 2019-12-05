@@ -9,32 +9,30 @@ namespace System.Linq
     {
         public static TSource Last<TSource>(this IEnumerable<TSource> source)
         {
-            if (source == null)
+            switch (source)
             {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (source is ICollection<TSource> collection && collection.Count == 0)
-            {
-                throw new InvalidOperationException();
-            }
-            else if (source is IList<TSource> list)
-            {
-                return list[list.Count - 1];
-            }
-            else
-            {
-                var found = false;
-                var result = default(TSource)!;
-                foreach (var item in source)
-                {
-                    result = item;
-                    found = true;
-                }
-                if (found)
-                {
-                    return result;
-                }
-                throw new InvalidOperationException();
+                case null:
+                    throw new ArgumentNullException(nameof(source));
+
+                case ICollection<TSource> collection when collection.Count == 0:
+                    throw new InvalidOperationException();
+
+                case IList<TSource> list:
+                    return list[list.Count - 1];
+
+                default:
+                    var found = false;
+                    var result = default(TSource)!;
+                    foreach (var item in source)
+                    {
+                        result = item;
+                        found = true;
+                    }
+                    if (found)
+                    {
+                        return result;
+                    }
+                    throw new InvalidOperationException();
             }
         }
 

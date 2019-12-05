@@ -17,12 +17,9 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            if (comparer == null)
-            {
-                return ContainsExtracted(source, value, EqualityComparer<TSource>.Default);
-            }
-
-            return ContainsExtracted(source, value, comparer);
+            return comparer == null
+                ? ContainsExtracted(source, value, EqualityComparer<TSource>.Default)
+                : ContainsExtracted(source, value, comparer);
         }
 
         private static bool ContainsExtracted<TSource>(IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer)

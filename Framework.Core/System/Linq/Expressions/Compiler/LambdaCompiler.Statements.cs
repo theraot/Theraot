@@ -229,11 +229,13 @@ namespace System.Linq.Expressions.Compiler
                 EmitExpressionAsType(node.GetExpression(count - 1), node.Type, tailCall);
             }
 
-            if (innerScopeInfo.HasValue)
+            if (!innerScopeInfo.HasValue)
             {
-                innerScopeInfo.Value.child.Exit();
-                _scope = innerScopeInfo.Value.parent;
+                return;
             }
+
+            innerScopeInfo.Value.child.Exit();
+            _scope = innerScopeInfo.Value.parent;
         }
 
         private void EmitBlockExpression(Expression expr, CompilationFlags flags)

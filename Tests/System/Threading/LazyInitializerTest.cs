@@ -35,26 +35,6 @@ namespace MonoTests.System.Threading
     [TestFixture]
     public class LazyInitializerTest
     {
-        private class C
-        {
-            public C()
-            {
-                ++Counter;
-            }
-
-            public int Counter { get; private set; }
-        }
-
-        [Test]
-        public void EnsureInitialized_Simple()
-        {
-            C c = null;
-            LazyInitializer.EnsureInitialized(ref c);
-
-            Assert.IsNotNull(c, "#1");
-            Assert.AreEqual(1, c.Counter, "#2");
-        }
-
         [Test]
         public void EnsureInitialized_FactoryIsNull()
         {
@@ -90,6 +70,26 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(1, c.Counter, "#12");
             Assert.IsTrue(init, "#13");
             Assert.AreEqual(oldLock, syncLock, "#14");
+        }
+
+        [Test]
+        public void EnsureInitialized_Simple()
+        {
+            C c = null;
+            LazyInitializer.EnsureInitialized(ref c);
+
+            Assert.IsNotNull(c, "#1");
+            Assert.AreEqual(1, c.Counter, "#2");
+        }
+
+        private class C
+        {
+            public C()
+            {
+                ++Counter;
+            }
+
+            public int Counter { get; private set; }
         }
     }
 }

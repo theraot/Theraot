@@ -52,11 +52,9 @@ namespace Theraot.Reflection
                 throw new ArgumentException("Could not infer delegate type", nameof(methodInfo));
             }
 
-            if (target == null)
-            {
-                return methodInfo.CreateDelegate(delegateType);
-            }
-            return methodInfo.CreateDelegate(delegateType, target);
+            return target == null
+                ? methodInfo.CreateDelegate(delegateType)
+                : methodInfo.CreateDelegate(delegateType, target);
         }
 
         public static Delegate BuildDelegate(Type delegateType, MethodInfo methodInfo, object target)
@@ -81,11 +79,9 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(delegateType));
             }
 
-            if (target == null)
-            {
-                return methodInfo.CreateDelegate(delegateType);
-            }
-            return methodInfo.CreateDelegate(delegateType, target);
+            return target == null
+                ? methodInfo.CreateDelegate(delegateType)
+                : methodInfo.CreateDelegate(delegateType, target);
         }
 
         public static Type? GetActionType(Type[] types)

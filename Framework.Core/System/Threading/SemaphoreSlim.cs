@@ -268,7 +268,7 @@ namespace System.Threading
                     continue;
                 }
 
-                if (TryOffset(-1, out var _, state))
+                if (TryOffset(-1, out _, state))
                 {
                     waiter.SetResult(true);
                 }

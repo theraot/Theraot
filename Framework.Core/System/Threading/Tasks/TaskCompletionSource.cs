@@ -33,7 +33,7 @@ namespace System.Threading.Tasks
     ///     </para>
     /// </remarks>
     /// <typeparam name="TResult">
-    ///     The type of the result value assocatied with this
+    ///     The type of the result value associated with this
     ///     <see cref="TaskCompletionSource{TResult}" />.
     /// </typeparam>
     [HostProtection(Synchronization = true, ExternalThreading = true)]

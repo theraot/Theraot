@@ -225,22 +225,21 @@ namespace System
                     waitHandle.Close();
                 }
             }
-
             if (Volatile.Read(ref thread) == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
-
-            if (!waitHandle.SafeWaitHandle.IsClosed)
+            if (waitHandle.SafeWaitHandle.IsClosed)
             {
-                try
-                {
-                    waitHandle.WaitOne();
-                }
-                catch (ObjectDisposedException exception)
-                {
-                    var _ = exception;
-                }
+                return _valueFactory.Invoke();
+            }
+            try
+            {
+                waitHandle.WaitOne();
+            }
+            catch (ObjectDisposedException exception)
+            {
+                var _ = exception;
             }
             return _valueFactory.Invoke();
         }
@@ -273,22 +272,21 @@ namespace System
                         }
                     }
                 }
-
                 if (foundThread == Thread.CurrentThread)
                 {
                     throw new InvalidOperationException();
                 }
-
-                if (!waitHandle.SafeWaitHandle.IsClosed)
+                if (waitHandle.SafeWaitHandle.IsClosed)
                 {
-                    try
-                    {
-                        waitHandle.WaitOne();
-                    }
-                    catch (ObjectDisposedException exception)
-                    {
-                        var _ = exception;
-                    }
+                    continue;
+                }
+                try
+                {
+                    waitHandle.WaitOne();
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    var _ = exception;
                 }
             }
             return _valueFactory.Invoke();

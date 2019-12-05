@@ -70,15 +70,17 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object? obj)
         {
-            if (obj is ExceptionStructNeedle<T> needle)
+            switch (obj)
             {
-                return this == needle;
+                case ExceptionStructNeedle<T> needle:
+                    return this == needle;
+
+                case ExceptionDispatchInfo info:
+                    return _exceptionDispatchInfo.Equals(info);
+
+                default:
+                    return obj is Exception exc && exc.Equals(Exception);
             }
-            if (obj is ExceptionDispatchInfo info)
-            {
-                return _exceptionDispatchInfo.Equals(info);
-            }
-            return obj is Exception exc && exc.Equals(Exception);
         }
 
         public override string ToString()

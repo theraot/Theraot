@@ -82,12 +82,7 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException(nameof(expression));
             }
-            if (arguments == null)
-            {
-                return InvokeExtracted(expression, ArrayEx.Empty<Expression>());
-            }
-
-            return InvokeExtracted(expression, arguments);
+            return InvokeExtracted(expression, arguments ?? ArrayEx.Empty<Expression>());
         }
 
         /// <summary>

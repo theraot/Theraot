@@ -81,18 +81,20 @@ namespace System.Linq.Expressions.Interpreter
                     // LabelExpression is a bit special, if it's directly in a
                     // block it becomes associate with the block's scope. Same
                     // thing if it's in a switch case body.
-                    if (labelBlock.Kind == LabelScopeKind.Block)
+                    if (labelBlock.Kind != LabelScopeKind.Block)
                     {
-                        var label = ((LabelExpression)node).Target;
-                        if (labelBlock.ContainsTarget(label))
-                        {
-                            return null;
-                        }
+                        return (labelBlock, LabelScopeKind.Statement, null);
+                    }
 
-                        if (labelBlock.Parent?.Kind == LabelScopeKind.Switch && labelBlock.Parent.ContainsTarget(label))
-                        {
-                            return null;
-                        }
+                    var label = ((LabelExpression)node).Target;
+                    if (labelBlock.ContainsTarget(label))
+                    {
+                        return null;
+                    }
+
+                    if (labelBlock.Parent?.Kind == LabelScopeKind.Switch && labelBlock.Parent.ContainsTarget(label))
+                    {
+                        return null;
                     }
 
                     return (labelBlock, LabelScopeKind.Statement, null);
@@ -100,12 +102,9 @@ namespace System.Linq.Expressions.Interpreter
                 case ExpressionType.Block:
                     // Labels defined immediately in the block are valid for
                     // the whole block.
-                    if (labelBlock.Parent?.Kind != LabelScopeKind.Switch)
-                    {
-                        return (labelBlock, LabelScopeKind.Block, new[] { node });
-                    }
-
-                    return (labelBlock, LabelScopeKind.Block, null);
+                    return labelBlock.Parent?.Kind != LabelScopeKind.Switch
+                        ? (labelBlock, LabelScopeKind.Block, new[] { node })
+                        : (labelBlock, LabelScopeKind.Block, null);
 
                 case ExpressionType.Switch:
                     var nodes = new List<Expression>();
@@ -266,39 +265,39 @@ namespace System.Linq.Expressions.Interpreter
 
                     case ExpressionType.Index:
                         var indexNode = (IndexExpression)node;
-                        if (indexNode.Indexer != null)
+                        if (indexNode.Indexer == null)
                         {
-                            LocalDefinition? objTmp = null;
-                            if (indexNode.Object != null)
-                            {
-                                objTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Object.Type), Instructions.Count);
-                                EmitThisForMethodCall(indexNode.Object);
-                                Instructions.EmitDup();
-                                Instructions.EmitStoreLocal(objTmp.GetValueOrDefault().Index);
-                            }
-
-                            var count = indexNode.ArgumentCount;
-                            var indexLocals = new LocalDefinition[count];
-                            for (var i = 0; i < count; i++)
-                            {
-                                var arg = indexNode.GetArgument(i);
-                                Compile(arg);
-
-                                var argTmp = _locals.DefineLocal(Expression.Parameter(arg.Type), Instructions.Count);
-                                Instructions.EmitDup();
-                                Instructions.EmitStoreLocal(argTmp.Index);
-
-                                indexLocals[i] = argTmp;
-                            }
-
-                            EmitIndexGet(indexNode);
-
-                            return new IndexMethodByRefUpdater(objTmp, indexLocals, indexNode.Indexer.GetSetMethod(), index);
+                            return indexNode.ArgumentCount == 1
+                                ? CompileArrayIndexAddress(indexNode.Object!, indexNode.GetArgument(0), index)
+                                : CompileMultiDimArrayAccess(indexNode.Object!, indexNode, index);
                         }
 
-                        return indexNode.ArgumentCount == 1
-                            ? CompileArrayIndexAddress(indexNode.Object!, indexNode.GetArgument(0), index)
-                            : CompileMultiDimArrayAccess(indexNode.Object!, indexNode, index);
+                        LocalDefinition? objTmp = null;
+                        if (indexNode.Object != null)
+                        {
+                            objTmp = _locals.DefineLocal(Expression.Parameter(indexNode.Object.Type), Instructions.Count);
+                            EmitThisForMethodCall(indexNode.Object);
+                            Instructions.EmitDup();
+                            Instructions.EmitStoreLocal(objTmp.GetValueOrDefault().Index);
+                        }
+
+                        var count = indexNode.ArgumentCount;
+                        var indexLocals = new LocalDefinition[count];
+                        for (var i = 0; i < count; i++)
+                        {
+                            var arg = indexNode.GetArgument(i);
+                            Compile(arg);
+
+                            var argTmp = _locals.DefineLocal(Expression.Parameter(arg.Type), Instructions.Count);
+                            Instructions.EmitDup();
+                            Instructions.EmitStoreLocal(argTmp.Index);
+
+                            indexLocals[i] = argTmp;
+                        }
+
+                        EmitIndexGet(indexNode);
+
+                        return new IndexMethodByRefUpdater(objTmp, indexLocals, indexNode.Indexer.GetSetMethod(), index);
 
                     case ExpressionType.MemberAccess:
                         var member = (MemberExpression)node;
@@ -2777,12 +2776,13 @@ namespace System.Linq.Expressions.Interpreter
 
         private void DefineBlockLabels(IEnumerable<Expression>? nodes)
         {
-            if (nodes != null)
+            if (nodes == null)
             {
-                foreach (var node in nodes)
-                {
-                    DefineBlockLabels(node);
-                }
+                return;
+            }
+            foreach (var node in nodes)
+            {
+                DefineBlockLabels(node);
             }
         }
 

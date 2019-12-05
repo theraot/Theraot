@@ -80,32 +80,24 @@ namespace Theraot.Threading.Needles
 
         public static bool operator ==(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (left is null)
-            {
-                return right is null;
-            }
-
-            if (right is null)
-            {
-                return false;
-            }
-
-            return EqualityComparer<T>.Default.Equals(left._target, right._target);
+            return left is null
+                ? right is null
+                : !(right is null) && EqualityComparer<T>.Default.Equals(left._target, right._target);
         }
 
         public override bool Equals(object? obj)
         {
-            if (obj is PromiseNeedle<T> other)
+            switch (obj)
             {
-                return Equals(other);
-            }
+                case PromiseNeedle<T> other:
+                    return Equals(other);
 
-            if (obj is T otherValue)
-            {
-                return Equals(otherValue);
-            }
+                case T otherValue:
+                    return Equals(otherValue);
 
-            return false;
+                default:
+                    return false;
+            }
         }
 
         public bool Equals(PromiseNeedle<T> other)

@@ -277,7 +277,8 @@ namespace System.Linq.Expressions.Compiler
                     return block.Variables.AsArrayInternal();
 
                 default:
-                    return ((CatchBlock)scope).Variable is ParameterExpression parameter
+                    var parameter = ((CatchBlock)scope).Variable;
+                    return parameter != null
                         ? new[] { parameter }
                         : ArrayEx.Empty<ParameterExpression>();
             }

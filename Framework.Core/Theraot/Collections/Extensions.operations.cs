@@ -274,6 +274,7 @@ namespace Theraot.Collections
             yield return source;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
         public static ReadOnlyCollectionEx<T> ToReadOnlyCollection<T>(this IEnumerable<T>? enumerable)
         {

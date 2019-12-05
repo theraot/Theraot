@@ -71,16 +71,14 @@ namespace Theraot.Core
             switch (exp)
             {
                 case 0:
+                    // Denormalized number.
+                    finite = true;
+                    if (man != 0)
                     {
-                        // Denormalized number.
-                        finite = true;
-                        if (man != 0)
-                        {
-                            exp = -1074;
-                        }
-
-                        break;
+                        exp = -1074;
                     }
+
+                    break;
 
                 case 0x7FF:
                     // NaN or Infinite.

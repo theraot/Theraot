@@ -52,17 +52,17 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object? obj)
         {
-            if (obj is ReadOnlyStructNeedle<T> other)
+            switch (obj)
             {
-                return Equals(other);
-            }
+                case ReadOnlyStructNeedle<T> other:
+                    return Equals(other);
 
-            if (obj is T otherValue)
-            {
-                return Equals(otherValue);
-            }
+                case T otherValue:
+                    return Equals(otherValue);
 
-            return false;
+                default:
+                    return false;
+            }
         }
 
         public bool Equals(ReadOnlyStructNeedle<T> other)

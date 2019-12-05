@@ -19,12 +19,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public static implicit operator (LabelScopeInfo parent, LabelScopeKind kind, IList<Expression>? nodes)(LabelScopeChangeInfo value)
         {
-            return (value.Parent, value.Kind, value.Nodes);
+            var (parent, kind, nodes) = value;
+            return (parent, kind, nodes);
         }
 
         public static implicit operator LabelScopeChangeInfo((LabelScopeInfo parent, LabelScopeKind kind, IList<Expression>? nodes) value)
         {
-            return new LabelScopeChangeInfo(value.parent, value.kind, value.nodes);
+            var (parent, kind, nodes) = value;
+            return new LabelScopeChangeInfo(parent, kind, nodes);
         }
 
         public void Deconstruct(out LabelScopeInfo parent, out LabelScopeKind kind, out IList<Expression>? nodes)

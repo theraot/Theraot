@@ -440,11 +440,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(second));
             }
 
-            if (comparer == null)
-            {
-                return SequenceEqualExtracted(EqualityComparer<TSource>.Default);
-            }
-            return SequenceEqualExtracted(comparer);
+            return SequenceEqualExtracted(comparer ?? EqualityComparer<TSource>.Default);
 
             bool SequenceEqualExtracted(IEqualityComparer<TSource> nonNullComparer)
             {
@@ -481,11 +477,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            if (comparer == null)
-            {
-                return source.CreateOrderedEnumerable(keySelector, Comparer<TKey>.Default, false);
-            }
-            return source.CreateOrderedEnumerable(keySelector, comparer, false);
+            return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, false);
         }
 
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -503,11 +495,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
-            if (comparer == null)
-            {
-                return source.CreateOrderedEnumerable(keySelector, Comparer<TKey>.Default, true);
-            }
-            return source.CreateOrderedEnumerable(keySelector, comparer, true);
+            return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, true);
         }
 
         public static TSource[] ToArray<TSource>(this IEnumerable<TSource> source)

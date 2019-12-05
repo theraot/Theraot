@@ -1,4 +1,6 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -75,8 +77,6 @@ namespace System.Linq
 
 #endif
 
-#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
-
     public static partial class
 #if LESSTHAN_NET35
         Enumerable
@@ -90,10 +90,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-
-            return count <= 0 ?
-                Enumerable.Empty<TSource>() :
-                TakeLastIterator(source, count);
+            return count <= 0 ? Enumerable.Empty<TSource>() : TakeLastIterator(source, count);
         }
 
         private static IEnumerable<TSource> TakeLastIterator<TSource>(IEnumerable<TSource> source, int count)
@@ -134,6 +131,6 @@ namespace System.Linq
             while (queue.Count > 0);
         }
     }
+}
 
 #endif
-}

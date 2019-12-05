@@ -42,15 +42,17 @@ namespace System.Threading.Tasks
             get
             {
                 var obj = Obj;
-                if (obj == null)
+                switch (obj)
                 {
-                    return false;
+                    case null:
+                        return false;
+
+                    case Task task:
+                        return task.IsCanceled;
+
+                    default:
+                        return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Canceled;
                 }
-                if (obj is Task task)
-                {
-                    return task.IsCanceled;
-                }
-                return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Canceled;
             }
         }
 
@@ -60,15 +62,17 @@ namespace System.Threading.Tasks
             get
             {
                 var obj = Obj;
-                if (obj == null)
+                switch (obj)
                 {
-                    return true;
+                    case null:
+                        return true;
+
+                    case Task task:
+                        return task.IsCompleted;
+
+                    default:
+                        return ((IValueTaskSource)obj).GetStatus(Token) != ValueTaskSourceStatus.Pending;
                 }
-                if (obj is Task task)
-                {
-                    return task.IsCompleted;
-                }
-                return ((IValueTaskSource)obj).GetStatus(Token) != ValueTaskSourceStatus.Pending;
             }
         }
 
@@ -78,15 +82,17 @@ namespace System.Threading.Tasks
             get
             {
                 var obj = Obj;
-                if (obj == null)
+                switch (obj)
                 {
-                    return true;
+                    case null:
+                        return true;
+
+                    case Task task:
+                        return task.Status == TaskStatus.RanToCompletion;
+
+                    default:
+                        return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Succeeded;
                 }
-                if (obj is Task task)
-                {
-                    return task.Status == TaskStatus.RanToCompletion;
-                }
-                return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Succeeded;
             }
         }
 
@@ -95,15 +101,17 @@ namespace System.Threading.Tasks
             get
             {
                 var obj = Obj;
-                if (obj == null)
+                switch (obj)
                 {
-                    return false;
+                    case null:
+                        return false;
+
+                    case Task task:
+                        return task.IsFaulted;
+
+                    default:
+                        return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Faulted;
                 }
-                if (obj is Task task)
-                {
-                    return task.IsFaulted;
-                }
-                return ((IValueTaskSource)obj).GetStatus(Token) == ValueTaskSourceStatus.Faulted;
             }
         }
 
@@ -122,15 +130,17 @@ namespace System.Threading.Tasks
         public Task AsTask()
         {
             var obj = Obj;
-            if (obj == null)
+            switch (obj)
             {
-                return CompletedTask;
+                case null:
+                    return CompletedTask;
+
+                case Task task:
+                    return task;
+
+                default:
+                    return GetTaskForValueTaskSource((IValueTaskSource)obj);
             }
-            if (obj is Task task)
-            {
-                return task;
-            }
-            return GetTaskForValueTaskSource((IValueTaskSource)obj);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -141,11 +151,7 @@ namespace System.Threading.Tasks
 
         public override bool Equals(object obj)
         {
-            if (!(obj is ValueTask))
-            {
-                return false;
-            }
-            return Equals((ValueTask)obj);
+            return obj is ValueTask task && Equals(task);
         }
 
         public bool Equals(ValueTask other)
@@ -164,21 +170,12 @@ namespace System.Threading.Tasks
 
         public override int GetHashCode()
         {
-            var obj = Obj;
-            if (obj != null)
-            {
-                return obj.GetHashCode();
-            }
-            return 0;
+            return Obj?.GetHashCode() ?? 0;
         }
 
         public ValueTask Preserve()
         {
-            if (Obj == null)
-            {
-                return this;
-            }
-            return new ValueTask(AsTask());
+            return Obj == null ? this : new ValueTask(AsTask());
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

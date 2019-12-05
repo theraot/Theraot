@@ -44,24 +44,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestMemberInit
     {
-        public class Foo
-        {
-            public string Bar;
-            public string Baz;
-        }
-
-        public class Gazonk
-        {
-            public string Tzap;
-        }
-
-        public class Thing
-        {
-            public string Value;
-
-            public string Bar { get; set; }
-        }
-
         [Test]
         public void CompiledInit()
         {
@@ -129,6 +111,24 @@ namespace MonoTests.System.Linq.Expressions
         public void NullExpression()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.MemberInit(null));
+        }
+
+        public class Foo
+        {
+            public string Bar;
+            public string Baz;
+        }
+
+        public class Gazonk
+        {
+            public string Tzap;
+        }
+
+        public class Thing
+        {
+            public string Value;
+
+            public string Bar { get; set; }
         }
     }
 }
