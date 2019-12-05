@@ -130,6 +130,7 @@ namespace Theraot.Collections
             var buffer = new ThreadSafeQueue<T>();
             var semaphore = new SemaphoreSlim(0);
             var source = new CancellationTokenSource();
+
             var subscription = new IDisposable?[]
             {
                 observable.Subscribe
@@ -137,7 +138,7 @@ namespace Theraot.Collections
                     new CustomObserver<T>
                     (
                         source.Cancel,
-                        _ => source.Cancel(),
+                        OnError,
                         OnNext
                     )
                 )
@@ -145,6 +146,13 @@ namespace Theraot.Collections
             var proxy = new ProxyObservable<T>();
             var tryTake = new TryTake<T>[] { (out T val) => { val = default!; return false; } };
             tryTake[0] = TakeInitial;
+
+            return new Progressor<T>(proxy, Take);
+
+            void OnError(Exception _)
+            {
+                source.Cancel();
+            }
 
             void OnNext(T item)
             {
@@ -202,8 +210,6 @@ namespace Theraot.Collections
             {
                 return tryTake[0](out value);
             }
-
-            return new Progressor<T>(proxy, Take);
 
             bool TakeReplacement(out T value)
             {
