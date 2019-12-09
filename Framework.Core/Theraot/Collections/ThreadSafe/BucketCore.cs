@@ -16,6 +16,7 @@ namespace Theraot.Collections.ThreadSafe
         private const int _capacityLog2 = 8;
         private const int _mask = _capacity - 1;
         private const int _maxLevel = 1 + (31 / _capacityLog2);
+        private readonly Func<object> _childFactory;
         private readonly int _level;
         private object?[]? _arrayFirst;
         private object?[]? _arraySecond;
@@ -33,6 +34,7 @@ namespace Theraot.Collections.ThreadSafe
             _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
             _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
             _arrayUse = ArrayReservoir<int>.GetArray(_capacity);
+            _childFactory = level == 1 ? FuncHelper.GetDefaultFunc<object>() : () => new BucketCore(_level - 1);
         }
 
         ~BucketCore()
@@ -73,29 +75,16 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
-
-            if (_level == 1)
-            {
-                var subIndex = SubIndex(index);
-                return Do
-                (
-                    ref arrayUse[subIndex],
-                    ref arrayFirst[subIndex],
-                    ref arraySecond[subIndex],
-                    callback
-                );
-            }
-            else
-            {
-                var subIndex = SubIndex(index);
-                return Do
-                (
-                    ref arrayUse[subIndex],
-                    ref arrayFirst[subIndex],
-                    ref arraySecond[subIndex],
-                    (ref object? target) => target is BucketCore core && core.Do(index, callback)
-                );
-            }
+            var subIndex = SubIndex(index);
+            return Do
+            (
+                ref arrayUse[subIndex],
+                ref arrayFirst[subIndex],
+                ref arraySecond[subIndex],
+                _level == 1
+                    ? callback
+                    : (ref object? target) => target is BucketCore core && core.Do(index, callback)
+            );
         }
 
         public bool DoMayDecrement(int index, DoAction callback)
@@ -108,29 +97,16 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
-
-            if (_level == 1)
-            {
-                var subIndex = SubIndex(index);
-                return DoMayDecrement
-                (
-                    ref arrayUse[subIndex],
-                    ref arrayFirst[subIndex],
-                    ref arraySecond[subIndex],
-                    callback
-                );
-            }
-            else
-            {
-                var subIndex = SubIndex(index);
-                return DoMayDecrement
-                (
-                    ref arrayUse[subIndex],
-                    ref arrayFirst[subIndex],
-                    ref arraySecond[subIndex],
-                    (ref object? target) => target is BucketCore core && core.DoMayDecrement(index, callback)
-                );
-            }
+            var subIndex = SubIndex(index);
+            return DoMayDecrement
+            (
+                ref arrayUse[subIndex],
+                ref arrayFirst[subIndex],
+                ref arraySecond[subIndex],
+                _level == 1
+                    ? callback
+                    : (ref object? target) => target is BucketCore core && core.DoMayDecrement(index, callback)
+            );
         }
 
         public bool DoMayIncrement(int index, DoAction callback)
@@ -139,35 +115,22 @@ namespace Theraot.Collections.ThreadSafe
             var arrayFirst = Volatile.Read(ref _arrayFirst);
             var arraySecond = Volatile.Read(ref _arraySecond);
             var arrayUse = Volatile.Read(ref _arrayUse);
-            if (arrayFirst == null || arraySecond == null || arrayUse == null)
+            var childFactory = _childFactory;
+            if (arrayFirst == null || arraySecond == null || arrayUse == null || childFactory == null)
             {
                 return false;
             }
-
-            if (_level == 1)
-            {
-                var subIndex = SubIndex(index);
-                return DoMayIncrement
-                (
-                    ref arrayUse[subIndex],
-                    ref arrayFirst[subIndex],
-                    ref arraySecond[subIndex],
-                    FuncHelper.GetDefaultFunc<object>(),
-                    callback
-                );
-            }
-            else
-            {
-                var subIndex = SubIndex(index);
-                return DoMayIncrement
-                (
-                    ref arrayUse[subIndex],
-                    ref arrayFirst[subIndex],
-                    ref arraySecond[subIndex],
-                    () => new BucketCore(_level - 1),
-                    (ref object? target) => target is BucketCore core && core.DoMayIncrement(index, callback)
-                );
-            }
+            var subIndex = SubIndex(index);
+            return DoMayIncrement
+            (
+                ref arrayUse[subIndex],
+                ref arrayFirst[subIndex],
+                ref arraySecond[subIndex],
+                childFactory,
+                _level == 1
+                    ? callback
+                    : (ref object? target) => target is BucketCore core && core.DoMayIncrement(index, callback)
+            );
         }
 
         public IEnumerable<object> EnumerateRange(int indexFrom, int indexTo)
