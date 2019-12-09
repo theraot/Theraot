@@ -508,12 +508,12 @@ namespace System.Linq
             {
                 case null:
                     throw new ArgumentNullException(nameof(source));
+
                 case ICollection<TSource> collection:
-                    {
-                        var result = new TSource[collection.Count];
-                        collection.CopyTo(result, 0);
-                        return result;
-                    }
+                    var result = new TSource[collection.Count];
+                    collection.CopyTo(result, 0);
+                    return result;
+
                 case string str:
                     return (TSource[])(object)str.ToCharArray();
 

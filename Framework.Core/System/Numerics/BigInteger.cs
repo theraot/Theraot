@@ -1404,21 +1404,19 @@ namespace System.Numerics
                     break;
 
                 default:
+                    if (InternalSign != -1)
                     {
-                        if (InternalSign != -1)
-                        {
-                            internalBits = InternalBits;
-                            highByte = 0;
-                        }
-                        else
-                        {
-                            internalBits = (uint[])InternalBits.Clone();
-                            NumericsHelpers.DangerousMakeTwosComplement(internalBits);
-                            highByte = 255;
-                        }
-
-                        break;
+                        internalBits = InternalBits;
+                        highByte = 0;
                     }
+                    else
+                    {
+                        internalBits = (uint[])InternalBits.Clone();
+                        NumericsHelpers.DangerousMakeTwosComplement(internalBits);
+                        highByte = 255;
+                    }
+
+                    break;
             }
 
             var bytes = new byte[checked(4 * internalBits.Length)];
@@ -1746,21 +1744,19 @@ namespace System.Numerics
                     break;
 
                 default:
+                    if (InternalSign != -1)
                     {
-                        if (InternalSign != -1)
-                        {
-                            internalBits = InternalBits;
-                            highDword = 0;
-                        }
-                        else
-                        {
-                            internalBits = (uint[])InternalBits.Clone();
-                            NumericsHelpers.DangerousMakeTwosComplement(internalBits);
-                            highDword = unchecked((uint)-1);
-                        }
-
-                        break;
+                        internalBits = InternalBits;
+                        highDword = 0;
                     }
+                    else
+                    {
+                        internalBits = (uint[])InternalBits.Clone();
+                        NumericsHelpers.DangerousMakeTwosComplement(internalBits);
+                        highDword = unchecked((uint)-1);
+                    }
+
+                    break;
             }
 
             var length = internalBits.Length - 1;

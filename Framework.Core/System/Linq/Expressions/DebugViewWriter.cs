@@ -361,29 +361,27 @@ namespace System.Linq.Expressions
                     break;
 
                 default:
+                    var suffix = GetConstantValueSuffix(node.Type);
+                    if (suffix != null)
                     {
-                        var suffix = GetConstantValueSuffix(node.Type);
-                        if (suffix != null)
-                        {
-                            Out(value.ToString());
-                            Out(suffix);
-                        }
-                        else
-                        {
-                            Out
-                            (
-                                string.Format
-                                (
-                                    CultureInfo.CurrentCulture,
-                                    ".Constant<{0}>({1})",
-                                    node.Type.ToString(),
-                                    value
-                                )
-                            );
-                        }
-
-                        break;
+                        Out(value.ToString());
+                        Out(suffix);
                     }
+                    else
+                    {
+                        Out
+                        (
+                            string.Format
+                            (
+                                CultureInfo.CurrentCulture,
+                                ".Constant<{0}>({1})",
+                                node.Type.ToString(),
+                                value
+                            )
+                        );
+                    }
+
+                    break;
             }
 
             return node;

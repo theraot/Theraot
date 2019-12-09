@@ -141,20 +141,19 @@ namespace System.Threading
                         switch (status)
                         {
                             case Status.HandleReadySet:
+                                // We reset it
+                                // Update the wait handle
+                                var handle = Volatile.Read(ref _handle);
+                                if (handle != null)
                                 {
-                                    // We reset it
-                                    // Update the wait handle
-                                    var handle = Volatile.Read(ref _handle);
-                                    if (handle != null)
-                                    {
-                                        // Reset it
-                                        handle.Reset();
-                                        // Done
-                                        return;
-                                    }
-
-                                    break;
+                                    // Reset it
+                                    handle.Reset();
+                                    // Done
+                                    return;
                                 }
+
+                                break;
+
                             case Status.HandleReadyNotSet:
                                 // Another thread reset it
                                 // we are done
@@ -213,20 +212,19 @@ namespace System.Threading
                         switch (status)
                         {
                             case Status.HandleReadyNotSet:
+                                // We set it
+                                // Update the wait handle
+                                var handle = Volatile.Read(ref _handle);
+                                if (handle != null)
                                 {
-                                    // We set it
-                                    // Update the wait handle
-                                    var handle = Volatile.Read(ref _handle);
-                                    if (handle != null)
-                                    {
-                                        // Reset it
-                                        handle.Set();
-                                        // Done
-                                        return;
-                                    }
-
-                                    break;
+                                    // Reset it
+                                    handle.Set();
+                                    // Done
+                                    return;
                                 }
+
+                                break;
+
                             case Status.HandleReadySet:
                                 // Another thread set it
                                 // we are done

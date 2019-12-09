@@ -288,40 +288,37 @@ namespace System.Collections.Concurrent
                 switch (array)
                 {
                     case KeyValuePair<TKey, TValue>[] pairs:
+                        // most decent alternative
+                        var keyValuePairs = pairs;
+                        foreach (var pair in _wrapped)
                         {
-                            // most decent alternative
-                            var keyValuePairs = pairs;
-                            foreach (var pair in _wrapped)
-                            {
-                                keyValuePairs[index] = pair;
-                                index++;
-                            }
-
-                            return;
+                            keyValuePairs[index] = pair;
+                            index++;
                         }
+
+                        return;
+
                     case DictionaryEntry[] entries:
+                        // that thing exists, I was totally unaware, I may as well use it.
+                        var dictionaryEntries = entries;
+                        foreach (var pair in _wrapped)
                         {
-                            // that thing exists, I was totally unaware, I may as well use it.
-                            var dictionaryEntries = entries;
-                            foreach (var pair in _wrapped)
-                            {
-                                dictionaryEntries[index] = new DictionaryEntry(pair.Key, pair.Value);
-                                index++;
-                            }
-
-                            return;
+                            dictionaryEntries[index] = new DictionaryEntry(pair.Key, pair.Value);
+                            index++;
                         }
+
+                        return;
+
                     case object[] objects:
+                        var valuePairs = objects;
+                        foreach (var pair in _wrapped)
                         {
-                            var valuePairs = objects;
-                            foreach (var pair in _wrapped)
-                            {
-                                valuePairs[index] = pair;
-                                index++;
-                            }
-
-                            return;
+                            valuePairs[index] = pair;
+                            index++;
                         }
+
+                        return;
+
                     default:
                         // A.K.A ScrewYouException
                         throw new ArgumentException("Not supported array type");

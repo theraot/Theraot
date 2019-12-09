@@ -862,12 +862,11 @@ namespace System.Threading.Tasks
                         break;
 
                     default:
-                        {
-                            Contract.Assert(currentContinuation is ITaskCompletionAction, "Expected continuation element to be Action, TaskContinuation, or ITaskContinuationAction");
-                            var action = (ITaskCompletionAction)currentContinuation;
-                            action.Invoke(this);
-                            break;
-                        }
+                        Contract.Assert(currentContinuation is ITaskCompletionAction,
+                            "Expected continuation element to be Action, TaskContinuation, or ITaskContinuationAction");
+                        var action = (ITaskCompletionAction)currentContinuation;
+                        action.Invoke(this);
+                        break;
                 }
             }
         }

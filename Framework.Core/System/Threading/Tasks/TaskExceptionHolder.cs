@@ -81,18 +81,17 @@ namespace System.Threading.Tasks
                 switch (edi.SourceException)
                 {
                     case AggregateException aggExp:
+                        var flattenedAggExp = aggExp.Flatten();
+                        foreach (var innerExp in flattenedAggExp.InnerExceptions)
                         {
-                            var flattenedAggExp = aggExp.Flatten();
-                            foreach (var innerExp in flattenedAggExp.InnerExceptions)
+                            if (innerExp is ThreadAbortException)
                             {
-                                if (innerExp is ThreadAbortException)
-                                {
-                                    return;
-                                }
+                                return;
                             }
-
-                            break;
                         }
+
+                        break;
+
                     case ThreadAbortException _:
                         return;
 
@@ -313,17 +312,16 @@ namespace System.Threading.Tasks
                 // Handle enumerables of EDIs by storing them directly
                 // Anything else is a programming error
                 case IEnumerable<ExceptionDispatchInfo> ediColl:
-                    {
-                        exceptions.AddRange(ediColl);
+                    exceptions.AddRange(ediColl);
 #if DEBUG
-                        Debug.Assert(exceptions.Count > 0, "There should be at least one dispatch info.");
-                        foreach (var tmp in exceptions)
-                        {
-                            Debug.Assert(tmp != null, "No dispatch infos should be null");
-                        }
-#endif
-                        break;
+                    Debug.Assert(exceptions.Count > 0, "There should be at least one dispatch info.");
+                    foreach (var tmp in exceptions)
+                    {
+                        Debug.Assert(tmp != null, "No dispatch infos should be null");
                     }
+#endif
+                    break;
+
                 default:
                     throw new ArgumentException("(Internal)Expected an Exception or an IEnumerable<Exception>", nameof(exceptionObject));
             }
