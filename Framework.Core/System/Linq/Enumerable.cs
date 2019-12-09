@@ -439,8 +439,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(second));
             }
-
-            return SequenceEqualExtracted(comparer ?? EqualityComparer<TSource>.Default);
+            // Do not use comparer ?? EqualityComparer<T>.Default, keep the comparer == null check explicit
+            if (comparer == null)
+            {
+                return SequenceEqualExtracted(EqualityComparer<TSource>.Default);
+            }
+            return SequenceEqualExtracted(comparer);
 
             bool SequenceEqualExtracted(IEqualityComparer<TSource> nonNullComparer)
             {
