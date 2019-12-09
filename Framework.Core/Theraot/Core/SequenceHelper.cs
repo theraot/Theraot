@@ -446,7 +446,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(next));
             }
-
+            // Do not use comparer ?? EqualityComparer<T>.Default, keep the comparer == null check explicit
             if (comparer == null)
             {
                 return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
@@ -461,7 +461,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(next));
             }
-
+            // Do not use comparer ?? EqualityComparer<T>.Default, keep the comparer == null check explicit
             if (comparer == null)
             {
                 return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
