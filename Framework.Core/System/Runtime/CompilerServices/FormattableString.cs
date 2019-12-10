@@ -9,23 +9,37 @@ namespace System.Runtime.CompilerServices
 
         public static string CurrentCulture(FormattableString formattable)
         {
-            throw new NotImplementedException();
+            if (formattable == null)
+            {
+                throw new ArgumentNullException(nameof(formattable));
+            }
+            return formattable.ToString(Globalization.CultureInfo.CurrentCulture);
         }
 
         public static string Invariant(FormattableString formattable)
         {
-            throw new NotImplementedException();
+            if (formattable == null)
+            {
+                throw new ArgumentNullException(nameof(formattable));
+            }
+            return formattable.ToString(Globalization.CultureInfo.InvariantCulture);
         }
 
-        public abstract object GetArgument(int index);
+        public abstract object? GetArgument(int index);
 
-        public abstract object[] GetArguments();
+        public abstract object?[] GetArguments();
 
-        public abstract string ToString(IFormatProvider formatProvider);
+        public abstract string ToString(IFormatProvider? formatProvider);
 
-        string IFormattable.ToString(string format, IFormatProvider formatProvider)
+        string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
         {
-            throw new NotImplementedException();
+            _ = format;
+            return ToString(formatProvider);
+        }
+
+        public override string ToString()
+        {
+            return ToString(Globalization.CultureInfo.CurrentCulture);
         }
     }
 }
