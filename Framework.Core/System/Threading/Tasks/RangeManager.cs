@@ -63,7 +63,7 @@ namespace System.Threading.Tasks
             //
             // find the actual number of index ranges we will need
             //
-            Debug.Assert((uSpan / uRangeSize) < int.MaxValue);
+            Debug.Assert(uSpan / uRangeSize < int.MaxValue);
 
             var nNumRanges = (int)(uSpan / uRangeSize);
 

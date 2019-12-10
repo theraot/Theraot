@@ -200,7 +200,7 @@ namespace System.Threading.Tasks
             var status = t.GetStatus(Token);
             if (status == ValueTaskSourceStatus.Pending)
             {
-                return (new ValueTaskSourceAsTask(t, Token)).Task;
+                return new ValueTaskSourceAsTask(t, Token).Task;
             }
             try
             {

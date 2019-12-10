@@ -66,8 +66,8 @@ namespace System.Collections.Generic
             }
 
             No.Op(context);
-            var dictionary = (info.GetValue("dictionary", typeof(KeyValuePair<T, T>[])) as KeyValuePair<T, T>[]) ?? ArrayEx.Empty<KeyValuePair<T, T>>();
-            var comparer = (info.GetValue("comparer", typeof(IEqualityComparer<T>)) as IEqualityComparer<T>) ?? EqualityComparer<T>.Default;
+            var dictionary = info.GetValue("dictionary", typeof(KeyValuePair<T, T>[])) as KeyValuePair<T, T>[] ?? ArrayEx.Empty<KeyValuePair<T, T>>();
+            var comparer = info.GetValue("comparer", typeof(IEqualityComparer<T>)) as IEqualityComparer<T> ?? EqualityComparer<T>.Default;
             _wrapped = new NullAwareDictionary<T, T>(dictionary, comparer);
         }
 

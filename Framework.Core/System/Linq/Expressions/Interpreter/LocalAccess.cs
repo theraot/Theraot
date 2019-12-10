@@ -310,7 +310,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            frame.Data[frame.StackIndex++] = (frame.Closure![Index]);
+            frame.Data[frame.StackIndex++] = frame.Closure![Index];
             return 1;
         }
     }

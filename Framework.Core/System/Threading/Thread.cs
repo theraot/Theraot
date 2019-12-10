@@ -88,7 +88,7 @@ namespace System.Threading
 
         public static Thread CurrentThread => _currentThread ??= new Thread();
 
-        public bool IsAlive => (_start == null && _probe!.TryGetTarget(out _)) || (_task?.IsCompleted == false);
+        public bool IsAlive => (_start == null && _probe!.TryGetTarget(out _)) || _task?.IsCompleted == false;
 
         public bool IsBackground
         {
