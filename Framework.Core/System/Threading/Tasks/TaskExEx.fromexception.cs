@@ -1,12 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Theraot;
 
-#if NET40
-
-using System.Linq;
-
-#endif
-
 namespace System.Threading.Tasks
 {
     public static partial class TaskExEx
