@@ -317,6 +317,8 @@ namespace TestRunner
             No.Op(typeof(Queryable));
             No.Op(typeof(BitOperations));
             No.Op(typeof(HashCode));
+            No.Op(typeof(FormattableString));
+            No.Op(typeof(FormattableStringFactory));
         }
 
         public static void TypeMethodAvailability()
