@@ -1,4 +1,8 @@
 ﻿#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4
+
+#pragma warning disable CA1305 // Specify IFormatProvider
+#pragma warning disable CA2201 // Do not raise reserved exception types
+
 using System;
 using System.Globalization;
 using System.Text;
@@ -170,7 +174,7 @@ namespace TestRunner
 
         public static void WriteLine(object value)
         {
-            _stringBuilder.AppendLine(value.ToString());
+            _stringBuilder.AppendLine(value == null ? "<null>" : value.ToString());
         }
 
         public static void WriteLine()

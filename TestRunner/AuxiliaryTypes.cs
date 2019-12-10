@@ -1,4 +1,5 @@
-﻿// ReSharper disable ClassNeverInstantiated.Local
+﻿#pragma warning disable CA1812 // Avoid uninstantiated internal classes
+// ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable InconsistentNaming
 
 namespace TestRunner.AuxiliaryTypes
