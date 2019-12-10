@@ -19,7 +19,7 @@ namespace System.Numerics
             {
                 case 'x':
                 case 'X':
-                    return FormatBigIntegerToHexString(value, fmt, digits, info);
+                    return FormatBigIntegerToHexString(ref value, fmt, digits, info);
 
                 case 'e':
                 case 'E':
@@ -37,7 +37,7 @@ namespace System.Numerics
                         return value.InternalSign.ToString(format, info);
                     }
 
-                    var builder = CreateBuilder(value, info, decimalFmt, digits);
+                    var builder = CreateBuilder(ref value, info, decimalFmt, digits);
                     if (decimalFmt)
                     {
                         // Format Round-trip decimal
@@ -107,7 +107,7 @@ namespace System.Numerics
                     }
 
                     var result = new StringBuilder(builder.Length + 20);
-                    var close = SetWrap(value, info, type, result);
+                    var close = SetWrap(ref value, info, type, result);
                     var append = builder;
                     if (groups)
                     {
@@ -448,7 +448,7 @@ namespace System.Numerics
             return false;
         }
 
-        private static ReverseStringBuilder CreateBuilder(BigInteger value, NumberFormatInfo info, bool decimalFmt, int digits)
+        private static ReverseStringBuilder CreateBuilder(ref BigInteger value, NumberFormatInfo info, bool decimalFmt, int digits)
         {
             // First convert to base 10^9.
             const uint numericBase = 1000000000; // 10^9
@@ -583,7 +583,7 @@ namespace System.Numerics
             }
             else
             {
-                builder = CreateBuilder(value, info, false, 0);
+                builder = CreateBuilder(ref value, info, false, 0);
             }
 
             // ---
@@ -619,7 +619,7 @@ namespace System.Numerics
             return result.ToString();
         }
 
-        private static string FormatBigIntegerToHexString(BigInteger value, char format, int digits, NumberFormatInfo info)
+        private static string FormatBigIntegerToHexString(ref BigInteger value, char format, int digits, NumberFormatInfo info)
         {
             var byteArray = value.ToByteArray();
             var stringBuilder = new StringBuilder((byteArray.Length * 2) + 1);
@@ -826,7 +826,7 @@ namespace System.Numerics
             return reader.EndOfString;
         }
 
-        private static string SetWrap(BigInteger value, NumberFormatInfo info, int type, StringBuilder result)
+        private static string SetWrap(ref BigInteger value, NumberFormatInfo info, int type, StringBuilder result)
         {
             var close = string.Empty;
             switch (type)
