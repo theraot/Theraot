@@ -516,178 +516,180 @@ namespace System.Linq.Expressions.Compiler
             {
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
+                    if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
                     {
-                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
+                        goto default;
+                    }
+
+                    EmitLiftEqualityComparison(nodeType, resultType, mc, paramList, argList);
+                    return;
+
+                default:
+                    var exit = IL.DefineLabel();
+                    var exitNull = IL.DefineLabel();
+                    var anyNull = GetLocal(typeof(bool));
+                    for (int i = 0, n = paramList.Length; i < n; i++)
+                    {
+                        var v = paramList[i];
+                        var arg = argList[i];
+                        if (arg.Type.IsNullable())
                         {
-                            goto default;
-                        }
-
-                        var exit = IL.DefineLabel();
-                        var exitAllNull = IL.DefineLabel();
-                        var exitAnyNull = IL.DefineLabel();
-
-                        var anyNull = GetLocal(typeof(bool));
-                        var allNull = GetLocal(typeof(bool));
-                        IL.Emit(OpCodes.Ldc_I4_0);
-                        IL.Emit(OpCodes.Stloc, anyNull);
-                        IL.Emit(OpCodes.Ldc_I4_1);
-                        IL.Emit(OpCodes.Stloc, allNull);
-
-                        for (int i = 0, n = paramList.Length; i < n; i++)
-                        {
-                            var v = paramList[i];
-                            var arg = argList[i];
                             _scope.AddLocal(this, v);
-                            if (arg.Type.IsNullable())
+                            EmitAddress(arg, arg.Type);
+                            IL.Emit(OpCodes.Dup);
+                            IL.EmitHasValue(arg.Type);
+                            IL.Emit(OpCodes.Ldc_I4_0);
+                            IL.Emit(OpCodes.Ceq);
+                            IL.Emit(OpCodes.Stloc, anyNull);
+                            IL.EmitGetValueOrDefault(arg.Type);
+                            _scope.EmitSet(v);
+                        }
+                        else
+                        {
+                            _scope.AddLocal(this, v);
+                            EmitExpression(arg);
+                            if (!arg.Type.IsValueType)
                             {
-                                EmitAddress(arg, arg.Type);
                                 IL.Emit(OpCodes.Dup);
-                                IL.EmitHasValue(arg.Type);
-                                IL.Emit(OpCodes.Ldc_I4_0);
+                                IL.Emit(OpCodes.Ldnull);
                                 IL.Emit(OpCodes.Ceq);
-                                IL.Emit(OpCodes.Dup);
-                                IL.Emit(OpCodes.Ldloc, anyNull);
-                                IL.Emit(OpCodes.Or);
                                 IL.Emit(OpCodes.Stloc, anyNull);
-                                IL.Emit(OpCodes.Ldloc, allNull);
-                                IL.Emit(OpCodes.And);
-                                IL.Emit(OpCodes.Stloc, allNull);
-                                IL.EmitGetValueOrDefault(arg.Type);
-                            }
-                            else
-                            {
-                                EmitExpression(arg);
-                                if (!arg.Type.IsValueType)
-                                {
-                                    IL.Emit(OpCodes.Dup);
-                                    IL.Emit(OpCodes.Ldnull);
-                                    IL.Emit(OpCodes.Ceq);
-                                    IL.Emit(OpCodes.Dup);
-                                    IL.Emit(OpCodes.Ldloc, anyNull);
-                                    IL.Emit(OpCodes.Or);
-                                    IL.Emit(OpCodes.Stloc, anyNull);
-                                    IL.Emit(OpCodes.Ldloc, allNull);
-                                    IL.Emit(OpCodes.And);
-                                    IL.Emit(OpCodes.Stloc, allNull);
-                                }
-                                else
-                                {
-                                    IL.Emit(OpCodes.Ldc_I4_0);
-                                    IL.Emit(OpCodes.Stloc, allNull);
-                                }
                             }
 
                             _scope.EmitSet(v);
                         }
 
-                        IL.Emit(OpCodes.Ldloc, allNull);
-                        IL.Emit(OpCodes.Brtrue, exitAllNull);
                         IL.Emit(OpCodes.Ldloc, anyNull);
-                        IL.Emit(OpCodes.Brtrue, exitAnyNull);
-
-                        EmitMethodCallExpression(mc);
-                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
-                        {
-                            var ci = resultType.GetConstructor(new[] { mc.Type });
-                            IL.Emit(OpCodes.Newobj, ci);
-                        }
-
-                        IL.Emit(OpCodes.Br_S, exit);
-
-                        IL.MarkLabel(exitAllNull);
-                        IL.EmitPrimitive(nodeType == ExpressionType.Equal);
-                        IL.Emit(OpCodes.Br_S, exit);
-
-                        IL.MarkLabel(exitAnyNull);
-                        IL.EmitPrimitive(nodeType == ExpressionType.NotEqual);
-
-                        IL.MarkLabel(exit);
-                        FreeLocal(anyNull);
-                        FreeLocal(allNull);
-                        return;
+                        IL.Emit(OpCodes.Brtrue, exitNull);
                     }
-                default:
+
+                    EmitMethodCallExpression(mc);
+                    if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
                     {
-                        var exit = IL.DefineLabel();
-                        var exitNull = IL.DefineLabel();
-                        var anyNull = GetLocal(typeof(bool));
-                        for (int i = 0, n = paramList.Length; i < n; i++)
+                        var ci = resultType.GetConstructor(new[] { mc.Type });
+                        IL.Emit(OpCodes.Newobj, ci);
+                    }
+
+                    IL.Emit(OpCodes.Br_S, exit);
+                    IL.MarkLabel(exitNull);
+                    if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
+                    {
+                        if (resultType.IsValueType)
                         {
-                            var v = paramList[i];
-                            var arg = argList[i];
-                            if (arg.Type.IsNullable())
-                            {
-                                _scope.AddLocal(this, v);
-                                EmitAddress(arg, arg.Type);
-                                IL.Emit(OpCodes.Dup);
-                                IL.EmitHasValue(arg.Type);
-                                IL.Emit(OpCodes.Ldc_I4_0);
-                                IL.Emit(OpCodes.Ceq);
-                                IL.Emit(OpCodes.Stloc, anyNull);
-                                IL.EmitGetValueOrDefault(arg.Type);
-                                _scope.EmitSet(v);
-                            }
-                            else
-                            {
-                                _scope.AddLocal(this, v);
-                                EmitExpression(arg);
-                                if (!arg.Type.IsValueType)
-                                {
-                                    IL.Emit(OpCodes.Dup);
-                                    IL.Emit(OpCodes.Ldnull);
-                                    IL.Emit(OpCodes.Ceq);
-                                    IL.Emit(OpCodes.Stloc, anyNull);
-                                }
-
-                                _scope.EmitSet(v);
-                            }
-
-                            IL.Emit(OpCodes.Ldloc, anyNull);
-                            IL.Emit(OpCodes.Brtrue, exitNull);
-                        }
-
-                        EmitMethodCallExpression(mc);
-                        if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
-                        {
-                            var ci = resultType.GetConstructor(new[] { mc.Type });
-                            IL.Emit(OpCodes.Newobj, ci);
-                        }
-
-                        IL.Emit(OpCodes.Br_S, exit);
-                        IL.MarkLabel(exitNull);
-                        if (TypeUtils.AreEquivalent(resultType, mc.Type.GetNullable()))
-                        {
-                            if (resultType.IsValueType)
-                            {
-                                var result = GetLocal(resultType);
-                                IL.Emit(OpCodes.Ldloca, result);
-                                IL.Emit(OpCodes.Initobj, resultType);
-                                IL.Emit(OpCodes.Ldloc, result);
-                                FreeLocal(result);
-                            }
-                            else
-                            {
-                                IL.Emit(OpCodes.Ldnull);
-                            }
+                            var result = GetLocal(resultType);
+                            IL.Emit(OpCodes.Ldloca, result);
+                            IL.Emit(OpCodes.Initobj, resultType);
+                            IL.Emit(OpCodes.Ldloc, result);
+                            FreeLocal(result);
                         }
                         else
                         {
-                            Debug.Assert
-                            (
-                                nodeType == ExpressionType.LessThan
-                                || nodeType == ExpressionType.LessThanOrEqual
-                                || nodeType == ExpressionType.GreaterThan
-                                || nodeType == ExpressionType.GreaterThanOrEqual
-                            );
-
-                            IL.Emit(OpCodes.Ldc_I4_0);
+                            IL.Emit(OpCodes.Ldnull);
                         }
-
-                        IL.MarkLabel(exit);
-                        FreeLocal(anyNull);
-                        return;
                     }
+                    else
+                    {
+                        Debug.Assert
+                        (
+                            nodeType == ExpressionType.LessThan
+                            || nodeType == ExpressionType.LessThanOrEqual
+                            || nodeType == ExpressionType.GreaterThan
+                            || nodeType == ExpressionType.GreaterThanOrEqual
+                        );
+
+                        IL.Emit(OpCodes.Ldc_I4_0);
+                    }
+
+                    IL.MarkLabel(exit);
+                    FreeLocal(anyNull);
+                    return;
             }
+        }
+
+        private void EmitLiftEqualityComparison(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
+        {
+            var exit = IL.DefineLabel();
+            var exitAllNull = IL.DefineLabel();
+            var exitAnyNull = IL.DefineLabel();
+
+            var anyNull = GetLocal(typeof(bool));
+            var allNull = GetLocal(typeof(bool));
+            IL.Emit(OpCodes.Ldc_I4_0);
+            IL.Emit(OpCodes.Stloc, anyNull);
+            IL.Emit(OpCodes.Ldc_I4_1);
+            IL.Emit(OpCodes.Stloc, allNull);
+
+            for (int i = 0, n = paramList.Length; i < n; i++)
+            {
+                var v = paramList[i];
+                var arg = argList[i];
+                _scope.AddLocal(this, v);
+                if (arg.Type.IsNullable())
+                {
+                    EmitAddress(arg, arg.Type);
+                    IL.Emit(OpCodes.Dup);
+                    IL.EmitHasValue(arg.Type);
+                    IL.Emit(OpCodes.Ldc_I4_0);
+                    IL.Emit(OpCodes.Ceq);
+                    IL.Emit(OpCodes.Dup);
+                    IL.Emit(OpCodes.Ldloc, anyNull);
+                    IL.Emit(OpCodes.Or);
+                    IL.Emit(OpCodes.Stloc, anyNull);
+                    IL.Emit(OpCodes.Ldloc, allNull);
+                    IL.Emit(OpCodes.And);
+                    IL.Emit(OpCodes.Stloc, allNull);
+                    IL.EmitGetValueOrDefault(arg.Type);
+                }
+                else
+                {
+                    EmitExpression(arg);
+                    if (!arg.Type.IsValueType)
+                    {
+                        IL.Emit(OpCodes.Dup);
+                        IL.Emit(OpCodes.Ldnull);
+                        IL.Emit(OpCodes.Ceq);
+                        IL.Emit(OpCodes.Dup);
+                        IL.Emit(OpCodes.Ldloc, anyNull);
+                        IL.Emit(OpCodes.Or);
+                        IL.Emit(OpCodes.Stloc, anyNull);
+                        IL.Emit(OpCodes.Ldloc, allNull);
+                        IL.Emit(OpCodes.And);
+                        IL.Emit(OpCodes.Stloc, allNull);
+                    }
+                    else
+                    {
+                        IL.Emit(OpCodes.Ldc_I4_0);
+                        IL.Emit(OpCodes.Stloc, allNull);
+                    }
+                }
+
+                _scope.EmitSet(v);
+            }
+
+            IL.Emit(OpCodes.Ldloc, allNull);
+            IL.Emit(OpCodes.Brtrue, exitAllNull);
+            IL.Emit(OpCodes.Ldloc, anyNull);
+            IL.Emit(OpCodes.Brtrue, exitAnyNull);
+
+            EmitMethodCallExpression(mc);
+            if (resultType.IsNullable() && !TypeUtils.AreEquivalent(resultType, mc.Type))
+            {
+                var ci = resultType.GetConstructor(new[] { mc.Type });
+                IL.Emit(OpCodes.Newobj, ci);
+            }
+
+            IL.Emit(OpCodes.Br_S, exit);
+
+            IL.MarkLabel(exitAllNull);
+            IL.EmitPrimitive(nodeType == ExpressionType.Equal);
+            IL.Emit(OpCodes.Br_S, exit);
+
+            IL.MarkLabel(exitAnyNull);
+            IL.EmitPrimitive(nodeType == ExpressionType.NotEqual);
+
+            IL.MarkLabel(exit);
+            FreeLocal(anyNull);
+            FreeLocal(allNull);
         }
 
         private void EmitListInit(ListInitExpression init)
