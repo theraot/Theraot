@@ -81,10 +81,9 @@ namespace System.Linq
                     collection = new List<TElement>();
                     collections.Add(key, collection);
                 }
-                if (!result._groupings.TryGetValue(key, out var grouping))
+                if (!result._groupings.ContainsKey(key))
                 {
-                    grouping = new Grouping<TKey, TElement>(key, collection);
-                    result._groupings.Add(key, grouping);
+                    result._groupings.Add(key, new Grouping<TKey, TElement>(key, collection));
                 }
                 collection.Add(elementSelector(item));
             }
