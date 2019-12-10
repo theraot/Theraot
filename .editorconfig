@@ -115,6 +115,9 @@ csharp_space_between_method_call_empty_parameter_list_parentheses = false
 # Wrapping preferences 
 csharp_preserve_single_line_statements = true 
 csharp_preserve_single_line_blocks = true 
+# Other features
+csharp_style_prefer_index_operator = false:none
+csharp_style_prefer_range_operator = false:none
 # ReSharper 
 csharp_indent_preprocessor_region = no_indent 
 csharp_place_expr_property_on_single_line = always 
