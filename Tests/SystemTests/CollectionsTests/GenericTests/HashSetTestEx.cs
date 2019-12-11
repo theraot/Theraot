@@ -5,6 +5,8 @@ extern alias nunitlinq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Theraot.Collections.Specialized;
+using Theraot.Core;
 
 namespace Tests.SystemTests.CollectionsTests.GenericTests
 {
@@ -27,6 +29,19 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
                     }
                 }
             );
+        }
+
+        [Test]
+        public void TryGetValue()
+        {
+            var actual = new object();
+            var check = new object();
+            var equalityComparer = new CustomEqualityComparer<object>(FuncHelper.GetTautologyFunc<object, object>(), _ => 0);
+            var hashSet = new HashSetEx<object>(equalityComparer) { actual };
+            var test = hashSet.TryGetValue(check, out var found);
+            Assert.IsTrue(test);
+            Assert.AreSame(actual, found);
+            Assert.AreNotSame(check, found);
         }
     }
 }
