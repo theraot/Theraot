@@ -22,24 +22,33 @@ namespace System.Collections.Generic
 #endif
     {
         public HashSetEx()
+            : this(EqualityComparer<T>.Default)
         {
             // Empty
         }
 
         public HashSetEx(IEnumerable<T> collection)
-            : base(collection)
+            : this(collection, EqualityComparer<T>.Default)
         {
             // Empty
         }
 
-        public HashSetEx(IEnumerable<T> collection, IEqualityComparer<T> comparer)
-            : base(collection, comparer)
+        public HashSetEx(IEnumerable<T> collection, IEqualityComparer<T>? comparer)
+#if (GREATERTHAN_NET30 &&  LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+            : base(collection, SpyEqualityComparer.GetFrom(comparer))
+#else
+            : base(collection, comparer ?? EqualityComparer<T>.Default)
+#endif
         {
             // Empty
         }
 
         public HashSetEx(IEqualityComparer<T>? comparer)
+#if (GREATERTHAN_NET30 &&  LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+            : base(SpyEqualityComparer.GetFrom(comparer))
+#else
             : base(comparer ?? EqualityComparer<T>.Default)
+#endif
         {
             // Empty
         }
@@ -135,6 +144,77 @@ namespace System.Collections.Generic
         public static IEqualityComparer<HashSet<T>> CreateSetComparer()
         {
             return HashSetEqualityComparer<T>.Instance;
+        }
+
+#endif
+
+#if (GREATERTHAN_NET30 &&  LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+
+        public bool TryGetValue(T equalValue, out T actualValue)
+        {
+            var spy = (Comparer as SpyEqualityComparer)!;
+            var found = equalValue;
+            spy.SetCallback
+            (
+                (stored, check) =>
+                {
+                    _ = check;
+                    found = stored;
+                }
+            );
+            var result = Contains(equalValue);
+            spy.SetCallback(null);
+            actualValue = result ? found : default!;
+            return result;
+        }
+
+        private sealed class SpyEqualityComparer : IEqualityComparer<T>
+        {
+            private readonly Threading.ThreadLocal<Action<T, T>?> _callback = new Threading.ThreadLocal<Action<T, T>?>();
+            private readonly IEqualityComparer<T> _wrapped;
+
+            private SpyEqualityComparer(IEqualityComparer<T> wrapped)
+            {
+                _wrapped = wrapped;
+            }
+
+            public static IEqualityComparer<T> GetFrom(IEqualityComparer<T>? comparer)
+            {
+                if (comparer == null)
+                {
+                    return new SpyEqualityComparer(EqualityComparer<T>.Default);
+                }
+                if (comparer is SpyEqualityComparer)
+                {
+                    return comparer;
+                }
+                return new SpyEqualityComparer(comparer);
+            }
+
+            public bool Equals(T x, T y)
+            {
+                GetCallback()?.Invoke(x, y);
+                return _wrapped.Equals(x, y);
+            }
+
+            public int GetHashCode(T obj)
+            {
+                return _wrapped.GetHashCode(obj);
+            }
+
+            public void SetCallback(Action<T, T>? callback)
+            {
+                _callback.Value = callback;
+            }
+
+            private Action<T, T>? GetCallback()
+            {
+                if (!_callback.IsValueCreated || _callback.Value == null)
+                {
+                    return null;
+                }
+                return _callback.Value;
+            }
         }
 
 #endif
