@@ -1,4 +1,4 @@
-﻿namespace System.Runtime.CompilerServices
+﻿namespace System
 {
     public static class FormattableStringEx
     {

@@ -1,6 +1,6 @@
 ﻿#if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD13
 
-namespace System.Runtime.CompilerServices
+namespace System
 {
     public abstract class FormattableString : IFormattable
     {
