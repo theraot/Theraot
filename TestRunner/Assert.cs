@@ -101,7 +101,7 @@ namespace TestRunner
                 return;
             }
 
-            throw new AssertionFailedException(BuildMessage(false, found, message));
+            throw new AssertionFailedException(BuildMessage(false, true, message));
         }
 
         public static void IsNotNull<T>(T found, string message = null)
@@ -133,7 +133,7 @@ namespace TestRunner
                 return;
             }
 
-            throw new AssertionFailedException(BuildMessage(true, found, message));
+            throw new AssertionFailedException(BuildMessage(true, false, message));
         }
 
         public static TException Throws<TException>(Action action, string message = null)
