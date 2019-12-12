@@ -458,7 +458,21 @@ namespace System.Linq.Expressions.Interpreter
                 DefineBlockLabels(labelScopeChangeInfo.Value.Nodes);
             }
 
+#if DEBUG
             var startingStackDepth = Instructions.CurrentStackDepth;
+#endif
+            CompileAsVoidExtracted(expr);
+#if DEBUG
+            Debug.Assert(Instructions.CurrentStackDepth == startingStackDepth);
+#endif
+            if (labelScopeChangeInfo.HasValue)
+            {
+                _labelBlock = labelScopeChangeInfo.Value.Parent;
+            }
+        }
+
+        private void CompileAsVoidExtracted(Expression expr)
+        {
             switch (expr.NodeType)
             {
                 case ExpressionType.Assign:
@@ -487,13 +501,6 @@ namespace System.Linq.Expressions.Interpreter
                     }
 
                     break;
-            }
-
-            Debug.Assert(Instructions.CurrentStackDepth == startingStackDepth);
-
-            if (labelScopeChangeInfo.HasValue)
-            {
-                _labelBlock = labelScopeChangeInfo.Value.Parent;
             }
         }
 
@@ -1949,8 +1956,21 @@ namespace System.Linq.Expressions.Interpreter
                 _guard.RunOnEmptyStack((@this, e) => @this.CompileNoLabelPush(e), this, expr);
                 return;
             }
-
+#if DEBUG
             var startingStackDepth = Instructions.CurrentStackDepth;
+#endif
+            CompileNoLabelPushExtracted(expr);
+#if DEBUG
+            Debug.Assert
+            (
+                Instructions.CurrentStackDepth == startingStackDepth + (expr.Type == typeof(void) ? 0 : 1),
+                $"{Instructions.CurrentStackDepth} vs {startingStackDepth + (expr.Type == typeof(void) ? 0 : 1)} for {expr.NodeType}"
+            );
+#endif
+        }
+
+        private void CompileNoLabelPushExtracted(Expression expr)
+        {
             switch (expr.NodeType)
             {
                 case ExpressionType.Add:
@@ -2121,12 +2141,6 @@ namespace System.Linq.Expressions.Interpreter
                     Compile(expr.ReduceAndCheck());
                     break;
             }
-
-            Debug.Assert
-            (
-                Instructions.CurrentStackDepth == startingStackDepth + (expr.Type == typeof(void) ? 0 : 1),
-                $"{Instructions.CurrentStackDepth} vs {startingStackDepth + (expr.Type == typeof(void) ? 0 : 1)} for {expr.NodeType}"
-            );
         }
 
         private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)

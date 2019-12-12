@@ -17,7 +17,7 @@ namespace System.Collections.Generic
 #if NET35
         , ISet<T>
 #endif
-#if (LESSTHAN_NET47 && GREATERTHAN_NET30) || LESSTHAN_NETSTANDARD13
+#if (LESSTHAN_NET46 && GREATERTHAN_NET30) || LESSTHAN_NETSTANDARD13
         , IReadOnlyCollection<T>
 #endif
     {

@@ -33,8 +33,13 @@ namespace System.Threading.Tasks
                     return;
                 }
 
-                var success = TrySetResult(completingTask);
+#if DEBUG
+                var success =
+#endif
+                TrySetResult(completingTask);
+#if DEBUG
                 Contract.Assert(success, "Only one task should have gotten to this point, and thus this must be successful.");
+#endif
 
                 // We need to remove continuations that may be left straggling on other tasks.
                 // Otherwise, repeated calls to WhenAny using the same task could leak actions.
