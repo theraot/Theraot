@@ -1,4 +1,4 @@
-<!--EXTERNAL_PROPERTIES: TargetFramework-->
+﻿<!--EXTERNAL_PROPERTIES: TargetFramework-->
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
@@ -31,6 +31,9 @@
     <Nullable>enable</Nullable>
     <NullableContextOptions>enable</NullableContextOptions>
     <PackageIcon>icon.jpg</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugSymbols>true</DebugSymbols>
@@ -42,8 +45,8 @@
     <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>True</DebugSymbols>
-    <Optimize>True</Optimize>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>true</Optimize>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>False</Prefer32Bit>
@@ -131,6 +134,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Theraot\Collections\Extensions.interleave.tt">
