@@ -5,7 +5,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    public class NeedleReservoir<T, TNeedle>
+    internal sealed class NeedleReservoir<T, TNeedle>
         where TNeedle : class, IRecyclable, INeedle<T>
     {
         private readonly Func<T, TNeedle> _needleFactory;
