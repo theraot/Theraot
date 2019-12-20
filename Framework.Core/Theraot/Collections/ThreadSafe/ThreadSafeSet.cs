@@ -163,17 +163,17 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         ///     Determines whether the specified value is contained.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="item">The value.</param>
         /// <returns>
         ///     <c>true</c> if the specified value is contained; otherwise, <c>false</c>.
         /// </returns>
-        public bool Contains(T value)
+        public bool Contains(T item)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            var hashCode = Comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found, value))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found, item))
                 {
                     return true;
                 }
@@ -187,13 +187,13 @@ namespace Theraot.Collections.ThreadSafe
         ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
-        /// <param name="arrayIndex">Index of the array.</param>
+        /// <param name="index">Index of the array.</param>
         /// <exception cref="ArgumentNullException">array</exception>
         /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
         /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] array, int index)
         {
-            _bucket.CopyTo(array, arrayIndex);
+            _bucket.CopyTo(array, index);
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -316,14 +316,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         ///     Removes the specified value.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="item">The value.</param>
         /// <returns>
         ///     <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Remove(T value)
+        public bool Remove(T item)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            var hashCode = Comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -332,7 +332,7 @@ namespace Theraot.Collections.ThreadSafe
                     hashCode + attempts,
                     found =>
                     {
-                        if (!Comparer.Equals(found, value))
+                        if (!Comparer.Equals(found, item))
                         {
                             return false;
                         }
@@ -353,14 +353,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         ///     Removes the specified value.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="item">The value.</param>
         /// <param name="previous">The found value that was removed.</param>
         /// <returns>
         ///     <c>true</c> if the specified value was removed; otherwise, <c>false</c>.
         /// </returns>
-        public bool Remove(T value, out T previous)
+        public bool Remove(T item, out T previous)
         {
-            var hashCode = Comparer.GetHashCode(value);
+            var hashCode = Comparer.GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -371,7 +371,7 @@ namespace Theraot.Collections.ThreadSafe
                     found =>
                     {
                         tmp = found;
-                        if (!Comparer.Equals(found, value))
+                        if (!Comparer.Equals(found, item))
                         {
                             return false;
                         }
