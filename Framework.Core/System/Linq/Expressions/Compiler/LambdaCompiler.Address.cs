@@ -137,7 +137,7 @@ namespace System.Linq.Expressions.Compiler
             IL.Emit(OpCodes.Unbox, type);
         }
 
-        private WriteBack? AddressOfWriteBack(MemberExpression node)
+        private Action<LambdaCompiler>? AddressOfWriteBack(MemberExpression node)
         {
             if (!(node.Member is PropertyInfo property) || !property.CanWrite)
             {
@@ -147,12 +147,12 @@ namespace System.Linq.Expressions.Compiler
             return AddressOfWriteBackCore(node); // avoids closure allocation
         }
 
-        private WriteBack? AddressOfWriteBack(IndexExpression node)
+        private Action<LambdaCompiler>? AddressOfWriteBack(IndexExpression node)
         {
             return node.Indexer?.CanWrite != true ? null : AddressOfWriteBackCore(node);
         }
 
-        private WriteBack AddressOfWriteBackCore(MemberExpression node)
+        private Action<LambdaCompiler> AddressOfWriteBackCore(MemberExpression node)
         {
             // emit instance, if any
             LocalBuilder? instanceLocal = null;
@@ -192,7 +192,7 @@ namespace System.Linq.Expressions.Compiler
             };
         }
 
-        private WriteBack AddressOfWriteBackCore(IndexExpression node)
+        private Action<LambdaCompiler> AddressOfWriteBackCore(IndexExpression node)
         {
             // emit instance, if any
             LocalBuilder? instanceLocal = null;
@@ -305,7 +305,7 @@ namespace System.Linq.Expressions.Compiler
         //
         // For properties, we want to write back into the property if it's
         // passed byref.
-        private WriteBack? EmitAddressWriteBack(Expression node, Type type)
+        private Action<LambdaCompiler>? EmitAddressWriteBack(Expression node, Type type)
         {
             var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, _labelBlock, node);
             if (labelScopeChangeInfo.HasValue)
@@ -314,7 +314,7 @@ namespace System.Linq.Expressions.Compiler
                 DefineBlockLabels(labelScopeChangeInfo.Value.nodes);
             }
 
-            WriteBack? result = null;
+            Action<LambdaCompiler>? result = null;
             if (TypeUtils.AreEquivalent(type, node.Type))
             {
                 switch (node.NodeType)

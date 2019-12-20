@@ -100,12 +100,12 @@ namespace System.Linq.Expressions.Compiler
             return mi.DeclaringType?.IsValueType == false;
         }
 
-        private List<WriteBack>? EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters = 0)
+        private List<Action<LambdaCompiler>>? EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters = 0)
         {
             var pis = method.GetParameters();
             Debug.Assert(args.ArgumentCount + skipParameters == pis.Length);
 
-            List<WriteBack>? writeBacks = null;
+            List<Action<LambdaCompiler>>? writeBacks = null;
             for (int i = skipParameters, n = pis.Length; i < n; i++)
             {
                 var parameter = pis[i];
@@ -119,7 +119,7 @@ namespace System.Linq.Expressions.Compiler
                     var wb = EmitAddressWriteBack(argument, type);
                     if (wb != null)
                     {
-                        (writeBacks ??= new List<WriteBack>()).Add(wb);
+                        (writeBacks ??= new List<Action<LambdaCompiler>>()).Add(wb);
                     }
                 }
                 else
@@ -1228,7 +1228,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        private void EmitWriteBack(List<WriteBack>? writeBacks)
+        private void EmitWriteBack(List<Action<LambdaCompiler>>? writeBacks)
         {
             if (writeBacks == null)
             {
