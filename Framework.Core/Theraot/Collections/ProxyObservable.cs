@@ -7,7 +7,7 @@ using Theraot.Threading;
 
 namespace Theraot.Collections
 {
-    public sealed class ProxyObservable<T> : IProxyObservable<T>
+    public sealed class ProxyObservable<T> : IObservable<T>, IObserver<T>
     {
         private readonly Bucket<IObserver<T>> _observers;
 
