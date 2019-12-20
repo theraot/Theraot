@@ -5,7 +5,7 @@ using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    internal class Pool<T>
+    internal sealed class Pool<T>
         where T : class
     {
         private readonly FixedSizeQueue<T> _entries;

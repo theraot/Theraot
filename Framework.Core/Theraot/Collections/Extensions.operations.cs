@@ -707,7 +707,7 @@ namespace Theraot.Collections
             return new NullableStructEnumerable<TSource>(source);
         }
 
-        private class NeedleEnumerable<TSource> : IEnumerable<ReadOnlyStructNeedle<TSource>>
+        private sealed class NeedleEnumerable<TSource> : IEnumerable<ReadOnlyStructNeedle<TSource>>
         {
             private readonly IEnumerable<TSource> _source;
 
@@ -730,7 +730,7 @@ namespace Theraot.Collections
             }
         }
 
-        private class NullableClassEnumerable<TSource> : IEnumerable<TSource?>
+        private sealed class NullableClassEnumerable<TSource> : IEnumerable<TSource?>
             where TSource : class
         {
             private readonly IEnumerable<TSource> _source;
@@ -754,7 +754,7 @@ namespace Theraot.Collections
             }
         }
 
-        private class NullableStructEnumerable<TSource> : IEnumerable<TSource?>
+        private sealed class NullableStructEnumerable<TSource> : IEnumerable<TSource?>
             where TSource : struct
         {
             private readonly IEnumerable<TSource> _source;
@@ -801,7 +801,7 @@ namespace Theraot.Collections
             return new StructNullableCollection<TSource>(source);
         }
 
-        private class ClassNullableCollection<TSource> : IReadOnlyCollection<TSource?>, ICollection<TSource?>
+        private sealed class ClassNullableCollection<TSource> : IReadOnlyCollection<TSource?>, ICollection<TSource?>
             where TSource : class
         {
             private readonly IReadOnlyCollection<TSource> _source;
@@ -860,7 +860,7 @@ namespace Theraot.Collections
             }
         }
 
-        private class StructNullableCollection<TSource> : IReadOnlyCollection<TSource?>, ICollection<TSource?>
+        private sealed class StructNullableCollection<TSource> : IReadOnlyCollection<TSource?>, ICollection<TSource?>
             where TSource : struct
         {
             private readonly IReadOnlyCollection<TSource> _source;

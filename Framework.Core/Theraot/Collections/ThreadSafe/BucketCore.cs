@@ -10,7 +10,7 @@ using Theraot.Threading;
 namespace Theraot.Collections.ThreadSafe
 {
     [Serializable]
-    internal class BucketCore : IEnumerable<object>
+    internal sealed class BucketCore : IEnumerable<object>
     {
         private const int _capacity = 1 << _capacityLog2;
         private const int _capacityLog2 = 8;
