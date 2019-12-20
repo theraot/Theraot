@@ -536,10 +536,12 @@ namespace System.Collections.Concurrent
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            // Thread Safe Dispose
+            if (!disposing)
             {
-                Interlocked.Exchange(ref _data, null!)?.Dispose();
+                return;
             }
+            Interlocked.Exchange(ref _data, null)?.Dispose();
         }
 
         private sealed class PrivateData : IDisposable, IReadOnlyCollection<T>

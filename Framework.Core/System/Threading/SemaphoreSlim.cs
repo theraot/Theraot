@@ -251,10 +251,12 @@ namespace System.Threading
 
         protected virtual void Dispose(bool disposing)
         {
-            // This is a protected method, the parameter should be kept
-            No.Op(disposing);
-            var state = Interlocked.Exchange(ref _state, null);
-            state?.Dispose();
+            // Thread Safe Dispose
+            if (!disposing)
+            {
+                return;
+            }
+            Interlocked.Exchange(ref _state, null)?.Dispose();
         }
 
         private void Awake(SemaphoreSlimState state)

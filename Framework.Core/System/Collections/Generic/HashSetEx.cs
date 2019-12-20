@@ -34,7 +34,7 @@ namespace System.Collections.Generic
         }
 
         public HashSetEx(IEnumerable<T> collection, IEqualityComparer<T>? comparer)
-#if (GREATERTHAN_NET30 &&  LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+#if (GREATERTHAN_NET30 && LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
             : base(collection, SpyEqualityComparer.GetFrom(comparer))
 #else
             : base(collection, comparer ?? EqualityComparer<T>.Default)
@@ -44,7 +44,7 @@ namespace System.Collections.Generic
         }
 
         public HashSetEx(IEqualityComparer<T>? comparer)
-#if (GREATERTHAN_NET30 &&  LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+#if (GREATERTHAN_NET30 && LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
             : base(SpyEqualityComparer.GetFrom(comparer))
 #else
             : base(comparer ?? EqualityComparer<T>.Default)
@@ -148,7 +148,9 @@ namespace System.Collections.Generic
 
 #endif
 
-#if (GREATERTHAN_NET30 &&  LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+#if (GREATERTHAN_NET30 && LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
         public bool TryGetValue(T equalValue, out T actualValue)
         {

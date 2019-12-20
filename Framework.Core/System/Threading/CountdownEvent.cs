@@ -216,9 +216,7 @@ namespace System.Threading
             {
                 return;
             }
-
-            var e = Interlocked.Exchange(ref _event, null);
-            e?.Dispose();
+            Interlocked.Exchange(ref _event, null)?.Dispose();
         }
 
         private ManualResetEventSlim GetEvent()
