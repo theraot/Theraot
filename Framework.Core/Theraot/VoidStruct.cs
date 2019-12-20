@@ -1,4 +1,4 @@
-﻿// Needed for NET35 (TASK)
+// Needed for NET35 (TASK)
 
 using System;
 
@@ -25,7 +25,7 @@ namespace Theraot
             return true;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is VoidStruct;
         }
