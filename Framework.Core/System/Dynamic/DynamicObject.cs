@@ -275,8 +275,6 @@ namespace System.Dynamic
                 // Empty
             }
 
-            private delegate DynamicMetaObject Fallback<in TBinder>(MetaDynamic @this, TBinder binder, DynamicMetaObject? errorSuggestion);
-
             private new DynamicObject? Value => (DynamicObject?)base.Value;
 
             public override DynamicMetaObject BindBinaryOperation(BinaryOperationBinder binder, DynamicMetaObject arg)
@@ -584,7 +582,7 @@ namespace System.Dynamic
                 return AstUtils.Empty;
             }
 
-            private DynamicMetaObject BuildCallMethodWithResult<TBinder>(MethodInfo method, TBinder binder, Expression[] args, DynamicMetaObject fallbackResult, Fallback<TBinder>? fallbackInvoke)
+            private DynamicMetaObject BuildCallMethodWithResult<TBinder>(MethodInfo method, TBinder binder, Expression[] args, DynamicMetaObject fallbackResult, Func<MetaDynamic, TBinder, DynamicMetaObject?, DynamicMetaObject>? fallbackInvoke)
                 where TBinder : DynamicMetaObjectBinder
             {
                 if (!IsOverridden(method))
@@ -711,7 +709,7 @@ namespace System.Dynamic
                 );
             }
 
-            private DynamicMetaObject CallMethodNoResult<TBinder>(MethodInfo method, TBinder binder, Expression[] args, Fallback<TBinder> fallback)
+            private DynamicMetaObject CallMethodNoResult<TBinder>(MethodInfo method, TBinder binder, Expression[] args, Func<MetaDynamic, TBinder, DynamicMetaObject?, DynamicMetaObject> fallback)
                 where TBinder : DynamicMetaObjectBinder
             {
                 //
@@ -772,7 +770,7 @@ namespace System.Dynamic
                 return fallback(this, binder, callDynamic);
             }
 
-            private DynamicMetaObject CallMethodReturnLast<TBinder>(MethodInfo method, TBinder binder, Expression[] args, Expression value, Fallback<TBinder> fallback)
+            private DynamicMetaObject CallMethodReturnLast<TBinder>(MethodInfo method, TBinder binder, Expression[] args, Expression value, Func<MetaDynamic, TBinder, DynamicMetaObject?, DynamicMetaObject> fallback)
                 where TBinder : DynamicMetaObjectBinder
             {
                 //
@@ -839,7 +837,7 @@ namespace System.Dynamic
                 return fallback(this, binder, callDynamic);
             }
 
-            private DynamicMetaObject CallMethodWithResult<TBinder>(MethodInfo method, TBinder binder, Expression[] args, Fallback<TBinder> fallback, Fallback<TBinder>? fallbackInvoke = null)
+            private DynamicMetaObject CallMethodWithResult<TBinder>(MethodInfo method, TBinder binder, Expression[] args, Func<MetaDynamic, TBinder, DynamicMetaObject?, DynamicMetaObject> fallback, Func<MetaDynamic, TBinder, DynamicMetaObject?, DynamicMetaObject>? fallbackInvoke = null)
                 where TBinder : DynamicMetaObjectBinder
             {
                 //
