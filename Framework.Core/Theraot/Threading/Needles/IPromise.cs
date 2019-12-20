@@ -1,6 +1,6 @@
 ﻿// Needed for NET40
 
-using System;
+using System.Runtime.CompilerServices;
 
 namespace Theraot.Threading.Needles
 {
@@ -14,10 +14,8 @@ namespace Theraot.Threading.Needles
         // Empty
     }
 
-    public interface IWaitablePromise : IPromise
+    public interface IWaitablePromise : IPromise, INotifyCompletion
     {
-        void OnCompleted(Action continuation);
-
         void Wait();
     }
 
