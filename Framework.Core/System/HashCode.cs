@@ -3,6 +3,9 @@
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+#pragma warning disable CC0019 // Use 'switch'
+#pragma warning disable RECS0012 // 'if' statement can be re-written as 'switch' statement
+#pragma warning disable RECS0098 // Finds redundant null coalescing expressions such as expr ?? expr
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

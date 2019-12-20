@@ -1,5 +1,6 @@
 ﻿// Needed for NET40
 
+#pragma warning disable RECS0017 // Possible compare of value type with 'null'
 // ReSharper disable ConstantNullCoalescingCondition
 // ReSharper disable NonReadonlyMemberInGetHashCode
 
