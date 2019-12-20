@@ -406,7 +406,7 @@ namespace System.Threading.Tasks
                 // If an unstarted task has a valid CancellationToken that gets signalled while the task is still not queued
                 // we need to proactively cancel it, because it may never execute to transition itself.
                 // The only way to accomplish this is to register a callback on the CT.
-                // We exclude Promise tasks from this, because TaskCompletionSource needs to fully control the inner tasks's lifetime (i.e. not allow external cancellations)
+                // We exclude Promise tasks from this, because TaskCompletionSource needs to fully control the lifetime of inner tasks (i.e. not allow external cancellations)
 
                 if ((_internalOptions & (InternalTaskOptions.QueuedByRuntime | InternalTaskOptions.PromiseTask | InternalTaskOptions.LazyCancellation)) != 0)
                 {

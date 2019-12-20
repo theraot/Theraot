@@ -114,7 +114,7 @@ namespace System.Threading.Tasks
                 return;
             }
 
-            // Otherwise, run it, making sure that t_currentTask is null'd out appropriately during the execution
+            // Otherwise, run it, making sure that t_currentTask is nulled out appropriately during the execution
             var prevCurrentTask = currentTask;
             try
             {
