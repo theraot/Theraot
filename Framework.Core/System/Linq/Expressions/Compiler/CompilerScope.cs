@@ -426,7 +426,7 @@ namespace System.Linq.Expressions.Compiler
             return MergedScopes == null ? GetVariables(Node) : GetVariablesIncludingMerged(MergedScopes);
         }
 
-        private IEnumerable<ParameterExpression> GetVariablesIncludingMerged(HashSet<BlockExpression> blockExpressions)
+        private IEnumerable<ParameterExpression> GetVariablesIncludingMerged(IEnumerable<BlockExpression> blockExpressions)
         {
             foreach (var param in GetVariables(Node))
             {
