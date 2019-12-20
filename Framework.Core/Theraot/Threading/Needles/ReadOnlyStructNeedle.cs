@@ -1,9 +1,5 @@
 ﻿// Needed for NET35 (ThreadLocal)
 
-#pragma warning disable CS0659 // Type overrides Object.Equals but does not override GetHashCode.
-#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
-#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
 // ReSharper disable ConstantNullCoalescingCondition
 
 using System;
@@ -72,6 +68,11 @@ namespace Theraot.Threading.Needles
                 return Equals(value);
             }
             return !IsAlive;
+        }
+
+        public override int GetHashCode()
+        {
+            return EqualityComparer<T>.Default.GetHashCode(Value);
         }
 
         public override string ToString()

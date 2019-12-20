@@ -1,8 +1,7 @@
 ﻿// Needed for NET40
 
-#pragma warning disable 659, 660, 661
-
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 
@@ -37,7 +36,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        T INeedle<T>.Value { get => throw Exception; set => throw new NotSupportedException(); }
+        T INeedle<T>.Value
+        {
+            get => Value;
+            set => throw new NotSupportedException();
+        }
 
         public static bool operator !=(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
@@ -76,11 +79,16 @@ namespace Theraot.Threading.Needles
                     return this == needle;
 
                 case ExceptionDispatchInfo info:
-                    return _exceptionDispatchInfo.Equals(info);
+                    return info.Equals(_exceptionDispatchInfo);
 
                 default:
                     return obj is Exception exc && exc.Equals(Exception);
             }
+        }
+
+        public override int GetHashCode()
+        {
+            return EqualityComparer<ExceptionDispatchInfo>.Default.GetHashCode(_exceptionDispatchInfo);
         }
 
         public override string ToString()
