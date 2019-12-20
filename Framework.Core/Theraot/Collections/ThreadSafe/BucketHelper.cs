@@ -15,7 +15,6 @@ namespace Theraot.Collections.ThreadSafe
 
         internal static object Null { get; }
 
-#if FAT
         public static T GetOrInsert<T>(this IBucket<T> bucket, int index, T item)
         {
             if (bucket == null)
@@ -114,8 +113,6 @@ namespace Theraot.Collections.ThreadSafe
             InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, out _);
         }
 
-#endif
-
         /// <summary>
         ///     Inserts or replaces the item at the specified index.
         /// </summary>
@@ -165,7 +162,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-#if FAT
         /// <summary>
         /// Inserts or replaces the item at the specified index.
         /// </summary>
@@ -189,8 +185,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             return InsertOrUpdateChecked(bucket, index, itemFactory, itemUpdateFactory, check, out _);
         }
-
-#endif
 
         /// <summary>
         ///     Inserts or replaces the item at the specified index.
@@ -250,7 +244,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-#if FAT
         /// <summary>
         /// Inserts or replaces the item at the specified index.
         /// </summary>
@@ -270,8 +263,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             return InsertOrUpdateChecked(bucket, index, item, itemUpdateFactory, check, out _);
         }
-
-#endif
 
         /// <summary>
         ///     Inserts or replaces the item at the specified index.
@@ -323,7 +314,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-#if FAT
         /// <summary>
         /// Inserts or replaces the item at the specified index.
         /// </summary>
@@ -342,8 +332,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             return InsertOrUpdateChecked(bucket, index, item, check, out _);
         }
-
-#endif
 
         /// <summary>
         ///     Inserts or replaces the item at the specified index.
@@ -394,7 +382,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-#if FAT
         /// <summary>
         /// Inserts or replaces the item at the specified index.
         /// </summary>
@@ -471,8 +458,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
         }
-
-#endif
 
         public static int RemoveWhere<T>(this IBucket<T> bucket, Predicate<T> check)
         {
@@ -560,7 +545,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-#if FAT
         public static bool Update<T>(this IBucket<T> bucket, int index, Func<T, T> itemUpdateFactory)
         {
             if (bucket == null)
@@ -579,8 +563,6 @@ namespace Theraot.Collections.ThreadSafe
             return bucket.Update(index, itemUpdateFactory, Tautology, out isEmpty);
         }
 
-#endif
-
         public static bool UpdateChecked<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check)
         {
             if (bucket == null)
@@ -591,7 +573,6 @@ namespace Theraot.Collections.ThreadSafe
             return bucket.Update(index, _ => item, check, out _);
         }
 
-#if FAT
         public static bool UpdateChecked<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out bool isEmpty)
         {
             if (bucket == null)
@@ -600,8 +581,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             return bucket.Update(index, _ => item, check, out isEmpty);
         }
-
-#endif
 
         private static bool Tautology<T>(T item)
         {

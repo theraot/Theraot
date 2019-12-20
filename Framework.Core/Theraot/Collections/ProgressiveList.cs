@@ -117,13 +117,11 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
-#if FAT
         internal static new ProgressiveList<T> Create<TList>(Progressor<T> progressor, IEqualityComparer<T> comparer)
             where TList : IList<T>, new()
         {
             return new ProgressiveList<T>(progressor, new TList(), comparer);
         }
-#endif
 
         protected override bool CacheContains(T item)
         {

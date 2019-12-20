@@ -46,12 +46,10 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-#if FAT
-        public void Bound(TKey key, out AVLNode<TKey, TValue> lower, out AVLNode<TKey, TValue> upper)
+        public void Bound(TKey key, out AVLNode<TKey, TValue>? lower, out AVLNode<TKey, TValue>? upper)
         {
             AVLNode<TKey, TValue>.Bound(_root, key, _comparer, out lower, out upper);
         }
-#endif
 
         public void Clear()
         {
@@ -84,7 +82,6 @@ namespace Theraot.Collections.Specialized
             return AVLNode<TKey, TValue>.GetNearestRight(_root, key, _comparer);
         }
 
-#if FAT
         public AVLNode<TKey, TValue> GetOrAdd(TKey key, Func<TKey, TValue> factory)
         {
             var result = AVLNode<TKey, TValue>.GetOrAdd(ref _root, key, factory, _comparer, out var isNew);
@@ -94,7 +91,6 @@ namespace Theraot.Collections.Specialized
             }
             return result;
         }
-#endif
 
         public IEnumerable<AVLNode<TKey, TValue>> Range(TKey lower, TKey upper)
         {

@@ -49,8 +49,7 @@ namespace Theraot.Collections.Specialized
             return AddNonDuplicateExtracted(ref node, key, value, comparer, null);
         }
 
-#if FAT
-        internal static void Bound(AVLNode<TKey, TValue> node, TKey key, IComparer<TKey> comparer, out AVLNode<TKey, TValue> lower, out AVLNode<TKey, TValue> upper)
+        internal static void Bound(AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer, out AVLNode<TKey, TValue>? lower, out AVLNode<TKey, TValue>? upper)
         {
             lower = null;
             upper = null;
@@ -72,7 +71,6 @@ namespace Theraot.Collections.Specialized
                 node = compare < 0 ? node._left : node._right;
             }
         }
-#endif
 
         internal static IEnumerable<AVLNode<TKey, TValue>> EnumerateFrom(AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
@@ -212,12 +210,10 @@ namespace Theraot.Collections.Specialized
             return result;
         }
 
-#if FAT
         internal static AVLNode<TKey, TValue> GetOrAdd(ref AVLNode<TKey, TValue> node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, out bool isNew)
         {
             return GetOrAddExtracted(ref node, key, factory, comparer, null, out isNew);
         }
-#endif
 
         internal static bool Remove(ref AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
@@ -358,7 +354,6 @@ namespace Theraot.Collections.Specialized
             RotateRight(ref node);
         }
 
-#if FAT
         private static AVLNode<TKey, TValue> GetOrAddExtracted(ref AVLNode<TKey, TValue> node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, AVLNode<TKey, TValue> created, out bool isNew)
         {
 #if DEBUG
@@ -405,7 +400,6 @@ namespace Theraot.Collections.Specialized
                 MakeBalanced(ref node);
             }
         }
-#endif
 
         private static void MakeBalanced(ref AVLNode<TKey, TValue>? node)
         {

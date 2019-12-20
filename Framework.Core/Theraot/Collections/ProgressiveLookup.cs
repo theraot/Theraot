@@ -102,14 +102,6 @@ namespace Theraot.Collections
             return new ProgressiveLookup<TKey, T>(source.GroupProgressiveBy(item => item.Key, item => item.Value, keyComparer), keyComparer);
         }
 
-#if FAT
-        internal static ProgressiveLookup<TKey, T> Create<TGroupingDictionary>(Progressor<IGrouping<TKey, T>> progressor, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
-            where TGroupingDictionary : IDictionary<TKey, IGrouping<TKey, T>>, new()
-        {
-            return new ProgressiveLookup<TKey, T>(progressor, new TGroupingDictionary(), keyComparer, itemComparer);
-        }
-#endif
-
         public bool Contains(TKey key)
         {
             return _cache.ContainsKey(key) || ProgressorWhere(Check).Any();
