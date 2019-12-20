@@ -3,15 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represent a thread-safe lock-free hash based collection.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public sealed class ThreadSafeCollection<T> : ICollection<T>
+    public sealed class ThreadSafeCollection<T> : ICollection<T>, IHasComparer<T>
     {
         private int _maxIndex;
 

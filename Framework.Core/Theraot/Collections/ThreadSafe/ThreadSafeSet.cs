@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -10,7 +11,7 @@ namespace Theraot.Collections.ThreadSafe
     ///     Represent a thread-safe lock-free hash based dictionary.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public sealed class ThreadSafeSet<T> : ISet<T>
+    public sealed class ThreadSafeSet<T> : ISet<T>, IHasComparer<T>
     {
         private const int _defaultProbing = 1;
 

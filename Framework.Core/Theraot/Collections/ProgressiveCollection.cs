@@ -5,11 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]
-    public class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
+    public class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>, IHasComparer<T>
     {
         private readonly ICollection<T> _cache;
 
