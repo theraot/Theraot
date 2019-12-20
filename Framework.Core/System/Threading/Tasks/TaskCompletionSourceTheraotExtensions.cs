@@ -3,7 +3,6 @@
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 #pragma warning disable RECS0146 // Member hides static member from outer class
 
-using System.Diagnostics;
 using System.Reflection;
 
 namespace System.Threading.Tasks
@@ -31,14 +30,24 @@ namespace System.Threading.Tasks
 
             private static Func<TaskCompletionSource<T>, CancellationToken, bool> CreateTrySetCanceledDelegate()
             {
-                var trySetCanceled = typeof(TaskCompletionSource<T>).GetMethod(
+                var trySetCanceled = typeof(TaskCompletionSource<T>).GetMethod
+                (
                     nameof(TrySetCanceled),
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod,
-                    null, CallingConventions.Any, new[] { typeof(CancellationToken) }, null);
-
-                Debug.Assert(trySetCanceled != null, nameof(trySetCanceled) + " != null");
-                return (Func<TaskCompletionSource<T>, CancellationToken, bool>)Delegate.CreateDelegate(
-                    typeof(Func<TaskCompletionSource<T>, CancellationToken, bool>), trySetCanceled);
+                    null,
+                    CallingConventions.Any,
+                    new[] { typeof(CancellationToken) },
+                    null
+                );
+                if (trySetCanceled == null)
+                {
+                    throw new PlatformNotSupportedException();
+                }
+                return (Func<TaskCompletionSource<T>, CancellationToken, bool>)Delegate.CreateDelegate
+                (
+                    typeof(Func<TaskCompletionSource<T>, CancellationToken, bool>),
+                    trySetCanceled
+                );
             }
         }
     }
