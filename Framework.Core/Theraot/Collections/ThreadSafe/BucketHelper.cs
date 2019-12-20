@@ -30,6 +30,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+            if (itemFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemFactory));
+            }
             if (bucket.TryGet(index, out var stored))
             {
                 return stored;
@@ -428,7 +432,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             isNew = true;
             var factoryUsed = false;
-            var created = default(T);
+            var created = default(T)!;
             while (true)
             {
                 if (isNew)

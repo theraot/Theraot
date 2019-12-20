@@ -68,7 +68,9 @@ namespace Theraot.Collections.Specialized
                 {
                     break;
                 }
-                node = compare < 0 ? node._left : node._right;
+                node = compare < 0
+                    ? node._left
+                    : node._right;
             }
         }
 
@@ -160,7 +162,9 @@ namespace Theraot.Collections.Specialized
                     break;
                 }
 
-                node = compare < 0 ? node._left : node._right;
+                node = compare < 0
+                    ? node._left
+                    : node._right;
             }
 
             return node;
@@ -182,7 +186,9 @@ namespace Theraot.Collections.Specialized
                     break;
                 }
 
-                node = compare < 0 ? node._left : node._right;
+                node = compare < 0
+                    ? node._left
+                    : node._right;
             }
 
             return result;
@@ -204,13 +210,15 @@ namespace Theraot.Collections.Specialized
                     break;
                 }
 
-                node = compare < 0 ? node._left : node._right;
+                node = compare < 0
+                    ? node._left
+                    : node._right;
             }
 
             return result;
         }
 
-        internal static AVLNode<TKey, TValue> GetOrAdd(ref AVLNode<TKey, TValue> node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, out bool isNew)
+        internal static AVLNode<TKey, TValue> GetOrAdd(ref AVLNode<TKey, TValue>? node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, out bool isNew)
         {
             return GetOrAddExtracted(ref node, key, factory, comparer, null, out isNew);
         }
@@ -237,7 +245,9 @@ namespace Theraot.Collections.Specialized
 
             try
             {
-                return compare < 0 ? Remove(ref node._left, key, comparer) : Remove(ref node._right, key, comparer);
+                return compare < 0
+                    ? Remove(ref node._left, key, comparer)
+                    : Remove(ref node._right, key, comparer);
             }
             finally
             {
@@ -324,7 +334,9 @@ namespace Theraot.Collections.Specialized
 
             try
             {
-                return compare < 0 ? AddNonDuplicateExtracted(ref node._left, key, value, comparer, created) : AddNonDuplicateExtracted(ref node._right, key, value, comparer, created);
+                return compare < 0
+                    ? AddNonDuplicateExtracted(ref node._left, key, value, comparer, created)
+                    : AddNonDuplicateExtracted(ref node._right, key, value, comparer, created);
             }
             finally
             {
@@ -354,26 +366,13 @@ namespace Theraot.Collections.Specialized
             RotateRight(ref node);
         }
 
-        private static AVLNode<TKey, TValue> GetOrAddExtracted(ref AVLNode<TKey, TValue> node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, AVLNode<TKey, TValue> created, out bool isNew)
+        private static AVLNode<TKey, TValue> GetOrAddExtracted(ref AVLNode<TKey, TValue>? node, TKey key, Func<TKey, TValue> factory, IComparer<TKey> comparer, AVLNode<TKey, TValue>? created, out bool isNew)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (factory == null)
-            {
-                throw new ArgumentNullException(nameof(factory));
-            }
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-#endif
-            // Ok, it has for node only
             if (node == null)
             {
                 if (created == null)
                 {
                     created = new AVLNode<TKey, TValue>(key, factory(key));
-                    factory = null;
                 }
                 var found = Interlocked.CompareExchange(ref node, created, null);
                 if (found == null)
