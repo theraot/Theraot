@@ -118,13 +118,13 @@ retry:
                 sb.Append(entry);
             }
             var str = sb.ToString();
-            Debug.WriteLine(str);
+            Console.WriteLine(str);
             // Make sure that threads have not sneaked in the ordering
             // If this has happen, it would have been a false failure
             // So, we will retry until it does not happen
             if ((new Regex("c[bc]+d")).IsMatch(str))
             {
-                Debug.WriteLine("...");
+                Console.WriteLine("...");
                 goto retry;
             }
             var regexSuccess = string.Format("a{{{0}}}x(b{{0,{1}}}(cd)+)+z", maxTasks, maxCount);
@@ -134,7 +134,7 @@ retry:
             var first = true;
             foreach (var entry in logCount)
             {
-                Debug.WriteLine(entry.ToString());
+                Console.WriteLine(entry.ToString());
                 if (entry == -1)
                 {
                     first = true;

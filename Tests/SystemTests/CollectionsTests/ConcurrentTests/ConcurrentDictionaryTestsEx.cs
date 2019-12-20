@@ -147,7 +147,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             {
                 foreach (var item in array)
                 {
-                    Debug.WriteLine(item);
+                    Console.WriteLine(item);
                 }
 
                 Assert.Fail();

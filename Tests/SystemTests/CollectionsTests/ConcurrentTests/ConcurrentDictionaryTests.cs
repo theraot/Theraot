@@ -344,7 +344,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             var class2 = new DumbClass(2);
 
             Assert.IsTrue(classMap.TryAdd(class1, nameof(class1)), "class 1");
-            Debug.WriteLine(string.Empty);
+            Console.WriteLine(string.Empty);
             Assert.IsTrue(classMap.TryAdd(class2, nameof(class2)), "class 2");
 
             Assert.AreEqual(nameof(class1), classMap[class1], "class 1 check");
