@@ -30,7 +30,6 @@ namespace Theraot.Core
         {
             String = str ?? throw new ArgumentNullException(nameof(str), "The string is null.");
             _length = str.Length;
-            _position = 0;
         }
 
         /// <summary>

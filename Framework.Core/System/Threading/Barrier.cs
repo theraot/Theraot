@@ -141,8 +141,6 @@ namespace System.Threading
             {
                 _ownerThreadContext = ExecutionContext.Capture();
             }
-
-            _actionCallerId = 0;
         }
 
         /// <summary>
@@ -491,7 +489,7 @@ namespace System.Threading
 #if DEBUG
             var result =
 #endif
-                SignalAndWait(Timeout.Infinite, cancellationToken);
+            SignalAndWait(Timeout.Infinite, cancellationToken);
 #if DEBUG
             Debug.Assert(result);
 #endif
