@@ -44,39 +44,37 @@ namespace System.Threading.Tasks
         /// </exception>
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
-            // Take a more efficient path if tasks is actually an array
-            switch (tasks)
+            if (tasks == null)
             {
-                case Task[] array:
-                    return WhenAll(array);
-
-                case ICollection<Task> collection:
-                    var index = 0;
-                    Task[] taskArray = new Task[collection.Count];
-                    foreach (var task in collection)
-                    {
-                        taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                    }
-                    return InternalWhenAll(taskArray);
-
-                case null:
-                    throw new ArgumentNullException(nameof(tasks));
-
-                default:
-                    var taskList = new List<Task>();
-                    foreach (var task in tasks)
-                    {
-                        if (task == null)
-                        {
-                            throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                        }
-
-                        taskList.Add(task);
-                    }
-
-                    // Delegate the rest to InternalWhenAll()
-                    return InternalWhenAll(taskList.ToArray());
+                throw new ArgumentNullException(nameof(tasks));
             }
+            if (tasks is Task[] array)
+            {
+                // Take a more efficient path if tasks is actually an array
+                return WhenAll(array);
+            }
+            if (tasks is ICollection<Task> collection)
+            {
+                var index = 0;
+                Task[] taskArray = new Task[collection.Count];
+                foreach (var task in collection)
+                {
+                    taskArray[index++] =
+                        task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                }
+                return InternalWhenAll(taskArray);
+            }
+            var taskList = new List<Task>();
+            foreach (var task in tasks)
+            {
+                if (task == null)
+                {
+                    throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                }
+                taskList.Add(task);
+            }
+            // Delegate the rest to InternalWhenAll()
+            return InternalWhenAll(taskList.ToArray());
         }
 
         /// <summary>
@@ -177,40 +175,37 @@ namespace System.Threading.Tasks
         /// </exception>
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
-            // Take a more efficient route if tasks is actually an array
-            switch (tasks)
+            if (tasks == null)
             {
-                case Task<TResult>[] array:
-                    return WhenAll(array);
-
-                case ICollection<Task<TResult>> collection:
-                    var index = 0;
-                    Task<TResult>[] taskArray = new Task<TResult>[collection.Count];
-                    foreach (var task in collection)
-                    {
-                        taskArray[index++] = task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
-                    }
-
-                    return InternalWhenAll(taskArray);
-
-                case null:
-                    throw new ArgumentNullException(nameof(tasks));
-
-                default:
-                    var taskList = new List<Task<TResult>>();
-                    foreach (var task in tasks)
-                    {
-                        if (task == null)
-                        {
-                            throw new ArgumentException("Task_MultiTaskContinuation_NullTask", nameof(tasks));
-                        }
-
-                        taskList.Add(task);
-                    }
-
-                    // Delegate the rest to InternalWhenAll<TResult>().
-                    return InternalWhenAll(taskList.ToArray());
+                throw new ArgumentNullException(nameof(tasks));
             }
+            if (tasks is Task<TResult>[] array)
+            {
+                // Take a more efficient route if tasks is actually an array
+                return WhenAll(array);
+            }
+            if (tasks is ICollection<Task<TResult>> collection)
+            {
+                var index = 0;
+                Task<TResult>[] taskArray = new Task<TResult>[collection.Count];
+                foreach (var task in collection)
+                {
+                    taskArray[index++] =
+                        task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
+                }
+                return InternalWhenAll(taskArray);
+            }
+            var taskList = new List<Task<TResult>>();
+            foreach (var task in tasks)
+            {
+                if (task == null)
+                {
+                    throw new ArgumentException("Task_MultiTaskContinuation_NullTask", nameof(tasks));
+                }
+                taskList.Add(task);
+            }
+            // Delegate the rest to InternalWhenAll<TResult>().
+            return InternalWhenAll(taskList.ToArray());
         }
 
         /// <summary>

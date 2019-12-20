@@ -54,26 +54,25 @@ namespace System.Runtime.CompilerServices
         /// <param name="collection">The collection whose elements to copy to the builder.</param>
         public ReadOnlyCollectionBuilder(IEnumerable<T> collection)
         {
-            switch (collection)
+            if (collection == null)
             {
-                case null:
-                    throw new ArgumentNullException(nameof(collection));
-
-                case ICollection<T> c:
-                    var count = c.Count;
-                    _items = new T[count];
-                    c.CopyTo(_items, 0);
-                    Count = count;
-                    break;
-
-                default:
-                    Count = 0;
-                    _items = new T[_defaultCapacity];
-                    foreach (var item in collection)
-                    {
-                        Add(item);
-                    }
-                    break;
+                throw new ArgumentNullException(nameof(collection));
+            }
+            if (collection is ICollection<T> c)
+            {
+                var count = c.Count;
+                _items = new T[count];
+                c.CopyTo(_items, 0);
+                Count = count;
+            }
+            else
+            {
+                Count = 0;
+                _items = new T[_defaultCapacity];
+                foreach (var item in collection)
+                {
+                    Add(item);
+                }
             }
         }
 
