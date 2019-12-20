@@ -678,6 +678,7 @@
     <Rule Id="CA1010" Action="Hidden" />
     <Rule Id="CA1031" Action="Hidden" />
     <Rule Id="CA1062" Action="Warning" />
+    <Rule Id="CA1508" Action="Hidden" />
     <Rule Id="CA1710" Action="Hidden" />
     <Rule Id="CA1720" Action="Hidden" />
   </Rules>
