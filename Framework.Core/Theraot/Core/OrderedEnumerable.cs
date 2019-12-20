@@ -9,7 +9,7 @@ using Theraot.Collections.Specialized;
 
 namespace Theraot.Core
 {
-    public class OrderedEnumerable<TElement, TKey> : IOrderedEnumerable<TElement>
+    public sealed class OrderedEnumerable<TElement, TKey> : IOrderedEnumerable<TElement>
     {
         private readonly IComparer<TKey> _comparer;
 

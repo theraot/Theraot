@@ -17,7 +17,7 @@ namespace Theraot.Threading.Needles
         }
     }
 
-    public class PromiseAwaiter : INotifyCompletion
+    public sealed class PromiseAwaiter : INotifyCompletion
     {
         private readonly IWaitablePromise _promise;
 
@@ -39,7 +39,7 @@ namespace Theraot.Threading.Needles
         }
     }
 
-    public class PromiseAwaiter<T> : INotifyCompletion
+    public sealed class PromiseAwaiter<T> : INotifyCompletion
         where T : class
     {
         private readonly IWaitablePromise<T> _promise;

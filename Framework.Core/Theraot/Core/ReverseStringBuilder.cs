@@ -6,7 +6,7 @@ using Theraot.Threading;
 
 namespace Theraot.Core
 {
-    public class ReverseStringBuilder : IEnumerable<char>
+    public sealed class ReverseStringBuilder : IEnumerable<char>
     {
         private readonly char[] _buffer;
         private readonly int _capacity;

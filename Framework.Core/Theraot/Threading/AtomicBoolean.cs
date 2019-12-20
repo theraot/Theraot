@@ -27,7 +27,7 @@ using System.Threading;
 
 namespace Theraot.Threading
 {
-    public class AtomicBoolean
+    public sealed class AtomicBoolean
     {
         private const int _set = 1;
 
