@@ -11,7 +11,7 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public class Promise : IWaitablePromise
+    public class Promise : IWaitablePromise, IRecyclable
     {
         private readonly int _hashCode;
 
