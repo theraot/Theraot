@@ -28,6 +28,8 @@ namespace Theraot.Reflection
 
         private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 
+        private static readonly object _syncLock = new object();
+
         public static Type GetDelegateType(params Type[] types)
         {
             if (types == null)
@@ -51,7 +53,7 @@ namespace Theraot.Reflection
 
         internal static Type GetDelegateTypeInternal(params Type[] types)
         {
-            lock (_delegateCache)
+            lock (_syncLock)
             {
                 // arguments & return type
                 var curTypeInfo = types.Aggregate(_delegateCache, (current, type) => NextTypeInfo(type, current));
@@ -109,7 +111,7 @@ namespace Theraot.Reflection
             return nextTypeInfo;
         }
 
-        private class TypeInfo
+        private struct TypeInfo
         {
             public Type? DelegateType;
             public Dictionary<Type, TypeInfo>? TypeChain;
