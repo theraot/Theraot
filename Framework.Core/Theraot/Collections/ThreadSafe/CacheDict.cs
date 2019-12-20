@@ -25,8 +25,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="capacity">The maximum number of elements to store will be this number aligned to next ^2.</param>
         public CacheDict(int capacity)
         {
-            capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            _entries = new Entry[capacity];
+            _entries = new Entry[NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity)];
         }
 
         /// <summary>
