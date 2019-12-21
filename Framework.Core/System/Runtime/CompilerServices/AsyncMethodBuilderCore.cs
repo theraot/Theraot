@@ -155,14 +155,19 @@ namespace System.Runtime.CompilerServices
                     StateMachine!.MoveNext();
                     return;
                 }
+                var callback = GetInvokeMoveNext();
+                ExecutionContext.Run(_context, callback, StateMachine);
+            }
 
+            private static ContextCallback GetInvokeMoveNext()
+            {
                 var callback = _invokeMoveNext;
                 if (callback == null)
                 {
-                    _invokeMoveNext = callback = InvokeMoveNext;
+                    callback = InvokeMoveNext;
+                    _invokeMoveNext = callback;
                 }
-
-                ExecutionContext.Run(_context, callback, StateMachine);
+                return callback;
 
                 static void InvokeMoveNext(object stateMachine)
                 {

@@ -7,6 +7,10 @@
 #pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+#pragma warning disable S112 // General exceptions should never be thrown
+#pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
+#pragma warning disable S2372 // Exceptions should not be thrown from property getters
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable VirtualMemberCallInConstructor
@@ -391,7 +395,7 @@ namespace System.Collections
                         return compatibleComparer.Comparer;
 
                     default:
-                        throw new ArgumentException();
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
                 }
             }
             set
@@ -407,7 +411,7 @@ namespace System.Collections
                         break;
 
                     default:
-                        throw new ArgumentException();
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
                 }
             }
         }
@@ -428,7 +432,7 @@ namespace System.Collections
                         return compatibleComparer.HashCodeProvider;
 
                     default:
-                        throw new ArgumentException();
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
                 }
             }
             set
@@ -444,7 +448,7 @@ namespace System.Collections
                         break;
 
                     default:
-                        throw new ArgumentException();
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
                 }
             }
         }
@@ -659,7 +663,7 @@ namespace System.Collections
 
         // Copies the values in this hash table to an array at
         // a given index.  Note that this only copies values, and not keys.
-        public virtual void CopyTo(Array array, int arrayIndex)
+        public virtual void CopyTo(Array array, int index)
         {
             if (array == null)
             {
@@ -671,17 +675,17 @@ namespace System.Collections
                 throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
             }
 
-            if (arrayIndex < 0)
+            if (index < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
             }
 
-            if (array.Length - arrayIndex < Count)
+            if (array.Length - index < Count)
             {
                 throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
             }
 
-            CopyEntries(array, arrayIndex);
+            CopyEntries(array, index);
         }
 
         // Returns a dictionary enumerator for this hashtable.
@@ -1553,11 +1557,11 @@ namespace System.Collections
                 }
             }
 
-            public override void CopyTo(Array array, int arrayIndex)
+            public override void CopyTo(Array array, int index)
             {
                 lock (_table.SyncRoot)
                 {
-                    _table.CopyTo(array, arrayIndex);
+                    _table.CopyTo(array, index);
                 }
             }
 

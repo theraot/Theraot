@@ -85,16 +85,19 @@ namespace System.Threading.Tasks.Sources
         public ValueTaskSourceStatus GetStatus(short token)
         {
             ValidateToken(token);
-            return
-                _continuation == null
-                ||
-                    _result == null
-                        ? ValueTaskSourceStatus.Pending
-                        : _result is ExceptionStructNeedle<TResult> error
-                            ? error.Exception is OperationCanceledException
-                                ? ValueTaskSourceStatus.Canceled
-                                : ValueTaskSourceStatus.Faulted
-                            : ValueTaskSourceStatus.Succeeded;
+            if (_continuation == null || _result == null)
+            {
+                return ValueTaskSourceStatus.Pending;
+            }
+            if (_result is ExceptionStructNeedle<TResult> error)
+            {
+                if (error.Exception is OperationCanceledException)
+                {
+                    return ValueTaskSourceStatus.Canceled;
+                }
+                return ValueTaskSourceStatus.Faulted;
+            }
+            return ValueTaskSourceStatus.Succeeded;
         }
 
         /// <summary>Gets the result of the operation.</summary>
@@ -123,12 +126,12 @@ namespace System.Threading.Tasks.Sources
             }
             ValidateToken(token);
 
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
             if ((flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) != 0)
             {
-#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
                 _executionContext = ExecutionContext.Capture();
-#endif
             }
+#endif
 
             if ((flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) != 0)
             {
@@ -201,6 +204,9 @@ namespace System.Threading.Tasks.Sources
                     Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
 #endif
                     return;
+
+                default:
+                    break;
             }
         }
 
@@ -231,11 +237,6 @@ namespace System.Threading.Tasks.Sources
             InvokeContinuation();
         }
 
-        /// <summary>
-        /// Invokes the continuation with the appropriate captured context / scheduler.
-        /// This assumes that if <see cref="_executionContext"/> is not null we're already
-        /// running within that <see cref="Threading.ExecutionContext"/>.
-        /// </summary>
         private void InvokeContinuation()
         {
             Debug.Assert(_continuation != null);
@@ -275,6 +276,9 @@ namespace System.Threading.Tasks.Sources
                     Task.Factory.StartNew(continuation, _continuationState, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
 #endif
                     return;
+
+                default:
+                    break;
             }
         }
     }

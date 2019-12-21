@@ -2,6 +2,8 @@
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA1822 // Mark members as static
+#pragma warning disable RECS0081 // Validate Xml docs
+// ReSharper disable InvalidXmlDocComment
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

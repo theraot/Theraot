@@ -47,13 +47,7 @@ namespace System.Collections
     // versa.
     //
     // The SortedList class provides a convenient way to create a sorted
-    // copy of another dictionary, such as a Hashtable. For example:
-    //
-    // Hashtable h = new Hashtable();
-    // h.Add(...);
-    // h.Add(...);
-    // ...
-    // SortedList s = new SortedList(h);
+    // copy of another dictionary, such as a Hashtable.
     //
     // The last line above creates a sorted list that contains a copy of the keys
     // and values stored in the hashtable. In this particular example, the keys
@@ -371,7 +365,7 @@ namespace System.Collections
         }
 
         // Copies the values in this SortedList to an array.
-        public virtual void CopyTo(Array array, int arrayIndex)
+        public virtual void CopyTo(Array array, int index)
         {
             if (array == null)
             {
@@ -383,12 +377,12 @@ namespace System.Collections
                 throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
             }
 
-            if (arrayIndex < 0)
+            if (index < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
             }
 
-            if (array.Length - arrayIndex < Count)
+            if (array.Length - index < Count)
             {
                 throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
             }
@@ -396,7 +390,7 @@ namespace System.Collections
             for (var i = 0; i < Count; i++)
             {
                 var entry = new DictionaryEntry(_keys[i], _values[i]);
-                array.SetValue(entry, i + arrayIndex);
+                array.SetValue(entry, i + index);
             }
         }
 
@@ -556,13 +550,7 @@ namespace System.Collections
 
         // Sets the capacity of this sorted list to the size of the sorted list.
         // This method can be used to minimize a sorted list's memory overhead once
-        // it is known that no new elements will be added to the sorted list. To
-        // completely clear a sorted list and release all memory referenced by the
-        // sorted list, execute the following statements:
-        //
-        // sortedList.Clear();
-        // sortedList.TrimToSize();
-        //
+        // it is known that no new elements will be added to the sorted list.
         public virtual void TrimToSize()
         {
             Capacity = _size;
@@ -675,7 +663,7 @@ namespace System.Collections
                 return _sortedList.Contains(value);
             }
 
-            public void CopyTo(Array array, int arrayIndex)
+            public void CopyTo(Array array, int index)
             {
                 if (array != null && array.Rank != 1)
                 {
@@ -683,7 +671,7 @@ namespace System.Collections
                 }
 
                 // defer error checking to Array.Copy
-                Array.Copy(_sortedList._keys, 0, array, arrayIndex, _sortedList.Count);
+                Array.Copy(_sortedList._keys, 0, array, index, _sortedList.Count);
             }
 
             public IEnumerator GetEnumerator()
@@ -764,12 +752,15 @@ namespace System.Collections
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
-
-                    return _getObjectRetType == Keys
-                        ? _key
-                        : _getObjectRetType == Values
-                            ? _value
-                            : new DictionaryEntry(_key, _value);
+                    if (_getObjectRetType == Keys)
+                    {
+                        return _key;
+                    }
+                    if (_getObjectRetType == Values)
+                    {
+                        return _value;
+                    }
+                    return new DictionaryEntry(_key, _value);
                 }
             }
 
@@ -959,11 +950,11 @@ namespace System.Collections
                 }
             }
 
-            public override void CopyTo(Array array, int arrayIndex)
+            public override void CopyTo(Array array, int index)
             {
                 lock (_root)
                 {
-                    _list.CopyTo(array, arrayIndex);
+                    _list.CopyTo(array, index);
                 }
             }
 
@@ -1100,7 +1091,7 @@ namespace System.Collections
                 return _sortedList.ContainsValue(value);
             }
 
-            public void CopyTo(Array array, int arrayIndex)
+            public void CopyTo(Array array, int index)
             {
                 if (array != null && array.Rank != 1)
                 {
@@ -1108,7 +1099,7 @@ namespace System.Collections
                 }
 
                 // defer error checking to Array.Copy
-                Array.Copy(_sortedList._values, 0, array, arrayIndex, _sortedList.Count);
+                Array.Copy(_sortedList._values, 0, array, index, _sortedList.Count);
             }
 
             public IEnumerator GetEnumerator()

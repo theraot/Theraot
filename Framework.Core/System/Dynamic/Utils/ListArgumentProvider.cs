@@ -73,25 +73,25 @@ namespace System.Dynamic.Utils
             return IndexOf(item) != -1;
         }
 
-        public void CopyTo(T[] array, int index)
+        public void CopyTo(T[] array, int arrayIndex)
         {
             ContractUtils.RequiresNotNull(array, nameof(array));
-            if (index < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex));
             }
 
             var n = ElementCount;
             Debug.Assert(n > 0);
-            if (index + n > array.Length)
+            if (arrayIndex + n > array.Length)
             {
                 throw new ArgumentException(string.Empty, nameof(array));
             }
 
-            array[index++] = First;
+            array[arrayIndex++] = First;
             for (var i = 1; i < n; i++)
             {
-                array[index++] = GetElement(i);
+                array[arrayIndex++] = GetElement(i);
             }
         }
 

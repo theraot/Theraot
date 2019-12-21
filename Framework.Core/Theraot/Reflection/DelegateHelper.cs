@@ -60,7 +60,7 @@ namespace Theraot.Reflection
 
                 // see if we have the delegate already
                 // clone because MakeCustomDelegate can hold onto the array.
-                return curTypeInfo.DelegateType ??= curTypeInfo.DelegateType = MakeNewDelegate((Type[])types.Clone());
+                return curTypeInfo.DelegateType ??= MakeNewDelegate((Type[])types.Clone());
             }
         }
 

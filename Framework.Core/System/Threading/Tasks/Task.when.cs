@@ -391,13 +391,8 @@ namespace System.Threading.Tasks
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
         {
-            // We would just like to do this:
-            //    return (Task<Task<TResult>>) WhenAny( (Task[]) tasks);
-            // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
-            // Call WhenAny(Task[]) for basic functionality
             // ReSharper disable once CoVariantArrayConversion
             var intermediate = WhenAny((Task[])tasks);
-            // Return a continuation task with the correct result type
             return intermediate.ContinueWith(Task<TResult>.ContinuationConversion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 
@@ -423,12 +418,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
         {
-            // We would just like to do this:
-            //    return (Task<Task<TResult>>) WhenAny( (IEnumerable<Task>) tasks);
-            // but classes are not covariant to enable casting Task<TResult> to Task<Task<TResult>>.
-            // Call WhenAny(IEnumerable<Task>) for basic functionality
             var intermediate = WhenAny((IEnumerable<Task>)tasks);
-            // Return a continuation task with the correct result type
             return intermediate.ContinueWith(Task<TResult>.ContinuationConversion, default, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
         }
 

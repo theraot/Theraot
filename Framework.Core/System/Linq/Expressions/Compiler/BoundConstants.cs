@@ -143,7 +143,8 @@ namespace System.Linq.Expressions.Compiler
         {
             if (!_indexes.TryGetValue(value, out var index))
             {
-                _indexes.Add(value, index = _values.Count);
+                index = _values.Count;
+                _indexes.Add(value, index);
                 _values.Add(value);
             }
 

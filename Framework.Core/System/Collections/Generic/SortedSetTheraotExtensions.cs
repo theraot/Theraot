@@ -1,6 +1,8 @@
 ﻿#if (LESSTHAN_NET472 && GREATERTHAN_NET35) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
+#pragma warning disable S112 // General exceptions should never be thrown
+#pragma warning disable S1751 // Loops with at most one iteration should be refactored
 
 namespace System.Collections.Generic
 {

@@ -226,19 +226,30 @@ namespace System.Threading.Tasks
 
         private sealed class ValueTaskSourceAsTask : TaskCompletionSource<bool>
         {
-            private static readonly Action<object> _completionAction = state =>
+            private static readonly Action<object> _completionAction = CompletionAction;
+
+            private readonly short _token;
+
+            private IValueTaskSource? _source;
+
+            public ValueTaskSourceAsTask(IValueTaskSource source, short token)
+            {
+                _token = token;
+                _source = source;
+                source.OnCompleted(_completionAction, this, token, ValueTaskSourceOnCompletedFlags.None);
+            }
+
+            private static void CompletionAction(object state)
             {
                 if (!(state is ValueTaskSourceAsTask valueTaskSourceAsTask))
                 {
                     throw new ArgumentOutOfRangeException(nameof(state));
                 }
-
                 var valueTaskSource = valueTaskSourceAsTask._source;
                 if (valueTaskSource == null)
                 {
                     throw new ArgumentOutOfRangeException(nameof(state));
                 }
-
                 valueTaskSourceAsTask._source = null;
                 var status = valueTaskSource.GetStatus(valueTaskSourceAsTask._token);
                 try
@@ -246,9 +257,8 @@ namespace System.Threading.Tasks
                     valueTaskSource.GetResult(valueTaskSourceAsTask._token);
                     valueTaskSourceAsTask.TrySetResult(false);
                 }
-                catch (Exception exception1)
+                catch (Exception exception)
                 {
-                    var exception = exception1;
                     if (status != ValueTaskSourceStatus.Canceled)
                     {
                         valueTaskSourceAsTask.TrySetException(exception);
@@ -258,16 +268,6 @@ namespace System.Threading.Tasks
                         valueTaskSourceAsTask.TrySetCanceled();
                     }
                 }
-            };
-
-            private readonly short _token;
-            private IValueTaskSource? _source;
-
-            public ValueTaskSourceAsTask(IValueTaskSource source, short token)
-            {
-                _token = token;
-                _source = source;
-                source.OnCompleted(_completionAction, this, token, ValueTaskSourceOnCompletedFlags.None);
             }
         }
     }

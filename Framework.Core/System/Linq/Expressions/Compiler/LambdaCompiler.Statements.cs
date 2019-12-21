@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable S125 // Sections of code should not be commented out
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -207,11 +209,22 @@ namespace System.Linq.Expressions.Compiler
                 var e = node.GetExpression(index);
                 var next = node.GetExpression(index + 1);
 
-                var tailCallFlag = tailCall != CompilationFlags.EmitAsNoTail
-                    ? next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn
-                        ? CompilationFlags.EmitAsTail
-                        : CompilationFlags.EmitAsMiddle
-                    : CompilationFlags.EmitAsNoTail;
+                CompilationFlags tailCallFlag;
+                if (tailCall != CompilationFlags.EmitAsNoTail)
+                {
+                    if (next is GotoExpression g && (g.Value == null || !Significant(g.Value)) && ReferenceLabel(g.Target).CanReturn)
+                    {
+                        tailCallFlag = CompilationFlags.EmitAsTail;
+                    }
+                    else
+                    {
+                        tailCallFlag = CompilationFlags.EmitAsMiddle;
+                    }
+                }
+                else
+                {
+                    tailCallFlag = CompilationFlags.EmitAsNoTail;
+                }
 
                 flags = UpdateEmitAsTailCallFlag(flags, tailCallFlag);
                 EmitExpressionAsVoid(e, flags);
@@ -401,7 +414,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitSwitchBuckets(SwitchInfo info, List<List<SwitchLabel>> buckets, int first, int last)
         {
-            for (; ; )
+            while (true)
             {
                 if (first == last)
                 {
@@ -663,7 +676,6 @@ namespace System.Linq.Expressions.Compiler
 
         private (CompilerScope parent, CompilerScope child)? GetInnerScope(object node, CompilerScope scope)
         {
-            //
             // Very often, we want to compile nodes as reductions
             // rather than as IL, but usually they need to allocate
             // some IL locals. To support this, we allow emitting a
@@ -673,20 +685,19 @@ namespace System.Linq.Expressions.Compiler
             //
             // User-created blocks will never hit this case; only our
             // internally reduced nodes will.
-            //
-
-            return !HasVariables(node) || scope.MergedScopes?.Contains(node as BlockExpression) == true
-                ? default
-                :
-                (
-                    scope,
-                    _tree.Scopes.TryGetValue(node, out var innerScope)
-                        ? innerScope
-                        : new CompilerScope(node, false)
-                        {
-                            NeedsClosure = scope.NeedsClosure
-                        }
-                );
+            if (!HasVariables(node) || scope.MergedScopes?.Contains(node as BlockExpression) == true)
+            {
+                return default;
+            }
+            return (
+                scope,
+                _tree.Scopes.TryGetValue(node, out var innerScope)
+                    ? innerScope
+                    : new CompilerScope(node, false)
+                    {
+                        NeedsClosure = scope.NeedsClosure
+                    }
+            );
         }
 
         private bool TryEmitHashtableSwitch(SwitchExpression node, CompilationFlags flags)

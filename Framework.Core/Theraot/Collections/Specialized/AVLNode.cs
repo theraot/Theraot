@@ -147,13 +147,6 @@ namespace Theraot.Collections.Specialized
 
         internal static AVLNode<TKey, TValue>? Get(AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-#endif
             while (node != null)
             {
                 var compare = comparer.Compare(key, node.Key);
@@ -161,12 +154,10 @@ namespace Theraot.Collections.Specialized
                 {
                     break;
                 }
-
                 node = compare < 0
                     ? node._left
                     : node._right;
             }
-
             return node;
         }
 
@@ -225,24 +216,15 @@ namespace Theraot.Collections.Specialized
 
         internal static bool Remove(ref AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-#endif
             if (node == null)
             {
                 return false;
             }
-
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
                 return RemoveExtracted(ref node);
             }
-
             try
             {
                 return compare < 0
@@ -269,13 +251,6 @@ namespace Theraot.Collections.Specialized
 
         private static void AddExtracted(ref AVLNode<TKey, TValue>? node, TKey key, IComparer<TKey> comparer, AVLNode<TKey, TValue> created)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-#endif
             // Ok, it has for node only
             int compare;
             if (node == null || (compare = comparer.Compare(key, node.Key)) == 0)
@@ -284,10 +259,8 @@ namespace Theraot.Collections.Specialized
                 {
                     return;
                 }
-
                 compare = -node._balance;
             }
-
             if (compare < 0)
             {
                 AddExtracted(ref node._left, key, comparer, created);
@@ -296,19 +269,11 @@ namespace Theraot.Collections.Specialized
             {
                 AddExtracted(ref node._right, key, comparer, created);
             }
-
             MakeBalanced(ref node);
         }
 
         private static bool AddNonDuplicateExtracted(ref AVLNode<TKey, TValue>? node, TKey key, TValue value, IComparer<TKey> comparer, AVLNode<TKey, TValue>? created)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (comparer == null)
-            {
-                throw new ArgumentNullException(nameof(comparer));
-            }
-#endif
             // Ok, it has for node only
             if (node == null)
             {
@@ -316,22 +281,18 @@ namespace Theraot.Collections.Specialized
                 {
                     created = new AVLNode<TKey, TValue>(key, value);
                 }
-
                 var found = Interlocked.CompareExchange(ref node, created, null);
                 if (found == null)
                 {
                     return true;
                 }
-
                 node = found;
             }
-
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
                 return false;
             }
-
             try
             {
                 return compare < 0

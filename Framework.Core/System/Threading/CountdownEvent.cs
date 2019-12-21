@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable CA2213 // Disposable fields should be disposed
+
 using System.Diagnostics;
 using Theraot.Threading;
 

@@ -22,7 +22,6 @@
 
 // Needed for NET30
 
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Theraot.Threading
@@ -35,70 +34,21 @@ namespace Theraot.Threading
 
         private int _value;
 
-        public bool Value { get => _value == _set; set => Exchange(value); }
-
-        public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
+        public bool Value
         {
-            if (left is null)
-            {
-                return !(right is null);
-            }
-
-            if (right is null)
-            {
-                return true;
-            }
-
-            return left._value != right._value;
-        }
-
-        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
-        {
-            if (left is null)
-            {
-                return right is null;
-            }
-
-            if (right is null)
-            {
-                return false;
-            }
-
-            return left._value == right._value;
+            get => _value == _set;
+            set => Interlocked.Exchange(ref _value, value ? _set : _unset);
         }
 
         public bool CompareExchange(bool expected, bool newVal)
         {
-            var newTemp = newVal ? _set : _unset;
             var expectedTemp = expected ? _set : _unset;
-
-            return Interlocked.CompareExchange(ref _value, newTemp, expectedTemp) == expectedTemp;
-        }
-
-        public bool Equals(AtomicBoolean obj)
-        {
-            if (obj is null)
-            {
-                return false;
-            }
-
-            return _value == obj._value;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is AtomicBoolean boolean && Equals(boolean);
+            return Interlocked.CompareExchange(ref _value, newVal ? _set : _unset, expectedTemp) == expectedTemp;
         }
 
         public bool Exchange(bool newVal)
         {
-            var newTemp = newVal ? _set : _unset;
-            return Interlocked.Exchange(ref _value, newTemp) == _set;
-        }
-
-        public override int GetHashCode()
-        {
-            return RuntimeHelpers.GetHashCode(this);
+            return Interlocked.Exchange(ref _value, newVal ? _set : _unset) == _set;
         }
 
         public override string ToString()

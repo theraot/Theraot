@@ -499,9 +499,10 @@ namespace System.Dynamic.Utils
 
             if (type.ContainsGenericParameters)
             {
+                var formattedParamName = index >= 0 ? $"{paramName}[{index}]" : paramName;
                 throw type.IsGenericTypeDefinition
-                    ? new ArgumentException($"Type {type} is a generic type definition", index >= 0 ? $"{paramName}[{index}]" : paramName)
-                    : new ArgumentException($"Type {type} contains generic parameters", index >= 0 ? $"{paramName}[{index}]" : paramName);
+                    ? new ArgumentException($"Type {type} is a generic type definition", formattedParamName)
+                    : new ArgumentException($"Type {type} contains generic parameters", formattedParamName);
             }
 
             return true;

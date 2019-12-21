@@ -1,6 +1,8 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CC0021 // Use nameof
+#pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S907 // "goto" statement should not be used
 // ReSharper disable ConstantNullCoalescingCondition
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -46,7 +48,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             node.ValidateArgumentCount();
 
-            //Console.WriteLine(node.DebugView);
             for (int i = 0, n = node.ParameterCount; i < n; i++)
             {
                 var p = node.GetParameter(i);
@@ -532,15 +533,16 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         case ExpressionType.Equal:
                         case ExpressionType.NotEqual:
+
                             /* generating (equal/not equal):
-                                * if(left == null) {
-                                *      right == null/right != null
-                                * }else if(right == null) {
-                                *      False/True
-                                * }else{
-                                *      op_Equality(left, right)/op_Inequality(left, right)
-                                * }
-                                */
+                                                            * if(left == null) {
+                                                            *      right == null/right != null
+                                                            * }else if(right == null) {
+                                                            *      False/True
+                                                            * }else{
+                                                            *      op_Equality(left, right)/op_Inequality(left, right)
+                                                            * }
+                                                            */
                             if (node.IsLiftedToNull)
                             {
                                 goto default;

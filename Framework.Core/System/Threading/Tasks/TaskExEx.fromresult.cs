@@ -5,7 +5,7 @@ namespace System.Threading.Tasks
     public static partial class TaskExEx
     {
         /// <summary>
-        ///     Creates an already completed <see cref="System.Threading.Tasks.Task{TResult}" /> from the specified result.
+        ///     Creates an already completed <see cref="Task{TResult}" /> from the specified result.
         /// </summary>
         /// <param name="result">The result from which to create the completed task.</param>
         /// <returns>

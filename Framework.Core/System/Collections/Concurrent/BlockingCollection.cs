@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable CA2213 // Disposable fields should be disposed
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
 using System.Collections.Generic;

@@ -8,6 +8,10 @@
 #pragma warning disable CC0074 // Make field readonly
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 #pragma warning disable RECS0025 // Non-readonly field referenced in 'GetHashCode()'
+#pragma warning disable S1104 // Fields should not have public accessibility
+#pragma warning disable S3358 // Ternary operators should not be nested
+#pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
+#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable MergeSequentialChecks
 // ReSharper disable NonReadonlyMemberInGetHashCode
@@ -430,7 +434,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1>))
+            if (!(other is ValueTuple<T1>))
             {
                 return false;
             }
@@ -444,6 +448,7 @@ namespace System
         /// Returns the hash code for the current <see cref="ValueTuple{T1}"/> instance.
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
+
         public override int GetHashCode()
         {
             return EqualityComparer<T1>.Default.GetHashCode(Item1);
@@ -645,7 +650,7 @@ namespace System
         /// </remarks>
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1, T2>))
+            if (!(other is ValueTuple<T1, T2>))
             {
                 return false;
             }
@@ -846,7 +851,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1, T2, T3>))
+            if (!(other is ValueTuple<T1, T2, T3>))
             {
                 return false;
             }
@@ -1071,7 +1076,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1, T2, T3, T4>))
+            if (!(other is ValueTuple<T1, T2, T3, T4>))
             {
                 return false;
             }
@@ -1320,7 +1325,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5>))
+            if (!(other is ValueTuple<T1, T2, T3, T4, T5>))
             {
                 return false;
             }
@@ -1593,7 +1598,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5, T6>))
+            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6>))
             {
                 return false;
             }
@@ -1890,7 +1895,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
+            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
             {
                 return false;
             }
@@ -2305,7 +2310,7 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (other == null || !(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
+            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
             {
                 return false;
             }

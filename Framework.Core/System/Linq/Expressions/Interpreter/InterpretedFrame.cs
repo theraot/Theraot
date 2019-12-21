@@ -74,7 +74,6 @@ namespace System.Linq.Expressions.Interpreter
 
         public static bool IsInterpretedFrame(MethodBase method)
         {
-            //ContractUtils.RequiresNotNull(method, nameof(method));
             return method.DeclaringType == typeof(Interpreter) && string.Equals(method.Name, "Run", StringComparison.Ordinal);
         }
 
@@ -105,7 +104,7 @@ namespace System.Linq.Expressions.Interpreter
             var target = Interpreter.Labels[labelIndex];
             Debug.Assert
             (
-                !gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
+                !gotoExceptionHandler || (_continuationIndex == target.ContinuationStackDepth),
                 "When it's time to jump to the exception handler, all previous finally blocks should already be processed"
             );
 

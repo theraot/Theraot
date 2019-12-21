@@ -2,6 +2,7 @@
 
 #pragma warning disable RECS0018 // Comparison of floating point numbers with equality operator
 #pragma warning disable RECS0088 // Comparing equal expression for equality is usually useless
+#pragma warning disable S1764 // Identical expressions should not be used on both sides of a binary operator
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable EqualExpressionComparison
 

@@ -27,7 +27,6 @@ namespace System.Linq.Expressions.Interpreter
             var first = frame.StackIndex - ArgumentCountProtected;
             object?[]? args = null;
             object? instance = null;
-
             try
             {
                 object? ret;
@@ -48,9 +47,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     instance = frame.Data[first];
                     NullCheck(instance);
-
                     args = GetArgs(frame, first, 1);
-
                     if (TryGetLightLambdaTarget(instance, out var targetLambda))
                     {
                         // no need to Invoke, just interpret the lambda body
@@ -69,7 +66,6 @@ namespace System.Linq.Expressions.Interpreter
                         }
                     }
                 }
-
                 if (Target.ReturnType != typeof(void))
                 {
                     frame.Data[first] = ret;
@@ -92,7 +88,6 @@ namespace System.Linq.Expressions.Interpreter
                     }
                 }
             }
-
             return 1;
         }
     }
@@ -104,101 +99,23 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         public abstract int ArgumentCount { get; }
 
-#if FEATURE_DLG_INVOKE
-        private static bool ShouldCache(MethodInfo info)
-        {
-            return true;
-        }
-#endif
-
-#if FEATURE_FAST_CREATE
-        /// <summary>
-        /// Gets the next type or null if no more types are available.
-        /// </summary>
-        private static Type TryGetParameterOrReturnType(MethodInfo target, ParameterInfo[] pi, int index)
-        {
-            if (!target.IsStatic)
-            {
-                index--;
-                if (index < 0)
-                {
-                    return target.DeclaringType;
-                }
-            }
-
-            if (index < pi.Length)
-            {
-                // next in signature
-                return pi[index].ParameterType;
-            }
-
-            if (target.ReturnType == typeof(void) || index > pi.Length)
-            {
-                // no more parameters
-                return null;
-            }
-
-            // last parameter on Invoke is return type
-            return target.ReturnType;
-        }
-
-        private static bool IndexIsNotReturnType(int index, MethodInfo target, ParameterInfo[] pi)
-        {
-            return pi.Length != index || (pi.Length == index && !target.IsStatic);
-        }
-#endif
-
-#if FEATURE_DLG_INVOKE
-        /// <summary>
-        /// Uses reflection to create new instance of the appropriate ReflectedCaller
-        /// </summary>
-        private static CallInstruction SlowCreate(MethodInfo info, ParameterInfo[] pis)
-        {
-            List<Type> types = new List<Type>();
-            if (!info.IsStatic) types.Add(info.DeclaringType);
-            foreach (ParameterInfo pi in pis)
-            {
-                types.Add(pi.ParameterType);
-            }
-            if (info.ReturnType != typeof(void))
-            {
-                types.Add(info.ReturnType);
-            }
-            Type[] arrTypes = types.ToArray();
-
-            try
-            {
-                return (CallInstruction)Activator.CreateInstance(GetHelperType(info, arrTypes), info);
-            }
-            catch (TargetInvocationException e)
-            {
-                ExceptionHelpers.UnwrapAndRethrow(e);
-                throw ContractUtils.Unreachable;
-            }
-        }
-#endif
-
         public override int ConsumedStack => ArgumentCount;
 
         public override string InstructionName => "Call";
 
-#if FEATURE_DLG_INVOKE
-        private static readonly CacheDict<MethodInfo, CallInstruction> s_cache = new CacheDict<MethodInfo, CallInstruction>(256);
-#endif
-
-        public static void ArrayItemSetter1(Array array, int index0, object value)
+        public static void ArrayItemSetter1(Array array, int index1, object value)
         {
-            array.SetValue(value, index0);
+            array.SetValue(value, index1);
         }
 
-        public static void ArrayItemSetter2(Array array, int index0, int index1, object value)
+        public static void ArrayItemSetter2(Array array, int index1, int index2, object value)
         {
-            array.SetValue(value, index0, index1);
+            array.SetValue(value, index1, index2);
         }
 
-        public static void ArrayItemSetter3(Array array, int index0, int index1, int index2, object value)
+        public static void ArrayItemSetter3(Array array, int index1, int index2, int index3, object value)
         {
-            array.SetValue(value, index0, index1, index2);
+            array.SetValue(value, index1, index2, index3);
         }
 
         public static CallInstruction Create(MethodInfo info)
@@ -213,87 +130,13 @@ namespace System.Linq.Expressions.Interpreter
             {
                 argumentCount++;
             }
-
             // A workaround for CLR behavior (Unable to create delegates for Array.Get/Set):
             // T[]::Address - not supported by ETs due to T& return value
             if (info.DeclaringType?.IsArray == true && (string.Equals(info.Name, "Get", StringComparison.Ordinal) || string.Equals(info.Name, "Set", StringComparison.Ordinal)))
             {
                 return GetArrayAccessor(info, argumentCount);
             }
-
-#if !FEATURE_DLG_INVOKE
             return new MethodInfoCallInstruction(info, argumentCount);
-#else
-            if (!info.IsStatic && info.DeclaringType.IsValueType)
-            {
-                return new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            if (argumentCount >= MaxHelpers)
-            {
-                // no delegate for this size, fall back to reflection invoke
-                return new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            foreach (ParameterInfo pi in parameters)
-            {
-                if (pi.ParameterType.IsByRef)
-                {
-                    // we don't support ref args via generics.
-                    return new MethodInfoCallInstruction(info, argumentCount);
-                }
-            }
-
-            // see if we've created one w/ a delegate
-            CallInstruction res;
-            if (ShouldCache(info))
-            {
-                if (s_cache.TryGetValue(info, out res))
-                {
-                    return res;
-                }
-            }
-
-            // create it
-            try
-            {
-#if FEATURE_FAST_CREATE
-                if (argumentCount < MaxArgs)
-                {
-                    res = FastCreate(info, parameters);
-                }
-                else
-#endif
-                {
-                    res = SlowCreate(info, parameters);
-                }
-            }
-            catch (TargetInvocationException tie)
-            {
-                if (!(tie.InnerException is NotSupportedException))
-                {
-                    throw;
-                }
-
-                res = new MethodInfoCallInstruction(info, argumentCount);
-            }
-            catch (NotSupportedException)
-            {
-                // if Delegate.CreateDelegate can't handle the method fall back to
-                // the slow reflection version.  For example this can happen w/
-                // a generic method defined on an interface and implemented on a class or
-                // a virtual generic method.
-                res = new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            // cache it for future users if it's a reasonable method to cache
-            if (ShouldCache(info))
-            {
-                s_cache[info] = res;
-            }
-
-            return res;
-#endif
         }
 
         protected static bool TryGetLightLambdaTarget(object instance, [NotNullWhen(true)] out LightLambda? lightLambda)
@@ -303,7 +146,6 @@ namespace System.Linq.Expressions.Interpreter
                 lightLambda = found;
                 return true;
             }
-
             lightLambda = null;
             return false;
         }
@@ -318,7 +160,6 @@ namespace System.Linq.Expressions.Interpreter
             var arrayType = info.DeclaringType;
             var isGetter = string.Equals(info.Name, "Get", StringComparison.Ordinal);
             MethodInfo? alternativeMethod = null;
-
             switch (arrayType?.GetArrayRank())
             {
                 case 1:
@@ -336,7 +177,6 @@ namespace System.Linq.Expressions.Interpreter
                 default:
                     break;
             }
-
             return alternativeMethod == null ? new MethodInfoCallInstruction(info, argumentCount) : Create(alternativeMethod);
         }
     }
@@ -358,7 +198,6 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var first = frame.StackIndex - ArgumentCountProtected;
-
             object? ret;
             if (Target.IsStatic)
             {
@@ -377,9 +216,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var instance = frame.Data[first];
                 NullCheck(instance);
-
                 var args = GetArgs(frame, first, 1);
-
                 if (TryGetLightLambdaTarget(instance, out var targetLambda))
                 {
                     // no need to Invoke, just interpret the lambda body
@@ -398,7 +235,6 @@ namespace System.Linq.Expressions.Interpreter
                     }
                 }
             }
-
             if (Target.ReturnType != typeof(void))
             {
                 frame.Data[first] = ret;
@@ -408,7 +244,6 @@ namespace System.Linq.Expressions.Interpreter
             {
                 frame.StackIndex = first;
             }
-
             return 1;
         }
 
@@ -420,19 +255,15 @@ namespace System.Linq.Expressions.Interpreter
         protected object?[] GetArgs(InterpretedFrame frame, int first, int skip)
         {
             var count = ArgumentCountProtected - skip;
-
             if (count <= 0)
             {
                 return ArrayEx.Empty<object>();
             }
-
             var args = new object?[count];
-
             for (var i = 0; i < args.Length; i++)
             {
                 args[i] = frame.Data[first + i + skip];
             }
-
             return args;
         }
     }

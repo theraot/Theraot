@@ -1,10 +1,12 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable S125 // Sections of code should not be commented out
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -419,14 +421,14 @@ namespace System.Dynamic
             {
                 // Generate a tree like:
                 //
-                // {
-                //   object result;
-                //   TryInvokeMember(payload, out result)
-                //      ? result
-                //      : TryGetMember(payload, out result)
-                //          ? FallbackInvoke(result)
-                //          : fallbackResult
-                // }
+                // `{                                       `
+                // `  object result;                        `
+                // `  TryInvokeMember(payload, out result)  `
+                // `     ? result                           `
+                // `     : TryGetMember(payload, out result)`
+                // `         ? FallbackInvoke(result)       `
+                // `         : fallbackResult               `
+                // `}                                       `
                 //
                 // Then it calls FallbackInvokeMember with this tree as the
                 // "error", giving the language the option of using this
@@ -592,10 +594,10 @@ namespace System.Dynamic
 
                 //
                 // Build a new expression like:
-                // {
-                //   object result;
-                //   TryGetMember(payload, out result) ? fallbackInvoke(result) : fallbackResult
-                // }
+                // `{                                                                            `
+                // `  object result;                                                             `
+                // `  TryGetMember(payload, out result) ? fallbackInvoke(result) : fallbackResult`
+                // `}                                                                            `
                 //
                 var result = Expression.Parameter(typeof(object), null);
                 var callArgs = method != CachedReflectionInfo.DynamicObjectTryBinaryOperation ? Expression.Parameter(typeof(object[]), null) : Expression.Parameter(typeof(object), null);
@@ -722,7 +724,7 @@ namespace System.Dynamic
 
                 //
                 // Build a new expression like:
-                //   if (TryDeleteMember(payload)) { } else { fallbackResult }
+                // `  if (TryDeleteMember(payload)) { } else { fallbackResult }`
                 //
                 var callDynamic = new DynamicMetaObject
                 (

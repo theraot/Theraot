@@ -215,7 +215,7 @@ namespace System.Linq.Expressions
         /// <returns>The delegate type.</returns>
         /// <remarks>
         ///     As with Func, the last argument is the return type. It can be set
-        ///     to <see cref="System.Void" /> to produce an Action.
+        ///     to <see cref="void" /> to produce an Action.
         /// </remarks>
         public static Type GetDelegateType(params Type[] typeArgs)
         {
@@ -657,9 +657,9 @@ namespace System.Linq.Expressions
         {
             if (ValidateTryGetFuncActionArgs(typeArgs) == TryGetFuncActionArgsResult.Valid)
             {
-                return (actionType = DelegateBuilder.GetActionType(typeArgs)) != null;
+                actionType = DelegateBuilder.GetActionType(typeArgs);
+                return actionType != null;
             }
-
             actionType = null;
             return false;
         }
@@ -686,9 +686,9 @@ namespace System.Linq.Expressions
         {
             if (ValidateTryGetFuncActionArgs(typeArgs) == TryGetFuncActionArgsResult.Valid)
             {
-                return (funcType = DelegateBuilder.GetFuncType(typeArgs)) != null;
+                funcType = DelegateBuilder.GetFuncType(typeArgs);
+                return funcType != null;
             }
-
             funcType = null;
             return false;
         }
@@ -699,23 +699,16 @@ namespace System.Linq.Expressions
             // method and call that will be used for creating instances of this
             // delegate type
             var factories = TypeHelper.LazyCreate(ref _lambdaFactories, () => new CacheDict<Type, Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>>(50));
-
             if (factories.TryGetValue(delegateType, out var fastPath))
             {
                 return fastPath(body, name, tailCall, parameters);
             }
-
             var create = typeof(Expression<>).MakeGenericType(delegateType).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic);
-            /*if (delegateType.IsCollectible)
-                {
-                    return (LambdaExpression)create.Invoke(null, new object[] { body, name, tailCall, parameters });
-                }*/
             factories[delegateType] = fastPath =
                 (Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>)create.CreateDelegate
                 (
                     typeof(Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>)
                 );
-
             return fastPath(body, name, tailCall, parameters);
         }
 
@@ -771,33 +764,23 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(delegateType, nameof(delegateType));
             ExpressionUtils.RequiresCanRead(body, nameof(body));
-
             if (!typeof(MulticastDelegate).IsAssignableFrom(delegateType) || delegateType == typeof(MulticastDelegate))
             {
                 throw new ArgumentException("Lambda type parameter must be derived from System.Delegate", paramName);
             }
-
             TypeUtils.ValidateType(delegateType, nameof(delegateType), true, true);
-
             var ldc = _lambdaDelegateCache;
             if (!ldc.TryGetValue(delegateType, out var mi))
             {
                 mi = delegateType.GetInvokeMethod();
-                /*if (!delegateType.IsCollectible)
-                {
-                    ldc[delegateType] = mi;
-                }*/
             }
-
             var pis = mi.GetParameters();
-
             if (pis.Length > 0)
             {
                 if (pis.Length != parameters.Length)
                 {
                     throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
                 }
-
                 var set = new HashSet<ParameterExpression>();
                 for (int i = 0, n = pis.Length; i < n; i++)
                 {
@@ -813,15 +796,12 @@ namespace System.Linq.Expressions
                             //We cannot pass a parameter of T& to a delegate that takes T or any non-ByRef type.
                             throw new ArgumentException($"ParameterExpression of type '{pex.Type.MakeByRefType()}' cannot be used for delegate parameter of type '{pType}'");
                         }
-
                         pType = pType.GetElementType();
                     }
-
                     if (!pex.Type.IsReferenceAssignableFromInternal(pType))
                     {
                         throw new ArgumentException($"ParameterExpression of type '{pex.Type}' cannot be used for delegate parameter of type '{pType}'");
                     }
-
                     if (!set.Add(pex))
                     {
                         throw new ArgumentException($"Found duplicate parameter '{pex}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{nameof(parameters)}[{i}]" : nameof(parameters));
@@ -832,7 +812,6 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
             }
-
             if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFromInternal(body.Type) && !TryQuote(mi.ReturnType, ref body))
             {
                 throw new ArgumentException($"Expression of type '{body.Type}' cannot be used for return type '{mi.ReturnType}'");
@@ -878,7 +857,7 @@ namespace System.Linq.Expressions
     [DebuggerTypeProxy(typeof(LambdaExpressionProxy))]
     public abstract class LambdaExpression : Expression, IParameterProvider
     {
-        internal LambdaExpression(Expression body)
+        private protected LambdaExpression(Expression body)
         {
             Body = body;
         }
@@ -1015,31 +994,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
     }
-
-    //#if !FEATURE_COMPILE
-
-    //    // Separate expression creation class to hide the CreateExpressionFunc function from users reflecting on Expression<T>
-    //    public class ExpressionCreator<TDelegate>
-    //    {
-    //        public static LambdaExpression CreateExpressionFunc(Expression body, string name, bool tailCall, ReadOnlyCollection<ParameterExpression> parameters)
-    //        {
-    //            if (name == null && !tailCall)
-    //            {
-    //                switch (parameters.Count)
-    //                {
-    //                    case 0: return new Expression0<TDelegate>(body);
-    //                    case 1: return new Expression1<TDelegate>(body, parameters[0]);
-    //                    case 2: return new Expression2<TDelegate>(body, parameters[0], parameters[1]);
-    //                    case 3: return new Expression3<TDelegate>(body, parameters[0], parameters[1], parameters[2]);
-    //                    default: return new ExpressionN<TDelegate>(body, parameters.ToArray());
-    //                }
-    //            }
-
-    //            return new FullExpression<TDelegate>(body, name, tailCall, parameters.ToArray());
-    //        }
-    //    }
-
-    //#endif
 
     internal sealed class Expression0<TDelegate> : Expression<TDelegate>
     {

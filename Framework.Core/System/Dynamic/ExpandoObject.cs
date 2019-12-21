@@ -2,6 +2,7 @@
 
 #pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
+#pragma warning disable S1144 // Unused private types or members should be removed
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

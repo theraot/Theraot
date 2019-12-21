@@ -206,14 +206,6 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Do(ref int use, ref object? first, ref object? second, DoAction callback)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-#endif
-
             try
             {
                 Interlocked.Increment(ref use);
@@ -227,13 +219,6 @@ namespace Theraot.Collections.ThreadSafe
 
         private static void DoEnsureSize(ref int use, ref object? first, ref object? second, Func<object> factory)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (factory == null)
-            {
-                throw new ArgumentNullException(nameof(factory));
-            }
-#endif
             try
             {
                 Interlocked.Increment(ref use);
@@ -287,13 +272,6 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayDecrement(ref int use, ref object? first, ref object? second, DoAction callback)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-#endif
             try
             {
                 Interlocked.Increment(ref use);
@@ -306,7 +284,6 @@ namespace Theraot.Collections.ThreadSafe
                     Interlocked.Decrement(ref use);
                     return true;
                 }
-
                 return false;
             }
             finally
@@ -317,13 +294,6 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayIncrement(ref int use, ref object? first, ref object? second, Func<object> factory, DoAction callback)
         {
-#if DEBUG
-            // NOTICE this method has no null check in the public build as an optimization, this is just to appease the dragons
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-#endif
             try
             {
                 Interlocked.Increment(ref use);
@@ -333,7 +303,6 @@ namespace Theraot.Collections.ThreadSafe
                     Interlocked.Increment(ref use);
                     return true;
                 }
-
                 return false;
             }
             finally

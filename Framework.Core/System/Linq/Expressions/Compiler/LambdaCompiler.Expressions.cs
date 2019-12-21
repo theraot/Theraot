@@ -2,6 +2,7 @@
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
+#pragma warning disable S907 // "goto" statement should not be used
 // ReSharper disable MemberCanBeMadeStatic.Local
 // ReSharper disable AssignNullToNotNullAttribute
 
@@ -390,7 +391,8 @@ namespace System.Linq.Expressions.Compiler
             if (emitAs != CompilationFlags.EmitAsVoidType)
             {
                 IL.Emit(OpCodes.Dup);
-                IL.Emit(OpCodes.Stloc, temp = GetLocal(node.Type));
+                temp = GetLocal(node.Type);
+                IL.Emit(OpCodes.Stloc, temp);
             }
 
             EmitSetIndexCall(index, objectType);

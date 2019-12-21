@@ -130,7 +130,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>Returns the removed pairs.</returns>
         public IEnumerable<T> ClearEnumerable()
         {
-            return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<T>());
+            return Interlocked.Exchange(ref _bucket, new Bucket<T>());
         }
 
         /// <summary>
@@ -187,13 +187,13 @@ namespace Theraot.Collections.ThreadSafe
         ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The array.</param>
-        /// <param name="index">Index of the array.</param>
+        /// <param name="arrayIndex">Index of the array.</param>
         /// <exception cref="ArgumentNullException">array</exception>
         /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
         /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
-        public void CopyTo(T[] array, int index)
+        public void CopyTo(T[] array, int arrayIndex)
         {
-            _bucket.CopyTo(array, index);
+            _bucket.CopyTo(array, arrayIndex);
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -525,25 +525,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(valueOverwriteCheck));
             }
-
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
-
-                bool Check(T found)
-                {
-                    if (Comparer.Equals(found, value))
-                    {
-                        // This is the item that has been stored with the key
-                        // Throw to abort overwrite
-                        throw new ArgumentException("The item has already been added");
-                    }
-
-                    // This is not the value, overwrite?
-                    return valueOverwriteCheck(found);
-                }
-
                 try
                 {
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
@@ -558,6 +543,19 @@ namespace Theraot.Collections.ThreadSafe
                     // An item with the same key has already been added
                     return false;
                 }
+            }
+
+            bool Check(T found)
+            {
+                if (Comparer.Equals(found, value))
+                {
+                    // This is the item that has been stored with the key
+                    // Throw to abort overwrite
+                    throw new ArgumentException("The item has already been added");
+                }
+
+                // This is not the value, overwrite?
+                return valueOverwriteCheck(found);
             }
         }
 

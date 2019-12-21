@@ -126,10 +126,10 @@ namespace System.Collections.Generic
             this.DeprecatedCopyTo(array, index);
         }
 
-        public void CopyTo(T[] array, int index)
+        public void CopyTo(T[] array, int arrayIndex)
         {
-            Extensions.CanCopyTo(Count, array, index);
-            Extensions.CopyTo(this, array, index);
+            Extensions.CanCopyTo(Count, array, arrayIndex);
+            Extensions.CopyTo(this, array, arrayIndex);
         }
 
         public void CopyTo(T[] array)

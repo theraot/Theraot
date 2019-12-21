@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable RCS1193 // Overriding member cannot change 'params' modifier.
+#pragma warning disable S3600 // "params" should not be introduced on overrides
 // ReSharper disable RedundantParams
 // ReSharper disable UnusedParameter.Global
 

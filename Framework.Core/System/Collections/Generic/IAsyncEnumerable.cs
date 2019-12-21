@@ -9,7 +9,7 @@ namespace System.Collections.Generic
     public interface IAsyncEnumerable<out T>
     {
         /// <summary>Returns an enumerator that iterates asynchronously through the collection.</summary>
-        /// <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken" /> that may be used to cancel the asynchronous iteration.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> that may be used to cancel the asynchronous iteration.</param>
         /// <returns>An enumerator that can be used to iterate asynchronously through the collection.</returns>
         IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken? cancellationToken = null);
     }

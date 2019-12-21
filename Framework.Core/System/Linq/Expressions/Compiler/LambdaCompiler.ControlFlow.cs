@@ -1,4 +1,7 @@
 ﻿#if LESSTHAN_NET35
+
+#pragma warning disable S907 // "goto" statement should not be used
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -283,7 +286,8 @@ namespace System.Linq.Expressions.Compiler
         {
             if (!_labelInfo.TryGetValue(node, out var result))
             {
-                _labelInfo.Add(node, result = new LabelInfo(IL, node, false));
+                result = new LabelInfo(IL, node, false);
+                _labelInfo.Add(node, result);
             }
 
             return result;

@@ -3,6 +3,7 @@
 #pragma warning disable CA1036 // Override methods on comparable types
 #pragma warning disable RCS1212 // Remove redundant assignment.
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
+#pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
 
 using System.Collections;
 using System.Collections.Generic;

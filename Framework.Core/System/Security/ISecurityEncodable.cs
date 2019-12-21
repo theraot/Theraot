@@ -64,7 +64,7 @@ namespace System.Security
         [Obsolete]
         public void Deny() => throw new PlatformNotSupportedException();
 
-        public abstract void FromXml(SecurityElement securityElement);
+        public abstract void FromXml(SecurityElement e);
 
         public abstract IPermission? Intersect(IPermission target);
 

@@ -882,13 +882,7 @@ namespace System.Collections
 
         // Sets the capacity of this list to the size of the list. This method can
         // be used to minimize a list's memory overhead once it is known that no
-        // new elements will be added to the list. To completely clear a list and
-        // release all memory referenced by the list, execute the following
-        // statements:
-        //
-        // list.Clear();
-        // list.TrimToSize();
-        //
+        // new elements will be added to the list.
         public virtual void TrimToSize()
         {
             Capacity = _size;

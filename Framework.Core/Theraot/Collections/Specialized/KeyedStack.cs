@@ -17,7 +17,8 @@ namespace Theraot.Collections.Specialized
         {
             if (!_data.TryGetValue(key, out var stack))
             {
-                _data.Add(key, stack = new Stack<TValue>());
+                stack = new Stack<TValue>();
+                _data.Add(key, stack);
             }
 
             stack.Push(item);

@@ -54,17 +54,15 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (_caches == null)
-                {
-                    _caches = new[] { new Instruction[2][], new Instruction[2][] };
-                }
-
-                return _caches[ConsumedStack][ProducedStack] ?? (_caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
+                var caches = GetCaches();
+                return caches[ConsumedStack][ProducedStack] ?? (caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
             }
         }
 
         public override int ConsumedStack => HasValue ? 1 : 0;
+
         public override string InstructionName => "Branch";
+
         public override int ProducedStack => HasResult ? 1 : 0;
 
         public override int Run(InterpretedFrame frame)
@@ -72,6 +70,18 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(Offset != Unknown);
 
             return Offset;
+        }
+
+        private static Instruction[][][] GetCaches()
+        {
+            var caches = _caches;
+            if (caches == null)
+            {
+                caches = new[] { new Instruction[2][], new Instruction[2][] };
+                _caches = caches;
+            }
+
+            return caches;
         }
     }
 

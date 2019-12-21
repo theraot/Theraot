@@ -120,7 +120,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Node = node;
             IsMethod = isMethod;
-            var variables = GetVariables(node);
+            var variables = GetVariablesCore(node);
 
             Definitions = new Dictionary<ParameterExpression, VariableStorageKind>(variables.Length);
             foreach (var v in variables)
@@ -134,31 +134,6 @@ namespace System.Linq.Expressions.Compiler
         ///     Equivalent to: _hoistedLocals ?? _closureHoistedLocals
         /// </summary>
         internal HoistedLocals? NearestHoistedLocals => _hoistedLocals ?? _closureHoistedLocals;
-
-        private string? CurrentLambdaName
-        {
-            get
-            {
-                var next = this;
-                while (true)
-                {
-                    var scope = next;
-                    if (scope.Node is LambdaExpression lambda)
-                    {
-                        return lambda.Name;
-                    }
-
-                    if (scope._parent == null)
-                    {
-                        break;
-                    }
-
-                    next = scope._parent;
-                }
-
-                throw ContractUtils.Unreachable;
-            }
-        }
 
         internal void AddLocal(LambdaCompiler gen, ParameterExpression variable)
         {
@@ -266,7 +241,7 @@ namespace System.Linq.Expressions.Compiler
             _locals.Clear();
         }
 
-        private static ParameterExpression[] GetVariables(object scope)
+        private static ParameterExpression[] GetVariablesCore(object scope)
         {
             switch (scope)
             {
@@ -380,7 +355,7 @@ namespace System.Linq.Expressions.Compiler
             var i = 0;
             foreach (var v in _hoistedLocals.Variables)
             {
-                // array[i] = new StrongBox<T>(...);
+                // `array[i] = new StrongBox<T>(...);`
                 lc.IL.Emit(OpCodes.Dup);
                 lc.IL.EmitPrimitive(i++);
                 var boxType = typeof(StrongBox<>).MakeGenericType(v.Type);
@@ -388,21 +363,21 @@ namespace System.Linq.Expressions.Compiler
                 int index;
                 if (IsMethod && (index = lc.Parameters.IndexOf(v)) >= 0)
                 {
-                    // array[i] = new StrongBox<T>(argument);
+                    // `array[i] = new StrongBox<T>(argument);`
                     lc.EmitLambdaArgument(index);
                     // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else if (v == _hoistedLocals.ParentVariable)
                 {
-                    // array[i] = new StrongBox<T>(closure.Locals);
+                    // `array[i] = new StrongBox<T>(closure.Locals);`
                     ResolveVariable(v, _closureHoistedLocals).EmitLoad();
                     // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else
                 {
-                    // array[i] = new StrongBox<T>();
+                    // `array[i] = new StrongBox<T>();`
                     // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(Type.EmptyTypes));
                 }
@@ -421,14 +396,36 @@ namespace System.Linq.Expressions.Compiler
             EmitSet(_hoistedLocals.SelfVariable);
         }
 
+        private string? GetCurrentLambdaName()
+        {
+            var next = this;
+            while (true)
+            {
+                var scope = next;
+                if (scope.Node is LambdaExpression lambda)
+                {
+                    return lambda.Name;
+                }
+
+                if (scope._parent == null)
+                {
+                    break;
+                }
+
+                next = scope._parent;
+            }
+
+            throw ContractUtils.Unreachable;
+        }
+
         private IEnumerable<ParameterExpression> GetVariables()
         {
-            return MergedScopes == null ? GetVariables(Node) : GetVariablesIncludingMerged(MergedScopes);
+            return MergedScopes == null ? GetVariablesCore(Node) : GetVariablesIncludingMerged(MergedScopes);
         }
 
         private IEnumerable<ParameterExpression> GetVariablesIncludingMerged(IEnumerable<BlockExpression> blockExpressions)
         {
-            foreach (var param in GetVariables(Node))
+            foreach (var param in GetVariablesCore(Node))
             {
                 yield return param;
             }
@@ -484,7 +481,7 @@ namespace System.Linq.Expressions.Compiler
             // by an internal error, e.g. a scope was created but it bypassed
             // VariableBinder.
             //
-            throw new InvalidOperationException($"variable '{variable.Name}' of type '{variable.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
+            throw new InvalidOperationException($"variable '{variable.Name}' of type '{variable.Type}' referenced from scope '{GetCurrentLambdaName()}', but it is not defined");
         }
 
         private void SetParent(LambdaCompiler lc, CompilerScope? parent)

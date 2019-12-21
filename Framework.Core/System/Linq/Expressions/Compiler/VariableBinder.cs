@@ -29,22 +29,6 @@ namespace System.Linq.Expressions.Compiler
             // Empty
         }
 
-        private string? CurrentLambdaName
-        {
-            get
-            {
-                foreach (var scope in _scopes)
-                {
-                    if (scope.Node is LambdaExpression lambda)
-                    {
-                        return lambda.Name;
-                    }
-                }
-
-                throw ContractUtils.Unreachable;
-            }
-        }
-
         public override Expression? Visit(Expression? node)
         {
             // When compiling deep trees, we run the risk of triggering a terminating StackOverflowException,
@@ -68,7 +52,9 @@ namespace System.Linq.Expressions.Compiler
                 return node;
             }
 
-            _scopes.Push(_tree.Scopes[node] = new CompilerScope(node, false));
+            var createdScope = new CompilerScope(node, false);
+            _tree.Scopes[node] = createdScope;
+            _scopes.Push(createdScope);
             Visit(MergeScopes(node));
             _scopes.Pop();
             return node;
@@ -104,7 +90,9 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // visit the lambda, but treat it like a scope associated with invocation
-            _scopes.Push(_tree.Scopes[node] = new CompilerScope(lambda, false));
+            var createdScope = new CompilerScope(lambda, false);
+            _tree.Scopes[node] = createdScope;
+            _scopes.Push(createdScope);
             Visit(MergeScopes(lambda));
             _scopes.Pop();
             // visit the invoke arguments
@@ -118,8 +106,12 @@ namespace System.Linq.Expressions.Compiler
 
         protected internal override Expression VisitLambda<T>(Expression<T> node)
         {
-            _scopes.Push(_tree.Scopes[node] = new CompilerScope(node, true));
-            _constants.Push(_tree.Constants[node] = new BoundConstants());
+            var createdScope = new CompilerScope(node, true);
+            _tree.Scopes[node] = createdScope;
+            _scopes.Push(createdScope);
+            var createdConstants = new BoundConstants();
+            _tree.Constants[node] = createdConstants;
+            _constants.Push(createdConstants);
             Visit(MergeScopes(node));
             _constants.Pop();
             _scopes.Pop();
@@ -151,14 +143,14 @@ namespace System.Linq.Expressions.Compiler
 
             if (definition == null)
             {
-                throw new InvalidOperationException($"variable '{node.Name}' of type '{node.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
+                throw new InvalidOperationException($"variable '{node.Name}' of type '{node.Type}' referenced from scope '{GetCurrentLambdaName()}', but it is not defined");
             }
 
             if (storage == VariableStorageKind.Hoisted)
             {
                 if (node.IsByRef)
                 {
-                    throw new InvalidOperationException($"Cannot close over byref parameter '{node.Name}' referenced in lambda '{CurrentLambdaName}'");
+                    throw new InvalidOperationException($"Cannot close over byref parameter '{node.Name}' referenced in lambda '{GetCurrentLambdaName()}'");
                 }
 
                 definition.Definitions[node] = VariableStorageKind.Hoisted;
@@ -190,12 +182,12 @@ namespace System.Linq.Expressions.Compiler
 
                 if (definition == null)
                 {
-                    throw new InvalidOperationException($"variable '{v.Name}' of type '{v.Type}' referenced from scope '{CurrentLambdaName}', but it is not defined");
+                    throw new InvalidOperationException($"variable '{v.Name}' of type '{v.Type}' referenced from scope '{GetCurrentLambdaName()}', but it is not defined");
                 }
 
                 if (v.IsByRef)
                 {
-                    throw new InvalidOperationException($"Cannot close over byref parameter '{v.Name}' referenced in lambda '{CurrentLambdaName}'");
+                    throw new InvalidOperationException($"Cannot close over byref parameter '{v.Name}' referenced in lambda '{GetCurrentLambdaName()}'");
                 }
 
                 definition.Definitions[v] = VariableStorageKind.Hoisted;
@@ -230,11 +222,26 @@ namespace System.Linq.Expressions.Compiler
                 return node;
             }
 
-            _scopes.Push(_tree.Scopes[node] = new CompilerScope(node, false));
+            var createdScope = new CompilerScope(node, false);
+            _tree.Scopes[node] = createdScope;
+            _scopes.Push(createdScope);
             Visit(node.Filter);
             Visit(node.Body);
             _scopes.Pop();
             return node;
+        }
+
+        private string? GetCurrentLambdaName()
+        {
+            foreach (var scope in _scopes)
+            {
+                if (scope.Node is LambdaExpression lambda)
+                {
+                    return lambda.Name;
+                }
+            }
+
+            throw ContractUtils.Unreachable;
         }
 
         // If the immediate child is another scope, merge it into this one

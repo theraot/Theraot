@@ -54,6 +54,7 @@ namespace System.Security.Permissions
 
         public override void FromXml(SecurityElement securityElement)
         {
+            // Empty
         }
 
         public override IPermission? Intersect(IPermission target)

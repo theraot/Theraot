@@ -3752,12 +3752,9 @@ namespace System.Threading.Tasks
                                     localFinally(localValue);
                                 }
 
-                                if (!replicationDelegateYieldedBeforeCompletion)
+                                if (!replicationDelegateYieldedBeforeCompletion && partitionState is IDisposable partitionToDispose)
                                 {
-                                    if (partitionState is IDisposable partitionToDispose)
-                                    {
-                                        partitionToDispose.Dispose();
-                                    }
+                                    partitionToDispose.Dispose();
                                 }
                             }
                         },

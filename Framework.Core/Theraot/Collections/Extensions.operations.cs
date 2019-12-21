@@ -2,6 +2,7 @@
 
 #pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
 #pragma warning disable RECS0146 // Member hides static member from outer class
+#pragma warning disable S3218 // Inner class members should not shadow outer class "static" or type members
 
 using System;
 using System.Collections;

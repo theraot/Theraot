@@ -2,6 +2,8 @@
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
 #pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable S3877 // Exceptions should not be thrown from unexpected methods
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -806,6 +808,24 @@ namespace System.Threading
             sense = (currentTotal & _senseMask) == 0;
         }
 
+        private static ContextCallback GetInvokePostPhaseAction()
+        {
+            var handler = _invokePostPhaseAction;
+            if (handler == null)
+            {
+                handler = InvokePostPhaseAction;
+                _invokePostPhaseAction = handler;
+            }
+
+            return handler;
+
+            static void InvokePostPhaseAction(object obj)
+            {
+                var thisBarrier = (Barrier)obj;
+                thisBarrier._postPhaseAction!(thisBarrier);
+            }
+        }
+
         /// <summary>
         ///     The reason of discontinuous waiting instead of direct waiting on the event is to avoid the race where the sense is
         ///     changed twice because the next phase is finished (due to either RemoveParticipant is called or another thread
@@ -871,19 +891,12 @@ namespace System.Threading
                     _actionCallerId = Thread.CurrentThread.ManagedThreadId;
                     if (_ownerThreadContext != null)
                     {
-                        var handler = _invokePostPhaseAction;
-                        if (handler == null)
-                        {
-                            _invokePostPhaseAction = handler = InvokePostPhaseAction;
-                        }
-
-                        ExecutionContext.Run(_ownerThreadContext, handler, this);
+                        ExecutionContext.Run(_ownerThreadContext, GetInvokePostPhaseAction(), this);
                     }
                     else
                     {
                         _postPhaseAction(this);
                     }
-
                     _exception = null; // reset the exception if it was set previously
                 }
                 catch (Exception ex)
@@ -895,7 +908,6 @@ namespace System.Threading
                     _actionCallerId = 0;
                     SetResetEvents(observedSense);
                 }
-
                 if (_exception != null)
                 {
                     throw new BarrierPostPhaseException(_exception);
@@ -904,12 +916,6 @@ namespace System.Threading
             else
             {
                 SetResetEvents(observedSense);
-            }
-
-            static void InvokePostPhaseAction(object obj)
-            {
-                var thisBarrier = (Barrier)obj;
-                thisBarrier._postPhaseAction!(thisBarrier);
             }
         }
 

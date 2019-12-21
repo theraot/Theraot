@@ -163,7 +163,8 @@ namespace System.Linq.Expressions.Compiler
 
                 // store in local
                 IL.Emit(OpCodes.Dup);
-                IL.Emit(OpCodes.Stloc, instanceLocal = GetInstanceLocal(instanceType));
+                instanceLocal = GetInstanceLocal(instanceType);
+                IL.Emit(OpCodes.Stloc, instanceLocal);
             }
 
             var pi = (PropertyInfo)node.Member;
@@ -203,7 +204,8 @@ namespace System.Linq.Expressions.Compiler
 
                 // store in local
                 IL.Emit(OpCodes.Dup);
-                IL.Emit(OpCodes.Stloc, instanceLocal = GetInstanceLocal(instanceType));
+                instanceLocal = GetInstanceLocal(instanceType);
+                IL.Emit(OpCodes.Stloc, instanceLocal);
             }
 
             // Emit indexes. We don't allow byref args, so no need to worry

@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
+#pragma warning disable S1144 // Unused private types or members should be removed
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -275,7 +276,7 @@ namespace System.Dynamic
                 // left most node each iteration.
                 var stack = new Stack<BindingRestrictions>();
                 BindingRestrictions top = this;
-                for (; ; )
+                while (true)
                 {
                     if (top is MergedRestriction m)
                     {

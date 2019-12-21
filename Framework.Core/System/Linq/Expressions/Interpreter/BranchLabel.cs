@@ -68,8 +68,6 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void Mark(InstructionList instructions)
         {
-            //ContractUtils.Requires(_targetIndex == UnknownIndex && _stackDepth == UnknownDepth && _continuationStackDepth == UnknownDepth);
-
             _stackDepth = instructions.CurrentStackDepth;
             _continuationStackDepth = instructions.CurrentContinuationsDepth;
             TargetIndex = instructions.Count;

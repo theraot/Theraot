@@ -4,12 +4,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-// Enables instruction counting and displaying stats at process exit.
-// #define STATS
-
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Theraot.Collections;
@@ -17,121 +13,20 @@ using Theraot.Collections;
 namespace System.Linq.Expressions.Interpreter
 {
     [DebuggerTypeProxy(typeof(DebugView))]
-    internal readonly struct InstructionArray
+    internal sealed partial class InstructionList
     {
-        // list of (instruction index, cookie) sorted by instruction index:
-        internal readonly KeyValuePair<int, object?>[] DebugCookies;
-
-        internal readonly Instruction[] Instructions;
-        internal readonly RuntimeLabel[] Labels;
-        internal readonly int MaxContinuationDepth;
-        internal readonly int MaxStackDepth;
-        internal readonly object[] Objects;
-
-        internal InstructionArray(int maxStackDepth, int maxContinuationDepth, Instruction[] instructions,
-            object[] objects, RuntimeLabel[] labels, IEnumerable<KeyValuePair<int, object?>>? debugCookies)
-        {
-            MaxStackDepth = maxStackDepth;
-            MaxContinuationDepth = maxContinuationDepth;
-            Instructions = instructions;
-            DebugCookies = debugCookies.AsArrayInternal();
-            Objects = objects;
-            Labels = labels;
-        }
-
-        internal sealed class DebugView
-        {
-            private readonly InstructionArray _array;
-
-            public DebugView(InstructionArray array)
-            {
-                ContractUtils.RequiresNotNull(array, nameof(array));
-                _array = array;
-            }
-
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionList.DebugView.InstructionView[] A0 => GetInstructionViews(true);
-
-            public InstructionList.DebugView.InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
-            {
-                return InstructionList.DebugView.GetInstructionViews
-                (
-                    _array.Instructions,
-                    _array.Objects,
-                    index => _array.Labels[index].Index,
-                    includeDebugCookies ? _array.DebugCookies : null
-                );
-            }
-        }
-    }
-
-    [DebuggerTypeProxy(typeof(DebugView))]
-    internal sealed class InstructionList
-    {
-#if STATS
-        private static Dictionary<string, int> _executedInstructions = new Dictionary<string, int>();
-        private static Dictionary<string, Dictionary<object, bool>> _instances = new Dictionary<string, Dictionary<object, bool>>();
-
-        static InstructionList()
-        {
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler((_, __) =>
-            {
-                PerfTrack.DumpHistogram(_executedInstructions);
-                Console.WriteLine("-- Total executed: {0}", _executedInstructions.Values.Aggregate(0, (sum, value) => sum + value));
-                Console.WriteLine("-----");
-
-                var referenced = new Dictionary<string, int>();
-                int total = 0;
-                foreach (var entry in _instances)
-                {
-                    referenced[entry.Key] = entry.Value.Count;
-                    total += entry.Value.Count;
-                }
-
-                PerfTrack.DumpHistogram(referenced);
-                Console.WriteLine("-- Total referenced: {0}", total);
-                Console.WriteLine("-----");
-            });
-        }
-#endif
-
         private const int _cachedObjectCount = 256;
-
         private const int _localInstrCacheSize = 64;
         private const int _pushIntMaxCachedValue = 100;
         private const int _pushIntMinCachedValue = -100;
-
         private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
         private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
-        private static Instruction[]? _assignLocal;
-
-        private static Instruction[]? _assignLocalBoxed;
-
-        private static Instruction[]? _assignLocalToClosure;
-        private static Instruction? _false;
-        private static Instruction[]? _ints;
-        private static Instruction[]? _loadLocal;
-
-        private static Instruction[]? _loadLocalBoxed;
-
-        private static Instruction[]? _loadLocalFromClosure;
-
-        private static Instruction[]? _loadLocalFromClosureBoxed;
-        private static Instruction[]? _loadObjectCached;
-        private static Instruction? _null;
-
-        private static Instruction[]? _storeLocal;
-
-        private static Instruction[]? _storeLocalBoxed;
-        private static Instruction? _true;
-
         private readonly List<Instruction> _instructions = new List<Instruction>();
 
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug
         private List<KeyValuePair<int, object?>>? _debugCookies;
 
-        private List<BranchLabel>? _labels;
         private int _maxContinuationDepth;
         private List<object>? _objects;
         private int _runtimeLabelCount;
@@ -150,11 +45,6 @@ namespace System.Linq.Expressions.Interpreter
             UpdateStackDepth(instruction);
         }
 
-        public void EmitAdd(Type type, bool @checked)
-        {
-            Emit(@checked ? AddOvfInstruction.Create(type) : AddInstruction.Create(type));
-        }
-
         public void EmitAnd(Type type)
         {
             Emit(AndInstruction.Create(type));
@@ -165,43 +55,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(ArrayLengthInstruction.Instance);
         }
 
-        public void EmitAssignLocal(int index)
-        {
-            if (_assignLocal == null)
-            {
-                _assignLocal = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _assignLocal.Length)
-            {
-                Emit(_assignLocal[index] ?? (_assignLocal[index] = new AssignLocalInstruction(index)));
-            }
-            else
-            {
-                Emit(new AssignLocalInstruction(index));
-            }
-        }
-
         public void EmitAssignLocalBoxed(int index)
         {
             Emit(AssignLocalBoxed(index));
-        }
-
-        public void EmitAssignLocalToClosure(int index)
-        {
-            if (_assignLocalToClosure == null)
-            {
-                _assignLocalToClosure = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _assignLocalToClosure.Length)
-            {
-                Emit(_assignLocalToClosure[index] ?? (_assignLocalToClosure[index] = new AssignLocalToClosureInstruction(index)));
-            }
-            else
-            {
-                Emit(new AssignLocalToClosureInstruction(index));
-            }
         }
 
         public void EmitBranch(BranchLabel label)
@@ -222,11 +78,6 @@ namespace System.Linq.Expressions.Interpreter
         public void EmitBranchTrue(BranchLabel elseLabel)
         {
             EmitBranch(new BranchTrueInstruction(), elseLabel);
-        }
-
-        public void EmitByRefCall(MethodInfo method, ParameterInfo[] parameters, ByRefUpdater[] byrefArgs)
-        {
-            Emit(new ByRefMethodInfoCallInstruction(method, method.IsStatic ? parameters.Length : parameters.Length + 1, byrefArgs));
         }
 
         public void EmitByRefNew(ConstructorInfo constructorInfo, ParameterInfo[] parameters, ByRefUpdater[] updaters)
@@ -367,23 +218,6 @@ namespace System.Linq.Expressions.Interpreter
             Emit(IncrementInstruction.Create(type));
         }
 
-        public void EmitInitializeLocal(int index, Type type)
-        {
-            var value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
-            if (value != null)
-            {
-                Emit(new InitializeLocalInstruction.ImmutableValue(index, value));
-            }
-            else if (type.IsValueType)
-            {
-                Emit(new InitializeLocalInstruction.MutableValue(index, type));
-            }
-            else
-            {
-                Emit(InitReference(index));
-            }
-        }
-
         public void EmitIntSwitch<T>(Dictionary<T, int> cases)
         {
             Emit(new IntSwitchInstruction<T>(cases));
@@ -429,90 +263,9 @@ namespace System.Linq.Expressions.Interpreter
             EmitLoad(value, null);
         }
 
-        public void EmitLoad(bool value)
-        {
-            if (value)
-            {
-                Emit(_true ??= new LoadObjectInstruction(Utils.BoxedTrue));
-            }
-            else
-            {
-                Emit(_false ??= new LoadObjectInstruction(Utils.BoxedFalse));
-            }
-        }
-
-        public void EmitLoad(object? value, Type? type)
-        {
-            if (value == null)
-            {
-                Emit(_null ??= new LoadObjectInstruction(null));
-                return;
-            }
-
-            if (type?.IsValueType != false)
-            {
-                switch (value)
-                {
-                    case bool b:
-                        EmitLoad(b);
-                        return;
-
-                    case int i when i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue:
-                        if (_ints == null)
-                        {
-                            _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
-                        }
-
-                        i -= _pushIntMinCachedValue;
-                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(i)));
-                        return;
-
-                    default:
-                        break;
-                }
-            }
-
-            if (_objects == null)
-            {
-                _objects = new List<object>();
-                if (_loadObjectCached == null)
-                {
-                    _loadObjectCached = new Instruction[_cachedObjectCount];
-                }
-            }
-
-            if (_objects.Count < _loadObjectCached!.Length)
-            {
-                var index = (uint)_objects.Count;
-                _objects.Add(value);
-                Emit(_loadObjectCached[index] ?? (_loadObjectCached[index] = new LoadCachedObjectInstruction(index)));
-            }
-            else
-            {
-                Emit(new LoadObjectInstruction(value));
-            }
-        }
-
         public void EmitLoadField(FieldInfo field)
         {
             Emit(GetLoadField(field));
-        }
-
-        public void EmitLoadLocal(int index)
-        {
-            if (_loadLocal == null)
-            {
-                _loadLocal = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _loadLocal.Length)
-            {
-                Emit(_loadLocal[index] ?? (_loadLocal[index] = new LoadLocalInstruction(index)));
-            }
-            else
-            {
-                Emit(new LoadLocalInstruction(index));
-            }
         }
 
         public void EmitLoadLocalBoxed(int index)
@@ -520,48 +273,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(LoadLocalBoxed(index));
         }
 
-        public void EmitLoadLocalFromClosure(int index)
-        {
-            if (_loadLocalFromClosure == null)
-            {
-                _loadLocalFromClosure = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _loadLocalFromClosure.Length)
-            {
-                Emit(_loadLocalFromClosure[index] ?? (_loadLocalFromClosure[index] = new LoadLocalFromClosureInstruction(index)));
-            }
-            else
-            {
-                Emit(new LoadLocalFromClosureInstruction(index));
-            }
-        }
-
-        public void EmitLoadLocalFromClosureBoxed(int index)
-        {
-            if (_loadLocalFromClosureBoxed == null)
-            {
-                _loadLocalFromClosureBoxed = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _loadLocalFromClosureBoxed.Length)
-            {
-                Emit(_loadLocalFromClosureBoxed[index] ?? (_loadLocalFromClosureBoxed[index] = new LoadLocalFromClosureBoxedInstruction(index)));
-            }
-            else
-            {
-                Emit(new LoadLocalFromClosureBoxedInstruction(index));
-            }
-        }
-
         public void EmitModulo(Type type)
         {
             Emit(ModuloInstruction.Create(type));
-        }
-
-        public void EmitMul(Type type, bool @checked)
-        {
-            Emit(@checked ? MulOvfInstruction.Create(type) : MulInstruction.Create(type));
         }
 
         public void EmitNegate(Type type)
@@ -654,35 +368,6 @@ namespace System.Linq.Expressions.Interpreter
             Emit(SetArrayItemInstruction.Instance);
         }
 
-        public void EmitStoreField(FieldInfo field)
-        {
-            if (field.IsStatic)
-            {
-                Emit(new StoreStaticFieldInstruction(field));
-            }
-            else
-            {
-                Emit(new StoreFieldInstruction(field));
-            }
-        }
-
-        public void EmitStoreLocal(int index)
-        {
-            if (_storeLocal == null)
-            {
-                _storeLocal = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _storeLocal.Length)
-            {
-                Emit(_storeLocal[index] ?? (_storeLocal[index] = new StoreLocalInstruction(index)));
-            }
-            else
-            {
-                Emit(new StoreLocalInstruction(index));
-            }
-        }
-
         public void EmitStoreLocalBoxed(int index)
         {
             Emit(StoreLocalBoxed(index));
@@ -697,11 +382,6 @@ namespace System.Linq.Expressions.Interpreter
         public void EmitStringSwitch(Dictionary<string, int> cases, StrongBox<int> nullCase)
         {
             Emit(new StringSwitchInstruction(cases, nullCase));
-        }
-
-        public void EmitSub(Type type, bool @checked)
-        {
-            Emit(@checked ? SubOvfInstruction.Create(type) : SubInstruction.Create(type));
         }
 
         public void EmitThrow()
@@ -727,18 +407,6 @@ namespace System.Linq.Expressions.Interpreter
         public void EmitTypeIs(Type type)
         {
             Emit(new TypeIsInstruction(type));
-        }
-
-        public BranchLabel MakeLabel()
-        {
-            if (_labels == null)
-            {
-                _labels = new List<BranchLabel>();
-            }
-
-            var label = new BranchLabel();
-            _labels.Add(label);
-            return label;
         }
 
         public void MarkLabel(BranchLabel label)
@@ -772,25 +440,6 @@ namespace System.Linq.Expressions.Interpreter
 
         public InstructionArray ToArray()
         {
-#if STATS
-            lock (_executedInstructions)
-            {
-                _instructions.ForEach((instr) =>
-                {
-                    int value = 0;
-                    var name = instr.GetType().Name;
-                    _executedInstructions.TryGetValue(name, out value);
-                    _executedInstructions[name] = value + 1;
-
-                    Dictionary<object, bool> dict;
-                    if (!_instances.TryGetValue(name, out dict))
-                    {
-                        _instances[name] = dict = new Dictionary<object, bool>();
-                    }
-                    dict[instr] = true;
-                });
-            }
-#endif
             return new InstructionArray
             (
                 MaxStackDepth,
@@ -817,21 +466,6 @@ namespace System.Linq.Expressions.Interpreter
             CurrentStackDepth += instruction.ConsumedStack;
         }
 
-        internal static Instruction AssignLocalBoxed(int index)
-        {
-            if (_assignLocalBoxed == null)
-            {
-                _assignLocalBoxed = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _assignLocalBoxed.Length)
-            {
-                return _assignLocalBoxed[index] ?? (_assignLocalBoxed[index] = new AssignLocalBoxedInstruction(index));
-            }
-
-            return new AssignLocalBoxedInstruction(index);
-        }
-
         internal static Instruction InitImmutableRefBox(int index)
         {
             return new InitializeLocalInstruction.ImmutableRefBox(index);
@@ -842,21 +476,6 @@ namespace System.Linq.Expressions.Interpreter
             return new InitializeLocalInstruction.Reference(index);
         }
 
-        internal static Instruction LoadLocalBoxed(int index)
-        {
-            if (_loadLocalBoxed == null)
-            {
-                _loadLocalBoxed = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _loadLocalBoxed.Length)
-            {
-                return _loadLocalBoxed[index] ?? (_loadLocalBoxed[index] = new LoadLocalBoxedInstruction(index));
-            }
-
-            return new LoadLocalBoxedInstruction(index);
-        }
-
         internal static Instruction Parameter(int index)
         {
             return new InitializeLocalInstruction.Parameter(index);
@@ -865,21 +484,6 @@ namespace System.Linq.Expressions.Interpreter
         internal static Instruction ParameterBox(int index)
         {
             return new InitializeLocalInstruction.ParameterBox(index);
-        }
-
-        internal static Instruction StoreLocalBoxed(int index)
-        {
-            if (_storeLocalBoxed == null)
-            {
-                _storeLocalBoxed = new Instruction[_localInstrCacheSize];
-            }
-
-            if (index < _storeLocalBoxed.Length)
-            {
-                return _storeLocalBoxed[index] ?? (_storeLocalBoxed[index] = new StoreLocalBoxedInstruction(index));
-            }
-
-            return new StoreLocalBoxedInstruction(index);
         }
 
         internal void EmitCreateDelegate(LightDelegateCreator creator)
@@ -900,6 +504,64 @@ namespace System.Linq.Expressions.Interpreter
         internal Instruction GetInstruction(int index)
         {
             return _instructions[index];
+        }
+
+        private void EmitBranch(OffsetInstruction instruction, BranchLabel label)
+        {
+            Emit(instruction);
+            label.AddBranch(this, Count - 1);
+        }
+    }
+
+    internal sealed partial class InstructionList
+    {
+        public void EmitAdd(Type type, bool @checked)
+        {
+            Emit(@checked ? AddOvfInstruction.Create(type) : AddInstruction.Create(type));
+        }
+
+        public void EmitByRefCall(MethodInfo method, ParameterInfo[] parameters, ByRefUpdater[] byrefArgs)
+        {
+            Emit(new ByRefMethodInfoCallInstruction(method, method.IsStatic ? parameters.Length : parameters.Length + 1, byrefArgs));
+        }
+
+        public void EmitInitializeLocal(int index, Type type)
+        {
+            var value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
+            if (value != null)
+            {
+                Emit(new InitializeLocalInstruction.ImmutableValue(index, value));
+            }
+            else if (type.IsValueType)
+            {
+                Emit(new InitializeLocalInstruction.MutableValue(index, type));
+            }
+            else
+            {
+                Emit(InitReference(index));
+            }
+        }
+
+        public void EmitMul(Type type, bool @checked)
+        {
+            Emit(@checked ? MulOvfInstruction.Create(type) : MulInstruction.Create(type));
+        }
+
+        public void EmitStoreField(FieldInfo field)
+        {
+            if (field.IsStatic)
+            {
+                Emit(new StoreStaticFieldInstruction(field));
+            }
+            else
+            {
+                Emit(new StoreFieldInstruction(field));
+            }
+        }
+
+        public void EmitSub(Type type, bool @checked)
+        {
+            Emit(@checked ? SubOvfInstruction.Create(type) : SubInstruction.Create(type));
         }
 
         internal void SwitchToBoxed(int index, int instructionIndex)
@@ -929,33 +591,6 @@ namespace System.Linq.Expressions.Interpreter
                 _loadFields.Add(field, instruction);
                 return instruction;
             }
-        }
-
-        private RuntimeLabel[] BuildRuntimeLabels()
-        {
-            if (_runtimeLabelCount == 0)
-            {
-                return _emptyRuntimeLabels;
-            }
-
-            var result = new RuntimeLabel[_runtimeLabelCount + 1];
-            foreach (var label in _labels!)
-            {
-                if (label.HasRuntimeLabel)
-                {
-                    result[label.LabelIndex] = label.ToRuntimeLabel();
-                }
-            }
-
-            // "return and rethrow" label:
-            result[result.Length - 1] = new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0);
-            return result;
-        }
-
-        private void EmitBranch(OffsetInstruction instruction, BranchLabel label)
-        {
-            Emit(instruction);
-            label.AddBranch(this, Count - 1);
         }
 
         private int EnsureLabelIndex(BranchLabel label)
@@ -990,109 +625,43 @@ namespace System.Linq.Expressions.Interpreter
                 _maxContinuationDepth = CurrentContinuationsDepth;
             }
         }
+    }
 
-        internal sealed class DebugView
+    internal sealed partial class InstructionList
+    {
+        private List<BranchLabel>? _labels;
+
+        public BranchLabel MakeLabel()
         {
-            private readonly InstructionList _list;
-
-            public DebugView(InstructionList list)
+            if (_labels == null)
             {
-                ContractUtils.RequiresNotNull(list, nameof(list));
-                _list = list;
+                _labels = new List<BranchLabel>();
             }
 
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionView[] A0 => GetInstructionViews(true);
+            var label = new BranchLabel();
+            _labels.Add(label);
+            return label;
+        }
 
-            public InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
+        private RuntimeLabel[] BuildRuntimeLabels()
+        {
+            if (_runtimeLabelCount == 0)
             {
-                return GetInstructionViews
-                (
-                    _list._instructions,
-                    _list._objects,
-                    index => _list._labels![index].TargetIndex,
-                    includeDebugCookies ? _list._debugCookies : null
-                );
+                return _emptyRuntimeLabels;
             }
 
-            internal static InstructionView[] GetInstructionViews(IList<Instruction> instructions, IList<object>? objects,
-                Func<int, int> labelIndexer, IList<KeyValuePair<int, object?>>? debugCookies)
+            var result = new RuntimeLabel[_runtimeLabelCount + 1];
+            foreach (var label in _labels!)
             {
-                var result = new List<InstructionView>();
-                var stackDepth = 0;
-                var continuationsDepth = 0;
-
-                using
-                (
-                    var cookieEnumerator =
-                        (
-                            debugCookies ??
-                            ArrayEx.Empty<KeyValuePair<int, object?>>()
-                        )
-                        .GetEnumerator()
-                )
+                if (label.HasRuntimeLabel)
                 {
-                    var hasCookie = cookieEnumerator.MoveNext();
-
-                    for (int i = 0, n = instructions.Count; i < n; i++)
-                    {
-                        var instruction = instructions[i];
-
-                        object? cookie = null;
-                        while (hasCookie && cookieEnumerator.Current.Key == i)
-                        {
-                            cookie = cookieEnumerator.Current.Value;
-                            hasCookie = cookieEnumerator.MoveNext();
-                        }
-
-                        var stackDiff = instruction.StackBalance;
-                        var contDiff = instruction.ContinuationsBalance;
-                        var name = instruction.ToDebugString(i, cookie, labelIndexer, objects);
-                        result.Add(new InstructionView(instruction, name, i, stackDepth, continuationsDepth));
-
-                        stackDepth += stackDiff;
-                        continuationsDepth += contDiff;
-                    }
-
-                    return result.AsArrayInternal();
+                    result[label.LabelIndex] = label.ToRuntimeLabel();
                 }
             }
 
-            [DebuggerDisplay("{" + nameof(GetValue) + "(),nq}", Name = "{GetName(),nq}", Type = "{GetDisplayType(), nq}")]
-            internal readonly struct InstructionView
-            {
-                private readonly int _continuationsDepth;
-                private readonly int _index;
-                private readonly Instruction _instruction;
-                private readonly string _name;
-                private readonly int _stackDepth;
-
-                public InstructionView(Instruction instruction, string name, int index, int stackDepth, int continuationsDepth)
-                {
-                    _instruction = instruction;
-                    _name = name;
-                    _index = index;
-                    _stackDepth = stackDepth;
-                    _continuationsDepth = continuationsDepth;
-                }
-
-                internal string GetDisplayType()
-                {
-                    return _instruction.ContinuationsBalance + "/" + _instruction.StackBalance;
-                }
-
-                internal string GetName()
-                {
-                    return _index +
-                           (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth + ")") +
-                           (_stackDepth == 0 ? "" : " S(" + _stackDepth + ")");
-                }
-
-                internal string GetValue()
-                {
-                    return _name;
-                }
-            }
+            // "return and rethrow" label:
+            result[result.Length - 1] = new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0);
+            return result;
         }
     }
 }
