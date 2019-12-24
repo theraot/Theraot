@@ -5,7 +5,6 @@
 
 using System.Runtime.Serialization;
 using System.Threading;
-using Theraot;
 
 namespace System
 {
@@ -40,8 +39,8 @@ namespace System
         protected OperationCanceledExceptionEx(SerializationInfo info, StreamingContext context)
 #endif
         {
-            No.Op(info);
-            No.Op(context);
+            _ = info;
+            _ = context;
         }
     }
 

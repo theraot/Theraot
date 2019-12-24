@@ -17,7 +17,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
-using Theraot;
 using Theraot.Reflection;
 
 namespace System.Linq.Expressions.Compiler
@@ -218,7 +217,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitDebugInfoExpression(Expression expr)
         {
-            No.Op(expr);
+            _ = expr;
         }
 
         private void EmitDynamicExpression(Expression expr)

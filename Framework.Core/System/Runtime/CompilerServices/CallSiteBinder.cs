@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
-using Theraot;
 using Theraot.Reflection;
 
 namespace System.Runtime.CompilerServices
@@ -61,8 +60,8 @@ namespace System.Runtime.CompilerServices
         public virtual T? BindDelegate<T>(CallSite<T> site, object[] args)
             where T : class
         {
-            No.Op(site);
-            No.Op(args);
+            _ = site;
+            _ = args;
             return null;
         }
 

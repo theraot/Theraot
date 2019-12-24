@@ -433,7 +433,7 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(Count > 0);
             _debugCookies.Add(new KeyValuePair<int, object?>(Count - 1, cookie));
 #else
-            Theraot.No.Op(cookie);
+            _ = cookie;
             _debugCookies = null;
 #endif
         }

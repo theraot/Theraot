@@ -588,7 +588,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Tautology<T>(T item)
         {
-            No.Op(item);
+            _ = item;
             return true;
         }
     }

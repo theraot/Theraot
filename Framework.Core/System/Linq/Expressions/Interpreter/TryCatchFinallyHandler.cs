@@ -9,7 +9,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using Theraot;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -117,7 +116,7 @@ namespace System.Linq.Expressions.Interpreter
             catch (Exception captured)
             {
                 // Silently eating exceptions and returning false matches the CLR behavior.
-                No.Op(captured);
+                _ = captured;
             }
 
             frame.StackIndex = stackIndex;

@@ -3,7 +3,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Theraot;
 using Theraot.Collections.Specialized;
 
 namespace System.Collections.Generic
@@ -85,8 +84,8 @@ namespace System.Collections.Generic
         protected DictionaryEx(SerializationInfo info, StreamingContext context)
 #endif
         {
-            No.Op(info);
-            No.Op(context);
+            _ = info;
+            _ = context;
         }
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;

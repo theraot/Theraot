@@ -364,7 +364,7 @@ namespace System.Runtime.CompilerServices
         internal void SetNotificationForWaitCompletion(bool enabled)
         {
             // Should not be static
-            No.Op(enabled);
+            _ = enabled;
         }
 
         /// <summary>

@@ -16,7 +16,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Theraot;
 using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Dynamic
@@ -88,8 +87,8 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryBinaryOperation(BinaryOperationBinder binder, object arg, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
-            No.Op(arg);
+            _ = binder;
+            _ = arg;
             result = null;
             return false;
         }
@@ -104,7 +103,7 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryConvert(ConvertBinder binder, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
+            _ = binder;
             result = null;
             return false;
         }
@@ -120,8 +119,8 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryCreateInstance(CreateInstanceBinder binder, object[] args, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
-            No.Op(args);
+            _ = binder;
+            _ = args;
             result = null;
             return false;
         }
@@ -136,8 +135,8 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryDeleteIndex(DeleteIndexBinder binder, object[] indexes)
         {
-            No.Op(binder);
-            No.Op(indexes);
+            _ = binder;
+            _ = indexes;
             return false;
         }
 
@@ -150,7 +149,7 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryDeleteMember(DeleteMemberBinder binder)
         {
-            No.Op(binder);
+            _ = binder;
             return false;
         }
 
@@ -165,8 +164,8 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryGetIndex(GetIndexBinder binder, object[] indexes, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
-            No.Op(indexes);
+            _ = binder;
+            _ = indexes;
             result = null;
             return false;
         }
@@ -181,7 +180,7 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryGetMember(GetMemberBinder binder, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
+            _ = binder;
             result = null;
             return false;
         }
@@ -197,8 +196,8 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryInvoke(InvokeBinder binder, object[] args, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
-            No.Op(args);
+            _ = binder;
+            _ = args;
             result = null;
             return false;
         }
@@ -214,8 +213,8 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryInvokeMember(InvokeMemberBinder binder, object[] args, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
-            No.Op(args);
+            _ = binder;
+            _ = args;
             result = null;
             return false;
         }
@@ -231,9 +230,9 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
         {
-            No.Op(binder);
-            No.Op(indexes);
-            No.Op(value);
+            _ = binder;
+            _ = indexes;
+            _ = value;
             return false;
         }
 
@@ -247,8 +246,8 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TrySetMember(SetMemberBinder binder, object value)
         {
-            No.Op(binder);
-            No.Op(value);
+            _ = binder;
+            _ = value;
             return false;
         }
 
@@ -262,7 +261,7 @@ namespace System.Dynamic
         /// <returns>true if the operation is complete, false if the call site should determine behavior.</returns>
         public virtual bool TryUnaryOperation(UnaryOperationBinder binder, [NotNullWhen(true)] out object? result)
         {
-            No.Op(binder);
+            _ = binder;
             result = null;
             return false;
         }

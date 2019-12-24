@@ -40,15 +40,15 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 catch (ObjectDisposedException exception)
                 {
-                    No.Op(exception);
+                    _ = exception;
                 }
                 catch (InvalidOperationException exception)
                 {
-                    No.Op(exception);
+                    _ = exception;
                 }
                 catch (NullReferenceException exception)
                 {
-                    No.Op(exception);
+                    _ = exception;
                 }
                 finally
                 {

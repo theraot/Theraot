@@ -6,7 +6,6 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
-using Theraot;
 
 namespace System.Runtime.CompilerServices
 {
@@ -52,9 +51,9 @@ namespace System.Runtime.CompilerServices
         public static T Bind<T>(CallSiteBinder binder, CallSite<T> site, object[] args)
             where T : class
         {
-            No.Op(binder);
-            No.Op(site);
-            No.Op(args);
+            _ = binder;
+            _ = site;
+            _ = args;
             throw new InvalidOperationException("No or Invalid rule produced");
         }
 

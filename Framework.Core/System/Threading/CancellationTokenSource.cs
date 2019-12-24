@@ -315,7 +315,7 @@ namespace System.Threading
             }
             catch (ObjectDisposedException exception) when (ignoreDisposedException)
             {
-                var _ = exception;
+                _ = exception;
             }
 
             UnregisterLinkedTokens();

@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
-using Theraot;
 
 namespace System.Diagnostics.Contracts
 {
@@ -138,7 +137,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition)
         {
-            No.Op(condition);
+            _ = condition;
             AssertMustUseRewriter(ContractFailureKind.Postcondition, nameof(Ensures));
         }
 
@@ -160,8 +159,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition, string userMessage)
         {
-            No.Op(condition);
-            No.Op(userMessage);
+            _ = condition;
+            _ = userMessage;
             AssertMustUseRewriter(ContractFailureKind.Postcondition, nameof(Ensures));
         }
 
@@ -185,8 +184,8 @@ namespace System.Diagnostics.Contracts
         public static void EnsuresOnThrow<TException>(bool condition)
             where TException : Exception
         {
-            No.Op(typeof(TException));
-            No.Op(condition);
+            _ = typeof(TException);
+            _ = condition;
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, nameof(EnsuresOnThrow));
         }
 
@@ -211,9 +210,9 @@ namespace System.Diagnostics.Contracts
         public static void EnsuresOnThrow<TException>(bool condition, string userMessage)
             where TException : Exception
         {
-            No.Op(typeof(TException));
-            No.Op(condition);
-            No.Op(userMessage);
+            _ = typeof(TException);
+            _ = condition;
+            _ = userMessage;
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, nameof(EnsuresOnThrow));
         }
 
@@ -383,7 +382,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition)
         {
-            No.Op(condition);
+            _ = condition;
             AssertMustUseRewriter(ContractFailureKind.Invariant, nameof(Invariant));
         }
 
@@ -402,8 +401,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition, string userMessage)
         {
-            No.Op(condition);
-            No.Op(userMessage);
+            _ = condition;
+            _ = userMessage;
             AssertMustUseRewriter(ContractFailureKind.Invariant, nameof(Invariant));
         }
 
@@ -421,7 +420,7 @@ namespace System.Diagnostics.Contracts
         [return: MaybeNull]
         public static T OldValue<T>(T value)
         {
-            No.Op(value);
+            _ = value;
             return default!;
         }
 
@@ -439,7 +438,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition)
         {
-            No.Op(condition);
+            _ = condition;
             AssertMustUseRewriter(ContractFailureKind.Precondition, nameof(Requires));
         }
 
@@ -458,8 +457,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition, string userMessage)
         {
-            No.Op(condition);
-            No.Op(userMessage);
+            _ = condition;
+            _ = userMessage;
             AssertMustUseRewriter(ContractFailureKind.Precondition, nameof(Requires));
         }
 
@@ -478,8 +477,8 @@ namespace System.Diagnostics.Contracts
         public static void Requires<TException>(bool condition)
             where TException : Exception
         {
-            No.Op(typeof(TException));
-            No.Op(condition);
+            _ = typeof(TException);
+            _ = condition;
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
         }
 
@@ -499,9 +498,9 @@ namespace System.Diagnostics.Contracts
         public static void Requires<TException>(bool condition, string userMessage)
             where TException : Exception
         {
-            No.Op(typeof(TException));
-            No.Op(condition);
-            No.Op(userMessage);
+            _ = typeof(TException);
+            _ = condition;
+            _ = userMessage;
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
         }
 

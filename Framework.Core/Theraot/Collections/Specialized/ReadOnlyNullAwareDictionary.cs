@@ -41,7 +41,7 @@ namespace Theraot.Collections.Specialized
 
         void ICollection<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>.Add(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue> item)
         {
-            No.Op(item);
+            _ = item;
             throw new NotSupportedException();
         }
 
@@ -82,7 +82,7 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>>.Remove(KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue> item)
         {
-            No.Op(item);
+            _ = item;
             throw new NotSupportedException();
         }
 

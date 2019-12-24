@@ -15,7 +15,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Threading;
-using Theraot;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
@@ -148,7 +147,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>The new instance of dynamic call site.</returns>
         public static CallSite<T> Create(CallSiteBinder binder)
         {
-            No.Op(binder);
+            _ = binder;
             throw new NotSupportedException();
         }
 

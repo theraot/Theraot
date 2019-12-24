@@ -55,7 +55,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(info));
             }
 
-            No.Op(context);
+            _ = context;
             Comparer = (IComparer<T>)info.GetValue(nameof(Comparer), typeof(IComparer<T>));
             _wrapped = new AVLTree<T, VoidStruct>(Comparer);
             var count = info.GetInt32(nameof(Count));
@@ -202,7 +202,7 @@ namespace System.Collections.Generic
 
         void IDeserializationCallback.OnDeserialization(object sender)
         {
-            No.Op(sender);
+            _ = sender;
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -301,7 +301,7 @@ namespace System.Collections.Generic
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            No.Op(context);
+            _ = context;
             if (info == null)
             {
                 throw new ArgumentNullException(nameof(info));

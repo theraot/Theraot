@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Permissions;
-using Theraot;
 using Theraot.Reflection;
 using Theraot.Threading;
 
@@ -316,7 +315,7 @@ namespace System.Threading
             }
             catch (Exception ex)
             {
-                No.Op(ex);
+                _ = ex;
                 // An async exception occured, if we had taken the upgradable mode, release it
                 _upgradableTaken.Value &= !taken || success;
             }

@@ -33,8 +33,8 @@ namespace System.Runtime.Serialization
         [Obsolete("This target platform does not support binary serialization.")]
         protected SerializationException(SerializationInfo info, StreamingContext context)
         {
-            Theraot.No.Op(info);
-            Theraot.No.Op(context);
+            _ = info;
+            _ = context;
         }
     }
 }

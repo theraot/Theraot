@@ -4,7 +4,6 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Theraot;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -229,7 +228,7 @@ namespace System.Threading
                     catch (InvalidCastException exception)
                     {
                         // Already canceled
-                        No.Op(exception);
+                        _ = exception;
                     }
                 },
                 () =>
@@ -241,7 +240,7 @@ namespace System.Threading
                     catch (InvalidOperationException exception)
                     {
                         // Already timeout
-                        No.Op(exception);
+                        _ = exception;
                     }
                 },
                 millisecondsTimeout,

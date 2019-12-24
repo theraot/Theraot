@@ -4,7 +4,6 @@
 #pragma warning disable S112 // General exceptions should never be thrown
 
 using System.Runtime.CompilerServices;
-using Theraot;
 
 namespace System
 {
@@ -18,7 +17,7 @@ namespace System
                 throw new NullReferenceException();
             }
 
-            No.Op(provider);
+            _ = provider;
             return str;
         }
     }

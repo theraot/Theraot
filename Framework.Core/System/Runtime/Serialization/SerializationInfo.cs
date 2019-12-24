@@ -6,7 +6,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Theraot;
 using Theraot.Reflection;
 
 namespace System.Runtime.Serialization
@@ -49,7 +48,7 @@ namespace System.Runtime.Serialization
             : this(type, converter)
         {
             // requireSameTokenInPartialTrust is a vacuous parameter in a platform that does not support partial trust.
-            No.Op(requireSameTokenInPartialTrust);
+            _ = requireSameTokenInPartialTrust;
         }
 
         public string AssemblyName

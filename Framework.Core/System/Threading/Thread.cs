@@ -82,7 +82,7 @@ namespace System.Threading
                 catch (Exception exception)
                 {
                     // Catch them all - there shouldn't be exceptions here, yet we really don't want them
-                    No.Op(exception);
+                    _ = exception;
                 }
             }
         }
@@ -94,7 +94,7 @@ namespace System.Threading
         public bool IsBackground
         {
             get => _start == null;
-            set => No.Op(value);
+            set => _ = value;
         }
 
         public bool IsThreadPoolThread => _start == null;
@@ -166,7 +166,7 @@ namespace System.Threading
 
         public void Abort(object stateInfo)
         {
-            No.Op(stateInfo);
+            _ = stateInfo;
             throw new PlatformNotSupportedException();
         }
 

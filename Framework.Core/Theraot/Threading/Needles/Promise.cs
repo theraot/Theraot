@@ -153,7 +153,7 @@ namespace Theraot.Threading.Needles
             catch (ObjectDisposedException exception)
             {
                 // Came late to the party, initialization was done
-                No.Op(exception);
+                _ = exception;
             }
         }
 
@@ -172,7 +172,7 @@ namespace Theraot.Threading.Needles
             catch (ObjectDisposedException exception)
             {
                 // Came late to the party, initialization was done
-                No.Op(exception);
+                _ = exception;
             }
         }
 
@@ -191,7 +191,7 @@ namespace Theraot.Threading.Needles
             catch (ObjectDisposedException exception)
             {
                 // Came late to the party, initialization was done
-                No.Op(exception);
+                _ = exception;
             }
         }
 
@@ -210,7 +210,7 @@ namespace Theraot.Threading.Needles
             catch (ObjectDisposedException exception)
             {
                 // Came late to the party, initialization was done
-                No.Op(exception);
+                _ = exception;
             }
         }
 
@@ -229,7 +229,7 @@ namespace Theraot.Threading.Needles
             catch (ObjectDisposedException exception)
             {
                 // Came late to the party, initialization was done
-                No.Op(exception);
+                _ = exception;
             }
         }
 
@@ -248,7 +248,7 @@ namespace Theraot.Threading.Needles
             catch (ObjectDisposedException exception)
             {
                 // Came late to the party, initialization was done
-                No.Op(exception);
+                _ = exception;
             }
         }
 

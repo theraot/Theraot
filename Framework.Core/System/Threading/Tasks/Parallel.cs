@@ -3374,8 +3374,8 @@ namespace System.Threading.Tasks
                     (
                         (ref object state, int timeout, out bool replicationDelegateYieldedBeforeCompletion) =>
                         {
-                            Theraot.No.Op(state);
-                            Theraot.No.Op(timeout);
+                            _ = state;
+                            _ = timeout;
 
                             // In this particular case, we do not participate in cooperative multitasking:
                             replicationDelegateYieldedBeforeCompletion = false;

@@ -1,10 +1,4 @@
-﻿#if LESSTHAN_NET40
-
-using Theraot;
-
-#endif
-
-namespace System
+﻿namespace System
 {
 #if LESSTHAN_NET40
 
@@ -23,7 +17,7 @@ namespace System
             }
             catch (Exception ex)
             {
-                No.Op(ex);
+                _ = ex;
                 result = default;
                 return false;
             }
@@ -42,7 +36,7 @@ namespace System
             }
             catch (Exception ex)
             {
-                No.Op(ex);
+                _ = ex;
                 result = default;
                 return false;
             }

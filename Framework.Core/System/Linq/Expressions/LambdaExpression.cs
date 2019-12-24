@@ -13,7 +13,6 @@ using System.Linq.Expressions.Compiler;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
-using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Reflection;
@@ -59,7 +58,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public new TDelegate Compile(bool preferInterpretation)
         {
-            No.Op(preferInterpretation);
+            _ = preferInterpretation;
             return (TDelegate)(object)LambdaCompiler.Compile(this);
         }
 
@@ -73,7 +72,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public new TDelegate Compile(DebugInfoGenerator debugInfoGenerator)
         {
-            No.Op(debugInfoGenerator);
+            _ = debugInfoGenerator;
             return Compile();
         }
 
@@ -931,7 +930,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public Delegate Compile(bool preferInterpretation)
         {
-            No.Op(preferInterpretation);
+            _ = preferInterpretation;
             return LambdaCompiler.Compile(this);
         }
 
@@ -945,7 +944,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public Delegate Compile(DebugInfoGenerator debugInfoGenerator)
         {
-            No.Op(debugInfoGenerator);
+            _ = debugInfoGenerator;
             return Compile();
         }
 

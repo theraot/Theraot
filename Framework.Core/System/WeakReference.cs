@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Theraot;
 
 namespace System
 {
@@ -36,7 +35,7 @@ namespace System
                 throw new ArgumentNullException(nameof(info));
             }
 
-            No.Op(context);
+            _ = context;
             var value = (T)info.GetValue("TrackedObject", typeof(T));
             _trackResurrection = info.GetBoolean("TrackResurrection");
             SetTarget(value);
@@ -74,7 +73,7 @@ namespace System
             {
                 // The handle was freed or never initialized.
                 // Nothing to do.
-                No.Op(exception);
+                _ = exception;
             }
         }
 

@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
@@ -475,7 +474,7 @@ namespace System.Collections.Concurrent
 
         private static ArgumentNullException CreateArgumentNullExceptionKey(TKey key)
         {
-            No.Op(key);
+            _ = key;
             return new ArgumentNullException(nameof(key));
         }
 

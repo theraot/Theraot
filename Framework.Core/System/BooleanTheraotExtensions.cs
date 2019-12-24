@@ -3,7 +3,6 @@
 #pragma warning disable CA1305 // Specify IFormatProvider
 
 using System.Runtime.CompilerServices;
-using Theraot;
 
 namespace System
 {
@@ -12,7 +11,7 @@ namespace System
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string ToString(this bool boolean, IFormatProvider provider)
         {
-            No.Op(provider);
+            _ = provider;
             return boolean.ToString();
         }
     }

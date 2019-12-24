@@ -13,7 +13,6 @@
 using System.Runtime.CompilerServices;
 using System.Globalization;
 using System.Runtime.Serialization;
-using Theraot;
 
 namespace System.Collections
 {
@@ -41,7 +40,7 @@ namespace System.Collections
                 throw new ArgumentNullException(nameof(info));
             }
 
-            No.Op(context);
+            _ = context;
             _compareInfo = (CompareInfo)(info.GetValue("CompareInfo", typeof(CompareInfo)) ?? throw new SerializationException());
         }
 

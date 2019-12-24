@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
 using System.Runtime.CompilerServices;
-using Theraot;
 
 namespace System
 {
@@ -10,7 +9,7 @@ namespace System
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string ToString(this char chr, IFormatProvider provider)
         {
-            No.Op(provider);
+            _ = provider;
             return char.ToString(chr);
         }
     }

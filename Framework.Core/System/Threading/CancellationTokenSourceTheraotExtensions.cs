@@ -5,7 +5,6 @@
 #pragma warning disable S112 // General exceptions should never be thrown
 
 using System.Runtime.CompilerServices;
-using Theraot;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -30,7 +29,7 @@ namespace System.Threading
                     }
                     catch (ObjectDisposedException exception)
                     {
-                        No.Op(exception);
+                        _ = exception;
                     }
                 },
                 millisecondsDelay
@@ -55,7 +54,7 @@ namespace System.Threading
                     }
                     catch (ObjectDisposedException exception)
                     {
-                        No.Op(exception);
+                        _ = exception;
                     }
                 },
                 delay

@@ -6,12 +6,11 @@ using System.Reflection;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Theraot;
 
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    ///     Provides an awaiter for awaiting a <see cref="System.Threading.Tasks.Task" /> .
+    ///     Provides an awaiter for awaiting a <see cref="Task" /> .
     /// </summary>
     /// <remarks>
     ///     This type is intended for compiler use only.
@@ -224,7 +223,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                No.Op(ex);
+                _ = ex;
             }
 
             return exc;
@@ -257,7 +256,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                No.Op(ex);
+                _ = ex;
                 return null;
             }
         }
@@ -276,7 +275,7 @@ namespace System.Runtime.CompilerServices
                 }
                 catch (Exception ex)
                 {
-                    No.Op(ex);
+                    _ = ex;
                 }
             }
 
@@ -321,7 +320,7 @@ namespace System.Runtime.CompilerServices
     }
 
     /// <summary>
-    ///     Provides an awaiter for awaiting a <see cref="System.Threading.Tasks.Task{TResult}" /> .
+    ///     Provides an awaiter for awaiting a <see cref="Task{TResult}" /> .
     /// </summary>
     /// <remarks>
     ///     This type is intended for compiler use only.

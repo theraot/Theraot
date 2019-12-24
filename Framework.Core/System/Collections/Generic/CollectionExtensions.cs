@@ -1,7 +1,6 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
 using System.Runtime.CompilerServices;
-using Theraot;
 
 namespace System.Collections.Generic
 {
@@ -61,7 +60,7 @@ namespace System.Collections.Generic
             }
             catch (ArgumentException ex)
             {
-                No.Op(ex);
+                _ = ex;
                 return false;
             }
         }

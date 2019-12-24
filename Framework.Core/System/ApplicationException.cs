@@ -16,7 +16,6 @@
 
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Theraot;
 
 namespace System
 {
@@ -57,8 +56,8 @@ namespace System
         protected ApplicationException(SerializationInfo info, StreamingContext context)
 #endif
         {
-            No.Op(info);
-            No.Op(context);
+            _ = info;
+            _ = context;
         }
     }
 }

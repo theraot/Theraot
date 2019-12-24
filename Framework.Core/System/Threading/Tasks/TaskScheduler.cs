@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
-using Theraot;
 using Theraot.Core;
 
 namespace System.Threading.Tasks
@@ -68,7 +67,7 @@ namespace System.Threading.Tasks
 
         protected virtual bool TryDequeue(Task task)
         {
-            No.Op(task);
+            _ = task;
             return false;
         }
 

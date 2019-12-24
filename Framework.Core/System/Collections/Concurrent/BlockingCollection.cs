@@ -625,7 +625,7 @@ namespace System.Collections.Concurrent
                         }
                         catch (OperationCanceledException exception)
                         {
-                            No.Op(exception);
+                            _ = exception;
                         }
                     }
 

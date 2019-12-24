@@ -2,7 +2,6 @@
 
 using System.Reflection;
 using System.Text;
-using Theraot;
 
 namespace System.Runtime.ExceptionServices
 {
@@ -63,7 +62,7 @@ namespace System.Runtime.ExceptionServices
             }
             catch (Exception exception)
             {
-                No.Op(exception);
+                _ = exception;
                 var newStackTrace = _stackTrace + BuildStackTrace(Environment.StackTrace);
                 SetStackTrace(SourceException, newStackTrace);
                 throw;

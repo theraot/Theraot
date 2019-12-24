@@ -200,7 +200,7 @@ namespace Theraot.Collections
                 }
                 catch (OperationCanceledException exception)
                 {
-                    No.Op(exception);
+                    _ = exception;
                 }
 
                 return TakeReplacement(out value);

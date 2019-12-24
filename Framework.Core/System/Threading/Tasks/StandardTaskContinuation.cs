@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
 using System.Diagnostics.Contracts;
-using Theraot;
 
 namespace System.Threading.Tasks
 {
@@ -68,7 +67,7 @@ namespace System.Threading.Tasks
                     {
                         // No further action is necessary -- ScheduleAndStart() already transitioned the
                         // task to faulted.  But we want to make sure that no exception is thrown from here.
-                        No.Op(exception);
+                        _ = exception;
                     }
                 }
             }

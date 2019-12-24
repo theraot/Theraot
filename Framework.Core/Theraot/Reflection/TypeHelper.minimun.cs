@@ -70,7 +70,7 @@ namespace Theraot.Reflection
             }
             catch (Exception exception)
             {
-                No.Op(exception);
+                _ = exception;
                 return alternative();
             }
         }

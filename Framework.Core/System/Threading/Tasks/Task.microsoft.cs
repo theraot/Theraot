@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Security;
-using Theraot;
 
 namespace System.Threading.Tasks
 {
@@ -122,7 +121,7 @@ namespace System.Threading.Tasks
             }
             catch (ObjectDisposedException exception)
             {
-                No.Op(exception);
+                _ = exception;
             }
 
             _cancellationRegistration = null;

@@ -4,7 +4,6 @@
 // ReSharper disable HeuristicUnreachableCode
 
 using System.Collections.Generic;
-using Theraot;
 using Theraot.Collections.Specialized;
 
 namespace System.Collections.ObjectModel
@@ -70,7 +69,7 @@ namespace System.Collections.ObjectModel
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            No.Op(item);
+            _ = item;
             throw new NotSupportedException();
         }
 
@@ -141,7 +140,7 @@ namespace System.Collections.ObjectModel
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            No.Op(item);
+            _ = item;
             throw new NotSupportedException();
         }
 

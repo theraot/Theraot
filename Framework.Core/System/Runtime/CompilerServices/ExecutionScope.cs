@@ -7,7 +7,6 @@
 #pragma warning disable S1104 // Fields should not have public accessibility
 
 using System.Linq.Expressions;
-using Theraot;
 
 namespace System.Runtime.CompilerServices
 {
@@ -27,8 +26,8 @@ namespace System.Runtime.CompilerServices
         public Delegate CreateDelegate(int indexLambda, object[] locals)
         {
             // Should not be static
-            No.Op(indexLambda);
-            No.Op(locals);
+            _ = indexLambda;
+            _ = locals;
             throw new NotSupportedException();
         }
 
@@ -41,8 +40,8 @@ namespace System.Runtime.CompilerServices
         public Expression IsolateExpression(Expression expression, object[] locals)
         {
             // Should not be static
-            No.Op(expression);
-            No.Op(locals);
+            _ = expression;
+            _ = locals;
             throw new NotSupportedException();
         }
     }

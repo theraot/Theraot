@@ -40,12 +40,12 @@ namespace System.Security.Permissions
     {
         public SecurityPermission(PermissionState state)
         {
-            Theraot.No.Op(state);
+            _ = state;
         }
 
         public SecurityPermission(SecurityPermissionFlag flag)
         {
-            Theraot.No.Op(flag);
+            _ = flag;
         }
 
         public SecurityPermissionFlag Flags { get; set; }
