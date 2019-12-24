@@ -115,7 +115,7 @@ namespace System.Threading.Tasks
 
             if (activeTasksSource == null)
             {
-                return null;
+                return ArrayEx.Empty<Task>();
             }
 
             // If it can be cast to an array, use it directly

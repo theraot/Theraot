@@ -66,11 +66,11 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        ///     Creates an empty expression that has <see cref="System.Void" /> type.
+        ///     Creates an empty expression that has <see cref="void" /> type.
         /// </summary>
         /// <returns>
         ///     A <see cref="DefaultExpression" /> that has the <see cref="NodeType" /> property equal to
-        ///     <see cref="ExpressionType.Default" /> and the <see cref="Type" /> property set to <see cref="System.Void" />.
+        ///     <see cref="ExpressionType.Default" /> and the <see cref="Type" /> property set to <see cref="void" />.
         /// </returns>
         [return: NotNull]
         public static DefaultExpression Empty()

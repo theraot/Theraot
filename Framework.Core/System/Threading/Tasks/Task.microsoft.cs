@@ -205,10 +205,9 @@ namespace System.Threading.Tasks
         internal void FinishStageTwo()
         {
             AddExceptionsFromChildren();
-
             // At this point, the task is done executing and waiting for its children,
             // we can transition our task to a completion state.
-            var completionState = ExceptionRecorded ? TaskStatus.Faulted : IsCancellationRequested && IsCancellationAcknowledged ? TaskStatus.Canceled : TaskStatus.RanToCompletion;
+            var completionState = GetCompletionState();
 
             // Use Interlocked.Exchange() to effect a memory fence, preventing
             // any SetCompleted() (or later) instructions from sneak back before it.
@@ -348,6 +347,20 @@ namespace System.Threading.Tasks
             }
         }
 
+        private static Task? EnterCurrentTask(Task task)
+        {
+            // Remember the current task so we can restore it after running, and then
+            var previousTask = InternalCurrent;
+            // place the current task into TLS.
+            InternalCurrent = task;
+            return previousTask;
+        }
+
+        private static void ExitCurrentTask(Task? previousTask)
+        {
+            InternalCurrent = previousTask;
+        }
+
         private static void TaskCancelCallback(object? obj)
         {
             if (!(obj is Task task))
@@ -471,12 +484,9 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         private void ExecuteWithThreadLocal()
         {
-            // Remember the current task so we can restore it after running, and then
-            var previousTask = InternalCurrent;
+            var previousTask = EnterCurrentTask(this);
             try
             {
-                // place the current task into TLS.
-                InternalCurrent = this;
                 var executionContext = CapturedContext;
                 if (executionContext == null)
                 {
@@ -496,7 +506,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                InternalCurrent = previousTask;
+                ExitCurrentTask(previousTask);
             }
 
             static void ExecutionContextCallback(object obj)
@@ -510,6 +520,19 @@ namespace System.Threading.Tasks
                     task.Execute();
                 }
             }
+        }
+
+        private TaskStatus GetCompletionState()
+        {
+            if (ExceptionRecorded)
+            {
+                return TaskStatus.Faulted;
+            }
+            if (IsCancellationRequested && IsCancellationAcknowledged)
+            {
+                return TaskStatus.Canceled;
+            }
+            return TaskStatus.RanToCompletion;
         }
 
         /// <summary>

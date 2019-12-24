@@ -1,5 +1,8 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable S1751 // Loops with at most one iteration should be refactored
+#pragma warning disable S2971 // "IEnumerable" LINQs should be simplified
+
 using System.Collections.Generic;
 
 namespace System.Linq

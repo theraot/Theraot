@@ -448,23 +448,8 @@ namespace System.Numerics
             return false;
         }
 
-        private static ReverseStringBuilder CreateBuilder(ref BigInteger value, NumberFormatInfo info, bool decimalFmt, int digits)
+        private static int Convert(BigInteger value, uint numericBase, int sourceLength, uint[] converted)
         {
-            // First convert to base 10^9.
-            const uint numericBase = 1000000000; // 10^9
-            const int numericBaseLog10 = 9;
-            var sourceLength = Length(value.InternalBits!);
-            int maxConvertedLength;
-            try
-            {
-                maxConvertedLength = checked((sourceLength * 10 / 9) + 2);
-            }
-            catch (OverflowException e)
-            {
-                throw new FormatException("The value is too large to be represented by this format specifier.", e);
-            }
-
-            var converted = new uint[maxConvertedLength];
             var convertedLength = 0;
             for (var sourceIndex = sourceLength; --sourceIndex >= 0;)
             {
@@ -478,12 +463,10 @@ namespace System.Numerics
                     current = (uint)(cipherBlock % numericBase);
                     carry = (uint)(cipherBlock / numericBase);
                 }
-
                 if (carry == 0)
                 {
                     continue;
                 }
-
                 converted[convertedLength++] = carry % numericBase;
                 carry /= numericBase;
                 if (carry != 0)
@@ -491,10 +474,23 @@ namespace System.Numerics
                     converted[convertedLength++] = carry;
                 }
             }
+            return convertedLength;
+        }
 
+        private static ReverseStringBuilder CreateBuilder(ref BigInteger value, NumberFormatInfo info, bool decimalFmt, int digits)
+        {
+            // First convert to base 10^9.
+            const uint numericBase = 1000000000; // 10^9
+            const int numericBaseLog10 = 9;
+            var sourceLength = Length(value.InternalBits!);
+            uint[] converted;
+            int convertedLength;
             int stringCapacity;
             try
             {
+                var maxConvertedLength = checked((sourceLength * 10 / 9) + 2);
+                converted = new uint[maxConvertedLength];
+                convertedLength = Convert(value, numericBase, sourceLength, converted);
                 // Each uint contributes at most 9 digits to the decimal representation.
                 stringCapacity = checked(convertedLength * numericBaseLog10);
             }
@@ -502,14 +498,12 @@ namespace System.Numerics
             {
                 throw new FormatException("The value is too large to be represented by this format specifier.", e);
             }
-
             if (decimalFmt)
             {
                 if (digits > 0 && stringCapacity < digits)
                 {
                     stringCapacity = digits;
                 }
-
                 if (value.InternalSign < 0)
                 {
                     try
@@ -523,7 +517,6 @@ namespace System.Numerics
                     }
                 }
             }
-
             var result = new ReverseStringBuilder(stringCapacity);
             for (var stringIndex = 0; stringIndex < convertedLength - 1; stringIndex++)
             {
@@ -534,13 +527,11 @@ namespace System.Numerics
                     cipherBlock /= 10;
                 }
             }
-
             for (var cipherBlock = converted[convertedLength - 1]; cipherBlock != 0;)
             {
                 result.Prepend((char)('0' + (cipherBlock % 10)));
                 cipherBlock /= 10;
             }
-
             return result;
         }
 
@@ -660,7 +651,15 @@ namespace System.Numerics
             }
 
             var stringBuilder1 = stringBuilder;
-            var str = value.InternalSign < 0 ? format != 'x' ? "F" : "f" : "0";
+            string str;
+            if (value.InternalSign < 0)
+            {
+                str = format != 'x' ? "F" : "f";
+            }
+            else
+            {
+                str = "0";
+            }
             stringBuilder1.Insert(0, str, digits - stringBuilder.Length);
             return stringBuilder.ToString();
         }
@@ -779,19 +778,6 @@ namespace System.Numerics
         {
             var allowLeadingWhite = (options & NumberStyles.AllowLeadingWhite) != NumberStyles.None;
             var allowTrailingWhite = (options & NumberStyles.AllowTrailingWhite) != NumberStyles.None;
-            /*
-            // Assume validated
-            if (
-                (options & NumberStyles.AllowCurrencySymbol) != NumberStyles.None
-                || (options & NumberStyles.AllowLeadingSign) != NumberStyles.None
-                || (options & NumberStyles.AllowParentheses) != NumberStyles.None
-                || (options & NumberStyles.AllowThousands) != NumberStyles.None
-                || (options & NumberStyles.AllowExponent) != NumberStyles.None
-                || (options & NumberStyles.AllowTrailingSign) != NumberStyles.None
-                )
-            {
-                return false;
-            }*/
             number.Negative = false;
             if (allowLeadingWhite)
             {
@@ -1069,8 +1055,28 @@ namespace System.Numerics
                 {
                     return newBuffer;
                 }
-
                 foreach (var size in groupingSizes)
+                {
+                    for (var count = size - 1; count >= 0; count--)
+                    {
+                        newBuffer.Prepend(enumerator.Current);
+                        if (!enumerator.MoveNext())
+                        {
+                            return newBuffer;
+                        }
+                    }
+                    newBuffer.Prepend(groupingSeparator);
+                }
+                return StringWithGroupsCore(groupingSizes, groupingSeparator, newBuffer, enumerator);
+            }
+        }
+
+        private static ReverseStringBuilder StringWithGroupsCore(int[] groupingSizes, string groupingSeparator, ReverseStringBuilder newBuffer, IEnumerator<char> enumerator)
+        {
+            var size = groupingSizes[groupingSizes.Length - 1];
+            if (size != 0)
+            {
+                while (true)
                 {
                     for (var count = size - 1; count >= 0; count--)
                     {
@@ -1083,34 +1089,14 @@ namespace System.Numerics
 
                     newBuffer.Prepend(groupingSeparator);
                 }
+            }
 
+            while (true)
+            {
+                newBuffer.Prepend(enumerator.Current);
+                if (!enumerator.MoveNext())
                 {
-                    var size = groupingSizes[groupingSizes.Length - 1];
-                    if (size != 0)
-                    {
-                        while (true)
-                        {
-                            for (var count = size - 1; count >= 0; count--)
-                            {
-                                newBuffer.Prepend(enumerator.Current);
-                                if (!enumerator.MoveNext())
-                                {
-                                    return newBuffer;
-                                }
-                            }
-
-                            newBuffer.Prepend(groupingSeparator);
-                        }
-                    }
-
-                    while (true)
-                    {
-                        newBuffer.Prepend(enumerator.Current);
-                        if (!enumerator.MoveNext())
-                        {
-                            return newBuffer;
-                        }
-                    }
+                    return newBuffer;
                 }
             }
         }

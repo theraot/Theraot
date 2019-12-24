@@ -59,7 +59,7 @@ namespace System.Threading.Tasks
 #if DEBUG
             var waitResult =
 #endif
-                WaitAll(tasks, Timeout.Infinite);
+            WaitAll(tasks, Timeout.Infinite);
 
 #if DEBUG
             Contract.Assert(waitResult, "expected wait to succeed");
@@ -214,24 +214,16 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
-
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
-
             Contract.EndContractBlock();
             cancellationToken.ThrowIfCancellationRequested(); // early check before we make any allocations
-            //
             // In this WaitAll() implementation we have 2 alternate code paths for a task to be handled:
             // CODE PATH 1: skip an already completed task, CODE PATH 2: actually wait on tasks
             // We make sure that the exception behavior of Task.Wait() is replicated the same for tasks handled in either of these code paths
-            //
-            List<Exception>? exceptions = null;
             List<Task>? waitedOnTaskList = null;
-            // If any of the waited-upon tasks end as Faulted or Canceled, set these to true.
-            var exceptionSeen = false;
-            var cancellationSeen = false;
             var allCompleted = true;
             // try inlining the task only if we have an infinite timeout and an empty cancellation token
             var canInline = millisecondsTimeout == Timeout.Infinite && !cancellationToken.CanBeCanceled;
@@ -243,7 +235,6 @@ namespace System.Threading.Tasks
                 {
                     throw new ArgumentException("The tasks array included at least one null element.");
                 }
-
                 var taskIsCompleted = task.IsCompleted;
                 if (canInline && !taskIsCompleted)
                 {
@@ -251,70 +242,21 @@ namespace System.Threading.Tasks
                     // A successful TryStart doesn't guarantee completion
                     taskIsCompleted = task.TryStart(task.ExecutingTaskScheduler, true) && task.IsCompleted;
                 }
-
                 if (!taskIsCompleted)
                 {
                     (waitedOnTaskList ??= new List<Task>(tasks.Length)).Add(task);
                 }
             }
-
             if (waitedOnTaskList != null)
             {
                 // Block waiting for the tasks to complete.
                 allCompleted = WaitAllBlockingCore(waitedOnTaskList, millisecondsTimeout, cancellationToken);
             }
-
             if (!allCompleted)
             {
                 return false;
             }
-
-            {
-                for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
-                {
-                    var task = tasks[taskIndex];
-                    if (task.IsFaulted || task.IsCanceled)
-                    {
-                        var exception = task.GetExceptions(true);
-                        if (exception != null)
-                        {
-                            // make sure the task's exception observed status is set appropriately
-                            // it's possible that WaitAll was called by the parent of an attached child,
-                            // this will make sure it won't throw again in the implicit wait
-                            task.UpdateExceptionObservedStatus();
-                            (exceptions ??= new List<Exception>(exception.InnerExceptions.Count)).AddRange(exception.InnerExceptions);
-                        }
-                    }
-
-                    if (task.IsFaulted)
-                    {
-                        exceptionSeen = true;
-                    }
-                    else
-                    {
-                        cancellationSeen |= task.IsCanceled;
-                    }
-
-                    if (task.IsWaitNotificationEnabled && task.NotifyDebuggerOfWaitCompletionIfNecessary())
-                    {
-                        break;
-                    }
-                }
-
-                if (cancellationSeen && !exceptionSeen)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
-
-                // If one or more threw exceptions, aggregate and throw them.
-                if (!exceptionSeen && !cancellationSeen)
-                {
-                    return true;
-                }
-
-                Contract.Assert(exceptions != null, "Should have seen at least one exception");
-                throw new AggregateException(exceptions!);
-            }
+            return WaitAllCore(tasks, cancellationToken);
         }
 
         /// <summary>
@@ -616,6 +558,53 @@ namespace System.Threading.Tasks
             }
 
             return waitCompleted;
+        }
+
+        private static bool WaitAllCore(Task[] tasks, CancellationToken cancellationToken)
+        {
+            List<Exception>? exceptions = null;
+            // If any of the waited-upon tasks end as Faulted or Canceled, set these to true.
+            var exceptionSeen = false;
+            var cancellationSeen = false;
+            for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
+            {
+                var task = tasks[taskIndex];
+                if (task.IsFaulted || task.IsCanceled)
+                {
+                    var exception = task.GetExceptions(true);
+                    if (exception != null)
+                    {
+                        // make sure the task's exception observed status is set appropriately
+                        // it's possible that WaitAll was called by the parent of an attached child,
+                        // this will make sure it won't throw again in the implicit wait
+                        task.UpdateExceptionObservedStatus();
+                        (exceptions ??= new List<Exception>(exception.InnerExceptions.Count)).AddRange(exception.InnerExceptions);
+                    }
+                }
+                if (task.IsFaulted)
+                {
+                    exceptionSeen = true;
+                }
+                else
+                {
+                    cancellationSeen |= task.IsCanceled;
+                }
+                if (task.IsWaitNotificationEnabled && task.NotifyDebuggerOfWaitCompletionIfNecessary())
+                {
+                    break;
+                }
+            }
+            if (cancellationSeen && !exceptionSeen)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+            // If one or more threw exceptions, aggregate and throw them.
+            if (!exceptionSeen && !cancellationSeen)
+            {
+                return true;
+            }
+            Contract.Assert(exceptions != null, "Should have seen at least one exception");
+            throw new AggregateException(exceptions!);
         }
 
         /// <summary>Placeholder method used as a breakpoint target by the debugger.  Must not be inlined or optimized.</summary>

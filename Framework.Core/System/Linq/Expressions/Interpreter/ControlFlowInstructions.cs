@@ -308,17 +308,6 @@ namespace System.Linq.Expressions.Interpreter
             {
                 Debug.Assert(!(unwrappedException is RethrowException));
                 frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, true);
-
-#if FEATURE_THREAD_ABORT
-                // stay in the current catch so that ThreadAbortException is not rethrown by CLR:
-                var abort = exception as ThreadAbortException;
-                if (abort != null)
-                {
-                    Interpreter.AnyAbortException = abort;
-                    frame.CurrentAbortHandler = exHandler;
-                }
-#endif
-
                 var rethrow = false;
                 try
                 {
@@ -343,7 +332,6 @@ namespace System.Linq.Expressions.Interpreter
                     // a rethrow instruction in a catch block gets to run
                     rethrow = true;
                 }
-
                 if (rethrow)
                 {
                     throw;
@@ -532,10 +520,6 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             // Are we jumping out of catch/finally while aborting the current thread?
-#if FEATURE_THREAD_ABORT
-            Interpreter.AbortThreadIfRequested(frame, _labelIndex);
-#endif
-
             // goto the target label or the current finally continuation:
             var value = _hasValue ? frame.Pop()! : Interpreter.NoValue;
             return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, false);
@@ -617,9 +601,6 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             // CLR rethrows ThreadAbortException when leaving catch handler if abort is requested on the current thread.
-#if FEATURE_THREAD_ABORT
-            Interpreter.AbortThreadIfRequested(frame, _labelIndex);
-#endif
             return GetLabel(frame).Index - frame.InstructionIndex;
         }
 

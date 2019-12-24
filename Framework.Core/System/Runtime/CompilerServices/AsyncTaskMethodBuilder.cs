@@ -5,6 +5,7 @@
 #pragma warning disable CC0091 // Use static method
 #pragma warning disable CS8653 // A default expression introduces a null value when 'T' is a non-nullable reference type.
 #pragma warning disable CS0649 // Field is never assigned
+#pragma warning disable S3459 // Unassigned members should be removed
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -15,7 +16,7 @@ using Theraot;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
-    ///     Provides a builder for asynchronous methods that return <see cref="System.Threading.Tasks.Task" />.
+    ///     Provides a builder for asynchronous methods that return <see cref="Threading.Tasks.Task" />.
     ///     This type is intended for compiler use only.
     /// </summary>
     /// <remarks>
@@ -33,25 +34,25 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     The generic builder object to which this non-generic instance delegates.
         /// </summary>
-        // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
+        // Note: this is a mutable struct, it has starts at the default value and then it is mutated
         // There is no need to assign it
         // It should not be readonly
         private AsyncTaskMethodBuilder<VoidStruct> _builder;
 
         /// <summary>
-        ///     Gets the <see cref="System.Threading.Tasks.Task" /> for this builder.
+        ///     Gets the <see cref="Threading.Tasks.Task" /> for this builder.
         /// </summary>
         /// <returns>
-        ///     The <see cref="System.Threading.Tasks.Task" /> representing the builder's asynchronous operation.
+        ///     The <see cref="Threading.Tasks.Task" /> representing the builder's asynchronous operation.
         /// </returns>
-        /// <exception cref="System.InvalidOperationException">The builder is not initialized.</exception>
+        /// <exception cref="InvalidOperationException">The builder is not initialized.</exception>
         public Task Task => _builder.Task;
 
         /// <summary>
-        ///     Initializes a new <see cref="System.Runtime.CompilerServices.AsyncTaskMethodBuilder" />.
+        ///     Initializes a new <see cref="AsyncTaskMethodBuilder" />.
         /// </summary>
         /// <returns>
-        ///     The initialized <see cref="System.Runtime.CompilerServices.AsyncTaskMethodBuilder" />.
+        ///     The initialized <see cref="AsyncTaskMethodBuilder" />.
         /// </returns>
         public static AsyncTaskMethodBuilder Create()
         {
@@ -92,27 +93,27 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Completes the <see cref="System.Threading.Tasks.Task" /> in the
-        ///     <see cref="System.Threading.Tasks.TaskStatus">Faulted</see> state with the specified exception.
+        ///     Completes the <see cref="Threading.Tasks.Task" /> in the
+        ///     <see cref="TaskStatus">Faulted</see> state with the specified exception.
         /// </summary>
-        /// <param name="exception">The <see cref="System.Exception" /> to use to fault the task.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <param name="exception">The <see cref="Exception" /> to use to fault the task.</param>
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="exception" /> argument is null (Nothing in Visual
         ///     Basic).
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">The builder is not initialized.</exception>
-        /// <exception cref="System.InvalidOperationException">The task has already completed.</exception>
+        /// <exception cref="InvalidOperationException">The builder is not initialized.</exception>
+        /// <exception cref="InvalidOperationException">The task has already completed.</exception>
         public void SetException(Exception exception)
         {
             _builder.SetException(exception);
         }
 
         /// <summary>
-        ///     Completes the <see cref="System.Threading.Tasks.Task" /> in the
-        ///     <see cref="System.Threading.Tasks.TaskStatus">RanToCompletion</see> state.
+        ///     Completes the <see cref="Threading.Tasks.Task" /> in the
+        ///     <see cref="TaskStatus">RanToCompletion</see> state.
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">The builder is not initialized.</exception>
-        /// <exception cref="System.InvalidOperationException">The task has already completed.</exception>
+        /// <exception cref="InvalidOperationException">The builder is not initialized.</exception>
+        /// <exception cref="InvalidOperationException">The task has already completed.</exception>
         public void SetResult()
         {
             _builder.SetResult(_cachedCompleted);
@@ -122,11 +123,11 @@ namespace System.Runtime.CompilerServices
         ///     Associates the builder with the state machine it represents.
         /// </summary>
         /// <param name="stateMachine">The heap-allocated state machine object.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument was null (Nothing in
         ///     Visual Basic).
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">The builder is incorrectly initialized.</exception>
+        /// <exception cref="InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             _builder.SetStateMachine(stateMachine);
@@ -157,7 +158,7 @@ namespace System.Runtime.CompilerServices
     }
 
     /// <summary>
-    ///     Provides a builder for asynchronous methods that return <see cref="System.Threading.Tasks.Task{TResult}" />.
+    ///     Provides a builder for asynchronous methods that return <see cref="Task{TResult}" />.
     ///     This type is intended for compiler use only.
     /// </summary>
     /// <remarks>
@@ -175,7 +176,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     State related to the IAsyncStateMachine.
         /// </summary>
-        // Note: this is a mutable struct, it has starts at the fault value and then it is mutated
+        // Note: this is a mutable struct, it has starts at the default value and then it is mutated
         // There is no need to assign it
         // It should not be readonly
         private AsyncMethodBuilderCore _coreState;
@@ -194,10 +195,10 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Gets the <see cref="System.Threading.Tasks.Task{TResult}" /> for this builder.
+        ///     Gets the <see cref="Task{TResult}" /> for this builder.
         /// </summary>
         /// <returns>
-        ///     The <see cref="System.Threading.Tasks.Task{TResult}" /> representing the builder's asynchronous operation.
+        ///     The <see cref="Task{TResult}" /> representing the builder's asynchronous operation.
         /// </returns>
         public Task<TResult> Task => CompletionSource.Task;
 
@@ -219,10 +220,10 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Initializes a new <see cref="System.Runtime.CompilerServices.AsyncTaskMethodBuilder" />.
+        ///     Initializes a new <see cref="AsyncTaskMethodBuilder" />.
         /// </summary>
         /// <returns>
-        ///     The initialized <see cref="System.Runtime.CompilerServices.AsyncTaskMethodBuilder" />.
+        ///     The initialized <see cref="AsyncTaskMethodBuilder" />.
         /// </returns>
         public static AsyncTaskMethodBuilder<TResult> Create()
         {
@@ -280,15 +281,15 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Completes the <see cref="System.Threading.Tasks.Task{TResult}" /> in the
-        ///     <see cref="System.Threading.Tasks.TaskStatus">Faulted</see> state with the specified exception.
+        ///     Completes the <see cref="Task{TResult}" /> in the
+        ///     <see cref="TaskStatus">Faulted</see> state with the specified exception.
         /// </summary>
-        /// <param name="exception">The <see cref="System.Exception" /> to use to fault the task.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <param name="exception">The <see cref="Exception" /> to use to fault the task.</param>
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="exception" /> argument is null (Nothing in Visual
         ///     Basic).
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">The task has already completed.</exception>
+        /// <exception cref="InvalidOperationException">The task has already completed.</exception>
         public void SetException(Exception exception)
         {
             if (exception == null)
@@ -305,11 +306,11 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     Completes the <see cref="System.Threading.Tasks.Task{TResult}" /> in the
-        ///     <see cref="System.Threading.Tasks.TaskStatus">RanToCompletion</see> state with the specified result.
+        ///     Completes the <see cref="Task{TResult}" /> in the
+        ///     <see cref="TaskStatus">RanToCompletion</see> state with the specified result.
         /// </summary>
         /// <param name="result">The result to use to complete the task.</param>
-        /// <exception cref="System.InvalidOperationException">The task has already completed.</exception>
+        /// <exception cref="InvalidOperationException">The task has already completed.</exception>
         public void SetResult([AllowNull] TResult result)
         {
             var completionSource = _task;
@@ -327,11 +328,11 @@ namespace System.Runtime.CompilerServices
         ///     Associates the builder with the state machine it represents.
         /// </summary>
         /// <param name="stateMachine">The heap-allocated state machine object.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         ///     The <paramref name="stateMachine" /> argument was null (Nothing in
         ///     Visual Basic).
         /// </exception>
-        /// <exception cref="System.InvalidOperationException">The builder is incorrectly initialized.</exception>
+        /// <exception cref="InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             _coreState.SetStateMachine(stateMachine);
@@ -371,7 +372,7 @@ namespace System.Runtime.CompilerServices
         ///     the builder's previously accessed task using default(TResult).
         /// </summary>
         /// <param name="completedTask">A task already completed with the value default(TResult).</param>
-        /// <exception cref="System.InvalidOperationException">The task has already completed.</exception>
+        /// <exception cref="InvalidOperationException">The task has already completed.</exception>
         internal void SetResult(TaskCompletionSource<TResult> completedTask)
         {
             if (_task == null)

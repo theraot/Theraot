@@ -1,5 +1,7 @@
 ﻿// Needed for Workaround
 
+#pragma warning disable S2234 // Parameters should be passed in the correct order
+
 using System;
 using System.Collections.Generic;
 

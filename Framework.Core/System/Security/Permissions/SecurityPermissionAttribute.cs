@@ -1,5 +1,8 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
+#pragma warning disable RECS0133 // Parameter name differs in base declaration
+#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
+
 using System.Diagnostics;
 
 namespace System.Security.Permissions
@@ -52,7 +55,7 @@ namespace System.Security.Permissions
             return this;
         }
 
-        public override void FromXml(SecurityElement securityElement)
+        public override void FromXml(SecurityElement esd)
         {
             // Empty
         }

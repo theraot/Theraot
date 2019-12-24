@@ -25,8 +25,8 @@ namespace System.Threading.Tasks
         ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
         ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
-        /// <exception cref="System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WhenAll(params Task[] tasks)
         {
@@ -45,8 +45,8 @@ namespace System.Threading.Tasks
         ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
         ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
-        /// <exception cref="System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
         {
@@ -65,8 +65,8 @@ namespace System.Threading.Tasks
         ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
         ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
-        /// <exception cref="System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
@@ -94,8 +94,8 @@ namespace System.Threading.Tasks
         ///     about all of the faulted tasks.  If no Tasks fault but one or more Tasks is canceled, the returned
         ///     Task will also be canceled.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
-        /// <exception cref="System.ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="tasks" /> argument is null.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="tasks" /> argument contains a null reference.</exception>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {

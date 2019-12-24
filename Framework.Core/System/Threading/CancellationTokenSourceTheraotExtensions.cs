@@ -2,6 +2,7 @@
 // Needed for Workaround
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
+#pragma warning disable S112 // General exceptions should never be thrown
 
 using System.Runtime.CompilerServices;
 using Theraot;

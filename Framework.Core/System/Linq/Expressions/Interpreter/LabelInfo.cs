@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CC0031 // Check for null before calling a delegate
+#pragma warning disable S1751 // Loops with at most one iteration should be refactored
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

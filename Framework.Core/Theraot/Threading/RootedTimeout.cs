@@ -2,6 +2,7 @@
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
 #pragma warning disable RCS1231 // Make parameter ref read-only.
+#pragma warning disable S3971 // "GC.SuppressFinalize" should not be called
 
 using System;
 using System.Threading;
@@ -52,7 +53,7 @@ namespace Theraot.Threading
 
         ~RootedTimeout()
         {
-            Close();
+            Timer.Donate(ref _wrapped);
         }
 
         public bool IsCanceled => Volatile.Read(ref _status) == _canceled;
@@ -166,12 +167,10 @@ namespace Theraot.Threading
             {
                 Close();
             }
-
             if (Interlocked.CompareExchange(ref _status, _canceled, _canceling) != _canceling)
             {
                 return false;
             }
-
             Volatile.Write(ref _status, _canceled);
             return true;
         }

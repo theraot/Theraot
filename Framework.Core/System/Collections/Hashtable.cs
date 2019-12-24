@@ -329,7 +329,7 @@ namespace System.Collections
 
         // Note: this constructor is a bogus constructor that does nothing
         // and is for use only with SyncHashtable.
-        internal Hashtable(bool trash)
+        private Hashtable(bool trash)
         {
             _ = trash;
         }
@@ -907,7 +907,7 @@ namespace System.Collections
             } while (b.HashColl < 0 && ++attempt < _buckets.Length);
         }
 
-        internal virtual KeyValuePairs[] ToKeyValuePairsArray()
+        private protected virtual KeyValuePairs[] ToKeyValuePairsArray()
         {
             var array = new KeyValuePairs[_count];
             var index = 0;
@@ -1595,7 +1595,7 @@ namespace System.Collections
                 }
             }
 
-            internal override KeyValuePairs[] ToKeyValuePairsArray()
+            private protected override KeyValuePairs[] ToKeyValuePairsArray()
             {
                 return _table.ToKeyValuePairsArray();
             }

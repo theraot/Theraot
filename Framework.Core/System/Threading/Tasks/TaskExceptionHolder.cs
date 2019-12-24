@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+#pragma warning disable S3971 // "GC.SuppressFinalize" should not be called
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -25,9 +26,6 @@ namespace System.Threading.Tasks
     /// </summary>
     internal class TaskExceptionHolder
     {
-        /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
-        private static readonly bool _failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
-
         /// <summary>An event handler used to notify of domain unload.</summary>
         private static EventHandler? _adUnloadEventHandler;
 
@@ -103,14 +101,6 @@ namespace System.Threading.Tasks
             var exceptionToThrow = CreateAggregateException();
             var unobservedTaskExceptionEventArgs = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
             TaskScheduler.PublishUnobservedTaskException(_task, unobservedTaskExceptionEventArgs);
-
-            // Now, if we are still unobserved and we're configured to crash on unobserved, throw the exception.
-            // We need to publish the event above even if we're not going to crash, hence
-            // why this check doesn't come at the beginning of the method.
-            if (_failFastOnUnobservedException && !unobservedTaskExceptionEventArgs.Observed)
-            {
-                throw exceptionToThrow;
-            }
         }
 
         /// <summary>Gets whether the exception holder is currently storing any exceptions for faults.</summary>
@@ -228,12 +218,10 @@ namespace System.Threading.Tasks
             {
                 return;
             }
-
             if (!calledFromFinalizer)
             {
                 GC.SuppressFinalize(this);
             }
-
             _isHandled = true;
         }
 
@@ -254,11 +242,6 @@ namespace System.Threading.Tasks
             {
                 AppDomain.CurrentDomain.DomainUnload += handler;
             }
-        }
-
-        private static bool ShouldFailFastOnUnobservedException()
-        {
-            return false;
         }
 
         /// <summary>Adds the exception to the fault list.</summary>

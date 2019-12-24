@@ -175,7 +175,7 @@ namespace System.Linq.Expressions
         ///     <paramref name="ifTrue" />
         ///     and <paramref name="ifFalse" /> expressions are not equal. Types of both <paramref name="ifTrue" /> and
         ///     <paramref name="ifFalse" /> must be implicitly
-        ///     reference assignable to the result type. The <paramref name="type" /> is allowed to be <see cref="System.Void" />.
+        ///     reference assignable to the result type. The <paramref name="type" /> is allowed to be <see cref="void" />.
         /// </remarks>
         public static ConditionalExpression Condition(Expression test, Expression ifTrue, Expression ifFalse, Type type)
         {
@@ -215,7 +215,7 @@ namespace System.Linq.Expressions
         ///     properties set to the specified values. The <see cref="ConditionalExpression.IfFalse" /> property is set to default
         ///     expression and
         ///     the type of the resulting <see cref="ConditionalExpression" /> returned by this method is
-        ///     <see cref="System.Void" />.
+        ///     <see cref="void" />.
         /// </returns>
         public static ConditionalExpression IfThen(Expression test, Expression ifTrue)
         {
@@ -240,7 +240,7 @@ namespace System.Linq.Expressions
         ///     <see cref="ConditionalExpression.IfTrue" />,
         ///     and <see cref="ConditionalExpression.IfFalse" /> properties set to the specified values. The type of the resulting
         ///     <see cref="ConditionalExpression" />
-        ///     returned by this method is <see cref="System.Void" />.
+        ///     returned by this method is <see cref="void" />.
         /// </returns>
         public static ConditionalExpression IfThenElse(Expression test, Expression ifTrue, Expression ifFalse)
         {

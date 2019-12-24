@@ -179,56 +179,57 @@ namespace System.Linq.Expressions.Interpreter
                     switch (instruction)
                     {
                         case EnterTryCatchFinallyInstruction enterTryCatchFinally:
-                            var handler = enterTryCatchFinally.Handler;
+                            AnalyzeEnterTryCatchFinallyInstruction(enterTryCatchFinally);
+                            break;
 
-                            AddTryStart(handler!.TryStartIndex);
-                            AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
-
-                            if (handler.IsFinallyBlockExist)
-                            {
-                                _handlerEnter.Add(handler.FinallyStartIndex, "finally");
-                                AddHandlerExit(handler.FinallyEndIndex);
-                            }
-
-                            if (handler.IsCatchBlockExist)
-                            {
-                                foreach (var catchHandler in handler.Handlers)
-                                {
-                                    _handlerEnter.Add(catchHandler.HandlerStartIndex - 1 /* include EnterExceptionHandler instruction */, catchHandler.ToString());
-                                    AddHandlerExit(catchHandler.HandlerEndIndex);
-
-                                    var filter = catchHandler.Filter;
-                                    if (filter == null)
-                                    {
-                                        continue;
-                                    }
-
-                                    _handlerEnter.Add(filter.StartIndex - 1 /* include EnterExceptionFilter instruction */, "filter");
-                                    AddHandlerExit(filter.EndIndex);
-                                }
-                            }
-
+                        case EnterTryFaultInstruction enterTryFault:
+                            AnalyzeEnterTryFaultInstruction(enterTryFault);
                             break;
 
                         default:
                             break;
                     }
+                }
+            }
 
-                    if (!(instruction is EnterTryFaultInstruction enterTryFault))
+            private void AnalyzeEnterTryCatchFinallyInstruction(EnterTryCatchFinallyInstruction enterTryCatchFinally)
+            {
+                var handler = enterTryCatchFinally.Handler;
+                AddTryStart(handler!.TryStartIndex);
+                AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
+                if (handler.IsFinallyBlockExist)
+                {
+                    _handlerEnter.Add(handler.FinallyStartIndex, "finally");
+                    AddHandlerExit(handler.FinallyEndIndex);
+                }
+                if (handler.IsCatchBlockExist)
+                {
+                    foreach (var catchHandler in handler.Handlers)
                     {
-                        continue;
-                    }
+                        _handlerEnter.Add(
+                            catchHandler.HandlerStartIndex - 1 /* include EnterExceptionHandler instruction */,
+                            catchHandler.ToString());
+                        AddHandlerExit(catchHandler.HandlerEndIndex);
+                        var filter = catchHandler.Filter;
+                        if (filter == null)
+                        {
+                            continue;
+                        }
 
-                    {
-                        var handler = enterTryFault.Handler;
-
-                        AddTryStart(handler!.TryStartIndex);
-                        AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
-
-                        _handlerEnter.Add(handler.FinallyStartIndex, "fault");
-                        AddHandlerExit(handler.FinallyEndIndex);
+                        _handlerEnter.Add(filter.StartIndex - 1 /* include EnterExceptionFilter instruction */,
+                            "filter");
+                        AddHandlerExit(filter.EndIndex);
                     }
                 }
+            }
+
+            private void AnalyzeEnterTryFaultInstruction(EnterTryFaultInstruction enterTryFault)
+            {
+                var handler = enterTryFault.Handler;
+                AddTryStart(handler!.TryStartIndex);
+                AddHandlerExit(handler.TryEndIndex + 1 /* include Goto instruction that acts as a "leave" */);
+                _handlerEnter.Add(handler.FinallyStartIndex, "fault");
+                AddHandlerExit(handler.FinallyEndIndex);
             }
 
             private void Dedent()

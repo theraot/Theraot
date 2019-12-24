@@ -804,25 +804,25 @@ namespace System.Linq.Expressions
             return IndexOf(item) != -1;
         }
 
-        public void CopyTo(Expression[] array, int index)
+        public void CopyTo(Expression[] array, int arrayIndex)
         {
             ContractUtils.RequiresNotNull(array, nameof(array));
-            if (index < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex));
             }
 
             var n = _block.ExpressionCount;
             Debug.Assert(n > 0);
-            if (index + n > array.Length)
+            if (arrayIndex + n > array.Length)
             {
                 throw new ArgumentException(string.Empty, nameof(array));
             }
 
-            array[index++] = _arg0;
+            array[arrayIndex++] = _arg0;
             for (var i = 1; i < n; i++)
             {
-                array[index++] = _block.GetExpression(i);
+                array[arrayIndex++] = _block.GetExpression(i);
             }
         }
 

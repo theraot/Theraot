@@ -221,8 +221,8 @@ namespace System.Linq.Expressions
 
         private static void ValidateNewArgs(ConstructorInfo constructor, ref Expression[] arguments, ref ReadOnlyCollectionEx<MemberInfo> members)
         {
-            ParameterInfo[] pis;
-            if ((pis = constructor.GetParameters()).Length > 0)
+            ParameterInfo[] pis = constructor.GetParameters();
+            if (pis.Length > 0)
             {
                 if (arguments.Length != pis.Length)
                 {

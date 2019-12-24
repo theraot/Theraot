@@ -207,13 +207,12 @@ namespace System.Linq.Expressions
                         break;
 
                     case ExpressionType.Power:
-                        /*op = "**";*/
                         op = "^";
                         break; // This was changed in CoreFx from ^ to **
+
                     case ExpressionType.PowerAssign:
-                        /*op = "**=";*/
                         op = "^=";
-                        break;
+                        break; // This was changed in CoreFx from ^= to **=
 
                     case ExpressionType.Coalesce:
                         op = "??";
@@ -582,14 +581,12 @@ namespace System.Linq.Expressions
             switch (node.NodeType)
             {
                 case ExpressionType.NewArrayBounds:
-                    // new MyType[](expr1, expr2)
                     Out("new ");
                     Out(node.Type.ToString());
                     VisitExpressions('(', node.Expressions, ')');
                     break;
 
                 case ExpressionType.NewArrayInit:
-                    // new [] {expr1, expr2}
                     Out("new [] ");
                     VisitExpressions('{', node.Expressions, '}');
                     break;
@@ -763,10 +760,9 @@ namespace System.Linq.Expressions
 
                 case ExpressionType.Convert:
                 case ExpressionType.ConvertChecked:
-                    /*Out(", ");
-                    Out(node.Type.Name);*/
                     Out(')');
                     break; // These were changed in CoreFx to add the type name
+
                 case ExpressionType.PostIncrementAssign:
                     Out("++");
                     break;

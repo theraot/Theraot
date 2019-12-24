@@ -20,7 +20,7 @@ namespace System.Threading.Tasks
 
         protected override IEnumerable<Task>? GetScheduledTasks()
         {
-            return null;
+            return ArrayEx.Empty<Task>();
         }
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)

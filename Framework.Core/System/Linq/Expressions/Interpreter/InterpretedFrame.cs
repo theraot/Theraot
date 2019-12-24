@@ -1,6 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CA1822 // Marcar miembros como static
 #pragma warning disable CC0091 // Use static method
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -33,11 +33,6 @@ namespace System.Linq.Expressions.Interpreter
         private int _continuationIndex;
         private int _pendingContinuation;
         private object? _pendingValue;
-#if FEATURE_THREAD_ABORT
-        // When a ThreadAbortException is raised from interpreted code this is the first frame that caught it.
-        // No handlers within this handler re-abort the current thread when left.
-        public ExceptionHandler CurrentAbortHandler;
-#endif
 
         internal InterpretedFrame(Interpreter interpreter, IStrongBox[]? closure)
         {
@@ -217,8 +212,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal InterpretedFrame? Enter()
         {
-            var currentFrame = _currentFrame;
-            _currentFrame = this;
+            var currentFrame = EnterCurrentFrame(this);
             return Parent = currentFrame;
         }
 
@@ -229,7 +223,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void Leave(InterpretedFrame? prevFrame)
         {
-            _currentFrame = prevFrame;
+            LeaveCurrentFrame(prevFrame);
         }
 
         internal void PopPendingContinuation()
@@ -258,6 +252,18 @@ namespace System.Linq.Expressions.Interpreter
         internal void SetStackDepth(int depth)
         {
             StackIndex = Interpreter.LocalCount + depth;
+        }
+
+        private static InterpretedFrame? EnterCurrentFrame(InterpretedFrame frame)
+        {
+            var currentFrame = _currentFrame;
+            _currentFrame = frame;
+            return currentFrame;
+        }
+
+        private static void LeaveCurrentFrame(InterpretedFrame? prevFrame)
+        {
+            _currentFrame = prevFrame;
         }
     }
 }

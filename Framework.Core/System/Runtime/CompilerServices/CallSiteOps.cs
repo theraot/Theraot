@@ -91,7 +91,6 @@ namespace System.Runtime.CompilerServices
             }
 
             var mm = site.CreateMatchMaker();
-            // CallSiteOps.ClearMatch(mm);
             mm.Match = true;
             return mm;
         }

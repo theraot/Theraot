@@ -5,6 +5,7 @@
 #pragma warning disable CC0074 // Make field readonly
 #pragma warning disable CC0091 // Use static method
 #pragma warning disable RCS1225 // Make class sealed.
+#pragma warning disable S1104 // Fields should not have public accessibility
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -86,30 +87,19 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentException("Type must be derived from System.Delegate");
             }
-
             var constructors = _siteConstructors;
             if (constructors == null)
             {
                 // It's okay to just set this, worst case we're just throwing away some data
                 _siteConstructors = constructors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(100);
             }
-
             if (constructors.TryGetValue(delegateType, out var ctor))
             {
                 return ctor(binder);
             }
-
             var method = typeof(CallSite<>).MakeGenericType(delegateType).GetMethod(nameof(Create));
-
-            /*if (delegateType.IsCollectible)
-                {
-                    // slow path
-                    return (CallSite)method.Invoke(null, new object[] { binder });
-                }*/
-
             ctor = (Func<CallSiteBinder, CallSite>)method.CreateDelegate(typeof(Func<CallSiteBinder, CallSite>));
             constructors.Add(delegateType, ctor);
-
             return ctor(binder);
         }
     }

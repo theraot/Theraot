@@ -286,12 +286,6 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException(nameof(node));
             }
-
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
-
             var a = VisitArguments(node);
             return a == null ? node : node.Rewrite(a);
         }

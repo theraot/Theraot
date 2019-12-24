@@ -100,15 +100,7 @@ namespace System.Threading
 
         public int WaitingWriteCount { get; private set; }
 
-        private ThreadLockState CurrentThreadState
-        {
-            get
-            {
-                var tid = Thread.CurrentThread.ManagedThreadId;
-
-                return tid < _fastStateCache.Length ? _fastStateCache[tid] ?? (_fastStateCache[tid] = new ThreadLockState()) : GetGlobalThreadState();
-            }
-        }
+        private ThreadLockState CurrentThreadState => TryGetThreadLockState(Thread.CurrentThread.ManagedThreadId) ?? GetGlobalThreadState();
 
         [DebuggerNonUserCode]
         public void Dispose()
@@ -655,6 +647,15 @@ namespace System.Threading
 
             --WaitingReadCount;
             return false;
+        }
+
+        private ThreadLockState? TryGetThreadLockState(int managedThreadId)
+        {
+            if (managedThreadId < _fastStateCache.Length)
+            {
+                return _fastStateCache[managedThreadId] ?? (_fastStateCache[managedThreadId] = new ThreadLockState());
+            }
+            return null;
         }
     }
 }

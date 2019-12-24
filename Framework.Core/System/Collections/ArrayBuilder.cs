@@ -14,9 +14,6 @@ namespace System.Collections.Generic
     /// <typeparam name="T">The element type.</typeparam>
     internal struct ArrayBuilder<T>
     {
-        private const int _defaultCapacity = 4;
-        private const int _maxCoreClrArrayLength = 0x7fefffff; // For byte arrays the limit is slightly larger
-
         /// <summary>
         ///     Initializes the <see cref="ArrayBuilder{T}" /> with a specified capacity.
         /// </summary>
@@ -32,7 +29,7 @@ namespace System.Collections.Generic
         }
 
         /// <summary>Gets the current underlying array.</summary>
-        private T[] Buffer { get; set; }
+        private T[] Buffer { get; }
 
         /// <summary>
         ///     Gets the number of items this instance can store without re-allocating,
@@ -44,51 +41,6 @@ namespace System.Collections.Generic
         ///     Gets the number of items in the array currently in use.
         /// </summary>
         private int Count { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the item at a certain index in the array.
-        /// </summary>
-        /// <param name="index">The index into the array.</param>
-        public T this[int index]
-        {
-            get
-            {
-                Debug.Assert(index >= 0 && index < Count);
-                return Buffer[index];
-            }
-        }
-
-        /// <summary>
-        ///     Adds an item to the backing array, resizing it if necessary.
-        /// </summary>
-        /// <param name="item">The item to add.</param>
-        public void Add(T item)
-        {
-            if (Count == Capacity)
-            {
-                EnsureCapacity(Count + 1);
-            }
-
-            UncheckedAdd(item);
-        }
-
-        /// <summary>
-        ///     Gets the first item in this builder.
-        /// </summary>
-        public T First()
-        {
-            Debug.Assert(Count > 0);
-            return Buffer[0];
-        }
-
-        /// <summary>
-        ///     Gets the last item in this builder.
-        /// </summary>
-        public T Last()
-        {
-            Debug.Assert(Count > 0);
-            return Buffer[Count - 1];
-        }
 
         /// <summary>
         ///     Creates an array from the contents of this builder.
@@ -128,29 +80,6 @@ namespace System.Collections.Generic
             Debug.Assert(Count < Capacity);
 
             Buffer[Count++] = item;
-        }
-
-        private void EnsureCapacity(int minimum)
-        {
-            Debug.Assert(minimum > Capacity);
-
-            var capacity = Capacity;
-            var nextCapacity = capacity == 0 ? _defaultCapacity : 2 * capacity;
-
-            if ((uint)nextCapacity > _maxCoreClrArrayLength)
-            {
-                nextCapacity = Math.Max(capacity + 1, _maxCoreClrArrayLength);
-            }
-
-            nextCapacity = Math.Max(nextCapacity, minimum);
-
-            var next = new T[nextCapacity];
-            if (Count > 0)
-            {
-                Array.Copy(Buffer, 0, next, 0, Count);
-            }
-
-            Buffer = next;
         }
     }
 }

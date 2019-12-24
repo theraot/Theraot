@@ -532,7 +532,7 @@ namespace System.Runtime.CompilerServices
             Capacity = newCapacity;
         }
 
-        private class Enumerator : IEnumerator<T>
+        private sealed class Enumerator : IEnumerator<T>
         {
             private readonly ReadOnlyCollectionBuilder<T> _builder;
             private readonly int _version;

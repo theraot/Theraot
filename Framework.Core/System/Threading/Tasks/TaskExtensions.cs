@@ -164,7 +164,7 @@ namespace System.Threading.Tasks
                             Task inner = outer.Result;
                             if (inner == null)
                             {
-                                // The outer task completed successfully, but with a null inner task;
+                                // The outer task completed successfully, but with a null inner task.
                                 // cancel the completionSource, and we're done.
                                 result = completionSource.TrySetCanceled();
                             }

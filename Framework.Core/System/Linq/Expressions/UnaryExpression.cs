@@ -1345,12 +1345,12 @@ namespace System.Linq.Expressions
                 i++;
                 Debug.Assert(i == temps.Length);
                 block[i++] = Assign(index, FunctionalOp(lastTemp));
-                block[i /*++*/] = lastTemp;
+                block[i] = lastTemp;
             }
             else
             {
                 Debug.Assert(i == temps.Length);
-                block[i /*++*/] = Assign(index, FunctionalOp(index));
+                block[i] = Assign(index, FunctionalOp(index));
             }
 
             Debug.Assert(i == block.Length);

@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
+#pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
 // ReSharper disable LoopCanBeConvertedToQuery
 
 using System.Collections.Generic;

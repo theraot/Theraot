@@ -59,12 +59,6 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public new TDelegate Compile(bool preferInterpretation)
         {
-#if FEATURE_INTERPRET
-            if (preferInterpretation)
-            {
-                return (TDelegate)(object)new Interpreter.LightCompiler().CompileTop(this).CreateDelegate();
-            }
-#endif
             No.Op(preferInterpretation);
             return (TDelegate)(object)LambdaCompiler.Compile(this);
         }
@@ -937,12 +931,6 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public Delegate Compile(bool preferInterpretation)
         {
-#if FEATURE_INTERPRET
-            if (preferInterpretation)
-            {
-                return new Interpreter.LightCompiler().CompileTop(this).CreateDelegate();
-            }
-#endif
             No.Op(preferInterpretation);
             return LambdaCompiler.Compile(this);
         }

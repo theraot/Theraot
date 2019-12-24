@@ -5,6 +5,7 @@
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -36,7 +37,7 @@ namespace System.Collections
     public class ArrayList : IList, ICloneable
     {
         // Copy of Array.MaxArrayLength
-        internal const int MaxArrayLength = 0X7FEFFFFF;
+        private const int MaxArrayLength = 0X7FEFFFFF;
 
         private const int _defaultCapacity = 4;
         private object?[] _items;
@@ -75,7 +76,6 @@ namespace System.Collections
             {
                 throw new ArgumentNullException(nameof(c), "Collection cannot be null.");
             }
-
             var count = c.Count;
             if (count == 0)
             {
@@ -90,7 +90,7 @@ namespace System.Collections
 
         // Note: this constructor is a bogus constructor that does nothing
         // and is for use only with SyncArrayList.
-        internal ArrayList(bool trash)
+        private ArrayList(bool trash)
         {
             _ = trash;
             _items = null!;
@@ -411,7 +411,7 @@ namespace System.Collections
         // Copies this ArrayList into array, which must be of a
         // compatible array type.
         //
-        public virtual void CopyTo(Array array, int arrayIndex)
+        public virtual void CopyTo(Array array, int index)
         {
             if (array != null && array.Rank != 1)
             {
@@ -419,7 +419,7 @@ namespace System.Collections
             }
 
             // Delegate rest of error checking to Array.Copy.
-            Array.Copy(_items, 0, array, arrayIndex, _size);
+            Array.Copy(_items, 0, array, index, _size);
         }
 
         // Copies this ArrayList into array, which must be of a
@@ -1149,9 +1149,9 @@ namespace System.Collections
                 return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int arrayIndex)
+            public override void CopyTo(Array array, int index)
             {
-                _list.CopyTo(array, arrayIndex);
+                _list.CopyTo(array, index);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -1469,9 +1469,9 @@ namespace System.Collections
                 return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int arrayIndex)
+            public override void CopyTo(Array array, int index)
             {
-                _list.CopyTo(array, arrayIndex);
+                _list.CopyTo(array, index);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2085,7 +2085,7 @@ namespace System.Collections
                 return false;
             }
 
-            public override void CopyTo(Array array, int arrayIndex)
+            public override void CopyTo(Array array, int index)
             {
                 if (array == null)
                 {
@@ -2097,18 +2097,18 @@ namespace System.Collections
                     throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
                 }
 
-                if (arrayIndex < 0)
+                if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
+                    throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
                 }
 
-                if (array.Length - arrayIndex < _baseSize)
+                if (array.Length - index < _baseSize)
                 {
                     throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
                 }
 
                 InternalUpdateRange();
-                _baseList.CopyTo(_baseIndex, array, arrayIndex, _baseSize);
+                _baseList.CopyTo(_baseIndex, array, index, _baseSize);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2508,9 +2508,9 @@ namespace System.Collections
                 return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int arrayIndex)
+            public override void CopyTo(Array array, int index)
             {
-                _list.CopyTo(array, arrayIndex);
+                _list.CopyTo(array, index);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2841,11 +2841,11 @@ namespace System.Collections
                 }
             }
 
-            public override void CopyTo(Array array, int arrayIndex)
+            public override void CopyTo(Array array, int index)
             {
                 lock (_root)
                 {
-                    _list.CopyTo(array, arrayIndex);
+                    _list.CopyTo(array, index);
                 }
             }
 

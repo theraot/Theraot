@@ -219,15 +219,6 @@ namespace System.Threading.Tasks
 
         // A Task<VoidStruct> that gets completed when all of its constituent tasks complete.
         // Completion logic will analyze the antecedents in order to choose completion status.
-        // This type allows us to replace this logic:
-        //      Task<VoidStruct> promise = new Task<VoidStruct>(...);
-        //      Action<Task> completionAction = delegate { <completion logic>};
-        //      TaskFactory.CommonCWAllLogic(tasksCopy).AddCompletionAction(completionAction);
-        //      return promise;
-        // which involves several allocations, with this logic:
-        //      return new WhenAllPromise(tasksCopy);
-        // which saves a couple of allocations and enables debugger notification specialization.
-        //
         // Used in InternalWhenAll(Task[])
         private sealed class WhenAllPromise : Task<VoidStruct>, ITaskCompletionAction
         {

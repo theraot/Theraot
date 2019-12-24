@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable S907 // "goto" statement should not be used
 // ReSharper disable AssignNullToNotNullAttribute
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -160,7 +161,6 @@ namespace System.Linq.Expressions.Compiler
                         locals.FreeLocal(lb);
                         break;
                     }
-
                     goto case TypeCode.Empty;
 
                 case TypeCode.Empty:
@@ -1082,12 +1082,21 @@ namespace System.Linq.Expressions.Compiler
                         default:
                             break;
                     }
-
-                    convCode = isChecked
-                        ? isFromUnsigned
-                            ? OpCodes.Conv_Ovf_I2_Un
-                            : OpCodes.Conv_Ovf_I2
-                        : OpCodes.Conv_I2;
+                    if (isChecked)
+                    {
+                        if (isFromUnsigned)
+                        {
+                            convCode = OpCodes.Conv_Ovf_I2_Un;
+                        }
+                        else
+                        {
+                            convCode = OpCodes.Conv_Ovf_I2;
+                        }
+                    }
+                    else
+                    {
+                        convCode = OpCodes.Conv_I2;
+                    }
                     break;
 
                 case TypeCode.Char:
@@ -1112,11 +1121,21 @@ namespace System.Linq.Expressions.Compiler
                             break;
                     }
 
-                    convCode = isChecked
-                        ? isFromUnsigned
-                            ? OpCodes.Conv_Ovf_U2_Un
-                            : OpCodes.Conv_Ovf_U2
-                        : OpCodes.Conv_U2;
+                    if (isChecked)
+                    {
+                        if (isFromUnsigned)
+                        {
+                            convCode = OpCodes.Conv_Ovf_U2_Un;
+                        }
+                        else
+                        {
+                            convCode = OpCodes.Conv_Ovf_U2;
+                        }
+                    }
+                    else
+                    {
+                        convCode = OpCodes.Conv_U2;
+                    }
                     break;
 
                 case TypeCode.Int32:
@@ -1140,11 +1159,21 @@ namespace System.Linq.Expressions.Compiler
                             break;
                     }
 
-                    convCode = isChecked
-                        ? isFromUnsigned
-                            ? OpCodes.Conv_Ovf_I4_Un
-                            : OpCodes.Conv_Ovf_I4
-                        : OpCodes.Conv_I4;
+                    if (isChecked)
+                    {
+                        if (isFromUnsigned)
+                        {
+                            convCode = OpCodes.Conv_Ovf_I4_Un;
+                        }
+                        else
+                        {
+                            convCode = OpCodes.Conv_Ovf_I4;
+                        }
+                    }
+                    else
+                    {
+                        convCode = OpCodes.Conv_I4;
+                    }
                     break;
 
                 case TypeCode.UInt32:
@@ -1169,11 +1198,21 @@ namespace System.Linq.Expressions.Compiler
                             break;
                     }
 
-                    convCode = isChecked
-                        ? isFromUnsigned
-                            ? OpCodes.Conv_Ovf_U4_Un
-                            : OpCodes.Conv_Ovf_U4
-                        : OpCodes.Conv_U4;
+                    if (isChecked)
+                    {
+                        if (isFromUnsigned)
+                        {
+                            convCode = OpCodes.Conv_Ovf_U4_Un;
+                        }
+                        else
+                        {
+                            convCode = OpCodes.Conv_Ovf_U4;
+                        }
+                    }
+                    else
+                    {
+                        convCode = OpCodes.Conv_U4;
+                    }
                     break;
 
                 case TypeCode.Int64:
@@ -1182,13 +1221,25 @@ namespace System.Linq.Expressions.Compiler
                         return;
                     }
 
-                    convCode = isChecked
-                        ? isFromUnsigned
-                            ? OpCodes.Conv_Ovf_I8_Un
-                            : OpCodes.Conv_Ovf_I8
-                        : isFromUnsigned
-                            ? OpCodes.Conv_U8
-                            : OpCodes.Conv_I8;
+                    if (isChecked)
+                    {
+                        if (isFromUnsigned)
+                        {
+                            convCode = OpCodes.Conv_Ovf_I8_Un;
+                        }
+                        else
+                        {
+                            convCode = OpCodes.Conv_Ovf_I8;
+                        }
+                    }
+                    else if (isFromUnsigned)
+                    {
+                        convCode = OpCodes.Conv_U8;
+                    }
+                    else
+                    {
+                        convCode = OpCodes.Conv_I8;
+                    }
                     break;
 
                 case TypeCode.UInt64:
@@ -1197,13 +1248,25 @@ namespace System.Linq.Expressions.Compiler
                         return;
                     }
 
-                    convCode = isChecked
-                        ? isFromUnsigned || tf.IsFloatingPoint()
-                            ? OpCodes.Conv_Ovf_U8_Un
-                            : OpCodes.Conv_Ovf_U8
-                        : isFromUnsigned || tf.IsFloatingPoint()
-                            ? OpCodes.Conv_U8
-                            : OpCodes.Conv_I8;
+                    if (isChecked)
+                    {
+                        if (isFromUnsigned || tf.IsFloatingPoint())
+                        {
+                            convCode = OpCodes.Conv_Ovf_U8_Un;
+                        }
+                        else
+                        {
+                            convCode = OpCodes.Conv_Ovf_U8;
+                        }
+                    }
+                    else if (isFromUnsigned || tf.IsFloatingPoint())
+                    {
+                        convCode = OpCodes.Conv_U8;
+                    }
+                    else
+                    {
+                        convCode = OpCodes.Conv_I8;
+                    }
                     break;
 
                 default:

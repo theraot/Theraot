@@ -152,7 +152,7 @@ namespace System.Linq
             return true;
         }
 
-        private static MethodInfo ReplaceQueryableMethod(MethodInfo method)
+        private static MethodInfo ReplaceQueryableMethodCore(MethodInfo method)
         {
             var targetType = GetTargetDeclaringType(method);
             var result = GetMatchingMethod(method, targetType);
@@ -193,7 +193,7 @@ namespace System.Linq
                 target = Visit(old.Object);
             }
 
-            var method = ReplaceQueryableMethod(old.Method);
+            var method = ReplaceQueryableMethodCore(old.Method);
             var parameters = method.GetParameters();
             var arguments = new Expression[old.Arguments.Count];
             for (var index = 0; index < arguments.Length; index++)

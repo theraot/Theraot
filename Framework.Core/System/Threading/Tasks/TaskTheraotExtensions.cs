@@ -4,6 +4,7 @@
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
+#pragma warning disable S112 // General exceptions should never be thrown
 
 using System.Runtime.CompilerServices;
 using Theraot;

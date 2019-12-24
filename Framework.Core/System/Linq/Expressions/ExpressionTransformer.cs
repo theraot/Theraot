@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
+#pragma warning disable S112 // General exceptions should never be thrown
 
 // ExpressionTransformer.cs
 //
@@ -288,11 +289,15 @@ namespace System.Linq.Expressions
         private NewExpression VisitNew(NewExpression nex)
         {
             var args = VisitExpressionList(nex.Arguments);
-            return args != nex.Arguments
-                ? nex.Members != null
-                    ? Expression.New(nex.Constructor!, args, nex.Members)
-                    : Expression.New(nex.Constructor!, args)
-                : nex;
+            if (args == nex.Arguments)
+            {
+                return nex;
+            }
+            if (nex.Members == null)
+            {
+                return Expression.New(nex.Constructor!, args);
+            }
+            return Expression.New(nex.Constructor!, args, nex.Members);
         }
 
         private Expression VisitNewArray(NewArrayExpression na)

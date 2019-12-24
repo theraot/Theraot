@@ -52,9 +52,9 @@ namespace System.Linq.Expressions
         [Flags]
         private enum Flow
         {
-            None,
-            Space,
-            NewLine,
+            None = 0,
+            Space = 1,
+            NewLine = 2,
 
             Break = 0x8000 // newline if column > MaxColumn
         }
@@ -576,13 +576,11 @@ namespace System.Linq.Expressions
         {
             if (node.NodeType == ExpressionType.NewArrayBounds)
             {
-                // .NewArray MyType[expr1, expr2]
                 Out(".NewArray " + node.Type.GetElementType());
                 VisitExpressions('[', node.Expressions.AsArrayInternal());
             }
             else
             {
-                // .NewArray MyType {expr1, expr2}
                 Out(".NewArray " + node.Type, Flow.Space);
                 VisitExpressions('{', node.Expressions.AsArrayInternal());
             }
@@ -894,13 +892,31 @@ namespace System.Linq.Expressions
 
         private static string? GetConstantValueSuffix(Type type)
         {
-            return type == typeof(uint) ? "U"
-                : type == typeof(long) ? "L"
-                : type == typeof(ulong) ? "UL"
-                : type == typeof(double) ? "D"
-                : type == typeof(float) ? "F"
-                : type == typeof(decimal) ? "M"
-                : null;
+            if (type == typeof(uint))
+            {
+                return "U";
+            }
+            if (type == typeof(long))
+            {
+                return "L";
+            }
+            if (type == typeof(ulong))
+            {
+                return "UL";
+            }
+            if (type == typeof(double))
+            {
+                return "D";
+            }
+            if (type == typeof(float))
+            {
+                return "F";
+            }
+            if (type == typeof(decimal))
+            {
+                return "M";
+            }
+            return null;
         }
 
         private static string GetDisplayName(string name)

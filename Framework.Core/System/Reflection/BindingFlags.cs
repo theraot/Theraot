@@ -2,6 +2,8 @@
 
 #pragma warning disable CA1008 // Enums should have zero value
 #pragma warning disable CA2217 // Do not mark enums with FlagsAttribute
+#pragma warning disable S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
+#pragma warning disable S2346 // Flags enumerations zero-value members should be named "None"
 
 using System.Runtime.InteropServices;
 

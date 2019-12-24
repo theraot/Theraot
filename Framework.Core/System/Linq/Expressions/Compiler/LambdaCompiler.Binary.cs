@@ -1,4 +1,7 @@
 ﻿#if LESSTHAN_NET35
+
+#pragma warning disable S907 // "goto" statement should not be used
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -496,7 +499,18 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.AddChecked:
-                    IL.Emit(leftType.IsFloatingPoint() ? OpCodes.Add : leftType.IsUnsigned() ? OpCodes.Add_Ovf_Un : OpCodes.Add_Ovf);
+                    if (leftType.IsFloatingPoint())
+                    {
+                        IL.Emit(OpCodes.Add);
+                    }
+                    else if (leftType.IsUnsigned())
+                    {
+                        IL.Emit(OpCodes.Add_Ovf_Un);
+                    }
+                    else
+                    {
+                        IL.Emit(OpCodes.Add_Ovf);
+                    }
                     break;
 
                 case ExpressionType.Subtract:
@@ -520,7 +534,18 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case ExpressionType.MultiplyChecked:
-                    IL.Emit(leftType.IsFloatingPoint() ? OpCodes.Mul : leftType.IsUnsigned() ? OpCodes.Mul_Ovf_Un : OpCodes.Mul_Ovf);
+                    if (leftType.IsFloatingPoint())
+                    {
+                        IL.Emit(OpCodes.Mul);
+                    }
+                    else if (leftType.IsUnsigned())
+                    {
+                        IL.Emit(OpCodes.Mul_Ovf_Un);
+                    }
+                    else
+                    {
+                        IL.Emit(OpCodes.Mul_Ovf);
+                    }
                     break;
 
                 case ExpressionType.Divide:

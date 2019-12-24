@@ -104,13 +104,31 @@ namespace System.Linq.Expressions
             return SwitchExtracted(type, switchValue, defaultBody, ref comparison, cases);
         }
 
+        private static Type GetResultType(Type? type, Expression? defaultBody, SwitchCase[] caseArray)
+        {
+            var bodyType = type;
+            if (bodyType != null)
+            {
+                return bodyType;
+            }
+            if (caseArray.Length != 0)
+            {
+                return caseArray[0].Body.Type;
+            }
+            if (defaultBody != null)
+            {
+                return defaultBody.Type;
+            }
+            return typeof(void);
+        }
+
         private static SwitchExpression SwitchExtracted(Type? type, Expression switchValue, Expression? defaultBody, ref MethodInfo? comparison, IEnumerable<SwitchCase>? cases)
         {
             var caseArray = cases.AsArrayInternal();
             ContractUtils.RequiresNotNullItems(caseArray, nameof(cases));
 
             // Type of the result. Either provided, or it is type of the branches.
-            var resultType = type ?? (caseArray.Length != 0 ? caseArray[0].Body.Type : defaultBody != null ? defaultBody.Type : typeof(void));
+            var resultType = GetResultType(type, defaultBody, caseArray);
 
             var customType = type != null;
 

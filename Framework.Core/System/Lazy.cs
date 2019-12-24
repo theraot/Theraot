@@ -112,16 +112,7 @@ namespace System
 
                 try
                 {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        var currentThread = Thread.CurrentThread;
-                        if (threads.Contains(currentThread))
-                        {
-                            throw new InvalidOperationException();
-                        }
-
-                        threads.Add(currentThread);
-                    }
+                    AddThread(threads);
                     ValueForDebugDisplay = valueFactory();
                     _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
                     Volatile.Write(ref _isValueCreated, 1);
@@ -134,10 +125,7 @@ namespace System
                 }
                 finally
                 {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        threads.Remove(Thread.CurrentThread);
-                    }
+                    RemoveThread(threads);
                 }
             }
 
@@ -150,16 +138,7 @@ namespace System
 
                 try
                 {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        var currentThread = Thread.CurrentThread;
-                        if (threads.Contains(currentThread))
-                        {
-                            throw new InvalidOperationException();
-                        }
-
-                        threads.Add(currentThread);
-                    }
+                    AddThread(threads);
                     ValueForDebugDisplay = valueFactory();
                     _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
                     Volatile.Write(ref _isValueCreated, 1);
@@ -172,10 +151,7 @@ namespace System
                 }
                 finally
                 {
-                    // lock (threads) // This is meant to not be thread-safe
-                    {
-                        threads.Remove(Thread.CurrentThread);
-                    }
+                    RemoveThread(threads);
                 }
             }
 
@@ -197,6 +173,23 @@ namespace System
         public T Value => _valueFactory.Invoke();
 
         internal T ValueForDebugDisplay { get; private set; } = default!;
+
+        private static void AddThread(HashSet<Thread> threads)
+        {
+            // lock (threads) // This is meant to not be thread-safe
+            var currentThread = Thread.CurrentThread;
+            if (threads.Contains(currentThread))
+            {
+                throw new InvalidOperationException();
+            }
+            threads.Add(currentThread);
+        }
+
+        private static void RemoveThread(HashSet<Thread> threads)
+        {
+            // lock (threads) // This is meant to not be thread-safe
+            threads.Remove(Thread.CurrentThread);
+        }
 
         private T CachingFullMode(Func<T> valueFactory, ref ManualResetEvent? waitHandle, ref Thread? thread)
         {
@@ -239,7 +232,7 @@ namespace System
             }
             catch (ObjectDisposedException exception)
             {
-                var _ = exception;
+                _ = exception;
             }
             return _valueFactory.Invoke();
         }
@@ -286,7 +279,7 @@ namespace System
                 }
                 catch (ObjectDisposedException exception)
                 {
-                    var _ = exception;
+                    _ = exception;
                 }
             }
             return _valueFactory.Invoke();

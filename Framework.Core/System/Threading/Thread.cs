@@ -2,6 +2,7 @@
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
+#pragma warning disable IDE0052 // Remove unread private members
 
 using System.Threading.Tasks;
 using Theraot;
@@ -20,9 +21,10 @@ namespace System.Threading
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static object? _threadProbe;
 
+        private string? _name;
+
         private readonly WeakReference<object>? _probe;
         private readonly ParameterizedThreadStart? _start;
-        private string? _name;
         private Task? _task;
 
         public Thread(ParameterizedThreadStart start)
@@ -33,7 +35,7 @@ namespace System.Threading
             }
             _start = state =>
             {
-                _currentThread = this;
+                SetCurrentThread(this);
                 start(state);
             };
             ManagedThreadId = Interlocked.Increment(ref _lastId);
@@ -47,7 +49,7 @@ namespace System.Threading
             }
             _start = _ =>
             {
-                _currentThread = this;
+                SetCurrentThread(this);
                 start();
             };
             ManagedThreadId = Interlocked.Increment(ref _lastId);
@@ -57,9 +59,8 @@ namespace System.Threading
         {
             _start = null;
             _task = null;
-            _currentThread = this;
-            _threadProbe = new object();
-            _probe = new WeakReference<object>(_threadProbe);
+            SetCurrentThread(this);
+            _probe = SetThreadProbe();
         }
 
         ~Thread()
@@ -239,6 +240,18 @@ namespace System.Threading
             var task = new Task(() => _start(parameter), TaskCreationOptions.LongRunning);
             task.Start();
             _task = task;
+        }
+
+        private static void SetCurrentThread(Thread thread)
+        {
+            _currentThread = thread;
+        }
+
+        private static WeakReference<object> SetThreadProbe()
+        {
+            var threadProbe = new object();
+            _threadProbe = threadProbe;
+            return new WeakReference<object>(threadProbe);
         }
     }
 }

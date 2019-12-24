@@ -27,64 +27,11 @@ namespace System.Threading.Tasks
         public static Task Run(Func<Task> action)
         {
             return Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
-            /*if (action == null)
-            {
-                throw new ArgumentNullException();
-            }
-            var result = new Task
-                (
-                    () =>
-                    {
-                        var task = action();
-                        task.Start(task.ExecutingTaskScheduler, false);
-                        task.Wait();
-                        if (task.IsFaulted)
-                        {
-                            throw task.Exception;
-                        }
-                        if (task.IsCanceled)
-                        {
-                            throw new TaskCanceledException(task);
-                        }
-                    },
-                    CancellationToken.None,
-                    TaskCreationOptions.DenyChildAttach
-                );
-            result.Start();
-            return result;*/
         }
 
         public static Task Run(Func<Task> action, CancellationToken cancellationToken)
         {
             return Factory.StartNew(action, cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
-            /*if (action == null)
-            {
-                throw new ArgumentNullException();
-            }
-            var result = new Task
-                (
-                    () =>
-                    {
-                        var task = action();
-                        task.Start(task.ExecutingTaskScheduler, false);
-                        task.Wait(cancellationToken);
-                        if (task.IsFaulted)
-                        {
-                            throw task.Exception;
-                        }
-                        if (task.IsCanceled)
-                        {
-                            throw new TaskCanceledException(task);
-                        }
-                    },
-                    cancellationToken,
-                    TaskCreationOptions.DenyChildAttach
-                );
-            if (!cancellationToken.IsCancellationRequested)
-            {
-                result.Start(result.ExecutingTaskScheduler, false);
-            }
-            return result;*/
         }
 
         public static Task<TResult> Run<TResult>(Func<TResult> function)

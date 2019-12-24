@@ -3848,7 +3848,7 @@ namespace System.Threading.Tasks
         private static void ThrowSingleCancellationExceptionOrOtherException(ICollection exceptions, Exception otherException, CancellationToken cancelToken)
         {
             // IF exceptions are all OperationCanceledExceptionExs with the specified cancelToken,
-            // THEN throw that unique OperationCanceledExceptionEx (pick any);
+            // THEN throw that unique OperationCanceledExceptionEx (pick any)
             // OTHERWISE throw the specified otherException.
             var reducedCancelEx = ReduceToSingleCancellationException(exceptions, cancelToken);
             ExceptionDispatchInfo.Capture(reducedCancelEx ?? otherException).Throw();

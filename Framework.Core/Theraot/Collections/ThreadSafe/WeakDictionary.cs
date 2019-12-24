@@ -364,9 +364,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
+        /// <exception cref="ArgumentNullException">array</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
+        /// <exception cref="ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             if (array == null)
@@ -389,10 +389,10 @@ namespace Theraot.Collections.ThreadSafe
 
         /// <inheritdoc />
         /// <summary>
-        ///     Returns an <see cref="System.Collections.Generic.IEnumerator{KeyValuePair}" /> that allows to iterate through the collection.
+        ///     Returns an <see cref="IEnumerator{KeyValuePair}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        ///     An <see cref="System.Collections.Generic.IEnumerator{KeyValuePair}" /> object that can be used to iterate through the
+        ///     An <see cref="IEnumerator{KeyValuePair}" /> object that can be used to iterate through the
         ///     collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()

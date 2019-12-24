@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable S907 // "goto" statement should not be used
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -304,8 +306,8 @@ namespace System.Linq.Expressions.Compiler
                         IL.Emit(OpCodes.Ceq);
                         return;
                     }
-
                     goto case ExpressionType.OnesComplement;
+
                 case ExpressionType.OnesComplement:
                     IL.Emit(OpCodes.Not);
                     if (!operandType.IsUnsigned())

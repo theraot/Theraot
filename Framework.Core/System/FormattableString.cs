@@ -31,15 +31,15 @@ namespace System
 
         public abstract string ToString(IFormatProvider? formatProvider);
 
+        public override string ToString()
+        {
+            return ToString(Globalization.CultureInfo.CurrentCulture);
+        }
+
         string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
         {
             _ = format;
             return ToString(formatProvider);
-        }
-
-        public override string ToString()
-        {
-            return ToString(Globalization.CultureInfo.CurrentCulture);
         }
     }
 }

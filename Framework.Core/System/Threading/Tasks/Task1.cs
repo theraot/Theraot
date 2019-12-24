@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable S2372 // Exceptions should not be thrown from property getters
 
 using System.Diagnostics.Contracts;
 

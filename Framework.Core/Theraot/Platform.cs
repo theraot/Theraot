@@ -111,7 +111,7 @@ namespace Theraot
             2
 #elif NET30 || NET35 || NETCOREAPP3_0
             3
-#elif NET40 || NET45 || NET46 || NET47 || NET48
+#elif NET40 || NET45 || NET46 || NET47 || NET471 || NET472 || NET48
             4
 #else
             -1
@@ -133,7 +133,7 @@ namespace Theraot
             5
 #elif NET46 || NETSTANDARD1_6
             6
-#elif NET47
+#elif NET47 || NET471 || NET472
             7
 #elif NET48
             8

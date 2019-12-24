@@ -1,6 +1,7 @@
 ﻿// Needed for NET35 (TASK)
 
 #pragma warning disable RCS1231 // Make parameter ref read-only.
+#pragma warning disable S3376 // Attribute, EventArgs, and Exception type names should end with the type being extended
 
 using System.Runtime.Serialization;
 using System.Threading;

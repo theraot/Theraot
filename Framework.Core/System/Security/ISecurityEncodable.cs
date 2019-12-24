@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 #pragma warning disable CA1041 // Provide ObsoleteAttribute message
+#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -64,7 +66,7 @@ namespace System.Security
         [Obsolete]
         public void Deny() => throw new PlatformNotSupportedException();
 
-        public abstract void FromXml(SecurityElement e);
+        public abstract void FromXml(SecurityElement elem);
 
         public abstract IPermission? Intersect(IPermission target);
 

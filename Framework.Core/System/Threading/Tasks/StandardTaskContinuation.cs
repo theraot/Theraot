@@ -44,10 +44,7 @@ namespace System.Threading.Tasks
             // Check if the completion status of the task works with the desired
             // activation criteria of the TaskContinuationOptions.
             var options = Options;
-            var isRightKind =
-                completedTask.Status == TaskStatus.RanToCompletion ? (options & TaskContinuationOptions.NotOnRanToCompletion) == 0 :
-                completedTask.IsCanceled ? (options & TaskContinuationOptions.NotOnCanceled) == 0 :
-                (options & TaskContinuationOptions.NotOnFaulted) == 0;
+            var isRightKind = CheckKind(completedTask, options);
 
             // If the completion status is allowed, run the continuation.
             var continuationTask = Task;
@@ -81,6 +78,19 @@ namespace System.Threading.Tasks
             {
                 continuationTask.InternalCancel(false);
             }
+        }
+
+        private static bool CheckKind(Task completedTask, TaskContinuationOptions options)
+        {
+            if (completedTask.Status == TaskStatus.RanToCompletion)
+            {
+                return (options & TaskContinuationOptions.NotOnRanToCompletion) == 0;
+            }
+            if (completedTask.IsCanceled)
+            {
+                return (options & TaskContinuationOptions.NotOnCanceled) == 0;
+            }
+            return (options & TaskContinuationOptions.NotOnFaulted) == 0;
         }
     }
 }

@@ -82,7 +82,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class InitializeLocalInstruction : LocalAccessInstruction
     {
-        internal InitializeLocalInstruction(int index)
+        private protected InitializeLocalInstruction(int index)
             : base(index)
         {
             // Empty

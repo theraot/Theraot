@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1064 // Exceptions should be public
+#pragma warning disable S3871 // Exception types should be "public"
 
 namespace System.Linq.Expressions.Interpreter
 {
