@@ -42,10 +42,10 @@ namespace System.Collections.ObjectModel
         internal IList<T> Wrapped { get; }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public void CopyTo(int index, T[] array, int arrayIndex, int count)
+        public void CopyTo(int sourceIndex, T[] array, int index, int count)
         {
-            Extensions.CanCopyTo(Count - index, array, count);
-            Extensions.CopyTo(this, index, array, arrayIndex, count);
+            Extensions.CanCopyTo(Count - sourceIndex, array, count);
+            Extensions.CopyTo(this, sourceIndex, array, index, count);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -55,10 +55,10 @@ namespace System.Collections.ObjectModel
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public void CopyTo(T[] array, int arrayIndex, int count)
+        public void CopyTo(T[] array, int index, int count)
         {
-            Extensions.CanCopyTo(array, arrayIndex, count);
-            Extensions.CopyTo(this, array, arrayIndex, count);
+            Extensions.CanCopyTo(array, index, count);
+            Extensions.CopyTo(this, array, index, count);
         }
 
         public override int GetHashCode()

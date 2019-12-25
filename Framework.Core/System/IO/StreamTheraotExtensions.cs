@@ -19,48 +19,48 @@ namespace System.IO
         private const int _defaultBufferSize = 4096;
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void CopyTo(this Stream input, Stream output)
+        public static void CopyTo(this Stream source, Stream destination)
         {
             //Added in .NET 4.0
-            if (input == null)
+            if (source == null)
             {
                 throw new NullReferenceException();
             }
 
-            if (output == null)
+            if (destination == null)
             {
-                throw new ArgumentNullException(nameof(output));
+                throw new ArgumentNullException(nameof(destination));
             }
 
             var buffer = new byte[_defaultBufferSize];
             int read;
             do
             {
-                read = input.Read(buffer, 0, _defaultBufferSize);
-                output.Write(buffer, 0, read);
+                read = source.Read(buffer, 0, _defaultBufferSize);
+                destination.Write(buffer, 0, read);
             } while (read != 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void CopyTo(this Stream input, Stream output, int bufferSize)
+        public static void CopyTo(this Stream source, Stream destination, int bufferSize)
         {
             //Added in .NET 4.0
-            if (input == null)
+            if (source == null)
             {
                 throw new NullReferenceException();
             }
 
-            if (output == null)
+            if (destination == null)
             {
-                throw new ArgumentNullException(nameof(output));
+                throw new ArgumentNullException(nameof(destination));
             }
 
             var buffer = new byte[bufferSize];
             int read;
             do
             {
-                read = input.Read(buffer, 0, bufferSize);
-                output.Write(buffer, 0, read);
+                read = source.Read(buffer, 0, bufferSize);
+                destination.Write(buffer, 0, read);
             } while (read != 0);
         }
     }

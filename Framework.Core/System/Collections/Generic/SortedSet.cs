@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1721 // Property names should not match get methods
+#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
 using System.Linq;
 using System.Runtime.Serialization;
@@ -126,10 +127,10 @@ namespace System.Collections.Generic
             this.DeprecatedCopyTo(array, index);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] array, int index)
         {
-            Extensions.CanCopyTo(Count, array, arrayIndex);
-            Extensions.CopyTo(this, array, arrayIndex);
+            Extensions.CanCopyTo(Count, array, index);
+            Extensions.CopyTo(this, array, index);
         }
 
         public void CopyTo(T[] array)

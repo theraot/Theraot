@@ -3,6 +3,7 @@
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -365,7 +366,7 @@ namespace System.Collections
         }
 
         // Copies the values in this SortedList to an array.
-        public virtual void CopyTo(Array array, int index)
+        public virtual void CopyTo(Array array, int arrayIndex)
         {
             if (array == null)
             {
@@ -377,12 +378,12 @@ namespace System.Collections
                 throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
             }
 
-            if (index < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
             }
 
-            if (array.Length - index < Count)
+            if (array.Length - arrayIndex < Count)
             {
                 throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
             }
@@ -390,7 +391,7 @@ namespace System.Collections
             for (var i = 0; i < Count; i++)
             {
                 var entry = new DictionaryEntry(_keys[i], _values[i]);
-                array.SetValue(entry, i + index);
+                array.SetValue(entry, i + arrayIndex);
             }
         }
 
@@ -950,11 +951,11 @@ namespace System.Collections
                 }
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
                 lock (_root)
                 {
-                    _list.CopyTo(array, index);
+                    _list.CopyTo(array, arrayIndex);
                 }
             }
 

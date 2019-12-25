@@ -6,6 +6,7 @@
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
+#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -411,7 +412,7 @@ namespace System.Collections
         // Copies this ArrayList into array, which must be of a
         // compatible array type.
         //
-        public virtual void CopyTo(Array array, int index)
+        public virtual void CopyTo(Array array, int arrayIndex)
         {
             if (array != null && array.Rank != 1)
             {
@@ -419,7 +420,7 @@ namespace System.Collections
             }
 
             // Delegate rest of error checking to Array.Copy.
-            Array.Copy(_items, 0, array, index, _size);
+            Array.Copy(_items, 0, array, arrayIndex, _size);
         }
 
         // Copies this ArrayList into array, which must be of a
@@ -1149,9 +1150,9 @@ namespace System.Collections
                 return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
-                _list.CopyTo(array, index);
+                _list.CopyTo(array, arrayIndex);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -1469,9 +1470,9 @@ namespace System.Collections
                 return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
-                _list.CopyTo(array, index);
+                _list.CopyTo(array, arrayIndex);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2085,7 +2086,7 @@ namespace System.Collections
                 return false;
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
                 if (array == null)
                 {
@@ -2097,18 +2098,18 @@ namespace System.Collections
                     throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
                 }
 
-                if (index < 0)
+                if (arrayIndex < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
+                    throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
                 }
 
-                if (array.Length - index < _baseSize)
+                if (array.Length - arrayIndex < _baseSize)
                 {
                     throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
                 }
 
                 InternalUpdateRange();
-                _baseList.CopyTo(_baseIndex, array, index, _baseSize);
+                _baseList.CopyTo(_baseIndex, array, arrayIndex, _baseSize);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2508,9 +2509,9 @@ namespace System.Collections
                 return _list.Contains(value);
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
-                _list.CopyTo(array, index);
+                _list.CopyTo(array, arrayIndex);
             }
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
@@ -2841,11 +2842,11 @@ namespace System.Collections
                 }
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
                 lock (_root)
                 {
-                    _list.CopyTo(array, index);
+                    _list.CopyTo(array, arrayIndex);
                 }
             }
 

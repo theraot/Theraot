@@ -11,6 +11,7 @@
 #pragma warning disable S125 // Sections of code should not be commented out
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
 #pragma warning disable S2372 // Exceptions should not be thrown from property getters
+#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable VirtualMemberCallInConstructor
@@ -662,8 +663,8 @@ namespace System.Collections
         }
 
         // Copies the values in this hash table to an array at
-        // a given index.  Note that this only copies values, and not keys.
-        public virtual void CopyTo(Array array, int index)
+        // a given arrayIndex.  Note that this only copies values, and not keys.
+        public virtual void CopyTo(Array array, int arrayIndex)
         {
             if (array == null)
             {
@@ -675,17 +676,17 @@ namespace System.Collections
                 throw new ArgumentException("Only single dimensional arrays are supported for the requested action.", nameof(array));
             }
 
-            if (index < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), "Non-negative number required.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number required.");
             }
 
-            if (array.Length - index < Count)
+            if (array.Length - arrayIndex < Count)
             {
                 throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
             }
 
-            CopyEntries(array, index);
+            CopyEntries(array, arrayIndex);
         }
 
         // Returns a dictionary enumerator for this hashtable.
@@ -1557,11 +1558,11 @@ namespace System.Collections
                 }
             }
 
-            public override void CopyTo(Array array, int index)
+            public override void CopyTo(Array array, int arrayIndex)
             {
                 lock (_table.SyncRoot)
                 {
-                    _table.CopyTo(array, index);
+                    _table.CopyTo(array, arrayIndex);
                 }
             }
 
