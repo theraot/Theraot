@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Theraot
 {
@@ -11,7 +10,6 @@ namespace Theraot
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="arg">The value.</param>
         [Conditional("THERAOT_NEVER")]
-        [Obsolete("Use a discard statement instead.")]
         public static void Op<T>(T arg)
         {
             _ = arg;
