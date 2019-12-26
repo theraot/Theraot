@@ -24,10 +24,12 @@ namespace System
             {
                 return (T[])(object)TypeEx.EmptyTypes;
             }
+
             if (_emptyArrays.TryGetValue(type, out var array))
             {
                 return (T[])array;
             }
+
             var result = new T[0];
             _emptyArrays[type] = result;
             return result;
@@ -58,6 +60,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             return new ReadOnlyCollection<T>(array);
 #else
             return Array.AsReadOnly(array);
@@ -73,15 +76,18 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (converter == null)
             {
                 throw new ArgumentNullException(nameof(converter));
             }
+
             var newArray = new TOutput[array.Length];
             for (var index = 0; index < array.Length; index++)
             {
                 newArray[index] = converter(array[index]);
             }
+
             return newArray;
 #else
             return Array.ConvertAll(array, converter);
@@ -96,6 +102,7 @@ namespace System
             {
                 throw new ArgumentOutOfRangeException(nameof(length), "Arrays larger than 2GB are not supported.");
             }
+
             Array.Copy(sourceArray, destinationArray, (int)length);
 #else
             Array.Copy(sourceArray, destinationArray, length);
@@ -110,14 +117,17 @@ namespace System
             {
                 throw new ArgumentOutOfRangeException(nameof(sourceIndex), "Arrays larger than 2GB are not supported.");
             }
+
             if (destinationIndex > int.MaxValue || destinationIndex < int.MinValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(destinationIndex), "Arrays larger than 2GB are not supported.");
             }
+
             if (length > int.MaxValue || length < int.MinValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(length), "Arrays larger than 2GB are not supported.");
             }
+
             Array.Copy(sourceArray, (int)sourceIndex, destinationArray, (int)destinationIndex, (int)length);
 #else
             Array.Copy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
@@ -132,6 +142,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             for (int index = 0; index < array.Length; index++)
             {
                 array[index] = value;
@@ -149,10 +160,12 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(array));
             }
+
             if (action == null)
             {
                 throw new ArgumentNullException(nameof(action));
             }
+
             foreach (var item in array)
             {
                 action(item);

@@ -15,10 +15,12 @@ namespace System
             {
                 return new UIntPtr(unchecked((uint)((int)pointer + offset)));
             }
+
             if (UIntPtr.Size == 8)
             {
                 return new UIntPtr(unchecked((ulong)((long)pointer + offset)));
             }
+
             throw new NotSupportedException("Not supported platform");
 #else
             return UIntPtr.Add(pointer, offset);
@@ -34,10 +36,12 @@ namespace System
             {
                 return new UIntPtr(unchecked((uint)((int)pointer - offset)));
             }
+
             if (UIntPtr.Size == 8)
             {
                 return new UIntPtr(unchecked((ulong)((long)pointer - offset)));
             }
+
             throw new NotSupportedException("Not supported platform");
 #else
             return UIntPtr.Subtract(pointer, offset);

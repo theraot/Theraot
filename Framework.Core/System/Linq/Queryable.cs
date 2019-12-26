@@ -172,6 +172,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is IQueryable queryable)
             {
                 return queryable;

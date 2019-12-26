@@ -10,7 +10,6 @@ using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an expression that has a constant value.
     /// </summary>
@@ -22,7 +21,6 @@ namespace System.Linq.Expressions
             Value = value;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -30,12 +28,11 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Constant;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
-        public override Type Type => Value == null ? typeof(object) : Value.GetType();
+        public override Type Type => Value?.GetType() ?? typeof(object);
 
         /// <summary>
         ///     Gets the value of the constant expression.

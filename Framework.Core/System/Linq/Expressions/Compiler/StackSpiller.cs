@@ -134,7 +134,7 @@ namespace System.Linq.Expressions.Compiler
         }
 
         [Conditional("DEBUG")]
-        private static void VerifyRewrite(Result result, Expression node)
+        private static void VerifyRewrite(in Result result, Expression node)
         {
             Debug.Assert(result.Node != null);
 
@@ -161,7 +161,7 @@ namespace System.Linq.Expressions.Compiler
             );
         }
 
-        private RewriteAction ProcessHandlers(Result body, ref CatchBlock[] handlers)
+        private RewriteAction ProcessHandlers(in Result body, ref CatchBlock[] handlers)
         {
             var action = body.Action;
 

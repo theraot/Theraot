@@ -82,9 +82,9 @@ namespace Theraot.Threading
             if (guard == null)
             {
                 _guard = new HashSet<UniqueId>
-                         {
-                             id
-                         };
+                {
+                    id
+                };
                 return true;
             }
 

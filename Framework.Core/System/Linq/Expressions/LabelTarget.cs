@@ -83,7 +83,7 @@ namespace System.Linq.Expressions
         public override string ToString()
         {
             // Reference source says "UnamedLabel"
-            return Name == null || string.IsNullOrEmpty(Name) ? "UnamedLabel" : Name;
+            return string.IsNullOrEmpty(Name) ? "UnamedLabel" : Name!;
         }
     }
 }

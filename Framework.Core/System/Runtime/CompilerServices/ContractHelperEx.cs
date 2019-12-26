@@ -33,7 +33,7 @@ namespace System.Runtime.CompilerServices
         internal static string GetFailureMessage(ContractFailureKind failureKind, string? conditionText)
         {
             string result;
-            var withCondition = !(conditionText == null || string.IsNullOrEmpty(conditionText));
+            var withCondition = !string.IsNullOrEmpty(conditionText);
             switch (failureKind)
             {
                 case ContractFailureKind.Assert:

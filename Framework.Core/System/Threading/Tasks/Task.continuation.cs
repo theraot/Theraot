@@ -1138,8 +1138,6 @@ namespace System.Threading.Tasks
                     // The continuations may have already executed at this point
                     LockEnter(spinWait);
                     return Volatile.Read(ref _continuationsStatus) == _continuationsInitialization ? continuations : null;
-
-                    // It is being taken or has already been taken for execution
             }
         }
     }

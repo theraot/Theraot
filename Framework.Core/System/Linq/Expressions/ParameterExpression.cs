@@ -86,7 +86,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a named parameter expression.
     /// </summary>
@@ -108,7 +107,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public string? Name { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -116,7 +114,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Parameter;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)
@@ -156,6 +153,7 @@ namespace System.Linq.Expressions
                     {
                         return new ParameterExpression(name);
                     }
+
                     if (type == typeof(Exception))
                     {
                         return new PrimitiveParameterExpression<Exception>(name);
@@ -196,7 +194,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Specialized subclass to avoid holding onto the byref flag in a
     ///     parameter expression.  This version always holds onto the expression
@@ -216,7 +213,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Generic type to avoid needing explicit storage for primitive data types
     ///     which are commonly used.
@@ -232,7 +228,6 @@ namespace System.Linq.Expressions
         public override Type Type => typeof(T);
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Specialized subclass which holds onto the type of the expression for
     ///     uncommon types.

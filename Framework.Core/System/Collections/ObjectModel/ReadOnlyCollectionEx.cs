@@ -29,9 +29,9 @@ namespace System.Collections.ObjectModel
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public
 #if LESSTHAN_NET45
-    partial
+        partial
 #endif
-    class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
+        class ReadOnlyCollectionEx<T> : ReadOnlyCollection<T>
     {
         public ReadOnlyCollectionEx(IList<T> wrapped)
             : base(wrapped)

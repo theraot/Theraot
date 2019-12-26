@@ -16,6 +16,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(culture));
             }
+
             return culture.TextInfo.ToLower(c);
 #endif
         }
@@ -30,6 +31,7 @@ namespace System
             {
                 throw new ArgumentNullException(nameof(culture));
             }
+
             return culture.TextInfo.ToUpper(c);
 #endif
         }

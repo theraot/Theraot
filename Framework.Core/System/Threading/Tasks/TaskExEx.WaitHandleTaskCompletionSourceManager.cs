@@ -4,7 +4,7 @@
 
     public static partial class TaskExEx
     {
-        private class WaitHandleTaskCompletionSourceManager
+        private sealed class WaitHandleTaskCompletionSourceManager
         {
             private readonly WaitHandle _handle;
             private readonly TaskCompletionSource<bool> _taskCompletionSource;
@@ -18,14 +18,12 @@
             public static void CreateWithoutTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource)
             {
                 var result = new WaitHandleTaskCompletionSourceManager(waitHandle, taskCompletionSource);
-                // ReSharper disable once MethodSupportsCancellation
                 Task.Run(result.CallbackWithoutTimeout);
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleTaskCompletionSourceManager(waitHandle, taskCompletionSource);
-                // ReSharper disable once MethodSupportsCancellation
                 Task.Run(() => result.CallbackWithTimeout(millisecondsTimeout));
             }
 
@@ -46,7 +44,7 @@
 
     public static partial class TaskExEx
     {
-        private class WaitHandleTaskCompletionSourceManager
+        private sealed class WaitHandleTaskCompletionSourceManager
         {
             private readonly RegisteredWaitHandle?[] _registeredWaitHandle;
 

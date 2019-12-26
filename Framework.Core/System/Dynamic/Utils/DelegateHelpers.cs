@@ -15,7 +15,6 @@ namespace System.Dynamic.Utils
 {
     internal static class DelegateHelpers
     {
-        // ReSharper disable once PossibleNullReferenceException
         private static readonly MethodInfo _arrayEmpty = typeof(ArrayEx).GetMethod(nameof(ArrayEx.Empty)).MakeGenericMethod(typeof(object));
 
         private static readonly MethodInfo _funcInvoke = typeof(Func<object[], object>).GetMethod("Invoke");
@@ -93,7 +92,6 @@ namespace System.Dynamic.Utils
 
                 if (paramIsByReference)
                 {
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     ilGenerator.Emit(OpCodes.Ldobj, paramType);
                 }
 
@@ -135,7 +133,6 @@ namespace System.Dynamic.Utils
                     ilGenerator.Emit(OpCodes.Ldloc, argArray);
                     ilGenerator.Emit(OpCodes.Ldc_I4, i);
                     ilGenerator.Emit(OpCodes.Ldelem_Ref);
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     ilGenerator.Emit(OpCodes.Unbox_Any, byrefToType);
                     ilGenerator.Emit(OpCodes.Stobj, byrefToType);
                 }

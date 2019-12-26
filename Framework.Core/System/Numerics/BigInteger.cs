@@ -628,7 +628,6 @@ namespace System.Numerics
             return length > 2 ? 1 : ULong(length, InternalBits).CompareTo(other);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Compares this instance to a second <see cref="BigInteger" /> and returns an integer that
         ///     indicates whether the value of this instance is less than, equal to, or greater than the value of the specified
@@ -684,7 +683,6 @@ namespace System.Numerics
             return InternalBits[diffLength - 1] >= other.InternalBits[diffLength - 1] ? InternalSign : -InternalSign;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Compares this instance to a specified object and returns an integer that indicates whether the value of this
         ///     instance is less than, equal to, or greater than the value of the specified object.
@@ -779,7 +777,6 @@ namespace System.Numerics
             return ULong(length, InternalBits) == other;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns a value that indicates whether the current instance and a specified
         ///     <see cref="BigInteger" /> object have the same value.
@@ -951,7 +948,6 @@ namespace System.Numerics
             return FormatBigInteger(this, format, NumberFormatInfo.CurrentInfo);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Converts the numeric value of the current <see cref="BigInteger" /> object to its equivalent
         ///     string representation by using the specified format and culture-specific format information.
@@ -972,15 +968,17 @@ namespace System.Numerics
 
         private readonly int GetSignComparison(in BigInteger other)
         {
-            if (InternalSign >= other.InternalSign)
+            if (InternalSign < other.InternalSign)
             {
-                if (InternalSign <= other.InternalSign)
-                {
-                    return 0;
-                }
-                return 1;
+                return -1;
             }
-            return -1;
+
+            if (InternalSign <= other.InternalSign)
+            {
+                return 0;
+            }
+
+            return 1;
         }
 
         private uint[] ToUInt32Array()

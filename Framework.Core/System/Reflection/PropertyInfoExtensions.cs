@@ -34,6 +34,7 @@ namespace System.Reflection
             {
                 return null;
             }
+
             return result;
         }
 
@@ -62,6 +63,7 @@ namespace System.Reflection
             {
                 return null;
             }
+
             return result;
         }
     }

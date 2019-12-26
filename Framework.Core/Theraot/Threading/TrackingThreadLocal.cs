@@ -63,6 +63,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(nameof(TrackingThreadLocal<T>));
                 }
+
                 return slots!.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
             }
         }

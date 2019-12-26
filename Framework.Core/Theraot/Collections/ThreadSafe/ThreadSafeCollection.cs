@@ -17,7 +17,6 @@ namespace Theraot.Collections.ThreadSafe
 
         private Bucket<T> _wrapped;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeCollection{T}" /> class.
         /// </summary>
@@ -49,7 +48,6 @@ namespace Theraot.Collections.ThreadSafe
             _wrapped.Set(Interlocked.Increment(ref _maxIndex), item);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes all the elements.
         /// </summary>
@@ -74,7 +72,6 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Where(itemCheck).Any();
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Determines whether the specified value is contained.
         /// </summary>
@@ -92,7 +89,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
@@ -107,7 +103,6 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.CopyTo(_wrapped, array, arrayIndex);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -125,7 +120,6 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes the specified value.
         /// </summary>

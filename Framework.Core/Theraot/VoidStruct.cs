@@ -1,10 +1,10 @@
-// Needed for NET35 (TASK)
+﻿// Needed for NET35 (TASK)
 
 using System;
 
 namespace Theraot
 {
-    public struct VoidStruct : IEquatable<VoidStruct>
+    public readonly struct VoidStruct : IEquatable<VoidStruct>
     {
         public static bool operator !=(VoidStruct left, VoidStruct right)
         {

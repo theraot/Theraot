@@ -11,7 +11,6 @@
 
 namespace System.ComponentModel.DataAnnotations
 {
-    /// <inheritdoc />
     /// <summary>
     ///     DisplayAttribute is a general-purpose attribute to specify user-visible globalizable strings for types and members.
     ///     The string properties of this class can be used either as literals or as resource identifiers into a specified

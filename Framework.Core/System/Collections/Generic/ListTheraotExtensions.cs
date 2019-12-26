@@ -17,6 +17,7 @@ namespace System.Collections.Generic
             {
                 throw new NullReferenceException();
             }
+
             return new ReadOnlyCollection<T>(list);
         }
     }

@@ -21,15 +21,19 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             if (resultSelector == null)
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             return ZipIterator();
+
             IEnumerable<TReturn> ZipIterator()
             {
                 using (var enumerator1 = first.GetEnumerator())
@@ -68,6 +72,7 @@ namespace System.Linq
                 {
                     yield return item;
                 }
+
                 yield return element;
             }
         }
@@ -79,11 +84,12 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return Appended();
+            return Prepended();
 
-            IEnumerable<TSource> Appended()
+            IEnumerable<TSource> Prepended()
             {
                 yield return element;
+
                 foreach (var item in source)
                 {
                     yield return item;

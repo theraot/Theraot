@@ -48,11 +48,13 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
+
             if (tasks is Task[] array)
             {
                 // Take a more efficient path if tasks is actually an array
                 return WhenAll(array);
             }
+
             if (tasks is ICollection<Task> collection)
             {
                 var index = 0;
@@ -62,8 +64,10 @@ namespace System.Threading.Tasks
                     taskArray[index++] =
                         task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
+
                 return InternalWhenAll(taskArray);
             }
+
             var taskList = new List<Task>();
             foreach (var task in tasks)
             {
@@ -71,8 +75,10 @@ namespace System.Threading.Tasks
                 {
                     throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
+
                 taskList.Add(task);
             }
+
             // Delegate the rest to InternalWhenAll()
             return InternalWhenAll(taskList.ToArray());
         }
@@ -179,11 +185,13 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
+
             if (tasks is Task<TResult>[] array)
             {
                 // Take a more efficient route if tasks is actually an array
                 return WhenAll(array);
             }
+
             if (tasks is ICollection<Task<TResult>> collection)
             {
                 var index = 0;
@@ -193,8 +201,10 @@ namespace System.Threading.Tasks
                     taskArray[index++] =
                         task ?? throw new ArgumentException("The tasks argument included a null value.", nameof(tasks));
                 }
+
                 return InternalWhenAll(taskArray);
             }
+
             var taskList = new List<Task<TResult>>();
             foreach (var task in tasks)
             {
@@ -202,8 +212,10 @@ namespace System.Threading.Tasks
                 {
                     throw new ArgumentException("Task_MultiTaskContinuation_NullTask", nameof(tasks));
                 }
+
                 taskList.Add(task);
             }
+
             // Delegate the rest to InternalWhenAll<TResult>().
             return InternalWhenAll(taskList.ToArray());
         }

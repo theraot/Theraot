@@ -14,6 +14,7 @@ namespace System.Collections.Generic
             {
                 throw new NullReferenceException(nameof(sortedSet));
             }
+
             var view = sortedSet.GetViewBetween(equalValue, equalValue);
             actualValue = default!;
             foreach (var result in view)
@@ -21,6 +22,7 @@ namespace System.Collections.Generic
                 actualValue = result;
                 return true;
             }
+
             return false;
         }
     }

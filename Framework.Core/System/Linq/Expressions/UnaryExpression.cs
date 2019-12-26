@@ -1137,7 +1137,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an expression that has a unary operator.
     /// </summary>
@@ -1152,7 +1151,6 @@ namespace System.Linq.Expressions
             Type = type;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
@@ -1212,7 +1210,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="MethodInfo" /> that represents the implementing method.</returns>
         public MethodInfo? Method { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -1227,7 +1224,6 @@ namespace System.Linq.Expressions
         /// <remarks>Can be null when <see cref="NodeType"/> is <see cref="ExpressionType.Throw"/>. </remarks>
         public Expression? Operand { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)
@@ -1237,7 +1233,6 @@ namespace System.Linq.Expressions
 
         private bool IsPrefix => NodeType == ExpressionType.PreIncrementAssign || NodeType == ExpressionType.PreDecrementAssign;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Reduces the expression node to a simpler expression.
         ///     If CanReduce returns true, this should return a valid expression.

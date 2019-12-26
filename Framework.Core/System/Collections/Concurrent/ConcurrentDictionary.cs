@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-// ReSharper disable HeuristicUnreachableCode
-
 using System.Collections.Generic;
 using System.Linq;
 using Theraot.Collections;
@@ -110,15 +108,15 @@ namespace System.Collections.Concurrent
             }
         }
 
-        object? IDictionary.this[object key]
+        object? IDictionary.this[object? key]
         {
             get
             {
                 switch (key)
                 {
                     case null:
-                        // key could be null
                         throw new ArgumentNullException(nameof(key));
+
                     case TKey keyAsTKey when _wrapped.TryGetValue(keyAsTKey, out var result):
                         return result;
 
@@ -131,9 +129,9 @@ namespace System.Collections.Concurrent
                 switch (key)
                 {
                     case null:
-                        // key could be null
                         // ConcurrentDictionary hates null
                         throw new ArgumentNullException(nameof(key));
+
                     case TKey keyAsTKey when value is TValue valueAsTValue:
                         this[keyAsTKey] = valueAsTValue;
                         break;
@@ -416,11 +414,7 @@ namespace System.Collections.Concurrent
         {
             // This should be an snapshot operation
             var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
-            foreach (var pair in _wrapped)
-            {
-                result.Add(pair);
-            }
-
+            result.AddRange(_wrapped);
             return result.ToArray();
         }
 

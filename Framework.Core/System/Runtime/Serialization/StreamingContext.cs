@@ -50,6 +50,7 @@ namespace System.Runtime.Serialization
             {
                 return false;
             }
+
             var ctx = (StreamingContext)obj;
             return ctx.Context == Context && ctx.State == State;
         }

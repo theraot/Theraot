@@ -14,10 +14,12 @@ namespace System
             {
                 return new IntPtr(unchecked((int)pointer + offset));
             }
+
             if (IntPtr.Size == 8)
             {
                 return new IntPtr(unchecked((long)pointer + offset));
             }
+
             throw new NotSupportedException("Not supported platform");
 #else
             return IntPtr.Add(pointer, offset);
@@ -32,10 +34,12 @@ namespace System
             {
                 return new IntPtr(unchecked((int)pointer - offset));
             }
+
             if (IntPtr.Size == 8)
             {
                 return new IntPtr(unchecked((long)pointer - offset));
             }
+
             throw new NotSupportedException("Not supported platform");
 #else
             return IntPtr.Subtract(pointer, offset);

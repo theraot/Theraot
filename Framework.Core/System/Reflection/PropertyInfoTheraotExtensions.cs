@@ -16,6 +16,7 @@ namespace System.Reflection
             {
                 throw new NullReferenceException();
             }
+
             return info.GetValue(obj, null);
         }
     }

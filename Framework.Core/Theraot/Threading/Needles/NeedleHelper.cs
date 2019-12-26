@@ -11,10 +11,12 @@ namespace Theraot.Threading.Needles
                 target = default!;
                 return false;
             }
+
             if (needle is ICacheNeedle<T> cacheNeedle)
             {
                 return cacheNeedle.TryGetValue(out target);
             }
+
             target = needle.Value;
             return needle.IsAlive;
         }

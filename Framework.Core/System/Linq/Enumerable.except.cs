@@ -12,10 +12,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             return ExceptExtracted(first, second, null);
         }
 
@@ -25,10 +27,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             return ExceptExtracted(first, second, comparer);
         }
 

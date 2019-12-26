@@ -257,6 +257,7 @@ namespace System.Threading
             {
                 return;
             }
+
             Interlocked.Exchange(ref _state, null)?.Dispose();
         }
 
@@ -293,6 +294,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(SemaphoreSlim));
             }
+
             return state;
         }
 

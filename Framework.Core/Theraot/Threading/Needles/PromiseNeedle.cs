@@ -1,7 +1,6 @@
 ﻿// Needed for Workaround
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
-// ReSharper disable ConstantNullCoalescingCondition
 
 using System;
 using System.Collections.Generic;
@@ -106,10 +105,12 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
+
             if (other.TryGetValue(out var value))
             {
                 return Equals(value);
             }
+
             return !IsAlive;
         }
 
@@ -127,11 +128,18 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             var target = _target;
-            return IsCompleted
-                ? Exception == null
-                    ? target!.ToString() ?? "[?]"
-                    : Exception.ToString() ?? "[?]"
-                : "[Not Created]";
+            if (!IsCompleted)
+            {
+                return "[Not Created]";
+            }
+
+            if (Exception == null)
+            {
+                return target?.ToString() ?? "[?]";
+            }
+
+            // ReSharper disable once ConstantNullCoalescingCondition
+            return Exception.ToString() ?? "[?]";
         }
 
         public bool TryGetValue(out T value)

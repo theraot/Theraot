@@ -21,6 +21,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             return bucket.Insert(index, item, out var previous) ? item : previous;
         }
 
@@ -30,14 +31,17 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             if (itemFactory == null)
             {
                 throw new ArgumentNullException(nameof(itemFactory));
             }
+
             if (bucket.TryGet(index, out var stored))
             {
                 return stored;
             }
+
             var created = itemFactory.Invoke();
             return bucket.Insert(index, created, out stored) ? created : stored;
         }
@@ -76,6 +80,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             isNew = true;
             while (true)
             {
@@ -85,6 +90,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         return;
                     }
+
                     isNew = false;
                 }
                 else
@@ -114,6 +120,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, out _);
         }
 
@@ -187,6 +194,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             return InsertOrUpdateChecked(bucket, index, itemFactory, itemUpdateFactory, check, out _);
         }
 
@@ -406,6 +414,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             return InsertOrUpdateChecked(bucket, index, itemFactory, check, out _);
         }
 
@@ -430,6 +439,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             isNew = true;
             var factoryUsed = false;
             var created = default(T)!;
@@ -442,10 +452,12 @@ namespace Theraot.Collections.ThreadSafe
                         created = itemFactory.Invoke();
                         factoryUsed = true;
                     }
+
                     if (bucket.Insert(index, created, out _))
                     {
                         return true;
                     }
+
                     isNew = false;
                 }
                 else
@@ -455,6 +467,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         return true;
                     }
+
                     if (!isNew)
                     {
                         return false; // returns false only when check returns false
@@ -555,6 +568,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             return bucket.Update(index, itemUpdateFactory, Tautology, out _);
         }
 
@@ -564,6 +578,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             return bucket.Update(index, itemUpdateFactory, Tautology, out isEmpty);
         }
 
@@ -583,6 +598,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(bucket));
             }
+
             return bucket.Update(index, _ => item, check, out isEmpty);
         }
 

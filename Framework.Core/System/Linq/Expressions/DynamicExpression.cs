@@ -43,19 +43,16 @@ namespace System.Linq.Expressions
         /// </summary>
         public CallSiteBinder Binder { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
         public override bool CanReduce => true;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the type of the delegate used by the <see cref="CallSite" />.
         /// </summary>
         public Type DelegateType { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -63,7 +60,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Dynamic;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
@@ -341,7 +337,6 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Reduces the dynamic expression node to a simpler expression.
         /// </summary>

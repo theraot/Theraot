@@ -89,15 +89,18 @@ namespace System.Threading.Tasks.Sources
             {
                 return ValueTaskSourceStatus.Pending;
             }
-            if (_result is ExceptionStructNeedle<TResult> error)
+
+            if (!(_result is ExceptionStructNeedle<TResult> error))
             {
-                if (error.Exception is OperationCanceledException)
-                {
-                    return ValueTaskSourceStatus.Canceled;
-                }
-                return ValueTaskSourceStatus.Faulted;
+                return ValueTaskSourceStatus.Succeeded;
             }
-            return ValueTaskSourceStatus.Succeeded;
+
+            if (error.Exception is OperationCanceledException)
+            {
+                return ValueTaskSourceStatus.Canceled;
+            }
+
+            return ValueTaskSourceStatus.Faulted;
         }
 
         /// <summary>Gets the result of the operation.</summary>
@@ -124,6 +127,7 @@ namespace System.Threading.Tasks.Sources
             {
                 throw new ArgumentNullException(nameof(continuation));
             }
+
             ValidateToken(token);
 
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13

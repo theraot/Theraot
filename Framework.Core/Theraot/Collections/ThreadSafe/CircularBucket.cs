@@ -5,7 +5,6 @@ using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a thread-safe wait-free fixed size circular bucket.
     /// </summary>
@@ -53,7 +52,6 @@ namespace Theraot.Collections.ThreadSafe
             return index;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>

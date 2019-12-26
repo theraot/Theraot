@@ -24,10 +24,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             return SelectExtracted(source, selector);
         }
 
@@ -37,10 +39,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             return SelectManyExtracted();
 
             IEnumerable<TResult> SelectManyExtracted()
@@ -61,10 +65,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             return SelectManyExtracted();
 
             IEnumerable<TResult> SelectManyExtracted()
@@ -76,6 +82,7 @@ namespace System.Linq
                     {
                         yield return item;
                     }
+
                     count++;
                 }
             }
@@ -87,14 +94,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (collectionSelector == null)
             {
                 throw new ArgumentNullException(nameof(collectionSelector));
             }
+
             if (resultSelector == null)
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             return SelectManyExtracted();
 
             IEnumerable<TResult> SelectManyExtracted()
@@ -115,14 +125,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (collectionSelector == null)
             {
                 throw new ArgumentNullException(nameof(collectionSelector));
             }
+
             if (resultSelector == null)
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             return SelectManyExtracted();
 
             IEnumerable<TResult> SelectManyExtracted()
@@ -134,6 +147,7 @@ namespace System.Linq
                     {
                         yield return resultSelector(element, collection);
                     }
+
                     count++;
                 }
             }
@@ -146,6 +160,7 @@ namespace System.Linq
             foreach (var item in source)
             {
                 yield return selector(item, count);
+
                 count++;
             }
         }

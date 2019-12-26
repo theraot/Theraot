@@ -1,6 +1,4 @@
-﻿// ReSharper disable HeuristicUnreachableCode
-
-#pragma warning disable CA1043 // Use Integral Or String Argument For Indexers
+﻿#pragma warning disable CA1043 // Use Integral Or String Argument For Indexers
 #pragma warning disable S4144 // Methods should not have identical implementations
 
 using System;

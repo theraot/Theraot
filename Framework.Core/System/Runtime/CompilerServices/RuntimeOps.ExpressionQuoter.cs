@@ -41,10 +41,12 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(hoistedLocals));
             }
+
             if (locals == null)
             {
                 throw new ArgumentNullException(nameof(locals));
             }
+
             var quoter = new ExpressionQuoter((HoistedLocals)hoistedLocals, locals);
             return quoter.Visit(expression);
         }
@@ -169,7 +171,13 @@ namespace System.Runtime.CompilerServices
             {
                 if (node.Variable != null)
                 {
-                    _shadowedVars.Push(new HashSet<ParameterExpression> { node.Variable });
+                    _shadowedVars.Push
+                    (
+                        new HashSet<ParameterExpression>
+                        {
+                            node.Variable
+                        }
+                    );
                 }
 
                 var b = Visit(node.Body);
@@ -212,8 +220,8 @@ namespace System.Runtime.CompilerServices
                     {
                         break;
                     }
-                    scope = nullableScope;
 
+                    scope = nullableScope;
                     locals = HoistedLocals.GetParent(locals);
                 }
 

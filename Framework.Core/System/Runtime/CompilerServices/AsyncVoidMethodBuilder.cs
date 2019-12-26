@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
-using Theraot;
 
 namespace System.Runtime.CompilerServices
 {
@@ -206,7 +205,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                No.Op(ex);
+                _ = ex;
             }
         }
 

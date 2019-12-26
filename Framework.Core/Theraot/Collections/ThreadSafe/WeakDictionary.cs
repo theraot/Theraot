@@ -1,6 +1,7 @@
 ﻿// Needed for NET35 (ConditionalWeakTable)
 
 #pragma warning disable RCS1231 // Make parameter ref read-only.
+// ReSharper disable ImplicitlyCapturedClosure
 
 using System;
 using System.Collections;
@@ -13,7 +14,6 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    // TODO: this is actually a Weak Key dictionary useful to extend objects, there could also be Weak Value dictionaries useful for caches, and fully weak dictionary useful for the combination.
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IHasComparer<TKey>, ICloneable
@@ -246,7 +246,6 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes all the elements.
         /// </summary>
@@ -276,6 +275,7 @@ namespace Theraot.Collections.ThreadSafe
 
                 var value = item.Value;
                 yield return new KeyValuePair<TKey, TValue>(foundKey, value);
+
                 _reservoir.DonateNeedle(item.Key);
             }
         }
@@ -287,6 +287,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 result.AddNew(pair.Key, pair.Value);
             }
+
             return result;
         }
 
@@ -301,7 +302,6 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.ContainsKey(Comparer.GetHashCode(item.Key), Check, input => EqualityComparer<TValue>.Default.Equals(input, item.Value));
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Determines whether the specified key is contained.
         /// </summary>
@@ -358,7 +358,6 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.ContainsKey(hashCode, input => PrivateTryGetValue(input, out var foundKey) && keyCheck(foundKey), valueCheck);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
@@ -387,7 +386,6 @@ namespace Theraot.Collections.ThreadSafe
             GetPairs().CopyTo(array, arrayIndex);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{KeyValuePair}" /> that allows to iterate through the collection.
         /// </summary>
@@ -471,7 +469,6 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes the specified key.
         /// </summary>
@@ -775,7 +772,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Tries to retrieve the value associated with the specified key.
         /// </summary>

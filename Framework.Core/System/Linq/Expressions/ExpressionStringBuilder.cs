@@ -606,13 +606,13 @@ namespace System.Linq.Expressions
             }
 
             var name = node.Name;
-            if (name == null || string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 Out("Param_" + GetParamId(node));
             }
             else
             {
-                Out(name);
+                Out(name!);
             }
 
             return node;
@@ -783,7 +783,7 @@ namespace System.Linq.Expressions
         {
             Out("catch (");
             Out(node.Test.Name);
-            if (node.Variable?.Name != null && !string.IsNullOrEmpty(node.Variable?.Name))
+            if (!string.IsNullOrEmpty(node.Variable?.Name))
             {
                 Out(' ');
                 Out(node.Variable!.Name!);
@@ -871,14 +871,14 @@ namespace System.Linq.Expressions
         private void DumpLabel(LabelTarget target)
         {
             var name = target.Name;
-            if (name == null || string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 var labelId = GetLabelId(target);
                 Out("UnnamedLabel_" + labelId);
             }
             else
             {
-                Out(name);
+                Out(name!);
             }
         }
 

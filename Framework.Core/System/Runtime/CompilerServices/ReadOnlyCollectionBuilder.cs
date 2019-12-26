@@ -58,6 +58,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(collection));
             }
+
             if (collection is ICollection<T> c)
             {
                 var count = c.Count;
@@ -133,6 +134,7 @@ namespace System.Runtime.CompilerServices
                 {
                     throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
                 }
+
                 var typedValue = value == null ? default : (T)value;
                 try
                 {
@@ -145,7 +147,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets or sets the element at the specified index.
         /// </summary>
@@ -180,6 +181,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
             }
+
             var typedValue = value == null ? default : (T)value;
             try
             {
@@ -193,7 +195,6 @@ namespace System.Runtime.CompilerServices
             return Count - 1;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Adds an item to the <see cref="ReadOnlyCollectionBuilder{T}" />.
         /// </summary>
@@ -231,7 +232,6 @@ namespace System.Runtime.CompilerServices
             return IsCompatibleObject(value) && Contains((T)value);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Determines whether the <see cref="ReadOnlyCollectionBuilder{T}" /> contains a
         ///     specific value
@@ -286,7 +286,6 @@ namespace System.Runtime.CompilerServices
             Array.Copy(_items, 0, array, index, Count);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Copies the elements of the <see cref="ReadOnlyCollectionBuilder{T}" /> to an
         ///     <see cref="Array" />,
@@ -302,7 +301,6 @@ namespace System.Runtime.CompilerServices
             Array.Copy(_items, 0, array, arrayIndex, Count);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an enumerator that iterates through the collection.
         /// </summary>
@@ -330,7 +328,6 @@ namespace System.Runtime.CompilerServices
             return -1;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the index of the first occurrence of a given value in the builder.
         /// </summary>
@@ -347,6 +344,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentException($"The value null is not of type '{typeof(T)}' and cannot be used in this collection.", nameof(value));
             }
+
             var typedValue = value == null ? default : (T)value;
             try
             {
@@ -358,7 +356,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Inserts an item to the <see cref="ReadOnlyCollectionBuilder{T}" /> at the
         ///     specified index.
@@ -398,7 +395,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes the first occurrence of a specific object from the
         ///     <see cref="ReadOnlyCollectionBuilder{T}" />.

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal struct LabelScopeChangeInfo : IEquatable<LabelScopeChangeInfo>
+    internal readonly struct LabelScopeChangeInfo : IEquatable<LabelScopeChangeInfo>
     {
         public readonly LabelScopeKind Kind;
         public readonly IList<Expression>? Nodes;

@@ -240,14 +240,15 @@ namespace System.Linq.Expressions.Compiler
                     @this.IL.Emit(OpCodes.Ldloc, instanceLocal);
                     @this.FreeLocal(instanceLocal);
                 }
+
                 foreach (var arg in args)
                 {
                     @this.IL.Emit(OpCodes.Ldloc, arg);
                     @this.FreeLocal(arg);
                 }
+
                 @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
-
                 @this.EmitSetIndexCall(node, instanceLocal?.LocalType);
             };
         }

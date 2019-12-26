@@ -4,7 +4,6 @@
 
 namespace System.Runtime.CompilerServices
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Allows you to obtain the line number in the source file at which the method is called.
     /// </summary>

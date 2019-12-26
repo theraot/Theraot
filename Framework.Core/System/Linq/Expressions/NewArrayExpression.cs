@@ -166,7 +166,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents creating a new array and possibly initializing the elements of the new array.
     /// </summary>
@@ -190,7 +189,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Expressions => _expressionsAsReadOnlyCollection;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)
@@ -251,7 +249,6 @@ namespace System.Linq.Expressions
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -268,7 +265,6 @@ namespace System.Linq.Expressions
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)

@@ -66,7 +66,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     An expression that provides runtime read/write access to variables.
     ///     Needed to implement "eval" in some dynamic languages.
@@ -84,7 +83,6 @@ namespace System.Linq.Expressions
             _variablesAsReadOnlyCollection = ReadOnlyCollectionEx.Create(_variables);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -92,7 +90,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.RuntimeVariables;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
@@ -117,6 +114,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
+
             if (variables == null)
             {
                 throw new ArgumentNullException(nameof(variables));

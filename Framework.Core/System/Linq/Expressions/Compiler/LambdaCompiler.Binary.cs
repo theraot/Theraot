@@ -220,7 +220,6 @@ namespace System.Linq.Expressions.Compiler
 
             // construct result type
             var ci = resultType.GetConstructor(new[] { resultType.GetNonNullable() });
-            // ReSharper disable once AssignNullToNotNullAttribute
             IL.Emit(OpCodes.Newobj, ci);
             IL.Emit(OpCodes.Stloc, locResult);
             IL.Emit(OpCodes.Br_S, labEnd);
@@ -511,6 +510,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         IL.Emit(OpCodes.Add_Ovf);
                     }
+
                     break;
 
                 case ExpressionType.Subtract:
@@ -546,6 +546,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         IL.Emit(OpCodes.Mul_Ovf);
                     }
+
                     break;
 
                 case ExpressionType.Divide:

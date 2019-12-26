@@ -116,6 +116,7 @@ namespace System.Linq.Expressions
             {
                 return ListInit(newExpression, initializers);
             }
+
             ContractUtils.RequiresNotNull(newExpression, nameof(newExpression));
             if (initializers == null)
             {
@@ -183,6 +184,7 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException(nameof(initializers));
             }
+
             return ListInitExtracted(newExpression, initializers);
         }
 
@@ -218,7 +220,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a constructor call that has a collection initializer.
     /// </summary>
@@ -238,7 +239,6 @@ namespace System.Linq.Expressions
             Initializers = initializers;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
@@ -254,7 +254,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public NewExpression NewExpression { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -262,7 +261,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public override ExpressionType NodeType => ExpressionType.ListInit;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)
@@ -270,7 +268,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Reduces the binary expression node to a simpler expression.
         ///     If CanReduce returns true, this should return a valid expression.
@@ -297,10 +294,12 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
+
             if (initializers == null)
             {
                 throw new ArgumentNullException(nameof(initializers));
             }
+
             return ListInit(newExpression, initializers);
         }
 

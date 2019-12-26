@@ -86,16 +86,19 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentException("Type must be derived from System.Delegate");
             }
+
             var constructors = _siteConstructors;
             if (constructors == null)
             {
                 // It's okay to just set this, worst case we're just throwing away some data
                 _siteConstructors = constructors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(100);
             }
+
             if (constructors.TryGetValue(delegateType, out var ctor))
             {
                 return ctor(binder);
             }
+
             var method = typeof(CallSite<>).MakeGenericType(delegateType).GetMethod(nameof(Create));
             ctor = (Func<CallSiteBinder, CallSite>)method.CreateDelegate(typeof(Func<CallSiteBinder, CallSite>));
             constructors.Add(delegateType, ctor);
@@ -103,7 +106,6 @@ namespace System.Runtime.CompilerServices
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Dynamic site type.
     /// </summary>
@@ -187,13 +189,19 @@ namespace System.Runtime.CompilerServices
             var matchmaker = CachedMatchmaker;
             if (matchmaker == null)
             {
-                return matchmaker ?? new CallSite<T> { Match = true };
+                return matchmaker ?? new CallSite<T>
+                {
+                    Match = true
+                };
             }
 
             matchmaker = Interlocked.Exchange(ref CachedMatchmaker, null);
             Debug.Assert(matchmaker?.Match != false, "cached site should be set up for matchmaking");
 
-            return matchmaker ?? new CallSite<T> { Match = true };
+            return matchmaker ?? new CallSite<T>
+            {
+                Match = true
+            };
         }
 
         // moves rule +2 up.

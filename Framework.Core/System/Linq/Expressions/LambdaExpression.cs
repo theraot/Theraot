@@ -19,7 +19,6 @@ using Theraot.Reflection;
 
 namespace System.Linq.Expressions
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Defines a <see cref="Expression{TDelegate}"/> node.
     ///     This captures a block of code that is similar to a .NET method body.
@@ -653,6 +652,7 @@ namespace System.Linq.Expressions
                 actionType = DelegateBuilder.GetActionType(typeArgs);
                 return actionType != null;
             }
+
             actionType = null;
             return false;
         }
@@ -682,6 +682,7 @@ namespace System.Linq.Expressions
                 funcType = DelegateBuilder.GetFuncType(typeArgs);
                 return funcType != null;
             }
+
             funcType = null;
             return false;
         }
@@ -696,6 +697,7 @@ namespace System.Linq.Expressions
             {
                 return fastPath(body, name, tailCall, parameters);
             }
+
             var create = typeof(Expression<>).MakeGenericType(delegateType).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic);
             factories[delegateType] = fastPath =
                 (Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>)create.CreateDelegate
@@ -761,12 +763,14 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException("Lambda type parameter must be derived from System.Delegate", paramName);
             }
+
             TypeUtils.ValidateType(delegateType, nameof(delegateType), true, true);
             var ldc = _lambdaDelegateCache;
             if (!ldc.TryGetValue(delegateType, out var mi))
             {
                 mi = delegateType.GetInvokeMethod();
             }
+
             var pis = mi.GetParameters();
             if (pis.Length > 0)
             {
@@ -774,6 +778,7 @@ namespace System.Linq.Expressions
                 {
                     throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
                 }
+
                 var set = new HashSet<ParameterExpression>();
                 for (int i = 0, n = pis.Length; i < n; i++)
                 {
@@ -789,12 +794,15 @@ namespace System.Linq.Expressions
                             //We cannot pass a parameter of T& to a delegate that takes T or any non-ByRef type.
                             throw new ArgumentException($"ParameterExpression of type '{pex.Type.MakeByRefType()}' cannot be used for delegate parameter of type '{pType}'");
                         }
+
                         pType = pType.GetElementType();
                     }
+
                     if (!pex.Type.IsReferenceAssignableFromInternal(pType))
                     {
                         throw new ArgumentException($"ParameterExpression of type '{pex.Type}' cannot be used for delegate parameter of type '{pType}'");
                     }
+
                     if (!set.Add(pex))
                     {
                         throw new ArgumentException($"Found duplicate parameter '{pex}'. Each ParameterExpression in the list must be a unique object.", i >= 0 ? $"{nameof(parameters)}[{i}]" : nameof(parameters));
@@ -805,6 +813,7 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
             }
+
             if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFromInternal(body.Type) && !TryQuote(mi.ReturnType, ref body))
             {
                 throw new ArgumentException($"Expression of type '{body.Type}' cannot be used for return type '{mi.ReturnType}'");
@@ -866,7 +875,6 @@ namespace System.Linq.Expressions
         /// <remarks>Used for debugging purposes.</remarks>
         public string? Name => NameCore;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -892,7 +900,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public bool TailCall => TailCallCore;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)

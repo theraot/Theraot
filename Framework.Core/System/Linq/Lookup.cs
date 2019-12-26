@@ -31,6 +31,7 @@ namespace System.Linq
                 {
                     return grouping;
                 }
+
                 return ArrayEx.Empty<TElement>();
             }
         }
@@ -62,14 +63,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (elementSelector == null)
             {
                 throw new ArgumentNullException(nameof(elementSelector));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             var nonNullComparer = comparer ?? EqualityComparer<TKey>.Default;
             var result = new Lookup<TKey, TElement>(nonNullComparer);
             var collections = new NullAwareDictionary<TKey, List<TElement>>(nonNullComparer);
@@ -81,12 +85,15 @@ namespace System.Linq
                     collection = new List<TElement>();
                     collections.Add(key, collection);
                 }
+
                 if (!result._groupings.ContainsKey(key))
                 {
                     result._groupings.Add(key, new Grouping<TKey, TElement>(key, collection));
                 }
+
                 collection.Add(elementSelector(item));
             }
+
             return result;
         }
     }

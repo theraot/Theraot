@@ -8,7 +8,7 @@ using System.Runtime.ExceptionServices;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public struct ExceptionStructNeedle<T> : INeedle<T>, IEquatable<ExceptionStructNeedle<T>>
+    public readonly struct ExceptionStructNeedle<T> : INeedle<T>, IEquatable<ExceptionStructNeedle<T>>
     {
         private readonly ExceptionDispatchInfo _exceptionDispatchInfo;
 

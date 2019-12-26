@@ -46,7 +46,6 @@ namespace Theraot.Collections.ThreadSafe
             _tail = _root;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the number of items actually contained.
         /// </summary>
@@ -95,7 +94,6 @@ namespace Theraot.Collections.ThreadSafe
             this.DeprecatedCopyTo(array, index);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>

@@ -243,7 +243,6 @@ namespace System.Threading.Tasks
                 CheckCount();
             }
 
-            /// <inheritdoc />
             /// <summary>
             ///     Returns whether we should notify the debugger of a wait completion.  This returns
             ///     true iff at least one constituent task has its bit set.
@@ -381,7 +380,6 @@ namespace System.Threading.Tasks
                 CheckCount();
             }
 
-            /// <inheritdoc />
             /// <summary>
             ///     Returns whether we should notify the debugger of a wait completion.  This returns
             ///     true iff at least one constituent task has its bit set.

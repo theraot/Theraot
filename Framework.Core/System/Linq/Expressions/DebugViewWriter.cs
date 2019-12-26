@@ -593,7 +593,7 @@ namespace System.Linq.Expressions
             // Have '$' for the DebugView of ParameterExpressions
             Out("$");
             var name = node.Name;
-            if (name == null || string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 // If no name if provided, generate a name as $var1, $var2.
                 // No guarantee for not having name conflicts with user provided variable names.
@@ -603,7 +603,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                Out(GetDisplayName(name));
+                Out(GetDisplayName(name!));
             }
 
             return node;
@@ -896,26 +896,32 @@ namespace System.Linq.Expressions
             {
                 return "U";
             }
+
             if (type == typeof(long))
             {
                 return "L";
             }
+
             if (type == typeof(ulong))
             {
                 return "UL";
             }
+
             if (type == typeof(double))
             {
                 return "D";
             }
+
             if (type == typeof(float))
             {
                 return "F";
             }
+
             if (type == typeof(decimal))
             {
                 return "M";
             }
+
             return null;
         }
 
@@ -928,7 +934,10 @@ namespace System.Linq.Expressions
         {
             if (ids == null)
             {
-                ids = new Dictionary<T, int> { { e, 1 } };
+                ids = new Dictionary<T, int>
+                {
+                    { e, 1 }
+                };
                 return 1;
             }
 
@@ -1209,6 +1218,7 @@ namespace System.Linq.Expressions
         private string GetLabelTargetName(LabelTarget target)
         {
             var name = target.Name;
+            // ReSharper disable once MergeSequentialChecksWhenPossible
             if (name == null || string.IsNullOrEmpty(name))
             {
                 // Create the label target name as #Label1, #Label2, etc.
@@ -1227,12 +1237,12 @@ namespace System.Linq.Expressions
         private string GetLambdaName(LambdaExpression lambda)
         {
             var name = lambda.Name;
-            if (name == null || string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return "#Lambda" + GetLambdaId(lambda);
             }
 
-            return GetDisplayName(name);
+            return GetDisplayName(name!);
         }
 
         private int GetParamId(ParameterExpression p)

@@ -75,12 +75,13 @@ namespace System.Linq.Expressions.Interpreter
         private static Instruction[][][] GetCaches()
         {
             var caches = _caches;
-            if (caches == null)
+            if (caches != null)
             {
-                caches = new[] { new Instruction[2][], new Instruction[2][] };
-                _caches = caches;
+                return caches;
             }
 
+            caches = new[] { new Instruction[2][], new Instruction[2][] };
+            _caches = caches;
             return caches;
         }
     }
@@ -332,6 +333,7 @@ namespace System.Linq.Expressions.Interpreter
                     // a rethrow instruction in a catch block gets to run
                     rethrow = true;
                 }
+
                 if (rethrow)
                 {
                     throw;

@@ -34,6 +34,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(exception));
             }
+
             var taskCompleteSource = new TaskCompletionSource<TResult>();
             taskCompleteSource.TrySetException(exception);
             return taskCompleteSource.Task;

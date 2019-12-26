@@ -25,18 +25,23 @@ namespace Theraot.Collections
             {
                 return ArrayEx.Empty<T>();
             }
+
             if (source is T[] array)
             {
                 return array;
             }
+
             if (!(source is ICollection<T> collection))
             {
+                // ReSharper disable once RemoveConstructorInvocation
                 return new List<T>(source).ToArray();
             }
+
             if (collection.Count == 0)
             {
                 return ArrayEx.Empty<T>();
             }
+
             var result = new T[collection.Count];
             collection.CopyTo(result, 0);
             return result;
@@ -51,16 +56,19 @@ namespace Theraot.Collections
             {
                 return ArrayEx.Empty<T>();
             }
+
             if (source is ISet<T> set)
             {
                 return set;
             }
+
             if (source is HashSet<T> resultHashSet)
             {
                 // Workaround for .NET 3.5 when all you want is Contains and no duplicates
                 // Remember that On .NET 3.5 HashSet is not an ISet
                 return resultHashSet;
             }
+
             return new ProgressiveSet<T>(source);
 #else
             return AsISet(source);
@@ -77,15 +85,18 @@ namespace Theraot.Collections
             {
                 return new EmptySet<T>(comparer);
             }
+
             if (source is HashSet<T> sourceAsHashSet && sourceAsHashSet.Comparer.Equals(comparer))
             {
                 return sourceAsHashSet;
             }
+
             if (source is ProgressiveSet<T> sourceAsProgressiveSet &&
                 sourceAsProgressiveSet.Comparer.Equals(comparer))
             {
                 return sourceAsProgressiveSet;
             }
+
             return new ProgressiveSet<T>(source, comparer);
 #else
             return AsISet(source, comparer);
@@ -100,10 +111,12 @@ namespace Theraot.Collections
             {
                 return ArrayEx.Empty<T>();
             }
+
             if (source is ICollection<T> collection)
             {
                 return collection;
             }
+
             return EnumerationList<T>.Create(source);
         }
 
@@ -115,18 +128,22 @@ namespace Theraot.Collections
             {
                 return ArrayEx.Empty<T>();
             }
+
             if (source is IList<T> list)
             {
                 return list;
             }
+
             if (!(source is ICollection<T> collection))
             {
                 return EnumerationList<T>.Create(source);
             }
+
             if (collection.Count == 0)
             {
                 return ArrayEx.Empty<T>();
             }
+
             var result = new T[collection.Count];
             collection.CopyTo(result, 0);
             return result;
@@ -140,6 +157,7 @@ namespace Theraot.Collections
             {
                 return EmptyCollection<T>.Instance;
             }
+
             if (source is T[] array)
             {
 #if LESSTHAN_NET45
@@ -148,6 +166,7 @@ namespace Theraot.Collections
                 return ArrayEx.AsReadOnly(array);
 #endif
             }
+
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -162,6 +181,7 @@ namespace Theraot.Collections
             {
                 return result;
             }
+
             return EnumerationList<T>.Create(source);
         }
 
@@ -173,6 +193,7 @@ namespace Theraot.Collections
             {
                 return EmptyCollection<T>.Instance;
             }
+
             if (source is T[] array)
             {
 #if LESSTHAN_NET45
@@ -181,6 +202,7 @@ namespace Theraot.Collections
                 return ArrayEx.AsReadOnly(array);
 #endif
             }
+
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -195,6 +217,7 @@ namespace Theraot.Collections
             {
                 return result;
             }
+
             return EnumerationList<T>.Create(source);
         }
 
@@ -206,10 +229,12 @@ namespace Theraot.Collections
             {
                 return EmptySet<T>.Instance;
             }
+
             if (source is ISet<T> resultISet)
             {
                 return resultISet;
             }
+
             return new ProgressiveSet<T>(source);
         }
 
@@ -237,6 +262,7 @@ namespace Theraot.Collections
             {
                 return sourceAsProgressiveSet;
             }
+
             return new ProgressiveSet<T>(source, comparer);
         }
 
@@ -248,22 +274,27 @@ namespace Theraot.Collections
             {
                 return new List<T>();
             }
+
             if (source is T[] array)
             {
                 return new List<T>(array);
             }
+
             if (source is List<T> list)
             {
                 return list;
             }
+
             if (!(source is ICollection<T> collection))
             {
                 return new List<T>(source);
             }
+
             if (collection.Count == 0)
             {
                 return new List<T>();
             }
+
             var result = new T[collection.Count];
             collection.CopyTo(result, 0);
             return new List<T>(result);
@@ -284,22 +315,27 @@ namespace Theraot.Collections
             {
                 return EmptyCollection<T>.Instance;
             }
+
             if (enumerable is ReadOnlyCollectionEx<T> readOnlyCollectionEx)
             {
                 return readOnlyCollectionEx;
             }
+
             if (enumerable is T[] array)
             {
                 return array.Length == 0 ? EmptyCollection<T>.Instance : new ReadOnlyCollectionEx<T>(array);
             }
+
             if (!(enumerable is ICollection<T> collection))
             {
                 return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
             }
+
             if (collection.Count == 0)
             {
                 return EmptyCollection<T>.Instance;
             }
+
             var result = new T[collection.Count];
             collection.CopyTo(result, 0);
             return new ReadOnlyCollectionEx<T>(result);
@@ -313,16 +349,19 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is IHasComparer<TKey> sourceHasComparer)
             {
                 comparer = sourceHasComparer.Comparer;
                 return true;
             }
+
             if (source is Dictionary<TKey, TValue> sourceAsDictionary)
             {
                 comparer = sourceAsDictionary.Comparer;
                 return true;
             }
+
             comparer = null;
             return false;
         }
@@ -336,14 +375,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is IHasComparer<TKey> sourceHasComparer && sourceHasComparer.Comparer.Equals(comparer))
             {
                 return source;
             }
+
             if (source is Dictionary<TKey, TValue> sourceAsDictionary && sourceAsDictionary.Comparer.Equals(comparer))
             {
                 return sourceAsDictionary;
             }
+
             return new DictionaryEx<TKey, TValue>(source, comparer);
         }
 
@@ -355,10 +397,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is ICollection<T> collection)
             {
                 return collection;
             }
+
             return EnumerationList<T>.Create(source);
         }
 
@@ -370,10 +414,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is IList<T> list)
             {
                 return list;
             }
+
             return EnumerationList<T>.Create(source);
         }
 
@@ -385,6 +431,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is T[] array)
             {
 #if LESSTHAN_NET45
@@ -393,6 +440,7 @@ namespace Theraot.Collections
                 return ArrayEx.AsReadOnly(array);
 #endif
             }
+
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -407,6 +455,7 @@ namespace Theraot.Collections
             {
                 return result;
             }
+
             return EnumerationList<T>.Create(source);
         }
 
@@ -418,6 +467,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is T[] array)
             {
 #if LESSTHAN_NET45
@@ -426,6 +476,7 @@ namespace Theraot.Collections
                 return ArrayEx.AsReadOnly(array);
 #endif
             }
+
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -440,6 +491,7 @@ namespace Theraot.Collections
             {
                 return result;
             }
+
             return EnumerationList<T>.Create(source);
         }
 
@@ -451,10 +503,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is T[] array)
             {
                 return ArrayEx.AsReadOnly(array);
             }
+
             if (source is ListEx<T> listEx)
             {
                 return listEx.AsReadOnly();
@@ -476,22 +530,28 @@ namespace Theraot.Collections
             {
                 return ArrayEx.Empty<T>();
             }
+
             if (source is T[] array)
             {
                 return array;
             }
+
             if (source is ReadOnlyCollectionEx<T> readOnlyCollectionEx)
             {
                 return readOnlyCollectionEx.Wrapped is T[] wrappedArray ? wrappedArray : readOnlyCollectionEx.ToArray();
             }
+
             if (source is ICollection<T> collection1 && collection1.Count == 0)
             {
                 return ArrayEx.Empty<T>();
             }
+
             if (!(source is ICollection<T> collection2))
             {
+                // ReSharper disable once RemoveConstructorInvocation
                 return new List<T>(source).ToArray();
             }
+
             var result = new T[collection2.Count];
             collection2.CopyTo(result, 0);
             return result;
@@ -506,14 +566,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (count == 0)
             {
                 return true;
             }
+
             if (source is ICollection<TSource> sourceAsCollection)
             {
                 return sourceAsCollection.Count >= count;
             }
+
             var result = 0;
             using (var item = source.GetEnumerator())
             {
@@ -530,6 +593,7 @@ namespace Theraot.Collections
                     }
                 }
             }
+
             return false;
         }
 
@@ -540,6 +604,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return predicateCount == null ? SkipExtracted(source, skipCount) : SkipExtracted(source, predicateCount, skipCount);
         }
 
@@ -550,7 +615,9 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return StepItemsExtracted();
+
             IEnumerable<T> StepItemsExtracted()
             {
                 var count = 0;
@@ -563,6 +630,7 @@ namespace Theraot.Collections
                     else
                     {
                         yield return item;
+
                         count++;
                     }
                 }
@@ -576,6 +644,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return predicateCount == null ? TakeExtracted(source, takeCount) : TakeExtracted(source, predicateCount, takeCount);
         }
 
@@ -586,16 +655,19 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (count < 0)
             {
                 throw new ArgumentNullException(nameof(count));
             }
+
             if (source is ICollection<T> collection && count >= collection.Count)
             {
                 var array = new T[collection.Count];
                 collection.CopyTo(array, 0);
                 return array;
             }
+
             var result = new List<T>(count);
             foreach (var item in source)
             {
@@ -606,6 +678,7 @@ namespace Theraot.Collections
 
                 result.Add(item);
             }
+
             return result.ToArray();
         }
 
@@ -655,6 +728,7 @@ namespace Theraot.Collections
                 }
 
                 yield return item;
+
                 count++;
             }
         }
@@ -670,6 +744,7 @@ namespace Theraot.Collections
                 }
 
                 yield return item;
+
                 if (predicateCount!(item))
                 {
                     count++;
@@ -686,6 +761,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return new NeedleEnumerable<TSource>(source);
         }
 
@@ -696,6 +772,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return new NullableClassEnumerable<TSource>(source);
         }
 
@@ -706,6 +783,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return new NullableStructEnumerable<TSource>(source);
         }
 
@@ -790,6 +868,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return new ClassNullableCollection<TSource>(source);
         }
 
@@ -800,6 +879,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return new StructNullableCollection<TSource>(source);
         }
 

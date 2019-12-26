@@ -6,7 +6,6 @@
 
 namespace System.Diagnostics.Contracts
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Instructs downstream tools whether to assume the correctness of this assembly, type or member without performing
     ///     any verification or not.

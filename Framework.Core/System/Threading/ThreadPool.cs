@@ -18,6 +18,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callBack));
             }
+
             _work.Add(() => callBack(null));
             if (Volatile.Read(ref _threadCount) >= Environment.ProcessorCount)
             {
@@ -32,10 +33,11 @@ namespace System.Threading
             {
                 GC.KeepAlive(new ThreadPoolThread());
             }
+
             return true;
         }
 
-        private class ThreadPoolThread
+        private sealed class ThreadPoolThread
         {
             private AutoResetEvent _event;
 
@@ -60,6 +62,7 @@ namespace System.Threading
                     {
                         break;
                     }
+
                     Interlocked.Increment(ref _threadCount);
                     try
                     {
@@ -73,6 +76,7 @@ namespace System.Threading
                     {
                         Interlocked.Decrement(ref _threadCount);
                     }
+
                     _pool.Donate(this);
                     e.WaitOne();
                 }

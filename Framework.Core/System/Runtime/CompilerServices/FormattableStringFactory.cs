@@ -10,10 +10,12 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(format));
             }
+
             if (arguments == null)
             {
                 throw new ArgumentNullException(nameof(arguments));
             }
+
             return new ConcreteFormattableString(format, arguments);
         }
 

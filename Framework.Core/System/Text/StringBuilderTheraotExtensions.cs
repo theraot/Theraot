@@ -16,6 +16,7 @@ namespace System.Text
             {
                 throw new NullReferenceException();
             }
+
             stringBuilder.Length = 0;
         }
     }

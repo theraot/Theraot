@@ -17,6 +17,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return comparer == null
                 ? ContainsExtracted(source, value, EqualityComparer<TSource>.Default)
                 : ContainsExtracted(source, value, comparer);
@@ -31,6 +32,7 @@ namespace System.Linq
                     return true;
                 }
             }
+
             return false;
         }
     }

@@ -66,6 +66,7 @@ namespace System.Linq.Expressions.Interpreter
                         }
                     }
                 }
+
                 if (Target.ReturnType != typeof(void))
                 {
                     frame.Data[first] = ret;
@@ -88,6 +89,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                 }
             }
+
             return 1;
         }
     }
@@ -130,12 +132,14 @@ namespace System.Linq.Expressions.Interpreter
             {
                 argumentCount++;
             }
+
             // A workaround for CLR behavior (Unable to create delegates for Array.Get/Set):
             // T[]::Address - not supported by ETs due to T& return value
             if (info.DeclaringType?.IsArray == true && (string.Equals(info.Name, "Get", StringComparison.Ordinal) || string.Equals(info.Name, "Set", StringComparison.Ordinal)))
             {
                 return GetArrayAccessor(info, argumentCount);
             }
+
             return new MethodInfoCallInstruction(info, argumentCount);
         }
 
@@ -146,6 +150,7 @@ namespace System.Linq.Expressions.Interpreter
                 lightLambda = found;
                 return true;
             }
+
             lightLambda = null;
             return false;
         }
@@ -177,6 +182,7 @@ namespace System.Linq.Expressions.Interpreter
                 default:
                     break;
             }
+
             return alternativeMethod == null ? new MethodInfoCallInstruction(info, argumentCount) : Create(alternativeMethod);
         }
     }
@@ -235,6 +241,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                 }
             }
+
             if (Target.ReturnType != typeof(void))
             {
                 frame.Data[first] = ret;
@@ -244,6 +251,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 frame.StackIndex = first;
             }
+
             return 1;
         }
 
@@ -259,11 +267,13 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return ArrayEx.Empty<object>();
             }
+
             var args = new object?[count];
             for (var i = 0; i < args.Length; i++)
             {
                 args[i] = frame.Data[first + i + skip];
             }
+
             return args;
         }
     }

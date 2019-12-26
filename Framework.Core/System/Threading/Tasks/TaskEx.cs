@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 
 #if NET40
 
-using System.Linq;
 using Theraot.Threading;
+using Theraot.Collections;
 
 #endif
 
@@ -179,7 +179,7 @@ namespace System.Threading.Tasks
             }
 
             var tcs = new TaskCompletionSource<Task<TResult>>();
-            Task.Factory.ContinueWhenAny(tasks as Task<TResult>[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            Task.Factory.ContinueWhenAny(tasks.AsArrayInternal(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
 #else
             // Missing in .NET 4.0
@@ -209,7 +209,7 @@ namespace System.Threading.Tasks
             }
 
             var tcs = new TaskCompletionSource<Task>();
-            Task.Factory.ContinueWhenAny(tasks as Task[] ?? tasks.ToArray(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            Task.Factory.ContinueWhenAny(tasks.AsArrayInternal(), tcs.TrySetResult, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
 #else
             // Missing in .NET 4.0
@@ -305,14 +305,17 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay), "The value needs to be either -1 (signifying an infinite timeout), 0 or a positive integer.");
             }
+
             if (cancellationToken.IsCancellationRequested)
             {
                 return TaskExEx.FromCanceled(cancellationToken);
             }
+
             if (millisecondsDelay == 0)
             {
                 return TaskExEx.CompletedTask;
             }
+
             var source = new TaskCompletionSource<bool>();
             RootedTimeout.Launch
             (

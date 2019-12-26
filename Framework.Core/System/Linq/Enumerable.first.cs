@@ -15,6 +15,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (!(source is IList<TSource> list))
             {
                 using (var enumerator = source.GetEnumerator())
@@ -42,10 +43,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             foreach (var item in source)
             {
                 if (predicate(item))
@@ -53,6 +56,7 @@ namespace System.Linq
                     return item;
                 }
             }
+
             throw new InvalidOperationException();
         }
 
@@ -62,10 +66,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             foreach (var item in source)
             {
                 return item;
             }
+
             return default!;
         }
 

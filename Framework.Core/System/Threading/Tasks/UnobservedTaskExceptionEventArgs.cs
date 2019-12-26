@@ -6,7 +6,6 @@
 
 namespace System.Threading.Tasks
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Provides data for the event that is raised when a faulted <see cref="Task" />'s
     ///     exception goes unobserved.
@@ -20,7 +19,6 @@ namespace System.Threading.Tasks
     /// </remarks>
     public class UnobservedTaskExceptionEventArgs : EventArgs
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="UnobservedTaskExceptionEventArgs" /> class
         ///     with the unobserved exception.

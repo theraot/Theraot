@@ -50,7 +50,6 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a <see cref="TaskCompletionSource{TResult}" />
         ///     with the specified options.
@@ -75,7 +74,6 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a <see cref="TaskCompletionSource{TResult}" />
         ///     with the specified state.

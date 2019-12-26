@@ -218,10 +218,12 @@ namespace System.Threading.Tasks
             {
                 return;
             }
+
             if (!calledFromFinalizer)
             {
                 GC.SuppressFinalize(this);
             }
+
             _isHandled = true;
         }
 
@@ -276,22 +278,20 @@ namespace System.Threading.Tasks
                     break;
                 // Handle enumerables of exceptions by capturing each of the contained exceptions into an EDI and storing it
                 case IEnumerable<Exception> exColl:
-                    {
 #if DEBUG
-                        var numExceptions = 0;
+                    var numExceptions = 0;
 #endif
-                        foreach (var exc in exColl)
-                        {
+                    foreach (var exc in exColl)
+                    {
 #if DEBUG
                             numExceptions++;
 #endif
-                            exceptions.Add(ExceptionDispatchInfo.Capture(exc));
-                        }
-#if DEBUG
-                        Debug.Assert(numExceptions > 0, "Collection should contain at least one exception.");
-#endif
-                        break;
+                        exceptions.Add(ExceptionDispatchInfo.Capture(exc));
                     }
+#if DEBUG
+                    Debug.Assert(numExceptions > 0, "Collection should contain at least one exception.");
+#endif
+                    break;
                 // Handle enumerables of EDIs by storing them directly
                 // Anything else is a programming error
                 case IEnumerable<ExceptionDispatchInfo> ediColl:

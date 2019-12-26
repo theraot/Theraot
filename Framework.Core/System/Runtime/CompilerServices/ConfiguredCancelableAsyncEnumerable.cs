@@ -68,7 +68,7 @@ namespace System.Runtime.CompilerServices
             /// passed the end of the collection.
             /// </returns>
             public ConfiguredValueTaskAwaitable<bool> MoveNextAsync() =>
-                                   _enumerator.MoveNextAsync().ConfigureAwait(_continueOnCapturedContext);
+                _enumerator.MoveNextAsync().ConfigureAwait(_continueOnCapturedContext);
 
             /// <summary>Gets the element in the collection at the current position of the enumerator.</summary>
             public T Current => _enumerator.Current;

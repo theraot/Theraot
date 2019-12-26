@@ -6,7 +6,6 @@
 
 namespace System.Diagnostics.Contracts
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Enables factoring legacy if-then-throw into separate methods for reuse and full control over
     ///     thrown exception and arguments

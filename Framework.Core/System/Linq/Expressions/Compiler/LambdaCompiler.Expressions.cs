@@ -3,8 +3,6 @@
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
 #pragma warning disable S907 // "goto" statement should not be used
-// ReSharper disable MemberCanBeMadeStatic.Local
-// ReSharper disable AssignNullToNotNullAttribute
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -196,7 +194,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitConstant(object? value)
         {
-            EmitConstant(value, value == null ? typeof(object) : value.GetType());
+            EmitConstant(value, value?.GetType() ?? typeof(object));
         }
 
         private void EmitConstant(object? value, Type type)
@@ -355,6 +353,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw new ArgumentNullException(nameof(objectType));
                 }
+
                 EmitGetArrayElement(objectType);
             }
         }
@@ -960,6 +959,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw new ArgumentNullException(nameof(obj));
                 }
+
                 EmitInstance(obj, out objectType);
             }
 
@@ -1131,6 +1131,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     throw new ArgumentNullException(nameof(objectType));
                 }
+
                 EmitSetArrayElement(objectType);
             }
         }

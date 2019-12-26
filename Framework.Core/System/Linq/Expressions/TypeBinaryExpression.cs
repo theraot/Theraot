@@ -60,7 +60,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an operation between an expression and a type.
     /// </summary>
@@ -79,7 +78,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -87,7 +85,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this
         ///     <see cref="Expression" /> represents.

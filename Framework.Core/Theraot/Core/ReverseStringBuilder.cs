@@ -67,6 +67,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(str));
             }
+
             var newStart = _start - str.Length;
             str.CopyTo(0, _buffer, newStart, str.Length);
             _start = newStart;

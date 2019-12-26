@@ -111,14 +111,17 @@ namespace System.Linq.Expressions
             {
                 return bodyType;
             }
+
             if (caseArray.Length != 0)
             {
                 return caseArray[0].Body.Type;
             }
+
             if (defaultBody != null)
             {
                 return defaultBody.Type;
             }
+
             return typeof(void);
         }
 
@@ -249,7 +252,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a control expression that handles multiple selections by passing control to a
     ///     <see cref="SwitchCase" />.
@@ -285,7 +287,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression? DefaultBody { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -298,7 +299,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression SwitchValue { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>

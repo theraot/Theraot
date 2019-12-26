@@ -63,11 +63,13 @@ namespace Theraot.Core
             while (true)
             {
                 yield return resultSelector!(current);
+
                 var found = next!(current);
                 if (comparer.Equals(found, endCondition))
                 {
                     break;
                 }
+
                 current = found;
             }
         }
@@ -141,6 +143,7 @@ namespace Theraot.Core
             while (true)
             {
                 yield return resultSelector!(current);
+
                 var found = next!(current);
                 if (found == null)
                 {
@@ -163,6 +166,7 @@ namespace Theraot.Core
             while (true)
             {
                 yield return resultSelector!(current.Value);
+
                 var found = next!(current.Value);
                 if (!found.HasValue)
                 {
@@ -300,6 +304,7 @@ namespace Theraot.Core
             while (true)
             {
                 yield return resultSelector!(current);
+
                 var found = next!(current);
                 if (found == null || (endCondition != null && comparer.Equals(found, endCondition)))
                 {
@@ -322,6 +327,7 @@ namespace Theraot.Core
             while (true)
             {
                 yield return resultSelector!(current.Value);
+
                 var found = next!(current.Value);
                 if (!found.HasValue)
                 {
@@ -374,12 +380,14 @@ namespace Theraot.Core
             while (true)
             {
                 yield return resultSelector!(current);
+
                 known.Add(current);
                 var found = next!(current);
                 if (known.Contains(found))
                 {
                     break;
                 }
+
                 current = found;
             }
         }
@@ -409,8 +417,10 @@ namespace Theraot.Core
                 {
                     break;
                 }
+
                 current = found;
             }
+
             return known;
         }
     }
@@ -446,11 +456,13 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(next));
             }
+
             // Do not use comparer ?? EqualityComparer<T>.Default, keep the comparer == null check explicit
             if (comparer == null)
             {
                 return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
             }
+
             return CommonNodeExtracted(first, second, next, comparer);
         }
 
@@ -461,11 +473,13 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(next));
             }
+
             // Do not use comparer ?? EqualityComparer<T>.Default, keep the comparer == null check explicit
             if (comparer == null)
             {
                 return CommonNodeExtracted(first, second, next, EqualityComparer<T>.Default);
             }
+
             return CommonNodeExtracted(first, second, next, comparer);
         }
 

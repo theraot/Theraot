@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Indicates that the use of <see cref="ValueTuple" /> on a member is meant to be treated as a tuple with
     ///     element names.
@@ -19,7 +18,6 @@ namespace System.Runtime.CompilerServices
     {
         private readonly string[] _transformNames;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="TupleElementNamesAttribute" />
         ///     class.

@@ -1,7 +1,6 @@
 ﻿// Needed for Workaround
 
 #pragma warning disable RCS1231 // Make parameter ref read-only.
-// ReSharper disable VirtualMemberNeverOverridden.Global
 
 using System;
 using System.Diagnostics;
@@ -135,7 +134,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return IsCompleted ? Exception == null ? "[Done]" : Exception.ToString() : "[Not Created]";
+            return IsCompleted ? Exception?.ToString() ?? "[Done]" : "[Not Created]";
         }
 
         public virtual void Wait()

@@ -95,6 +95,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 needle.Value = item;
             }
+
             _wrapped.Add(needle);
         }
 

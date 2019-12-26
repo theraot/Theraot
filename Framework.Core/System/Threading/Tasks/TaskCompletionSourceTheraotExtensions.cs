@@ -15,6 +15,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(taskCompletionSource));
             }
+
             return TrySetCanceledCachedDelegate<T>.TrySetCanceled(taskCompletionSource, token);
         }
 
@@ -43,6 +44,7 @@ namespace System.Threading.Tasks
                 {
                     throw new PlatformNotSupportedException();
                 }
+
                 return (Func<TaskCompletionSource<T>, CancellationToken, bool>)Delegate.CreateDelegate
                 (
                     typeof(Func<TaskCompletionSource<T>, CancellationToken, bool>),

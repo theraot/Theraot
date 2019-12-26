@@ -10,7 +10,6 @@ using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents the default value of a type or an empty expression.
     /// </summary>
@@ -22,7 +21,6 @@ namespace System.Linq.Expressions
             Type = type;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -30,7 +28,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.Default;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>

@@ -26,7 +26,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     The index of each constant in the constant array
         /// </summary>
-        private readonly NullAwareDictionary<object, int> _indexes = new NullAwareDictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
+        private readonly NullAwareDictionary<object?, int> _indexes = new NullAwareDictionary<object?, int>(ReferenceEqualityComparer<object?>.Instance);
 
         /// <summary>
         ///     Each constant referenced within this lambda, and how often it was referenced

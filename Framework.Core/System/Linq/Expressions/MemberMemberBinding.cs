@@ -150,7 +150,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents initializing members of a member of a newly created object.
     /// </summary>

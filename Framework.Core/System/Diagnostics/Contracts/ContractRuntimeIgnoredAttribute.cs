@@ -6,7 +6,6 @@
 
 namespace System.Diagnostics.Contracts
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Methods (and properties) marked with this attribute can be used within calls to Contract methods, but have no
     ///     runtime behavior associated with them.

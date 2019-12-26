@@ -60,6 +60,7 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
+
                 return new SerializationEntry(_members[_currentItem], _data[_currentItem], _types[_currentItem]);
             }
         }
@@ -74,6 +75,7 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
+
                 return _members[_currentItem];
             }
         }
@@ -86,6 +88,7 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
+
                 return _types[_currentItem];
             }
         }
@@ -98,6 +101,7 @@ namespace System.Runtime.Serialization
                 {
                     throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                 }
+
                 return _data[_currentItem];
             }
         }

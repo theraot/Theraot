@@ -29,13 +29,9 @@ namespace Theraot.Threading
         private const int _started = 1;
 
         private static readonly Bucket<RootedTimeout> _root = new Bucket<RootedTimeout>();
-
         private static int _lastRootIndex = -1;
-
         private readonly int _hashcode;
-
         private Action? _callback;
-
         private int _rootIndex = -1;
 
         private long _startTime;
@@ -100,6 +96,7 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException(nameof(callback));
             }
+
             if (cancelledCallback == null)
             {
                 throw new ArgumentNullException(nameof(cancelledCallback));
@@ -113,17 +110,9 @@ namespace Theraot.Threading
             var timeout = new RootedTimeout();
             if (token.CanBeCanceled)
             {
-                token.Register
-                (
-                    () =>
-                    {
-                        if (timeout.Cancel())
-                        {
-                            cancelledCallback();
-                        }
-                    }
-                );
+                RegisterCancellation(cancelledCallback, timeout, ref token);
             }
+
             Root(timeout);
 
             if (dueTime == -1)
@@ -167,10 +156,12 @@ namespace Theraot.Threading
             {
                 Close();
             }
+
             if (Interlocked.CompareExchange(ref _status, _canceled, _canceling) != _canceling)
             {
                 return false;
             }
+
             Volatile.Write(ref _status, _canceled);
             return true;
         }
@@ -245,6 +236,20 @@ namespace Theraot.Threading
             return _hashcode;
         }
 
+        private static void RegisterCancellation(Action cancelledCallback, RootedTimeout timeout, ref CancellationToken token)
+        {
+            token.Register
+            (
+                () =>
+                {
+                    if (timeout.Cancel())
+                    {
+                        cancelledCallback();
+                    }
+                }
+            );
+        }
+
         private static void Root(RootedTimeout rootedTimeout)
         {
             rootedTimeout._rootIndex = Interlocked.Increment(ref _lastRootIndex);
@@ -292,12 +297,14 @@ namespace Theraot.Threading
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
 
-            if (Interlocked.CompareExchange(ref _status, _started, _created) == _created)
+            if (Interlocked.CompareExchange(ref _status, _started, _created) != _created)
             {
-                _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-                _targetTime = dueTime == -1 ? -1 : _startTime + dueTime;
-                _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                return;
             }
+
+            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+            _targetTime = dueTime == -1 ? -1 : _startTime + dueTime;
+            _wrapped = Timer.GetTimer(Finish, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
     }
 }

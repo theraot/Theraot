@@ -455,7 +455,6 @@ namespace System.Dynamic.Utils
                 return false;
             }
 
-            // ReSharper disable once LoopCanBeConvertedToQuery
             for (var index = 0; index < parameters.Length; index++)
             {
                 if (!IsReferenceAssignableFromInternal(parameters[index].ParameterType, argTypes[index]))
@@ -497,15 +496,15 @@ namespace System.Dynamic.Utils
                 return false; // Caller can skip further checks.
             }
 
-            if (type.ContainsGenericParameters)
+            if (!type.ContainsGenericParameters)
             {
-                var formattedParamName = index >= 0 ? $"{paramName}[{index}]" : paramName;
-                throw type.IsGenericTypeDefinition
-                    ? new ArgumentException($"Type {type} is a generic type definition", formattedParamName)
-                    : new ArgumentException($"Type {type} contains generic parameters", formattedParamName);
+                return true;
             }
 
-            return true;
+            var formattedParamName = index >= 0 ? $"{paramName}[{index}]" : paramName;
+            throw type.IsGenericTypeDefinition
+                ? new ArgumentException($"Type {type} is a generic type definition", formattedParamName)
+                : new ArgumentException($"Type {type} contains generic parameters", formattedParamName);
         }
 
         private static bool HasArrayToInterfaceConversion(Type source, Type target)
@@ -600,13 +599,11 @@ namespace System.Dynamic.Utils
             {
                 if (!skipNonArray) // Skip if we just came from HasReferenceConversionTo and have just tested these
                 {
-                    // ReSharper disable once PossibleNullReferenceException
                     if (source.IsValueType)
                     {
                         return false;
                     }
 
-                    // ReSharper disable once PossibleNullReferenceException
                     if (target.IsValueType)
                     {
                         return false;

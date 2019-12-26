@@ -790,16 +790,16 @@ namespace System.Threading.Tasks
             }
 
             return FromAsyncCore
-                (
-                    asyncResult,
-                    result =>
-                    {
-                        endMethod(result);
-                        return default(VoidStruct);
-                    },
-                    TaskCreationOptions.None,
-                    _scheduler
-                );
+            (
+                asyncResult,
+                result =>
+                {
+                    endMethod(result);
+                    return default(VoidStruct);
+                },
+                TaskCreationOptions.None,
+                _scheduler
+            );
         }
 
         public Task FromAsync(IAsyncResult asyncResult, Action<IAsyncResult> endMethod, TaskCreationOptions creationOptions)

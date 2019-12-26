@@ -6,7 +6,6 @@
 
 namespace System.Diagnostics.Contracts
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Types marked with this attribute specify that they are a contract for the type that is the argument of the
     ///     constructor.

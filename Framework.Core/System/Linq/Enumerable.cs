@@ -2,7 +2,6 @@
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 #pragma warning disable S2971 // "IEnumerable" LINQs should be simplified
-// ReSharper disable LoopCanBeConvertedToQuery
 
 using System.Collections;
 using System.Collections.Generic;
@@ -18,10 +17,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(func));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var enumerator = source.GetEnumerator();
             using (enumerator)
             {
@@ -35,6 +36,7 @@ namespace System.Linq
                 {
                     folded = func(folded, enumerator.Current);
                 }
+
                 return folded;
             }
         }
@@ -45,15 +47,18 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(func));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var folded = seed;
             foreach (var item in source)
             {
                 folded = func(folded, item);
             }
+
             return folded;
         }
 
@@ -63,19 +68,23 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             if (func == null)
             {
                 throw new ArgumentNullException(nameof(func));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var result = seed;
             foreach (var item in source)
             {
                 result = func(result, item);
             }
+
             return resultSelector(result);
         }
 
@@ -85,10 +94,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var enumerator = source.GetEnumerator();
             using (enumerator)
             {
@@ -99,6 +110,7 @@ namespace System.Linq
                         return false;
                     }
                 }
+
                 return true;
             }
         }
@@ -109,6 +121,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is ICollection<TSource> collection)
             {
                 return collection.Count > 0;
@@ -126,10 +139,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             foreach (var item in source)
             {
                 if (predicate(item))
@@ -137,6 +152,7 @@ namespace System.Linq
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -151,6 +167,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is IEnumerable<TResult> enumerable)
             {
                 return enumerable;
@@ -173,17 +190,21 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             return ConcatExtracted();
+
             IEnumerable<TSource> ConcatExtracted()
             {
                 foreach (var item in first)
                 {
                     yield return item;
                 }
+
                 foreach (var item in second)
                 {
                     yield return item;
@@ -197,10 +218,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is ICollection<TSource> collection)
             {
                 return collection.Count;
             }
+
             var result = 0;
             using (var item = source.GetEnumerator())
             {
@@ -233,6 +256,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return DefaultIfEmptyExtracted();
 
             IEnumerable<TSource> DefaultIfEmptyExtracted()
@@ -245,8 +269,7 @@ namespace System.Linq
                         do
                         {
                             yield return enumerator.Current;
-                        }
-                        while (enumerator.MoveNext());
+                        } while (enumerator.MoveNext());
                     }
                     else
                     {
@@ -267,6 +290,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return DistinctExtracted();
 
             IEnumerable<TSource> DistinctExtracted()
@@ -282,6 +306,7 @@ namespace System.Linq
                         {
                             continue;
                         }
+
                         foundNull = true;
                     }
                     else
@@ -290,8 +315,10 @@ namespace System.Linq
                         {
                             continue;
                         }
+
                         found.Add(item, null);
                     }
+
                     yield return item;
                 }
             }
@@ -308,10 +335,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is TSource[] array)
             {
                 return array.LongLength;
             }
+
             long count = 0;
             using (var item = source.GetEnumerator())
             {
@@ -335,6 +364,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return OfTypeExtracted();
 
             IEnumerable<TResult> OfTypeExtracted()
@@ -360,10 +390,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, false);
         }
 
@@ -378,10 +410,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, true);
         }
 
@@ -409,6 +443,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return ReverseExtracted();
 
             IEnumerable<TSource> ReverseExtracted()
@@ -418,6 +453,7 @@ namespace System.Linq
                 {
                     stack.Push(item);
                 }
+
                 foreach (var item in stack)
                 {
                     yield return item;
@@ -436,15 +472,18 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             // Do not use comparer ?? EqualityComparer<T>.Default, keep the comparer == null check explicit
             if (comparer == null)
             {
                 return SequenceEqualExtracted(EqualityComparer<TSource>.Default);
             }
+
             return SequenceEqualExtracted(comparer);
 
             bool SequenceEqualExtracted(IEqualityComparer<TSource> nonNullComparer)
@@ -457,11 +496,13 @@ namespace System.Linq
                         {
                             return false;
                         }
+
                         if (!nonNullComparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
                         {
                             return false;
                         }
                     }
+
                     return !secondEnumerator.MoveNext();
                 }
             }
@@ -478,10 +519,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, false);
         }
 
@@ -496,10 +539,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, true);
         }
 
@@ -519,6 +564,7 @@ namespace System.Linq
                     return (TSource[])(object)str.ToCharArray();
 
                 default:
+                    // ReSharper disable once RemoveConstructorInvocation
                     return new List<TSource>(source).ToArray();
             }
         }
@@ -534,20 +580,24 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (elementSelector == null)
             {
                 throw new ArgumentNullException(nameof(elementSelector));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             comparer ??= EqualityComparer<TKey>.Default;
             var result = new Dictionary<TKey, TElement>(comparer);
             foreach (var item in source)
             {
                 result.Add(keySelector(item), elementSelector(item));
             }
+
             return result;
         }
 
@@ -615,6 +665,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             return Where(source, (item, _) => predicate(item));
         }
 
@@ -624,10 +675,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return WhereExtracted();
 
             IEnumerable<TSource> WhereExtracted()
@@ -639,7 +692,9 @@ namespace System.Linq
                     {
                         continue;
                     }
+
                     yield return item;
+
                     count++;
                 }
             }
@@ -651,14 +706,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             if (resultSelector == null)
             {
                 throw new ArgumentNullException(nameof(resultSelector));
             }
+
             return ZipExtracted();
 
             IEnumerable<TReturn> ZipExtracted()

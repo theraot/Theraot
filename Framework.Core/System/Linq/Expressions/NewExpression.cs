@@ -353,7 +353,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<MemberInfo>? Members { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -361,7 +360,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> that represents this expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.New;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)

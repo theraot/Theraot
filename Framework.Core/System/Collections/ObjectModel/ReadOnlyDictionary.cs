@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET45
 
 #pragma warning disable S4144 // Methods should not have identical implementations
-// ReSharper disable HeuristicUnreachableCode
 
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;

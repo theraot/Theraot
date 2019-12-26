@@ -61,7 +61,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool TryGetValue(TKey key, [NotNullWhen(true)]out TValue value)
+        public bool TryGetValue(TKey key, [NotNullWhen(true)] out TValue value)
         {
             if (key == null)
             {

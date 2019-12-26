@@ -82,6 +82,7 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException(nameof(expression));
             }
+
             return InvokeExtracted(expression, arguments ?? ArrayEx.Empty<Expression>());
         }
 
@@ -468,7 +469,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -476,7 +476,6 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public sealed override ExpressionType NodeType => ExpressionType.Invoke;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this
         ///     <see cref="Expression" /> represents.

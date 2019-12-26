@@ -82,7 +82,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents calling a constructor and initializing one or more members of the new object.
     /// </summary>
@@ -106,7 +105,6 @@ namespace System.Linq.Expressions
         /// </returns>
         public ReadOnlyCollection<MemberBinding> Bindings => _bindingsAsReadOnlyCollection;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets a value that indicates whether the expression tree node can be reduced.
         /// </summary>
@@ -116,7 +114,6 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="Expressions.NewExpression" /> that represents the constructor call.</returns>
         public NewExpression NewExpression { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -124,14 +121,12 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType" /> of the expression.</returns>
         public override ExpressionType NodeType => ExpressionType.MemberInit;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
         public override Type Type => NewExpression.Type;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Reduces the <see cref="MemberInitExpression" /> to a simpler expression.
         ///     If CanReduce returns true, this should return a valid expression.
@@ -158,10 +153,12 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
+
             if (bindings == null)
             {
                 throw new ArgumentNullException(nameof(bindings));
             }
+
             return MemberInit(newExpression, bindings);
         }
 

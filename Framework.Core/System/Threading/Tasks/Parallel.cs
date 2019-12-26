@@ -2,7 +2,7 @@
 
 #pragma warning disable CC0014 // Use ternary operator
 #pragma warning disable CC0031 // Check for null before calling a delegate
-// ReSharper disable PossibleNullReferenceException
+// ReSharper disable ImplicitlyCapturedClosure
 
 // BASEDON: https://github.com/dotnet/corefx/blob/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/Parallel.cs
 
@@ -2817,7 +2817,7 @@ namespace System.Threading.Tasks
             // We just return immediately if 'to' is smaller (or equal to) 'from'.
             if (toExclusive <= fromInclusive)
             {
-                result._completed = true;
+                result.IsCompleted = true;
                 return result;
             }
 
@@ -3041,10 +3041,10 @@ namespace System.Threading.Tasks
             finally
             {
                 var status = sharedPStateFlags.LoopStateFlags;
-                result._completed = status == ParallelLoopStateFlags.ParallelLoopStateNone;
+                result.IsCompleted = status == ParallelLoopStateFlags.ParallelLoopStateNone;
                 if ((status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
                 {
-                    result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
+                    result.LowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
                 }
             }
 
@@ -3102,7 +3102,7 @@ namespace System.Threading.Tasks
             // We just return immediately if 'to' is smaller (or equal to) 'from'.
             if (toExclusive <= fromInclusive)
             {
-                result._completed = true;
+                result.IsCompleted = true;
                 return result;
             }
 
@@ -3328,10 +3328,10 @@ namespace System.Threading.Tasks
             finally
             {
                 var status = sharedPStateFlags.LoopStateFlags;
-                result._completed = status == ParallelLoopStateFlags.ParallelLoopStateNone;
+                result.IsCompleted = status == ParallelLoopStateFlags.ParallelLoopStateNone;
                 if ((status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
                 {
-                    result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
+                    result.LowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
                 }
             }
 
@@ -3790,10 +3790,10 @@ namespace System.Threading.Tasks
             finally
             {
                 var status = sharedPStateFlags.LoopStateFlags;
-                result._completed = status == ParallelLoopStateFlags.ParallelLoopStateNone;
+                result.IsCompleted = status == ParallelLoopStateFlags.ParallelLoopStateNone;
                 if ((status & ParallelLoopStateFlags.ParallelLoopStateBroken) != 0)
                 {
-                    result._lowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
+                    result.LowestBreakIteration = sharedPStateFlags.LowestBreakIteration;
                 }
 
                 //dispose the partitioner source if it implements IDisposable

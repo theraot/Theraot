@@ -164,6 +164,7 @@ namespace Theraot.Threading
                 value = default!;
                 return false;
             }
+
             var bundle = Thread.GetData(slot);
             if (!(bundle is INeedle<T> container))
             {

@@ -458,7 +458,7 @@ namespace System.Threading.Tasks
             var condition = RemoveConditions(ref continuationOptions);
             if (cancellationToken.CanBeCanceled)
             {
-                cancellationToken.Register(() => source.TrySetCanceled());
+                RegisterCancellation(source, ref cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return source.Task;
@@ -499,7 +499,7 @@ namespace System.Threading.Tasks
             var condition = RemoveConditions(ref continuationOptions);
             if (cancellationToken.CanBeCanceled)
             {
-                cancellationToken.Register(() => source.TrySetCanceled());
+                RegisterCancellation(source, ref cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return source.Task;
@@ -540,7 +540,7 @@ namespace System.Threading.Tasks
             var condition = RemoveConditions(ref continuationOptions);
             if (cancellationToken.CanBeCanceled)
             {
-                cancellationToken.Register(() => source.TrySetCanceled());
+                RegisterCancellation(source, ref cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return source.Task;
@@ -580,7 +580,7 @@ namespace System.Threading.Tasks
             var condition = RemoveConditions(ref continuationOptions);
             if (cancellationToken.CanBeCanceled)
             {
-                cancellationToken.Register(() => source.TrySetCanceled());
+                RegisterCancellation(source, ref cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return source.Task;
@@ -612,6 +612,11 @@ namespace System.Threading.Tasks
                 scheduler
             );
             return source.Task;
+        }
+
+        private static void RegisterCancellation<TResult>(TaskCompletionSource<TResult> source, ref CancellationToken cancellationToken)
+        {
+            cancellationToken.Register(() => source.TrySetCanceled());
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

@@ -74,6 +74,7 @@ namespace System.Threading
                 {
                     return target;
                 }
+
                 target = valueFactory();
                 Volatile.Write(ref initialized, true);
             }

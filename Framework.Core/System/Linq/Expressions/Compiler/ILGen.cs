@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable S907 // "goto" statement should not be used
-// ReSharper disable AssignNullToNotNullAttribute
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -161,6 +160,7 @@ namespace System.Linq.Expressions.Compiler
                         locals.FreeLocal(lb);
                         break;
                     }
+
                     goto case TypeCode.Empty;
 
                 case TypeCode.Empty:
@@ -1082,6 +1082,7 @@ namespace System.Linq.Expressions.Compiler
                         default:
                             break;
                     }
+
                     if (isChecked)
                     {
                         if (isFromUnsigned)
@@ -1097,6 +1098,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         convCode = OpCodes.Conv_I2;
                     }
+
                     break;
 
                 case TypeCode.Char:
@@ -1136,6 +1138,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         convCode = OpCodes.Conv_U2;
                     }
+
                     break;
 
                 case TypeCode.Int32:
@@ -1174,6 +1177,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         convCode = OpCodes.Conv_I4;
                     }
+
                     break;
 
                 case TypeCode.UInt32:
@@ -1213,6 +1217,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         convCode = OpCodes.Conv_U4;
                     }
+
                     break;
 
                 case TypeCode.Int64:
@@ -1240,6 +1245,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         convCode = OpCodes.Conv_I8;
                     }
+
                     break;
 
                 case TypeCode.UInt64:
@@ -1267,6 +1273,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         convCode = OpCodes.Conv_I8;
                     }
+
                     break;
 
                 default:

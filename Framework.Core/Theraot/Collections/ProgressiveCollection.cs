@@ -119,6 +119,7 @@ namespace Theraot.Collections
                 }
 
                 yield return item;
+
                 knownCount = _cache.Count;
             }
         }

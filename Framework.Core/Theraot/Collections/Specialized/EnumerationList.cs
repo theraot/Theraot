@@ -114,6 +114,7 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException(nameof(wrapped));
             }
+
             return new EnumerationList<T>(wrapped);
         }
 

@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-// ReSharper disable LoopCanBeConvertedToQuery
-
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
@@ -39,8 +37,10 @@ namespace System.Linq
                         tuple = new Tuple<Grouping<TKey, TElement>, List<TElement>>(new Grouping<TKey, TElement>(key, collection), collection);
                         groupings.Add(key, tuple);
                     }
+
                     tuple.Item2.Add(_elementSelector(item));
                 }
+
                 return Enumerator(groupings);
             }
 

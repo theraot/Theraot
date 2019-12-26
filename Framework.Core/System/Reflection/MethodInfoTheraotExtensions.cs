@@ -22,10 +22,12 @@ namespace System.Reflection
             {
                 throw new NullReferenceException();
             }
+
             if (methodInfo is DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType);
             }
+
             return Delegate.CreateDelegate(delegateType, methodInfo);
         }
 
@@ -42,10 +44,12 @@ namespace System.Reflection
             {
                 throw new NullReferenceException();
             }
+
             if (methodInfo is DynamicMethod dynamicMethod)
             {
                 return dynamicMethod.CreateDelegate(delegateType, target);
             }
+
             return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
     }

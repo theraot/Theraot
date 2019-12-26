@@ -73,6 +73,7 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException(nameof(initializers));
             }
+
             return ListBindExtracted(member, initializers);
         }
 
@@ -153,7 +154,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents initializing the elements of a collection member of a newly created object.
     /// </summary>
@@ -185,10 +185,12 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
+
             if (initializers == null)
             {
                 throw new ArgumentNullException(nameof(initializers));
             }
+
             return Expression.ListBind(Member, initializers);
         }
 

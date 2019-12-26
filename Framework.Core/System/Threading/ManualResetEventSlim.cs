@@ -41,8 +41,6 @@ namespace System.Threading
         {
             get
             {
-                // The value returned by this property should be considered out of sync
-                // But won't be out of sync
                 var spinWait = new SpinWait();
                 while (true)
                 {

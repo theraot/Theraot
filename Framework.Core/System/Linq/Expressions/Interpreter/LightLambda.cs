@@ -91,7 +91,7 @@ namespace System.Linq.Expressions.Interpreter
             return new InterpretedFrame(_interpreter, _closure);
         }
 
-        private class DebugViewPrinter
+        private sealed class DebugViewPrinter
         {
             private readonly Dictionary<int, string> _handlerEnter = new Dictionary<int, string>();
             private readonly Dictionary<int, int> _handlerExit = new Dictionary<int, int>();
@@ -202,24 +202,27 @@ namespace System.Linq.Expressions.Interpreter
                     _handlerEnter.Add(handler.FinallyStartIndex, "finally");
                     AddHandlerExit(handler.FinallyEndIndex);
                 }
-                if (handler.IsCatchBlockExist)
-                {
-                    foreach (var catchHandler in handler.Handlers)
-                    {
-                        _handlerEnter.Add(
-                            catchHandler.HandlerStartIndex - 1 /* include EnterExceptionHandler instruction */,
-                            catchHandler.ToString());
-                        AddHandlerExit(catchHandler.HandlerEndIndex);
-                        var filter = catchHandler.Filter;
-                        if (filter == null)
-                        {
-                            continue;
-                        }
 
-                        _handlerEnter.Add(filter.StartIndex - 1 /* include EnterExceptionFilter instruction */,
-                            "filter");
-                        AddHandlerExit(filter.EndIndex);
+                if (!handler.IsCatchBlockExist)
+                {
+                    return;
+                }
+
+                foreach (var catchHandler in handler.Handlers)
+                {
+                    _handlerEnter.Add(
+                        catchHandler.HandlerStartIndex - 1 /* include EnterExceptionHandler instruction */,
+                        catchHandler.ToString());
+                    AddHandlerExit(catchHandler.HandlerEndIndex);
+                    var filter = catchHandler.Filter;
+                    if (filter == null)
+                    {
+                        continue;
                     }
+
+                    _handlerEnter.Add(filter.StartIndex - 1 /* include EnterExceptionFilter instruction */,
+                        "filter");
+                    AddHandlerExit(filter.EndIndex);
                 }
             }
 

@@ -10,7 +10,6 @@ namespace System.Linq.Expressions
 {
     public class DynamicExpressionVisitor : ExpressionVisitor
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Visits the children of the <see cref="DynamicExpression" />.
         /// </summary>

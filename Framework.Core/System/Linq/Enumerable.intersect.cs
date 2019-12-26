@@ -12,10 +12,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             return IntersectExtracted(first, second, EqualityComparer<TSource>.Default);
         }
 
@@ -25,10 +27,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(first));
             }
+
             if (second == null)
             {
                 throw new ArgumentNullException(nameof(second));
             }
+
             return IntersectExtracted(first, second, comparer ?? EqualityComparer<TSource>.Default);
         }
 

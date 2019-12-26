@@ -1,14 +1,12 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2213 // Disposable fields should be disposed
-// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
-using Theraot;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
@@ -542,6 +540,7 @@ namespace System.Collections.Concurrent
             {
                 return;
             }
+
             Interlocked.Exchange(ref _data, null)?.Dispose();
         }
 
@@ -674,7 +673,7 @@ namespace System.Collections.Concurrent
                     }
                     catch (OperationCanceledException exception)
                     {
-                        No.Op(exception);
+                        _ = exception;
                     }
                 }
 

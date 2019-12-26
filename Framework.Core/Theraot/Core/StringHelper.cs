@@ -125,6 +125,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(regex));
             }
+
             return regex.IsMatch(text, startAt);
         }
 
@@ -178,6 +179,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(regex));
             }
+
             return regex.Match(text, startAt);
         }
 
@@ -188,6 +190,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(regex));
             }
+
             return regex.Match(text, startAt, length);
         }
 
@@ -260,6 +263,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(regex));
             }
+
             return regex.Matches(text, startAt);
         }
 

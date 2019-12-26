@@ -214,10 +214,12 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
+
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
+
             Contract.EndContractBlock();
             cancellationToken.ThrowIfCancellationRequested(); // early check before we make any allocations
             // In this WaitAll() implementation we have 2 alternate code paths for a task to be handled:
@@ -235,6 +237,7 @@ namespace System.Threading.Tasks
                 {
                     throw new ArgumentException("The tasks array included at least one null element.");
                 }
+
                 var taskIsCompleted = task.IsCompleted;
                 if (canInline && !taskIsCompleted)
                 {
@@ -242,20 +245,24 @@ namespace System.Threading.Tasks
                     // A successful TryStart doesn't guarantee completion
                     taskIsCompleted = task.TryStart(task.ExecutingTaskScheduler, true) && task.IsCompleted;
                 }
+
                 if (!taskIsCompleted)
                 {
                     (waitedOnTaskList ??= new List<Task>(tasks.Length)).Add(task);
                 }
             }
+
             if (waitedOnTaskList != null)
             {
                 // Block waiting for the tasks to complete.
                 allCompleted = WaitAllBlockingCore(waitedOnTaskList, millisecondsTimeout, cancellationToken);
             }
+
             if (!allCompleted)
             {
                 return false;
             }
+
             return WaitAllCore(tasks, cancellationToken);
         }
 
@@ -279,6 +286,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
+
             var waitResult = WaitAny(tasks, Timeout.Infinite);
             Contract.Assert(tasks.Length == 0 || waitResult != -1, "expected wait to succeed");
             return waitResult;
@@ -581,6 +589,7 @@ namespace System.Threading.Tasks
                         (exceptions ??= new List<Exception>(exception.InnerExceptions.Count)).AddRange(exception.InnerExceptions);
                     }
                 }
+
                 if (task.IsFaulted)
                 {
                     exceptionSeen = true;
@@ -589,20 +598,24 @@ namespace System.Threading.Tasks
                 {
                     cancellationSeen |= task.IsCanceled;
                 }
+
                 if (task.IsWaitNotificationEnabled && task.NotifyDebuggerOfWaitCompletionIfNecessary())
                 {
                     break;
                 }
             }
+
             if (cancellationSeen && !exceptionSeen)
             {
                 cancellationToken.ThrowIfCancellationRequested();
             }
+
             // If one or more threw exceptions, aggregate and throw them.
             if (!exceptionSeen && !cancellationSeen)
             {
                 return true;
             }
+
             Contract.Assert(exceptions != null, "Should have seen at least one exception");
             throw new AggregateException(exceptions!);
         }

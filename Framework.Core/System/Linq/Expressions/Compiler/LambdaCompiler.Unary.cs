@@ -186,7 +186,6 @@ namespace System.Linq.Expressions.Compiler
                     EmitBinaryOperator(ExpressionType.SubtractChecked, nnType, nnType, nnType, false);
 
                     // construct result
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     IL.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nnType }));
                     IL.Emit(OpCodes.Br_S, end);
 
@@ -284,7 +283,6 @@ namespace System.Linq.Expressions.Compiler
 
                         // construct result
                         var ci = resultType.GetConstructor(new[] { nnOperandType });
-                        // ReSharper disable once AssignNullToNotNullAttribute
                         IL.Emit(OpCodes.Newobj, ci);
                         IL.Emit(OpCodes.Br_S, labEnd);
 
@@ -306,6 +304,7 @@ namespace System.Linq.Expressions.Compiler
                         IL.Emit(OpCodes.Ceq);
                         return;
                     }
+
                     goto case ExpressionType.OnesComplement;
 
                 case ExpressionType.OnesComplement:

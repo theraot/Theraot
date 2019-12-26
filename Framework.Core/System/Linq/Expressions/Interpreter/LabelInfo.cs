@@ -172,7 +172,10 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (!(_definitions is HashSet<LabelScopeInfo> set))
                 {
-                    _definitions = set = new HashSet<LabelScopeInfo> { (LabelScopeInfo)_definitions };
+                    _definitions = set = new HashSet<LabelScopeInfo>
+                    {
+                        (LabelScopeInfo)_definitions
+                    };
                 }
 
                 set.Add(scope);

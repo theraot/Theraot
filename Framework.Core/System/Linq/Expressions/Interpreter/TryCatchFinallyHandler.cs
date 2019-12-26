@@ -20,7 +20,6 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly int TryEndIndex;
         internal readonly int TryStartIndex;
 
-        /// <inheritdoc />
         /// <summary>
         ///     No finally block
         /// </summary>

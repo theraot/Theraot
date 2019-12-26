@@ -1,8 +1,6 @@
 ﻿// Needed for NET40
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
-// ReSharper disable ConstantNullCoalescingCondition
-// ReSharper disable NonReadonlyMemberInGetHashCode
 
 using System;
 using System.Collections.Generic;
@@ -68,6 +66,7 @@ namespace Theraot.Threading.Needles
             {
                 return Equals(value);
             }
+
             return !IsAlive;
         }
 
@@ -78,13 +77,14 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return EqualityComparer<T>.Default.GetHashCode(Value);
         }
 
         public override string ToString()
         {
             var target = Value;
-            return IsAlive ? target!.ToString() ?? "<?>" : "<Dead Needle>";
+            return IsAlive ? target?.ToString() ?? "<?>" : "<Dead Needle>";
         }
 
         private bool Equals(T otherValue)

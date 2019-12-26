@@ -1,0 +1,4 @@
+[*.cs]
+resharper_unused_member_global_highlighting = warning
+resharper_class_with_virtual_members_never_inherited_global_highlighting = warning
+dotnet_diagnostic.EPS01.severity = warning

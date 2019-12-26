@@ -30,8 +30,6 @@ namespace System.Diagnostics.Contracts
         }
 
         // Called by COM Interop, if we see Cor_E_CodeContractFailed as an HRESULT.
-        // ReSharper disable once UnusedMember.Local
-
         private ContractException()
         {
             HResult = ContractHelper.Cor_E_CodeContractFailed;

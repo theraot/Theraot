@@ -1,8 +1,5 @@
 ﻿// Needed for Workaround
 
-// ReSharper disable VirtualMemberNeverOverridden.Global
-// ReSharper disable ConstantNullCoalescingCondition
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -133,6 +130,7 @@ namespace Theraot.Threading.Needles
                 return $"<Faulted: {Exception}>";
             }
 
+            // ReSharper disable once ConstantNullCoalescingCondition
             return _handle != null && _handle.TryGetTarget(out var target) ? target.ToString() ?? "<?>" : "<Dead Needle>";
         }
 
@@ -143,6 +141,7 @@ namespace Theraot.Threading.Needles
                 value = found;
                 return true;
             }
+
             value = default!;
             return false;
         }

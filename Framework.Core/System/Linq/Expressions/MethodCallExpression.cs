@@ -675,7 +675,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo Method { get; }
 
-        /// <inheritdoc />
         /// <summary>
         /// Returns the node type of this <see cref="Expression" />. (Inherited from <see cref="Expression" />.)
         /// </summary>
@@ -688,7 +687,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression? Object => GetInstance();
 
-        /// <inheritdoc />
         /// <summary>
         /// Gets the static type of the expression that this <see cref="Expression" /> represents. (Inherited from <see cref="Expression" />.)
         /// </summary>
@@ -869,9 +867,8 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression2 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1;
+        private readonly Expression _arg1; // storage for the 2nd argument
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-        // storage for the 2nd argument
 
         public InstanceMethodCallExpression2(MethodInfo method, Expression instance, Expression arg0, Expression arg1)
             : base(method, instance)
@@ -933,9 +930,8 @@ namespace System.Linq.Expressions
 
     internal sealed class InstanceMethodCallExpression3 : InstanceMethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2;
+        private readonly Expression _arg1, _arg2; // storage for the 2nd - 3rd argument
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-        // storage for the 2nd - 3rd argument
 
         public InstanceMethodCallExpression3(MethodInfo method, Expression instance, Expression arg0, Expression arg1, Expression arg2)
             : base(method, instance)
@@ -1125,9 +1121,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression2 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1;
+        private readonly Expression _arg1; // storage for the 2nd arg
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-        // storage for the 2nd arg
 
         public MethodCallExpression2(MethodInfo method, Expression arg0, Expression arg1)
             : base(method)
@@ -1189,9 +1184,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression3 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2;
+        private readonly Expression _arg1, _arg2; // storage for the 2nd - 3rd args.
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-        // storage for the 2nd - 3rd args.
 
         public MethodCallExpression3(MethodInfo method, Expression arg0, Expression arg1, Expression arg2)
             : base(method)
@@ -1261,9 +1255,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression4 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2, _arg3;
+        private readonly Expression _arg1, _arg2, _arg3; // storage for the 2nd - 4th args.
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-        // storage for the 2nd - 4th args.
 
         public MethodCallExpression4(MethodInfo method, Expression arg0, Expression arg1, Expression arg2, Expression arg3)
             : base(method)
@@ -1341,9 +1334,8 @@ namespace System.Linq.Expressions
 
     internal sealed class MethodCallExpression5 : MethodCallExpression, IArgumentProvider
     {
-        private readonly Expression _arg1, _arg2, _arg3, _arg4;
+        private readonly Expression _arg1, _arg2, _arg3, _arg4; // storage for the 2nd - 5th args.
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
-        // storage for the 2nd - 5th args.
 
         public MethodCallExpression5(MethodInfo method, Expression arg0, Expression arg1, Expression arg2, Expression arg3, Expression arg4)
             : base(method)

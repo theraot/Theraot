@@ -20,6 +20,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callBack));
             }
+
             return ThreadPool.QueueUserWorkItem(_ => callBack(state));
 #else
             return ThreadPool.QueueUserWorkItem(callBack, state);
@@ -34,6 +35,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callBack));
             }
+
             _ = preferLocal;
             return ThreadPool.QueueUserWorkItem(_ => callBack(state));
 #elif TARGETS_NET || TARGETS_NETCORE || LESSTHAN_NETSTANDARD21
@@ -41,6 +43,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callBack));
             }
+
             _ = preferLocal;
             return ThreadPool.QueueUserWorkItem(obj => callBack(obj), state);
 #else
@@ -59,6 +62,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callBack));
             }
+
             return ThreadPool.QueueUserWorkItem(_ => callBack(state));
 #else
             return ThreadPool.QueueUserWorkItem(callBack, state);
@@ -76,6 +80,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callBack));
             }
+
             _ = preferLocal;
             return ThreadPool.UnsafeQueueUserWorkItem(obj => callBack(obj), state);
 #elif LESSTHAN_NETSTANDARD13
@@ -83,6 +88,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(callBack));
             }
+
             _ = preferLocal;
             return ThreadPool.QueueUserWorkItem(_ => callBack(state));
 #else

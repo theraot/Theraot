@@ -35,7 +35,10 @@ namespace System.Runtime.CompilerServices
 
         public ConditionalWeakTable()
         {
-            _wrapped = new WeakDictionary<TKey, TValue> { AutoRemoveDeadItems = true };
+            _wrapped = new WeakDictionary<TKey, TValue>
+            {
+                AutoRemoveDeadItems = true
+            };
         }
 
         /// <summary>

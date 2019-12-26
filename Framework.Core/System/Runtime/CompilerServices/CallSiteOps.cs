@@ -145,6 +145,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(site));
             }
+
             if (site.Binder == null)
             {
                 throw new ArgumentException($"{nameof(site.Binder)} is null", nameof(site));

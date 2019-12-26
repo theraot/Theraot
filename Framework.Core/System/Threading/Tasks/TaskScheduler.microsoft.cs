@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
-// ReSharper disable VirtualMemberNeverOverridden.Global
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -10,6 +9,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security;
+using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
@@ -118,8 +118,7 @@ namespace System.Threading.Tasks
                 return ArrayEx.Empty<Task>();
             }
 
-            // If it can be cast to an array, use it directly
-            var activeTasksArray = activeTasksSource as Task[] ?? new List<Task>(activeTasksSource).ToArray();
+            var activeTasksArray = activeTasksSource.AsArrayInternal();
 
             // touch all Task.Id fields so that the debugger doesn't need to do a lot of cross-proc calls to generate them
             foreach (var t in activeTasksArray)

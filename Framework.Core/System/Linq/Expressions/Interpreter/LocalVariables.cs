@@ -128,7 +128,7 @@ namespace System.Linq.Expressions.Interpreter
             return true;
         }
 
-        public void UndefineLocal(LocalDefinition definition, int end)
+        public void UndefineLocal(in LocalDefinition definition, int end)
         {
             var scope = _variables[definition.Parameter];
             scope.Stop = end;

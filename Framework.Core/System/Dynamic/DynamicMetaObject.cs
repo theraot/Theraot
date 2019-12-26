@@ -46,7 +46,6 @@ namespace System.Dynamic
             Restrictions = restrictions;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="DynamicMetaObject" /> class.
         /// </summary>

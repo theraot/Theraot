@@ -293,10 +293,12 @@ namespace System.Linq.Expressions
             {
                 return nex;
             }
+
             if (nex.Members == null)
             {
                 return Expression.New(nex.Constructor!, args);
             }
+
             return Expression.New(nex.Constructor!, args, nex.Members);
         }
 
@@ -306,9 +308,7 @@ namespace System.Linq.Expressions
             if (expressionList != na.Expressions)
             {
                 return na.NodeType == ExpressionType.NewArrayInit
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     ? Expression.NewArrayInit(na.Type.GetElementType(), expressionList)
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     : Expression.NewArrayBounds(na.Type.GetElementType(), expressionList);
             }
 

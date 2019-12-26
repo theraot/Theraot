@@ -33,6 +33,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(@delegate));
             }
+
             return DelegateEqualsExtracted(@delegate.GetMethodInfo(), @delegate.Target, method, target);
         }
 
@@ -173,12 +174,7 @@ namespace Theraot.Reflection
             where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>();
-            if (attributes != null)
-            {
-                return attributes.Length > 0;
-            }
-
-            return false;
+            return attributes?.Length > 0;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -186,12 +182,7 @@ namespace Theraot.Reflection
             where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>(true);
-            if (attributes != null)
-            {
-                return attributes.Length > 0;
-            }
-
-            return false;
+            return attributes?.Length > 0;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -199,12 +190,7 @@ namespace Theraot.Reflection
             where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>();
-            if (attributes != null)
-            {
-                return attributes.Length > 0;
-            }
-
-            return false;
+            return attributes?.Length > 0;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -212,12 +198,7 @@ namespace Theraot.Reflection
             where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>(true);
-            if (attributes != null)
-            {
-                return attributes.Length > 0;
-            }
-
-            return false;
+            return attributes?.Length > 0;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -225,12 +206,7 @@ namespace Theraot.Reflection
             where TAttribute : Attribute
         {
             var attributes = item.GetAttributes<TAttribute>(true);
-            if (attributes != null)
-            {
-                return attributes.Length > 0;
-            }
-
-            return false;
+            return attributes?.Length > 0;
         }
 
         public static bool HasIdentityPrimitiveOrNullableConversionTo(this Type source, Type target)

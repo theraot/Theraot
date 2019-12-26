@@ -8,7 +8,6 @@ using System.Runtime.Serialization;
 
 namespace System.Threading.Tasks
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an exception used to communicate an invalid operation by a
     ///     <see cref="TaskScheduler" />.
@@ -16,7 +15,6 @@ namespace System.Threading.Tasks
     [Serializable]
     public class TaskSchedulerException : Exception
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="TaskSchedulerException" /> class.
         /// </summary>
@@ -26,7 +24,6 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="TaskSchedulerException" />
         ///     class with a specified error message.
@@ -38,7 +35,6 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="TaskSchedulerException" />
         ///     class using the default error message and a reference to the inner exception that is the cause of
@@ -51,7 +47,6 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="TaskSchedulerException" />
         ///     class with a specified error message and a reference to the inner exception that is the cause of
@@ -65,7 +60,6 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="TaskSchedulerException" />
         ///     class with serialized data.

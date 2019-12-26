@@ -13,6 +13,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var result = default(TSource)!;
             foreach (var item in source)
@@ -21,13 +22,16 @@ namespace System.Linq
                 {
                     throw new InvalidOperationException();
                 }
+
                 found = true;
                 result = item;
             }
+
             if (found)
             {
                 return result;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -37,10 +41,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var result = default(TSource)!;
             foreach (var item in source)
@@ -49,17 +55,21 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 if (found)
                 {
                     throw new InvalidOperationException();
                 }
+
                 found = true;
                 result = item;
             }
+
             if (found)
             {
                 return result;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -70,6 +80,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var result = default(TSource)!;
             foreach (var item in source)
@@ -78,9 +89,11 @@ namespace System.Linq
                 {
                     throw new InvalidOperationException();
                 }
+
                 found = true;
                 result = item;
             }
+
             return result;
         }
 
@@ -91,10 +104,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var result = default(TSource)!;
             foreach (var item in source)
@@ -103,13 +118,16 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 if (found)
                 {
                     throw new InvalidOperationException();
                 }
+
                 found = true;
                 result = item;
             }
+
             return result;
         }
     }

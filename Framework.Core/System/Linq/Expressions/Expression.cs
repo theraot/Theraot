@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1062 // Validate arguments of public methods
-// ReSharper disable VirtualMemberNeverOverridden.Global
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -547,7 +546,7 @@ namespace System.Linq.Expressions
             throw new ArgumentException("Expression must be writable", paramName);
         }
 
-        private class ExtensionInfo
+        private sealed class ExtensionInfo
         {
             internal readonly ExpressionType NodeType;
 

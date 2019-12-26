@@ -2,7 +2,6 @@
 
 namespace System.Runtime.CompilerServices
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Allows you to obtain the method or property name of the caller to the method.
     /// </summary>

@@ -69,7 +69,7 @@ namespace System.Threading.Tasks
     /// </remarks>
     [AsyncMethodBuilder(typeof(AsyncValueTaskMethodBuilder<>))]
     [StructLayout(LayoutKind.Auto)]
-    public struct ValueTask<TResult> : IEquatable<ValueTask<TResult>>
+    public readonly struct ValueTask<TResult> : IEquatable<ValueTask<TResult>>
     {
         /// <summary>The result to be used if the operation completed successfully synchronously.</summary>
         internal readonly TResult _result;
@@ -178,10 +178,12 @@ namespace System.Threading.Tasks
             {
                 return _task.GetHashCode();
             }
+
             if (_result != null)
             {
                 return _result.GetHashCode();
             }
+
             return 0;
         }
 

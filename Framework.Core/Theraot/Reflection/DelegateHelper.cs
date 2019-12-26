@@ -36,10 +36,12 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(types));
             }
+
             if (types.Length == 0)
             {
                 throw new ArgumentException("Non-empty collection required", nameof(types));
             }
+
             for (var index = 0; index < types.Length; index++)
             {
                 var type = types[index];
@@ -48,6 +50,7 @@ namespace Theraot.Reflection
                     throw new ArgumentNullException($"{nameof(types)}[{index}]");
                 }
             }
+
             return GetDelegateTypeInternal(types);
         }
 

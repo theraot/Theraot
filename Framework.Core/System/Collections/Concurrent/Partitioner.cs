@@ -203,6 +203,7 @@ namespace System.Collections.Concurrent
                 foreach (var item in source)
                 {
                     yield return new KeyValuePair<long, T>(NumericHelper.BuildInt64(index, subIndex), item);
+
                     subIndex++;
                 }
             }

@@ -398,6 +398,7 @@ namespace System.Linq.Expressions.Compiler
                     clone[index] = _self.ToTemp(current, out var temp, _byRefs?[index] ?? false);
                     comma.Add(temp);
                 }
+
                 comma.Capacity = comma.Count + 1;
                 _comma = comma;
             }

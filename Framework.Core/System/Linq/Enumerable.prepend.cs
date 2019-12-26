@@ -18,6 +18,7 @@ namespace System.Linq
             IEnumerable<TSource> Appended()
             {
                 yield return element;
+
                 foreach (var item in source)
                 {
                     yield return item;

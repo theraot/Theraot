@@ -2,7 +2,6 @@
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
-// ReSharper disable MemberCanBeMadeStatic.Global
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -18,7 +17,6 @@ using Theraot.Reflection;
 
 namespace System.Dynamic
 {
-    /// <inheritdoc />
     /// <summary>
     ///     The dynamic call site binder that participates in the <see cref="DynamicMetaObject" /> binding
     ///     protocol.
@@ -42,7 +40,6 @@ namespace System.Dynamic
         /// </summary>
         internal virtual bool IsStandardBinder => false;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Performs the runtime binding of the dynamic operation on a set of arguments.
         /// </summary>

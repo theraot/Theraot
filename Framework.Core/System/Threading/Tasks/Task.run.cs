@@ -64,14 +64,11 @@ namespace System.Threading.Tasks
             var result = source.Task;
             ThreadPool.QueueUserWorkItem
             (
-                _ =>
-                {
-                    function().ContinueWith
-                    (
-                        task => source.SetResult(task.InternalResult),
-                        TaskScheduler.Current
-                    );
-                }
+                _ => function().ContinueWith
+                (
+                    task => source.SetResult(task.InternalResult),
+                    TaskScheduler.Current
+                )
             );
             result.Wait();
             return result;
@@ -89,13 +86,13 @@ namespace System.Threading.Tasks
             ThreadPool.QueueUserWorkItem
             (
                 _ =>
-                function().ContinueWith
-                (
-                    task => source.SetResult(task.InternalResult),
-                    cancellationToken,
-                    TaskContinuationOptions.None,
-                    TaskScheduler.Current
-                )
+                    function().ContinueWith
+                    (
+                        task => source.SetResult(task.InternalResult),
+                        cancellationToken,
+                        TaskContinuationOptions.None,
+                        TaskScheduler.Current
+                    )
             );
             result.Wait(cancellationToken);
             return result;

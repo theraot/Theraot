@@ -5,7 +5,6 @@
 
 namespace System.Linq.Expressions.Interpreter
 {
-    /// <inheritdoc />
     /// <summary>
     ///     The re-throw instruction will throw this exception
     /// </summary>

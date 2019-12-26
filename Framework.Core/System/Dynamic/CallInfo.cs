@@ -39,7 +39,6 @@ namespace System.Dynamic
     {
         private readonly ReadOnlyCollectionEx<string> _argumentNames;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Creates a new <see cref="CallInfo" /> that represents arguments in the dynamic binding process.
         /// </summary>

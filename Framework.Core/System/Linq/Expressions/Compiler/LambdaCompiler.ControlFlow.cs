@@ -156,6 +156,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return;
             }
+
             foreach (var node in nodes)
             {
                 DefineBlockLabels(node);
@@ -284,12 +285,13 @@ namespace System.Linq.Expressions.Compiler
 
         private LabelInfo EnsureLabel(LabelTarget node)
         {
-            if (!_labelInfo.TryGetValue(node, out var result))
+            if (_labelInfo.TryGetValue(node, out var result))
             {
-                result = new LabelInfo(IL, node, false);
-                _labelInfo.Add(node, result);
+                return result;
             }
 
+            result = new LabelInfo(IL, node, false);
+            _labelInfo.Add(node, result);
             return result;
         }
 

@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-// ReSharper disable LoopCanBeConvertedToQuery
-
 using System.Collections.Generic;
 using Theraot.Core;
 
@@ -30,14 +28,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             if (elementSelector == null)
             {
                 throw new ArgumentNullException(nameof(elementSelector));
             }
+
             return CreateGroupByIterator(source, keySelector, elementSelector, comparer);
         }
 
@@ -52,14 +53,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (keySelector == null)
             {
                 throw new ArgumentNullException(nameof(keySelector));
             }
+
             if (elementSelector == null)
             {
                 throw new ArgumentNullException(nameof(elementSelector));
             }
+
             return CreateGroupByIterator(source, keySelector, elementSelector, resultSelector, comparer);
         }
 
@@ -75,12 +79,12 @@ namespace System.Linq
 
         private static IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey>? comparer)
         {
-            return new GroupedEnumerable<TSource, TKey, TElement>(source, keySelector, elementSelector, comparer)/* as IEnumerable<IGrouping<TKey, TElement>>*/;
+            return new GroupedEnumerable<TSource, TKey, TElement>(source, keySelector, elementSelector, comparer);
         }
 
         private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey>? comparer)
         {
-            return new GroupedConvertedEnumerable<TSource, TKey, TElement, TResult>(source, keySelector, elementSelector, resultSelector, comparer)/* as IEnumerable<TResult>*/;
+            return new GroupedConvertedEnumerable<TSource, TKey, TElement, TResult>(source, keySelector, elementSelector, resultSelector, comparer);
         }
     }
 }

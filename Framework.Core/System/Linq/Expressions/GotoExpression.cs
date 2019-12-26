@@ -332,7 +332,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an unconditional jump. This includes return statements, break and continue statements, and other jumps.
     /// </summary>
@@ -352,7 +351,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public GotoExpressionKind Kind { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -365,7 +363,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget Target { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)

@@ -117,6 +117,7 @@ namespace System.Threading.Tasks
             {
                 source.Task.AssignCancellationToken(cancellationToken, null, null);
             }
+
             var timeout = RootedTimeout.Launch
             (
                 () => source.TrySetResult(true),

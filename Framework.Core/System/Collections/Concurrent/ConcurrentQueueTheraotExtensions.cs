@@ -16,6 +16,7 @@ namespace System.Collections.Concurrent
             {
                 throw new NullReferenceException();
             }
+
             while (concurrentQueue.TryDequeue(out _))
             {
                 // Empty

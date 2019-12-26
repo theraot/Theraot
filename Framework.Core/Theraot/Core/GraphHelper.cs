@@ -137,6 +137,7 @@ namespace Theraot.Core
 
                         known.Add(found);
                         yield return resultSelector(found);
+
                         queue.Enqueue(found);
                     }
 
@@ -168,6 +169,7 @@ namespace Theraot.Core
                     foreach (var found in branches)
                     {
                         yield return resultSelector(found);
+
                         queue.Enqueue(found);
                     }
 
@@ -317,6 +319,7 @@ namespace Theraot.Core
 
                         known.Add(found);
                         yield return resultSelector(found);
+
                         stack.Push(found);
                     }
 
@@ -348,6 +351,7 @@ namespace Theraot.Core
                     foreach (var found in branches)
                     {
                         yield return resultSelector(found);
+
                         stack.Push(found);
                     }
 

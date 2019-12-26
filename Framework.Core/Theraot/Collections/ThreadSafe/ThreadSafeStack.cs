@@ -44,7 +44,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the number of items actually contained.
         /// </summary>
@@ -93,7 +92,6 @@ namespace Theraot.Collections.ThreadSafe
             this.DeprecatedCopyTo(array, index);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -106,6 +104,7 @@ namespace Theraot.Collections.ThreadSafe
             while (current != null)
             {
                 yield return current.Value;
+
                 current = current.Link;
             }
         }

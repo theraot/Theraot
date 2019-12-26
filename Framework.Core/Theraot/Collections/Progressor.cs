@@ -3,8 +3,7 @@
 #pragma warning disable CA2000 // Dispose objects before losing scope
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable IDE0067 // Disposable object is never disposed
-// ReSharper disable ConstantConditionalAccessQualifier
-// ReSharper disable RedundantExplicitArrayCreation
+// ReSharper disable ImplicitlyCapturedClosure
 
 using System;
 using System.Collections;
@@ -131,6 +130,7 @@ namespace Theraot.Collections
             var semaphore = new SemaphoreSlim(0);
             var source = new CancellationTokenSource();
 
+            // ReSharper disable once RedundantExplicitArrayCreation
             var subscription = new IDisposable?[]
             {
                 observable.Subscribe
@@ -144,7 +144,14 @@ namespace Theraot.Collections
                 )
             };
             var proxy = new ProxyObservable<T>();
-            var tryTake = new TryTake<T>[] { (out T val) => { val = default!; return false; } };
+            var tryTake = new TryTake<T>[]
+            {
+                (out T val) =>
+                {
+                    val = default!;
+                    return false;
+                }
+            };
             tryTake[0] = TakeInitial;
 
             return new Progressor<T>(proxy, Take);
@@ -355,6 +362,7 @@ namespace Theraot.Collections
         private static Progressor<T> CreateFromIEnumerableExtracted(IEnumerator<T> enumerator)
         {
             var proxy = new ProxyObservable<T>();
+            // ReSharper disable once RedundantExplicitArrayCreation
             var enumeratorBox = new IEnumerator<T>?[] { enumerator };
             return new Progressor<T>(proxy, (out T value) => Take(out value));
 

@@ -13,10 +13,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (index < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(index), index, "index < 0");
             }
+
             switch (source)
             {
                 case IList<TSource> list:
@@ -33,8 +35,10 @@ namespace System.Linq
                         {
                             return item;
                         }
+
                         count++;
                     }
+
                     throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
@@ -46,10 +50,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (index < 0)
             {
                 return default!;
             }
+
             switch (source)
             {
                 case IList<TSource> list:
@@ -66,8 +72,10 @@ namespace System.Linq
                         {
                             return item;
                         }
+
                         count++;
                     }
+
                     return default!;
             }
         }

@@ -19,7 +19,6 @@ namespace Theraot.Collections.ThreadSafe
 
         private int _probing;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
         /// </summary>
@@ -29,7 +28,6 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
         /// </summary>
@@ -52,7 +50,6 @@ namespace Theraot.Collections.ThreadSafe
             _probing = initialProbing;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeSet{T}" /> class.
         /// </summary>
@@ -115,7 +112,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes all the elements.
         /// </summary>
@@ -159,7 +155,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Determines whether the specified value is contained.
         /// </summary>
@@ -169,7 +164,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Contains(T item)
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -182,7 +176,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
@@ -201,7 +194,6 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.ExceptWith(this, other);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -312,7 +304,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes the specified value.
         /// </summary>
@@ -322,7 +313,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T item)
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
             var hashCode = Comparer.GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
@@ -525,6 +515,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(valueOverwriteCheck));
             }
+
             var hashCode = Comparer.GetHashCode(value);
             for (var attempts = 0; ; attempts++)
             {

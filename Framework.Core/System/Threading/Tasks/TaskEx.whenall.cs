@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 #if NET40
 
 using System.Linq;
+using Theraot.Collections;
 
 #endif
 
@@ -75,6 +76,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
+
             return WhenAllCore(tasks, (Action<Task[], TaskCompletionSource<object>>)((_, tcs) => tcs.TrySetResult(null!)));
 #else
             // Missing in .NET 4.0
@@ -104,11 +106,19 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(tasks));
             }
-            return WhenAllCore<TResult[]>(tasks, (completedTasks, tcs) =>
-                                                 tcs.TrySetResult(completedTasks
-                                                                      .Cast<Task<TResult>>()
-                                                                      .Select(t => t.Result)
-                                                                      .ToArray()));
+
+            return WhenAllCore<TResult[]>
+            (
+                tasks,
+                (completedTasks, tcs) =>
+                    tcs.TrySetResult
+                    (
+                        completedTasks
+                            .Cast<Task<TResult>>()
+                            .Select(t => t.Result)
+                            .ToArray()
+                    )
+            );
 #else
             // Missing in .NET 4.0
             return Task.WhenAll(tasks);
@@ -151,11 +161,11 @@ namespace System.Threading.Tasks
         /// <returns>
         /// A Task that represents the completion of all of the provided tasks.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="System.ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="tasks"/> argument is null.</exception><exception cref="ArgumentException">The <paramref name="tasks"/> argument contains a null reference.</exception>
         private static Task<TResult> WhenAllCore<TResult>(IEnumerable<Task> tasks, Action<Task[], TaskCompletionSource<TResult>> setResultAction)
         {
             var tcs = new TaskCompletionSource<TResult>();
-            var taskArray = tasks as Task[] ?? tasks.ToArray();
+            var taskArray = tasks.AsArrayInternal();
             if (taskArray.Length == 0)
             {
                 setResultAction!(taskArray, tcs);
@@ -177,6 +187,7 @@ namespace System.Threading.Tasks
                             canceled |= task.IsCanceled;
                         }
                     }
+
                     if (exceptions?.Count > 0)
                     {
                         tcs.TrySetException(exceptions);

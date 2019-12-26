@@ -244,6 +244,7 @@ namespace System.Collections.Generic
                 actualValue = node.Key;
                 return true;
             }
+
             actualValue = default!;
             return false;
         }

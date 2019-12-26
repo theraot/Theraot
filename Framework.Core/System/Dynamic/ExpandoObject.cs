@@ -26,6 +26,7 @@ namespace System.Dynamic
     /// <summary>
     ///     Represents an object with members that can be dynamically added and removed at runtime.
     /// </summary>
+    // ReSharper disable once InheritdocConsiderUsage
     public sealed class ExpandoObject : IDynamicMetaObjectProvider, IDictionary<string, object>, INotifyPropertyChanged
     {
         internal const int AmbiguousMatchFound = -2;
@@ -207,6 +208,7 @@ namespace System.Dynamic
                 value = tmp;
                 return true;
             }
+
             value = null!;
             return false;
         }
@@ -461,7 +463,7 @@ namespace System.Dynamic
         ///     pair.  This enables us to do a class check in a thread safe manner w/o
         ///     requiring locks.
         /// </summary>
-        private class ExpandoData
+        private sealed class ExpandoData
         {
             internal static readonly ExpandoData Empty = new ExpandoData();
 
@@ -530,7 +532,10 @@ namespace System.Dynamic
                 var oldLength = _dataArray.Length;
                 var arr = new object[GetAlignedSize(newClass.Keys.Length)];
                 Array.Copy(_dataArray, 0, arr, 0, _dataArray.Length);
-                return new ExpandoData(newClass, arr, Version) { [oldLength] = Uninitialized };
+                return new ExpandoData(newClass, arr, Version)
+                {
+                    [oldLength] = Uninitialized
+                };
             }
 
             private static int GetAlignedSize(int len)
@@ -545,7 +550,7 @@ namespace System.Dynamic
 
         [DebuggerTypeProxy(typeof(KeyCollectionDebugView))]
         [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-        private class KeyCollection : ICollection<string>
+        private sealed class KeyCollection : ICollection<string>
         {
             private readonly ExpandoObject _expando;
             private readonly int _expandoCount;
@@ -671,7 +676,7 @@ namespace System.Dynamic
             }
         }
 
-        private class MetaExpando : DynamicMetaObject
+        private sealed class MetaExpando : DynamicMetaObject
         {
             public MetaExpando(Expression expression, ExpandoObject value)
                 : base(expression, BindingRestrictions.Empty, value)
@@ -936,7 +941,7 @@ namespace System.Dynamic
 
         [DebuggerTypeProxy(typeof(ValueCollectionDebugView))]
         [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-        private class ValueCollection : ICollection<object>
+        private sealed class ValueCollection : ICollection<object>
         {
             private readonly ExpandoObject _expando;
             private readonly int _expandoCount;

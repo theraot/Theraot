@@ -23,7 +23,7 @@ namespace Theraot.Collections
             return new PartitionEnumerable<T>(items, partitionSize);
         }
 
-        private class PartitionEnumerable<T> : IEnumerable<IEnumerable<T>>
+        private sealed class PartitionEnumerable<T> : IEnumerable<IEnumerable<T>>
         {
             private readonly int _partitionSize;
 
@@ -49,6 +49,7 @@ namespace Theraot.Collections
                     }
 
                     yield return group;
+
                     group = new List<T>();
                     count = _partitionSize;
                 }

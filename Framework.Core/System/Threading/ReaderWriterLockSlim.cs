@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-// ReSharper disable once ConditionIsAlwaysTrueOrFalse
-
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -261,18 +259,9 @@ namespace System.Threading
             // We first try to obtain the upgradeable right
             try
             {
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                while (!_upgradableEvent.IsSet || !taken)
+                while (!_upgradableEvent.IsSet)
                 {
-                    try
-                    {
-                        // Empty
-                    }
-                    finally
-                    {
-                        taken = _upgradableTaken.TryRelaxedSet();
-                    }
-
+                    taken = _upgradableTaken.TryRelaxedSet();
                     if (taken)
                     {
                         break;
@@ -654,6 +643,7 @@ namespace System.Threading
             {
                 return _fastStateCache[managedThreadId] ?? (_fastStateCache[managedThreadId] = new ThreadLockState());
             }
+
             return null;
         }
     }

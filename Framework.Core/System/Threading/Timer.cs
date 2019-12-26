@@ -30,9 +30,11 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
+
             var callback = _callback;
             Stop();
             Task.Factory.StartNew(Function, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
+
             async Task Function()
             {
                 await Task.Delay(dueTime, _changeSource!.Token).ConfigureAwait(false);
@@ -70,20 +72,24 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(nameof(Timer));
             }
+
             var callback = _callback;
             if (period < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(period));
             }
+
             if (dueTime < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(dueTime));
             }
+
             Stop();
             if (dueTime != -1)
             {
                 Task.Factory.StartNew(Function, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
             }
+
             async Task Function()
             {
                 await Task.Delay(dueTime, _changeSource!.Token).ConfigureAwait(false);

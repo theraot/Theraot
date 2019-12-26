@@ -12,6 +12,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(del));
             }
+
             return del.Method;
         }
 
@@ -21,6 +22,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(method));
             }
+
             return method.GetBaseDefinition();
         }
 
@@ -30,6 +32,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetEvent(name);
         }
 
@@ -39,6 +42,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetEvents();
         }
 
@@ -48,6 +52,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetField(name);
         }
 
@@ -57,6 +62,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetFields();
         }
 
@@ -66,6 +72,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(typeInfo));
             }
+
             return typeInfo.GetInterfaceMap(interfaceType);
         }
 
@@ -75,6 +82,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetMethod(name, parameters);
         }
 
@@ -84,6 +92,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetMethods();
         }
 
@@ -93,6 +102,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetProperties();
         }
 
@@ -102,6 +112,7 @@ namespace System.Reflection
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             return type.GetProperty(name);
         }
     }

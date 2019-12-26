@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
-// ReSharper disable LoopCanBeConvertedToQuery
 
 using System.Collections.Generic;
 using Theraot.Reflection;
@@ -16,6 +15,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0L;
             var count = 0L;
             foreach (var item in source)
@@ -23,10 +23,12 @@ namespace System.Linq
                 sum += item;
                 count++;
             }
+
             if (count == 0L)
             {
                 throw new InvalidOperationException();
             }
+
             return sum / (double)count;
         }
 
@@ -41,6 +43,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0L;
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
@@ -48,10 +51,12 @@ namespace System.Linq
                 sum += item!.Value;
                 count++;
             }
+
             if (count == 0L)
             {
                 return null;
             }
+
             return sum / (double)count;
         }
 
@@ -66,6 +71,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0L;
             var count = 0L;
             foreach (var item in source)
@@ -73,10 +79,12 @@ namespace System.Linq
                 sum += item;
                 count++;
             }
+
             if (count == 0L)
             {
                 throw new InvalidOperationException();
             }
+
             return sum / (double)count;
         }
 
@@ -91,6 +99,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0L;
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
@@ -98,10 +107,12 @@ namespace System.Linq
                 sum += item!.Value;
                 count++;
             }
+
             if (count == 0L)
             {
                 return null;
             }
+
             return sum / (double)count;
         }
 
@@ -116,6 +127,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0f;
             var count = 0L;
             foreach (var item in source)
@@ -123,10 +135,12 @@ namespace System.Linq
                 sum += item;
                 count++;
             }
+
             if (count == 0L)
             {
                 throw new InvalidOperationException();
             }
+
             return sum / count;
         }
 
@@ -141,6 +155,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0f;
             var count = 0L;
             foreach (var nullable in Where(source, n => n.HasValue))
@@ -148,10 +163,12 @@ namespace System.Linq
                 sum += nullable!.Value;
                 count++;
             }
+
             if (count == 0L)
             {
                 return null;
             }
+
             return sum / count;
         }
 
@@ -166,6 +183,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0d;
             var count = 0L;
             foreach (var item in source)
@@ -173,10 +191,12 @@ namespace System.Linq
                 sum += item;
                 count++;
             }
+
             if (count == 0L)
             {
                 throw new InvalidOperationException();
             }
+
             return sum / count;
         }
 
@@ -191,6 +211,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0d;
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
@@ -198,10 +219,12 @@ namespace System.Linq
                 sum += item!.Value;
                 count++;
             }
+
             if (count == 0L)
             {
                 return null;
             }
+
             return sum / count;
         }
 
@@ -216,6 +239,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0m;
             var count = 0L;
             foreach (var item in source)
@@ -223,10 +247,12 @@ namespace System.Linq
                 sum += item;
                 count++;
             }
+
             if (count == 0L)
             {
                 throw new InvalidOperationException();
             }
+
             return sum / count;
         }
 
@@ -241,6 +267,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0m;
             var count = 0L;
             foreach (var item in Where(source, n => n.HasValue))
@@ -248,10 +275,12 @@ namespace System.Linq
                 sum += item!.Value;
                 count++;
             }
+
             if (count == 0)
             {
                 return null;
             }
+
             return sum / count;
         }
 
@@ -266,6 +295,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var max = int.MinValue;
             foreach (var element in source)
@@ -274,12 +304,15 @@ namespace System.Linq
                 {
                     max = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -289,6 +322,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var max = long.MinValue;
             foreach (var element in source)
@@ -297,12 +331,15 @@ namespace System.Linq
                 {
                     max = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -312,13 +349,15 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     throw new InvalidOperationException();
                 }
-                // Skin NaN
+
+                // Skip NaN
                 var max = enumerator.Current;
                 while (double.IsNaN(max))
                 {
@@ -326,8 +365,10 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     max = enumerator.Current;
                 }
+
                 while (enumerator.MoveNext())
                 {
                     var element = enumerator.Current;
@@ -336,6 +377,7 @@ namespace System.Linq
                         max = element;
                     }
                 }
+
                 return max;
             }
         }
@@ -346,13 +388,15 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     throw new InvalidOperationException();
                 }
-                // Skin NaN
+
+                // Skip NaN
                 var max = enumerator.Current;
                 while (float.IsNaN(max))
                 {
@@ -360,8 +404,10 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     max = enumerator.Current;
                 }
+
                 while (enumerator.MoveNext())
                 {
                     var element = enumerator.Current;
@@ -370,6 +416,7 @@ namespace System.Linq
                         max = element;
                     }
                 }
+
                 return max;
             }
         }
@@ -380,6 +427,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var max = decimal.MinValue;
             foreach (var element in source)
@@ -388,12 +436,15 @@ namespace System.Linq
                 {
                     max = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -403,6 +454,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var max = int.MinValue;
             foreach (var element in source)
@@ -417,12 +469,15 @@ namespace System.Linq
                 {
                     max = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             return null;
         }
 
@@ -432,6 +487,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var max = long.MinValue;
             foreach (var element in source)
@@ -446,12 +502,15 @@ namespace System.Linq
                 {
                     max = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             return null;
         }
 
@@ -461,12 +520,14 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     return null;
                 }
+
                 // Skip null
                 var found = enumerator.Current;
                 while (!found.HasValue)
@@ -475,8 +536,10 @@ namespace System.Linq
                     {
                         return null;
                     }
+
                     found = enumerator.Current;
                 }
+
                 // Skip NaN
                 var max = found.Value;
                 while (double.IsNaN(max))
@@ -485,6 +548,7 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     // Skip null
                     found = enumerator.Current;
                     while (!found.HasValue)
@@ -493,10 +557,13 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = enumerator.Current;
                     }
+
                     max = found.Value;
                 }
+
                 while (enumerator.MoveNext())
                 {
                     // Skip null
@@ -507,14 +574,17 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = enumerator.Current;
                     }
+
                     var value = found.Value;
                     if (value > max)
                     {
                         max = value;
                     }
                 }
+
                 return max;
             }
         }
@@ -525,12 +595,14 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     return null;
                 }
+
                 // Skip null
                 var found = enumerator.Current;
                 while (!found.HasValue)
@@ -539,8 +611,10 @@ namespace System.Linq
                     {
                         return null;
                     }
+
                     found = enumerator.Current;
                 }
+
                 // Skip NaN
                 var max = found.Value;
                 while (float.IsNaN(max))
@@ -549,6 +623,7 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     // Skip null
                     found = enumerator.Current;
                     while (!found.HasValue)
@@ -557,10 +632,13 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = enumerator.Current;
                     }
+
                     max = found.Value;
                 }
+
                 while (enumerator.MoveNext())
                 {
                     // Skip null
@@ -571,14 +649,17 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = enumerator.Current;
                     }
+
                     var value = found.Value;
                     if (value > max)
                     {
                         max = value;
                     }
                 }
+
                 return max;
             }
         }
@@ -589,6 +670,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var max = decimal.MinValue;
             foreach (var element in source)
@@ -603,12 +685,15 @@ namespace System.Linq
                 {
                     max = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             return null;
         }
 
@@ -618,6 +703,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var comparer = Comparer<TSource>.Default;
             var max = default(TSource)!;
             if (typeof(TSource).CanBeNull())
@@ -629,8 +715,10 @@ namespace System.Linq
                         max = element;
                     }
                 }
+
                 return max;
             }
+
             var found = false;
             foreach (var element in source)
             {
@@ -647,10 +735,12 @@ namespace System.Linq
                     found = true;
                 }
             }
+
             if (found)
             {
                 return max;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -660,10 +750,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var max = int.MinValue;
             foreach (var element in source)
@@ -673,12 +765,15 @@ namespace System.Linq
                 {
                     max = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -688,10 +783,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var max = long.MinValue;
             foreach (var element in source)
@@ -701,12 +798,15 @@ namespace System.Linq
                 {
                     max = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -716,17 +816,20 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     throw new InvalidOperationException();
                 }
-                // Skin NaN
+
+                // Skip NaN
                 var max = selector(enumerator.Current);
                 while (double.IsNaN(max))
                 {
@@ -734,8 +837,10 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     max = selector(enumerator.Current);
                 }
+
                 while (enumerator.MoveNext())
                 {
                     var value = selector(enumerator.Current);
@@ -744,6 +849,7 @@ namespace System.Linq
                         max = value;
                     }
                 }
+
                 return max;
             }
         }
@@ -754,17 +860,20 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     throw new InvalidOperationException();
                 }
-                // Skin NaN
+
+                // Skip NaN
                 var max = selector(enumerator.Current);
                 while (float.IsNaN(max))
                 {
@@ -772,8 +881,10 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     max = selector(enumerator.Current);
                 }
+
                 while (enumerator.MoveNext())
                 {
                     var value = selector(enumerator.Current);
@@ -782,6 +893,7 @@ namespace System.Linq
                         max = value;
                     }
                 }
+
                 return max;
             }
         }
@@ -792,10 +904,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var max = decimal.MinValue;
             foreach (var element in source)
@@ -805,12 +919,15 @@ namespace System.Linq
                 {
                     max = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return max;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -820,10 +937,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             int? max = null;
             foreach (var element in source)
@@ -840,8 +959,10 @@ namespace System.Linq
                 {
                     max = item;
                 }
+
                 found = true;
             }
+
             return found ? max : null;
         }
 
@@ -851,10 +972,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             long? max = null;
             foreach (var element in source)
@@ -871,8 +994,10 @@ namespace System.Linq
                 {
                     max = item;
                 }
+
                 found = true;
             }
+
             return found ? max : null;
         }
 
@@ -882,16 +1007,19 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     return null;
                 }
+
                 // Skip null
                 var found = selector(enumerator.Current);
                 while (!found.HasValue)
@@ -900,8 +1028,10 @@ namespace System.Linq
                     {
                         return null;
                     }
+
                     found = selector(enumerator.Current);
                 }
+
                 // Skip NaN
                 var max = found.Value;
                 while (double.IsNaN(max))
@@ -910,6 +1040,7 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     // Skip null
                     found = selector(enumerator.Current);
                     while (!found.HasValue)
@@ -918,10 +1049,13 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = selector(enumerator.Current);
                     }
+
                     max = found.Value;
                 }
+
                 while (enumerator.MoveNext())
                 {
                     // Skip null
@@ -932,14 +1066,17 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = selector(enumerator.Current);
                     }
+
                     var value = found.Value;
                     if (value > max)
                     {
                         max = value;
                     }
                 }
+
                 return max;
             }
         }
@@ -950,16 +1087,19 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             using (var enumerator = source.GetEnumerator())
             {
                 if (!enumerator.MoveNext())
                 {
                     return null;
                 }
+
                 // Skip null
                 var found = selector(enumerator.Current);
                 while (!found.HasValue)
@@ -968,8 +1108,10 @@ namespace System.Linq
                     {
                         return null;
                     }
+
                     found = selector(enumerator.Current);
                 }
+
                 // Skip NaN
                 var max = found.Value;
                 while (float.IsNaN(max))
@@ -978,6 +1120,7 @@ namespace System.Linq
                     {
                         return max;
                     }
+
                     // Skip null
                     found = selector(enumerator.Current);
                     while (!found.HasValue)
@@ -986,10 +1129,13 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = selector(enumerator.Current);
                     }
+
                     max = found.Value;
                 }
+
                 while (enumerator.MoveNext())
                 {
                     // Skip null
@@ -1000,14 +1146,17 @@ namespace System.Linq
                         {
                             return max;
                         }
+
                         found = selector(enumerator.Current);
                     }
+
                     var value = found.Value;
                     if (value > max)
                     {
                         max = value;
                     }
                 }
+
                 return max;
             }
         }
@@ -1018,10 +1167,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             decimal? max = null;
             foreach (var element in source)
@@ -1038,8 +1189,10 @@ namespace System.Linq
                 {
                     max = item;
                 }
+
                 found = true;
             }
+
             return found ? max : null;
         }
 
@@ -1049,11 +1202,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult ClosureSelector(TSource item, int _) => selector(item);
+
+            TResult ClosureSelector(TSource item, int _)
+            {
+                return selector(item);
+            }
+
             return Max
             (
                 SelectExtracted
@@ -1070,6 +1229,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = int.MaxValue;
             foreach (var element in source)
@@ -1078,12 +1238,15 @@ namespace System.Linq
                 {
                     min = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1093,6 +1256,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = long.MaxValue;
             foreach (var element in source)
@@ -1101,12 +1265,15 @@ namespace System.Linq
                 {
                     min = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1116,6 +1283,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = double.MaxValue;
             foreach (var element in source)
@@ -1124,16 +1292,20 @@ namespace System.Linq
                 {
                     return element;
                 }
+
                 if (element < min)
                 {
                     min = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1143,6 +1315,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = float.MaxValue;
             foreach (var element in source)
@@ -1151,16 +1324,20 @@ namespace System.Linq
                 {
                     return element;
                 }
+
                 if (element < min)
                 {
                     min = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1170,6 +1347,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = decimal.MaxValue;
             foreach (var element in source)
@@ -1178,12 +1356,15 @@ namespace System.Linq
                 {
                     min = element;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1193,6 +1374,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = int.MaxValue;
             foreach (var element in source)
@@ -1207,12 +1389,15 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             return null;
         }
 
@@ -1222,6 +1407,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = long.MaxValue;
             foreach (var element in source)
@@ -1236,12 +1422,15 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             return null;
         }
 
@@ -1251,6 +1440,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = double.MaxValue;
             foreach (var element in source)
@@ -1265,16 +1455,20 @@ namespace System.Linq
                 {
                     return value;
                 }
+
                 if (value < min)
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             return null;
         }
 
@@ -1284,6 +1478,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = float.MaxValue;
             foreach (var element in source)
@@ -1298,16 +1493,20 @@ namespace System.Linq
                 {
                     return value;
                 }
+
                 if (value < min)
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             return null;
         }
 
@@ -1317,6 +1516,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var min = decimal.MaxValue;
             foreach (var element in source)
@@ -1331,12 +1531,15 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             return null;
         }
 
@@ -1346,6 +1549,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var comparer = Comparer<TSource>.Default;
             var min = default(TSource)!;
             if (default(TSource)! == null)
@@ -1356,13 +1560,16 @@ namespace System.Linq
                     {
                         continue;
                     }
+
                     if (min == null || comparer.Compare(element, min) < 0)
                     {
                         min = element;
                     }
                 }
+
                 return min;
             }
+
             var found = false;
             foreach (var element in source)
             {
@@ -1379,10 +1586,12 @@ namespace System.Linq
                     found = true;
                 }
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1392,10 +1601,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var min = int.MaxValue;
             foreach (var element in source)
@@ -1405,12 +1616,15 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1420,10 +1634,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var min = long.MaxValue;
             foreach (var element in source)
@@ -1433,12 +1649,15 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1448,10 +1667,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var min = double.MaxValue;
             foreach (var element in source)
@@ -1461,16 +1682,20 @@ namespace System.Linq
                 {
                     return value;
                 }
+
                 if (value < min)
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1480,10 +1705,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var min = float.MaxValue;
             foreach (var element in source)
@@ -1493,16 +1720,20 @@ namespace System.Linq
                 {
                     return value;
                 }
+
                 if (value < min)
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1512,10 +1743,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             var min = decimal.MaxValue;
             foreach (var element in source)
@@ -1525,12 +1758,15 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             if (found)
             {
                 return min;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -1540,10 +1776,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             int? min = null;
             foreach (var element in source)
@@ -1560,8 +1798,10 @@ namespace System.Linq
                 {
                     min = item;
                 }
+
                 found = true;
             }
+
             return found ? min : null;
         }
 
@@ -1571,10 +1811,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             long? min = null;
             foreach (var element in source)
@@ -1591,8 +1833,10 @@ namespace System.Linq
                 {
                     min = item;
                 }
+
                 found = true;
             }
+
             return found ? min : null;
         }
 
@@ -1602,10 +1846,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             float? min = null;
             foreach (var element in source)
@@ -1615,11 +1861,13 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 var value = item.Value;
                 if (float.IsNaN(value))
                 {
                     return value;
                 }
+
                 if (min.HasValue)
                 {
                     if (value < min)
@@ -1631,8 +1879,10 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             return found ? min : null;
         }
 
@@ -1642,10 +1892,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             double? min = null;
             foreach (var element in source)
@@ -1655,11 +1907,13 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 var value = item.Value;
                 if (double.IsNaN(value))
                 {
                     return value;
                 }
+
                 if (min.HasValue)
                 {
                     if (value < min)
@@ -1671,8 +1925,10 @@ namespace System.Linq
                 {
                     min = value;
                 }
+
                 found = true;
             }
+
             return found ? min : null;
         }
 
@@ -1682,10 +1938,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
+
             var found = false;
             decimal? min = null;
             foreach (var element in source)
@@ -1702,8 +1960,10 @@ namespace System.Linq
                 {
                     min = item;
                 }
+
                 found = true;
             }
+
             return found ? min : null;
         }
 
@@ -1713,11 +1973,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (selector == null)
             {
                 throw new ArgumentNullException(nameof(selector));
             }
-            TResult ClosureSelector(TSource item, int _) => selector(item);
+
+            TResult ClosureSelector(TSource item, int _)
+            {
+                return selector(item);
+            }
+
             return Min
             (
                 SelectExtracted
@@ -1734,10 +2000,12 @@ namespace System.Linq
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
+
             if ((long)start + count - 1L > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(start));
             }
+
             return RangeExtracted();
 
             IEnumerable<int> RangeExtracted()
@@ -1755,11 +2023,13 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var count = 0;
             foreach (var item in source)
             {
                 count += item;
             }
+
             return count;
         }
 
@@ -1774,6 +2044,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0;
             foreach (var item in source)
             {
@@ -1782,6 +2053,7 @@ namespace System.Linq
                     sum += item.GetValueOrDefault();
                 }
             }
+
             return sum;
         }
 
@@ -1796,11 +2068,13 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0L;
             foreach (var item in source)
             {
                 sum += item;
             }
+
             return sum;
         }
 
@@ -1815,6 +2089,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0L;
             foreach (var item in source)
             {
@@ -1823,6 +2098,7 @@ namespace System.Linq
                     sum += item.GetValueOrDefault();
                 }
             }
+
             return sum;
         }
 
@@ -1837,11 +2113,13 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0f;
             foreach (var item in source)
             {
                 sum += item;
             }
+
             return sum;
         }
 
@@ -1856,6 +2134,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0f;
             foreach (var item in source)
             {
@@ -1864,6 +2143,7 @@ namespace System.Linq
                     sum += item.GetValueOrDefault();
                 }
             }
+
             return sum;
         }
 
@@ -1878,11 +2158,13 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0d;
             foreach (var item in source)
             {
                 sum += item;
             }
+
             return sum;
         }
 
@@ -1897,6 +2179,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             double sum = 0;
             foreach (var item in source)
             {
@@ -1905,6 +2188,7 @@ namespace System.Linq
                     sum += item.GetValueOrDefault();
                 }
             }
+
             return sum;
         }
 
@@ -1919,11 +2203,13 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0m;
             foreach (var item in source)
             {
                 sum += item;
             }
+
             return sum;
         }
 
@@ -1938,6 +2224,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var sum = 0.0m;
             foreach (var item in source)
             {
@@ -1946,6 +2233,7 @@ namespace System.Linq
                     sum += item.GetValueOrDefault();
                 }
             }
+
             return sum;
         }
 

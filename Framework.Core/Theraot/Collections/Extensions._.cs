@@ -1095,10 +1095,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
             }
+
             var localComparer = EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
             return items.All(item => localCollection.Contains(item, localComparer));
@@ -1110,10 +1112,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
             }
+
             var localComparer = comparer ?? EqualityComparer<T>.Default;
             var localCollection = AsICollection(source);
             return items.All(item => localCollection.Contains(item, localComparer));

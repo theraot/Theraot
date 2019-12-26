@@ -35,17 +35,15 @@ namespace System.Threading.Tasks
     /// </remarks>
     public struct ParallelLoopResult
     {
-        // ReSharper disable once InconsistentNaming
-        internal bool _completed;
-
-        // ReSharper disable once InconsistentNaming
-        internal long? _lowestBreakIteration;
-
         /// <summary>
         ///     Gets whether the loop ran to completion, such that all iterations of the loop were executed
         ///     and the loop didn't receive a request to end prematurely.
         /// </summary>
-        public bool IsCompleted => _completed;
+        public bool IsCompleted
+        {
+            get;
+            internal set;
+        }
 
         /// <summary>
         ///     Gets the index of the lowest iteration from which
@@ -56,7 +54,11 @@ namespace System.Threading.Tasks
         ///     If <see cref="ParallelLoopState.Break()" /> was not employed, this property will
         ///     return null.
         /// </remarks>
-        public long? LowestBreakIteration => _lowestBreakIteration;
+        public long? LowestBreakIteration
+        {
+            get;
+            internal set;
+        }
     }
 
     /// <summary>
@@ -220,17 +222,17 @@ namespace System.Threading.Tasks
 
             // replace shared LowestBreakIteration with CurrentIteration, but only if CurrentIteration
             // is less than LowestBreakIteration.
-            var lowestBreakIteration = parallelFlags._lowestBreakIteration;
+            var lowestBreakIteration = parallelFlags.LowestBreakIterationInternal;
             if (iteration >= lowestBreakIteration)
             {
                 return;
             }
 
             var wait = new SpinWait();
-            while (Interlocked.CompareExchange(ref parallelFlags._lowestBreakIteration, iteration, lowestBreakIteration) != lowestBreakIteration)
+            while (Interlocked.CompareExchange(ref parallelFlags.LowestBreakIterationInternal, iteration, lowestBreakIteration) != lowestBreakIteration)
             {
                 wait.SpinOnce();
-                lowestBreakIteration = parallelFlags._lowestBreakIteration;
+                lowestBreakIteration = parallelFlags.LowestBreakIterationInternal;
                 if (iteration > lowestBreakIteration)
                 {
                     break;
@@ -274,7 +276,7 @@ namespace System.Threading.Tasks
             }
 
             var wait = new SpinWait();
-            while (Interlocked.CompareExchange(ref parallelFlags._lowestBreakIteration, iteration, lowestBreakIteration) != lowestBreakIteration)
+            while (Interlocked.CompareExchange(ref parallelFlags.LowestBreakIterationInternal, iteration, lowestBreakIteration) != lowestBreakIteration)
             {
                 wait.SpinOnce();
                 lowestBreakIteration = parallelFlags.LowestBreakIteration;
@@ -473,24 +475,23 @@ namespace System.Threading.Tasks
         // Records the lowest iteration at which a Break() has been called,
         // or Int32.MaxValue if no break has been called.  Used directly
         // by Break().
-        // ReSharper disable once InconsistentNaming
-        internal volatile int _lowestBreakIteration = int.MaxValue;
+        internal volatile int LowestBreakIterationInternal = int.MaxValue;
 
         // Not strictly necessary, but maintains consistency with ParallelStateFlags64
-        internal int LowestBreakIteration => _lowestBreakIteration;
+        internal int LowestBreakIteration => LowestBreakIterationInternal;
 
         // Does some processing to convert _lowestBreakIteration to a long?.
         internal long? NullableLowestBreakIteration
         {
             get
             {
-                if (_lowestBreakIteration == int.MaxValue)
+                if (LowestBreakIterationInternal == int.MaxValue)
                 {
                     return null;
                 }
 
                 // protect against torn read of 64-bit value
-                long result = _lowestBreakIteration;
+                long result = LowestBreakIterationInternal;
                 return IntPtr.Size >= 8 ? result : Interlocked.Read(ref result);
             }
         }
@@ -541,23 +542,22 @@ namespace System.Threading.Tasks
         // Records the lowest iteration at which a Break() has been called,
         // or Int64.MaxValue if no break has been called.  Used directly
         // by Break().
-        // ReSharper disable once InconsistentNaming
-        internal long _lowestBreakIteration = long.MaxValue;
+        internal long LowestBreakIterationInternal = long.MaxValue;
 
         // Performs a conditionally interlocked read of _lowestBreakIteration.
-        internal long LowestBreakIteration => IntPtr.Size >= 8 ? _lowestBreakIteration : Interlocked.Read(ref _lowestBreakIteration);
+        internal long LowestBreakIteration => IntPtr.Size >= 8 ? LowestBreakIterationInternal : Interlocked.Read(ref LowestBreakIterationInternal);
 
         // Does some processing to convert _lowestBreakIteration to a long?.
         internal long? NullableLowestBreakIteration
         {
             get
             {
-                if (_lowestBreakIteration == long.MaxValue)
+                if (LowestBreakIterationInternal == long.MaxValue)
                 {
                     return null;
                 }
 
-                return IntPtr.Size >= 8 ? _lowestBreakIteration : Interlocked.Read(ref _lowestBreakIteration);
+                return IntPtr.Size >= 8 ? LowestBreakIterationInternal : Interlocked.Read(ref LowestBreakIterationInternal);
             }
         }
 

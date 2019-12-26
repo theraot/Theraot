@@ -48,7 +48,10 @@ namespace System.Runtime.CompilerServices
         /// <returns>The initialized instance.</returns>
         public static AsyncValueTaskMethodBuilder<TResult> Create()
         {
-            return new AsyncValueTaskMethodBuilder<TResult> { _methodBuilder = AsyncTaskMethodBuilder<TResult>.Create() };
+            return new AsyncValueTaskMethodBuilder<TResult>
+            {
+                _methodBuilder = AsyncTaskMethodBuilder<TResult>.Create()
+            };
         }
 
         /// <summary>Schedules the state machine to proceed to the next action when the specified awaiter completes.</summary>

@@ -41,7 +41,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a label, which can be placed in any <see cref="Expression" /> context. If
     ///     it is jumped to, it will get the value provided by the corresponding
@@ -65,7 +64,6 @@ namespace System.Linq.Expressions
         /// <remarks>Can be null when <see cref="Target" />.Type is typeof(void).</remarks>
         public Expression? DefaultValue { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -78,7 +76,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget Target { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)

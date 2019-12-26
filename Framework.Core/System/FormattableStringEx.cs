@@ -8,6 +8,7 @@
             {
                 throw new ArgumentNullException(nameof(formattable));
             }
+
             return formattable.ToString(Globalization.CultureInfo.CurrentCulture);
         }
     }

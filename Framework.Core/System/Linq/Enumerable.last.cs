@@ -13,14 +13,17 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is ICollection<TSource> collection && collection.Count == 0)
             {
                 throw new InvalidOperationException();
             }
+
             if (source is IList<TSource> list)
             {
                 return list[list.Count - 1];
             }
+
             var found = false;
             var result = default(TSource)!;
             foreach (var item in source)
@@ -28,10 +31,12 @@ namespace System.Linq
                 result = item;
                 found = true;
             }
+
             if (found)
             {
                 return result;
             }
+
             throw new InvalidOperationException();
         }
 
@@ -41,10 +46,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var found = false;
             var result = default(TSource)!;
             foreach (var item in source)
@@ -53,9 +60,11 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 result = item;
                 found = true;
             }
+
             if (found)
             {
                 return result;
@@ -70,10 +79,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             if (source is IList<TSource> list)
             {
                 return list.Count > 0 ? list[list.Count - 1] : default;
             }
+
             var found = false;
             var result = default(TSource)!;
             foreach (var item in source)
@@ -92,10 +103,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             var result = default(TSource)!;
             foreach (var item in source)
             {
@@ -103,8 +116,10 @@ namespace System.Linq
                 {
                     continue;
                 }
+
                 result = item;
             }
+
             return result;
         }
     }

@@ -30,6 +30,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(nameof(obj));
             }
+
             return obj.GetHashCode();
         }
     }

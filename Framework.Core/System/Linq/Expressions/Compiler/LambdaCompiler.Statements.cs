@@ -35,7 +35,13 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // else create a new bucket
-            buckets.Add(new List<SwitchLabel> { key });
+            buckets.Add
+            (
+                new List<SwitchLabel>
+                {
+                    key
+                }
+            );
         }
 
         // Determines if the type is an integer we can switch on.
@@ -229,6 +235,7 @@ namespace System.Linq.Expressions.Compiler
                 flags = UpdateEmitAsTailCallFlag(flags, tailCallFlag);
                 EmitExpressionAsVoid(e, flags);
             }
+
             // if the type of Block it means this is not a Comma
             // so we will force the last expression to emit as void.
             // We don't need EmitAsType flag anymore, should only pass
@@ -594,6 +601,7 @@ namespace System.Linq.Expressions.Compiler
                 value = GetLocal(tryType);
                 IL.Emit(OpCodes.Stloc, value);
             }
+
             //******************************************************************
             // 3. Emit the catch blocks
             //******************************************************************
@@ -626,7 +634,6 @@ namespace System.Linq.Expressions.Compiler
                 if (tryType != typeof(void))
                 {
                     //store the value of the catch block body
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     IL.Emit(OpCodes.Stloc, value);
                 }
 
@@ -638,6 +645,7 @@ namespace System.Linq.Expressions.Compiler
 
                 _labelBlock = tmpParent;
             }
+
             //******************************************************************
             // 4. Emit the finally block
             //******************************************************************
@@ -654,6 +662,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     IL.BeginFaultBlock();
                 }
+
                 // Emit the body
                 EmitExpressionAsVoid(node.Finally ?? node.Fault!);
                 IL.EndExceptionBlock();
@@ -664,9 +673,9 @@ namespace System.Linq.Expressions.Compiler
             {
                 IL.EndExceptionBlock();
             }
+
             if (value != null)
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
                 IL.Emit(OpCodes.Ldloc, value);
                 FreeLocal(value);
             }
@@ -689,6 +698,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return default;
             }
+
             return (
                 scope,
                 _tree.Scopes.TryGetValue(node, out var innerScope)

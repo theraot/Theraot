@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Theraot;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Threading.Needles;
@@ -65,7 +64,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(info));
             }
 
-            No.Op(context);
+            _ = context;
             var dictionary = info.GetValue("dictionary", typeof(KeyValuePair<T, T>[])) as KeyValuePair<T, T>[] ?? ArrayEx.Empty<KeyValuePair<T, T>>();
             var comparer = info.GetValue("comparer", typeof(IEqualityComparer<T>)) as IEqualityComparer<T> ?? EqualityComparer<T>.Default;
             _wrapped = new NullAwareDictionary<T, T>(dictionary, comparer);
@@ -105,8 +104,6 @@ namespace System.Collections.Generic
 
         public bool Contains([AllowNull] T item)
         {
-            // item can be null
-            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.ContainsKey(item);
         }
 
@@ -260,7 +257,6 @@ namespace System.Collections.Generic
         public bool Remove([AllowNull] T item)
         {
             // item can be null
-            // ReSharper disable once AssignNullToNotNullAttribute
             return _wrapped.Remove(item);
         }
 
@@ -322,6 +318,7 @@ namespace System.Collections.Generic
             {
                 return true;
             }
+
             actualValue = default!;
             return false;
         }

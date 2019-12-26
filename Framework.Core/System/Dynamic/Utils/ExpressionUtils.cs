@@ -290,7 +290,7 @@ namespace System.Dynamic.Utils
         }
 
         internal static bool SameElementsWithPossibleNulls<T>(ICollection<T?>? replacement, T?[] current)
-                            where T : class
+            where T : class
         {
             if (replacement == current) // Relatively common case, so particularly useful to take the short-circuit.
             {

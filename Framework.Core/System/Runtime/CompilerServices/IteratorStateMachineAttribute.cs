@@ -2,7 +2,6 @@
 
 namespace System.Runtime.CompilerServices
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Identities the iterator state machine type for this method.
     /// </summary>
@@ -10,7 +9,6 @@ namespace System.Runtime.CompilerServices
     [Serializable]
     public sealed class IteratorStateMachineAttribute : StateMachineAttribute
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes the attribute.
         /// </summary>

@@ -22,6 +22,7 @@ namespace System.Dynamic.Utils
                 {
                     continue;
                 }
+
                 if (newNodes == null)
                 {
                     newNodes = new Expression[n];
@@ -30,6 +31,7 @@ namespace System.Dynamic.Utils
                         newNodes[j] = nodes.GetArgument(j);
                     }
                 }
+
                 newNodes[i] = node;
             }
 

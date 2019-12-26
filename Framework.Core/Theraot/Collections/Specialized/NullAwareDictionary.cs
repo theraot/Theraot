@@ -3,14 +3,11 @@
 #pragma warning disable CA1043 // Use Integral Or String Argument For Indexers
 #pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
-// ReSharper disable ConditionIsAlwaysTrueOrFalse
-// ReSharper disable HeuristicUnreachableCode
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Theraot.Reflection;
 using Theraot.Threading.Needles;
 
@@ -44,6 +41,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
         }
@@ -65,6 +63,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
         }
@@ -91,6 +90,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
@@ -121,6 +121,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
@@ -151,12 +152,14 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
             {
                 Add(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value);
             }
+
             ValueForNullKey = valueForNullKey;
         }
 
@@ -182,12 +185,14 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
             {
                 Add(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value);
             }
+
             ValueForNullKey = valueForNullKey;
         }
 
@@ -211,6 +216,7 @@ namespace Theraot.Collections.Specialized
                 Comparer = EqualityComparer<TKey>.Default;
                 _wrapped = wrapped.WithComparer(Comparer);
             }
+
             if (typeof(TKey).CanBeNull())
             {
                 Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
@@ -221,6 +227,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             ValueForNullKey = valueForNullKey;
@@ -254,6 +261,7 @@ namespace Theraot.Collections.Specialized
                 Comparer = comparer;
                 _wrapped = wrapped.WithComparer(Comparer);
             }
+
             if (typeof(TKey).CanBeNull())
             {
                 Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
@@ -264,6 +272,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             ValueForNullKey = valueForNullKey;
@@ -291,12 +300,14 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
             {
                 Add(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value);
             }
+
             if (valueForNullKey.IsAlive)
             {
                 ValueForNullKey = valueForNullKey.Value;
@@ -325,12 +336,14 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
             {
                 Add(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value);
             }
+
             if (valueForNullKey.IsAlive)
             {
                 ValueForNullKey = valueForNullKey.Value;
@@ -357,6 +370,7 @@ namespace Theraot.Collections.Specialized
                 Comparer = EqualityComparer<TKey>.Default;
                 _wrapped = wrapped.WithComparer(Comparer);
             }
+
             if (typeof(TKey).CanBeNull())
             {
                 Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
@@ -367,6 +381,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             if (valueForNullKey.IsAlive)
@@ -403,6 +418,7 @@ namespace Theraot.Collections.Specialized
                 Comparer = comparer;
                 _wrapped = wrapped.WithComparer(Comparer);
             }
+
             if (typeof(TKey).CanBeNull())
             {
                 Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
@@ -413,6 +429,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             if (valueForNullKey.IsAlive)
@@ -443,6 +460,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
@@ -473,6 +491,7 @@ namespace Theraot.Collections.Specialized
                 Keys = new ProxyCollection<TKey, ReadOnlyStructNeedle<TKey>>(_wrapped.Keys.AsICollection, key => new ReadOnlyStructNeedle<TKey>(key), needle => needle.Value);
                 Values = _wrapped.Values.WrapAsReadOnlyICollection();
             }
+
             _keys = new ProxyCollection<ReadOnlyStructNeedle<TKey>, TKey>(() => Keys, needle => needle.Value, value => new ReadOnlyStructNeedle<TKey>(value));
             AsReadOnly = new ReadOnlyNullAwareDictionary<TKey, TValue>(this);
             foreach (var pair in dictionary)
@@ -519,7 +538,19 @@ namespace Theraot.Collections.Specialized
 
         public ICollection<TValue> Values { get; }
 
-        public TValue this[[AllowNull] TKey key]
+        TValue IDictionary<TKey, TValue>.this[TKey key]
+        {
+            get
+            {
+                return this[key];
+            }
+            set
+            {
+                this[key] = value;
+            }
+        }
+
+        public TValue this[TKey key]
         {
             get
             {
@@ -532,6 +563,7 @@ namespace Theraot.Collections.Specialized
                     ValueForNullKey = value;
                     return;
                 }
+
                 _wrapped[key] = value;
             }
         }
@@ -555,13 +587,19 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public void Add([AllowNull] TKey key, TValue value)
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            Add(key, value);
+        }
+
+        public void Add(TKey key, TValue value)
         {
             if (key == null)
             {
                 AddForNullKey(value);
                 return;
             }
+
             _wrapped.Add(key, value);
         }
 
@@ -572,6 +610,7 @@ namespace Theraot.Collections.Specialized
                 _wrapped.Add(key.Value, value);
                 return;
             }
+
             AddForNullKey(value);
         }
 
@@ -649,7 +688,12 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public bool ContainsKey([AllowNull] TKey key)
+        bool IDictionary<TKey, TValue>.ContainsKey(TKey key)
+        {
+            return ContainsKey(key);
+        }
+
+        public bool ContainsKey(TKey key)
         {
             return key == null ? ContainsNullKey() : _wrapped.ContainsKey(key);
         }
@@ -683,10 +727,12 @@ namespace Theraot.Collections.Specialized
             {
                 output.Add(new KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>(default, _valueForNull[0]));
             }
+
             foreach (var pair in _wrapped)
             {
                 output.Add(new KeyValuePair<ReadOnlyStructNeedle<TKey>, TValue>(new ReadOnlyStructNeedle<TKey>(pair.Key), pair.Value));
             }
+
             dictionary = output.ToArray();
             comparer = Comparer;
         }
@@ -724,7 +770,12 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public bool Remove([AllowNull] TKey key)
+        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        {
+            return Remove(key);
+        }
+
+        public bool Remove(TKey key)
         {
             return key == null ? RemoveNullKey() : _wrapped.Remove(key);
         }
@@ -795,7 +846,7 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        public bool TryAdd([AllowNull] TKey key, TValue value)
+        public bool TryAdd(TKey key, TValue value)
         {
             return key == null ? TryAddNullKey(value) : _wrapped.TryAdd(key, value);
         }
@@ -811,11 +862,17 @@ namespace Theraot.Collections.Specialized
             {
                 return false;
             }
+
             ValueForNullKey = value;
             return true;
         }
 
-        public bool TryGetValue([AllowNull] TKey key, out TValue value)
+        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
+        {
+            return TryGetValue(key, out value);
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
         {
             return key == null ? TryGetValueForNullKey(out value) : _wrapped.TryGetValue(key, out value);
         }
@@ -832,6 +889,7 @@ namespace Theraot.Collections.Specialized
                 value = _valueForNull[0];
                 return true;
             }
+
             value = default!;
             return false;
         }

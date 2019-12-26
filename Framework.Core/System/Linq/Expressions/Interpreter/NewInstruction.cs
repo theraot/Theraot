@@ -95,7 +95,6 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            // ReSharper disable once PossibleNullReferenceException
             return "New " + Constructor.DeclaringType.Name + "(" + Constructor + ")";
         }
 

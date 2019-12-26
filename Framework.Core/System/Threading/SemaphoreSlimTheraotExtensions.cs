@@ -18,6 +18,7 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             return WaitPrivateAsync(semaphore);
         }
@@ -29,6 +30,7 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             return WaitPrivateAsync(semaphore, cancellationToken);
         }
@@ -40,11 +42,13 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
+
             return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore) : WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
@@ -55,12 +59,14 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             var millisecondsTimeout = (int)timeout.TotalMilliseconds;
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
+
             return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore) : WaitPrivateAsync(semaphore, millisecondsTimeout);
         }
 
@@ -71,12 +77,14 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             var millisecondsTimeout = (int)timeout.TotalMilliseconds;
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
+
             return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore, cancellationToken) : WaitPrivateAsync(semaphore, (int)timeout.TotalMilliseconds, cancellationToken);
         }
 
@@ -87,11 +95,13 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(semaphore.AvailableWaitHandle);
             if (millisecondsTimeout < -1)
             {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
+
             return millisecondsTimeout == -1 ? WaitPrivateAsync(semaphore, cancellationToken) : WaitPrivateAsync(semaphore, millisecondsTimeout, cancellationToken);
         }
 
@@ -101,6 +111,7 @@ namespace System.Threading
             {
                 return true;
             }
+
             while (true)
             {
                 await TaskExEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle).ConfigureAwait(false);
@@ -117,6 +128,7 @@ namespace System.Threading
             {
                 return true;
             }
+
             var start = ThreadingHelper.TicksNow();
             var timeout = millisecondsTimeout;
             while
@@ -132,8 +144,10 @@ namespace System.Threading
                 {
                     return true;
                 }
+
                 timeout = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
             }
+
             return false;
         }
 
@@ -144,6 +158,7 @@ namespace System.Threading
             {
                 return true;
             }
+
             while (true)
             {
                 await TaskExEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle, cancellationToken).ConfigureAwait(false);
@@ -160,6 +175,7 @@ namespace System.Threading
             {
                 return true;
             }
+
             var start = ThreadingHelper.TicksNow();
             var timeout = millisecondsTimeout;
             while
@@ -177,8 +193,10 @@ namespace System.Threading
                 {
                     return true;
                 }
+
                 timeout = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
             }
+
             return false;
         }
     }

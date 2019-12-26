@@ -1,7 +1,6 @@
 ﻿// Needed for NET35 (ThreadLocal)
 
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
-// ReSharper disable ConstantNullCoalescingCondition
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public struct ReadOnlyStructNeedle<T> : INeedle<T>, IEquatable<ReadOnlyStructNeedle<T>>
+    public readonly struct ReadOnlyStructNeedle<T> : INeedle<T>, IEquatable<ReadOnlyStructNeedle<T>>
     {
         public ReadOnlyStructNeedle(T target)
         {
@@ -68,6 +67,7 @@ namespace Theraot.Threading.Needles
             {
                 return Equals(value);
             }
+
             return !IsAlive;
         }
 
@@ -79,7 +79,7 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             var value = Value;
-            return IsAlive ? value!.ToString() ?? "<?>" : "<Dead Needle>";
+            return IsAlive ? value?.ToString() ?? "<?>" : "<Dead Needle>";
         }
 
         private bool Equals(T otherValue)

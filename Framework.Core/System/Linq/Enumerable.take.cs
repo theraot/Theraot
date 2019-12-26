@@ -18,6 +18,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return TakeWhileExtracted();
 
             IEnumerable<TSource> TakeWhileExtracted()
@@ -28,6 +29,7 @@ namespace System.Linq
                     foreach (var item in source)
                     {
                         yield return item;
+
                         currentCount++;
                         if (currentCount == count)
                         {
@@ -44,6 +46,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             return TakeWhile(source, (item, _) => predicate(item));
         }
 
@@ -53,10 +56,12 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(predicate));
             }
+
             if (source == null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return TakeWhileExtracted();
 
             IEnumerable<TSource> TakeWhileExtracted()
@@ -68,7 +73,9 @@ namespace System.Linq
                     {
                         break;
                     }
+
                     yield return item;
+
                     count++;
                 }
             }
@@ -90,7 +97,8 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            return count <= 0 ? Enumerable.Empty<TSource>() : TakeLastIterator(source, count);
+
+            return count <= 0 ? ArrayEx.Empty<TSource>() : TakeLastIterator(source, count);
         }
 
         private static IEnumerable<TSource> TakeLastIterator<TSource>(IEnumerable<TSource> source, int count)
@@ -118,17 +126,17 @@ namespace System.Linq
                         {
                             queue.Dequeue();
                             queue.Enqueue(e.Current);
-                        }
-                        while (e.MoveNext());
+                        } while (e.MoveNext());
+
                         break;
                     }
                 }
             }
+
             do
             {
                 yield return queue.Dequeue();
-            }
-            while (queue.Count > 0);
+            } while (queue.Count > 0);
         }
     }
 }

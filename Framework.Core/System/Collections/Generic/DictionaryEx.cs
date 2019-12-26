@@ -30,6 +30,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
+
             foreach (var pair in dictionary)
             {
                 Add(pair.Key, pair.Value);
@@ -43,6 +44,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException(nameof(dictionary));
             }
+
             foreach (var pair in dictionary)
             {
                 Add(pair.Key, pair.Value);

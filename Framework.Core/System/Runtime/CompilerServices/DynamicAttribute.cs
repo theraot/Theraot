@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Indicates that the use of <see cref="object" /> on a member is meant to be treated as a dynamically
     ///     dispatched type.
@@ -18,7 +17,6 @@ namespace System.Runtime.CompilerServices
     {
         private readonly bool[] _transformFlags;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="DynamicAttribute" /> class.
         /// </summary>
@@ -33,7 +31,6 @@ namespace System.Runtime.CompilerServices
             _transformFlags = new[] { true };
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="DynamicAttribute" /> class.
         /// </summary>

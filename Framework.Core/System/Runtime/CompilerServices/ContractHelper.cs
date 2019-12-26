@@ -72,7 +72,7 @@ namespace System.Runtime.CompilerServices
             var failureMessage = ContractHelperEx.GetFailureMessage(failureKind, conditionText);
 
             // Now add in the user message, if present.
-            if (!(userMessage == null || string.IsNullOrEmpty(userMessage)))
+            if (!string.IsNullOrEmpty(userMessage))
             {
                 return failureMessage + "  " + userMessage;
             }

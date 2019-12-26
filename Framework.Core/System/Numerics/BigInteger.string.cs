@@ -166,13 +166,13 @@ namespace System.Numerics
         internal static char ParseFormatSpecifier(string? format, out int digits)
         {
             digits = -1;
-            if (format == null || string.IsNullOrEmpty(format))
+            if (string.IsNullOrEmpty(format))
             {
                 return 'R';
             }
 
             var index = 0;
-            var chr = format[index];
+            var chr = format![index];
             if ((chr < 'A' || chr > 'Z') && (chr < 'a' || chr > 'z'))
             {
                 return '\0';
@@ -213,6 +213,7 @@ namespace System.Numerics
             {
                 return ParseNumberNotHex(reader, options, number);
             }
+
             var allowCurrencySymbol = (options & NumberStyles.AllowCurrencySymbol) != NumberStyles.None;
             var allowLeadingWhite = (options & NumberStyles.AllowLeadingWhite) != NumberStyles.None;
             var allowLeadingSign = (options & NumberStyles.AllowLeadingSign) != NumberStyles.None;
@@ -463,10 +464,12 @@ namespace System.Numerics
                     current = (uint)(cipherBlock % numericBase);
                     carry = (uint)(cipherBlock / numericBase);
                 }
+
                 if (carry == 0)
                 {
                     continue;
                 }
+
                 converted[convertedLength++] = carry % numericBase;
                 carry /= numericBase;
                 if (carry != 0)
@@ -474,6 +477,7 @@ namespace System.Numerics
                     converted[convertedLength++] = carry;
                 }
             }
+
             return convertedLength;
         }
 
@@ -498,12 +502,14 @@ namespace System.Numerics
             {
                 throw new FormatException("The value is too large to be represented by this format specifier.", e);
             }
+
             if (decimalFmt)
             {
                 if (digits > 0 && stringCapacity < digits)
                 {
                     stringCapacity = digits;
                 }
+
                 if (value.InternalSign < 0)
                 {
                     try
@@ -517,6 +523,7 @@ namespace System.Numerics
                     }
                 }
             }
+
             var result = new ReverseStringBuilder(stringCapacity);
             for (var stringIndex = 0; stringIndex < convertedLength - 1; stringIndex++)
             {
@@ -527,11 +534,13 @@ namespace System.Numerics
                     cipherBlock /= 10;
                 }
             }
+
             for (var cipherBlock = converted[convertedLength - 1]; cipherBlock != 0;)
             {
                 result.Prepend((char)('0' + (cipherBlock % 10)));
                 cipherBlock /= 10;
             }
+
             return result;
         }
 
@@ -660,6 +669,7 @@ namespace System.Numerics
             {
                 str = "0";
             }
+
             stringBuilder1.Insert(0, str, digits - stringBuilder.Length);
             return stringBuilder.ToString();
         }
@@ -791,8 +801,8 @@ namespace System.Numerics
                     (
                         new[]
                         {
-                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C',
-                                'D', 'E', 'F'
+                            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+                            'A', 'B', 'C', 'D', 'E', 'F'
                         }
                     );
                 if (input.Length == 0)
@@ -1055,6 +1065,7 @@ namespace System.Numerics
                 {
                     return newBuffer;
                 }
+
                 foreach (var size in groupingSizes)
                 {
                     for (var count = size - 1; count >= 0; count--)
@@ -1065,8 +1076,10 @@ namespace System.Numerics
                             return newBuffer;
                         }
                     }
+
                     newBuffer.Prepend(groupingSeparator);
                 }
+
                 return StringWithGroupsCore(groupingSizes, groupingSeparator, newBuffer, enumerator);
             }
         }

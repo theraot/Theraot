@@ -17,11 +17,12 @@ namespace System.Security
 {
     public sealed class SecurityElement : ISecurityElementFactory
     {
-        private const int _attributesTypical = 4 * 2;  // 4 attributes, times 2 strings per attribute
+        private const int _attributesTypical = 4 * 2; // 4 attributes, times 2 strings per attribute
         private const int _childrenTypical = 1;
         private static readonly char[] _escapeChars = { '<', '>', '\"', '\'', '&' };
 
-        private static readonly string[] _escapeStringPairs = {
+        private static readonly string[] _escapeStringPairs =
+        {
             // these must be all once character escape sequences or a new escaping algorithm is needed
             "<", "&lt;",
             ">", "&gt;",
@@ -146,6 +147,7 @@ namespace System.Security
                 {
                     throw new ArgumentException("Cannot have a null child.");
                 }
+
                 _children = value;
             }
         }
@@ -245,32 +247,17 @@ namespace System.Security
 
         public static bool IsValidAttributeValue(string value)
         {
-            if (value == null)
-            {
-                return false;
-            }
-
-            return value.IndexOfAny(_valueIllegalCharacters) == -1;
+            return value?.IndexOfAny(_valueIllegalCharacters) == -1;
         }
 
         public static bool IsValidTag(string tag)
         {
-            if (tag == null)
-            {
-                return false;
-            }
-
-            return tag.IndexOfAny(_tagIllegalCharacters) == -1;
+            return tag?.IndexOfAny(_tagIllegalCharacters) == -1;
         }
 
         public static bool IsValidText(string text)
         {
-            if (text == null)
-            {
-                return false;
-            }
-
-            return text.IndexOfAny(_textIllegalCharacters) == -1;
+            return text?.IndexOfAny(_textIllegalCharacters) == -1;
         }
 
         public void AddAttribute(string name, string value)
@@ -455,6 +442,7 @@ namespace System.Security
                     }
                 }
             }
+
             return true;
         }
 
@@ -486,6 +474,7 @@ namespace System.Security
                     return current;
                 }
             }
+
             return null;
         }
 
@@ -519,6 +508,7 @@ namespace System.Security
                     return text;
                 }
             }
+
             return null;
         }
 

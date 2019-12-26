@@ -405,7 +405,7 @@ namespace System.Linq.Expressions.Interpreter
             public override int Run(InterpretedFrame frame)
             {
                 var obj = frame.Pop();
-                frame.Push(obj == null ? "" : obj.ToString());
+                frame.Push(obj?.ToString() ?? "");
                 return 1;
             }
         }
@@ -558,7 +558,13 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (node.Variable != null)
                 {
-                    _shadowedVars.Push(new HashSet<ParameterExpression> { node.Variable });
+                    _shadowedVars.Push
+                    (
+                        new HashSet<ParameterExpression>
+                        {
+                            node.Variable
+                        }
+                    );
                 }
 
                 var b = Visit(node.Body);

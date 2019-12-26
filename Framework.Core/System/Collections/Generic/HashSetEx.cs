@@ -185,10 +185,12 @@ namespace System.Collections.Generic
                 {
                     return new SpyEqualityComparer(EqualityComparer<T>.Default);
                 }
+
                 if (comparer is SpyEqualityComparer)
                 {
                     return comparer;
                 }
+
                 return new SpyEqualityComparer(comparer);
             }
 
@@ -214,6 +216,7 @@ namespace System.Collections.Generic
                 {
                     return null;
                 }
+
                 return _callback.Value;
             }
         }

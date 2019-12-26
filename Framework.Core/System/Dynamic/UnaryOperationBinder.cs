@@ -9,7 +9,6 @@ using System.Linq.Expressions;
 
 namespace System.Dynamic
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents the unary dynamic operation at the call site, providing the binding semantic and the details about the
     ///     operation.
@@ -31,7 +30,6 @@ namespace System.Dynamic
         /// </summary>
         public ExpressionType Operation { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     The result type of the operation.
         /// </summary>
@@ -51,13 +49,11 @@ namespace System.Dynamic
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Always returns <c>true</c> because this is a standard <see cref="DynamicMetaObjectBinder" />.
         /// </summary>
         internal sealed override bool IsStandardBinder => true;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Performs the binding of the dynamic unary operation.
         /// </summary>

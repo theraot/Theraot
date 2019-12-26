@@ -308,7 +308,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents accessing a field or property.
     /// </summary>
@@ -331,7 +330,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberInfo Member => GetMember();
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)

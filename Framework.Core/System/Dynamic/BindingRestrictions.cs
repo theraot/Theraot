@@ -31,11 +31,9 @@ namespace System.Dynamic
         /// </summary>
         public static readonly BindingRestrictions Empty = new CustomRestriction(AstUtils.Constant(true));
 
-        private const int _customRestrictionHash = 613566756;
-        private const int _instanceRestrictionHash = -1840700270;
-        private const int _typeRestrictionHash = 1227133513; // 00100 1001 0010 0100 1001 0010 0100 1001₂
-        // 01001 0010 0100 1001 0010 0100 1001 0010₂
-        // 10010 0100 1001 0010 0100 1001 0010 0100₂
+        private const int _customRestrictionHash = 0b_0010_0100_1001_0010_0100_1001_0010_0100;
+        private const int _instanceRestrictionHash = unchecked((int)0b_1001_0010_0100_1001_0010_0100_1001_0010);
+        private const int _typeRestrictionHash = 0b_0100_1001_0010_0100_1001_0010_0100_1001;
 
         private BindingRestrictions()
         {
@@ -334,7 +332,14 @@ namespace System.Dynamic
                     depth++;
                 }
 
-                _tests.Push(new AndNode { Node = node, Depth = depth });
+                _tests.Push
+                (
+                    new AndNode
+                    {
+                        Node = node,
+                        Depth = depth
+                    }
+                );
             }
 
             private struct AndNode

@@ -20,7 +20,6 @@ using Theraot.Core;
 
 namespace System.Threading.Tasks
 {
-    /// <inheritdoc />
     /// <summary>
     ///     An implementation of TaskScheduler that uses the ThreadPool scheduler
     /// </summary>
@@ -38,7 +37,6 @@ namespace System.Threading.Tasks
         /// </summary>
         internal override bool RequiresAtomicStartTransition => false;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Notifies the scheduler that work is progressing (no-op).
         /// </summary>

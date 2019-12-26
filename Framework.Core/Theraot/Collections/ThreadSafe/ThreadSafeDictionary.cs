@@ -3,6 +3,7 @@
 #pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
 #pragma warning disable RCS1212 // Remove redundant assignment.
 #pragma warning disable RCS1231 // Make parameter ref read-only.
+// ReSharper disable ImplicitlyCapturedClosure
 
 using System;
 using System.Collections;
@@ -52,7 +53,6 @@ namespace Theraot.Collections.ThreadSafe
             _probing = initialProbing;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
@@ -62,7 +62,6 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
@@ -73,7 +72,6 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Initializes a new instance of the <see cref="ThreadSafeDictionary{TKey, TValue}" /> class.
         /// </summary>
@@ -143,7 +141,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes all the elements.
         /// </summary>
@@ -175,7 +172,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Determines whether the specified key is contained.
         /// </summary>
@@ -255,7 +251,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
@@ -269,7 +264,6 @@ namespace Theraot.Collections.ThreadSafe
             _bucket.CopyTo(array, arrayIndex);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -340,7 +334,6 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Removes the specified key.
         /// </summary>
@@ -364,6 +357,7 @@ namespace Theraot.Collections.ThreadSafe
                     return result;
                 }
             }
+
             return false;
 
             bool Check(KeyValuePair<TKey, TValue> found)
@@ -842,7 +836,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Tries to retrieve the value associated with the specified key.
         /// </summary>
@@ -881,11 +874,13 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
+
                 if (keyMatch)
                 {
                     return false;
                 }
             }
+
             return false;
 
             bool Check(KeyValuePair<TKey, TValue> found)
@@ -901,6 +896,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(valueCheck));
             }
+
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, newValue);
             var keyMatch = false;
@@ -911,11 +907,13 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
+
                 if (keyMatch)
                 {
                     return false;
                 }
             }
+
             return false;
 
             bool Check(KeyValuePair<TKey, TValue> found)
@@ -931,6 +929,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(newValue));
             }
+
             var hashCode = GetHashCode(key);
             var keyMatch = false;
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -940,11 +939,13 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return true;
                 }
+
                 if (keyMatch)
                 {
                     return false;
                 }
             }
+
             return false;
 
             bool Check(KeyValuePair<TKey, TValue> found)
@@ -1011,6 +1012,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
+
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
@@ -1052,6 +1054,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
+
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
@@ -1082,6 +1085,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
+
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
@@ -1114,6 +1118,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
+
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
@@ -1156,6 +1161,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
+
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
@@ -1257,6 +1263,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return isNew ? insertPair.Value : updatePair.Value;
                 }
+
                 attempts++;
             }
 
@@ -1282,10 +1289,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var hashCode = GetHashCode(key);
             var attempts = 0;
             var insertPair = default(KeyValuePair<TKey, TValue>);
@@ -1305,6 +1314,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return isNew ? insertPair.Value : updatePair.Value;
                 }
+
                 attempts++;
             }
 
@@ -1330,6 +1340,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var hashCode = GetHashCode(key);
             var attempts = 0;
             var insertPair = new KeyValuePair<TKey, TValue>(key, addValue);
@@ -1349,6 +1360,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return isNew ? insertPair.Value : updatePair.Value;
                 }
+
                 attempts++;
             }
 
@@ -1369,6 +1381,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var hashCode = GetHashCode(key);
             var attempts = 0;
             var insertPair = new KeyValuePair<TKey, TValue>(key, addValue);
@@ -1388,6 +1401,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return isNew ? insertPair.Value : updatePair.Value;
                 }
+
                 attempts++;
             }
 
@@ -1449,6 +1463,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(keyOverwriteCheck));
             }
+
             var hashCode = GetHashCode(key);
             var created = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
@@ -1498,10 +1513,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(addValueFactory));
             }
+
             if (updateValueFactory == null)
             {
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
+
             var hashCode = GetHashCode(key);
             for (var attempts = 0; ; attempts++)
             {

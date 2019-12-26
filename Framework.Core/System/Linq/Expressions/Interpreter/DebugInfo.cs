@@ -22,7 +22,10 @@ namespace System.Linq.Expressions.Interpreter
         public static DebugInfo? GetMatchingDebugInfo(DebugInfo[] debugInfos, int index)
         {
             //Create a faked DebugInfo to do the search
-            var d = new DebugInfo { Index = index };
+            var d = new DebugInfo
+            {
+                Index = index
+            };
 
             //to find the closest debug info before the current index
 
@@ -51,14 +54,12 @@ namespace System.Linq.Expressions.Interpreter
             return IsClear ? string.Format(CultureInfo.InvariantCulture, "{0}: clear", Index) : string.Format(CultureInfo.InvariantCulture, "{0}: [{1}-{2}] '{3}'", Index, StartLine, EndLine, FileName);
         }
 
-        private class DebugInfoComparer : IComparer<DebugInfo>
+        private sealed class DebugInfoComparer : IComparer<DebugInfo>
         {
             //We allow comparison between int and DebugInfo here
             int IComparer<DebugInfo>.Compare(DebugInfo x, DebugInfo y)
             {
-                // ReSharper disable once PossibleNullReferenceException
                 var d1Index = x.Index;
-                // ReSharper disable once PossibleNullReferenceException
                 var d2Index = y.Index;
                 if (d1Index > d2Index)
                 {

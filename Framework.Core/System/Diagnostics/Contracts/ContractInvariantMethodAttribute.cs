@@ -6,7 +6,6 @@
 
 namespace System.Diagnostics.Contracts
 {
-    /// <inheritdoc />
     /// <summary>
     ///     This attribute is used to mark a method as being the invariant
     ///     method for a class. The method can have any name, but it must

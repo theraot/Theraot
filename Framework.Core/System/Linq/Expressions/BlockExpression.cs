@@ -17,7 +17,6 @@ using Theraot.Collections;
 
 namespace System.Linq.Expressions
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a block that contains a sequence of expressions where variables can be defined.
     /// </summary>
@@ -34,7 +33,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Expressions => GetOrMakeExpressions();
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this Expression. Extension nodes should return
         ///     ExpressionType.Extension when overriding this method.
@@ -47,7 +45,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Result => GetExpression(ExpressionCount - 1);
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
@@ -757,7 +754,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Provides a wrapper around an IArgumentProvider which exposes the argument providers
     ///     members out as an IList of Expression.  This is used to avoid allocating an array

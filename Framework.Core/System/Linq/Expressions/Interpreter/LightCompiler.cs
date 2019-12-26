@@ -3,7 +3,6 @@
 #pragma warning disable CC0021 // Use nameof
 #pragma warning disable S125 // Sections of code should not be commented out
 #pragma warning disable S907 // "goto" statement should not be used
-// ReSharper disable ConstantNullCoalescingCondition
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -122,6 +121,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         nodes.Add(@switch.DefaultBody);
                     }
+
                     return (labelBlock, LabelScopeKind.Switch, nodes);
 
                 // Remove this when Convert(Void) goes away.
@@ -190,13 +190,11 @@ namespace System.Linq.Expressions.Interpreter
                     return ((MemberExpression)node).Member is FieldInfo;
 
                 default:
-                    break;
                     // ExpressionType.Unbox does have the behaviour writeback is used to simulate, but
                     // it doesn't need explicit writeback to produce it, so include it in the default
                     // false cases.
+                    return false;
             }
-
-            return false;
         }
 
         private void CheckRethrow()
@@ -1331,7 +1329,6 @@ namespace System.Linq.Expressions.Interpreter
                         node.Expression,
                         compMethod
                     ),
-                    // ReSharper disable once PossibleNullReferenceException
                     compMethod.ReturnType.GetInvokeMethod(),
                     node
                 );
@@ -1768,7 +1765,10 @@ namespace System.Linq.Expressions.Interpreter
                 var updater = CompileAddress(@object!, -1);
                 if (updater != null)
                 {
-                    updaters = new List<ByRefUpdater> { updater };
+                    updaters = new List<ByRefUpdater>
+                    {
+                        updater
+                    };
                 }
             }
 
@@ -2355,20 +2355,10 @@ namespace System.Linq.Expressions.Interpreter
                     }
                 }
 
-                if (switchType == TypeCode.String)
+                if (switchType == TypeCode.String && Equals(node.Comparison, CachedReflectionInfo.StringOpEqualityStringString))
                 {
-                    // If we have a comparison other than string equality, bail
-                    var equality = CachedReflectionInfo.StringOpEqualityStringString ?? null;
-                    if (equality?.IsStatic == false)
-                    {
-                        equality = null;
-                    }
-
-                    if (Equals(node.Comparison, equality))
-                    {
-                        CompileStringSwitchExpression(node);
-                        return;
-                    }
+                    CompileStringSwitchExpression(node);
+                    return;
                 }
             }
 
@@ -2510,6 +2500,7 @@ namespace System.Linq.Expressions.Interpreter
                         {
                             Instructions.EmitEnterExceptionHandlerVoid();
                         }
+
                         // at this point the stack balance is prepared for the hidden exception variable:
                         var handlerLabel = Instructions.MarkRuntimeLabel();
                         var handlerStart = Instructions.Count;
@@ -2796,6 +2787,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return;
             }
+
             foreach (var node in nodes)
             {
                 DefineBlockLabels(node);

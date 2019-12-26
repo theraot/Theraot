@@ -15,6 +15,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ArgumentNullException(nameof(state));
             }
+
             action();
         };
 

@@ -58,6 +58,7 @@ namespace System.Linq.Expressions.Interpreter
                 Emit(GetNull());
                 return;
             }
+
             if (type?.IsValueType != false)
             {
                 switch (value)
@@ -76,6 +77,7 @@ namespace System.Linq.Expressions.Interpreter
                         break;
                 }
             }
+
             _objects ??= new List<object>();
             var loadObjectCached = GetLoadObjectCached();
             if (_objects.Count < loadObjectCached!.Length)
@@ -154,6 +156,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return assignLocalBoxed[index] ??= new AssignLocalBoxedInstruction(index);
             }
+
             return new AssignLocalBoxedInstruction(index);
         }
 
@@ -164,6 +167,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return loadLocalBoxed[index] ??= new LoadLocalBoxedInstruction(index);
             }
+
             return new LoadLocalBoxedInstruction(index);
         }
 

@@ -23,6 +23,7 @@ namespace System.Linq
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             return source;
         }
 
@@ -61,9 +62,11 @@ namespace System.Linq
                         {
                             continue;
                         }
+
                         while (true)
                         {
                             yield return enumerator.Current;
+
                             if (!enumerator.MoveNext())
                             {
                                 yield break;
@@ -91,9 +94,9 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            return count <= 0 ?
-                source :
-                SkipLastIterator(source, count);
+            return count <= 0
+                ? source
+                : SkipLastIterator(source, count);
         }
 
         private static IEnumerable<TSource> SkipLastIterator<TSource>(IEnumerable<TSource> source, int count)
@@ -109,9 +112,10 @@ namespace System.Linq
                         do
                         {
                             yield return queue.Dequeue();
+
                             queue.Enqueue(e.Current);
-                        }
-                        while (e.MoveNext());
+                        } while (e.MoveNext());
+
                         break;
                     }
 

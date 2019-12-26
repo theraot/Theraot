@@ -16,6 +16,7 @@ namespace System.Diagnostics
             {
                 throw new NullReferenceException();
             }
+
             stopwatch.Reset();
             stopwatch.Start();
         }

@@ -6,7 +6,7 @@ namespace System.Threading.Tasks
 
     public static partial class TaskExEx
     {
-        private class WaitHandleCancellableTaskCompletionSourceManager
+        private sealed class WaitHandleCancellableTaskCompletionSourceManager
         {
             private readonly WaitHandle[] _handles;
             private readonly TaskCompletionSource<bool> _taskCompletionSource;
@@ -38,6 +38,7 @@ namespace System.Threading.Tasks
                 {
                     _taskCompletionSource.SetResult(true);
                 }
+
                 _taskCompletionSource.TrySetCanceled();
             }
 
@@ -48,6 +49,7 @@ namespace System.Threading.Tasks
                 {
                     _taskCompletionSource.SetResult(true);
                 }
+
                 _taskCompletionSource.TrySetCanceled();
             }
         }
@@ -57,7 +59,7 @@ namespace System.Threading.Tasks
 
     public static partial class TaskExEx
     {
-        private class WaitHandleCancellableTaskCompletionSourceManager
+        private sealed class WaitHandleCancellableTaskCompletionSourceManager
         {
             private readonly CancellationToken _cancellationToken;
 

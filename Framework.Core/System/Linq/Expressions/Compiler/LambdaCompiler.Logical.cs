@@ -103,11 +103,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitExpressionAsVoid(node.GetExpression(i));
             }
+
             EmitExpressionAndBranch(branch, node.GetExpression(count - 1), label);
             if (!innerScopeInfo.HasValue)
             {
                 return;
             }
+
             innerScopeInfo.Value.child.Exit();
             _scope = innerScopeInfo.Value.parent;
         }

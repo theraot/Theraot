@@ -24,6 +24,7 @@ namespace System.Threading.Tasks
             {
                 return FromCanceled<TResult>(token);
             }
+
             var taskCompleteSource = new TaskCompletionSource<TResult>();
             if (token.CanBeCanceled)
             {
@@ -33,6 +34,7 @@ namespace System.Threading.Tasks
                 token.Register(() => taskCompleteSource.TrySetCanceled(token));
 #endif
             }
+
             return taskCompleteSource.Task;
         }
     }

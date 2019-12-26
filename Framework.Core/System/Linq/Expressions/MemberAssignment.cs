@@ -80,7 +80,6 @@ namespace System.Linq.Expressions
         }
     }
 
-    /// <inheritdoc />
     /// <summary>
     ///     Represents assignment to a member of an object.
     /// </summary>

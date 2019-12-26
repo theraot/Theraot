@@ -604,14 +604,16 @@ namespace System.Numerics
 
         private static int GetSign(in BigInteger value, bool isEven)
         {
-            if (value.InternalSign <= 0)
+            if (value.InternalSign > 0)
             {
-                if (!isEven)
-                {
-                    return -1;
-                }
                 return 1;
             }
+
+            if (!isEven)
+            {
+                return -1;
+            }
+
             return 1;
         }
 

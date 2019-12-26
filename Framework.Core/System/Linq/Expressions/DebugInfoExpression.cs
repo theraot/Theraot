@@ -9,7 +9,6 @@ using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
 {
-    /// <inheritdoc />
     /// <summary>
     ///     <para>Emits or clears a sequence point for debug information.</para>
     ///     <para>
@@ -45,7 +44,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual bool IsClear => throw ContractUtils.Unreachable;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -63,7 +61,6 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int StartLine => throw ContractUtils.Unreachable;
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)

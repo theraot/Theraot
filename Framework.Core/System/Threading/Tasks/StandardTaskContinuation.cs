@@ -85,10 +85,12 @@ namespace System.Threading.Tasks
             {
                 return (options & TaskContinuationOptions.NotOnRanToCompletion) == 0;
             }
+
             if (completedTask.IsCanceled)
             {
                 return (options & TaskContinuationOptions.NotOnCanceled) == 0;
             }
+
             return (options & TaskContinuationOptions.NotOnFaulted) == 0;
         }
     }

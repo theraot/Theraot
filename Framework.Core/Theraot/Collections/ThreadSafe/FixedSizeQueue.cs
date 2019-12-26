@@ -54,7 +54,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public int Capacity { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the number of items actually contained.
         /// </summary>
@@ -75,7 +74,6 @@ namespace Theraot.Collections.ThreadSafe
             this.DeprecatedCopyTo(array, index);
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns an <see cref="IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>

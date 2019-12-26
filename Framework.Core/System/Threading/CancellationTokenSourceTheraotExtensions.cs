@@ -18,6 +18,7 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(cancellationTokenSource.Token);
             RootedTimeout.Launch
             (
@@ -43,6 +44,7 @@ namespace System.Threading
             {
                 throw new NullReferenceException();
             }
+
             GC.KeepAlive(cancellationTokenSource.Token);
             RootedTimeout.Launch
             (

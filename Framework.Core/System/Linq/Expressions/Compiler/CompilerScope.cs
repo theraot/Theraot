@@ -1,4 +1,5 @@
 ﻿#if LESSTHAN_NET35
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -365,20 +366,17 @@ namespace System.Linq.Expressions.Compiler
                 {
                     // `array[i] = new StrongBox<T>(argument);`
                     lc.EmitLambdaArgument(index);
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else if (v == _hoistedLocals.ParentVariable)
                 {
                     // `array[i] = new StrongBox<T>(closure.Locals);`
                     ResolveVariable(v, _closureHoistedLocals).EmitLoad();
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else
                 {
                     // `array[i] = new StrongBox<T>();`
-                    // ReSharper disable once AssignNullToNotNullAttribute
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(Type.EmptyTypes));
                 }
 

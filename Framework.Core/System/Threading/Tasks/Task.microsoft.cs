@@ -527,10 +527,12 @@ namespace System.Threading.Tasks
             {
                 return TaskStatus.Faulted;
             }
+
             if (IsCancellationRequested && IsCancellationAcknowledged)
             {
                 return TaskStatus.Canceled;
             }
+
             return TaskStatus.RanToCompletion;
         }
 

@@ -2,7 +2,7 @@
 
 namespace Theraot.Threading
 {
-    public struct UniqueId : IEquatable<UniqueId>
+    public readonly struct UniqueId : IEquatable<UniqueId>
     {
         private readonly uint _id;
 

@@ -218,6 +218,7 @@ namespace System.Threading
             {
                 return;
             }
+
             Interlocked.Exchange(ref _event, null)?.Dispose();
         }
 

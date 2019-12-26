@@ -60,14 +60,17 @@ namespace Theraot.Collections.Specialized
                 {
                     upper = node;
                 }
+
                 if (compare >= 0)
                 {
                     lower = node;
                 }
+
                 if (compare == 0)
                 {
                     break;
                 }
+
                 node = compare < 0
                     ? node._left
                     : node._right;
@@ -101,6 +104,7 @@ namespace Theraot.Collections.Specialized
                 if (node != null)
                 {
                     yield return node;
+
                     foreach (var item in EnumerateRoot(node._right))
                     {
                         yield return item;
@@ -136,6 +140,7 @@ namespace Theraot.Collections.Specialized
                 {
                     node = stack.Pop();
                     yield return node;
+
                     node = node.Right;
                 }
                 else
@@ -154,10 +159,12 @@ namespace Theraot.Collections.Specialized
                 {
                     break;
                 }
+
                 node = compare < 0
                     ? node._left
                     : node._right;
             }
+
             return node;
         }
 
@@ -220,11 +227,13 @@ namespace Theraot.Collections.Specialized
             {
                 return false;
             }
+
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
                 return RemoveExtracted(ref node);
             }
+
             try
             {
                 return compare < 0
@@ -259,8 +268,10 @@ namespace Theraot.Collections.Specialized
                 {
                     return;
                 }
+
                 compare = -node._balance;
             }
+
             if (compare < 0)
             {
                 AddExtracted(ref node._left, key, comparer, created);
@@ -269,6 +280,7 @@ namespace Theraot.Collections.Specialized
             {
                 AddExtracted(ref node._right, key, comparer, created);
             }
+
             MakeBalanced(ref node);
         }
 
@@ -281,18 +293,22 @@ namespace Theraot.Collections.Specialized
                 {
                     created = new AVLNode<TKey, TValue>(key, value);
                 }
+
                 var found = Interlocked.CompareExchange(ref node, created, null);
                 if (found == null)
                 {
                     return true;
                 }
+
                 node = found;
             }
+
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
                 return false;
             }
+
             try
             {
                 return compare < 0
@@ -335,25 +351,29 @@ namespace Theraot.Collections.Specialized
                 {
                     created = new AVLNode<TKey, TValue>(key, factory(key));
                 }
+
                 var found = Interlocked.CompareExchange(ref node, created, null);
                 if (found == null)
                 {
                     isNew = true;
                     return created;
                 }
+
                 node = found;
             }
+
             var compare = comparer.Compare(key, node.Key);
             if (compare == 0)
             {
                 isNew = false;
                 return node;
             }
+
             try
             {
                 return compare < 0
-                           ? GetOrAddExtracted(ref node._left, key, factory, comparer, created, out isNew)
-                           : GetOrAddExtracted(ref node._right, key, factory, comparer, created, out isNew);
+                    ? GetOrAddExtracted(ref node._left, key, factory, comparer, created, out isNew)
+                    : GetOrAddExtracted(ref node._right, key, factory, comparer, created, out isNew);
             }
             finally
             {

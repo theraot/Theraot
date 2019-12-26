@@ -160,6 +160,7 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
+
             return Token == other.Token;
         }
 
@@ -186,11 +187,13 @@ namespace System.Threading.Tasks
             {
                 return;
             }
+
             if (obj is Task task)
             {
                 task.GetAwaiter().GetResult();
                 return;
             }
+
             ((IValueTaskSource)obj).GetResult(Token);
         }
 
@@ -202,6 +205,7 @@ namespace System.Threading.Tasks
             {
                 return new ValueTaskSourceAsTask(t, Token).Task;
             }
+
             try
             {
                 t.GetResult(Token);
@@ -221,6 +225,7 @@ namespace System.Threading.Tasks
                     completedTask = _task;
                 }
             }
+
             return completedTask;
         }
 
@@ -245,11 +250,13 @@ namespace System.Threading.Tasks
                 {
                     throw new ArgumentOutOfRangeException(nameof(state));
                 }
+
                 var valueTaskSource = valueTaskSourceAsTask._source;
                 if (valueTaskSource == null)
                 {
                     throw new ArgumentOutOfRangeException(nameof(state));
                 }
+
                 valueTaskSourceAsTask._source = null;
                 var status = valueTaskSource.GetStatus(valueTaskSourceAsTask._token);
                 try

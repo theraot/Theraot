@@ -161,48 +161,7 @@ namespace System.Runtime.CompilerServices
             }
             else
             {
-                var scheduler = continueOnCapturedContext ? TaskScheduler.Current : TaskScheduler.Default;
-                if (task.IsCompleted)
-                {
-                    Task.Factory.StartNew
-                    (
-                        state => ((Action?)state)?.Invoke(), continuation, CancellationToken.None,
-                        TaskCreationOptions.None, scheduler
-                    );
-                }
-                else if (scheduler != TaskScheduler.Default)
-                {
-                    task.ContinueWith
-                    (
-                        _ => RunNoException(continuation), CancellationToken.None,
-                        TaskContinuationOptions.ExecuteSynchronously, scheduler
-                    );
-                }
-                else
-                {
-                    task.ContinueWith
-                    (
-                        _ =>
-                        {
-                            if (IsValidLocationForInlining)
-                            {
-                                RunNoException(continuation);
-                            }
-                            else
-                            {
-                                Task.Factory.StartNew
-                                (
-                                    state => RunNoException((Action?)state), continuation,
-                                    CancellationToken.None, TaskCreationOptions.None,
-                                    TaskScheduler.Default
-                                );
-                            }
-                        },
-                        CancellationToken.None,
-                        TaskContinuationOptions.ExecuteSynchronously,
-                        TaskScheduler.Default
-                    );
-                }
+                OnCompletedWithoutSyncContext(task, continuation, continueOnCapturedContext);
             }
         }
 
@@ -287,6 +246,55 @@ namespace System.Runtime.CompilerServices
             ThrowForNonSuccess(task);
         }
 
+        private static void OnCompletedWithoutSyncContext(Task task, Action continuation, bool continueOnCapturedContext)
+        {
+            var scheduler = continueOnCapturedContext ? TaskScheduler.Current : TaskScheduler.Default;
+            if (task.IsCompleted)
+            {
+                Task.Factory.StartNew
+                (
+                    state => ((Action?)state)?.Invoke(),
+                    continuation,
+                    CancellationToken.None,
+                    TaskCreationOptions.None, scheduler
+                );
+            }
+            else if (scheduler != TaskScheduler.Default)
+            {
+                task.ContinueWith
+                (
+                    _ => RunNoException(continuation),
+                    CancellationToken.None,
+                    TaskContinuationOptions.ExecuteSynchronously, scheduler
+                );
+            }
+            else
+            {
+                task.ContinueWith
+                (
+                    _ =>
+                    {
+                        if (IsValidLocationForInlining)
+                        {
+                            RunNoException(continuation);
+                        }
+                        else
+                        {
+                            Task.Factory.StartNew
+                            (
+                                state => RunNoException((Action?)state), continuation,
+                                CancellationToken.None, TaskCreationOptions.None,
+                                TaskScheduler.Default
+                            );
+                        }
+                    },
+                    CancellationToken.None,
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default
+                );
+            }
+        }
+
         private static void RunNoException(Action? continuation)
         {
             if (continuation == null)
@@ -311,7 +319,6 @@ namespace System.Runtime.CompilerServices
                 case TaskStatus.Canceled:
                     throw new TaskCanceledException(task);
                 case TaskStatus.Faulted:
-                    // ReSharper disable once PossibleNullReferenceException
                     throw PrepareExceptionForRethrow(task.Exception!.InnerException);
                 default:
                     throw new InvalidOperationException("The task has not yet completed.");
@@ -320,7 +327,7 @@ namespace System.Runtime.CompilerServices
     }
 
     /// <summary>
-    ///     Provides an awaiter for awaiting a <see cref="Task{TResult}" /> .
+    ///     Provides an awaiter for awaiting a <see cref="Task{T}" /> .
     /// </summary>
     /// <remarks>
     ///     This type is intended for compiler use only.

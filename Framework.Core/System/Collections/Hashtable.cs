@@ -13,9 +13,6 @@
 #pragma warning disable S2372 // Exceptions should not be thrown from property getters
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
-// ReSharper disable InconsistentNaming
-// ReSharper disable VirtualMemberCallInConstructor
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
@@ -139,6 +136,7 @@ namespace System.Collections
         private const string _keysName = nameof(Keys);
         private const string _loadFactorName = "LoadFactor";
         private const string _valuesName = nameof(Values);
+
         private const string _versionName = "Version";
         // Deleted entries have their key set to buckets
 
@@ -307,7 +305,7 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
+                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -323,7 +321,7 @@ namespace System.Collections
             var e = d.GetEnumerator();
             while (e.MoveNext())
             {
-                // ReSharper disable once AssignNullToNotNullAttribute
+                // ReSharper disable once VirtualMemberCallInConstructor
                 Add(e.Key, e.Value);
             }
         }
@@ -383,6 +381,7 @@ namespace System.Collections
         public virtual ICollection Values => _values ??= new ValueCollection(this);
 
         [Obsolete("Please use KeyComparer properties.")]
+        // ReSharper disable once InconsistentNaming
         protected IComparer? comparer
         {
             get
@@ -420,6 +419,7 @@ namespace System.Collections
         protected IEqualityComparer? EqualityComparer { get; private set; }
 
         [Obsolete("Please use EqualityComparer property.")]
+        // ReSharper disable once InconsistentNaming
         protected IHashCodeProvider? hcp
         {
             get
@@ -510,6 +510,7 @@ namespace System.Collections
                     {
                         return null;
                     }
+
                     if ((b.HashColl & 0x7FFFFFFF) == hashcode && KeyEquals(b.Key, key))
                     {
                         return b.Val;
@@ -517,6 +518,7 @@ namespace System.Collections
 
                     bucketNumber = (int)((bucketNumber + incr) % (uint)buckets.Length);
                 } while (b.HashColl < 0 && ++attempt < buckets.Length);
+
                 return null;
             }
 
@@ -574,7 +576,12 @@ namespace System.Collections
         public virtual object Clone()
         {
             var buckets = _buckets;
-            var ht = new Hashtable(_count, EqualityComparer) { _version = _version, _loadFactor = _loadFactor, _count = 0 };
+            var ht = new Hashtable(_count, EqualityComparer)
+            {
+                _version = _version,
+                _loadFactor = _loadFactor,
+                _count = 0
+            };
 
             var bucket = buckets.Length;
             while (bucket > 0)
@@ -620,6 +627,7 @@ namespace System.Collections
                 {
                     return false;
                 }
+
                 if ((b.HashColl & 0x7FFFFFFF) == hashcode && KeyEquals(b.Key, key))
                 {
                     return true;
@@ -627,6 +635,7 @@ namespace System.Collections
 
                 bucketNumber = (int)((bucketNumber + incr) % (uint)buckets.Length);
             } while (b.HashColl < 0 && ++attempt < buckets.Length);
+
             return false;
         }
 
@@ -659,6 +668,7 @@ namespace System.Collections
                     }
                 }
             }
+
             return false;
         }
 
@@ -848,20 +858,24 @@ namespace System.Collections
             {
                 throw new SerializationException("The keys for this dictionary are missing.");
             }
+
             if (serValues == null)
             {
                 throw new SerializationException("The values for this dictionary are missing.");
             }
+
             if (serKeys.Length != serValues.Length)
             {
                 throw new SerializationException("Deserialization data is corrupt. The keys and values arrays have different sizes.");
             }
+
             for (var i = 0; i < serKeys.Length; i++)
             {
                 if (serKeys[i] == null)
                 {
                     throw new SerializationException();
                 }
+
                 Insert(serKeys[i], serValues[i], true);
             }
 
@@ -888,7 +902,7 @@ namespace System.Collections
             var attempt = 0;
 
             Bucket b;
-            var bn = (int)(seed % (uint)_buckets.Length);  // bucketNumber
+            var bn = (int)(seed % (uint)_buckets.Length); // bucketNumber
             do
             {
                 b = _buckets[bn];
@@ -898,12 +912,13 @@ namespace System.Collections
                     // Clear hash_coll field, then key, then value
                     _buckets[bn].HashColl &= unchecked((int)0x80000000);
                     _buckets[bn].Key = _buckets[bn].HashColl != 0 ? _buckets : null;
-                    _buckets[bn].Val = null;  // Free object references sooner & simplify ContainsValue.
+                    _buckets[bn].Val = null; // Free object references sooner & simplify ContainsValue.
                     _count--;
                     UpdateVersion();
                     _isWriterInProgress = false;
                     return;
                 }
+
                 bn = (int)((bn + incr) % (uint)_buckets.Length);
             } while (b.HashColl < 0 && ++attempt < _buckets.Length);
         }
@@ -1097,7 +1112,7 @@ namespace System.Collections
                 // that once contained an entry and also has had a collision.
                 // We need to search this entire collision chain because we have to ensure that there are no
                 // duplicate entries in the table.
-                if (emptySlotNumber == -1 && _buckets[bucketNumber].Key == _buckets && _buckets[bucketNumber].HashColl < 0)//(((buckets[bucketNumber].hash_coll & unchecked(0x80000000))!=0)))
+                if (emptySlotNumber == -1 && _buckets[bucketNumber].Key == _buckets && _buckets[bucketNumber].HashColl < 0)
                 {
                     emptySlotNumber = bucketNumber;
                 }
@@ -1136,6 +1151,7 @@ namespace System.Collections
                     {
                         throw new ArgumentException(string.Empty, nameof(key));
                     }
+
                     _isWriterInProgress = true;
                     _buckets[bucketNumber].Val = value;
                     UpdateVersion();
@@ -1180,7 +1196,7 @@ namespace System.Collections
 
         private void PutEntry(Bucket[] newBuckets, object key, object? value, int hashcode)
         {
-            Debug.Assert(hashcode >= 0, "hashcode >= 0");  // make sure collision bit (sign bit) wasn't set.
+            Debug.Assert(hashcode >= 0, "hashcode >= 0"); // make sure collision bit (sign bit) wasn't set.
 
             var seed = (uint)hashcode;
             var incr = unchecked(1 + (seed * HashHelpers.HashPrime % ((uint)newBuckets.Length - 1)));
@@ -1200,6 +1216,7 @@ namespace System.Collections
                     newBuckets[bucketNumber].HashColl |= unchecked((int)0x80000000);
                     _occupancy++;
                 }
+
                 bucketNumber = (int)((bucketNumber + incr) % (uint)newBuckets.Length);
             }
         }
@@ -1258,10 +1275,11 @@ namespace System.Collections
         // This cannot be serialized
         private struct Bucket
         {
+            // Store hash code; sign bit means there was a collision.
             public int HashColl;
             public object? Key;
+
             public object? Val;
-            // Store hash code; sign bit means there was a collision.
         }
 
         // internal debug view class for hashtable
@@ -1391,6 +1409,7 @@ namespace System.Collections
                     _current = true;
                     return true;
                 }
+
                 _current = false;
                 return false;
             }
@@ -1458,7 +1477,7 @@ namespace System.Collections
         }
 
         // Synchronized wrapper for hashtable
-        private class SyncHashtable : Hashtable, IEnumerable
+        private sealed class SyncHashtable : Hashtable, IEnumerable
         {
             private readonly Hashtable _table;
 
@@ -1547,6 +1566,7 @@ namespace System.Collections
                 {
                     throw new ArgumentNullException(nameof(key), "Key cannot be null.");
                 }
+
                 return _table.ContainsKey(key);
             }
 
@@ -1673,12 +1693,14 @@ namespace System.Collections
         // h1(key) + i*h2(key), 0 <= i < size.  h2 and the size must be relatively prime.
         // We prefer the low computation costs of higher prime numbers over the increased
         // memory allocation of a fixed prime number i.e. when right sizing a HashSet.
-        public static readonly int[] Primes = {
+        public static readonly int[] Primes =
+        {
             3, 7, 11, 17, 23, 29, 37, 47, 59, 71, 89, 107, 131, 163, 197, 239, 293, 353, 431, 521, 631, 761, 919,
             1103, 1327, 1597, 1931, 2333, 2801, 3371, 4049, 4861, 5839, 7013, 8419, 10103, 12143, 14591,
             17519, 21023, 25229, 30293, 36353, 43627, 52361, 62851, 75431, 90523, 108631, 130363, 156437,
             187751, 225307, 270371, 324449, 389357, 467237, 560689, 672827, 807403, 968897, 1162687, 1395263,
-            1674319, 2009191, 2411033, 2893249, 3471899, 4166287, 4999559, 5999471, 7199369 };
+            1674319, 2009191, 2411033, 2893249, 3471899, 4166287, 4999559, 5999471, 7199369
+        };
 
         private static WeakDictionary<object, SerializationInfo> _serializationInfoTable;
 
@@ -1724,6 +1746,7 @@ namespace System.Collections
                     return i;
                 }
             }
+
             return min;
         }
 
@@ -1742,6 +1765,7 @@ namespace System.Collections
                     return false;
                 }
             }
+
             return true;
         }
     }
@@ -1796,9 +1820,9 @@ namespace System.Collections
                 throw new ArgumentNullException(nameof(obj));
             }
 
-            return HashCodeProvider != null ?
-                HashCodeProvider.GetHashCode(obj) :
-                obj.GetHashCode();
+            return HashCodeProvider != null
+                ? HashCodeProvider.GetHashCode(obj)
+                : obj.GetHashCode();
         }
     }
 
@@ -1809,7 +1833,6 @@ namespace System.Collections
         private readonly object? _key;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private readonly object? _value;
 
         public KeyValuePairs(object? key, object? value)

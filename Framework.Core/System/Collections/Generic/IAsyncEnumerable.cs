@@ -11,7 +11,7 @@ namespace System.Collections.Generic
         /// <summary>Returns an enumerator that iterates asynchronously through the collection.</summary>
         /// <param name="cancellationToken">A <see cref="CancellationToken" /> that may be used to cancel the asynchronous iteration.</param>
         /// <returns>An enumerator that can be used to iterate asynchronously through the collection.</returns>
-        IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken? cancellationToken = null);
+        IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default);
     }
 }
 

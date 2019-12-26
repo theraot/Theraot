@@ -137,7 +137,6 @@ namespace System.Collections
         public SortedList(IComparer? comparer, int capacity)
             : this(comparer)
         {
-            // ReSharper disable once VirtualMemberCallInConstructor
             Capacity = capacity;
         }
 

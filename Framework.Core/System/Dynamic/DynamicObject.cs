@@ -20,7 +20,6 @@ using AstUtils = System.Linq.Expressions.Utils;
 
 namespace System.Dynamic
 {
-    /// <inheritdoc />
     /// <summary>
     ///     <para>
     ///         Provides a simple class that can be inherited from to create an object with dynamic behavior
@@ -59,7 +58,6 @@ namespace System.Dynamic
             return ArrayEx.Empty<string>();
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the <see cref="DynamicMetaObject" /> responsible for binding operations performed on this
         ///     object,

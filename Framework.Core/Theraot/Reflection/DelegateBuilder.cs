@@ -90,6 +90,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(types));
             }
+
             switch (types.Length)
             {
                 case 0:
@@ -154,6 +155,7 @@ namespace Theraot.Reflection
             {
                 throw new ArgumentNullException(nameof(types));
             }
+
             switch (types.Length)
             {
                 case 1:

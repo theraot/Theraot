@@ -87,6 +87,7 @@ namespace System.Linq.Expressions
             {
                 return Property(instance, indexer, arguments);
             }
+
             if (instance == null)
             {
                 throw new ArgumentNullException(nameof(instance));
@@ -517,7 +518,6 @@ namespace System.Linq.Expressions
         /// <remarks>Null if array access.</remarks>
         public PropertyInfo? Indexer { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Returns the node type of this <see cref="Expression" />. (Inherited from
         ///     <see cref="Expression" />.)
@@ -531,13 +531,12 @@ namespace System.Linq.Expressions
         /// <remarks>Not null if <see cref="Indexer"/> is null (array access). Null if <see cref="Indexer"/> is static.</remarks>
         public Expression? Object { get; }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         ///     (Inherited from <see cref="Expression" />.)
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
-        public override Type Type => Indexer != null ? Indexer.PropertyType : Object!.Type.GetElementType();
+        public override Type Type => Indexer?.PropertyType ?? Object!.Type.GetElementType();
 
         /// <summary>
         ///     Gets the argument expression with the specified <paramref name="index" />.
@@ -551,8 +550,8 @@ namespace System.Linq.Expressions
                 argument ??
                 (
                     Indexer != null
-                    ? Constant(null, Indexer.GetIndexParameters()[index].ParameterType)
-                    : Constant(null)
+                        ? Constant(null, Indexer.GetIndexParameters()[index].ParameterType)
+                        : Constant(null)
                 );
         }
 

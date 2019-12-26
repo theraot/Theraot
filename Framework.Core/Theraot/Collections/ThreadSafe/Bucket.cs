@@ -29,6 +29,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             _bucketCore = new BucketCore();
             var index = 0;
             foreach (var item in source)
@@ -345,6 +346,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
 
                     yield return new KeyValuePair<int, T>(index, castValue);
+
                     index++;
                 }
             }

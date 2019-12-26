@@ -11,7 +11,6 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Determines if variables are closed over in nested lambdas and need to
     ///     be hoisted.

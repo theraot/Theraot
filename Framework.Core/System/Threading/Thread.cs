@@ -18,7 +18,7 @@ namespace System.Threading
         private static int _lastId;
 
         [ThreadStatic]
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+        // ReSharper disable once NotAccessedField.Local
         private static object? _threadProbe;
 
         private string? _name;
@@ -33,6 +33,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(start));
             }
+
             _start = state =>
             {
                 SetCurrentThread(this);
@@ -47,6 +48,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException(nameof(start));
             }
+
             _start = _ =>
             {
                 SetCurrentThread(this);
@@ -110,6 +112,7 @@ namespace System.Threading
                 {
                     throw new InvalidOperationException();
                 }
+
                 _name = value;
             }
         }
@@ -122,10 +125,12 @@ namespace System.Threading
                 {
                     return _probe!.TryGetTarget(out _) ? ThreadState.Background : ThreadState.Stopped;
                 }
+
                 if (_task == null)
                 {
                     return ThreadState.Unstarted;
                 }
+
                 switch (_task.Status)
                 {
                     case TaskStatus.Canceled:
@@ -178,18 +183,22 @@ namespace System.Threading
                 var source = new TaskCompletionSource<VoidStruct>();
                 source.Task.Wait();
             }
+
             if (_start == null)
             {
                 if (_probe!.TryGetTarget(out _))
                 {
                     Wait();
                 }
+
                 return;
             }
+
             if (_task == null)
             {
                 throw new ThreadStateException("Unable to Join not started Thread.");
             }
+
             switch (_task.Status)
             {
                 case TaskStatus.Canceled:
@@ -201,12 +210,14 @@ namespace System.Threading
                     _task.Wait();
                     return;
             }
+
             void Wait()
             {
                 var source = new TaskCompletionSource<VoidStruct>();
                 var probe = _probe;
                 GCMonitor.Collected += Handler;
                 source.Task.Wait();
+
                 void Handler(object sender, EventArgs args)
                 {
                     if (probe!.TryGetTarget(out _))
@@ -226,6 +237,7 @@ namespace System.Threading
             {
                 throw new ThreadStateException($"Unable to Start started Thread (Internal Task: {_task}) (Internal Delegate: {_start}).");
             }
+
             var task = new Task(() => _start(null), TaskCreationOptions.LongRunning);
             task.Start();
             _task = task;
@@ -237,6 +249,7 @@ namespace System.Threading
             {
                 throw new ThreadStateException($"Unable to Start started Thread (Internal Task: {_task}) (Internal Delegate: {_start}).");
             }
+
             var task = new Task(() => _start(parameter), TaskCreationOptions.LongRunning);
             task.Start();
             _task = task;

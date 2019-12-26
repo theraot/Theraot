@@ -52,8 +52,7 @@ namespace System.Threading.Tasks
             var uSpan = (ulong)(toExclusive - fromInclusive);
             var uRangeSize = uSpan / (ulong)numExpectedWorkers; // rough estimate first
 
-            uRangeSize -= uRangeSize % (ulong)step; // snap to multiples of nStep
-                                                    // otherwise index range transitions will derail us from nStep
+            uRangeSize -= uRangeSize % (ulong)step; // snap to multiples of nStep otherwise index range transitions will derail us from nStep
 
             if (uRangeSize == 0)
             {

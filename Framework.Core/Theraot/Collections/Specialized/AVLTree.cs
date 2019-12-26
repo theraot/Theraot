@@ -89,6 +89,7 @@ namespace Theraot.Collections.Specialized
             {
                 Count++;
             }
+
             return result;
         }
 
