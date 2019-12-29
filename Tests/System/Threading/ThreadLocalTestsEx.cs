@@ -1,6 +1,7 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using NUnit.Framework;
 
 namespace MonoTests.System.Threading
 {
@@ -17,30 +18,10 @@ namespace MonoTests.System.Threading
         }
     }
 
-    [TestFixture]
     public partial class ThreadLocalTestsEx
     {
-        private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
-        {
-            var thread = new Thread(() =>
-            {
-                try
-                {
-                    GC.KeepAlive(threadLocal.Value);
-                }
-                catch (Exception exc)
-                {
-                    Theraot.No.Op(exc);
-                }
-            });
-            thread.Start();
-            thread.Join();
-        }
-    }
+#if LESSTHAN_NET40
 
-    public partial class ThreadLocalTestsEx
-    {
-#if LESSSTHAN_NET40
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 fails
         public void InitializeThrowingTest()
@@ -136,6 +117,23 @@ namespace MonoTests.System.Threading
             }
         }
 
+        private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
+        {
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    GC.KeepAlive(threadLocal.Value);
+                }
+                catch (Exception exc)
+                {
+                    Theraot.No.Op(exc);
+                }
+            });
+            thread.Start();
+            thread.Join();
+        }
+
         private static void TestException(bool tracking)
         {
             var callTime = 0;
@@ -189,6 +187,7 @@ namespace MonoTests.System.Threading
                 Assert.AreEqual(1, callTime, "#6");
             }
         }
+
 #endif
     }
 }
