@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Theraot.Collections;
+using Theraot.Core;
 using Theraot.Reflection;
 
 namespace TestRunner
@@ -41,7 +42,7 @@ namespace TestRunner
             if (exception is AssertionFailedException)
             {
                 Console.WriteLine(exception.Message);
-                Console.WriteLine(StringEx.Implode("\r\n", exception.StackTrace.Split('\r', '\n').Skip(1)));
+                Console.WriteLine(StringEx.Implode("\r\n", exception.StackTrace.Split(CharHelper.GetNewLine()).Skip(1)));
                 return;
             }
 
