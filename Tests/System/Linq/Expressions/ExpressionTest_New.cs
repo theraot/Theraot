@@ -41,108 +41,12 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestNew
     {
-        public class Foo
-        {
-            public Foo(string s)
-            {
-                No.Op(s);
-            }
-        }
-
-        public class Bar
-        {
-            public string Value { get; set; }
-        }
-
-        public struct Baz
-        {
-            // Empty
-        }
-
-        public class Gazonk
-        {
-            private readonly string _value;
-
-            public Gazonk(string s)
-            {
-                _value = s;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is Gazonk o && _value == o._value;
-            }
-
-            public override int GetHashCode()
-            {
-                return _value.GetHashCode();
-            }
-        }
-
-        public class FakeAnonymousType
-        {
-            public FakeAnonymousType(string foo)
-            {
-                FooValue = foo;
-            }
-
-            public FakeAnonymousType(string foo, string bar, string baz)
-            {
-                FooValue = foo;
-                BarValue = bar;
-                BazValue = baz;
-            }
-
-            public string FooValue { get; set; }
-
-            public string BarValue { get; set; }
-
-            public string BazValue { get; set; }
-
-            public int GazonkValue { get; set; }
-
-            public string Tzap
-            {
-                set => No.Op(value);
-            }
-        }
-
-        public struct EineStrukt
-        {
-            public int Left;
-            public int Right;
-
-            public EineStrukt(int left, int right)
-            {
-                Left = left;
-                Right = right;
-            }
-        }
-
-        public class EineKlass
-        {
-            public EineKlass()
-            {
-                // Empty
-            }
-
-            public EineKlass(string l, string r)
-            {
-                Left = l;
-                Right = r;
-            }
-
-            public string Left { get; set; }
-
-            public string Right { get; set; }
-        }
-
         [Test]
         public void CompileNewClass()
         {
             // TODO: split
             var p = Expression.Parameter(typeof(string), "p");
-            var n = Expression.New(typeof(Gazonk).GetConstructor(new[] {typeof(string)}), p);
+            var n = Expression.New(typeof(Gazonk).GetConstructor(new[] { typeof(string) }), p);
             var fgaz = Expression.Lambda<Func<string, Gazonk>>(n, p).Compile();
 
             var g1 = new Gazonk("foo");
@@ -183,7 +87,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<string, string, EineKlass>>
             (
-                Expression.New(typeof(EineKlass).GetConstructor(new[] {typeof(string), typeof(string)}), pl, pr), pl, pr
+                Expression.New(typeof(EineKlass).GetConstructor(new[] { typeof(string), typeof(string) }), pl, pr), pl, pr
             ).Compile();
 
             var k = compiled("foo", "bar");
@@ -213,7 +117,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<int, int, EineStrukt>>
             (
-                Expression.New(typeof(EineStrukt).GetConstructor(new[] {typeof(int), typeof(int)}), pl, pr), pl, pr
+                Expression.New(typeof(EineStrukt).GetConstructor(new[] { typeof(int), typeof(int) }), pl, pr), pl, pr
             ).Compile();
 
             var s = compiled(42, 12);
@@ -225,19 +129,19 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ConstructorHasTooMuchParameters()
         {
-            Assert.Throws<ArgumentException>(() => Expression.New(typeof(Foo).GetConstructor(new[] {typeof(string)})));
+            Assert.Throws<ArgumentException>(() => Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) })));
         }
 
         [Test]
         public void HasNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.New(typeof(Foo).GetConstructor(new[] {typeof(string)}), null as Expression));
+            Assert.Throws<ArgumentNullException>(() => Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) }), null as Expression));
         }
 
         [Test]
         public void HasWrongArgument()
         {
-            Assert.Throws<ArgumentException>(() => Expression.New(typeof(Foo).GetConstructor(new[] {typeof(string)}), Expression.Constant(12)));
+            Assert.Throws<ArgumentException>(() => Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) }), Expression.Constant(12)));
         }
 
         [Test]
@@ -249,8 +153,8 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     Expression.New
                     (
-                        typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                        new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty(nameof(FakeAnonymousType.FooValue)), typeof(FakeAnonymousType).GetProperty("BarValue")
+                        typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
+                        new[] { "FooValue".ToConstant() }, typeof(FakeAnonymousType).GetProperty(nameof(FakeAnonymousType.FooValue)), typeof(FakeAnonymousType).GetProperty("BarValue")
                     );
                 }
             );
@@ -265,8 +169,8 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     Expression.New
                     (
-                        typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                        new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty(nameof(FakeAnonymousType.GazonkValue))
+                        typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
+                        new[] { "FooValue".ToConstant() }, typeof(FakeAnonymousType).GetProperty(nameof(FakeAnonymousType.GazonkValue))
                     );
                 }
             );
@@ -281,8 +185,8 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     Expression.New
                     (
-                        typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                        new[] {"FooValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty("Tzap")
+                        typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
+                        new[] { "FooValue".ToConstant() }, typeof(FakeAnonymousType).GetProperty("Tzap")
                     );
                 }
             );
@@ -309,8 +213,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             var n = Expression.New
             (
-                typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string), typeof(string), typeof(string)}),
-                new[] {"FooValue".ToConstant(), "BarValue".ToConstant(), "BazValue".ToConstant()}, typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue"), typeof(FakeAnonymousType).GetProperty("BazValue")
+                typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string), typeof(string), typeof(string) }),
+                new[] { "FooValue".ToConstant(), "BarValue".ToConstant(), "BazValue".ToConstant() }, typeof(FakeAnonymousType).GetProperty("FooValue"), typeof(FakeAnonymousType).GetProperty("BarValue"), typeof(FakeAnonymousType).GetProperty("BazValue")
             );
 
             Assert.IsNotNull(n.Constructor);
@@ -322,7 +226,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NewFoo()
         {
-            var n = Expression.New(typeof(Foo).GetConstructor(new[] {typeof(string)}), Expression.Constant("foo"));
+            var n = Expression.New(typeof(Foo).GetConstructor(new[] { typeof(string) }), Expression.Constant("foo"));
 
             Assert.AreEqual(ExpressionType.New, n.NodeType);
             Assert.AreEqual(typeof(Foo), n.Type);
@@ -359,9 +263,9 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     Expression.New
                     (
-                        typeof(FakeAnonymousType).GetConstructor(new[] {typeof(string)}),
-                        new[] {"FooValue".ToConstant()},
-                        new MemberInfo[] {null}
+                        typeof(FakeAnonymousType).GetConstructor(new[] { typeof(string) }),
+                        new[] { "FooValue".ToConstant() },
+                        new MemberInfo[] { null }
                     );
                 }
             );
@@ -371,6 +275,99 @@ namespace MonoTests.System.Linq.Expressions
         public void NullType()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.New(null as Type));
+        }
+
+        public struct Baz
+        {
+            // Empty
+        }
+
+        public struct EineStrukt
+        {
+            public int Left;
+            public int Right;
+
+            public EineStrukt(int left, int right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+
+        public class Bar
+        {
+            public string Value { get; set; }
+        }
+
+        public class EineKlass
+        {
+            public EineKlass()
+            {
+                // Empty
+            }
+
+            public EineKlass(string l, string r)
+            {
+                Left = l;
+                Right = r;
+            }
+
+            public string Left { get; set; }
+
+            public string Right { get; set; }
+        }
+
+        public class FakeAnonymousType
+        {
+            public FakeAnonymousType(string foo)
+            {
+                FooValue = foo;
+            }
+
+            public FakeAnonymousType(string foo, string bar, string baz)
+            {
+                FooValue = foo;
+                BarValue = bar;
+                BazValue = baz;
+            }
+
+            public string BarValue { get; set; }
+            public string BazValue { get; set; }
+            public string FooValue { get; set; }
+            public int GazonkValue { get; set; }
+
+            public string Tzap
+            {
+                set => No.Op(value);
+            }
+        }
+
+        public class Foo
+        {
+            public Foo(string s)
+            {
+                No.Op(s);
+            }
+        }
+
+        public class Gazonk
+        {
+            private readonly string _value;
+
+            public Gazonk(string s)
+            {
+                _value = s;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Gazonk o && _value == o._value;
+            }
+
+            public override int GetHashCode()
+            {
+                return _value.GetHashCode();
+            }
         }
     }
 }

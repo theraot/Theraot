@@ -40,47 +40,12 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestNewArrayInit
     {
-        private static Func<T[]> CreateArrayInit<T>(T[] ts)
-        {
-            return Expression.Lambda<Func<T[]>>
-            (
-                Expression.NewArrayInit
-                (
-                    typeof(T),
-                    (from t in ts select t.ToConstant() as Expression).ToArray()
-                )
-            ).Compile();
-        }
-
-        private static void AssertCreatedArrayIsEqual<T>(params T[] ts)
-        {
-            var creator = CreateArrayInit(ts);
-            var array = creator();
-
-            Assert.IsTrue(ts.SequenceEqual(array));
-        }
-
         private enum Months
         {
             Jan,
             Feb,
             Mar,
             Apr
-        }
-
-        private class Foo
-        {
-            // Empty
-        }
-
-        private struct Bar
-        {
-            public int Value;
-
-            public Bar(int b)
-            {
-                Value = b;
-            }
         }
 
         [Test]
@@ -145,6 +110,41 @@ namespace MonoTests.System.Linq.Expressions
         public void WrongInitializer()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.NewArrayInit(typeof(int), 1.ToConstant(), "2".ToConstant(), 3.ToConstant()));
+        }
+
+        private static void AssertCreatedArrayIsEqual<T>(params T[] ts)
+        {
+            var creator = CreateArrayInit(ts);
+            var array = creator();
+
+            Assert.IsTrue(ts.SequenceEqual(array));
+        }
+
+        private static Func<T[]> CreateArrayInit<T>(T[] ts)
+        {
+            return Expression.Lambda<Func<T[]>>
+            (
+                Expression.NewArrayInit
+                (
+                    typeof(T),
+                    (from t in ts select t.ToConstant() as Expression).ToArray()
+                )
+            ).Compile();
+        }
+
+        private struct Bar
+        {
+            public int Value;
+
+            public Bar(int b)
+            {
+                Value = b;
+            }
+        }
+
+        private class Foo
+        {
+            // Empty
         }
     }
 }

@@ -26,7 +26,6 @@ namespace System.Dynamic
     /// <summary>
     ///     Represents an object with members that can be dynamically added and removed at runtime.
     /// </summary>
-    // ReSharper disable once InheritdocConsiderUsage
     public sealed class ExpandoObject : IDynamicMetaObjectProvider, IDictionary<string, object>, INotifyPropertyChanged
     {
         internal const int AmbiguousMatchFound = -2;

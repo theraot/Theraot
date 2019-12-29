@@ -9,7 +9,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public partial class ReadOnlyNullAwareDictionary<TKey, TValue> : IDictionary<ReadOnlyStructNeedle<TKey>, TValue>, IReadOnlyDictionary<ReadOnlyStructNeedle<TKey>, TValue>
+    public sealed partial class ReadOnlyNullAwareDictionary<TKey, TValue> : IDictionary<ReadOnlyStructNeedle<TKey>, TValue>, IReadOnlyDictionary<ReadOnlyStructNeedle<TKey>, TValue>
     {
         public ReadOnlyNullAwareDictionary(IDictionary<ReadOnlyStructNeedle<TKey>, TValue> dictionary)
         {
@@ -27,7 +27,7 @@ namespace Theraot.Collections.Specialized
         public ValueCollection Values { get; }
         ICollection<TValue> IDictionary<ReadOnlyStructNeedle<TKey>, TValue>.Values => Values;
         IEnumerable<TValue> IReadOnlyDictionary<ReadOnlyStructNeedle<TKey>, TValue>.Values => Values;
-        protected IDictionary<ReadOnlyStructNeedle<TKey>, TValue> Dictionary { get; }
+        private IDictionary<ReadOnlyStructNeedle<TKey>, TValue> Dictionary { get; }
         public TValue this[ReadOnlyStructNeedle<TKey> key] => Dictionary[key];
 
         TValue IDictionary<ReadOnlyStructNeedle<TKey>, TValue>.this[ReadOnlyStructNeedle<TKey> key]

@@ -1,4 +1,6 @@
-﻿#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
+﻿// Needed for NET30 (Expressions)
+
+#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
 
 using System.Collections.Generic;
 

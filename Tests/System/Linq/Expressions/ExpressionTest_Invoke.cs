@@ -44,17 +44,7 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestInvoke
     {
-        private static Expression CreateInvokable<T>()
-        {
-            return Expression.Parameter(typeof(T), "invokable");
-        }
-
         private delegate string StringAction(string s);
-
-        private static string Identity(string s)
-        {
-            return s;
-        }
 
         [Test]
         public void ArgumentCountDoesntMatchParametersLength()
@@ -159,6 +149,16 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             Assert.AreEqual("foo", compiled(Identity, "foo"));
+        }
+
+        private static Expression CreateInvokable<T>()
+        {
+            return Expression.Parameter(typeof(T), "invokable");
+        }
+
+        private static string Identity(string s)
+        {
+            return s;
         }
     }
 }

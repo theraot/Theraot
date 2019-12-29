@@ -44,21 +44,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestNot
     {
-        private struct Slot
-        {
-            public readonly int Value;
-
-            public Slot(int value)
-            {
-                Value = value;
-            }
-
-            public static bool operator !(Slot s)
-            {
-                return s.Value > 0;
-            }
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -181,6 +166,21 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(null, compiled(null));
             Assert.AreEqual(true, compiled(new Slot(1)));
             Assert.AreEqual(false, compiled(new Slot(0)));
+        }
+
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int value)
+            {
+                Value = value;
+            }
+
+            public static bool operator !(Slot s)
+            {
+                return s.Value > 0;
+            }
         }
     }
 }

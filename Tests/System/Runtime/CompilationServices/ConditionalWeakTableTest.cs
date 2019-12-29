@@ -526,40 +526,6 @@ namespace MonoTests.System.Runtime.CompilerServices
     {
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
 
-        [Test]
-        public void GetOrCreateValue()
-        {
-            var cwt = new ConditionalWeakTable<object, object>();
-
-            try
-            {
-                cwt.GetOrCreateValue(null);
-                Assert.Fail("#0");
-            }
-            catch (ArgumentNullException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            object key = "foo";
-            var val = cwt.GetOrCreateValue(key);
-            Assert.IsTrue(val != null, "#2");
-            Assert.AreEqual(typeof(object), val.GetType(), "#3");
-
-            Assert.AreEqual(val, cwt.GetOrCreateValue(key), "#4");
-
-            var cwt2 = new ConditionalWeakTable<object, string>();
-            try
-            {
-                cwt2.GetOrCreateValue(key);
-                Assert.Fail("#5");
-            }
-            catch (MissingMethodException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-        }
-
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void PromotedCwtPointingToYoungStuff()
         {
@@ -594,6 +560,40 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             GC.Collect();
             GC.KeepAlive(cwt.GetHashCode());
+        }
+
+        [Test]
+        public void GetOrCreateValue()
+        {
+            var cwt = new ConditionalWeakTable<object, object>();
+
+            try
+            {
+                cwt.GetOrCreateValue(null);
+                Assert.Fail("#0");
+            }
+            catch (ArgumentNullException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            object key = "foo";
+            var val = cwt.GetOrCreateValue(key);
+            Assert.IsTrue(val != null, "#2");
+            Assert.AreEqual(typeof(object), val.GetType(), "#3");
+
+            Assert.AreEqual(val, cwt.GetOrCreateValue(key), "#4");
+
+            var cwt2 = new ConditionalWeakTable<object, string>();
+            try
+            {
+                cwt2.GetOrCreateValue(key);
+                Assert.Fail("#5");
+            }
+            catch (MissingMethodException ex)
+            {
+                Theraot.No.Op(ex);
+            }
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]

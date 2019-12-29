@@ -35,13 +35,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestMakeBinary
     {
-        public static int GoodMethod(string a, double d)
-        {
-            No.Op(a);
-            No.Op(d);
-            return 1;
-        }
-
         public static int BadMethodSig_1()
         {
             return 1;
@@ -61,52 +54,11 @@ namespace MonoTests.System.Linq.Expressions
             return 1;
         }
 
-        private static MethodInfo Gm(string n)
+        public static int GoodMethod(string a, double d)
         {
-            var methods = typeof(ExpressionTestMakeBinary).GetMethods
-            (
-                BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public
-            );
-
-            foreach (var m in methods)
-            {
-                if (m.Name == n)
-                {
-                    return m;
-                }
-            }
-
-            throw new Exception(string.Format("Method {0} not found", n));
-        }
-
-        private static void PassInt(ExpressionType nt)
-        {
-            Expression left = Expression.Constant(1);
-            Expression right = Expression.Constant(1);
-
-            Expression.MakeBinary(nt, left, right);
-        }
-
-        private static void FailInt(ExpressionType nt)
-        {
-            Expression left = Expression.Constant(1);
-            Expression right = Expression.Constant(1);
-
-            try
-            {
-                Expression.MakeBinary(nt, left, right);
-            }
-            catch (ArgumentException)
-            {
-                return;
-            }
-            catch (InvalidOperationException)
-            {
-                return;
-            }
-
-            // If we get here, there was an error
-            Assert.Fail("FailInt failed while creating an {0}", nt);
+            No.Op(a);
+            No.Op(d);
+            return 1;
         }
 
         public T CodeGen<T>(Func<Expression, Expression, Expression> bin, T v1, T v2)
@@ -118,21 +70,6 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<T>>(bin(v1.ToConstant(), v2.ToConstant())).Compile();
             return compiled();
-        }
-
-        private void CTest<T>(ExpressionType node, bool r, T a, T b)
-        {
-            var pa = Expression.Parameter(typeof(T), "a");
-            var pb = Expression.Parameter(typeof(T), "b");
-
-            var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
-            var lambda = Expression.Lambda<Func<T, T, bool>>
-            (
-                p, pa, pb
-            );
-
-            var compiled = lambda.Compile();
-            Assert.AreEqual(r, compiled(a, b), string.Format("{0} ({1},{2}) == {3}", node, a, b, r));
         }
 
         [Test]
@@ -209,7 +146,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MakeArrayIndex()
         {
-            var array = Expression.Constant(new[] {1, 2}, typeof(int[]));
+            var array = Expression.Constant(new[] { 1, 2 }, typeof(int[]));
             var index = Expression.Constant(1);
 
             var arrayIndex = Expression.MakeBinary
@@ -340,6 +277,69 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(253, CodeGen(Expression.Multiply, 11, 23));
             Assert.AreEqual(33, CodeGen(Expression.Divide, 100, 3));
             Assert.AreEqual(100.0 / 3, CodeGen<double>(Expression.Divide, 100, 3));
+        }
+
+        private static void FailInt(ExpressionType nt)
+        {
+            Expression left = Expression.Constant(1);
+            Expression right = Expression.Constant(1);
+
+            try
+            {
+                Expression.MakeBinary(nt, left, right);
+            }
+            catch (ArgumentException)
+            {
+                return;
+            }
+            catch (InvalidOperationException)
+            {
+                return;
+            }
+
+            // If we get here, there was an error
+            Assert.Fail("FailInt failed while creating an {0}", nt);
+        }
+
+        private static MethodInfo Gm(string n)
+        {
+            var methods = typeof(ExpressionTestMakeBinary).GetMethods
+            (
+                BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public
+            );
+
+            foreach (var m in methods)
+            {
+                if (m.Name == n)
+                {
+                    return m;
+                }
+            }
+
+            throw new Exception(string.Format("Method {0} not found", n));
+        }
+
+        private static void PassInt(ExpressionType nt)
+        {
+            Expression left = Expression.Constant(1);
+            Expression right = Expression.Constant(1);
+
+            Expression.MakeBinary(nt, left, right);
+        }
+
+        private void CTest<T>(ExpressionType node, bool r, T a, T b)
+        {
+            var pa = Expression.Parameter(typeof(T), "a");
+            var pb = Expression.Parameter(typeof(T), "b");
+
+            var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
+            var lambda = Expression.Lambda<Func<T, T, bool>>
+            (
+                p, pa, pb
+            );
+
+            var compiled = lambda.Compile();
+            Assert.AreEqual(r, compiled(a, b), string.Format("{0} ({1},{2}) == {3}", node, a, b, r));
         }
     }
 }

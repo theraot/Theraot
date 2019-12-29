@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET35 (BigInteger)
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;

@@ -69,7 +69,7 @@ namespace Theraot.Collections
                 return resultHashSet;
             }
 
-            return new ProgressiveSet<T>(source);
+            return ProgressiveSet<T>.Create(Progressor<T>.CreateFromIEnumerable(source), new HashSetEx<T>(), EqualityComparer<T>.Default);
 #else
             return AsISet(source);
 #endif
@@ -91,13 +91,17 @@ namespace Theraot.Collections
                 return sourceAsHashSet;
             }
 
-            if (source is ProgressiveSet<T> sourceAsProgressiveSet &&
-                sourceAsProgressiveSet.Comparer.Equals(comparer))
+            if (source is SortedSet<T> sourceAsSortedSet && sourceAsSortedSet.Comparer.Equals(comparer))
+            {
+                return sourceAsSortedSet;
+            }
+
+            if (source is ProgressiveSet<T> sourceAsProgressiveSet && sourceAsProgressiveSet.Comparer.Equals(comparer))
             {
                 return sourceAsProgressiveSet;
             }
 
-            return new ProgressiveSet<T>(source, comparer);
+            return ProgressiveSet<T>.Create(Progressor<T>.CreateFromIEnumerable(source), new HashSetEx<T>(), comparer);
 #else
             return AsISet(source, comparer);
 #endif
@@ -235,7 +239,7 @@ namespace Theraot.Collections
                 return resultISet;
             }
 
-            return new ProgressiveSet<T>(source);
+            return ProgressiveSet<T>.Create(Progressor<T>.CreateFromIEnumerable(source), new HashSetEx<T>(), EqualityComparer<T>.Default);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -263,7 +267,7 @@ namespace Theraot.Collections
                 return sourceAsProgressiveSet;
             }
 
-            return new ProgressiveSet<T>(source, comparer);
+            return ProgressiveSet<T>.Create(Progressor<T>.CreateFromIEnumerable(source), new HashSetEx<T>(), comparer);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

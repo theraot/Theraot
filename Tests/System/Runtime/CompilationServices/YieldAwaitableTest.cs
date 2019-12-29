@@ -39,79 +39,9 @@ namespace MonoTests.System.Runtime.CompilerServices
     [TestFixture]
     public class YieldAwaitableTest
     {
-        private class MyScheduler : TaskScheduler
-        {
-            protected override IEnumerable<Task> GetScheduledTasks()
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override void QueueTask(Task task)
-            {
-                TryExecuteTask(task);
-            }
-
-            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class MyContext : SynchronizationContext
-        {
-            // For debug purposes
-            public int Started;
-
-            // For debug purposes
-            public int Completed;
-
-            // For debug purposes
-            public int PostCounter;
-
-            // For debug purposes
-            public int SendCounter;
-
-            public override void OperationStarted()
-            {
-                ++Started;
-                base.OperationStarted();
-            }
-
-            public override void OperationCompleted()
-            {
-                ++Completed;
-                base.OperationCompleted();
-            }
-
-            public override void Post(SendOrPostCallback d, object state)
-            {
-                ++PostCounter;
-                base.Post(d, state);
-            }
-
-            public override void Send(SendOrPostCallback d, object state)
-            {
-                ++SendCounter;
-                base.Send(d, state);
-            }
-        }
-
         private YieldAwaitable.YieldAwaiter _a;
+
         private SynchronizationContext _sc;
-
-        [SetUp]
-        public void Setup()
-        {
-            _sc = SynchronizationContext.Current;
-            _a = new YieldAwaitable().GetAwaiter();
-        }
-
-        [TearDown]
-        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public void TearDown()
-        {
-            SynchronizationContext.SetSynchronizationContext(_sc);
-        }
 
         [Test]
         public void IsCompleted()
@@ -198,6 +128,77 @@ namespace MonoTests.System.Runtime.CompilerServices
 
                 Assert.IsTrue(mre.WaitOne(1000), "#1");
                 Assert.IsNull(contextRan, "#2");
+            }
+        }
+
+        [SetUp]
+        public void Setup()
+        {
+            _sc = SynchronizationContext.Current;
+            _a = new YieldAwaitable().GetAwaiter();
+        }
+
+        [TearDown]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        public void TearDown()
+        {
+            SynchronizationContext.SetSynchronizationContext(_sc);
+        }
+
+        private class MyContext : SynchronizationContext
+        {
+            // For debug purposes
+            public int Completed;
+
+            // For debug purposes
+            public int PostCounter;
+
+            // For debug purposes
+            public int SendCounter;
+
+            // For debug purposes
+            public int Started;
+
+            public override void OperationCompleted()
+            {
+                ++Completed;
+                base.OperationCompleted();
+            }
+
+            public override void OperationStarted()
+            {
+                ++Started;
+                base.OperationStarted();
+            }
+
+            public override void Post(SendOrPostCallback d, object state)
+            {
+                ++PostCounter;
+                base.Post(d, state);
+            }
+
+            public override void Send(SendOrPostCallback d, object state)
+            {
+                ++SendCounter;
+                base.Send(d, state);
+            }
+        }
+
+        private class MyScheduler : TaskScheduler
+        {
+            protected override IEnumerable<Task> GetScheduledTasks()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void QueueTask(Task task)
+            {
+                TryExecuteTask(task);
+            }
+
+            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+            {
+                throw new NotImplementedException();
             }
         }
     }

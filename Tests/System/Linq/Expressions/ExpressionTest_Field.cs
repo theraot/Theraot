@@ -35,26 +35,6 @@ namespace MonoTests.System.Linq.Expressions
     {
         public static string Foo = "foo";
 
-        public class Bar
-        {
-            public string Baz;
-
-            public Bar()
-            {
-                Baz = "baz";
-            }
-        }
-
-        public struct Gazonk
-        {
-            public string Tzap;
-
-            public Gazonk(string tzap)
-            {
-                Tzap = tzap;
-            }
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -142,7 +122,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 () =>
                 {
-                    // This will fail because access to a static field should be created using a FieldInfo and 
+                    // This will fail because access to a static field should be created using a FieldInfo and
                     // not an instance plus the field name.
                     Expression.Field(Expression.Constant(new MemberClass()), "StaticField");
                 }
@@ -173,6 +153,26 @@ namespace MonoTests.System.Linq.Expressions
                     );
                 }
             );
+        }
+
+        public struct Gazonk
+        {
+            public string Tzap;
+
+            public Gazonk(string tzap)
+            {
+                Tzap = tzap;
+            }
+        }
+
+        public class Bar
+        {
+            public string Baz;
+
+            public Bar()
+            {
+                Baz = "baz";
+            }
         }
     }
 }

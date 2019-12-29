@@ -45,24 +45,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             return queue;
         }
 
-        private static WeakReference AddObjectWeakReference(ConcurrentQueue<object> queue)
-        {
-            var obj = new object();
-            var weakReference = CreateWeakReference(obj);
-            queue.Enqueue(obj);
-            return weakReference;
-        }
-
-        private static WeakReference CreateWeakReference(object obj)
-        {
-            return new WeakReference(obj);
-        }
-
-        private static void DequeueIgnore(ConcurrentQueue<object> queue)
-        {
-            queue.TryDequeue(out _);
-        }
-
         [Test]
         public void CountTestCase()
         {
@@ -248,6 +230,24 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.AreEqual(2, value, $"#4 : {value}");
             queue.TryPeek(out value);
             Assert.AreEqual(2, value, $"#5 : {value}");
+        }
+
+        private static WeakReference AddObjectWeakReference(ConcurrentQueue<object> queue)
+        {
+            var obj = new object();
+            var weakReference = CreateWeakReference(obj);
+            queue.Enqueue(obj);
+            return weakReference;
+        }
+
+        private static WeakReference CreateWeakReference(object obj)
+        {
+            return new WeakReference(obj);
+        }
+
+        private static void DequeueIgnore(ConcurrentQueue<object> queue)
+        {
+            queue.TryDequeue(out _);
         }
     }
 }

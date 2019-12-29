@@ -36,7 +36,7 @@ namespace System.Runtime.CompilerServices
         public ConfiguredCancelableAsyncEnumerable<T> ConfigureAwait(bool continueOnCapturedContext) =>
             new ConfiguredCancelableAsyncEnumerable<T>(_enumerable, continueOnCapturedContext, _cancellationToken);
 
-        /// <summary>Sets the <see cref="CancellationToken"/> to be passed to <see cref="IAsyncEnumerable{T}.GetAsyncEnumerator(System.Threading.CancellationToken?)"/> when iterating.</summary>
+        /// <summary>Sets the <see cref="CancellationToken"/> to be passed to <see cref="IAsyncEnumerable{T}.GetAsyncEnumerator(CancellationToken)"/> when iterating.</summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
         /// <returns>The configured enumerable.</returns>
         /// <remarks>This will replace any previous <see cref="CancellationToken"/> set by <see cref="WithCancellation(CancellationToken)"/> for this iteration.</remarks>

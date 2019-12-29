@@ -171,9 +171,9 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        public int RemoveDeadItems()
+        public void RemoveDeadItems()
         {
-            return _wrapped.RemoveWhere(input => !input.IsAlive);
+            _wrapped.RemoveWhere(input => !input.IsAlive);
         }
 
         public int RemoveWhere(Predicate<T?> itemCheck)

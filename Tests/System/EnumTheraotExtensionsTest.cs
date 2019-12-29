@@ -8,18 +8,29 @@ namespace Tests.System
     public class EnumTheraotExtensionsTest
     {
         [Flags]
+        private enum WithoutZero
+        {
+            Two = 2,
+        }
+
+        [Flags]
         private enum WithZero
         {
             Zero = 0,
             One = 1,
         }
 
-        [Flags]
-        private enum WithoutZero
+        [Test]
+        public void HasFlagWithEnumHavingZeroValue()
         {
-            Two = 2,
+            Assert.IsTrue(WithZero.One.HasFlag(WithZero.Zero));
         }
 
+        [Test]
+        public void HasFlagWithEnumNotHavingZeroValue()
+        {
+            Assert.IsTrue(WithoutZero.Two.HasFlag((WithoutZero)0));
+        }
 
         [Test]
         public void ThrowsOnNullEnum()
@@ -34,18 +45,6 @@ namespace Tests.System
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             AssertEx.Throws<ArgumentNullException>(() => WithZero.One.HasFlag(null));
-        }
-
-        [Test]
-        public void HasFlagWithEnumHavingZeroValue()
-        {
-            Assert.IsTrue(WithZero.One.HasFlag(WithZero.Zero));
-        }
-
-        [Test]
-        public void HasFlagWithEnumNotHavingZeroValue()
-        {
-            Assert.IsTrue(WithoutZero.Two.HasFlag((WithoutZero)0));
         }
     }
 }

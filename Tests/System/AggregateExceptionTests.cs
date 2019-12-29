@@ -38,6 +38,76 @@ namespace MonoTests.System
     {
         private AggregateException _e;
 
+        [Test]
+        public void FlattenTestCase()
+        {
+            var ex = _e.Flatten();
+
+            Assert.AreEqual(3, ex.InnerExceptions.Count, "#1");
+            Assert.AreEqual(3, ex.InnerExceptions.Count(exception => !(exception is AggregateException)), "#2");
+        }
+
+        [Test]
+        public void GetBaseException_stops_at_first_inner_exception_that_is_not_AggregateException()
+        {
+            var inner = new ArgumentNullException();
+            var outer = new InvalidOperationException("x", inner);
+            Assert.AreEqual(outer, new AggregateException(outer).GetBaseException());
+        }
+
+        [Test]
+        public void GetBaseWithInner()
+        {
+            var ae = new AggregateException("x", new ArgumentException(), new ArgumentNullException());
+            Assert.AreEqual(ae, ae.GetBaseException(), "#1");
+
+            var expected = new ArgumentException();
+            var ae2 = new AggregateException("x", new AggregateException(expected, new Exception()));
+            Assert.AreEqual(expected, ae2.GetBaseException().InnerException, "#2");
+        }
+
+        [Test]
+        public void Handle_AllHandled()
+        {
+            _e.Handle(l => true);
+        }
+
+        [Test]
+        public void Handle_Invalid()
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentNullException>(() => _e.Handle(null));
+        }
+
+        [Test]
+        public void Handle_Unhandled()
+        {
+            try
+            {
+                _e.Handle(l => l is AggregateException);
+                Assert.Fail();
+            }
+            catch (AggregateException e)
+            {
+                Assert.AreEqual(1, e.InnerExceptions.Count);
+            }
+        }
+
+        [Test]
+        public void InitializationWithNullInnerValuesTest()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                GC.KeepAlive(new AggregateException(new Exception(), null, new ApplicationException())));
+        }
+
+        [Test]
+        public void InitializationWithNullValuesTest()
+        {
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((IEnumerable<Exception>)null)));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((Exception[])null)));
+        }
+
         [SetUp]
         public void Setup()
         {
@@ -59,76 +129,6 @@ namespace MonoTests.System
             Assert.AreEqual(inner, ex.InnerExceptions[0]);
             Assert.AreEqual(message, ex.InnerException.Message);
             Assert.AreEqual(inner, ex.GetBaseException());
-        }
-
-        [Test]
-        public void FlattenTestCase()
-        {
-            var ex = _e.Flatten();
-
-            Assert.AreEqual(3, ex.InnerExceptions.Count, "#1");
-            Assert.AreEqual(3, ex.InnerExceptions.Count(exception => !(exception is AggregateException)), "#2");
-        }
-
-        [Test]
-        public void InitializationWithNullInnerValuesTest()
-        {
-            Assert.Throws<ArgumentException>(() =>
-                GC.KeepAlive(new AggregateException(new Exception(), null, new ApplicationException())));
-        }
-
-        [Test]
-        public void InitializationWithNullValuesTest()
-        {
-            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((IEnumerable<Exception>)null)));
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(new AggregateException((Exception[])null)));
-        }
-
-        [Test]
-        public void Handle_Invalid()
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => _e.Handle(null));
-        }
-
-        [Test]
-        public void Handle_AllHandled()
-        {
-            _e.Handle(l => true);
-        }
-
-        [Test]
-        public void Handle_Unhandled()
-        {
-            try
-            {
-                _e.Handle(l => l is AggregateException);
-                Assert.Fail();
-            }
-            catch (AggregateException e)
-            {
-                Assert.AreEqual(1, e.InnerExceptions.Count);
-            }
-        }
-
-        [Test]
-        public void GetBaseWithInner()
-        {
-            var ae = new AggregateException("x", new ArgumentException(), new ArgumentNullException());
-            Assert.AreEqual(ae, ae.GetBaseException(), "#1");
-
-            var expected = new ArgumentException();
-            var ae2 = new AggregateException("x", new AggregateException(expected, new Exception()));
-            Assert.AreEqual(expected, ae2.GetBaseException().InnerException, "#2");
-        }
-
-        [Test]
-        public void GetBaseException_stops_at_first_inner_exception_that_is_not_AggregateException()
-        {
-            var inner = new ArgumentNullException();
-            var outer = new InvalidOperationException("x", inner);
-            Assert.AreEqual(outer, new AggregateException(outer).GetBaseException());
         }
     }
 }

@@ -44,26 +44,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestLessThanOrEqual
     {
-        private struct Slot
-        {
-            public readonly int Value;
-
-            public Slot(int val)
-            {
-                Value = val;
-            }
-
-            public static bool operator >=(Slot a, Slot b)
-            {
-                return a.Value >= b.Value;
-            }
-
-            public static bool operator <=(Slot a, Slot b)
-            {
-                return a.Value <= b.Value;
-            }
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -212,6 +192,26 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(null, compiled(null, new Slot(1)));
             Assert.AreEqual(null, compiled(new Slot(1), null));
             Assert.AreEqual(null, compiled(null, null));
+        }
+
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int val)
+            {
+                Value = val;
+            }
+
+            public static bool operator <=(Slot a, Slot b)
+            {
+                return a.Value <= b.Value;
+            }
+
+            public static bool operator >=(Slot a, Slot b)
+            {
+                return a.Value >= b.Value;
+            }
         }
     }
 }

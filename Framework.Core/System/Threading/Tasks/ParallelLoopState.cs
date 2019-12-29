@@ -443,11 +443,10 @@ namespace System.Threading.Tasks
             }
         }
 
-        // Returns true if StoppedBroken is updated to ParallelLoopStateCanceled.
-        internal bool Cancel()
+        internal void Cancel()
         {
             // we can set the canceled flag regardless of the state of other bits.
-            return AtomicLoopStateUpdate(ParallelLoopStateCanceled, ParallelLoopStateNone);
+            AtomicLoopStateUpdate(ParallelLoopStateCanceled, ParallelLoopStateNone);
         }
 
         internal void SetExceptional()

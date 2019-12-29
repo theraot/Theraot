@@ -4,44 +4,31 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections
 {
     [DebuggerNonUserCode]
-    public class ProgressiveSet<T> : ProgressiveCollection<T>, ISet<T>
+    public sealed class ProgressiveSet<T> : ISet<T>, IHasComparer<T>, IProgressive<T>, IClosable
     {
-        // Note: these constructors uses ExtendedSet because HashSet is not an ISet<T> in .NET 3.5 and base class needs an ISet<T>
-        public ProgressiveSet(IEnumerable<T> enumerable)
-            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new HashSetEx<T>(), null)
+        private readonly ProgressiveCollection<T> _wrapped;
+
+        private ProgressiveSet(Progressor<T> progressor, ISet<T> cache, IEqualityComparer<T>? comparer)
         {
-            // Empty
+            Comparer = comparer ?? EqualityComparer<T>.Default;
+            _wrapped = ProgressiveCollection<T>.Create(progressor, cache, Comparer);
         }
 
-        public ProgressiveSet(IEnumerable<T> enumerable, IEqualityComparer<T>? comparer)
-            : this(Progressor<T>.CreateFromIEnumerable(enumerable), new HashSetEx<T>(comparer), null)
-        {
-            // Empty
-        }
-
-        public ProgressiveSet(IObservable<T> observable)
-            : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(), null)
-        {
-            // Empty
-        }
-
-        public ProgressiveSet(IObservable<T> observable, IEqualityComparer<T>? comparer)
-            : this(Progressor<T>.CreateFromIObservable(observable), new HashSetEx<T>(comparer), null)
-        {
-            // Empty
-        }
-
-        protected ProgressiveSet(Progressor<T> progressor, ISet<T> cache, IEqualityComparer<T>? comparer)
-            : base(progressor, cache, comparer)
-        {
-            // Empty
-        }
-
+        public ICollection<T> Cache => _wrapped.Cache;
+        public IEqualityComparer<T> Comparer { get; }
+        public int Count => _wrapped.Count;
+        public bool IsClosed => _wrapped.IsClosed;
         bool ICollection<T>.IsReadOnly => true;
+
+        public static ProgressiveSet<T> Create(Progressor<T> progressor, ISet<T> cache, IEqualityComparer<T>? comparer)
+        {
+            return new ProgressiveSet<T>(progressor, cache, comparer);
+        }
 
         void ICollection<T>.Add(T item)
         {
@@ -58,9 +45,29 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
+        public void Close()
+        {
+            _wrapped.Close();
+        }
+
+        public bool Contains(T item)
+        {
+            return _wrapped.Contains(item);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            _wrapped.CopyTo(array, arrayIndex);
+        }
+
         void ISet<T>.ExceptWith(IEnumerable<T> other)
         {
             throw new NotSupportedException();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _wrapped.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -96,6 +103,11 @@ namespace Theraot.Collections
         public bool Overlaps(IEnumerable<T> other)
         {
             return Extensions.Overlaps(this, other);
+        }
+
+        public IEnumerable<T> Progress()
+        {
+            return _wrapped.Progress();
         }
 
         bool ICollection<T>.Remove(T item)

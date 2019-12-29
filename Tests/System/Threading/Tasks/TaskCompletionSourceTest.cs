@@ -145,19 +145,20 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
+
         [Test]
         public void SetCanceledWithTokenTest()
         {
             var tokenSource = new CancellationTokenSource();
-            
+
             Assert.IsNotNull(_completionSource.Task, "#1");
             Assert.IsTrue(_completionSource.TrySetCanceled(tokenSource.Token), "#2");
             Assert.AreEqual(TaskStatus.Canceled, _completionSource.Task.Status, "#3");
             Assert.IsFalse(_completionSource.TrySetResult(42), "#4");
             Assert.AreEqual(TaskStatus.Canceled, _completionSource.Task.Status, "#5");
         }
+
 #endif
 
         [Test]

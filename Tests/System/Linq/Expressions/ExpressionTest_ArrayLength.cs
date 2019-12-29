@@ -86,7 +86,7 @@ namespace MonoTests.System.Linq.Expressions
                 parameter
             ).Compile();
 
-            Assert.AreEqual(2, compiled(new object[] {ValueA, ValueB}));
+            Assert.AreEqual(2, compiled(new object[] { ValueA, ValueB }));
         }
 
         [Test]
@@ -119,13 +119,13 @@ namespace MonoTests.System.Linq.Expressions
                 parameter
             ).Compile();
 
-            Assert.AreEqual(2, compiled(new[] {ValueA, ValueB}));
+            Assert.AreEqual(2, compiled(new[] { ValueA, ValueB }));
         }
 
         [Test]
         public void Rank1String()
         {
-            string[] array = {"a", "b", "c"};
+            string[] array = { "a", "b", "c" };
 
             var unaryExpression = Expression.ArrayLength(Expression.Constant(array));
             Assert.AreEqual(ExpressionType.ArrayLength, unaryExpression.NodeType, "ArrayLength#01");
@@ -137,7 +137,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Rank2String()
         {
-            string[,] array = {{ }, { }};
+            string[,] array = { { }, { } };
 
             AssertEx.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant(array)));
         }

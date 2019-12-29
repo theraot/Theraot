@@ -38,21 +38,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestLifting
     {
-        private static MethodInfo Gm(string n)
-        {
-            var m = typeof(ExpressionTestLifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
-
-            foreach (var mm in m)
-            {
-                if (mm.Name == n)
-                {
-                    return mm;
-                }
-            }
-
-            throw new Exception("No method found: " + n);
-        }
-
         public static int MyCompare(OpStruct a, OpStruct b)
         {
             No.Op(a);
@@ -108,6 +93,21 @@ namespace MonoTests.System.Linq.Expressions
             //
             Assert.AreEqual(typeof(int?), cmp.Type);
             Assert.AreEqual(typeof(int?), cmp2.Type);
+        }
+
+        private static MethodInfo Gm(string n)
+        {
+            var m = typeof(ExpressionTestLifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
+
+            foreach (var mm in m)
+            {
+                if (mm.Name == n)
+                {
+                    return mm;
+                }
+            }
+
+            throw new Exception("No method found: " + n);
         }
     }
 }

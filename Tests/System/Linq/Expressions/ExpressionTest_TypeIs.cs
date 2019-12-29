@@ -37,31 +37,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestTypeIs
     {
-        private struct Foo
-        {
-            // Empty
-        }
-
-        private class Bar
-        {
-            // Empty
-        }
-
-        private class Baz : Bar
-        {
-            // Empty
-        }
-
-        private static Func<TType, bool> CreateTypeIs<TType, TCandidate>()
-        {
-            var p = Expression.Parameter(typeof(TType), "p");
-
-            return Expression.Lambda<Func<TType, bool>>
-            (
-                Expression.TypeIs(p, typeof(TCandidate)), p
-            ).Compile();
-        }
-
         public static void TacTac()
         {
             // Empty
@@ -135,6 +110,31 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             Assert.IsFalse(compiled());
+        }
+
+        private static Func<TType, bool> CreateTypeIs<TType, TCandidate>()
+        {
+            var p = Expression.Parameter(typeof(TType), "p");
+
+            return Expression.Lambda<Func<TType, bool>>
+            (
+                Expression.TypeIs(p, typeof(TCandidate)), p
+            ).Compile();
+        }
+
+        private struct Foo
+        {
+            // Empty
+        }
+
+        private class Bar
+        {
+            // Empty
+        }
+
+        private class Baz : Bar
+        {
+            // Empty
         }
     }
 }

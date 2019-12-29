@@ -50,13 +50,6 @@ namespace MonoTests.System.Linq.Expressions
             return i;
         }
 
-        private static Type[] GetTestTypeArray(int length)
-        {
-            return Enumerable.Range(0, length - 1)
-                .Select(_ => typeof(int))
-                .ToArray();
-        }
-
         [Test]
         public void CompileActionDiscardingRetValue()
         {
@@ -183,7 +176,7 @@ namespace MonoTests.System.Linq.Expressions
                 (
                     Expression.Lambda<Func<string>>
                     (
-                        Expression.Call(parameter,  new Func<string>(default(int).ToString).GetMethodInfo())
+                        Expression.Call(parameter, new Func<string>(default(int).ToString).GetMethodInfo())
                     )
                 ),
                 parameter
@@ -296,6 +289,13 @@ namespace MonoTests.System.Linq.Expressions
             const string Name = "hello";
 
             AssertEx.Throws<ArgumentException>(() => Expression.Parameter(typeof(void), Name));
+        }
+
+        private static Type[] GetTestTypeArray(int length)
+        {
+            return Enumerable.Range(0, length - 1)
+                .Select(_ => typeof(int))
+                .ToArray();
         }
     }
 }

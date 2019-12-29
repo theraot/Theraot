@@ -32,7 +32,7 @@ namespace Tests.Helpers
         internal static IDisposable WithContractFailed(EventHandler<ContractFailedEventArgs> handler)
         {
             Contract.ContractFailed += handler;
-            return new UnregisterContractFailed {Handler = handler};
+            return new UnregisterContractFailed { Handler = handler };
         }
 
         private class UnregisterContractFailed : IDisposable

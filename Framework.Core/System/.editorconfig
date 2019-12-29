@@ -1,4 +1,8 @@
 [*.cs]
-resharper_unused_member_global_highlighting = do_not_show
-resharper_class_with_virtual_members_never_inherited_global_highlighting = do_not_show
+resharper_unused_auto_property_accessor_global_highlighting = do_not_show
+resharper_unused_parameter_global_highlighting = do_not_show
+resharper_event_never_subscribed_to_global_highlighting = do_not_show
+resharper_member_can_be_made_static_global_highlighting = do_not_show
+resharper_class_never_instantiated_global_highlighting = do_not_show
+resharper_auto_property_can_be_made_get_only_global_highlighting = do_not_show
 dotnet_diagnostic.EPS01.severity = silent

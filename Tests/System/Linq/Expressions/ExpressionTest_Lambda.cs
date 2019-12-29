@@ -43,14 +43,9 @@ namespace MonoTests.System.Linq.Expressions
 
         private delegate object DelegateObjectINT(int a);
 
-        private delegate object DelegateObjectString(string s);
-
         private delegate object DelegateObjectObject(object s);
 
-        public static void Foo()
-        {
-            // Empty
-        }
+        private delegate object DelegateObjectString(string s);
 
         public static int CallDelegate(Func<int, int> e)
         {
@@ -70,6 +65,11 @@ namespace MonoTests.System.Linq.Expressions
             }
 
             return e(i);
+        }
+
+        public static void Foo()
+        {
+            // Empty
         }
 
         [Test]
@@ -289,7 +289,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void NullParameter()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.Lambda<Func<int, int>>(Expression.Constant(1), new ParameterExpression[] {null}));
+            Assert.Throws<ArgumentNullException>(() => Expression.Lambda<Func<int, int>>(Expression.Constant(1), new ParameterExpression[] { null }));
         }
 
         [Test]

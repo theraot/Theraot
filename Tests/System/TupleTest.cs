@@ -35,6 +35,14 @@ namespace MonoTests.System
     public class TupleTest
     {
         [Test]
+        public void ToStringTest()
+        {
+            var t1 = new Tuple<int, object, int, int, int, int, int, Tuple<string, string>>(1, null, 3, 4, 5, 6, 7, new Tuple<string, string>(null, null));
+
+            Assert.AreEqual("(1, , 3, 4, 5, 6, 7, , )", t1.ToString(), "#1");
+        }
+
+        [Test]
         public void TupleWithRest_Invalid()
         {
             Assert.Throws<ArgumentException>(() =>
@@ -53,14 +61,6 @@ namespace MonoTests.System
                     7, null);
                 GC.KeepAlive(tuple);
             });
-        }
-
-        [Test]
-        public void ToStringTest()
-        {
-            var t1 = new Tuple<int, object, int, int, int, int, int, Tuple<string, string>>(1, null, 3, 4, 5, 6, 7, new Tuple<string, string>(null, null));
-
-            Assert.AreEqual("(1, , 3, 4, 5, 6, 7, , )", t1.ToString(), "#1");
         }
     }
 }

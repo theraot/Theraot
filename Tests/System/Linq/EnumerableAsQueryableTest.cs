@@ -40,31 +40,76 @@ using System.Reflection;
 
 namespace MonoTests.System.Linq
 {
+    public static class Ext
+    {
+        public static string InstantiatedGenericMethod<T>(this IQueryable<int> iq, T t)
+        {
+            Theraot.No.Op(iq);
+            Theraot.No.Op(t);
+            return "QueryableInstantiatedGenericMethod";
+        }
+
+        public static string InstantiatedGenericMethod(this IEnumerable<int> ie, int t)
+        {
+            Theraot.No.Op(ie);
+            Theraot.No.Op(t);
+            return "EnumerableInstantiatedGenericMethod";
+        }
+
+        public static string NonGenericMethod(this IQueryable<int> iq)
+        {
+            Theraot.No.Op(iq);
+            return "QueryableNonGenericMethod";
+        }
+
+        public static string NonGenericMethod(this IEnumerable<int> iq)
+        {
+            Theraot.No.Op(iq);
+            return "EnumerableNonGenericMethod";
+        }
+
+        public static string UserQueryableExt1<T>(this IQueryable<T> e, Expression<Func<int, int>> ex)
+        {
+            Theraot.No.Op(e);
+            Theraot.No.Op(ex);
+            return "UserQueryableExt1";
+        }
+
+        public static string UserQueryableExt1<T>(this IEnumerable<T> e, Expression<Func<int, int>> ex)
+        {
+            Theraot.No.Op(e);
+            Theraot.No.Op(ex);
+            return "UserEnumerableExt1";
+        }
+
+        public static string UserQueryableExt2<T>(this IQueryable<T> e, Expression<Func<int, int>> ex)
+        {
+            Theraot.No.Op(e);
+            Theraot.No.Op(ex);
+            return "UserQueryableExt2";
+        }
+
+        public static string UserQueryableExt2<T>(this IEnumerable<T> e, Func<int, int> ex)
+        {
+            Theraot.No.Op(e);
+            Theraot.No.Op(ex);
+            return "UserEnumerableExt2";
+        }
+
+        public static string UserQueryableExt3<T>(this IQueryable<T> e, Expression<Func<int, int>> ex, int dummy)
+        {
+            Theraot.No.Op(e);
+            Theraot.No.Op(ex);
+            Theraot.No.Op(dummy);
+            return "UserQueryableExt3";
+        }
+    }
+
     [TestFixture]
     public class EnumerableAsQueryableTest
     {
         private int[] _array;
         private IQueryable<int> _src;
-
-        [SetUp]
-        public void MyTestCleanup()
-        {
-            _array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            _src = _array.AsQueryable();
-        }
-
-        [Test]
-        public void NewQueryableExpression()
-        {
-            var queryable = _array.AsQueryable();
-            var expression = queryable.Expression;
-
-            Assert.AreEqual(ExpressionType.Constant, expression.NodeType);
-
-            var constant = (ConstantExpression)expression;
-
-            Assert.AreEqual(queryable, constant.Value);
-        }
 
         [Test]
         public void Aggregate()
@@ -171,6 +216,22 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
+        public void InstantiatedGenericMethod()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
+                var method = (from m in typeof(Ext).GetMethods(extensionFlags)
+                              where (m.Name == "InstantiatedGenericMethod" &&
+                                     m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                              select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+
+                Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
+                _src.Provider.Execute(e);
+            });
+        }
+
+        [Test]
         public void Intersect()
         {
             int[] subset = { 1, 2, 3 };
@@ -206,6 +267,70 @@ namespace MonoTests.System.Linq
         public void Min()
         {
             Assert.AreEqual(_src.Min(), _array.Min<int>());
+        }
+
+        [SetUp]
+        public void MyTestCleanup()
+        {
+            _array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            _src = _array.AsQueryable();
+        }
+
+        [Test]
+        public void NewQueryableExpression()
+        {
+            var queryable = _array.AsQueryable();
+            var expression = queryable.Expression;
+
+            Assert.AreEqual(ExpressionType.Constant, expression.NodeType);
+
+            var constant = (ConstantExpression)expression;
+
+            Assert.AreEqual(queryable, constant.Value);
+        }
+
+        [Test]
+        public void NonGenericAsQueryableInstantiateProperQueryable()
+        {
+            IEnumerable bar = new Bar<int, string>();
+            var queryable = bar.AsQueryable();
+
+            Assert.IsTrue(queryable is IQueryable<string>);
+        }
+
+        [Test]
+        public void NonGenericEnumerable1()
+        {
+            Assert.Throws<ArgumentException>(() => new MyEnum().AsQueryable());
+        }
+
+        [Test]
+        public void NonGenericEnumerable2()
+        {
+            IEnumerable<int> nonGen = new[] { 1, 2, 3 };
+            Assert.IsTrue(nonGen.AsQueryable() != null);
+        }
+
+        [Test]
+        public void NonGenericMethod()
+        {
+            const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
+                          where (m.Name == "NonGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                          select m).FirstOrDefault();
+
+            Expression e = Expression.Call(method, _src.Expression);
+            Assert.AreEqual(_src.Provider.Execute(e), "EnumerableNonGenericMethod", "NonGenericMethod");
+        }
+
+        [Test]
+        public void NullEnumerable()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                const IEnumerable<int> a = null;
+                a.AsQueryable();
+            });
         }
 
         [Test]
@@ -324,14 +449,6 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void Where()
-        {
-            var oddArray1 = _array.Where(n => (n % 2) == 1).ToArray();
-            var oddArray2 = _src.Where(n => (n % 2) == 1).ToArray();
-            Assert.AreEqual(oddArray1, oddArray2);
-        }
-
-        [Test]
         public void UserExtensionMethod()
         {
             const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
@@ -360,9 +477,9 @@ namespace MonoTests.System.Linq
             {
                 const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
                 var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                    where (m.Name == "UserQueryableExt3" &&
-                           m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                    select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+                              where (m.Name == "UserQueryableExt3" &&
+                                     m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                              select m).FirstOrDefault().MakeGenericMethod(typeof(int));
                 Expression<Func<int, int>> exp = i => i;
                 Expression e = Expression.Call(method, _src.Expression, Expression.Quote(exp), Expression.Constant(10));
                 _src.Provider.Execute(e);
@@ -370,54 +487,11 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void NonGenericMethod()
+        public void Where()
         {
-            const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                          where (m.Name == "NonGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                          select m).FirstOrDefault();
-
-            Expression e = Expression.Call(method, _src.Expression);
-            Assert.AreEqual(_src.Provider.Execute(e), "EnumerableNonGenericMethod", "NonGenericMethod");
-        }
-
-        [Test]
-        public void InstantiatedGenericMethod()
-        {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-                var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                    where (m.Name == "InstantiatedGenericMethod" &&
-                           m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                    select m).FirstOrDefault().MakeGenericMethod(typeof(int));
-
-                Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
-                _src.Provider.Execute(e);
-            });
-        }
-
-        [Test]
-        public void NullEnumerable()
-        {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                const IEnumerable<int> a = null;
-                a.AsQueryable();
-            });
-        }
-
-        [Test]
-        public void NonGenericEnumerable1()
-        {
-            Assert.Throws<ArgumentException>(() => new MyEnum().AsQueryable());
-        }
-
-        [Test]
-        public void NonGenericEnumerable2()
-        {
-            IEnumerable<int> nonGen = new[] { 1, 2, 3 };
-            Assert.IsTrue(nonGen.AsQueryable() != null);
+            var oddArray1 = _array.Where(n => (n % 2) == 1).ToArray();
+            var oddArray2 = _src.Where(n => (n % 2) == 1).ToArray();
+            Assert.AreEqual(oddArray1, oddArray2);
         }
 
         // ReSharper disable once UnusedTypeParameter
@@ -432,23 +506,6 @@ namespace MonoTests.System.Linq
             {
                 return GetEnumerator();
             }
-        }
-
-        [Test]
-        public void NonGenericAsQueryableInstantiateProperQueryable()
-        {
-            IEnumerable bar = new Bar<int, string>();
-            var queryable = bar.AsQueryable();
-
-            Assert.IsTrue(queryable is IQueryable<string>);
-        }
-    }
-
-    internal class MyEnum : IEnumerable
-    {
-        public IEnumerator GetEnumerator()
-        {
-            throw new NotImplementedException();
         }
     }
 
@@ -465,68 +522,11 @@ namespace MonoTests.System.Linq
         }
     }
 
-    public static class Ext
+    internal class MyEnum : IEnumerable
     {
-        public static string UserQueryableExt1<T>(this IQueryable<T> e, Expression<Func<int, int>> ex)
+        public IEnumerator GetEnumerator()
         {
-            Theraot.No.Op(e);
-            Theraot.No.Op(ex);
-            return "UserQueryableExt1";
-        }
-
-        public static string UserQueryableExt2<T>(this IQueryable<T> e, Expression<Func<int, int>> ex)
-        {
-            Theraot.No.Op(e);
-            Theraot.No.Op(ex);
-            return "UserQueryableExt2";
-        }
-
-        public static string UserQueryableExt3<T>(this IQueryable<T> e, Expression<Func<int, int>> ex, int dummy)
-        {
-            Theraot.No.Op(e);
-            Theraot.No.Op(ex);
-            Theraot.No.Op(dummy);
-            return "UserQueryableExt3";
-        }
-
-        public static string UserQueryableExt1<T>(this IEnumerable<T> e, Expression<Func<int, int>> ex)
-        {
-            Theraot.No.Op(e);
-            Theraot.No.Op(ex);
-            return "UserEnumerableExt1";
-        }
-
-        public static string UserQueryableExt2<T>(this IEnumerable<T> e, Func<int, int> ex)
-        {
-            Theraot.No.Op(e);
-            Theraot.No.Op(ex);
-            return "UserEnumerableExt2";
-        }
-
-        public static string NonGenericMethod(this IQueryable<int> iq)
-        {
-            Theraot.No.Op(iq);
-            return "QueryableNonGenericMethod";
-        }
-
-        public static string NonGenericMethod(this IEnumerable<int> iq)
-        {
-            Theraot.No.Op(iq);
-            return "EnumerableNonGenericMethod";
-        }
-
-        public static string InstantiatedGenericMethod<T>(this IQueryable<int> iq, T t)
-        {
-            Theraot.No.Op(iq);
-            Theraot.No.Op(t);
-            return "QueryableInstantiatedGenericMethod";
-        }
-
-        public static string InstantiatedGenericMethod(this IEnumerable<int> ie, int t)
-        {
-            Theraot.No.Op(ie);
-            Theraot.No.Op(t);
-            return "EnumerableInstantiatedGenericMethod";
+            throw new NotImplementedException();
         }
     }
 }

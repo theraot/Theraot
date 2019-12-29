@@ -1,4 +1,6 @@
-﻿using System;
+﻿// In theory I should remove this type, however I find it too good not to have
+
+using System;
 using System.Diagnostics;
 using System.Reflection;
 

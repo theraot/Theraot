@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerNonUserCode]
-    public class CustomComparer<T> : Comparer<T>
+    public sealed class CustomComparer<T> : Comparer<T>
     {
         private readonly Func<T, T, int> _comparison;
 

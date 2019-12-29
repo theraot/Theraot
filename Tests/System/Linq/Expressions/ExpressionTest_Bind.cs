@@ -34,15 +34,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestBind
     {
-        private struct Slot
-        {
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public int Integer { get; set; }
-
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public short Short { get; set; }
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -81,7 +72,7 @@ namespace MonoTests.System.Linq.Expressions
             );
             var compiled = Expression.Lambda<Func<int, short, Slot>>(memberInitExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(new Slot {Integer = Left, Short = Right}, compiled(Left, Right));
+            Assert.AreEqual(new Slot { Integer = Left, Short = Right }, compiled(Left, Right));
         }
 
         [Test]
@@ -184,6 +175,15 @@ namespace MonoTests.System.Linq.Expressions
             var expression = Expression.Bind(typeof(MemberClass).GetProperty(nameof(MemberClass.StaticProperty)), Expression.Constant(Value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#09");
             Assert.AreEqual($"{nameof(MemberClass.StaticProperty)} = {Value}", expression.ToString(), "Bind#10");
+        }
+
+        private struct Slot
+        {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            public int Integer { get; set; }
+
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            public short Short { get; set; }
         }
     }
 }

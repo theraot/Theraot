@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// In theory I should remove this type, however I find it too good not to have
+
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;

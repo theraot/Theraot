@@ -38,21 +38,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestCoalesce
     {
-        private struct Slot
-        {
-            private readonly int _value;
-
-            public Slot(int v)
-            {
-                _value = v;
-            }
-
-            public static implicit operator int(Slot s)
-            {
-                return s._value;
-            }
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -155,7 +140,7 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.Constant(42),
                     Expression.Lambda<Func<string, int>>
                     (
-                        Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s
+                        Expression.Call(typeof(int).GetMethod("Parse", new[] { typeof(string) }), s), s
                     )
                 ), s
             ).Compile();
@@ -179,7 +164,7 @@ namespace MonoTests.System.Linq.Expressions
                         42.ToConstant(),
                         Expression.Lambda<Action<string>>
                         (
-                            Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s
+                            Expression.Call(typeof(int).GetMethod("Parse", new[] { typeof(string) }), s), s
                         )
                     );
                 }
@@ -260,7 +245,7 @@ namespace MonoTests.System.Linq.Expressions
                         42.ToConstant(),
                         Expression.Lambda<Func<string, string, int>>
                         (
-                            Expression.Call(typeof(int).GetMethod("Parse", new[] {typeof(string)}), s), s, p
+                            Expression.Call(typeof(int).GetMethod("Parse", new[] { typeof(string) }), s), s, p
                         )
                     );
                 }
@@ -310,6 +295,21 @@ namespace MonoTests.System.Linq.Expressions
                     );
                 }
             );
+        }
+
+        private struct Slot
+        {
+            private readonly int _value;
+
+            public Slot(int v)
+            {
+                _value = v;
+            }
+
+            public static implicit operator int(Slot s)
+            {
+                return s._value;
+            }
         }
     }
 }

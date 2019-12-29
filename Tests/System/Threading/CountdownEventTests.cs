@@ -37,69 +37,6 @@ namespace MonoTests.System.Threading
     public class CountdownEventTests
     {
         [Test]
-        public void Constructor_Invalid()
-        {
-            try
-            {
-                using (new CountdownEvent(-2))
-                {
-                    Assert.Fail("#1");
-                }
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-        }
-
-        [Test]
-        public void Constructor_Zero()
-        {
-            using (var ce = new CountdownEvent(0))
-            {
-                Assert.IsTrue(ce.IsSet, "#1");
-                Assert.AreEqual(0, ce.InitialCount, "#2");
-                Assert.IsTrue(ce.Wait(0), "#3");
-            }
-        }
-
-        [Test]
-        public void Constructor_Max()
-        {
-            using (new CountdownEvent(int.MaxValue))
-            {
-                // Empty
-            }
-        }
-
-        [Test]
-        public void AddCount_Invalid()
-        {
-            using (var ev = new CountdownEvent(1))
-            {
-                try
-                {
-                    ev.AddCount(0);
-                    Assert.Fail("#1");
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Theraot.No.Op(ex);
-                }
-
-                try
-                {
-                    ev.AddCount(-1);
-                    Assert.Fail("#2");
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Theraot.No.Op(ex);
-                }
-            }
-        }
-
-        [Test]
         public void AddCount_HasBeenSet()
         {
             using (var ev = new CountdownEvent(0))
@@ -124,6 +61,33 @@ namespace MonoTests.System.Threading
                     Assert.Fail("#3");
                 }
                 catch (InvalidOperationException ex)
+                {
+                    Theraot.No.Op(ex);
+                }
+            }
+        }
+
+        [Test]
+        public void AddCount_Invalid()
+        {
+            using (var ev = new CountdownEvent(1))
+            {
+                try
+                {
+                    ev.AddCount(0);
+                    Assert.Fail("#1");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Theraot.No.Op(ex);
+                }
+
+                try
+                {
+                    ev.AddCount(-1);
+                    Assert.Fail("#2");
+                }
+                catch (ArgumentOutOfRangeException ex)
                 {
                     Theraot.No.Op(ex);
                 }
@@ -157,14 +121,38 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void InitialTestCase()
+        public void Constructor_Invalid()
         {
-            using (var evt = new CountdownEvent(5))
+            try
             {
-                Assert.AreEqual(5, evt.InitialCount, "#1");
-                evt.AddCount();
-                evt.Signal(3);
-                Assert.AreEqual(5, evt.InitialCount, "#2");
+                using (new CountdownEvent(-2))
+                {
+                    Assert.Fail("#1");
+                }
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+        }
+
+        [Test]
+        public void Constructor_Max()
+        {
+            using (new CountdownEvent(int.MaxValue))
+            {
+                // Empty
+            }
+        }
+
+        [Test]
+        public void Constructor_Zero()
+        {
+            using (var ce = new CountdownEvent(0))
+            {
+                Assert.IsTrue(ce.IsSet, "#1");
+                Assert.AreEqual(0, ce.InitialCount, "#2");
+                Assert.IsTrue(ce.Wait(0), "#3");
             }
         }
 
@@ -268,6 +256,18 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        public void InitialTestCase()
+        {
+            using (var evt = new CountdownEvent(5))
+            {
+                Assert.AreEqual(5, evt.InitialCount, "#1");
+                evt.AddCount();
+                evt.Signal(3);
+                Assert.AreEqual(5, evt.InitialCount, "#2");
+            }
+        }
+
+        [Test]
         public void IsSetTestCase()
         {
             using (var evt = new CountdownEvent(5))
@@ -279,6 +279,21 @@ namespace MonoTests.System.Threading
 
                 evt.Reset();
                 Assert.IsFalse(evt.IsSet, "#3");
+            }
+        }
+
+        [Test]
+        public void Reset_FullInitialized()
+        {
+            using (var ev = new CountdownEvent(0))
+            {
+                Assert.IsTrue(ev.IsSet, "#1");
+                Assert.AreEqual(0, ev.CurrentCount, "#2");
+
+                ev.Reset(4);
+                Assert.IsFalse(ev.IsSet, "#3");
+                Assert.AreEqual(4, ev.CurrentCount, "#4");
+                Assert.IsFalse(ev.Wait(0), "#5");
             }
         }
 
@@ -300,21 +315,6 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Reset_FullInitialized()
-        {
-            using (var ev = new CountdownEvent(0))
-            {
-                Assert.IsTrue(ev.IsSet, "#1");
-                Assert.AreEqual(0, ev.CurrentCount, "#2");
-
-                ev.Reset(4);
-                Assert.IsFalse(ev.IsSet, "#3");
-                Assert.AreEqual(4, ev.CurrentCount, "#4");
-                Assert.IsFalse(ev.Wait(0), "#5");
-            }
-        }
-
-        [Test]
         public void Reset_Zero()
         {
             using (var ev = new CountdownEvent(1))
@@ -325,6 +325,45 @@ namespace MonoTests.System.Threading
                 Assert.IsTrue(ev.IsSet, "#2");
                 Assert.IsTrue(ev.Wait(0), "#3");
                 Assert.AreEqual(0, ev.CurrentCount, "#4");
+            }
+        }
+
+        [Test]
+        public void ResetTest()
+        {
+            using (var evt = new CountdownEvent(5))
+            {
+                Assert.AreEqual(5, evt.CurrentCount);
+                evt.Signal();
+                Assert.AreEqual(4, evt.CurrentCount);
+                evt.Reset();
+                Assert.AreEqual(5, evt.CurrentCount);
+                Assert.AreEqual(5, evt.InitialCount);
+                evt.Signal();
+                evt.Signal();
+                Assert.AreEqual(3, evt.CurrentCount);
+                Assert.AreEqual(5, evt.InitialCount);
+                evt.Reset(10);
+                Assert.AreEqual(10, evt.CurrentCount);
+                Assert.AreEqual(10, evt.InitialCount);
+            }
+        }
+
+        [Test]
+        [Category("RaceCondition")] // This test creates a race condition
+        public void Signal_Concurrent() // TODO: Review
+        {
+            for (var r = 0; r < 100; ++r)
+            {
+                using (var ce = new CountdownEvent(500))
+                {
+                    for (var i = 0; i < ce.InitialCount; ++i)
+                    {
+                        ThreadPool.QueueUserWorkItem(delegate { ce.Signal(); });
+                    }
+
+                    Assert.IsTrue(ce.Wait(1000), "#1");
+                }
             }
         }
 
@@ -384,31 +423,23 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        [Category("RaceCondition")] // This test creates a race condition
-        public void Signal_Concurrent() // TODO: Review
+        public void TryAddCount_HasBeenSet()
         {
-            for (var r = 0; r < 100; ++r)
+            using (var ev = new CountdownEvent(0))
             {
-                using (var ce = new CountdownEvent(500))
-                {
-                    for (var i = 0; i < ce.InitialCount; ++i)
-                    {
-                        ThreadPool.QueueUserWorkItem(delegate { ce.Signal(); });
-                    }
-
-                    Assert.IsTrue(ce.Wait(1000), "#1");
-                }
+                Assert.IsFalse(ev.TryAddCount(1), "#1");
             }
-        }
 
-        [Test]
-        public void TryAddCountTestCase()
-        {
-            using (var evt = new CountdownEvent(5))
+            using (var ev = new CountdownEvent(1))
             {
-                Assert.IsTrue(evt.TryAddCount(2), "#1");
-                evt.Signal(7);
-                Assert.IsFalse(evt.TryAddCount(), "#2");
+                ev.Signal();
+                Assert.IsFalse(ev.TryAddCount(1), "#2");
+            }
+
+            using (var ev = new CountdownEvent(2))
+            {
+                ev.Signal(2);
+                Assert.IsFalse(ev.TryAddCount(66), "#3");
             }
         }
 
@@ -440,23 +471,13 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void TryAddCount_HasBeenSet()
+        public void TryAddCountTestCase()
         {
-            using (var ev = new CountdownEvent(0))
+            using (var evt = new CountdownEvent(5))
             {
-                Assert.IsFalse(ev.TryAddCount(1), "#1");
-            }
-
-            using (var ev = new CountdownEvent(1))
-            {
-                ev.Signal();
-                Assert.IsFalse(ev.TryAddCount(1), "#2");
-            }
-
-            using (var ev = new CountdownEvent(2))
-            {
-                ev.Signal(2);
-                Assert.IsFalse(ev.TryAddCount(66), "#3");
+                Assert.IsTrue(evt.TryAddCount(2), "#1");
+                evt.Signal(7);
+                Assert.IsFalse(evt.TryAddCount(), "#2");
             }
         }
 
@@ -490,27 +511,6 @@ namespace MonoTests.System.Threading
 
             Assert.IsTrue(s, "#1");
             Assert.IsTrue(evt.IsSet, "#2");
-        }
-
-        [Test]
-        public void ResetTest()
-        {
-            using (var evt = new CountdownEvent(5))
-            {
-                Assert.AreEqual(5, evt.CurrentCount);
-                evt.Signal();
-                Assert.AreEqual(4, evt.CurrentCount);
-                evt.Reset();
-                Assert.AreEqual(5, evt.CurrentCount);
-                Assert.AreEqual(5, evt.InitialCount);
-                evt.Signal();
-                evt.Signal();
-                Assert.AreEqual(3, evt.CurrentCount);
-                Assert.AreEqual(5, evt.InitialCount);
-                evt.Reset(10);
-                Assert.AreEqual(10, evt.CurrentCount);
-                Assert.AreEqual(10, evt.InitialCount);
-            }
         }
     }
 }

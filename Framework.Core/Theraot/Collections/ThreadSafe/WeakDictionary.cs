@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
 {
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IHasComparer<TKey>, ICloneable
+    public sealed class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IHasComparer<TKey>, ICloneable
         where TKey : class
     {
         private readonly KeyCollection<TKey, TValue> _keyCollection;
@@ -86,7 +86,7 @@ namespace Theraot.Collections.ThreadSafe
         public ICollection<TKey> Keys => _keyCollection;
 
         public ICollection<TValue> Values => _valueCollection;
-        protected ThreadSafeDictionary<WeakNeedle<TKey>, TValue> Wrapped { get; }
+        private ThreadSafeDictionary<WeakNeedle<TKey>, TValue> Wrapped { get; }
 
         public TValue this[TKey key]
         {
@@ -565,9 +565,9 @@ namespace Theraot.Collections.ThreadSafe
             return Wrapped.Remove(Comparer.GetHashCode(item.Key), Check, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
         }
 
-        public int RemoveDeadItems()
+        public void RemoveDeadItems()
         {
-            return Wrapped.RemoveWhereKey(key => !key.IsAlive);
+            Wrapped.RemoveWhereKey(key => !key.IsAlive);
         }
 
         /// <summary>
@@ -989,11 +989,6 @@ namespace Theraot.Collections.ThreadSafe
 
             _reservoir.DonateNeedle(needle);
             return false;
-        }
-
-        protected bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            return ((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item);
         }
 
         private static bool PrivateTryGetValue(WeakNeedle<TKey> needle, out TKey foundKey)

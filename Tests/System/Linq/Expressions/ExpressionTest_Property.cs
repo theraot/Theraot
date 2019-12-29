@@ -33,23 +33,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestProperty
     {
-        public class Foo
-        {
-            public string Prop { get; set; }
-
-            public static string StatProp => "StaticFoo";
-        }
-
-        public struct Bar
-        {
-            public string Prop { get; set; }
-
-            public Bar(string slot)
-            {
-                Prop = slot;
-            }
-        }
-
         public static int StaticProperty => 42;
 
         [Test]
@@ -173,7 +156,7 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.Property(p, typeof(Foo).GetProperty("Prop")), p
             ).Compile();
 
-            Assert.AreEqual("foo", compiled(new Foo {Prop = "foo"}));
+            Assert.AreEqual("foo", compiled(new Foo { Prop = "foo" }));
         }
 
         [Test]
@@ -203,6 +186,22 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             Assert.AreEqual("StaticFoo", compiled());
+        }
+
+        public struct Bar
+        {
+            public Bar(string slot)
+            {
+                Prop = slot;
+            }
+
+            public string Prop { get; set; }
+        }
+
+        public class Foo
+        {
+            public static string StatProp => "StaticFoo";
+            public string Prop { get; set; }
         }
     }
 }

@@ -37,61 +37,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestAdd
     {
-        public static class S
-        {
-            public static int MyAdder(int a, int b)
-            {
-                No.Op(a);
-                No.Op(b);
-                return 1000;
-            }
-        }
-
-        private struct Slot
-        {
-            private readonly int _value;
-
-            public Slot(int value)
-            {
-                _value = value;
-            }
-
-            public static Slot operator +(Slot a, Slot b)
-            {
-                return new Slot(a._value + b._value);
-            }
-        }
-
-        private struct SlotToNullable
-        {
-            private readonly int _value;
-
-            public SlotToNullable(int value)
-            {
-                _value = value;
-            }
-
-            public static SlotToNullable? operator +(SlotToNullable a, SlotToNullable b)
-            {
-                return new SlotToNullable(a._value + b._value);
-            }
-        }
-
-        private struct SlotFromNullableToNullable
-        {
-            private readonly int _value;
-
-            public SlotFromNullableToNullable(int value)
-            {
-                _value = value;
-            }
-
-            public static SlotFromNullableToNullable? operator +(SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
-            {
-                return a.HasValue && b.HasValue ? (SlotFromNullableToNullable?)new SlotFromNullableToNullable(a.Value._value + b.Value._value) : null;
-            }
-        }
-
         [Test]
         public void AddDecimals()
         {
@@ -100,7 +45,7 @@ namespace MonoTests.System.Linq.Expressions
             const decimal ValueLeft = 1m;
             const decimal ValueRight = 1m;
             const decimal Result = ValueLeft + ValueRight;
-            var method = typeof(decimal).GetMethod("op_Addition", new[] {typeof(decimal), typeof(decimal)});
+            var method = typeof(decimal).GetMethod("op_Addition", new[] { typeof(decimal), typeof(decimal) });
 
             var parameterLeft = Expression.Parameter(typeof(decimal), NameLeft);
             var parameterRight = Expression.Parameter(typeof(decimal), NameRight);
@@ -141,7 +86,7 @@ namespace MonoTests.System.Linq.Expressions
             const decimal ValueRight = 1m;
             const decimal Result = ValueLeft + ValueRight;
             var type = typeof(decimal?);
-            var method = typeof(decimal).GetMethod("op_Addition", new[] {typeof(decimal), typeof(decimal)});
+            var method = typeof(decimal).GetMethod("op_Addition", new[] { typeof(decimal), typeof(decimal) });
 
             var parameterLeft = Expression.Parameter(type, NameLeft);
             var parameterRight = Expression.Parameter(type, NameRight);
@@ -546,6 +491,61 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.Parameter(typeof(SlotToNullable?), NameRight)
                 )
             );
+        }
+
+        private struct Slot
+        {
+            private readonly int _value;
+
+            public Slot(int value)
+            {
+                _value = value;
+            }
+
+            public static Slot operator +(Slot a, Slot b)
+            {
+                return new Slot(a._value + b._value);
+            }
+        }
+
+        private struct SlotFromNullableToNullable
+        {
+            private readonly int _value;
+
+            public SlotFromNullableToNullable(int value)
+            {
+                _value = value;
+            }
+
+            public static SlotFromNullableToNullable? operator +(SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
+            {
+                return a.HasValue && b.HasValue ? (SlotFromNullableToNullable?)new SlotFromNullableToNullable(a.Value._value + b.Value._value) : null;
+            }
+        }
+
+        private struct SlotToNullable
+        {
+            private readonly int _value;
+
+            public SlotToNullable(int value)
+            {
+                _value = value;
+            }
+
+            public static SlotToNullable? operator +(SlotToNullable a, SlotToNullable b)
+            {
+                return new SlotToNullable(a._value + b._value);
+            }
+        }
+
+        public static class S
+        {
+            public static int MyAdder(int a, int b)
+            {
+                No.Op(a);
+                No.Op(b);
+                return 1000;
+            }
         }
     }
 }

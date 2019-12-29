@@ -21,7 +21,7 @@ namespace Theraot.Collections.ThreadSafe
             _recycler = recycler;
         }
 
-        internal bool Donate(T? entry)
+        internal void Donate(T? entry)
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             if (entry != null && ReentryGuard.Enter(_reentryGuardId))
@@ -32,11 +32,11 @@ namespace Theraot.Collections.ThreadSafe
                     var recycler = _recycler;
                     if (entries == null || recycler == null)
                     {
-                        return false;
+                        return;
                     }
 
                     recycler.Invoke(entry);
-                    return entries.TryAdd(entry);
+                    entries.TryAdd(entry);
                 }
                 catch (ObjectDisposedException exception)
                 {
@@ -60,8 +60,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 disposable.Dispose();
             }
-
-            return false;
         }
 
         internal bool TryGet(out T result)

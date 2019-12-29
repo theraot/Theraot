@@ -37,73 +37,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestSubtractChecked
     {
-        //
-        // This method makes sure that compiling an AddChecked on two values
-        // throws an OverflowException, if it doesnt, it fails
-        //
-        private static void MustOverflow<T>(T v1, T v2)
-        {
-            var lambda = Expression.Lambda<Func<T>>
-            (
-                Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
-            );
-            var compiled = lambda.Compile();
-            T res;
-            try
-            {
-                res = compiled();
-            }
-            catch (OverflowException)
-            {
-                // OK
-                return;
-            }
-
-            throw new Exception
-            (
-                string.Format
-                (
-                    "SubtractChecked on {2} should have thrown an exception with values {0} {1}, result was: {3}",
-                    v1, v2, v1.GetType(), res
-                )
-            );
-        }
-
-        //
-        // This routine should execute the code, but not throw an
-        // overflow exception
-        //
-        private static void MustNotOverflow<T>(T v1, T v2)
-        {
-            var lambda = Expression.Lambda<Func<T>>
-            (
-                Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
-            );
-            var compiled = lambda.Compile();
-            compiled();
-        }
-
-        //
-        // SubtractChecked is not defined for small types (byte, sbyte)
-        //
-        private static void InvalidOperation<T>(T v1, T v2)
-        {
-            try
-            {
-                Expression.Lambda<Func<T>>
-                (
-                    Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
-                );
-            }
-            catch (InvalidOperationException)
-            {
-                // OK
-                return;
-            }
-
-            throw new Exception(string.Format("SubtractChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -228,6 +161,73 @@ namespace MonoTests.System.Linq.Expressions
             (
                 "(value(MonoTests.System.Linq.Expressions.OpStruct) - value(MonoTests.System.Linq.Expressions.OpStruct))",
                 expr.ToString(), "SubtractChecked#18"
+            );
+        }
+
+        //
+        // SubtractChecked is not defined for small types (byte, sbyte)
+        //
+        private static void InvalidOperation<T>(T v1, T v2)
+        {
+            try
+            {
+                Expression.Lambda<Func<T>>
+                (
+                    Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
+                );
+            }
+            catch (InvalidOperationException)
+            {
+                // OK
+                return;
+            }
+
+            throw new Exception(string.Format("SubtractChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
+        }
+
+        //
+        // This routine should execute the code, but not throw an
+        // overflow exception
+        //
+        private static void MustNotOverflow<T>(T v1, T v2)
+        {
+            var lambda = Expression.Lambda<Func<T>>
+            (
+                Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
+            );
+            var compiled = lambda.Compile();
+            compiled();
+        }
+
+        //
+        // This method makes sure that compiling an AddChecked on two values
+        // throws an OverflowException, if it doesnt, it fails
+        //
+        private static void MustOverflow<T>(T v1, T v2)
+        {
+            var lambda = Expression.Lambda<Func<T>>
+            (
+                Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2))
+            );
+            var compiled = lambda.Compile();
+            T res;
+            try
+            {
+                res = compiled();
+            }
+            catch (OverflowException)
+            {
+                // OK
+                return;
+            }
+
+            throw new Exception
+            (
+                string.Format
+                (
+                    "SubtractChecked on {2} should have thrown an exception with values {0} {1}, result was: {3}",
+                    v1, v2, v1.GetType(), res
+                )
             );
         }
     }

@@ -39,83 +39,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestEqual
     {
-        public struct D
-        {
-            // Empty
-        }
-
-        private struct Slot
-        {
-            public readonly int Value;
-
-            public Slot(int value)
-            {
-                Value = value;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is Slot))
-                {
-                    return false;
-                }
-
-                var other = (Slot)obj;
-                return other.Value == Value;
-            }
-
-            public override int GetHashCode()
-            {
-                return Value;
-            }
-
-            public static bool operator ==(Slot a, Slot b)
-            {
-                return a.Value == b.Value;
-            }
-
-            public static bool operator !=(Slot a, Slot b)
-            {
-                return a.Value != b.Value;
-            }
-        }
-
-        private struct SlotToNullable
-        {
-            public readonly int Value;
-
-            public SlotToNullable(int value)
-            {
-                Value = value;
-            }
-
-            public override int GetHashCode()
-            {
-                return Value;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is SlotToNullable))
-                {
-                    return false;
-                }
-
-                var other = (SlotToNullable)obj;
-                return other.Value == Value;
-            }
-
-            public static bool? operator ==(SlotToNullable a, SlotToNullable b)
-            {
-                return a.Value == b.Value;
-            }
-
-            public static bool? operator !=(SlotToNullable a, SlotToNullable b)
-            {
-                return a.Value != b.Value;
-            }
-        }
-
         public enum Foo
         {
             Bar,
@@ -240,64 +163,6 @@ namespace MonoTests.System.Linq.Expressions
                 }
             );
         }
-
-        /*struct SlotFromNullableToNullable {
-            public int Value;
-
-            public SlotFromNullableToNullable (int value)
-            {
-                this.Value = value;
-            }
-
-            public override bool Equals (object obj)
-            {
-                if (!(obj is SlotFromNullableToNullable))
-                    return false;
-
-                var other = (SlotFromNullableToNullable) obj;
-                return other.Value == this.Value;
-            }
-
-            public override int GetHashCode ()
-            {
-                return Value;
-            }
-
-            public static bool? operator == (SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
-            {
-                if (a.HasValue && b.HasValue)
-                    return (bool?) (a.Value.Value == b.Value.Value);
-                else
-                    return null;
-            }
-
-            public static bool? operator != (SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
-            {
-                return !(a == b);
-            }
-        }
-
-        [Test]
-        public void UserDefinedFromNullableToNullableEqual ()
-        {
-            var l = Expression.Parameter (typeof (SlotFromNullableToNullable?), "l");
-            var r = Expression.Parameter (typeof (SlotFromNullableToNullable?), "r");
-
-            var node = Expression.Equal (l, r);
-
-            Assert.IsFalse (node.IsLifted);
-            Assert.IsFalse (node.IsLiftedToNull);
-            Assert.AreEqual (typeof (bool?), node.Type);
-            Assert.IsNotNull (node.Method);
-
-            var eq = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?, bool?>> (node, l, r).Compile ();
-
-            Assert.AreEqual ((bool?) null, eq (null, null));
-            Assert.AreEqual ((bool?) null, eq (new SlotFromNullableToNullable (2), null));
-            Assert.AreEqual ((bool?) null, eq (null, new SlotFromNullableToNullable (2)));
-            Assert.AreEqual ((bool?) true, eq (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (2)));
-            Assert.AreEqual ((bool?) false, eq (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (-2)));
-        }*/
 
         [Test]
         public void NullableBoolEqualToBool()
@@ -512,5 +377,140 @@ namespace MonoTests.System.Linq.Expressions
                 }
             );
         }
+
+        public struct D
+        {
+            // Empty
+        }
+
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int value)
+            {
+                Value = value;
+            }
+
+            public static bool operator !=(Slot a, Slot b)
+            {
+                return a.Value != b.Value;
+            }
+
+            public static bool operator ==(Slot a, Slot b)
+            {
+                return a.Value == b.Value;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj is Slot))
+                {
+                    return false;
+                }
+
+                var other = (Slot)obj;
+                return other.Value == Value;
+            }
+
+            public override int GetHashCode()
+            {
+                return Value;
+            }
+        }
+
+        private struct SlotToNullable
+        {
+            public readonly int Value;
+
+            public SlotToNullable(int value)
+            {
+                Value = value;
+            }
+
+            public static bool? operator !=(SlotToNullable a, SlotToNullable b)
+            {
+                return a.Value != b.Value;
+            }
+
+            public static bool? operator ==(SlotToNullable a, SlotToNullable b)
+            {
+                return a.Value == b.Value;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj is SlotToNullable))
+                {
+                    return false;
+                }
+
+                var other = (SlotToNullable)obj;
+                return other.Value == Value;
+            }
+
+            public override int GetHashCode()
+            {
+                return Value;
+            }
+        }
+
+        /*struct SlotFromNullableToNullable {
+            public int Value;
+
+            public SlotFromNullableToNullable (int value)
+            {
+                this.Value = value;
+            }
+
+            public override bool Equals (object obj)
+            {
+                if (!(obj is SlotFromNullableToNullable))
+                    return false;
+
+                var other = (SlotFromNullableToNullable) obj;
+                return other.Value == this.Value;
+            }
+
+            public override int GetHashCode ()
+            {
+                return Value;
+            }
+
+            public static bool? operator == (SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
+            {
+                if (a.HasValue && b.HasValue)
+                    return (bool?) (a.Value.Value == b.Value.Value);
+                else
+                    return null;
+            }
+
+            public static bool? operator != (SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
+            {
+                return !(a == b);
+            }
+        }
+
+        [Test]
+        public void UserDefinedFromNullableToNullableEqual ()
+        {
+            var l = Expression.Parameter (typeof (SlotFromNullableToNullable?), "l");
+            var r = Expression.Parameter (typeof (SlotFromNullableToNullable?), "r");
+
+            var node = Expression.Equal (l, r);
+
+            Assert.IsFalse (node.IsLifted);
+            Assert.IsFalse (node.IsLiftedToNull);
+            Assert.AreEqual (typeof (bool?), node.Type);
+            Assert.IsNotNull (node.Method);
+
+            var eq = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?, bool?>> (node, l, r).Compile ();
+
+            Assert.AreEqual ((bool?) null, eq (null, null));
+            Assert.AreEqual ((bool?) null, eq (new SlotFromNullableToNullable (2), null));
+            Assert.AreEqual ((bool?) null, eq (null, new SlotFromNullableToNullable (2)));
+            Assert.AreEqual ((bool?) true, eq (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (2)));
+            Assert.AreEqual ((bool?) false, eq (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (-2)));
+        }*/
     }
 }

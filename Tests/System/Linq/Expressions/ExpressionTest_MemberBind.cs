@@ -40,37 +40,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestMemberBind
     {
-        public class Foo
-        {
-            public string Bar;
-            public string Baz;
-
-            public Gazonk Gaz;
-
-            public Foo()
-            {
-                Gazoo = new Gazonk();
-                Gaz = new Gazonk();
-            }
-
-            public Gazonk Gazoo { get; set; }
-
-            public string Gruik { get; set; }
-        }
-
-        public class Gazonk
-        {
-            public int Klang;
-            public string Tzap;
-
-            public string Couic { get; set; }
-
-            public string Bang()
-            {
-                return "";
-            }
-        }
-
         [Test]
         public void CompiledMemberBinding()
         {
@@ -176,6 +145,37 @@ namespace MonoTests.System.Linq.Expressions
         public void NullMethod()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.MemberBind(null));
+        }
+
+        public class Foo
+        {
+            public string Bar;
+            public string Baz;
+
+            public Gazonk Gaz;
+
+            public Foo()
+            {
+                Gazoo = new Gazonk();
+                Gaz = new Gazonk();
+            }
+
+            public Gazonk Gazoo { get; set; }
+
+            public string Gruik { get; set; }
+        }
+
+        public class Gazonk
+        {
+            public int Klang;
+            public string Tzap;
+
+            public string Couic { get; set; }
+
+            public string Bang()
+            {
+                return "";
+            }
         }
     }
 }

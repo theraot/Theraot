@@ -40,18 +40,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestNewArrayBounds
     {
-        private static Func<object> CreateNewArrayFactory<T>(params int[] bounds)
-        {
-            return Expression.Lambda<Func<object>>
-            (
-                Expression.NewArrayBounds
-                (
-                    typeof(T),
-                    (from bound in bounds select bound.ToConstant() as Expression).ToArray()
-                )
-            ).Compile();
-        }
-
         [Test]
         public void ArgBoundsContainsExpressionTypeNotInteger()
         {
@@ -125,6 +113,18 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(typeof(int[,]), ab.Type);
             Assert.AreEqual(2, ab.Expressions.Count);
             Assert.AreEqual("new System.Int32[,](1, 2)", ab.ToString());
+        }
+
+        private static Func<object> CreateNewArrayFactory<T>(params int[] bounds)
+        {
+            return Expression.Lambda<Func<object>>
+            (
+                Expression.NewArrayBounds
+                (
+                    typeof(T),
+                    (from bound in bounds select bound.ToConstant() as Expression).ToArray()
+                )
+            ).Compile();
         }
     }
 }

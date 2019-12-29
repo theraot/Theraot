@@ -19,6 +19,8 @@ namespace Theraot.Collections
     internal interface IClosable
     {
         bool IsClosed { get; }
+
+        void Close();
     }
 
     [DebuggerTypeProxy(typeof(ProgressorProxy))]
@@ -333,32 +335,6 @@ namespace Theraot.Collections
             }
         }
 
-        public IEnumerable<T> While(Predicate<T> condition)
-        {
-            if (condition == null)
-            {
-                throw new ArgumentNullException(nameof(condition));
-            }
-
-            return WhileExtracted();
-
-            IEnumerable<T> WhileExtracted()
-            {
-                while (true)
-                {
-                    var tryTake = Volatile.Read(ref _tryTake);
-                    if (tryTake != null && tryTake(out var item) && condition(item))
-                    {
-                        yield return item;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-
         private static Progressor<T> CreateFromIEnumerableExtracted(IEnumerator<T> enumerator)
         {
             var proxy = new ProxyObservable<T>();
@@ -393,7 +369,7 @@ namespace Theraot.Collections
         }
     }
 
-    internal class ProgressorProxy
+    internal sealed class ProgressorProxy
     {
         private readonly IClosable _node;
 

@@ -238,12 +238,12 @@ namespace System.Linq.Expressions.Compiler
 
             if (_labelBlock.Kind == LabelScopeKind.Block)
             {
-                _labelBlock.TryGetLabelInfo(node.Target, out label);
+                label = _labelBlock.GetLabelInfo(node.Target);
 
                 // We're in a block but didn't find our label, try switch
                 if (label == null && _labelBlock.Parent?.Kind == LabelScopeKind.Switch)
                 {
-                    _labelBlock.Parent.TryGetLabelInfo(node.Target, out label);
+                    label = _labelBlock.Parent.GetLabelInfo(node.Target);
                 }
 
                 // if we're in a switch or block, we should've found the label

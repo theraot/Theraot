@@ -111,11 +111,13 @@ namespace MonoTests.System.Threading.Tasks
             }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
             protected CustomException(SerializationInfo info, StreamingContext context)
                 : base(info, context)
             {
                 // Empty
             }
+
 #endif
         }
 
@@ -140,11 +142,13 @@ namespace MonoTests.System.Threading.Tasks
             }
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
             protected OtherException(SerializationInfo info, StreamingContext context)
                 : base(info, context)
             {
                 // Empty
             }
+
 #endif
         }
     }
@@ -152,6 +156,7 @@ namespace MonoTests.System.Threading.Tasks
     public partial class MinimalTaskTestsEx
     {
 #if LESSTHAN_NET40
+
         [Test]
         public void Run()
         {
@@ -167,6 +172,7 @@ namespace MonoTests.System.Threading.Tasks
             t.Wait();
             Assert.AreEqual(expectedScheduler, foundScheduler);
         }
+
 #endif
     }
 }

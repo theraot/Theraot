@@ -43,91 +43,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestAndAlso
     {
-        private struct Incomplete
-        {
-            public readonly int Value;
-
-            public Incomplete(int val)
-            {
-                Value = val;
-            }
-
-            public static Incomplete operator &(Incomplete a, Incomplete b)
-            {
-                return new Incomplete(a.Value & b.Value);
-            }
-        }
-
-        private struct Slot
-        {
-            public readonly int Value;
-
-            public Slot(int val)
-            {
-                Value = val;
-            }
-
-            public static Slot operator &(Slot a, Slot b)
-            {
-                return new Slot(a.Value & b.Value);
-            }
-
-            public static bool operator true(Slot a)
-            {
-                return a.Value != 0;
-            }
-
-            public static bool operator false(Slot a)
-            {
-                return a.Value == 0;
-            }
-
-            public override string ToString()
-            {
-                return Value.ToString();
-            }
-        }
-
-        private class A // Should not be static, inheritance is needed for testing
-        {
-            public static bool operator true(A x)
-            {
-                No.Op(x);
-                return true;
-            }
-
-            public static bool operator false(A x)
-            {
-                No.Op(x);
-                return false;
-            }
-        }
-
-        private class B : A
-        {
-            public static B operator &(B x, B y)
-            {
-                No.Op(x);
-                No.Op(y);
-                return new B();
-            }
-
-            // ReSharper disable once UnusedMember.Local
-            public static bool op_True<T>(B x)
-            {
-                No.Op(x);
-                No.Op(typeof(T));
-                return true;
-            }
-
-            // ReSharper disable once UnusedMember.Local
-            public static bool op_False(B x)
-            {
-                No.Op(x);
-                return false;
-            }
-        }
-
         [Test]
         public void AndAlsoBoolItem()
         {
@@ -522,6 +437,91 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(null, compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
+        }
+
+        private struct Incomplete
+        {
+            public readonly int Value;
+
+            public Incomplete(int val)
+            {
+                Value = val;
+            }
+
+            public static Incomplete operator &(Incomplete a, Incomplete b)
+            {
+                return new Incomplete(a.Value & b.Value);
+            }
+        }
+
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int val)
+            {
+                Value = val;
+            }
+
+            public static Slot operator &(Slot a, Slot b)
+            {
+                return new Slot(a.Value & b.Value);
+            }
+
+            public static bool operator false(Slot a)
+            {
+                return a.Value == 0;
+            }
+
+            public static bool operator true(Slot a)
+            {
+                return a.Value != 0;
+            }
+
+            public override string ToString()
+            {
+                return Value.ToString();
+            }
+        }
+
+        private class A // Should not be static, inheritance is needed for testing
+        {
+            public static bool operator false(A x)
+            {
+                No.Op(x);
+                return false;
+            }
+
+            public static bool operator true(A x)
+            {
+                No.Op(x);
+                return true;
+            }
+        }
+
+        private class B : A
+        {
+            // ReSharper disable once UnusedMember.Local
+            public static bool op_False(B x)
+            {
+                No.Op(x);
+                return false;
+            }
+
+            // ReSharper disable once UnusedMember.Local
+            public static bool op_True<T>(B x)
+            {
+                No.Op(x);
+                No.Op(typeof(T));
+                return true;
+            }
+
+            public static B operator &(B x, B y)
+            {
+                No.Op(x);
+                No.Op(y);
+                return new B();
+            }
         }
     }
 }

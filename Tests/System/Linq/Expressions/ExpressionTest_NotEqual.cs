@@ -39,11 +39,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestNotEqual
     {
-        public struct D
-        {
-            // Empty
-        }
-
         public enum Foo
         {
             Bar,
@@ -240,6 +235,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(method, expr.Method);
 
             Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) != value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
+        }
+
+        public struct D
+        {
+            // Empty
         }
     }
 }

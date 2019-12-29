@@ -44,76 +44,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestNegate
     {
-        private struct Slot
-        {
-            public readonly int Value;
-
-            public Slot(int value)
-            {
-                Value = value;
-            }
-
-            public static Slot operator -(Slot s)
-            {
-                return new Slot(-s.Value);
-            }
-        }
-
-        private struct SlotToNullable
-        {
-            public readonly int Value;
-
-            public SlotToNullable(int value)
-            {
-                Value = value;
-            }
-
-            public static SlotToNullable? operator -(SlotToNullable s)
-            {
-                return new SlotToNullable(-s.Value);
-            }
-        }
-
-        private struct SlotFromNullable
-        {
-            public readonly int Value;
-
-            public SlotFromNullable(int value)
-            {
-                Value = value;
-            }
-
-            public static SlotFromNullable operator -(SlotFromNullable? s)
-            {
-                if (s.HasValue)
-                {
-                    return new SlotFromNullable(-s.Value.Value);
-                }
-
-                return new SlotFromNullable(-1);
-            }
-        }
-
-        private struct SlotFromNullableToNullable
-        {
-            public readonly int Value;
-
-            public SlotFromNullableToNullable(int value)
-            {
-                Value = value;
-            }
-
-            public static SlotFromNullableToNullable? operator -(SlotFromNullableToNullable? s)
-            {
-                if (s.HasValue)
-                {
-                    return new SlotFromNullableToNullable(-s.Value.Value);
-                }
-
-                return null;
-            }
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -172,7 +102,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var d = Expression.Parameter(typeof(decimal), "l");
 
-            var method = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
+            var method = typeof(decimal).GetMethod("op_UnaryNegation", new[] { typeof(decimal) });
 
             var node = Expression.Negate(d);
             Assert.IsFalse(node.IsLifted);
@@ -190,7 +120,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var d = Expression.Parameter(typeof(decimal?), "l");
 
-            var method = typeof(decimal).GetMethod("op_UnaryNegation", new[] {typeof(decimal)});
+            var method = typeof(decimal).GetMethod("op_UnaryNegation", new[] { typeof(decimal) });
 
             var node = Expression.Negate(d);
             Assert.IsTrue(node.IsLifted);
@@ -318,6 +248,76 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual((SlotToNullable?)new SlotToNullable(42), compiled(new SlotToNullable(-42)));
             Assert.AreEqual((SlotToNullable?)new SlotToNullable(-2), compiled(new SlotToNullable(2)));
+        }
+
+        private struct Slot
+        {
+            public readonly int Value;
+
+            public Slot(int value)
+            {
+                Value = value;
+            }
+
+            public static Slot operator -(Slot s)
+            {
+                return new Slot(-s.Value);
+            }
+        }
+
+        private struct SlotFromNullable
+        {
+            public readonly int Value;
+
+            public SlotFromNullable(int value)
+            {
+                Value = value;
+            }
+
+            public static SlotFromNullable operator -(SlotFromNullable? s)
+            {
+                if (s.HasValue)
+                {
+                    return new SlotFromNullable(-s.Value.Value);
+                }
+
+                return new SlotFromNullable(-1);
+            }
+        }
+
+        private struct SlotFromNullableToNullable
+        {
+            public readonly int Value;
+
+            public SlotFromNullableToNullable(int value)
+            {
+                Value = value;
+            }
+
+            public static SlotFromNullableToNullable? operator -(SlotFromNullableToNullable? s)
+            {
+                if (s.HasValue)
+                {
+                    return new SlotFromNullableToNullable(-s.Value.Value);
+                }
+
+                return null;
+            }
+        }
+
+        private struct SlotToNullable
+        {
+            public readonly int Value;
+
+            public SlotToNullable(int value)
+            {
+                Value = value;
+            }
+
+            public static SlotToNullable? operator -(SlotToNullable s)
+            {
+                return new SlotToNullable(-s.Value);
+            }
         }
     }
 }

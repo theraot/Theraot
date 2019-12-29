@@ -93,9 +93,10 @@ namespace Theraot.Collections.Specialized
                     Advance,
                     _cancellationTokenSource.Token
                 );
-                var items = ProgressiveCollection<TElement>.Create<ThreadSafeCollection<TElement>>
+                var items = ProgressiveCollection<TElement>.Create
                 (
                     progressor,
+                    new ThreadSafeCollection<TElement>(),
                     EqualityComparer<TElement>.Default
                 );
                 var result = new Grouping<TKey, TElement>(key, items);

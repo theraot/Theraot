@@ -42,32 +42,6 @@ namespace MonoTests.System.Linq.Expressions
             Apr
         }
 
-        private static Func<T[], int, T> CreateArrayAccess<T>()
-        {
-            const string NameArray = "a";
-            const string NameIndex = "b";
-
-            var parameterArray = Expression.Parameter(typeof(T[]), NameArray);
-            var parameterIndex = Expression.Parameter(typeof(int), NameIndex);
-
-            return Expression.Lambda<Func<T[], int, T>>(Expression.ArrayIndex(parameterArray, parameterIndex), parameterArray, parameterIndex).Compile();
-        }
-
-        private struct Bar
-        {
-            public readonly int Value;
-
-            public Bar(int value)
-            {
-                Value = value;
-            }
-        }
-
-        private class Foo
-        {
-            // Empty
-        }
-
         [Test]
         public void Arg1NotArray()
         {
@@ -120,7 +94,7 @@ namespace MonoTests.System.Linq.Expressions
             const int IndexA = 1;
             const int IndexB = 1;
 
-            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
 
             AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), indexes));
         }
@@ -142,7 +116,7 @@ namespace MonoTests.System.Linq.Expressions
             const int IndexA = 1;
             const long IndexB = 1L;
 
-            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
 
             AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[SizeA, SizeB]), indexes));
         }
@@ -150,7 +124,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileClassArrayAccess()
         {
-            var array = new[] {new Foo(), new Foo(), new Foo(), new Foo()};
+            var array = new[] { new Foo(), new Foo(), new Foo(), new Foo() };
             var compiled = CreateArrayAccess<Foo>();
 
             Assert.AreEqual(array[0], compiled(array, 0));
@@ -162,7 +136,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileEnumArrayAccess()
         {
-            var array = new[] {Months.Jan, Months.Feb, Months.Mar, Months.Apr};
+            var array = new[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr };
             var compiled = CreateArrayAccess<Months>();
 
             Assert.AreEqual(array[0], compiled(array, 0));
@@ -174,7 +148,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileIntArrayAccess()
         {
-            var array = new[] {1, 2, 3, 4};
+            var array = new[] { 1, 2, 3, 4 };
             var compiled = CreateArrayAccess<int>();
 
             Assert.AreEqual(array[0], compiled(array, 0));
@@ -186,7 +160,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileShortArrayAccess()
         {
-            var array = new short[] {1, 2, 3, 4};
+            var array = new short[] { 1, 2, 3, 4 };
             var compiled = CreateArrayAccess<short>();
 
             Assert.AreEqual(array[0], compiled(array, 0));
@@ -198,7 +172,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileStructArrayAccess()
         {
-            var array = new[] {new Bar(0), new Bar(1), new Bar(2), new Bar(3)};
+            var array = new[] { new Bar(0), new Bar(1), new Bar(2), new Bar(3) };
             var compiled = CreateArrayAccess<Bar>();
 
             Assert.AreEqual(array[0], compiled(array, 0));
@@ -218,7 +192,7 @@ namespace MonoTests.System.Linq.Expressions
             const int Index = 0;
             var type = typeof(int);
 
-            int[] array = {Value};
+            int[] array = { Value };
 
             var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(Index));
             Assert.AreEqual(ExpressionType.ArrayIndex, binaryExpression.NodeType, "ArrayIndex#01");
@@ -234,7 +208,7 @@ namespace MonoTests.System.Linq.Expressions
             const int Index = 0;
             var type = typeof(NoOpClass);
 
-            NoOpClass[] array = {value};
+            NoOpClass[] array = { value };
 
             var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(Index));
             Assert.AreEqual(ExpressionType.ArrayIndex, binaryExpression.NodeType, "ArrayIndex#05");
@@ -251,8 +225,8 @@ namespace MonoTests.System.Linq.Expressions
             const int IndexB = 0;
             var type = typeof(int);
 
-            int[,] array = {{Value}, {Value}};
-            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+            int[,] array = { { Value }, { Value } };
+            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
 
             var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), indexes);
             Assert.AreEqual(ExpressionType.Call, binaryExpression.NodeType, "ArrayIndex#09");
@@ -269,13 +243,39 @@ namespace MonoTests.System.Linq.Expressions
             const int IndexB = 0;
             var type = typeof(NoOpClass);
 
-            NoOpClass[,] array = {{ValueA}, {ValueB}};
-            Expression[] indexes = {Expression.Constant(IndexA), Expression.Constant(IndexB)};
+            NoOpClass[,] array = { { ValueA }, { ValueB } };
+            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
 
             var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), indexes);
             Assert.AreEqual(ExpressionType.Call, binaryExpression.NodeType, "ArrayIndex#13");
             Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#14");
             Assert.AreEqual($"value({type.FullName}[,]).Get(1, 0)", binaryExpression.ToString(), "ArrayIndex#16");
+        }
+
+        private static Func<T[], int, T> CreateArrayAccess<T>()
+        {
+            const string NameArray = "a";
+            const string NameIndex = "b";
+
+            var parameterArray = Expression.Parameter(typeof(T[]), NameArray);
+            var parameterIndex = Expression.Parameter(typeof(int), NameIndex);
+
+            return Expression.Lambda<Func<T[], int, T>>(Expression.ArrayIndex(parameterArray, parameterIndex), parameterArray, parameterIndex).Compile();
+        }
+
+        private struct Bar
+        {
+            public readonly int Value;
+
+            public Bar(int value)
+            {
+                Value = value;
+            }
+        }
+
+        private class Foo
+        {
+            // Empty
         }
     }
 }

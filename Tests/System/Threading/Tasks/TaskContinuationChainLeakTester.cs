@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,10 +7,9 @@ namespace MonoTests.System.Threading.Tasks
 {
     internal class TaskContinuationChainLeakTester
     {
-        private volatile bool _stop;
         private int _counter;
         private WeakReference<Task> _headTaskWeakRef;
-
+        private volatile bool _stop;
         public ManualResetEvent TasksPilledUp { get; } = new ManualResetEvent(false);
 
         public void Run()

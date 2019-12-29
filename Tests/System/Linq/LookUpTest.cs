@@ -41,37 +41,18 @@ namespace MonoTests.System.Linq
     [TestFixture]
     public class LookupTest
     {
-        private class Color
-        {
-            public string Name { get; set; }
-
-            public int Value { get; set; }
-
-            public Color(string name, int value)
-            {
-                Name = name;
-                Value = value;
-            }
-        }
-
-        private static IEnumerable<Color> GetColors()
-        {
-            yield return new Color("Red", 0xff0000);
-            yield return new Color("Green", 0x00ff00);
-            yield return new Color("Blue", 0x0000ff);
-        }
-
         [Test]
-        public void LookupIgnoreCase()
+        public void EmptyResult()
         {
             var lookup = GetColors().ToLookup(
                 c => c.Name,
                 c => c.Value,
                 StringComparer.OrdinalIgnoreCase);
 
-            Assert.AreEqual(0xff0000, lookup["red"].First());
-            Assert.AreEqual(0x00ff00, lookup["GrEeN"].First());
-            Assert.AreEqual(0x0000ff, lookup["Blue"].First());
+            var l = lookup["notexist"];
+            Assert.IsNotNull(l);
+            var values = l.AsArray();
+            Assert.AreEqual(values.Length, 0);
         }
 
         [Test]
@@ -95,6 +76,16 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
+        public void LookupEnumeratorWithNull()
+        {
+            var lookup = new[] { "hi", "bye", "42" }.ToLookup(c => (char.IsNumber(c[0]) ? null : c[0].ToString()));
+
+            Assert.IsTrue(lookup.Any(g => g.Key == "h"));
+            Assert.IsTrue(lookup.Any(g => g.Key == "b"));
+            Assert.IsTrue(lookup.Any(g => g.Key == null));
+        }
+
+        [Test]
         public void LookupEnumeratorWithoutNull()
         {
             var lookup = new[] { "hi", "bye" }.ToLookup(c => c[0].ToString());
@@ -105,13 +96,16 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void LookupEnumeratorWithNull()
+        public void LookupIgnoreCase()
         {
-            var lookup = new[] { "hi", "bye", "42" }.ToLookup(c => (char.IsNumber(c[0]) ? null : c[0].ToString()));
+            var lookup = GetColors().ToLookup(
+                c => c.Name,
+                c => c.Value,
+                StringComparer.OrdinalIgnoreCase);
 
-            Assert.IsTrue(lookup.Any(g => g.Key == "h"));
-            Assert.IsTrue(lookup.Any(g => g.Key == "b"));
-            Assert.IsTrue(lookup.Any(g => g.Key == null));
+            Assert.AreEqual(0xff0000, lookup["red"].First());
+            Assert.AreEqual(0x00ff00, lookup["GrEeN"].First());
+            Assert.AreEqual(0x0000ff, lookup["Blue"].First());
         }
 
         [Test]
@@ -123,18 +117,24 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(0, lookup[null].Count());
         }
 
-        [Test]
-        public void EmptyResult()
+        private static IEnumerable<Color> GetColors()
         {
-            var lookup = GetColors().ToLookup(
-                c => c.Name,
-                c => c.Value,
-                StringComparer.OrdinalIgnoreCase);
+            yield return new Color("Red", 0xff0000);
+            yield return new Color("Green", 0x00ff00);
+            yield return new Color("Blue", 0x0000ff);
+        }
 
-            var l = lookup["notexist"];
-            Assert.IsNotNull(l);
-            var values = l.AsArray();
-            Assert.AreEqual(values.Length, 0);
+        private class Color
+        {
+            public Color(string name, int value)
+            {
+                Name = name;
+                Value = value;
+            }
+
+            public string Name { get; set; }
+
+            public int Value { get; set; }
         }
     }
 }

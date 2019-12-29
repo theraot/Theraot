@@ -1,5 +1,7 @@
 ﻿// Needed for NET40
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Linq;
 namespace Theraot.Collections.Specialized
 {
     [DebuggerNonUserCode]
-    public class ProxyCollection<T> : ICollection<T>
+    public sealed class ProxyCollection<T> : ICollection<T>
     {
         private readonly Func<ICollection<T>> _wrapped;
 
@@ -105,7 +107,7 @@ namespace Theraot.Collections.Specialized
     }
 
     [DebuggerNonUserCode]
-    public class ProxyCollection<TCovered, TUncovered> : ICollection<TUncovered>
+    public sealed class ProxyCollection<TCovered, TUncovered> : ICollection<TUncovered>
     {
         private readonly Func<TUncovered, TCovered> _cover;
         private readonly Func<TCovered, TUncovered> _uncover;

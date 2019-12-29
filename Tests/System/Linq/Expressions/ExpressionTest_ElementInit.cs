@@ -45,27 +45,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestElementInit
     {
-        public class Foo
-        {
-            public void Add(string s)
-            {
-                No.Op(s);
-            }
-
-            public void Baz()
-            {
-                // Empty
-            }
-        }
-
-        public static class Bar
-        {
-            public static void Add()
-            {
-                // Empty
-            }
-        }
-
         [Test]
         public void AddMethodIsNotAnInstanceMethod()
         {
@@ -101,7 +80,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void MethodHasNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] {null}));
+            Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), new Expression[] { null }));
         }
 
         [Test]
@@ -114,6 +93,27 @@ namespace MonoTests.System.Linq.Expressions
         public void MethodNull()
         {
             Assert.Throws<ArgumentNullException>(() => Expression.ElementInit(null));
+        }
+
+        public static class Bar
+        {
+            public static void Add()
+            {
+                // Empty
+            }
+        }
+
+        public class Foo
+        {
+            public void Add(string s)
+            {
+                No.Op(s);
+            }
+
+            public void Baz()
+            {
+                // Empty
+            }
         }
     }
 }

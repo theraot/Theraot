@@ -40,31 +40,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestTypeAs
     {
-        private static Func<object, TType> CreateTypeAs<TType>()
-        {
-            var obj = Expression.Parameter(typeof(object), "obj");
-
-            return Expression.Lambda<Func<object, TType>>
-            (
-                Expression.TypeAs(obj, typeof(TType)), obj
-            ).Compile();
-        }
-
-        private struct Foo
-        {
-            // Empty
-        }
-
-        private class Bar
-        {
-            // Empty
-        }
-
-        private class Baz : Bar
-        {
-            // Empty
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -126,6 +101,31 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(ExpressionType.TypeAs, expr.NodeType, "TypeAs#07");
             Assert.AreEqual(typeof(OpClass), expr.Type, "TypeAs#08");
             Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) As OpClass)", expr.ToString(), "TypeAs#09");
+        }
+
+        private static Func<object, TType> CreateTypeAs<TType>()
+        {
+            var obj = Expression.Parameter(typeof(object), "obj");
+
+            return Expression.Lambda<Func<object, TType>>
+            (
+                Expression.TypeAs(obj, typeof(TType)), obj
+            ).Compile();
+        }
+
+        private struct Foo
+        {
+            // Empty
+        }
+
+        private class Bar
+        {
+            // Empty
+        }
+
+        private class Baz : Bar
+        {
+            // Empty
         }
     }
 }

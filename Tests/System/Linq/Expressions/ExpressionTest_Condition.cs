@@ -60,7 +60,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileConditional()
         {
-            var parameters = new[] {Expression.Parameter(typeof(int), "number")};
+            var parameters = new[] { Expression.Parameter(typeof(int), "number") };
 
             var lambda = Expression.Lambda<Func<int, string>>
             (

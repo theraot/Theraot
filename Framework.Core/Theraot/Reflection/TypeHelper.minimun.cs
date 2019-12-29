@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -80,7 +81,7 @@ namespace Theraot.Reflection
             return Cast(source, () => def);
         }
 
-        public static MethodInfo? FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
+        public static MethodInfo? FindConversionOperator(IEnumerable<MethodInfo> methods, Type typeFrom, Type typeTo, bool implicitOnly)
         {
             return
             (

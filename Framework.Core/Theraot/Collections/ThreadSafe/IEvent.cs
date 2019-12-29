@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET30 (Dynamic)
+
+using System;
 using System.Reflection;
 
 namespace Theraot.Collections.ThreadSafe

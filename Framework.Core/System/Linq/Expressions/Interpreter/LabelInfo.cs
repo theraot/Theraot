@@ -9,7 +9,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
@@ -343,15 +342,14 @@ namespace System.Linq.Expressions.Interpreter
             return _labels?.ContainsKey(target) == true;
         }
 
-        internal bool TryGetLabelInfo(LabelTarget target, [NotNullWhen(true)] out LabelInfo? info)
+        internal LabelInfo? GetLabelInfo(LabelTarget target)
         {
-            if (_labels != null)
+            if (_labels != null && _labels.TryGetValue(target, out var info))
             {
-                return _labels.TryGetValue(target, out info);
+                return info;
             }
 
-            info = null;
-            return false;
+            return null;
         }
     }
 }

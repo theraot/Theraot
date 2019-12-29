@@ -9,7 +9,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Collections.Specialized
 {
     // ReSharper disable once UnusedTypeParameter
-    public partial class ReadOnlyNullAwareDictionary<TKey, TValue> // TValue is used in another file, this is a partial class
+    public sealed partial class ReadOnlyNullAwareDictionary<TKey, TValue> // TValue is used in another file, this is a partial class
     {
         [Serializable]
         public sealed class KeyCollection : ICollection<ReadOnlyStructNeedle<TKey>>, ICollection

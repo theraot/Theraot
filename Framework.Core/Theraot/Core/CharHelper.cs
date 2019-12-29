@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET35 (BigInteger)
+
+using System;
 
 namespace Theraot.Core
 {

@@ -20,7 +20,6 @@ namespace System.Threading.Tasks.Tests
         [TestCase(API.For64, StartIndexBase.Int32, 2, WithParallelOption.WithDOP, ActionWithState.Stop, ActionWithLocal.HasFinally)]
         [TestCase(API.For64, StartIndexBase.Int32, 97, WithParallelOption.None, ActionWithState.None, ActionWithLocal.HasFinally)]
         [TestCase(API.For64, StartIndexBase.Int32, 97, WithParallelOption.WithDOP, ActionWithState.Stop, ActionWithLocal.None)]
-
         [TestCase(API.For, StartIndexBase.Zero, 0, WithParallelOption.None, ActionWithState.None, ActionWithLocal.None)]
         [TestCase(API.For, StartIndexBase.Zero, 10, WithParallelOption.None, ActionWithState.None, ActionWithLocal.None)]
         [TestCase(API.For, StartIndexBase.Zero, 10, WithParallelOption.None, ActionWithState.Stop, ActionWithLocal.HasFinally)]
@@ -31,7 +30,6 @@ namespace System.Threading.Tasks.Tests
         [TestCase(API.For, StartIndexBase.Zero, 2, WithParallelOption.WithDOP, ActionWithState.Stop, ActionWithLocal.HasFinally)]
         [TestCase(API.For, StartIndexBase.Zero, 97, WithParallelOption.None, ActionWithState.Stop, ActionWithLocal.None)]
         [TestCase(API.For, StartIndexBase.Zero, 97, WithParallelOption.WithDOP, ActionWithState.None, ActionWithLocal.HasFinally)]
-
         [TestCase(API.ForeachOnArray, StartIndexBase.Zero, 0, WithParallelOption.None, ActionWithState.None, ActionWithLocal.None)]
         [TestCase(API.ForeachOnArray, StartIndexBase.Zero, 10, WithParallelOption.None, ActionWithState.Stop, ActionWithLocal.None)]
         [TestCase(API.ForeachOnArray, StartIndexBase.Zero, 10, WithParallelOption.WithDOP, ActionWithState.None, ActionWithLocal.HasFinally)]
@@ -41,7 +39,6 @@ namespace System.Threading.Tasks.Tests
         [TestCase(API.ForeachOnArray, StartIndexBase.Zero, 2, WithParallelOption.WithDOP, ActionWithState.None, ActionWithLocal.HasFinally)]
         [TestCase(API.ForeachOnArray, StartIndexBase.Zero, 97, WithParallelOption.None, ActionWithState.Stop, ActionWithLocal.HasFinally)]
         [TestCase(API.ForeachOnArray, StartIndexBase.Zero, 97, WithParallelOption.WithDOP, ActionWithState.None, ActionWithLocal.None)]
-
         [TestCase(API.ForeachOnList, StartIndexBase.Zero, 0, WithParallelOption.None, ActionWithState.None, ActionWithLocal.None)]
         [TestCase(API.ForeachOnList, StartIndexBase.Zero, 10, WithParallelOption.None, ActionWithState.Stop, ActionWithLocal.HasFinally)]
         [TestCase(API.ForeachOnList, StartIndexBase.Zero, 10, WithParallelOption.WithDOP, ActionWithState.None, ActionWithLocal.None)]
@@ -51,7 +48,6 @@ namespace System.Threading.Tasks.Tests
         [TestCase(API.ForeachOnList, StartIndexBase.Zero, 2, WithParallelOption.WithDOP, ActionWithState.Stop, ActionWithLocal.None)]
         [TestCase(API.ForeachOnList, StartIndexBase.Zero, 97, WithParallelOption.None, ActionWithState.None, ActionWithLocal.None)]
         [TestCase(API.ForeachOnList, StartIndexBase.Zero, 97, WithParallelOption.WithDOP, ActionWithState.Stop, ActionWithLocal.HasFinally)]
-
         [TestCase(API.Foreach, StartIndexBase.Zero, 0, WithParallelOption.None, ActionWithState.None, ActionWithLocal.None)]
         [TestCase(API.Foreach, StartIndexBase.Zero, 10, WithParallelOption.None, ActionWithState.None, ActionWithLocal.HasFinally)]
         [TestCase(API.Foreach, StartIndexBase.Zero, 10, WithParallelOption.None, ActionWithState.Stop, ActionWithLocal.None)]

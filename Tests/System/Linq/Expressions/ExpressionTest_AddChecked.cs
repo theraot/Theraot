@@ -38,42 +38,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestAddChecked
     {
-        private static void InvalidOperation<T>(T v1, T v2)
-        {
-            // SubtractChecked is not defined for small types (byte, sbyte)
-            AssertEx.Throws<InvalidOperationException>
-            (
-                () => Expression.Lambda<Func<T>>
-                (
-                    Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
-                )
-            );
-        }
-
-        private static void MustNotOverflow<T>(T v1, T v2)
-        {
-            // This routine should execute the code, but not throw an
-            // overflow exception
-            var lambda = Expression.Lambda<Func<T>>
-            (
-                Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
-            );
-            var compiled = lambda.Compile();
-            compiled();
-        }
-
-        private static void MustOverflow<T>(T v1, T v2)
-        {
-            // This method makes sure that compiling an AddChecked on two values
-            // throws an OverflowException, if it does not, it fails
-            var lambda = Expression.Lambda<Func<T>>
-            (
-                Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
-            );
-            var compiled = lambda.Compile();
-            AssertEx.Throws<OverflowException, T>(compiled);
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -215,6 +179,42 @@ namespace MonoTests.System.Linq.Expressions
                 additionExpression.ToString(),
                 "AddChecked#18"
             );
+        }
+
+        private static void InvalidOperation<T>(T v1, T v2)
+        {
+            // SubtractChecked is not defined for small types (byte, sbyte)
+            AssertEx.Throws<InvalidOperationException>
+            (
+                () => Expression.Lambda<Func<T>>
+                (
+                    Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
+                )
+            );
+        }
+
+        private static void MustNotOverflow<T>(T v1, T v2)
+        {
+            // This routine should execute the code, but not throw an
+            // overflow exception
+            var lambda = Expression.Lambda<Func<T>>
+            (
+                Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
+            );
+            var compiled = lambda.Compile();
+            compiled();
+        }
+
+        private static void MustOverflow<T>(T v1, T v2)
+        {
+            // This method makes sure that compiling an AddChecked on two values
+            // throws an OverflowException, if it does not, it fails
+            var lambda = Expression.Lambda<Func<T>>
+            (
+                Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2))
+            );
+            var compiled = lambda.Compile();
+            AssertEx.Throws<OverflowException, T>(compiled);
         }
     }
 }
