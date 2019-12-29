@@ -90,32 +90,28 @@ namespace TestRunner.System.Threading
                     var tasks = Enumerable.Range(0, maxTasks)
                         .Select
                         (
-                            _ =>
-                            {
-                                return Task.Factory.StartNew
-                                (
-                                    async () =>
-                                    {
-                                        log.Add("a");
-                                        await semaphore[0].WaitAsync
-                                        (
-                                            source[0].Token
-                                        ).ConfigureAwait(false);
-                                        Interlocked.Add(ref padding, 100);
-                                        logCount.Add(-1);
-                                        log.Add("b");
-                                        Thread.Sleep(1000 + padding);
+                            _ => Task.Factory.StartNew
+                            (
+                                async () =>
+                                {
+                                    log.Add("a");
+                                    await semaphore[0].WaitAsync
+                                    (
+                                        source[0].Token
+                                    ).ConfigureAwait(false);
+                                    Interlocked.Add(ref padding, 100);
+                                    logCount.Add(-1);
+                                    log.Add("b");
+                                    Thread.Sleep(1000 + padding);
 
-                                        // Calling release should give increasing results per chunk
-                                        log.Add("c");
-                                        var count = semaphore[0].Release();
-                                        logCount.Add(count);
-                                        log.Add("d");
-                                    }
+                                    // Calling release should give increasing results per chunk
+                                    log.Add("c");
+                                    var count = semaphore[0].Release();
+                                    logCount.Add(count);
+                                    log.Add("d");
+                                }
 
-                                ).Unwrap();
-                            }
-
+                            ).Unwrap()
                         ).ToArray();
                     Thread.Sleep(TimeSpan.FromMilliseconds(500));
                     log.Add("x");

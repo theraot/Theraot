@@ -70,9 +70,9 @@ namespace TestRunner
                 else
                 {
                     dictionary = new SortedDictionary<Type, Delegate>(typeComparer)
-                                 {
-                                     { generatorType, @delegate }
-                                 };
+                    {
+                        { generatorType, @delegate }
+                    };
                     result.Add(returnType, dictionary);
                 }
             }
