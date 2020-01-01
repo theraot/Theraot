@@ -10,9 +10,8 @@ namespace Theraot.Threading
     {
         private static readonly Pool<Timer> _pool = new Pool<Timer>(64, time => time.Stop());
 
-        private readonly System.Threading.Timer _timer;
-
         private Action? _callback;
+        private System.Threading.Timer? _timer;
 
         private Timer(Action callback, TimeSpan dueTime, TimeSpan period)
         {
@@ -53,7 +52,7 @@ namespace Theraot.Threading
 
         void IDisposable.Dispose()
         {
-            _timer.Dispose();
+            Interlocked.Exchange(ref _timer, null)?.Dispose();
             _callback = null;
         }
 

@@ -37,6 +37,7 @@ namespace Theraot.Collections.ThreadSafe
 
                     recycler.Invoke(entry);
                     entries.TryAdd(entry);
+                    return;
                 }
                 catch (ObjectDisposedException exception)
                 {

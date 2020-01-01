@@ -259,7 +259,8 @@ namespace System.Threading
             // We first try to obtain the upgradeable right
             try
             {
-                while (!_upgradableEvent.IsSet)
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                while (!_upgradableEvent.IsSet || !taken)
                 {
                     taken = _upgradableTaken.TryRelaxedSet();
                     if (taken)
@@ -455,12 +456,7 @@ namespace System.Threading
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (!disposing)
+            if (_disposed || !disposing)
             {
                 return;
             }
