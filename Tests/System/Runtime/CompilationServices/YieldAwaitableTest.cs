@@ -1,5 +1,5 @@
 ﻿//
-// YieldAwaitebleTest.cs
+// YieldAwaitableTest.cs
 //
 // Authors:
 //	Marek Safar  <marek.safar@gmail.com>
@@ -67,27 +67,31 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public void OnCompleted_2() // TODO: Review
+        public void OnCompleted_2()
         {
             TaskScheduler scheduler = null;
             SynchronizationContext.SetSynchronizationContext(null);
+            var manualResetEvents = new ManualResetEvent[1];
 
-            using (var mre = new ManualResetEvent(false))
+            using (manualResetEvents[0] = new ManualResetEvent(false))
             {
-                _a.OnCompleted(() =>
-                {
-                    scheduler = TaskScheduler.Current;
-                    mre.Set();
-                });
+                _a.OnCompleted
+                (
+                    () =>
+                    {
+                        scheduler = TaskScheduler.Current;
+                        manualResetEvents[0].Set();
+                    }
+                );
 
-                Assert.IsTrue(mre.WaitOne(1000), "#1");
+                Assert.IsTrue(manualResetEvents[0].WaitOne(1000), "#1");
                 Assert.AreEqual(TaskScheduler.Current, scheduler, "#2");
             }
         }
 
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public void OnCompleted_3() // TODO: Review
+        public void OnCompleted_3()
         {
             var scheduler = new MyScheduler();
             TaskScheduler ranScheduler = null;
@@ -95,15 +99,19 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             var t = Task.Factory.StartNew(() =>
             {
-                using (var mre = new ManualResetEvent(false))
+                var manualResetEvents = new ManualResetEvent[1];
+                using (manualResetEvents[0] = new ManualResetEvent(false))
                 {
-                    _a.OnCompleted(() =>
-                    {
-                        ranScheduler = TaskScheduler.Current;
-                        mre.Set();
-                    });
+                    _a.OnCompleted
+                    (
+                        () =>
+                        {
+                            ranScheduler = TaskScheduler.Current;
+                            manualResetEvents[0].Set();
+                        }
+                    );
 
-                    mre.WaitOne(1000);
+                    manualResetEvents[0].WaitOne(1000);
                 }
             }, CancellationToken.None, TaskCreationOptions.None, scheduler);
 
@@ -113,20 +121,24 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-        public void OnCompleted_4() // TODO: Review
+        public void OnCompleted_4()
         {
             SynchronizationContext contextRan = null;
-            using (var mre = new ManualResetEvent(false))
+            var manualResetEvents = new ManualResetEvent[1];
+            using (manualResetEvents[0] = new ManualResetEvent(false))
             {
                 var context = new MyContext();
                 SynchronizationContext.SetSynchronizationContext(context);
-                _a.OnCompleted(() =>
-                {
-                    contextRan = SynchronizationContext.Current;
-                    mre.Set();
-                });
+                _a.OnCompleted
+                (
+                    () =>
+                    {
+                        contextRan = SynchronizationContext.Current;
+                        manualResetEvents[0].Set();
+                    }
+                );
 
-                Assert.IsTrue(mre.WaitOne(1000), "#1");
+                Assert.IsTrue(manualResetEvents[0].WaitOne(1000), "#1");
                 Assert.IsNull(contextRan, "#2");
             }
         }
@@ -145,18 +157,26 @@ namespace MonoTests.System.Runtime.CompilerServices
             SynchronizationContext.SetSynchronizationContext(_sc);
         }
 
-        private class MyContext : SynchronizationContext
+        private sealed class MyContext : SynchronizationContext
         {
             // For debug purposes
+            // ReSharper disable once MemberCanBePrivate.Local
+            // ReSharper disable once NotAccessedField.Local
             public int Completed;
 
             // For debug purposes
+            // ReSharper disable once MemberCanBePrivate.Local
+            // ReSharper disable once NotAccessedField.Local
             public int PostCounter;
 
             // For debug purposes
+            // ReSharper disable once MemberCanBePrivate.Local
+            // ReSharper disable once NotAccessedField.Local
             public int SendCounter;
 
             // For debug purposes
+            // ReSharper disable once MemberCanBePrivate.Local
+            // ReSharper disable once NotAccessedField.Local
             public int Started;
 
             public override void OperationCompleted()
@@ -184,7 +204,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        private class MyScheduler : TaskScheduler
+        private sealed class MyScheduler : TaskScheduler
         {
             protected override IEnumerable<Task> GetScheduledTasks()
             {

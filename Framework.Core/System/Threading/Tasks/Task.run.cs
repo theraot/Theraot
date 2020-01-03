@@ -54,7 +54,6 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
-            // TODO: Review performance
             if (function == null)
             {
                 throw new ArgumentNullException(nameof(function));

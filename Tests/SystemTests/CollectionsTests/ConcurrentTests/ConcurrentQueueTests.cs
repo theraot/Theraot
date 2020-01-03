@@ -97,7 +97,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     var queue = new ConcurrentQueue<object>();
                     queue.Enqueue(new object());
 
-                    const int Threads = 10;
+                    const int threads = 10;
                     var threadCounter = 0;
                     var success = true;
 
@@ -107,7 +107,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                         {
                             var threadId = Interlocked.Increment(ref threadCounter);
                             object temp;
-                            if (threadId < Threads)
+                            if (threadId < threads)
                             {
                                 while (queue.TryPeek(out temp))
                                 {
@@ -118,7 +118,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                             {
                                 queue.TryDequeue(out temp);
                             }
-                        }, Threads
+                        }, threads
                     );
 
                     Assert.IsTrue(success, "TryPeek returned unexpected null value.");

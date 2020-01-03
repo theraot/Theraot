@@ -21,7 +21,7 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
+//      Federico Di Gregorio <fog@initd.org>
 
 using System;
 using System.Linq.Expressions;
@@ -30,20 +30,13 @@ using NUnit.Framework;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTestConstant
+    public partial class ExpressionTestConstant
     {
-        private static T Check<T>(T val)
-        {
-            var lambda = Expression.Lambda<Func<T>>(Expression.Constant(val));
-            var compiled = lambda.Compile();
-            return compiled();
-        }
-
         private delegate void Foo();
 
         private enum Chose
         {
-            Moche
+            Option
         }
 
         private interface IBar
@@ -51,17 +44,8 @@ namespace MonoTests.System.Linq.Expressions
             // Empty
         }
 
-        private class Bar : IBar
-        {
-            // Empty
-        }
-
+        // ReSharper disable once UnusedTypeParameter
         private interface IBaz<T>
-        {
-            // Empty
-        }
-
-        private class Baz<T> : IBaz<T>
         {
             // Empty
         }
@@ -138,6 +122,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(new DateTime(1971, 10, 19), expr.Value, "Constant#26");
             Assert.AreEqual(typeof(DateTime), expr.Type, "Constant#27");
             // This test must be done under the assumption that both "ToString" happen on the same culture
+            // ReSharper disable once SpecifyACultureInStringConversionExplicitly
             Assert.AreEqual(new DateTime(1971, 10, 19).ToString(), expr.ToString(), "Constant#28");
         }
 
@@ -157,26 +142,15 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(date, compiled());
         }
 
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-
-        [Test]
-        public void EmitDbNullConstant()
-        {
-            var compiled = Expression.Lambda<Func<DBNull>>(Expression.Constant(DBNull.Value)).Compile();
-
-            Assert.AreEqual(DBNull.Value, compiled());
-        }
-#endif
-
         [Test]
         public void EmitNullableEnum()
         {
             var compiled = Expression.Lambda<Func<Chose?>>
             (
-                Expression.Constant((Chose?)Chose.Moche, typeof(Chose?))
+                Expression.Constant((Chose?)Chose.Option, typeof(Chose?))
             ).Compile();
 
-            Assert.AreEqual((Chose?)Chose.Moche, compiled());
+            Assert.AreEqual((Chose?)Chose.Option, compiled());
         }
 
         [Test]
@@ -286,12 +260,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // null value, type == valuetype is invalid
-                    Expression.Constant(null, typeof(int));
-                }
-            );
+                () => Expression.Constant(null, typeof(int)));
         }
 
         [Test]
@@ -299,12 +268,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // type mismatch: int value, type == double
-                    Expression.Constant(0, typeof(double));
-                }
-            );
+                () => Expression.Constant(0, typeof(double)));
         }
 
         [Test]
@@ -323,5 +287,37 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>(() => Expression.Constant(null, typeof(void)));
         }
+
+        private static T Check<T>(T val)
+        {
+            var lambda = Expression.Lambda<Func<T>>(Expression.Constant(val));
+            var compiled = lambda.Compile();
+            return compiled();
+        }
+
+        private sealed class Bar : IBar
+        {
+            // Empty
+        }
+
+        private sealed class Baz<T> : IBaz<T>
+        {
+            // Empty
+        }
+    }
+
+    public partial class ExpressionTestConstant
+    {
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+        [Test]
+        public void EmitDbNullConstant()
+        {
+            var compiled = Expression.Lambda<Func<DBNull>>(Expression.Constant(DBNull.Value)).Compile();
+
+            Assert.AreEqual(DBNull.Value, compiled());
+        }
+
+#endif
     }
 }

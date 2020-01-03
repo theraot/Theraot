@@ -34,7 +34,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -83,14 +84,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<InvalidOperationException>
             (
-                () =>
-                {
-                    Expression.GreaterThan
-                    (
-                        Foo.Bar.ToConstant(),
-                        Foo.Baz.ToConstant()
-                    );
-                }
+                () => Expression.GreaterThan
+                (
+                    Foo.Bar.ToConstant(),
+                    Foo.Baz.ToConstant()
+                )
             );
         }
 
@@ -245,21 +243,21 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public Slot(int val)
             {
-                Value = val;
+                _value = val;
             }
 
             public static bool operator <(Slot a, Slot b)
             {
-                return a.Value < b.Value;
+                return a._value < b._value;
             }
 
             public static bool operator >(Slot a, Slot b)
             {
-                return a.Value > b.Value;
+                return a._value > b._value;
             }
         }
     }

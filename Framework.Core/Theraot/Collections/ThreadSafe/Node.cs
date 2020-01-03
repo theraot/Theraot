@@ -11,7 +11,10 @@ namespace Theraot.Collections.ThreadSafe
     internal sealed class Node<T>
     {
         public Node<T>? Link;
+
+        // ReSharper disable once RedundantDefaultMemberInitializer
         public T Value = default!;
+
         private static readonly Pool<Node<T>> _pool = new Pool<Node<T>>(64, Recycle);
 
         private Node()

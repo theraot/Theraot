@@ -114,7 +114,7 @@ namespace MonoTests.System
             Assert.IsFalse(r.TryGetTarget(out _), "#1");
         }
 
-        private class Foo
+        private sealed class Foo
         {
             public static bool Failed;
             private readonly WeakReference _wr;

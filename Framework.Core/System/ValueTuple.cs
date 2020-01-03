@@ -14,6 +14,7 @@
 #pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
+// ReSharper disable UseDeconstructionOnParameter
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

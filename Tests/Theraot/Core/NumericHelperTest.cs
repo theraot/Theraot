@@ -16,6 +16,7 @@ namespace Tests.Theraot.Core
             {
                 Assert.AreEqual(output[index], NumericHelper.Log2(input[index]));
             }
+
             Assert.AreEqual(0, NumericHelper.Log2(1));
             Assert.Throws<ArgumentOutOfRangeException>(() => NumericHelper.Log2(0));
             Assert.Throws<ArgumentOutOfRangeException>(() => NumericHelper.Log2(-1));
@@ -77,6 +78,7 @@ namespace Tests.Theraot.Core
             {
                 CheckValue(NumericHelper.Int64AsDouble(x));
             }
+
             var inputDouble = new[]
             {
                 2318709486335437829,

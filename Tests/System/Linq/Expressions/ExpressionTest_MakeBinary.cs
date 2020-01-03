@@ -65,7 +65,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             if (bin == null)
             {
-                throw new ArgumentNullException("bin");
+                throw new ArgumentNullException(nameof(bin));
             }
 
             var compiled = Expression.Lambda<Func<T>>(bin(v1.ToConstant(), v2.ToConstant())).Compile();
@@ -279,6 +279,21 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(100.0 / 3, CodeGen<double>(Expression.Divide, 100, 3));
         }
 
+        private static void CTest<T>(ExpressionType node, bool r, T a, T b)
+        {
+            var pa = Expression.Parameter(typeof(T), "a");
+            var pb = Expression.Parameter(typeof(T), "b");
+
+            var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
+            var lambda = Expression.Lambda<Func<T, T, bool>>
+            (
+                p, pa, pb
+            );
+
+            var compiled = lambda.Compile();
+            Assert.AreEqual(r, compiled(a, b), $"{node} ({a},{b}) == {r}");
+        }
+
         private static void FailInt(ExpressionType nt)
         {
             Expression left = Expression.Constant(1);
@@ -316,7 +331,7 @@ namespace MonoTests.System.Linq.Expressions
                 }
             }
 
-            throw new Exception(string.Format("Method {0} not found", n));
+            throw new Exception($"Method {n} not found");
         }
 
         private static void PassInt(ExpressionType nt)
@@ -325,21 +340,6 @@ namespace MonoTests.System.Linq.Expressions
             Expression right = Expression.Constant(1);
 
             Expression.MakeBinary(nt, left, right);
-        }
-
-        private void CTest<T>(ExpressionType node, bool r, T a, T b)
-        {
-            var pa = Expression.Parameter(typeof(T), "a");
-            var pb = Expression.Parameter(typeof(T), "b");
-
-            var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
-            var lambda = Expression.Lambda<Func<T, T, bool>>
-            (
-                p, pa, pb
-            );
-
-            var compiled = lambda.Compile();
-            Assert.AreEqual(r, compiled(a, b), string.Format("{0} ({1},{2}) == {3}", node, a, b, r));
         }
     }
 }

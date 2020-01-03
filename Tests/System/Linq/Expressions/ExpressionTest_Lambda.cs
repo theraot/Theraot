@@ -29,7 +29,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -39,9 +40,9 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestLambda
     {
-        private delegate object DelegateObjectEmtpy();
+        private delegate object DelegateObjectEmpty();
 
-        private delegate object DelegateObjectINT(int a);
+        private delegate object DelegateObjectInt(int a);
 
         private delegate object DelegateObjectObject(object s);
 
@@ -76,7 +77,7 @@ namespace MonoTests.System.Linq.Expressions
         public void Assignability()
         {
             // allowed: string to object
-            Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant("string"));
+            Expression.Lambda(typeof(DelegateObjectEmpty), Expression.Constant("string"));
 
             // allowed delegate has string, delegate has base class (object)
             var p = Expression.Parameter(typeof(object), "ParObject");
@@ -101,12 +102,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // missing a parameter
-                    Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"));
-                }
-            );
+                () => Expression.Lambda(typeof(DelegateObjectInt), Expression.Constant("foo")));
         }
 
         [Test]
@@ -118,7 +114,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     // extra parameter
                     var p = Expression.Parameter(typeof(int), "AAA");
-                    Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant("foo"), p);
+                    Expression.Lambda(typeof(DelegateObjectEmpty), Expression.Constant("foo"), p);
                 }
             );
         }
@@ -132,7 +128,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     // invalid argument type
                     var p = Expression.Parameter(typeof(string), "AAA");
-                    Expression.Lambda(typeof(DelegateObjectINT), Expression.Constant("foo"), p);
+                    Expression.Lambda(typeof(DelegateObjectInt), Expression.Constant("foo"), p);
                 }
             );
         }
@@ -156,12 +152,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // float to object, invalid
-                    Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1.0));
-                }
-            );
+                () => Expression.Lambda(typeof(DelegateObjectEmpty), Expression.Constant(1.0)));
         }
 
         [Test]
@@ -169,12 +160,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // float to object, invalid
-                    Expression.Lambda(typeof(DelegateObjectEmtpy), Expression.Constant(1));
-                }
-            );
+                () => Expression.Lambda(typeof(DelegateObjectEmpty), Expression.Constant(1)));
         }
 
         [Test]
@@ -224,7 +210,7 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual(typeof(Func<int, int>), l.Type);
 
-            l = Expression.Lambda(Expression.Call(null, GetType().GetMethod("Foo")), Expression.Parameter(typeof(string), "foofoo"));
+            l = Expression.Lambda(Expression.Call(null, GetType().GetMethod("Foo")), Expression.Parameter(typeof(string), "fooFoo"));
 
             Assert.AreEqual(typeof(Action<string>), l.Type);
         }
@@ -278,12 +264,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // The first parameter must be a delegate type
-                    Expression.Lambda(typeof(string), Expression.Constant(1));
-                }
-            );
+                () => Expression.Lambda(typeof(string), Expression.Constant(1)));
         }
 
         [Test]

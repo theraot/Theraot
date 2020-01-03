@@ -9,6 +9,7 @@ namespace System.Threading.Tasks
 {
     public partial class Task<TResult> : Task
     {
+        // ReSharper disable once RedundantDefaultMemberInitializer
         internal TResult InternalResult = default!;
 
         static Task()

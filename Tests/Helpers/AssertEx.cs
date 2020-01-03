@@ -38,6 +38,7 @@ namespace Tests.Helpers
                 Assert.IsTrue(exception.GetType().IsSameOrSubclassOf(typeof(TException)));
                 return;
             }
+
             Assert.Fail();
         }
 

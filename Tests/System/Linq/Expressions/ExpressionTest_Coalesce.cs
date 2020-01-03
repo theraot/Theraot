@@ -21,14 +21,15 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
-//		Jb Evain <jbevain@novell.com>
+//      Federico Di Gregorio <fog@initd.org>
+//      Jb Evain <jbevain@novell.com>
 
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -176,15 +177,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // The artuments are not compatible
-                    Expression.Coalesce
-                    (
-                        Expression.Parameter(typeof(int?), "a"),
-                        Expression.Parameter(typeof(bool), "b")
-                    );
-                }
+                () => Expression.Coalesce
+                (
+                    Expression.Parameter(typeof(int?), "a"),
+                    Expression.Parameter(typeof(bool), "b")
+                )
             );
         }
 
@@ -221,12 +218,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<InvalidOperationException>
             (
-                () =>
-                {
-                    // This throws because they are both doubles, which are never
-                    Expression.Coalesce(Expression.Constant(1.0), Expression.Constant(2.0));
-                }
-            );
+                () => Expression.Coalesce(Expression.Constant(1.0), Expression.Constant(2.0)));
         }
 
         [Test]

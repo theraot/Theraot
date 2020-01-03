@@ -35,7 +35,8 @@ using System.Linq.Expressions;
 using NUnit.Framework;
 using Theraot;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -66,13 +67,13 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void MethodArgumentCountDoesnMatchParameterLength()
+        public void MethodArgumentCountDoesNotMatchParameterLength()
         {
             Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add")));
         }
 
         [Test]
-        public void MethodArgumentDoesntMatchParameterType()
+        public void MethodArgumentDoesNotMatchParameterType()
         {
             Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Add"), Expression.Constant(1)));
         }
@@ -84,7 +85,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void MethodNameDoesntMatchAdd()
+        public void MethodNameDoesNotMatchAdd()
         {
             Assert.Throws<ArgumentException>(() => Expression.ElementInit(typeof(Foo).GetMethod("Baz")));
         }

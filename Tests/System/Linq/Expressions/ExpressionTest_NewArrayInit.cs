@@ -134,15 +134,13 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Bar
         {
-            public int Value;
-
             public Bar(int b)
             {
-                Value = b;
+                _ = b;
             }
         }
 
-        private class Foo
+        private sealed class Foo
         {
             // Empty
         }

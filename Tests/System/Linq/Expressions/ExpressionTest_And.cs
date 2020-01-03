@@ -21,15 +21,16 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
-//		Jb Evain <jbevain@novell.com>
+//      Federico Di Gregorio <fog@initd.org>
+//      Jb Evain <jbevain@novell.com>
 
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 using Tests.Helpers;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -42,17 +43,17 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndBoolItem()
         {
-            const string Name = "i";
-            const string NameLeft = nameof(Item<bool>.Left);
-            const string NameRight = nameof(Item<bool>.Right);
+            const string name = "i";
+            const string nameLeft = nameof(Item<bool>.Left);
+            const string nameRight = nameof(Item<bool>.Right);
 
-            var parameter = Expression.Parameter(typeof(Item<bool>), Name);
+            var parameter = Expression.Parameter(typeof(Item<bool>), name);
             var compiled = Expression.Lambda<Func<Item<bool>, bool>>
             (
                 Expression.And
                 (
-                    Expression.Property(parameter, NameLeft),
-                    Expression.Property(parameter, NameRight)
+                    Expression.Property(parameter, nameLeft),
+                    Expression.Property(parameter, nameRight)
                 ),
                 parameter
             ).Compile();
@@ -81,11 +82,11 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndBoolNullableTest()
         {
-            const string NameLeft = "a";
-            const string NameRight = "b";
+            const string nameLeft = "a";
+            const string nameRight = "b";
 
-            var parameterLeft = Expression.Parameter(typeof(bool?), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(bool?), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(bool?), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(bool?), nameRight);
             var lambda = Expression.Lambda<Func<bool?, bool?, bool?>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
             var binaryExpression = lambda.Body as BinaryExpression;
@@ -111,11 +112,11 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndBoolTest()
         {
-            const string NameLeft = "a";
-            const string NameRight = "b";
+            const string nameLeft = "a";
+            const string nameRight = "b";
 
-            var parameterLeft = Expression.Parameter(typeof(bool), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(bool), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(bool), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(bool), nameRight);
             var lambda = Expression.Lambda<Func<bool, bool, bool>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
             var binaryExpression = lambda.Body as BinaryExpression;
@@ -135,11 +136,11 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndIntNullableTest()
         {
-            const string NameLeft = "a";
-            const string NameRight = "b";
+            const string nameLeft = "a";
+            const string nameRight = "b";
 
-            var parameterLeft = Expression.Parameter(typeof(int?), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(int?), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(int?), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(int?), nameRight);
             var compiled = Expression.Lambda<Func<int?, int?, int?>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight).Compile();
 
             Assert.AreEqual((int?)1, compiled(1, 1), "a1");
@@ -157,11 +158,11 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndIntTest()
         {
-            const string NameLeft = "a";
-            const string NameRight = "b";
+            const string nameLeft = "a";
+            const string nameRight = "b";
 
-            var parameterLeft = Expression.Parameter(typeof(int), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(int), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(int), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(int), nameRight);
             var compiled = Expression.Lambda<Func<int, int, int>>(Expression.And(parameterLeft, parameterRight), parameterLeft, parameterRight).Compile();
 
             Assert.AreEqual(0, compiled(0, 0), "t1");
@@ -187,9 +188,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndNullableBoolItem()
         {
-            const string Name = "i";
+            const string name = "i";
 
-            var parameter = Expression.Parameter(typeof(Item<bool?>), Name);
+            var parameter = Expression.Parameter(typeof(Item<bool?>), name);
             var compiled = Expression.Lambda<Func<Item<bool?>, bool?>>
             (
                 Expression.And
@@ -224,63 +225,63 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.And(null, Expression.Constant(Value)));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.And(null, Expression.Constant(value)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.And(Expression.Constant(Value), null));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.And(Expression.Constant(value), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            const int ValueLeft = 1;
-            const bool ValueRight = true;
+            const int valueLeft = 1;
+            const bool valueRight = true;
 
-            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
         public void Boolean()
         {
-            const bool ValueLeft = true;
-            const bool ValueRight = false;
+            const bool valueLeft = true;
+            const bool valueRight = false;
 
-            var binaryExpression = Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            var binaryExpression = Expression.And(Expression.Constant(valueLeft), Expression.Constant(valueRight));
             Assert.AreEqual(ExpressionType.And, binaryExpression.NodeType, "And#05");
             Assert.AreEqual(typeof(bool), binaryExpression.Type, "And#06");
             Assert.IsNull(binaryExpression.Method, "And#07");
-            Assert.AreEqual($"({ValueLeft} And {ValueRight})", binaryExpression.ToString(), "And#08");
+            Assert.AreEqual($"({valueLeft} And {valueRight})", binaryExpression.ToString(), "And#08");
         }
 
         [Test]
         public void Double()
         {
-            const double ValueLeft = 1.0;
-            const double ValueRight = 2.0;
+            const double valueLeft = 1.0;
+            const double valueRight = 2.0;
 
-            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.And(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
         public void Integer()
         {
-            const int ValueLeft = 1;
-            const int ValueRight = 2;
+            const int valueLeft = 1;
+            const int valueRight = 2;
 
-            var binaryExpression = Expression.And(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            var binaryExpression = Expression.And(Expression.Constant(valueLeft), Expression.Constant(valueRight));
             Assert.AreEqual(ExpressionType.And, binaryExpression.NodeType, "And#01");
             Assert.AreEqual(typeof(int), binaryExpression.Type, "And#02");
             Assert.IsNull(binaryExpression.Method, "And#03");
-            Assert.AreEqual($"({ValueLeft} & {ValueRight})", binaryExpression.ToString(), "And#04");
+            Assert.AreEqual($"({valueLeft} & {valueRight})", binaryExpression.ToString(), "And#04");
         }
 
         [Test]

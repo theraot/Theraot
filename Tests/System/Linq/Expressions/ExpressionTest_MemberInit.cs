@@ -34,7 +34,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -81,13 +82,10 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    Expression.MemberInit
-                    (
-                        Expression.New(typeof(Foo)), Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
-                    );
-                }
+                () => Expression.MemberInit
+                (
+                    Expression.New(typeof(Foo)), Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Zap)), "zap".ToConstant())
+                )
             );
         }
 
@@ -96,14 +94,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentNullException>
             (
-                () =>
-                {
-                    Expression.MemberInit
-                    (
-                        Expression.New(typeof(Foo)),
-                        null
-                    );
-                }
+                () => Expression.MemberInit
+                (
+                    Expression.New(typeof(Foo)),
+                    null
+                )
             );
         }
 
@@ -121,7 +116,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Gazonk
         {
-            public string Tzap;
+            public string Zap;
         }
 
         public class Thing

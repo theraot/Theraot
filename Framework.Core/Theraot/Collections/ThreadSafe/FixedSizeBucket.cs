@@ -67,13 +67,15 @@ namespace Theraot.Collections.ThreadSafe
         ~FixedSizeBucket()
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (!GCMonitor.FinalizingForUnload)
+            if (GCMonitor.FinalizingForUnload)
             {
-                var entries = _entries;
-                if (entries != null)
-                {
-                    ArrayReservoir<object?>.DonateArray(entries);
-                }
+                return;
+            }
+
+            var entries = _entries;
+            if (entries != null)
+            {
+                ArrayReservoir<object?>.DonateArray(entries);
             }
         }
 
@@ -116,19 +118,21 @@ namespace Theraot.Collections.ThreadSafe
             {
                 foreach (var entry in _entries)
                 {
-                    if (entry != null)
+                    if (entry == null)
                     {
-                        if (entry == BucketHelper.Null)
-                        {
-                            array[arrayIndex] = default!;
-                        }
-                        else
-                        {
-                            array[arrayIndex] = (T)entry;
-                        }
-
-                        arrayIndex++;
+                        continue;
                     }
+
+                    if (entry == BucketHelper.Null)
+                    {
+                        array[arrayIndex] = default!;
+                    }
+                    else
+                    {
+                        array[arrayIndex] = (T)entry;
+                    }
+
+                    arrayIndex++;
                 }
             }
             catch (IndexOutOfRangeException exception)
@@ -168,16 +172,18 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var entry in _entries)
             {
-                if (entry != null)
+                if (entry == null)
                 {
-                    if (entry == BucketHelper.Null)
-                    {
-                        yield return default!;
-                    }
-                    else
-                    {
-                        yield return (T)entry;
-                    }
+                    continue;
+                }
+
+                if (entry == BucketHelper.Null)
+                {
+                    yield return default!;
+                }
+                else
+                {
+                    yield return (T)entry;
                 }
             }
         }
@@ -302,21 +308,25 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
-            if (found != null)
+            if (found == null)
             {
-                var comparisonItem = found == BucketHelper.Null ? default : (T)found;
-                if (check(comparisonItem))
-                {
-                    var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
-                    if (found == compare)
-                    {
-                        Interlocked.Decrement(ref _count);
-                        return true;
-                    }
-                }
+                return false;
             }
 
-            return false;
+            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
+            if (!check(comparisonItem))
+            {
+                return false;
+            }
+
+            var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
+            if (found != compare)
+            {
+                return false;
+            }
+
+            Interlocked.Decrement(ref _count);
+            return true;
         }
 
         /// <summary>
@@ -404,13 +414,15 @@ namespace Theraot.Collections.ThreadSafe
             {
                 foreach (var entry in _entries)
                 {
-                    if (entry != null)
+                    if (entry == null)
                     {
-                        var castValue = entry == BucketHelper.Null ? default : (T)entry;
-                        if (check(castValue))
-                        {
-                            yield return castValue;
-                        }
+                        continue;
+                    }
+
+                    var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                    if (check(castValue))
+                    {
+                        yield return castValue;
                     }
                 }
             }
@@ -430,15 +442,20 @@ namespace Theraot.Collections.ThreadSafe
                 var index = 0;
                 foreach (var entry in _entries)
                 {
-                    if (entry != null)
+                    if (entry == null)
                     {
-                        var castValue = entry == BucketHelper.Null ? default : (T)entry;
-                        if (check(castValue))
-                        {
-                            yield return new KeyValuePair<int, T>(index, castValue);
-                            index++;
-                        }
+                        continue;
                     }
+
+                    var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                    if (!check(castValue))
+                    {
+                        continue;
+                    }
+
+                    yield return new KeyValuePair<int, T>(index, castValue);
+
+                    index++;
                 }
             }
         }
@@ -489,13 +506,13 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             var found = Interlocked.CompareExchange(ref entries[index], (object?)item ?? BucketHelper.Null, null);
-            if (found == null)
+            if (found != null)
             {
-                Interlocked.Increment(ref _count);
-                return true;
+                return false;
             }
 
-            return false;
+            Interlocked.Increment(ref _count);
+            return true;
         }
 
         internal bool RemoveAtInternal(int index, out T previous)

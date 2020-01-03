@@ -1,6 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CA1822 // Marcar miembros como static
+#pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0091 // Use static method
 
 // Licensed to the .NET Foundation under one or more agreements.

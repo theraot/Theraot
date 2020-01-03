@@ -11,12 +11,15 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void StartCancelled()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                var cancellation = new CancellationToken(true);
-                var task = new Task(() => { }, cancellation);
-                task.Start();
-            });
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    var cancellation = new CancellationToken(true);
+                    var task = new Task(() => { }, cancellation);
+                    task.Start();
+                }
+            );
         }
     }
 }

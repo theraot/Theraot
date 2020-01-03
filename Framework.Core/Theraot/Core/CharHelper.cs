@@ -19,7 +19,7 @@ namespace Theraot.Core
         private static readonly char[] _newLine =
         {
             '\u000A' /*NewLine*/,
-            '\u000D' /*Carriage return*/,
+            '\u000D' /*Carriage return*/
         };
 
         public static char[] GetClassicWhitespace()

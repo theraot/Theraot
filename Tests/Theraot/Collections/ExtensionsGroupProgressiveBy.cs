@@ -21,8 +21,9 @@ namespace Tests.Theraot.Collections
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
+
             try
             {
                 action();
@@ -113,6 +114,7 @@ namespace Tests.Theraot.Collections
                 GC.KeepAlive(enumerator);
                 Assert.AreEqual(src.Total, 0);
             }
+
             Assert.AreEqual(src.Total, 0);
             using (var enumerator = a.GetEnumerator())
             {
@@ -120,6 +122,7 @@ namespace Tests.Theraot.Collections
                 GC.KeepAlive(enumerator);
                 Assert.AreEqual(src.Total, 0);
             }
+
             Assert.AreEqual(src.Total, 0);
         }
 
@@ -157,8 +160,10 @@ namespace Tests.Theraot.Collections
                         Assert.Fail();
                         break;
                 }
+
                 count++;
             }
+
             Assert.AreEqual(3, count);
         }
 
@@ -181,9 +186,11 @@ namespace Tests.Theraot.Collections
                     index++;
                     count++;
                 }
+
                 Assert.AreEqual(count, 5);
                 first = false;
             }
+
             Assert.AreEqual(index, 10);
         }
 
@@ -222,9 +229,11 @@ namespace Tests.Theraot.Collections
                     index++;
                     count++;
                 }
+
                 Assert.AreEqual(count, 5);
                 first = false;
             }
+
             Assert.AreEqual(index, 10);
         }
 
@@ -292,7 +301,7 @@ namespace Tests.Theraot.Collections
             {
                 for (var index = 0; index < _count; index++)
                 {
-                    Total = Total + 1;
+                    Total += 1;
                     yield return Total;
                 }
             }
@@ -303,7 +312,7 @@ namespace Tests.Theraot.Collections
             }
         }
 
-        private class Data
+        private sealed class Data
         {
             public readonly int Number;
             public readonly string String;

@@ -53,8 +53,8 @@ namespace MonoTests.System.Linq.Expressions
                         typeof(Foo).GetProperty("Gazoo"),
                         Expression.Bind
                         (
-                            typeof(Gazonk).GetField(nameof(Gazonk.Tzap)),
-                            "tzap".ToConstant()
+                            typeof(Gazonk).GetField(nameof(Gazonk.Zap)),
+                            "zap".ToConstant()
                         ),
                         Expression.Bind
                         (
@@ -68,7 +68,7 @@ namespace MonoTests.System.Linq.Expressions
             var foo = compiled();
 
             Assert.IsNotNull(foo);
-            Assert.AreEqual("tzap", foo.Gazoo.Tzap);
+            Assert.AreEqual("zap", foo.Gazoo.Zap);
             Assert.AreEqual(42, foo.Gazoo.Klang);
         }
 
@@ -78,11 +78,11 @@ namespace MonoTests.System.Linq.Expressions
             var mb = Expression.MemberBind
             (
                 typeof(Foo).GetField("Gaz"),
-                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
+                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Zap)), "zap".ToConstant())
             );
 
             Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
-            Assert.AreEqual($"Gaz = {{{nameof(Gazonk.Tzap)} = \"tzap\"}}", mb.ToString());
+            Assert.AreEqual($"Gaz = {{{nameof(Gazonk.Zap)} = \"zap\"}}", mb.ToString());
         }
 
         [Test]
@@ -91,11 +91,11 @@ namespace MonoTests.System.Linq.Expressions
             var mb = Expression.MemberBind
             (
                 typeof(Foo).GetProperty(nameof(Foo.Gazoo)),
-                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
+                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Zap)), "zap".ToConstant())
             );
 
             Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
-            Assert.AreEqual($"Gazoo = {{{nameof(Gazonk.Tzap)} = \"tzap\"}}", mb.ToString());
+            Assert.AreEqual($"Gazoo = {{{nameof(Gazonk.Zap)} = \"zap\"}}", mb.ToString());
         }
 
         [Test]
@@ -104,11 +104,11 @@ namespace MonoTests.System.Linq.Expressions
             var mb = Expression.MemberBind
             (
                 typeof(Foo).GetProperty(nameof(Foo.Gazoo)).GetSetMethod(true),
-                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Tzap)), "tzap".ToConstant())
+                Expression.Bind(typeof(Gazonk).GetField(nameof(Gazonk.Zap)), "zap".ToConstant())
             );
 
             Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
-            Assert.AreEqual($"Gazoo = {{{nameof(Gazonk.Tzap)} = \"tzap\"}}", mb.ToString());
+            Assert.AreEqual($"Gazoo = {{{nameof(Gazonk.Zap)} = \"zap\"}}", mb.ToString());
         }
 
         [Test]
@@ -168,7 +168,7 @@ namespace MonoTests.System.Linq.Expressions
         public class Gazonk
         {
             public int Klang;
-            public string Tzap;
+            public string Zap;
 
             public string Couic { get; set; }
 

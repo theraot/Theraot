@@ -83,7 +83,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception ex)
             {
-                var _ = ex;
+                _ = ex;
             }
 
             try
@@ -92,7 +92,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception ex)
             {
-                var _ = ex;
+                _ = ex;
             }
 
             try
@@ -112,18 +112,21 @@ namespace MonoTests.System.Runtime.ExceptionServices
         public void Throw()
         {
             Exception orig = null;
-            var t = TaskEx.Run(() =>
-            {
-                try
+            var t = TaskEx.Run
+            (
+                () =>
                 {
-                    throw new ApplicationException("aaa");
+                    try
+                    {
+                        throw new ApplicationException("aaa");
+                    }
+                    catch (Exception e)
+                    {
+                        orig = e;
+                        return ExceptionDispatchInfo.Capture(e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    orig = e;
-                    return ExceptionDispatchInfo.Capture(e);
-                }
-            });
+            );
 
             var ed = t.Result;
             var origStack = orig.StackTrace;

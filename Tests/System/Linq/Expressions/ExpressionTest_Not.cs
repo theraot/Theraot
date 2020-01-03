@@ -34,7 +34,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -170,16 +171,16 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public Slot(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static bool operator !(Slot s)
             {
-                return s.Value > 0;
+                return s._value > 0;
             }
         }
     }

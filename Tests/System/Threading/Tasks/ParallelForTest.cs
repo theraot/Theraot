@@ -12,27 +12,35 @@
 //
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
+
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace System.Threading.Tasks.Tests
 {
     public enum ActionWithLocal
     {
-        None,            // no ParallelLoopState<TLocal>
-        HasFinally,     // need ParallelLoopState<TLocal> and Action<TLocal> threadLocalFinally
+        // no ParallelLoopState<TLocal>
+        None,
+
+        // need ParallelLoopState<TLocal> and Action<TLocal> threadLocalFinally
+        HasFinally
     }
 
     public enum ActionWithState
     {
-        None,          // no ParallelLoopState
-        Stop,          // need ParallelLoopState and will do Stop
-        //Break,         // need ParallelLoopState and will do Break, which is covered in ..\ParallelStateTests
+        // no ParallelLoopState
+        None,
+
+        // need ParallelLoopState and will do Stop
+        Stop
     }
 
     // List of APIs being tested
-    public enum API
+    public enum Api
     {
         For,
         For64,
@@ -53,11 +61,20 @@ namespace System.Threading.Tasks.Tests
     [Flags]
     public enum PartitionerType
     {
-        IListBalancedOOB = 0, // Out of the box List Partitioner
-        ArrayBalancedOOB = 1, // Out of the box Array partitioner
-        IEnumerableOOB = 2,  // Out of the box Enumerable partitioner
-        RangePartitioner = 3,  // out of the box range partitioner
-        IEnumerable1Chunk = 4  // partitioner one chunk
+        // Out of the box List Partitioner
+        ListBalancedOob = 0,
+
+        // Out of the box Array partitioner
+        ArrayBalancedOob = 1,
+
+        // Out of the box Enumerable partitioner
+        EnumerableOob = 2,
+
+        // out of the box range partitioner
+        RangePartitioner = 3,
+
+        // partitioner one chunk
+        Enumerable1Chunk = 4
     }
 
     public enum StartIndexBase
@@ -65,13 +82,18 @@ namespace System.Threading.Tasks.Tests
         Zero = 0,
         Int16 = short.MaxValue,
         Int32 = int.MaxValue,
-        Int64 = -1,     // Enum can't take a Int64.MaxValue
+
+        // Enum can't take a Int64.MaxValue
+        Int64 = -1
     }
 
     public enum WithParallelOption
     {
-        None,            // no ParallelOptions
-        WithDOP,         // ParallelOptions created with DOP
+        // no ParallelOptions
+        None,
+
+        // ParallelOptions created with DOP
+        WithDop
     }
 
     public enum WorkloadPattern
@@ -79,33 +101,31 @@ namespace System.Threading.Tasks.Tests
         Similar,
         Increasing,
         Decreasing,
-        Random,
+        Random
     }
 
     public sealed class ParallelForTest
     {
-        private static readonly int s_zetaSeedOffset = 10000;
+        private const int _zetaSeedOffset = 10000;
         private readonly TestParameters _parameters;
 
         private readonly ThreadLocal<Random> _random = new ThreadLocal<Random>(() => new Random(unchecked((int)(DateTime.Now.Ticks))));
         private readonly double[] _results;
         private readonly List<int>[] _sequences;
-        private IList<int> _collection = null;  // the collection used in Foreach
+        private IList<int> _collection; // the collection used in Foreach
 
         // global place to store the workload result for verification
 
         private ParallelOptions _parallelOption;
 
-        private OrderablePartitioner<int> _partitioner = null;
+        private OrderablePartitioner<int> _partitioner;
 
         // offset to the zeta seed to ensure result converge to the expected
-        private OrderablePartitioner<Tuple<int, int>> _rangePartitioner = null;
+        private OrderablePartitioner<Tuple<int, int>> _rangePartitioner;
 
         // data structure used with ParallelLoopState<TLocal>
         // each row is the sequence of loop "index" finished in the same thread
         private int _threadCount;
-
-        // @TODO: remove if ConcurrentDictionary can be used
 
         // Random generator for WorkloadPattern == Random
         public ParallelForTest(TestParameters parameters)
@@ -114,11 +134,13 @@ namespace System.Threading.Tasks.Tests
 
             _results = new double[parameters.Count];
 
-            if (parameters.LocalOption != ActionWithLocal.None)
+            if (parameters.LocalOption == ActionWithLocal.None)
             {
-                _sequences = new List<int>[1024];
-                _threadCount = 0;
+                return;
             }
+
+            _sequences = new List<int>[1024];
+            _threadCount = 0;
         }
 
         public static double ZetaSequence(int n)
@@ -134,9 +156,9 @@ namespace System.Threading.Tasks.Tests
 
         internal void RealRun()
         {
-            if (_parameters.Api == API.For64)
+            if (_parameters.Api == Api.For64)
                 RunParallelFor64Test();
-            else if (_parameters.Api == API.For)
+            else if (_parameters.Api == Api.For)
                 RunParallelForTest();
             else
                 RunParallelForeachTest();
@@ -148,6 +170,11 @@ namespace System.Threading.Tasks.Tests
             // verify unique  index sequences if run WithLocal
             if (_parameters.LocalOption != ActionWithLocal.None)
                 VerifySequences();
+        }
+
+        private static List<int> ThreadLocalInit()
+        {
+            return new List<int>();
         }
 
         // consolidate all the indexes of the global sequences into one list
@@ -180,8 +207,12 @@ namespace System.Threading.Tasks.Tests
         {
             switch (_parameters.ParallelOption)
             {
-                case WithParallelOption.WithDOP:
-                    return new ParallelOptions() { TaskScheduler = TaskScheduler.Current, MaxDegreeOfParallelism = _parameters.Count };
+                case WithParallelOption.WithDop:
+                    return new ParallelOptions
+                    {
+                        TaskScheduler = TaskScheduler.Current,
+                        MaxDegreeOfParallelism = _parameters.Count
+                    };
 
                 default:
                     throw new ArgumentOutOfRangeException("Test error: Invalid option of " + _parameters.ParallelOption);
@@ -192,7 +223,7 @@ namespace System.Threading.Tasks.Tests
         {
             if (_results[i] == 0)
             {
-                int zetaIndex = s_zetaSeedOffset;
+                int zetaIndex = _zetaSeedOffset;
                 switch (_parameters.WorkloadPattern)
                 {
                     case WorkloadPattern.Similar:
@@ -200,15 +231,15 @@ namespace System.Threading.Tasks.Tests
                         break;
 
                     case WorkloadPattern.Increasing:
-                        zetaIndex += i * s_zetaSeedOffset;
+                        zetaIndex += i * _zetaSeedOffset;
                         break;
 
                     case WorkloadPattern.Decreasing:
-                        zetaIndex += (_parameters.Count - i) * s_zetaSeedOffset;
+                        zetaIndex += (_parameters.Count - i) * _zetaSeedOffset;
                         break;
 
                     case WorkloadPattern.Random:
-                        zetaIndex += _random.Value.Next(0, _parameters.Count) * s_zetaSeedOffset;
+                        zetaIndex += _random.Value.Next(0, _parameters.Count) * _zetaSeedOffset;
                         break;
                 }
 
@@ -255,10 +286,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForeachWithLocal()
         {
-            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-            //                                                             Func<TLocal> threadLocalInitlocalInit,
-            //                                                             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -274,10 +301,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForeachWithLocalAndIndex()
         {
-            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-            //                                                             Func<TLocal> threadLocalInitlocalInit,
-            //                                                             Func<TSource, ParallelLoopState, Int64, TLocal, TLocal> body,
-            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -293,7 +316,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForEachWithOptions()
         {
-            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,ParallelOptions parallelOptions, Action<TSource> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -309,7 +331,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForEachWithOptionsAndIndexAndState()
         {
-            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source, ParallelOptions parallelOptions,, Action<TSource, ParallelLoopState, Int64> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -325,11 +346,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForEachWithOptionsAndLocal()
         {
-            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-            //                                                             ParallelOptions parallelOptions,
-            //                                                             Func<TLocal> threadLocalInitlocalInit,
-            //                                                             Func<TSource, ParallelLoopState, TLocal, TLocal> body,
-            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -345,13 +361,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForEachWithOptionsAndLocalAndIndex()
         {
-            // <summary>
-            // public static ParallelLoopResult ForEach<TSource, TLocal>(IEnumerable<TSource> source,
-            //                                                             ParallelOptions parallelOptions,
-            //                                                             Func<TLocal> threadLocalInitlocalInit,
-            //                                                             Func<TSource, ParallelLoopState, Int64, TLocal, TLocal> body,
-            //                                                             Action<TLocal> threadLocalFinallylocalFinally)
-            // </summary>
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -367,7 +376,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForEachWithOptionsAndState()
         {
-            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source, ParallelOptions parallelOptions, Action<T, ParallelLoopState> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -383,7 +391,6 @@ namespace System.Threading.Tasks.Tests
 
         private void ParallelForEachWithState()
         {
-            // ParallelLoopResult ForEach<TSource>(IEnumerable<TSource> source,Action<T, ParallelLoopState> body)
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
@@ -457,9 +464,9 @@ namespace System.Threading.Tasks.Tests
             for (int i = 0; i < length; i++)
                 arrayCollection[i] = _parameters.StartIndex + i;
 
-            if (_parameters.Api == API.ForeachOnArray)
+            if (_parameters.Api == Api.ForeachOnArray)
                 _collection = arrayCollection;
-            else if (_parameters.Api == API.ForeachOnList)
+            else if (_parameters.Api == Api.ForeachOnList)
                 _collection = new List<int>(arrayCollection);
             else
                 _collection = arrayCollection;
@@ -484,7 +491,7 @@ namespace System.Threading.Tasks.Tests
                     else if (_parameters.StateOption == ActionWithState.Stop)
                     {
                         // call Parallel.Foreach with ParallelLoopState and ParallelOptions
-                        if (_parameters.Api == API.Foreach)
+                        if (_parameters.Api == Api.Foreach)
                             ParallelForEachWithOptionsAndState();
                         else // call indexed version for array / list overloads - to avoid calling too many combinations
                             ParallelForEachWithOptionsAndIndexAndState();
@@ -493,7 +500,7 @@ namespace System.Threading.Tasks.Tests
                 else if (_parameters.LocalOption == ActionWithLocal.HasFinally)
                 {
                     // call Parallel.Foreach and ParallelLoopState<TLocal>, plus threadLocalFinally, plus ParallelOptions
-                    if (_parameters.Api == API.Foreach)
+                    if (_parameters.Api == Api.Foreach)
                         ParallelForEachWithOptionsAndLocal();
                     else // call indexed version for array / list overloads - to avoid calling too many combinations
                         ParallelForEachWithOptionsAndLocalAndIndex();
@@ -511,7 +518,7 @@ namespace System.Threading.Tasks.Tests
                     else if (_parameters.StateOption == ActionWithState.Stop)
                     {
                         // call Parallel.Foreach with ParallelLoopState
-                        if (_parameters.Api == API.Foreach)
+                        if (_parameters.Api == Api.Foreach)
                             ParallelForEachWithState();
                         else // call indexed version for array / list overloads - to avoid calling too many combinations
                             ParallelForEachWithIndexAndState();
@@ -520,7 +527,7 @@ namespace System.Threading.Tasks.Tests
                 else if (_parameters.LocalOption == ActionWithLocal.HasFinally)
                 {
                     // call Parallel.Foreach and ParallelLoopState<TLocal>, plus threadLocalFinally
-                    if (_parameters.Api == API.Foreach)
+                    if (_parameters.Api == Api.Foreach)
                         ParallelForeachWithLocal();
                     else // call indexed version for array / list overloads - to avoid calling too many combinations
                         ParallelForeachWithLocalAndIndex();
@@ -584,11 +591,6 @@ namespace System.Threading.Tasks.Tests
             _sequences[index] = local;
         }
 
-        private List<int> ThreadLocalInit()
-        {
-            return new List<int>();
-        }
-
         /// <summary>
         /// Each Parallel.For loop stores the result of its computation in the 'result' array.
         /// This function checks if result[i] for each i from 0 to _parameters.Count is correct
@@ -601,16 +603,18 @@ namespace System.Threading.Tasks.Tests
             //Function point comparison cant be done by rounding off to nearest decimal points since
             //1.64 could be represented as 1.63999999 or as 1.6499999999. To perform floating point comparisons,
             //a range has to be defined and check to ensure that the result obtained is within the specified range
-            double minLimit = 1.63;
-            double maxLimit = 1.65;
+            const double minLimit = 1.63;
+            const double maxLimit = 1.65;
 
-            if (_results[i] < minLimit || _results[i] > maxLimit)
+            if (!(_results[i] < minLimit) && !(_results[i] > maxLimit))
             {
-                Assert.False(double.MinValue == _results[i], string.Format("results[{0}] has been revisited", i));
-
-                Assert.True(_parameters.StateOption == ActionWithState.Stop && 0 == _results[i],
-                    string.Format("Incorrect results[{0}]. Expected result to lie between {1} and {2} but got {3})", i, minLimit, maxLimit, _results[i]));
+                return;
             }
+
+            Assert.False(double.MinValue == _results[i], $"results[{i}] has been revisited");
+
+            Assert.True(_parameters.StateOption == ActionWithState.Stop && 0 == _results[i],
+                $"Incorrect results[{i}]. Expected result to lie between {minLimit} and {maxLimit} but got {_results[i]})");
         }
 
         /// <summary>
@@ -624,12 +628,11 @@ namespace System.Threading.Tasks.Tests
         /// <returns>true if consolidated list contains indices for all executed loops</returns>
         private void VerifySequences()
         {
-            List<int> duplicates;
-            List<int> processedIndexes = Consolidate(out duplicates);
+            List<int> processedIndexes = Consolidate(out var duplicates);
             Assert.IsEmpty(duplicates);
 
             // If result[i] != 0 then the body for that index was executed.
-            // We expect the threadlocal list to also contain the same index
+            // We expect the ThreadLocal list to also contain the same index
             for (int idx = 0, n = _parameters.Count; idx < n; idx++)
             {
                 Assert.AreEqual(processedIndexes.Contains(idx), _results[idx] != 0);
@@ -645,16 +648,8 @@ namespace System.Threading.Tasks.Tests
         // workload for Foreach overload that takes a range partitioner
         private void Work(Tuple<int, int> tuple)
         {
-            for (int i = tuple.Item1; i < tuple.Item2; i++)
-            {
-                Work(i);
-            }
-        }
-
-        // workload for Foreach overload that takes a range partitioner
-        private void Work(Tuple<long, long> tuple)
-        {
-            for (long i = tuple.Item1; i < tuple.Item2; i++)
+            var (item1, item2) = tuple;
+            for (int i = item1; i < item2; i++)
             {
                 Work(i);
             }
@@ -669,16 +664,19 @@ namespace System.Threading.Tasks.Tests
         // workload for Foreach overload that takes a range partitioner
         private List<int> WorkWithIndexAndLocal(Tuple<int, int> tuple, ParallelLoopState state, long index, List<int> threadLocalValue)
         {
-            for (int i = tuple.Item1; i < tuple.Item2; i++)
+            var (item1, item2) = tuple;
+            for (int i = item1; i < item2; i++)
             {
                 Work(i);
                 threadLocalValue.Add((int)index);
 
-                if (_parameters.StateOption == ActionWithState.Stop)
+                if (_parameters.StateOption != ActionWithState.Stop)
                 {
-                    if (index > (_parameters.StartIndex + (_parameters.Count / 2)))
-                        state.Stop();
+                    continue;
                 }
+
+                if (index > (_parameters.StartIndex + (_parameters.Count / 2)))
+                    state.Stop();
             }
 
             return threadLocalValue;
@@ -690,11 +688,13 @@ namespace System.Threading.Tasks.Tests
             Work(i);
             threadLocalValue.Add((int)index);
 
-            if (_parameters.StateOption == ActionWithState.Stop)
+            if (_parameters.StateOption != ActionWithState.Stop)
             {
-                if (index > (_parameters.StartIndex + (_parameters.Count / 2)))
-                    state.Stop();
+                return threadLocalValue;
             }
+
+            if (index > (_parameters.StartIndex + (_parameters.Count / 2)))
+                state.Stop();
 
             return threadLocalValue;
         }
@@ -702,7 +702,8 @@ namespace System.Threading.Tasks.Tests
         // workload for Foreach overload that takes a range partitioner
         private void WorkWithIndexAndStop(Tuple<int, int> tuple, ParallelLoopState state, long index)
         {
-            for (int i = tuple.Item1; i < tuple.Item2; i++)
+            var (item1, item2) = tuple;
+            for (int i = item1; i < item2; i++)
             {
                 WorkWithIndexAndStop(i, state, index);
             }
@@ -727,18 +728,20 @@ namespace System.Threading.Tasks.Tests
         private void WorkWithIndexAndStopPartitioner(int i, ParallelLoopState state, long index)
         {
             //index verification
-            if (_parameters.PartitionerType == PartitionerType.IEnumerableOOB)
+            if (_parameters.PartitionerType == PartitionerType.EnumerableOob)
             {
                 int itemAtIndex = _collection[(int)index];
                 Assert.AreEqual(i, itemAtIndex);
             }
+
             WorkWithIndexAndStop(i, state, index);
         }
 
         // workload for Foreach overload that takes a range partitioner
         private List<int> WorkWithLocal(Tuple<int, int> tuple, ParallelLoopState state, List<int> threadLocalValue)
         {
-            for (int i = tuple.Item1; i < tuple.Item2; i++)
+            var (item1, item2) = tuple;
+            for (int i = item1; i < item2; i++)
             {
                 WorkWithLocal(i, state, threadLocalValue);
             }
@@ -752,11 +755,13 @@ namespace System.Threading.Tasks.Tests
             Work(i);
             threadLocalValue.Add(i - _parameters.StartIndex);
 
-            if (_parameters.StateOption == ActionWithState.Stop)
+            if (_parameters.StateOption != ActionWithState.Stop)
             {
-                if (i > (_parameters.StartIndex + (_parameters.Count / 2)))
-                    state.Stop();
+                return threadLocalValue;
             }
+
+            if (i > (_parameters.StartIndex + (_parameters.Count / 2)))
+                state.Stop();
 
             return threadLocalValue;
         }
@@ -767,29 +772,14 @@ namespace System.Threading.Tasks.Tests
             Work(i);
             threadLocalValue.Add((int)(i - _parameters.StartIndex64));
 
-            if (_parameters.StateOption == ActionWithState.Stop)
+            if (_parameters.StateOption != ActionWithState.Stop)
             {
-                if (i > (_parameters.StartIndex64 + (_parameters.Count / 2)))
-                    state.Stop();
+                return threadLocalValue;
             }
 
-            return threadLocalValue;
-        }
+            if (i > (_parameters.StartIndex64 + (_parameters.Count / 2)))
+                state.Stop();
 
-        // workload for Foreach overload that takes a range partitioner
-        private List<int> WorkWithLocal(Tuple<long, long> tuple, ParallelLoopState state, List<int> threadLocalValue)
-        {
-            for (long i = tuple.Item1; i < tuple.Item2; i++)
-            {
-                Work(i);
-                threadLocalValue.Add((int)(i - _parameters.StartIndex64));
-
-                if (_parameters.StateOption == ActionWithState.Stop)
-                {
-                    if (i > (_parameters.StartIndex64 + (_parameters.Count / 2)))
-                        state.Stop();
-                }
-            }
             return threadLocalValue;
         }
 
@@ -799,12 +789,15 @@ namespace System.Threading.Tasks.Tests
             for (int i = tuple.Item1; i < tuple.Item2; i++)
             {
                 //index verification - only for enumerable
-                if (_parameters.PartitionerType == PartitionerType.IEnumerableOOB)
+                if (_parameters.PartitionerType != PartitionerType.EnumerableOob)
                 {
-                    int itemAtIndex = _collection[(int)index];
-                    Assert.AreEqual(i, itemAtIndex);
+                    continue;
                 }
+
+                int itemAtIndex = _collection[(int)index];
+                Assert.AreEqual(i, itemAtIndex);
             }
+
             return WorkWithIndexAndLocal(tuple, state, index, threadLocalValue);
         }
 
@@ -812,11 +805,13 @@ namespace System.Threading.Tasks.Tests
         private List<int> WorkWithLocalAndIndexPartitioner(int i, ParallelLoopState state, long index, List<int> threadLocalValue)
         {
             //index verification - only for enumerable
-            if (_parameters.PartitionerType == PartitionerType.IEnumerableOOB)
+            if (_parameters.PartitionerType != PartitionerType.EnumerableOob)
             {
-                int itemAtIndex = _collection[(int)index];
-                Assert.AreEqual(i, itemAtIndex);
+                return WorkWithIndexAndLocal(i, state, index, threadLocalValue);
             }
+
+            int itemAtIndex = _collection[(int)index];
+            Assert.AreEqual(i, itemAtIndex);
 
             return WorkWithIndexAndLocal(i, state, index, threadLocalValue);
         }
@@ -826,22 +821,14 @@ namespace System.Threading.Tasks.Tests
         {
             Work(i);
             if (i > (_parameters.StartIndex + (_parameters.Count / 2)))
-                state.Stop();  // if the current index is in the second half range, try stop all
+                state.Stop(); // if the current index is in the second half range, try stop all
         }
 
         // workload for Foreach overload that takes a range partitioner
         private void WorkWithStop(Tuple<int, int> tuple, ParallelLoopState state)
         {
-            for (int i = tuple.Item1; i < tuple.Item2; i++)
-            {
-                WorkWithStop(i, state);
-            }
-        }
-
-        // workload for Foreach overload that takes a range partitioner
-        private void WorkWithStop(Tuple<long, long> tuple, ParallelLoopState state)
-        {
-            for (long i = tuple.Item1; i < tuple.Item2; i++)
+            var (item1, item2) = tuple;
+            for (int i = item1; i < item2; i++)
             {
                 WorkWithStop(i, state);
             }
@@ -866,21 +853,22 @@ namespace System.Threading.Tasks.Tests
         {
             switch (partitionerName)
             {
-                case PartitionerType.IListBalancedOOB:
+                case PartitionerType.ListBalancedOob:
                     return Partitioner.Create(new List<T>(dataSource), true);
 
-                case PartitionerType.ArrayBalancedOOB:
-                    return Partitioner.Create(new List<T>(dataSource).ToArray(), true);
+                case PartitionerType.ArrayBalancedOob:
+                    return Partitioner.Create(dataSource.ToArray(), true);
 
-                case PartitionerType.IEnumerableOOB:
+                case PartitionerType.EnumerableOob:
                     return Partitioner.Create(dataSource);
 
-                case PartitionerType.IEnumerable1Chunk:
+                case PartitionerType.Enumerable1Chunk:
                     return PartitionerEx.Create(dataSource, EnumerablePartitionerOptions.NoBuffering);
 
                 default:
                     break;
             }
+
             return null;
         }
 
@@ -894,15 +882,16 @@ namespace System.Threading.Tasks.Tests
                 default:
                     break;
             }
+
             return null;
         }
     }
 
     public class TestParameters
     {
-        public const int DEFAULT_STARTINDEXOFFSET = 1000;
+        public const int Default_StartIndexOffset = 1000;
 
-        public readonly API Api;
+        public readonly Api Api;
 
         public readonly StartIndexBase StartIndexBase;
 
@@ -932,13 +921,13 @@ namespace System.Threading.Tasks.Tests
 
         public WorkloadPattern WorkloadPattern;
 
-        public TestParameters(API api, StartIndexBase startIndexBase, int? startIndexOffset = null)
+        public TestParameters(Api api, StartIndexBase startIndexBase, int? startIndexOffset = null)
         {
             Api = api;
             StartIndexBase = startIndexBase;
-            StartIndexOffset = startIndexOffset ?? DEFAULT_STARTINDEXOFFSET;
+            StartIndexOffset = startIndexOffset ?? Default_StartIndexOffset;
 
-            if (api == API.For64)
+            if (api == Api.For64)
             {
                 // StartIndexBase.Int64 was set to -1 since Enum can't take a Int64.MaxValue. Fixing this below.
                 long indexBase64 = (startIndexBase == StartIndexBase.Int64) ? long.MaxValue : (long)startIndexBase;
@@ -961,7 +950,7 @@ namespace System.Threading.Tasks.Tests
 
             //partitioner options
             ParallelForeachDataSourceType = DataSourceType.Collection;
-            PartitionerType = PartitionerType.IListBalancedOOB;
+            PartitionerType = PartitionerType.ListBalancedOob;
         }
 
         // the api to be tested

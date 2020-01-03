@@ -1,7 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
+
+#if LESSTHAN_NET40
+
+using System.Collections.Generic;
+
+#endif
 
 namespace MonoTests.System.Threading
 {
@@ -31,7 +36,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        [Category("NotDotNet")] // nunit results in stack overflow
+        [Category("NotDotNet")] // nUnit results in stack overflow
         public void MultipleReferenceToValueTest()
         {
             Assert.Throws(
@@ -39,7 +44,7 @@ namespace MonoTests.System.Threading
                 () =>
                 {
                     ThreadLocal<int>[] threadLocal = { null };
-                    using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, false))
+                    using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0]?.Value + 1 ?? 0, false))
                     {
                         GC.KeepAlive(threadLocal[0].Value);
                     }
@@ -50,7 +55,7 @@ namespace MonoTests.System.Threading
                 () =>
                 {
                     ThreadLocal<int>[] threadLocal = { null };
-                    using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, true))
+                    using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0]?.Value + 1 ?? 0, true))
                     {
                         GC.KeepAlive(threadLocal[0].Value);
                     }
@@ -68,19 +73,27 @@ namespace MonoTests.System.Threading
                 LaunchAndWaitThread(threadLocal);
                 LaunchAndWaitThread(threadLocal);
                 LaunchAndWaitThread(threadLocal);
-                var expected = new List<int> { 0, 1, 2 };
+                var expected = new List<int>
+                {
+                    0,
+                    1,
+                    2
+                };
                 foreach (var item in threadLocal.Values)
                 {
                     Assert.IsTrue(expected.Remove(item));
                 }
+
                 Assert.AreEqual(expected.Count, 0);
             }
-            using (var tlocal = new ThreadLocal<int>(() => 0, false))
+
+            using (var tLocal = new ThreadLocal<int>(() => 0, false))
             {
                 Assert.Throws
                 (
                     typeof(InvalidOperationException),
-                    () => GC.KeepAlive(tlocal.Values));
+                    () => GC.KeepAlive(tLocal.Values)
+                );
             }
         }
 
@@ -100,6 +113,7 @@ namespace MonoTests.System.Threading
                 LaunchAndWaitThread(threadLocal);
                 Assert.AreEqual(threadLocal.Values.Count, 0);
             }
+
             Assert.AreEqual(count, 3);
         }
 
@@ -119,17 +133,20 @@ namespace MonoTests.System.Threading
 
         private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
         {
-            var thread = new Thread(() =>
-            {
-                try
+            var thread = new Thread
+            (
+                () =>
                 {
-                    GC.KeepAlive(threadLocal.Value);
+                    try
+                    {
+                        GC.KeepAlive(threadLocal.Value);
+                    }
+                    catch (Exception exc)
+                    {
+                        Theraot.No.Op(exc);
+                    }
                 }
-                catch (Exception exc)
-                {
-                    Theraot.No.Op(exc);
-                }
-            });
+            );
             thread.Start();
             thread.Join();
         }

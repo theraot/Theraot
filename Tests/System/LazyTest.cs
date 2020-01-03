@@ -28,7 +28,6 @@
 
 using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.Threading;
 
 namespace MonoTests.System
@@ -47,26 +46,32 @@ namespace MonoTests.System
                 var e1Set = new AutoResetEvent[1];
                 using (e1Set[0] = new AutoResetEvent(false))
                 {
-                    var lazy = new Lazy<string>(() =>
-                    {
-                        init[0].Set();
-                        Thread.Sleep(10);
-                        throw new ApplicationException();
-                    });
+                    var lazy = new Lazy<string>
+                    (
+                        () =>
+                        {
+                            init[0].Set();
+                            Thread.Sleep(10);
+                            throw new ApplicationException();
+                        }
+                    );
 
                     Exception e1 = null;
-                    var thread = new Thread(() =>
-                    {
-                        try
+                    var thread = new Thread
+                    (
+                        () =>
                         {
-                            GC.KeepAlive(lazy.Value);
+                            try
+                            {
+                                GC.KeepAlive(lazy.Value);
+                            }
+                            catch (Exception ex)
+                            {
+                                e1 = ex;
+                                e1Set[0].Set();
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            e1 = ex;
-                            e1Set[0].Set();
-                        }
-                    });
+                    );
                     thread.Start();
 
                     Assert.IsTrue(init[0].WaitOne(3000), "#1");
@@ -101,23 +106,29 @@ namespace MonoTests.System
         [Test]
         public void Ctor_Null_1()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                var lazy = new Lazy<int>(null);
-                GC.KeepAlive(lazy);
-            });
+            Assert.Throws<ArgumentNullException>
+            (
+                () =>
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    var lazy = new Lazy<int>(null);
+                    GC.KeepAlive(lazy);
+                }
+            );
         }
 
         [Test]
         public void Ctor_Null_2()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                var lazy = new Lazy<int>(null, false);
-                GC.KeepAlive(lazy);
-            });
+            Assert.Throws<ArgumentNullException>
+            (
+                () =>
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    var lazy = new Lazy<int>(null, false);
+                    GC.KeepAlive(lazy);
+                }
+            );
         }
 
         [Test]
@@ -140,15 +151,20 @@ namespace MonoTests.System
             var threads = new Thread[10];
             for (var i = 0; i < 10; ++i)
             {
-                threads[i] = new Thread(() =>
-                {
-                    lock (monitor)
+                threads[i] = new Thread
+                (
+                    () =>
                     {
-                        Monitor.Wait(monitor); // TODO: Review
+                        lock (monitor)
+                        {
+                            Monitor.Wait(monitor);
+                        }
+
+                        GC.KeepAlive(l.Value);
                     }
-                    GC.KeepAlive(l.Value);
-                });
+                );
             }
+
             for (var i = 0; i < 10; ++i)
             {
                 threads[i].Start();
@@ -210,6 +226,7 @@ namespace MonoTests.System
                 {
                     throw new Exception();
                 }
+
                 return 99;
             }, LazyThreadSafetyMode.ExecutionAndPublication);
 
@@ -222,6 +239,7 @@ namespace MonoTests.System
             {
                 Theraot.No.Op(ex);
             }
+
             Assert.AreEqual(1, invoke, "#2");
 
             try
@@ -233,6 +251,7 @@ namespace MonoTests.System
             {
                 Theraot.No.Op(ex);
             }
+
             Assert.AreEqual(1, invoke, "#4");
 
             fail[0] = false;
@@ -245,6 +264,7 @@ namespace MonoTests.System
             {
                 Theraot.No.Op(ex);
             }
+
             Assert.AreEqual(1, invoke, "#6");
 
             var rec = new[] { true };
@@ -283,6 +303,7 @@ namespace MonoTests.System
                 {
                     throw new Exception();
                 }
+
                 return 99;
             }, LazyThreadSafetyMode.None);
             try
@@ -347,15 +368,20 @@ namespace MonoTests.System
             var fail = new[] { true };
             var invoke = new[] { 0 };
             var lz = new Lazy<int>[] { null };
-            lz[0] = new Lazy<int>(() =>
-            {
-                invoke[0]++;
-                if (fail[0])
+            lz[0] = new Lazy<int>
+            (
+                () =>
                 {
-                    throw new Exception();
-                }
-                return 99;
-            }, LazyThreadSafetyMode.PublicationOnly);
+                    invoke[0]++;
+                    if (fail[0])
+                    {
+                        throw new Exception();
+                    }
+
+                    return 99;
+                },
+                LazyThreadSafetyMode.PublicationOnly
+            );
 
             try
             {
@@ -384,13 +410,17 @@ namespace MonoTests.System
 
             invoke[0] = 0;
             var rec = true;
-            lz[0] = new Lazy<int>(() =>
-            {
-                invoke[0]++;
-                var r = rec;
-                rec = false;
-                return r ? lz[0].Value : 88;
-            }, LazyThreadSafetyMode.PublicationOnly);
+            lz[0] = new Lazy<int>
+            (
+                () =>
+                {
+                    invoke[0]++;
+                    var r = rec;
+                    rec = false;
+                    return r ? lz[0].Value : 88;
+                },
+                LazyThreadSafetyMode.PublicationOnly
+            );
 
             Assert.AreEqual(88, lz[0].Value, "#6");
             Assert.AreEqual(2, invoke[0], "#7");
@@ -436,7 +466,7 @@ namespace MonoTests.System
             return 22;
         }
 
-        private class DefaultCtorClass
+        private sealed class DefaultCtorClass
         {
             public DefaultCtorClass()
             {
@@ -446,7 +476,7 @@ namespace MonoTests.System
             public int Prop { get; }
         }
 
-        private class NoDefaultCtorClass
+        private sealed class NoDefaultCtorClass
         {
             public NoDefaultCtorClass(int i)
             {

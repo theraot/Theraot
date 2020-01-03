@@ -63,6 +63,7 @@ namespace System.Linq
 
         public Type ElementType => typeof(TElement);
 
+        // ReSharper disable once ConvertToAutoPropertyWhenPossible
         public Expression Expression => _expression!;
 
         public IQueryProvider Provider => this;

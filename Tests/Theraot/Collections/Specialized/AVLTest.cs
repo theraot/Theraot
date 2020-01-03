@@ -11,7 +11,14 @@ namespace Tests.Theraot.Collections.Specialized
         [Test]
         public void AddAndRemove()
         {
-            var avl = new AVLTree<int, int> { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 }, { 50, 50 } };
+            var avl = new AVLTree<int, int>
+            {
+                { 10, 10 },
+                { 20, 20 },
+                { 30, 30 },
+                { 40, 40 },
+                { 50, 50 }
+            };
             Assert.IsTrue(avl.Remove(30));
             Assert.IsFalse(avl.Remove(70));
             Assert.AreEqual(avl.Count, 4);
@@ -27,7 +34,19 @@ namespace Tests.Theraot.Collections.Specialized
         [Test]
         public void AddRemoveAndBalance()
         {
-            var avl = new AVLTree<int, int> { { 9, 9 }, { 77, 77 }, { 50, 50 }, { 48, 48 }, { 24, 24 }, { 60, 60 }, { 72, 72 }, { 95, 95 }, { 66, 66 }, { 27, 27 } };
+            var avl = new AVLTree<int, int>
+            {
+                { 9, 9 },
+                { 77, 77 },
+                { 50, 50 },
+                { 48, 48 },
+                { 24, 24 },
+                { 60, 60 },
+                { 72, 72 },
+                { 95, 95 },
+                { 66, 66 },
+                { 27, 27 }
+            };
             Assert.IsFalse(avl.Remove(30));
             Assert.IsTrue(avl.Remove(77));
             Assert.IsTrue(avl.Remove(72));
@@ -47,27 +66,27 @@ namespace Tests.Theraot.Collections.Specialized
         {
             var values = new[]
             {
-                                9,
-                                77,
-                                50,
-                                48,
-                                24,
-                                60,
-                                72,
-                                95,
-                                66,
-                                27,
-                                28,
-                                33,
-                                50,
-                                65,
-                                37,
-                                75,
-                                58,
-                                36,
-                                74,
-                                60
-                        };
+                9,
+                77,
+                50,
+                48,
+                24,
+                60,
+                72,
+                95,
+                66,
+                27,
+                28,
+                33,
+                50,
+                65,
+                37,
+                75,
+                58,
+                36,
+                74,
+                60
+            };
             var avl = new AVLTree<int, int>();
             var expected = new List<int>();
             var duplicates = new List<int>();
@@ -82,12 +101,15 @@ namespace Tests.Theraot.Collections.Specialized
                 {
                     expected.Add(item);
                 }
+
                 avl.Add(item, item);
             }
+
             foreach (var duplicate in duplicates)
             {
                 Assert.IsTrue(avl.Remove(duplicate));
             }
+
             Assert.AreEqual(expected.Count, avl.Count);
             expected.Sort();
             var index = 0;
@@ -96,11 +118,13 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             foreach (var duplicate in duplicates)
             {
                 Assert.IsTrue(avl.Remove(duplicate));
                 expected.Remove(duplicate);
             }
+
             Assert.AreEqual(expected.Count, avl.Count);
             expected.Sort();
             index = 0;
@@ -114,7 +138,14 @@ namespace Tests.Theraot.Collections.Specialized
         [Test]
         public void AddRemoveAndBalanceExtended()
         {
-            var avl = new AVLTree<int, int> { { 1, 1 }, { 3, 3 }, { 5, 5 }, { 7, 7 }, { 9, 9 } };
+            var avl = new AVLTree<int, int>
+            {
+                { 1, 1 },
+                { 3, 3 },
+                { 5, 5 },
+                { 7, 7 },
+                { 9, 9 }
+            };
             Assert.IsTrue(avl.Remove(5));
             Assert.IsTrue(avl.Remove(7));
             Assert.IsTrue(avl.Remove(3));
@@ -136,7 +167,16 @@ namespace Tests.Theraot.Collections.Specialized
         [Test]
         public void LargeTreeTest()
         {
-            var avl = new AVLTree<int, int> { { 4, 0 }, { 8, 0 }, { 12, 0 }, { 16, 0 }, { 18, 0 }, { 19, 0 }, { 21, 0 } };
+            var avl = new AVLTree<int, int>
+            {
+                { 4, 0 },
+                { 8, 0 },
+                { 12, 0 },
+                { 16, 0 },
+                { 18, 0 },
+                { 19, 0 },
+                { 21, 0 }
+            };
             Assert.AreEqual(avl.Count, 7);
             var expected = new[] { 4, 8, 12, 16, 18, 19, 21 };
             var index = 0;
@@ -145,6 +185,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(2, 0);
             avl.Add(6, 0);
             avl.Add(10, 0);
@@ -159,6 +200,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(1, 0);
             avl.Add(3, 0);
             avl.Add(5, 0);
@@ -175,6 +217,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Remove(23);
             avl.Remove(20);
             avl.Remove(17);
@@ -186,6 +229,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(9, 0);
             expected = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 21 };
             index = 0;
@@ -194,6 +238,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(31, 0);
             avl.Add(27, 0);
             avl.Add(26, 0);
@@ -210,6 +255,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Remove(31);
             avl.Remove(30);
             avl.Remove(25);
@@ -220,6 +266,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(20, 0);
             avl.Add(10, 0);
             avl.Add(30, 0);
@@ -235,6 +282,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(39, 0);
             avl.Add(36, 0);
             avl.Add(46, 0);
@@ -261,6 +309,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Remove(1);
             avl.Remove(7);
             avl.Remove(9);
@@ -272,6 +321,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(17, 0);
             expected = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 21, 24, 26, 27, 28, 28, 29, 29, 30, 31, 32, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49 };
             index = 0;
@@ -280,6 +330,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Remove(21);
             expected = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 24, 26, 27, 28, 28, 29, 29, 30, 31, 32, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49 };
             index = 0;
@@ -288,6 +339,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(22, 0);
             avl.Add(23, 0);
             avl.Add(25, 0);
@@ -298,6 +350,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Remove(28);
             avl.Remove(29);
             avl.Remove(32);
@@ -308,6 +361,7 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(expected[index], item.Key);
                 index++;
             }
+
             avl.Add(50, 0);
             avl.Add(51, 0);
             avl.Add(52, 0);
@@ -371,14 +425,29 @@ namespace Tests.Theraot.Collections.Specialized
         [Test]
         public void SearchLeft()
         {
-            var avl = new AVLTree<int, int> { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 }, { 50, 50 } };
+            var avl = new AVLTree<int, int>
+            {
+                { 10, 10 },
+                { 20, 20 },
+                { 30, 30 },
+                { 40, 40 },
+                { 50, 50 }
+            };
             Assert.AreEqual(50, avl.GetNearestLeft(100).Key);
             Assert.AreEqual(30, avl.GetNearestLeft(30).Key);
             Assert.AreEqual(20, avl.GetNearestLeft(25).Key);
             Assert.AreEqual(20, avl.GetNearestLeft(20).Key);
             Assert.IsNull(avl.GetNearestLeft(5));
 
-            avl = new AVLTree<int, int> { { 10, 10 }, { 10, 20 }, { 30, 30 }, { 30, 40 }, { 50, 50 }, { 50, 60 } };
+            avl = new AVLTree<int, int>
+            {
+                { 10, 10 },
+                { 10, 20 },
+                { 30, 30 },
+                { 30, 40 },
+                { 50, 50 },
+                { 50, 60 }
+            };
             Assert.AreEqual(50, avl.GetNearestLeft(100).Key);
             Assert.AreEqual(60, avl.GetNearestLeft(100).Value);
             Assert.AreEqual(30, avl.GetNearestLeft(30).Key);
@@ -398,14 +467,29 @@ namespace Tests.Theraot.Collections.Specialized
         [Test]
         public void SearchRight()
         {
-            var avl = new AVLTree<int, int> { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 }, { 50, 50 } };
+            var avl = new AVLTree<int, int>
+            {
+                { 10, 10 },
+                { 20, 20 },
+                { 30, 30 },
+                { 40, 40 },
+                { 50, 50 }
+            };
             Assert.IsNull(avl.GetNearestRight(100));
             Assert.AreEqual(30, avl.GetNearestRight(30).Key);
             Assert.AreEqual(30, avl.GetNearestRight(25).Key);
             Assert.AreEqual(20, avl.GetNearestRight(20).Key);
             Assert.AreEqual(10, avl.GetNearestRight(5).Key);
 
-            avl = new AVLTree<int, int> { { 10, 10 }, { 10, 20 }, { 30, 30 }, { 30, 40 }, { 50, 50 }, { 50, 60 } };
+            avl = new AVLTree<int, int>
+            {
+                { 10, 10 },
+                { 10, 20 },
+                { 30, 30 },
+                { 30, 40 },
+                { 50, 50 },
+                { 50, 60 }
+            };
             Assert.IsNull(avl.GetNearestRight(100));
             Assert.AreEqual(30, avl.GetNearestRight(30).Key);
             Assert.AreEqual(30, avl.GetNearestRight(30).Value);
@@ -466,6 +550,7 @@ namespace Tests.Theraot.Collections.Specialized
             {
                 avl.Add(item, item);
             }
+
             Assert.AreEqual(avl.Count, data.Length);
             Array.Sort(data);
             var index = 0;
@@ -489,6 +574,7 @@ namespace Tests.Theraot.Collections.Specialized
                     copy.Add(item);
                 }
             }
+
             Assert.AreEqual(avl.Count, copy.Count);
             Array.Sort(data);
             var index = 0;

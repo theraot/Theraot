@@ -10,14 +10,14 @@ namespace Tests.System
         [Flags]
         private enum WithoutZero
         {
-            Two = 2,
+            Two = 2
         }
 
         [Flags]
         private enum WithZero
         {
             Zero = 0,
-            One = 1,
+            One = 1
         }
 
         [Test]

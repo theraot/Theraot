@@ -6,7 +6,7 @@ extern alias nunitlinq;
 // EnumerableAsQueryableTest.cs
 //
 // Authors:
-//	Roei Erez (roeie@mainsoft.com)
+//  Roei Erez (roeie@mainsoft.com)
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
 //
@@ -218,17 +218,26 @@ namespace MonoTests.System.Linq
         [Test]
         public void InstantiatedGenericMethod()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-                var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                              where (m.Name == "InstantiatedGenericMethod" &&
-                                     m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                              select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
+                    var method =
+                    (
+                        from m in typeof(Ext).GetMethods(extensionFlags)
+                        where
+                        (
+                            m.Name == "InstantiatedGenericMethod"
+                            && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
+                        )
+                        select m
+                    ).FirstOrDefault().MakeGenericMethod(typeof(int));
 
-                Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
-                _src.Provider.Execute(e);
-            });
+                    Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
+                    _src.Provider.Execute(e);
+                }
+            );
         }
 
         [Test]
@@ -315,9 +324,16 @@ namespace MonoTests.System.Linq
         public void NonGenericMethod()
         {
             const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                          where (m.Name == "NonGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                          select m).FirstOrDefault();
+            var method =
+            (
+                from m in typeof(Ext).GetMethods(extensionFlags)
+                where
+                (
+                    m.Name == "NonGenericMethod"
+                    && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
+                )
+                select m
+            ).FirstOrDefault();
 
             Expression e = Expression.Call(method, _src.Expression);
             Assert.AreEqual(_src.Provider.Execute(e), "EnumerableNonGenericMethod", "NonGenericMethod");
@@ -326,11 +342,14 @@ namespace MonoTests.System.Linq
         [Test]
         public void NullEnumerable()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                const IEnumerable<int> a = null;
-                a.AsQueryable();
-            });
+            Assert.Throws<ArgumentNullException>
+            (
+                () =>
+                {
+                    const IEnumerable<int> a = null;
+                    a.AsQueryable();
+                }
+            );
         }
 
         [Test]
@@ -452,38 +471,64 @@ namespace MonoTests.System.Linq
         public void UserExtensionMethod()
         {
             const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                          where (m.Name == "UserQueryableExt1" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                          select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+            var method =
+            (
+                from m in typeof(Ext).GetMethods(extensionFlags)
+                where
+                (
+                    m.Name == "UserQueryableExt1"
+                    && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
+                )
+                select m
+            ).FirstOrDefault().MakeGenericMethod(typeof(int));
             Expression<Func<int, int>> exp = i => i;
-            Expression expression = Expression.Equal(
-                                    Expression.Constant("UserEnumerableExt1"),
-                                    Expression.Call(method, _src.Expression, Expression.Quote(exp)));
+            Expression expression = Expression.Equal
+            (
+                Expression.Constant("UserEnumerableExt1"),
+                Expression.Call(method, _src.Expression, Expression.Quote(exp))
+            );
             Assert.AreEqual(_src.Provider.Execute<bool>(expression), true, "UserQueryableExt1");
 
-            method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                      where (m.Name == "UserQueryableExt2" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                      select m).FirstOrDefault().MakeGenericMethod(typeof(int));
-            expression = Expression.Equal(
-                                    Expression.Constant("UserEnumerableExt2"),
-                                    Expression.Call(method, _src.Expression, Expression.Quote(exp)));
+            method =
+            (
+                from m in typeof(Ext).GetMethods(extensionFlags)
+                where
+                (
+                    m.Name == "UserQueryableExt2" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
+                )
+                select m
+            ).FirstOrDefault().MakeGenericMethod(typeof(int));
+            expression = Expression.Equal
+            (
+                Expression.Constant("UserEnumerableExt2"),
+                Expression.Call(method, _src.Expression, Expression.Quote(exp))
+            );
             Assert.AreEqual(_src.Provider.Execute<bool>(expression), true, "UserQueryableExt2");
         }
 
         [Test]
         public void UserExtensionMethodNegative()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-                var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                              where (m.Name == "UserQueryableExt3" &&
-                                     m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                              select m).FirstOrDefault().MakeGenericMethod(typeof(int));
-                Expression<Func<int, int>> exp = i => i;
-                Expression e = Expression.Call(method, _src.Expression, Expression.Quote(exp), Expression.Constant(10));
-                _src.Provider.Execute(e);
-            });
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    const BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
+                    var method =
+                    (
+                        from m in typeof(Ext).GetMethods(extensionFlags)
+                        where
+                        (
+                            m.Name == "UserQueryableExt3"
+                            && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
+                        )
+                        select m
+                    ).FirstOrDefault().MakeGenericMethod(typeof(int));
+                    Expression<Func<int, int>> exp = i => i;
+                    Expression e = Expression.Call(method, _src.Expression, Expression.Quote(exp), Expression.Constant(10));
+                    _src.Provider.Execute(e);
+                }
+            );
         }
 
         [Test]
@@ -495,7 +540,7 @@ namespace MonoTests.System.Linq
         }
 
         // ReSharper disable once UnusedTypeParameter
-        private class Bar<T1, T2> : IEnumerable<T2>
+        private sealed class Bar<T1, T2> : IEnumerable<T2>
         {
             public IEnumerator<T2> GetEnumerator()
             {

@@ -53,7 +53,8 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         var currentCapacity = MinCapacity << currentIndex;
                         Array.Clear(item, 0, currentCapacity);
-                    });
+                    }
+                );
             }
         }
     }

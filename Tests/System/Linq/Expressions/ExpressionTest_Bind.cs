@@ -21,7 +21,7 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
+//      Federico Di Gregorio <fog@initd.org>
 
 using System;
 using System.Linq.Expressions;
@@ -37,10 +37,10 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.Bind(null, Expression.Constant(Value)));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.Bind(null, Expression.Constant(value)));
         }
 
         [Test]
@@ -53,14 +53,14 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void BindValueTypes()
         {
-            const string NameLeft = "i";
-            const string NameRight = "s";
+            const string nameLeft = "i";
+            const string nameRight = "s";
 
-            const int Left = 42;
-            const short Right = -1;
+            const int left = 42;
+            const short right = -1;
 
-            var parameterLeft = Expression.Parameter(typeof(int), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(short), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(int), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(short), nameRight);
 
             var memberInitExpression = Expression.MemberInit
             (
@@ -72,7 +72,15 @@ namespace MonoTests.System.Linq.Expressions
             );
             var compiled = Expression.Lambda<Func<int, short, Slot>>(memberInitExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(new Slot { Integer = Left, Short = Right }, compiled(Left, Right));
+            Assert.AreEqual
+            (
+                new Slot
+                {
+                    Integer = left,
+                    Short = right
+                },
+                compiled(left, right)
+            );
         }
 
         [Test]
@@ -84,67 +92,67 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void FieldRo()
         {
-            const int Value = 1;
+            const int value = 1;
 
-            var expression = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.TestField1)), Expression.Constant(Value));
+            var expression = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.TestField1)), Expression.Constant(value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#01");
-            Assert.AreEqual($"{nameof(MemberClass.TestField1)} = {Value}", expression.ToString(), "Bind#02");
+            Assert.AreEqual($"{nameof(MemberClass.TestField1)} = {value}", expression.ToString(), "Bind#02");
         }
 
         [Test]
         public void FieldRw()
         {
-            const int Value = 1;
+            const int value = 1;
 
-            var expression = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.TestField2)), Expression.Constant(Value));
+            var expression = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.TestField2)), Expression.Constant(value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#03");
-            Assert.AreEqual($"{nameof(MemberClass.TestField2)} = {Value}", expression.ToString(), "Bind#04");
+            Assert.AreEqual($"{nameof(MemberClass.TestField2)} = {value}", expression.ToString(), "Bind#04");
         }
 
         [Test]
         public void FieldStatic()
         {
-            const int Value = 1;
+            const int value = 1;
 
-            var expression = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.StaticField)), Expression.Constant(Value));
+            var expression = Expression.Bind(typeof(MemberClass).GetField(nameof(MemberClass.StaticField)), Expression.Constant(value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#05");
-            Assert.AreEqual($"{nameof(MemberClass.StaticField)} = {Value}", expression.ToString(), "Bind#06");
+            Assert.AreEqual($"{nameof(MemberClass.StaticField)} = {value}", expression.ToString(), "Bind#06");
         }
 
         [Test]
         public void Method()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // This tests the MethodInfo version of Bind(): should raise an exception
             // because the argument is not a field or property accessor.
 
-            AssertEx.Throws<ArgumentException>(() => Expression.Bind(new Func<int, int>(new MemberClass().TestMethod).GetMethodInfo(), Expression.Constant(Value)));
+            AssertEx.Throws<ArgumentException>(() => Expression.Bind(new Func<int, int>(new MemberClass().TestMethod).GetMethodInfo(), Expression.Constant(value)));
         }
 
         [Test]
         public void PropertyAccessor()
         {
-            const int Value = 1;
+            const int value = 1;
             var method = typeof(MemberClass).GetMethod($"get_{nameof(MemberClass.TestProperty2)}");
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            var expression = Expression.Bind(method, Expression.Constant(Value));
+            var expression = Expression.Bind(method, Expression.Constant(value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#11");
-            Assert.AreEqual($"{nameof(MemberClass.TestProperty2)} = {Value}", expression.ToString(), "Bind#12");
+            Assert.AreEqual($"{nameof(MemberClass.TestProperty2)} = {value}", expression.ToString(), "Bind#12");
             Assert.AreEqual(typeof(MemberClass).GetProperty(nameof(MemberClass.TestProperty2)), expression.Member, "Bind#13");
         }
 
         [Test]
         public void PropertyAccessorStatic()
         {
-            const int Value = 1;
+            const int value = 1;
             var method = typeof(MemberClass).GetMethod($"get_{nameof(MemberClass.StaticProperty)}");
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            var expression = Expression.Bind(method, Expression.Constant(Value));
+            var expression = Expression.Bind(method, Expression.Constant(value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#14");
-            Assert.AreEqual($"{nameof(MemberClass.StaticProperty)} = {Value}", expression.ToString(), "Bind#15");
+            Assert.AreEqual($"{nameof(MemberClass.StaticProperty)} = {value}", expression.ToString(), "Bind#15");
             Assert.AreEqual(typeof(MemberClass).GetProperty(nameof(MemberClass.StaticProperty)), expression.Member, "Bind#16");
         }
 
@@ -158,23 +166,23 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void PropertyRw()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            var expression = Expression.Bind(typeof(MemberClass).GetProperty(nameof(MemberClass.TestProperty2)), Expression.Constant(Value));
+            var expression = Expression.Bind(typeof(MemberClass).GetProperty(nameof(MemberClass.TestProperty2)), Expression.Constant(value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#07");
-            Assert.AreEqual($"{nameof(MemberClass.TestProperty2)} = {Value}", expression.ToString(), "Bind#08");
+            Assert.AreEqual($"{nameof(MemberClass.TestProperty2)} = {value}", expression.ToString(), "Bind#08");
         }
 
         [Test]
         public void PropertyStatic()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            var expression = Expression.Bind(typeof(MemberClass).GetProperty(nameof(MemberClass.StaticProperty)), Expression.Constant(Value));
+            var expression = Expression.Bind(typeof(MemberClass).GetProperty(nameof(MemberClass.StaticProperty)), Expression.Constant(value));
             Assert.AreEqual(MemberBindingType.Assignment, expression.BindingType, "Bind#09");
-            Assert.AreEqual($"{nameof(MemberClass.StaticProperty)} = {Value}", expression.ToString(), "Bind#10");
+            Assert.AreEqual($"{nameof(MemberClass.StaticProperty)} = {value}", expression.ToString(), "Bind#10");
         }
 
         private struct Slot

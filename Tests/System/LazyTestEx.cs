@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
@@ -93,32 +92,44 @@ namespace MonoTests.System
         {
             var control = 0;
             var threadDone = 0;
-            var needle = new Lazy<int>(() =>
-            {
-                Interlocked.Increment(ref control);
-                return 5;
-            });
+            var needle = new Lazy<int>
+            (
+                () =>
+                {
+                    Interlocked.Increment(ref control);
+                    return 5;
+                }
+            );
             var manual = new ManualResetEvent[1];
             using (manual[0] = new ManualResetEvent(false))
             {
-                var threadA = new Thread(() =>
-                {
-                    manual[0].WaitOne();
-                    GC.KeepAlive(needle.Value);
-                    Interlocked.Increment(ref threadDone);
-                });
-                var threadB = new Thread(() =>
-                {
-                    manual[0].WaitOne();
-                    GC.KeepAlive(needle.Value);
-                    Interlocked.Increment(ref threadDone);
-                });
-                var threadC = new Thread(() =>
-                {
-                    manual[0].WaitOne();
-                    GC.KeepAlive(needle.Value);
-                    Interlocked.Increment(ref threadDone);
-                });
+                var threadA = new Thread
+                (
+                    () =>
+                    {
+                        manual[0].WaitOne();
+                        GC.KeepAlive(needle.Value);
+                        Interlocked.Increment(ref threadDone);
+                    }
+                );
+                var threadB = new Thread
+                (
+                    () =>
+                    {
+                        manual[0].WaitOne();
+                        GC.KeepAlive(needle.Value);
+                        Interlocked.Increment(ref threadDone);
+                    }
+                );
+                var threadC = new Thread
+                (
+                    () =>
+                    {
+                        manual[0].WaitOne();
+                        GC.KeepAlive(needle.Value);
+                        Interlocked.Increment(ref threadDone);
+                    }
+                );
                 threadA.Start();
                 threadB.Start();
                 threadC.Start();
@@ -163,7 +174,7 @@ namespace MonoTests.System
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(needle[0].Value));
         }
 
-        private class DefectiveCtorClass
+        private sealed class DefectiveCtorClass
         {
             private static int _count;
 
@@ -174,6 +185,7 @@ namespace MonoTests.System
                 {
                     throw new InvalidOperationException();
                 }
+
                 Prop = _count;
             }
 

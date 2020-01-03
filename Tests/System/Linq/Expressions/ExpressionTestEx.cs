@@ -12,7 +12,7 @@ namespace Tests.System.Linq.Expressions
     internal static class ExpressionTestEx
     {
         [Test]
-        public static void TestLamdaCompilation()
+        public static void TestLambdaCompilation()
         {
             var paramExpr = Expression.Parameter(typeof(int), "arg");
             var lambdaExpr = Expression.Lambda
@@ -28,7 +28,7 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationGenericDelegateType()
+        public static void TestLambdaCompilationGenericDelegateType()
         {
             var paramExpr = Expression.Parameter(typeof(int), "arg");
             var lambdaExpr = Expression.Lambda<Func<int, int>>
@@ -44,7 +44,7 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationGenericDelegateTypeInvalid()
+        public static void TestLambdaCompilationGenericDelegateTypeInvalid()
         {
             Assert.Throws<ArgumentException>
             (
@@ -66,7 +66,7 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationGenericDelegateTypeWrong()
+        public static void TestLambdaCompilationGenericDelegateTypeWrong()
         {
             Assert.Throws<ArgumentException>
             (
@@ -88,7 +88,7 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationWithDelegateType()
+        public static void TestLambdaCompilationWithDelegateType()
         {
             var paramExpr = Expression.Parameter(typeof(int), "arg");
             var lambdaExpr = Expression.Lambda
@@ -105,7 +105,7 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationWithDelegateTypeInvalid()
+        public static void TestLambdaCompilationWithDelegateTypeInvalid()
         {
             Assert.Throws<ArgumentException>
             (
@@ -128,7 +128,7 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationWithDelegateTypeNull()
+        public static void TestLambdaCompilationWithDelegateTypeNull()
         {
             Assert.Throws<ArgumentNullException>
             (
@@ -151,7 +151,7 @@ namespace Tests.System.Linq.Expressions
         }
 
         [Test]
-        public static void TestLamdaCompilationWithDelegateTypeWrong()
+        public static void TestLambdaCompilationWithDelegateTypeWrong()
         {
             Assert.Throws<ArgumentException>
             (

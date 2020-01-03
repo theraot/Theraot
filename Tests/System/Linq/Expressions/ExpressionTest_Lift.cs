@@ -88,7 +88,7 @@ namespace MonoTests.System.Linq.Expressions
 
             //
             // When we use a MethodInfo, that has a non-bool return type,
-            // the result is always Nullable<returntype> regardless of the
+            // the result is always Nullable<T> regardless of the
             // setting of "liftToNull"
             //
             Assert.AreEqual(typeof(int?), cmp.Type);

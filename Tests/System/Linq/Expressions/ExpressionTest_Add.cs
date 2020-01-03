@@ -21,8 +21,8 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
-//		Jb Evain <jbevain@novell.com>
+//      Federico Di Gregorio <fog@initd.org>
+//      Jb Evain <jbevain@novell.com>
 
 using System;
 using System.Linq;
@@ -40,15 +40,15 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AddDecimals()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
-            const decimal ValueLeft = 1m;
-            const decimal ValueRight = 1m;
-            const decimal Result = ValueLeft + ValueRight;
+            const string nameLeft = "l";
+            const string nameRight = "r";
+            const decimal valueLeft = 1m;
+            const decimal valueRight = 1m;
+            const decimal result = valueLeft + valueRight;
             var method = typeof(decimal).GetMethod("op_Addition", new[] { typeof(decimal), typeof(decimal) });
 
-            var parameterLeft = Expression.Parameter(typeof(decimal), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(decimal), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(decimal), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(decimal), nameRight);
 
             var binaryExpression = Expression.Add(parameterLeft, parameterRight);
             Assert.IsFalse(binaryExpression.IsLifted);
@@ -58,7 +58,7 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<decimal, decimal, decimal>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(Result, compiled(ValueLeft, ValueRight));
+            Assert.AreEqual(result, compiled(valueLeft, valueRight));
         }
 
         [Test]
@@ -80,16 +80,16 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AddLiftedDecimals()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
-            const decimal ValueLeft = 1m;
-            const decimal ValueRight = 1m;
-            const decimal Result = ValueLeft + ValueRight;
+            const string nameLeft = "l";
+            const string nameRight = "r";
+            const decimal valueLeft = 1m;
+            const decimal valueRight = 1m;
+            const decimal result = valueLeft + valueRight;
             var type = typeof(decimal?);
             var method = typeof(decimal).GetMethod("op_Addition", new[] { typeof(decimal), typeof(decimal) });
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
 
             var binaryExpression = Expression.Add(parameterLeft, parameterRight);
             Assert.IsTrue(binaryExpression.IsLifted);
@@ -99,23 +99,23 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = Expression.Lambda<Func<decimal?, decimal?, decimal?>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
-            Assert.AreEqual(Result, compiled(ValueLeft, ValueRight));
-            Assert.AreEqual(null, compiled(ValueLeft, null));
-            Assert.AreEqual(null, compiled(null, ValueRight));
+            Assert.AreEqual(result, compiled(valueLeft, valueRight));
+            Assert.AreEqual(null, compiled(valueLeft, null));
+            Assert.AreEqual(null, compiled(null, valueRight));
             Assert.AreEqual(null, compiled(null, null));
         }
 
         [Test]
         public void AddNotLifted()
         {
-            const int ValueLeft = 1;
-            const int ValueRight = 1;
+            const int valueLeft = 1;
+            const int valueRight = 1;
             var type = typeof(int);
 
             var binaryExpression = Expression.Add
             (
-                Expression.Constant(ValueLeft, type),
-                Expression.Constant(ValueRight, type)
+                Expression.Constant(valueLeft, type),
+                Expression.Constant(valueRight, type)
             );
 
             Assert.AreEqual(type, binaryExpression.Type);
@@ -126,16 +126,16 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AddStrings()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
-            const string ValueLeft = "foo";
-            const string ValueRight = "bar";
-            const string Result = ValueLeft + ValueRight;
+            const string nameLeft = "l";
+            const string nameRight = "r";
+            const string valueLeft = "foo";
+            const string valueRight = "bar";
+            const string result = valueLeft + valueRight;
             var type = typeof(string);
             var method = new Func<object, object, string>(string.Concat).GetMethodInfo();
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
 
             var binaryExpression = Expression.Add(parameterLeft, parameterRight, method);
             Assert.IsFalse(binaryExpression.IsLifted);
@@ -146,21 +146,21 @@ namespace MonoTests.System.Linq.Expressions
             var compiled = Expression.Lambda<Func<string, string, string>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
             Assert.AreEqual(string.Empty, compiled(null, null));
-            Assert.AreEqual(Result, compiled(ValueLeft, ValueRight));
+            Assert.AreEqual(result, compiled(valueLeft, valueRight));
         }
 
         [Test]
         public void AddTestNullable()
         {
-            const string NameLeft = "a";
-            const string NameRight = "b";
-            const int ValueLeft = 1;
-            const int ValueRight = 2;
-            const decimal Result = ValueLeft + ValueRight;
+            const string nameLeft = "a";
+            const string nameRight = "b";
+            const int valueLeft = 1;
+            const int valueRight = 2;
+            const decimal result = valueLeft + valueRight;
             var type = typeof(int?);
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
             var lambda = Expression.Lambda<Func<int?, int?, int?>>(Expression.Add(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
             var binaryExpression = lambda.Body as BinaryExpression;
@@ -171,53 +171,53 @@ namespace MonoTests.System.Linq.Expressions
 
             var compiled = lambda.Compile();
 
-            Assert.AreEqual(null, compiled(ValueLeft, null), "a1");
+            Assert.AreEqual(null, compiled(valueLeft, null), "a1");
             Assert.AreEqual(null, compiled(null, null), "a2");
-            Assert.AreEqual(null, compiled(null, ValueRight), "a3");
-            Assert.AreEqual(Result, compiled(ValueLeft, ValueRight), "a4");
+            Assert.AreEqual(null, compiled(null, valueRight), "a3");
+            Assert.AreEqual(result, compiled(valueLeft, valueRight), "a4");
         }
 
         [Test]
         public void Arg1Null()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.Add(null, Expression.Constant(Value)));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.Add(null, Expression.Constant(value)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.Add(Expression.Constant(Value), null));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.Add(Expression.Constant(value), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            const int ValueLeft = 1;
-            const double ValueRight = 2.0;
+            const int valueLeft = 1;
+            const double valueRight = 2.0;
 
-            AssertEx.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
         public void Boolean()
         {
-            const bool ValueLeft = true;
-            const bool ValueRight = false;
+            const bool valueLeft = true;
+            const bool valueRight = false;
 
-            AssertEx.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.Add(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
         public void CompileAdd()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             var input = new[]
             {
@@ -230,8 +230,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var type = typeof(int);
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
             var lambda = Expression.Lambda<Func<int, int, int>>(Expression.Add(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
             var binaryExpression = lambda.Body as BinaryExpression;
@@ -275,28 +275,28 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Numeric()
         {
-            const int ValueLeft = 1;
-            const int ValueRight = 2;
+            const int valueLeft = 1;
+            const int valueRight = 2;
             var type = typeof(int);
 
-            var binaryExpression = Expression.Add(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            var binaryExpression = Expression.Add(Expression.Constant(valueLeft), Expression.Constant(valueRight));
             Assert.AreEqual(ExpressionType.Add, binaryExpression.NodeType, "Add#01");
             Assert.AreEqual(type, binaryExpression.Type, "Add#02");
             Assert.IsNull(binaryExpression.Method, "Add#03");
-            Assert.AreEqual($"({ValueLeft} + {ValueRight})", binaryExpression.ToString(), "Add#04");
+            Assert.AreEqual($"({valueLeft} + {valueRight})", binaryExpression.ToString(), "Add#04");
         }
 
         [Test]
         public void TestMethodAddition()
         {
-            const int ValueLeft = 1;
-            const int ValueRight = 2;
-            var result = S.MyAdder(ValueLeft, ValueRight);
+            const int valueLeft = 1;
+            const int valueRight = 2;
+            var result = S.MyAdder(valueLeft, valueRight);
 
             var binaryExpression = Expression.Add
             (
-                Expression.Constant(ValueLeft),
-                Expression.Constant(ValueRight),
+                Expression.Constant(valueLeft),
+                Expression.Constant(valueRight),
                 new Func<int, int, int>(S.MyAdder).GetMethodInfo()
             );
             var lambda = Expression.Lambda<Func<int>>(binaryExpression);
@@ -308,8 +308,8 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedAdd()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             var input = new[]
             {
@@ -321,8 +321,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var type = typeof(Slot);
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
 
             var binaryExpression = Expression.Add(parameterLeft, parameterRight);
 
@@ -341,18 +341,18 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedAddLifted()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
-            const int ValueLeft = 21;
-            const int ValueRight = 21;
+            const int valueLeft = 21;
+            const int valueRight = 21;
 
-            const int Result = ValueLeft + ValueRight;
+            const int result = valueLeft + valueRight;
 
             var type = typeof(Slot?);
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
 
             var binaryExpression = Expression.Add(parameterLeft, parameterRight);
 
@@ -363,7 +363,7 @@ namespace MonoTests.System.Linq.Expressions
             var compiled = Expression.Lambda<Func<Slot?, Slot?, Slot?>>(binaryExpression, parameterLeft, parameterRight).Compile();
 
             Assert.AreEqual(null, compiled(null, null));
-            Assert.AreEqual((Slot?)new Slot(Result), compiled(new Slot(ValueLeft), new Slot(ValueRight)));
+            Assert.AreEqual((Slot?)new Slot(result), compiled(new Slot(valueLeft), new Slot(valueRight)));
         }
 
         [Test]
@@ -399,8 +399,8 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedFromNullableToNullableAdd()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             var input = new (int? Left, int? Right)[]
             {
@@ -408,15 +408,15 @@ namespace MonoTests.System.Linq.Expressions
                 (Left: 2, Right: null),
                 (Left: null, Right: 2),
                 (Left: 2, Right: 2),
-                (Left: 2, Right: -2),
+                (Left: 2, Right: -2)
             };
 
             var instances = input.Select(value => (value.Left, value.Right, Result: value.Left + value.Right));
 
             var type = typeof(SlotFromNullableToNullable?);
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
 
             var binaryExpression = Expression.Add(parameterLeft, parameterRight);
 
@@ -444,8 +444,8 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedToNullableAdd()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             var input = new[]
             {
@@ -455,8 +455,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var instances = input.Select(value => (value.Left, value.Right, Result: value.Left + value.Right));
 
-            var parameterLeft = Expression.Parameter(typeof(SlotToNullable), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(SlotToNullable), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(SlotToNullable), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(SlotToNullable), nameRight);
 
             var binaryExpression = Expression.Add(parameterLeft, parameterRight);
 
@@ -480,15 +480,15 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedToNullableAddFromNullable()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             AssertEx.Throws<InvalidOperationException>
             (
                 () => Expression.Add
                 (
-                    Expression.Parameter(typeof(SlotToNullable?), NameLeft),
-                    Expression.Parameter(typeof(SlotToNullable?), NameRight)
+                    Expression.Parameter(typeof(SlotToNullable?), nameLeft),
+                    Expression.Parameter(typeof(SlotToNullable?), nameRight)
                 )
             );
         }

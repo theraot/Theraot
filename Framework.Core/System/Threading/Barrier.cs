@@ -488,7 +488,7 @@ namespace System.Threading
 #if DEBUG
             var result =
 #endif
-            SignalAndWait(Timeout.Infinite, cancellationToken);
+                SignalAndWait(Timeout.Infinite, cancellationToken);
 #if DEBUG
             Debug.Assert(result);
 #endif

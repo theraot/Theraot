@@ -70,7 +70,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void InitedWithFalseToken()
+        public void InitializedWithFalseToken()
         {
             var tk = new CancellationToken(false);
             Assert.IsFalse(tk.CanBeCanceled, "#1");
@@ -78,7 +78,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void InitedWithTrueToken()
+        public void InitializedWithTrueToken()
         {
             var tk = new CancellationToken(true);
             Assert.IsTrue(tk.CanBeCanceled, "#1");

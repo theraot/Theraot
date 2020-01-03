@@ -89,7 +89,7 @@ namespace MonoTests.System.Threading
                 ++Counter;
             }
 
-            public int Counter { get; private set; }
+            public int Counter { get; }
         }
     }
 }

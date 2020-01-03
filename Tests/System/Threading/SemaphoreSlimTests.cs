@@ -6,7 +6,7 @@ using NUnit.Framework;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-#if LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
 using System.Reflection;
 
@@ -34,6 +34,7 @@ namespace System.Threading.Tests
         }
 
         [Test]
+        [Category("RaceCondition")]
         public static void LockCancellationTest()
         {
             LockCancellationTestAsync().Wait();
@@ -112,8 +113,7 @@ namespace System.Threading.Tests
         {
             // Invalid timeout
             RunSemaphoreSlimTest1_Wait(10, 10, -10, true, typeof(ArgumentOutOfRangeException));
-            RunSemaphoreSlimTest1_Wait
-               (10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
+            RunSemaphoreSlimTest1_Wait(10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
         [Test]
@@ -139,8 +139,7 @@ namespace System.Threading.Tests
         {
             // Invalid timeout
             RunSemaphoreSlimTest1_WaitAsync(10, 10, -10, true, typeof(ArgumentOutOfRangeException));
-            RunSemaphoreSlimTest1_WaitAsync
-               (10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
+            RunSemaphoreSlimTest1_WaitAsync(10, 10, new TimeSpan(0, 0, int.MaxValue), true, typeof(ArgumentOutOfRangeException));
         }
 
         /// <summary>
@@ -168,9 +167,9 @@ namespace System.Threading.Tests
                             await semaphores[0].WaitAsync();
                             nonZeroObserved |= counters[0].Value > 0;
 
-                            counters[0].Value = counters[0].Value + 1;
+                            counters[0].Value += 1;
                             semaphores[0].Release();
-                            counters[0].Value = counters[0].Value - 1;
+                            counters[0].Value -= 1;
 
                             if (Interlocked.Decrement(ref remAsyncActions) == 0)
                             {
@@ -183,6 +182,7 @@ namespace System.Threading.Tests
                         {
                             doWorkAsync.Invoke(i);
                         }
+
                         semaphore.Release();
 
                         mre.WaitOne();
@@ -221,14 +221,10 @@ namespace System.Threading.Tests
         {
             RunSemaphoreSlimTest4_Dispose(5, 10, null, null);
             RunSemaphoreSlimTest4_Dispose(5, 10, SemaphoreSlimActions.CurrentCount, null);
-            RunSemaphoreSlimTest4_Dispose
-               (5, 10, SemaphoreSlimActions.Wait, typeof(ObjectDisposedException));
-            RunSemaphoreSlimTest4_Dispose
-               (5, 10, SemaphoreSlimActions.WaitAsync, typeof(ObjectDisposedException));
-            RunSemaphoreSlimTest4_Dispose
-              (5, 10, SemaphoreSlimActions.Release, typeof(ObjectDisposedException));
-            RunSemaphoreSlimTest4_Dispose
-              (5, 10, SemaphoreSlimActions.AvailableWaitHandle, typeof(ObjectDisposedException));
+            RunSemaphoreSlimTest4_Dispose(5, 10, SemaphoreSlimActions.Wait, typeof(ObjectDisposedException));
+            RunSemaphoreSlimTest4_Dispose(5, 10, SemaphoreSlimActions.WaitAsync, typeof(ObjectDisposedException));
+            RunSemaphoreSlimTest4_Dispose(5, 10, SemaphoreSlimActions.Release, typeof(ObjectDisposedException));
+            RunSemaphoreSlimTest4_Dispose(5, 10, SemaphoreSlimActions.AvailableWaitHandle, typeof(ObjectDisposedException));
         }
 
         [Test]
@@ -272,39 +268,48 @@ namespace System.Threading.Tests
                 {
                     return semaphore.Wait(timeSpan);
                 }
+
                 if (param is int milliseconds)
                 {
                     return semaphore.Wait(milliseconds);
                 }
+
                 semaphore.Wait();
                 return null;
             }
+
             if (action == SemaphoreSlimActions.WaitAsync)
             {
                 if (param is TimeSpan timeSpan)
                 {
                     return semaphore.WaitAsync(timeSpan).Result;
                 }
+
                 if (param is int milliseconds)
                 {
                     return semaphore.WaitAsync(milliseconds).Result;
                 }
+
                 semaphore.WaitAsync().Wait();
                 return null;
             }
+
             if (action == SemaphoreSlimActions.Release)
             {
                 return param != null ? semaphore.Release((int)param) : semaphore.Release();
             }
+
             if (action == SemaphoreSlimActions.Dispose)
             {
                 semaphore.Dispose();
                 return null;
             }
+
             if (action == SemaphoreSlimActions.CurrentCount)
             {
                 return semaphore.CurrentCount;
             }
+
             return action == SemaphoreSlimActions.AvailableWaitHandle ? semaphore.AvailableWaitHandle : null;
         }
 
@@ -405,8 +410,7 @@ namespace System.Threading.Tests
         /// <param name="exceptionType">The type of the thrown exception in case of invalid cases,
         /// null for valid cases</param>
         /// <returns>True if the test succeeded, false otherwise</returns>
-        private static void RunSemaphoreSlimTest2_Release
-           (int initial, int maximum, int releaseCount, Type exceptionType)
+        private static void RunSemaphoreSlimTest2_Release(int initial, int maximum, int releaseCount, Type exceptionType)
         {
             using (var semaphore = new SemaphoreSlim(initial, maximum))
             {
@@ -513,7 +517,7 @@ namespace System.Threading.Tests
             }
         }
 
-        private class AsyncLock
+        private sealed class AsyncLock
         {
             private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
@@ -529,7 +533,7 @@ namespace System.Threading.Tests
                 throw new TimeoutException($"Attempt to take lock timed out in {timeout}.");
             }
 
-            private class DisposableSemaphore : IDisposable
+            private sealed class DisposableSemaphore : IDisposable
             {
                 private readonly SemaphoreSlim _s;
 

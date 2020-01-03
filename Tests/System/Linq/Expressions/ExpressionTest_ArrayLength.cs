@@ -44,9 +44,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1NotArray()
         {
-            const string Value = "This is not an array!";
+            const string value = "This is not an array!";
 
-            AssertEx.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant(Value)));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayLength(Expression.Constant(value)));
         }
 
         [Test]
@@ -59,67 +59,67 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileObjectArrayLengthA()
         {
-            const int Size = 0;
-            const string Name = "ary";
+            const int size = 0;
+            const string name = "ary";
 
-            var parameter = Expression.Parameter(typeof(object[]), Name);
+            var parameter = Expression.Parameter(typeof(object[]), name);
             var compiled = Expression.Lambda<Func<object[], int>>
             (
                 Expression.ArrayLength(parameter),
                 parameter
             ).Compile();
 
-            Assert.AreEqual(Size, compiled(new object[Size]));
+            Assert.AreEqual(size, compiled(new object[size]));
         }
 
         [Test]
         public void CompileObjectArrayLengthB()
         {
-            const string ValueA = "jb";
-            const string ValueB = "evain";
-            const string Name = "ary";
+            const string valueA = "jb";
+            const string valueB = "evain";
+            const string name = "ary";
 
-            var parameter = Expression.Parameter(typeof(object[]), Name);
+            var parameter = Expression.Parameter(typeof(object[]), name);
             var compiled = Expression.Lambda<Func<object[], int>>
             (
                 Expression.ArrayLength(parameter),
                 parameter
             ).Compile();
 
-            Assert.AreEqual(2, compiled(new object[] { ValueA, ValueB }));
+            Assert.AreEqual(2, compiled(new object[] { valueA, valueB }));
         }
 
         [Test]
         public void CompileStringArrayLengthA()
         {
-            const int Size = 0;
-            const string Name = "ary";
+            const int size = 0;
+            const string name = "ary";
 
-            var parameter = Expression.Parameter(typeof(string[]), Name);
+            var parameter = Expression.Parameter(typeof(string[]), name);
             var compiled = Expression.Lambda<Func<string[], int>>
             (
                 Expression.ArrayLength(parameter),
                 parameter
             ).Compile();
 
-            Assert.AreEqual(Size, compiled(new string[Size]));
+            Assert.AreEqual(size, compiled(new string[size]));
         }
 
         [Test]
         public void CompileStringArrayLengthB()
         {
-            const string ValueA = "jb";
-            const string ValueB = "evain";
-            const string Name = "ary";
+            const string valueA = "jb";
+            const string valueB = "evain";
+            const string name = "ary";
 
-            var parameter = Expression.Parameter(typeof(string[]), Name);
+            var parameter = Expression.Parameter(typeof(string[]), name);
             var compiled = Expression.Lambda<Func<string[], int>>
             (
                 Expression.ArrayLength(parameter),
                 parameter
             ).Compile();
 
-            Assert.AreEqual(2, compiled(new[] { ValueA, ValueB }));
+            Assert.AreEqual(2, compiled(new[] { valueA, valueB }));
         }
 
         [Test]

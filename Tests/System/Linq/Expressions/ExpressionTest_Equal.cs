@@ -29,7 +29,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -153,12 +154,12 @@ namespace MonoTests.System.Linq.Expressions
                 () =>
                 {
                     int? a = 1;
-                    const int B = 2;
+                    const int b = 2;
 
                     Expression.Equal
                     (
                         Expression.Constant(a, typeof(int?)),
-                        Expression.Constant(B, typeof(int))
+                        Expression.Constant(b, typeof(int))
                     );
                 }
             );
@@ -367,14 +368,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<InvalidOperationException>
             (
-                () =>
-                {
-                    Expression.Equal
-                    (
-                        Expression.Parameter(typeof(SlotToNullable?), "l"),
-                        Expression.Parameter(typeof(SlotToNullable?), "r")
-                    );
-                }
+                () => Expression.Equal
+                (
+                    Expression.Parameter(typeof(SlotToNullable?), "l"),
+                    Expression.Parameter(typeof(SlotToNullable?), "r")
+                )
             );
         }
 
@@ -385,132 +383,64 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public Slot(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static bool operator !=(Slot a, Slot b)
             {
-                return a.Value != b.Value;
+                return a._value != b._value;
             }
 
             public static bool operator ==(Slot a, Slot b)
             {
-                return a.Value == b.Value;
+                return a._value == b._value;
             }
 
             public override bool Equals(object obj)
             {
-                if (!(obj is Slot))
-                {
-                    return false;
-                }
-
-                var other = (Slot)obj;
-                return other.Value == Value;
+                var other = obj as Slot?;
+                return other?._value == _value;
             }
 
             public override int GetHashCode()
             {
-                return Value;
+                return _value;
             }
         }
 
         private struct SlotToNullable
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public SlotToNullable(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static bool? operator !=(SlotToNullable a, SlotToNullable b)
             {
-                return a.Value != b.Value;
+                return a._value != b._value;
             }
 
             public static bool? operator ==(SlotToNullable a, SlotToNullable b)
             {
-                return a.Value == b.Value;
+                return a._value == b._value;
             }
 
             public override bool Equals(object obj)
             {
-                if (!(obj is SlotToNullable))
-                {
-                    return false;
-                }
-
-                var other = (SlotToNullable)obj;
-                return other.Value == Value;
+                var other = obj as SlotToNullable?;
+                return other?._value == _value;
             }
 
             public override int GetHashCode()
             {
-                return Value;
+                return _value;
             }
         }
-
-        /*struct SlotFromNullableToNullable {
-            public int Value;
-
-            public SlotFromNullableToNullable (int value)
-            {
-                this.Value = value;
-            }
-
-            public override bool Equals (object obj)
-            {
-                if (!(obj is SlotFromNullableToNullable))
-                    return false;
-
-                var other = (SlotFromNullableToNullable) obj;
-                return other.Value == this.Value;
-            }
-
-            public override int GetHashCode ()
-            {
-                return Value;
-            }
-
-            public static bool? operator == (SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
-            {
-                if (a.HasValue && b.HasValue)
-                    return (bool?) (a.Value.Value == b.Value.Value);
-                else
-                    return null;
-            }
-
-            public static bool? operator != (SlotFromNullableToNullable? a, SlotFromNullableToNullable? b)
-            {
-                return !(a == b);
-            }
-        }
-
-        [Test]
-        public void UserDefinedFromNullableToNullableEqual ()
-        {
-            var l = Expression.Parameter (typeof (SlotFromNullableToNullable?), "l");
-            var r = Expression.Parameter (typeof (SlotFromNullableToNullable?), "r");
-
-            var node = Expression.Equal (l, r);
-
-            Assert.IsFalse (node.IsLifted);
-            Assert.IsFalse (node.IsLiftedToNull);
-            Assert.AreEqual (typeof (bool?), node.Type);
-            Assert.IsNotNull (node.Method);
-
-            var eq = Expression.Lambda<Func<SlotFromNullableToNullable?, SlotFromNullableToNullable?, bool?>> (node, l, r).Compile ();
-
-            Assert.AreEqual ((bool?) null, eq (null, null));
-            Assert.AreEqual ((bool?) null, eq (new SlotFromNullableToNullable (2), null));
-            Assert.AreEqual ((bool?) null, eq (null, new SlotFromNullableToNullable (2)));
-            Assert.AreEqual ((bool?) true, eq (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (2)));
-            Assert.AreEqual ((bool?) false, eq (new SlotFromNullableToNullable (2), new SlotFromNullableToNullable (-2)));
-        }*/
     }
 }

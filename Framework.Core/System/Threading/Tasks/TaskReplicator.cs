@@ -157,6 +157,8 @@ namespace System.Threading.Tasks
         private sealed class Replica<TState> : Replica
         {
             private readonly ReplicableUserAction<TState> _action;
+
+            // ReSharper disable once RedundantDefaultMemberInitializer
             private TState _state = default!;
 
             public Replica(TaskReplicator replicator, int maxConcurrency, int timeout, ReplicableUserAction<TState> action)

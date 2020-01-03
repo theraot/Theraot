@@ -17,7 +17,10 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
         public void NotSafeEnumerator()
         {
             // This is the way Enumerators normally work
-            var x = new HashSet<int> { 14 };
+            var x = new HashSet<int>
+            {
+                14
+            };
             Assert.Throws
             (
                 typeof(InvalidOperationException),
@@ -37,7 +40,10 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
             var actual = new object();
             var check = new object();
             var equalityComparer = new CustomEqualityComparer<object>(FuncHelper.GetTautologyFunc<object, object>(), _ => 0);
-            var hashSet = new HashSetEx<object>(equalityComparer) { actual };
+            var hashSet = new HashSetEx<object>(equalityComparer)
+            {
+                actual
+            };
             var test = hashSet.TryGetValue(check, out var found);
             Assert.IsTrue(test);
             Assert.AreSame(actual, found);

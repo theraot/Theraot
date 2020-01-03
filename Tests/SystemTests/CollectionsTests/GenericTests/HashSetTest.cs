@@ -570,7 +570,7 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
             Assert.AreEqual(0, source.Count());
         }
 
-        private class StringComparerOrdinalLookAlike : IEqualityComparer<string>
+        private sealed class StringComparerOrdinalLookAlike : IEqualityComparer<string>
         {
             public bool Equals(string x, string y)
             {

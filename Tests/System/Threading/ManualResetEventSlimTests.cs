@@ -167,34 +167,42 @@ namespace MonoTests.System.Threading
                         {
                             Exception exception = null, setting = null;
 
-                            ThreadPool.QueueUserWorkItem(delegate
-                            {
-                                try
+                            ThreadPool.QueueUserWorkItem
+                            (
+                                delegate
                                 {
-                                    countdownEvent[0].Signal();
-                                    countdownEvent[0].Wait(1000);
-                                    _mre.Dispose();
+                                    try
+                                    {
+                                        countdownEvent[0].Signal();
+                                        countdownEvent[0].Wait(1000);
+                                        _mre.Dispose();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        exception = e;
+                                    }
+
+                                    countdownEvent[1].Signal();
                                 }
-                                catch (Exception e)
+                            );
+                            ThreadPool.QueueUserWorkItem
+                            (
+                                delegate
                                 {
-                                    exception = e;
+                                    try
+                                    {
+                                        countdownEvent[0].Signal();
+                                        countdownEvent[0].Wait(1000);
+                                        _mre.Set();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        setting = e;
+                                    }
+
+                                    countdownEvent[1].Signal();
                                 }
-                                countdownEvent[1].Signal();
-                            });
-                            ThreadPool.QueueUserWorkItem(delegate
-                            {
-                                try
-                                {
-                                    countdownEvent[0].Signal();
-                                    countdownEvent[0].Wait(1000);
-                                    _mre.Set();
-                                }
-                                catch (Exception e)
-                                {
-                                    setting = e;
-                                }
-                                countdownEvent[1].Signal();
-                            });
+                            );
 
                             countdownEvent[1].Wait();
                             Assert.IsNull(exception, "#1");
@@ -217,11 +225,14 @@ namespace MonoTests.System.Threading
         [Test]
         public void WaitAfterDisposeTest()
         {
-            Assert.Throws<ObjectDisposedException>(() =>
-            {
-                _mre.Dispose();
-                _mre.Wait();
-            });
+            Assert.Throws<ObjectDisposedException>
+            (
+                () =>
+                {
+                    _mre.Dispose();
+                    _mre.Wait();
+                }
+            );
         }
 
         [Test]
@@ -231,12 +242,15 @@ namespace MonoTests.System.Threading
             var token = new CancellationTokenSource[1];
             using (token[0] = new CancellationTokenSource())
             {
-                ThreadPool.QueueUserWorkItem(delegate
-                {
-                    Thread.Sleep(10);
-                    _mre.Dispose();
-                    token[0].Cancel();
-                });
+                ThreadPool.QueueUserWorkItem
+                (
+                    delegate
+                    {
+                        Thread.Sleep(10);
+                        _mre.Dispose();
+                        token[0].Cancel();
+                    }
+                );
 
                 try
                 {
@@ -298,6 +312,7 @@ namespace MonoTests.System.Threading
                 Assert.IsTrue(mre.Wait(1000), $"{i}");
                 Assert.IsTrue(b, $"{i}");
             }
+
             foreach (var mre in manualResetEvents)
             {
                 mre.Dispose();
@@ -375,7 +390,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("LongRunning")]
-        public void WaitWithCancellationTokenAndNotImmediateSetTest() // TODO: Review
+        public void WaitWithCancellationTokenAndNotImmediateSetTest()
         {
             var manualResetEvent = new ManualResetEventSlim[1];
             using (manualResetEvent[0] = new ManualResetEventSlim())

@@ -21,13 +21,14 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
+//      Federico Di Gregorio <fog@initd.org>
 
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -114,7 +115,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void TestOverflows()
         {
-            // These should overflow, check the various types and codepaths
+            // These should overflow, check the various types and code paths
             // in BinaryExpression:
             MustOverflow(int.MinValue, 1);
             MustOverflow(int.MaxValue, -1);
@@ -182,7 +183,7 @@ namespace MonoTests.System.Linq.Expressions
                 return;
             }
 
-            throw new Exception(string.Format("SubtractChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
+            throw new Exception($"SubtractChecked should have thrown for the creation of a tree with {v1.GetType()} operands");
         }
 
         //
@@ -201,7 +202,7 @@ namespace MonoTests.System.Linq.Expressions
 
         //
         // This method makes sure that compiling an AddChecked on two values
-        // throws an OverflowException, if it doesnt, it fails
+        // throws an OverflowException, if it does not, it fails
         //
         private static void MustOverflow<T>(T v1, T v2)
         {

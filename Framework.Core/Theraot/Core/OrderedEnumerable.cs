@@ -1,5 +1,7 @@
 ﻿// Needed for NET20 (Linq)
 
+// ReSharper disable UseDeconstructionOnParameter
+
 using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -26,7 +26,6 @@
 
 using NUnit.Framework;
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -134,7 +133,7 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Debug.WriteLine(_completionSource.Task.Result);
+                Console.WriteLine(_completionSource.Task.Result);
                 Assert.Fail("#6");
             }
             catch (AggregateException e)
@@ -163,24 +162,25 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Ignore("#4550, Mono GC is lame")]
-        public void SetExceptionAndUnobservedEvent() // TODO: Review
+        public void SetExceptionAndUnobservedEvent()
         {
             var notFromMainThread = false;
-            using (var mre = new ManualResetEvent(false))
+            var manualResetEvents = new ManualResetEvent[1];
+            using (manualResetEvents[0] = new ManualResetEvent(false))
             {
                 var mainThreadId = Thread.CurrentThread.ManagedThreadId;
                 TaskScheduler.UnobservedTaskException += (o, args) =>
                 {
                     notFromMainThread = Thread.CurrentThread.ManagedThreadId != mainThreadId;
                     args.SetObserved();
-                    mre.Set();
+                    manualResetEvents[0].Set();
                 };
                 var inner = new ApplicationException();
                 CreateFaultedTaskCompletionSource(inner);
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
-                Assert.IsTrue(mre.WaitOne(5000), "#1");
+                Assert.IsTrue(manualResetEvents[0].WaitOne(5000), "#1");
                 Assert.IsTrue(notFromMainThread, "#2");
             }
         }
@@ -221,9 +221,9 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(TaskStatus.Faulted, _completionSource.Task.Status, "#3");
             Assert.That(_completionSource.Task.Exception, Is.TypeOf(typeof(AggregateException)), "#4.1");
 
-            var aggr = _completionSource.Task.Exception;
-            Assert.AreEqual(1, aggr.InnerExceptions.Count, "#4.2");
-            Assert.AreEqual(e, aggr.InnerExceptions[0], "#4.3");
+            var aggregate = _completionSource.Task.Exception;
+            Assert.AreEqual(1, aggregate.InnerExceptions.Count, "#4.2");
+            Assert.AreEqual(e, aggregate.InnerExceptions[0], "#4.3");
 
             Assert.IsFalse(_completionSource.TrySetResult(42), "#5");
             Assert.AreEqual(TaskStatus.Faulted, _completionSource.Task.Status, "#6");

@@ -14,79 +14,96 @@ namespace Tests.Theraot.Threading.Needles
     {
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void CountdownEvent_Signal_Concurrent() // TODO: Review
+        public void CountdownEvent_Signal_Concurrent()
         {
             for (var r = 0; r < 100; ++r)
             {
-                using (var ce = new CountdownEvent(500))
+                var countDownEvents = new CountdownEvent[1];
+                using (countDownEvents[0] = new CountdownEvent(500))
                 {
-                    for (var i = 0; i < ce.InitialCount; ++i)
+                    for (var i = 0; i < countDownEvents[0].InitialCount; ++i)
                     {
-                        Task.Factory.StartNew(delegate
-                        {
-                            ce.Signal();
-                        });
+                        Task.Factory.StartNew
+                        (
+                            delegate
+                            {
+                                countDownEvents[0].Signal();
+                            }
+                        );
                     }
-                    Assert.IsTrue(ce.Wait(1000), "#1");
+
+                    Assert.IsTrue(countDownEvents[0].Wait(1000), "#1");
                 }
             }
         }
 
         [Test]
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
-        public void ManualResetEventSlim_SetAfterDisposeTest() // TODO: Review
+        public void ManualResetEventSlim_SetAfterDisposeTest()
         {
             var mre = new ManualResetEventSlim();
 
-            ParallelTestHelper.Repeat(delegate
-            {
-                Exception disp = null, setting = null;
-
-                var evt = new CountdownEvent(2);
-                var evtFinish = new CountdownEvent(2);
-
-                Task.Factory.StartNew(delegate
+            ParallelTestHelper.Repeat
+            (
+                delegate
                 {
-                    try
-                    {
-                        evt.Signal();
-                        evt.Wait(1000);
-                        mre.Dispose();
-                    }
-                    catch (Exception e)
-                    {
-                        disp = e;
-                    }
-                    evtFinish.Signal();
-                });
-                Task.Factory.StartNew(delegate
-                {
-                    try
-                    {
-                        evt.Signal();
-                        evt.Wait(1000);
-                        mre.Set();
-                    }
-                    catch (Exception e)
-                    {
-                        setting = e;
-                    }
-                    evtFinish.Signal();
-                });
+                    Exception disp = null, setting = null;
 
-                var bb = evtFinish.Wait(1000);
-                if (!bb)
-                {
-                    Assert.AreEqual(true, evtFinish.IsSet);
+                    var countdownEvents = new CountdownEvent[2];
+                    countdownEvents[0] = new CountdownEvent(2);
+                    countdownEvents[1] = new CountdownEvent(2);
+
+                    Task.Factory.StartNew
+                    (
+                        delegate
+                        {
+                            try
+                            {
+                                countdownEvents[0].Signal();
+                                countdownEvents[0].Wait(1000);
+                                mre.Dispose();
+                            }
+                            catch (Exception e)
+                            {
+                                disp = e;
+                            }
+
+                            countdownEvents[1].Signal();
+                        }
+                    );
+                    Task.Factory.StartNew
+                    (
+                        delegate
+                        {
+                            try
+                            {
+                                countdownEvents[0].Signal();
+                                countdownEvents[0].Wait(1000);
+                                mre.Set();
+                            }
+                            catch (Exception e)
+                            {
+                                setting = e;
+                            }
+
+                            countdownEvents[1].Signal();
+                        }
+                    );
+
+                    var bb = countdownEvents[1].Wait(1000);
+                    if (!bb)
+                    {
+                        Assert.AreEqual(true, countdownEvents[1].IsSet);
+                    }
+
+                    Assert.IsTrue(bb, "#0");
+                    Assert.IsNull(disp, "#1");
+                    Assert.IsNull(setting, "#2");
+
+                    countdownEvents[0].Dispose();
+                    countdownEvents[1].Dispose();
                 }
-
-                Assert.IsTrue(bb, "#0");
-                Assert.IsNull(disp, "#1");
-                Assert.IsNull(setting, "#2");
-
-                evt.Dispose();
-                evtFinish.Dispose();
-            });
+            );
         }
 
         [Test]
@@ -95,18 +112,22 @@ namespace Tests.Theraot.Threading.Needles
         {
             for (var i = 0; i < 10000; ++i)
             {
-                using (var mre = new ManualResetEventSlim())
+                var manualResetEvents = new ManualResetEventSlim[1];
+                using (manualResetEvents[0] = new ManualResetEventSlim())
                 {
                     var b = true;
 
-                    Task.Factory.StartNew(mre.Set);
+                    Task.Factory.StartNew(manualResetEvents[0].Set);
 
-                    Task.Factory.StartNew(delegate
-                    {
-                        b &= mre.Wait(1000);
-                    });
+                    Task.Factory.StartNew
+                    (
+                        delegate
+                        {
+                            b &= manualResetEvents[0].Wait(1000);
+                        }
+                    );
 
-                    Assert.IsTrue(mre.Wait(1000), i.ToString());
+                    Assert.IsTrue(manualResetEvents[0].Wait(1000), i.ToString());
                     Assert.IsTrue(b, i.ToString());
                 }
             }
@@ -114,28 +135,33 @@ namespace Tests.Theraot.Threading.Needles
 
         [Test]
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
-        public void Progressor_ThreadedUse() // TODO: Review
+        public void Progressor_ThreadedUse()
         {
-            var source = Progressor<int>.CreateFromIList(new List<int>
-            {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9
-            });
-            using (var handle = new ManualResetEvent(false))
+            var source = Progressor<int>.CreateFromIList
+            (
+                new List<int>
+                {
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                }
+            );
+            var manualResetEvents = new ManualResetEvent[1];
+            using (manualResetEvents[0] = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };
+
                 void Work()
                 {
                     Interlocked.Increment(ref count[0]);
-                    handle.WaitOne();
+                    manualResetEvents[0].WaitOne();
                     foreach (var item in source)
                     {
                         GC.KeepAlive(item);
@@ -144,20 +170,23 @@ namespace Tests.Theraot.Threading.Needles
 
                     Interlocked.Increment(ref count[1]);
                 }
+
                 Task.Factory.StartNew(Work);
                 Task.Factory.StartNew(Work);
                 while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(0);
                 }
-                handle.Set();
+
+                manualResetEvents[0].Set();
                 while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(0);
                 }
+
                 Assert.AreEqual(10, Volatile.Read(ref count[2]));
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-                handle.Close();
+                manualResetEvents[0].Close();
 #endif
             }
         }

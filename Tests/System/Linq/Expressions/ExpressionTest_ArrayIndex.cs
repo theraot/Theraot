@@ -21,7 +21,7 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
+//      Federico Di Gregorio <fog@initd.org>
 
 using System;
 using System.Collections.Generic;
@@ -45,80 +45,80 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1NotArray()
         {
-            const string Value = "This is not an array!";
-            const int Index = 1;
+            const string value = "This is not an array!";
+            const int index = 1;
 
-            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(Value), Expression.Constant(Index)));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(value), Expression.Constant(index)));
         }
 
         [Test]
         public void Arg1Null()
         {
-            const int Index = 1;
+            const int index = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(null, Expression.Constant(Index)));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(null, Expression.Constant(index)));
         }
 
         [Test]
         public void Arg2Null1()
         {
-            const int Size = 1;
+            const int size = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression)null));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), (Expression)null));
         }
 
         [Test]
         public void Arg2Null2()
         {
-            const int Size = 1;
+            const int size = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (IEnumerable<Expression>)null));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), (IEnumerable<Expression>)null));
         }
 
         [Test]
         public void Arg2Null3()
         {
-            const int Size = 1;
+            const int size = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), (Expression[])null));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), (Expression[])null));
         }
 
         [Test]
         public void Arg2WrongNumber1()
         {
-            const int Size = 1;
-            const int IndexA = 1;
-            const int IndexB = 1;
+            const int size = 1;
+            const int indexA = 1;
+            const int indexB = 1;
 
-            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
+            Expression[] indexes = { Expression.Constant(indexA), Expression.Constant(indexB) };
 
-            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[Size]), indexes));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), indexes));
         }
 
         [Test]
         public void Arg2WrongType1()
         {
             const int size = 1;
-            const bool Index = true;
+            const bool index = true;
 
-            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), Expression.Constant(Index)));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[size]), Expression.Constant(index)));
         }
 
         [Test]
         public void Arg2WrongType2()
         {
-            const int SizeA = 1;
-            const int SizeB = 1;
-            const int IndexA = 1;
-            const long IndexB = 1L;
+            const int sizeA = 1;
+            const int sizeB = 1;
+            const int indexA = 1;
+            const long indexB = 1L;
 
-            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
+            Expression[] indexes = { Expression.Constant(indexA), Expression.Constant(indexB) };
 
-            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[SizeA, SizeB]), indexes));
+            AssertEx.Throws<ArgumentException>(() => Expression.ArrayIndex(Expression.Constant(new int[sizeA, sizeB]), indexes));
         }
 
         [Test]
@@ -188,63 +188,63 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Rank1Struct()
         {
-            const int Value = 42;
-            const int Index = 0;
+            const int value = 42;
+            const int index = 0;
             var type = typeof(int);
 
-            int[] array = { Value };
+            int[] array = { value };
 
-            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(Index));
+            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(index));
             Assert.AreEqual(ExpressionType.ArrayIndex, binaryExpression.NodeType, "ArrayIndex#01");
             Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#02");
             Assert.IsNull(binaryExpression.Method, "ArrayIndex#03");
-            Assert.AreEqual($"value({type.FullName}[])[{Index}]", binaryExpression.ToString(), "ArrayIndex#04");
+            Assert.AreEqual($"value({type.FullName}[])[{index}]", binaryExpression.ToString(), "ArrayIndex#04");
         }
 
         [Test]
         public void Rank1UserDefinedClass()
         {
             var value = new NoOpClass();
-            const int Index = 0;
+            const int index = 0;
             var type = typeof(NoOpClass);
 
             NoOpClass[] array = { value };
 
-            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(Index));
+            var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), Expression.Constant(index));
             Assert.AreEqual(ExpressionType.ArrayIndex, binaryExpression.NodeType, "ArrayIndex#05");
             Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#06");
             Assert.IsNull(binaryExpression.Method, "ArrayIndex#07");
-            Assert.AreEqual($"value({type.FullName}[])[{Index}]", binaryExpression.ToString(), "ArrayIndex#08");
+            Assert.AreEqual($"value({type.FullName}[])[{index}]", binaryExpression.ToString(), "ArrayIndex#08");
         }
 
         [Test]
         public void Rank2Struct()
         {
-            const int Value = 42;
-            const int IndexA = 1;
-            const int IndexB = 0;
+            const int value = 42;
+            const int indexA = 1;
+            const int indexB = 0;
             var type = typeof(int);
 
-            int[,] array = { { Value }, { Value } };
-            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
+            int[,] array = { { value }, { value } };
+            Expression[] indexes = { Expression.Constant(indexA), Expression.Constant(indexB) };
 
             var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), indexes);
             Assert.AreEqual(ExpressionType.Call, binaryExpression.NodeType, "ArrayIndex#09");
             Assert.AreEqual(type, binaryExpression.Type, "ArrayIndex#10");
-            Assert.AreEqual($"value({type.FullName}[,]).Get({IndexA}, {IndexB})", binaryExpression.ToString(), "ArrayIndex#12");
+            Assert.AreEqual($"value({type.FullName}[,]).Get({indexA}, {indexB})", binaryExpression.ToString(), "ArrayIndex#12");
         }
 
         [Test]
         public void Rank2UserDefinedClass()
         {
-            var ValueA = new NoOpClass();
-            var ValueB = new NoOpClass();
-            const int IndexA = 1;
-            const int IndexB = 0;
+            var valueA = new NoOpClass();
+            var valueB = new NoOpClass();
+            const int indexA = 1;
+            const int indexB = 0;
             var type = typeof(NoOpClass);
 
-            NoOpClass[,] array = { { ValueA }, { ValueB } };
-            Expression[] indexes = { Expression.Constant(IndexA), Expression.Constant(IndexB) };
+            NoOpClass[,] array = { { valueA }, { valueB } };
+            Expression[] indexes = { Expression.Constant(indexA), Expression.Constant(indexB) };
 
             var binaryExpression = Expression.ArrayIndex(Expression.Constant(array), indexes);
             Assert.AreEqual(ExpressionType.Call, binaryExpression.NodeType, "ArrayIndex#13");
@@ -254,11 +254,11 @@ namespace MonoTests.System.Linq.Expressions
 
         private static Func<T[], int, T> CreateArrayAccess<T>()
         {
-            const string NameArray = "a";
-            const string NameIndex = "b";
+            const string nameArray = "a";
+            const string nameIndex = "b";
 
-            var parameterArray = Expression.Parameter(typeof(T[]), NameArray);
-            var parameterIndex = Expression.Parameter(typeof(int), NameIndex);
+            var parameterArray = Expression.Parameter(typeof(T[]), nameArray);
+            var parameterIndex = Expression.Parameter(typeof(int), nameIndex);
 
             return Expression.Lambda<Func<T[], int, T>>(Expression.ArrayIndex(parameterArray, parameterIndex), parameterArray, parameterIndex).Compile();
         }
@@ -273,7 +273,7 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        private class Foo
+        private sealed class Foo
         {
             // Empty
         }

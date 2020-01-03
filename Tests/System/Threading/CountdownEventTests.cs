@@ -351,18 +351,25 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void Signal_Concurrent() // TODO: Review
+        public void Signal_Concurrent()
         {
             for (var r = 0; r < 100; ++r)
             {
-                using (var ce = new CountdownEvent(500))
+                var countDownEvens = new CountdownEvent[1];
+                using (countDownEvens[0] = new CountdownEvent(500))
                 {
-                    for (var i = 0; i < ce.InitialCount; ++i)
+                    for (var i = 0; i < countDownEvens[0].InitialCount; ++i)
                     {
-                        ThreadPool.QueueUserWorkItem(delegate { ce.Signal(); });
+                        ThreadPool.QueueUserWorkItem
+                        (
+                            delegate
+                            {
+                                countDownEvens[0].Signal();
+                            }
+                        );
                     }
 
-                    Assert.IsTrue(ce.Wait(1000), "#1");
+                    Assert.IsTrue(countDownEvens[0].Wait(1000), "#1");
                 }
             }
         }

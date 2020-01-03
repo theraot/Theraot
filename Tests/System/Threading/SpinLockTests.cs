@@ -39,12 +39,15 @@ namespace MonoTests.System.Threading
         [Test]
         public void FirstTakenParameterTest()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var taken = true;
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var taken = true;
 
-                _sl.Enter(ref taken);
-            });
+                    _sl.Enter(ref taken);
+                }
+            );
         }
 
         [Test]
@@ -102,27 +105,33 @@ namespace MonoTests.System.Threading
         [Test]
         public void RecursionExceptionTest()
         {
-            Assert.Throws<LockRecursionException>(() =>
-            {
-                _sl = new SpinLock(true);
-                var taken = false;
-                var taken2 = false;
+            Assert.Throws<LockRecursionException>
+            (
+                () =>
+                {
+                    _sl = new SpinLock(true);
+                    var taken = false;
+                    var taken2 = false;
 
-                _sl.Enter(ref taken);
-                Assert.IsTrue(taken, "#1");
-                _sl.Enter(ref taken2);
-            });
+                    _sl.Enter(ref taken);
+                    Assert.IsTrue(taken, "#1");
+                    _sl.Enter(ref taken2);
+                }
+            );
         }
 
         [Test]
         public void SecondTakenParameterTest()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var taken = true;
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var taken = true;
 
-                _sl.TryEnter(ref taken);
-            });
+                    _sl.TryEnter(ref taken);
+                }
+            );
         }
 
         [Test]

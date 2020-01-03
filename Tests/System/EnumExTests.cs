@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿// ReSharper disable UnusedMember.Local
+
+using NUnit.Framework;
 using System;
 
 namespace Tests.System
@@ -10,7 +12,7 @@ namespace Tests.System
         private enum WithZero
         {
             Zero = 0,
-            One = 1,
+            One = 1
         }
 
         [Test]

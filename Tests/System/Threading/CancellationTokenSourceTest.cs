@@ -205,11 +205,13 @@ namespace MonoTests.System.Threading
         public void CancelOrder()
         {
             var current = 0;
+
             void Action(object x)
             {
                 Assert.AreEqual(current, x);
                 current++;
             }
+
             using (var cts = new CancellationTokenSource())
             {
                 cts.Token.Register(Action, 2);
@@ -257,7 +259,7 @@ namespace MonoTests.System.Threading
 
         [Test]
         [Category("LongRunning")]
-        public void ConcurrentCancelLinkedTokenSourceWhileDisposing() // TODO: Review
+        public void ConcurrentCancelLinkedTokenSourceWhileDisposing()
         {
             ParallelTestHelper.Repeat
             (
@@ -469,11 +471,7 @@ namespace MonoTests.System.Threading
                 token.Register(reg.Dispose);
                 token.Register
                 (
-                    () =>
-                    {
-                        token.Register(() => register = true);
-                    }
-                );
+                    () => token.Register(() => register = true));
                 source.Cancel();
 
 #if GREATERTHAN_NETCOREAPP11 && LESSTHAN_NETCOREAPP30
@@ -557,6 +555,7 @@ namespace MonoTests.System.Threading
                         Assert.Fail();
                     }
                 }
+
                 var time = called - set;
                 var milliseconds = time / TimeSpan.TicksPerMillisecond;
                 if (milliseconds > 0 && milliseconds < 50)
@@ -717,6 +716,7 @@ namespace MonoTests.System.Threading
                 {
                     GC.KeepAlive(cancellationTokenSource);
                 }
+
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)

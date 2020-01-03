@@ -6,12 +6,16 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
+using NUnit.Framework;
+
+#if !NETCOREAPP2_0
+
 using System.Threading;
 using System.Linq;
-using NUnit.Framework;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
+
+#endif
 
 namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 {
@@ -122,6 +126,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     expectedCount--;
                 }
 
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 didRemove = didRemove || removed;
                 Assert.IsTrue(didRemove);
                 Assert.AreEqual(expectedCount, dictionary.Count);
@@ -136,6 +141,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     expectedCount++;
                 }
 
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 didAdd = didAdd || added;
                 Assert.IsTrue(didAdd);
                 Assert.AreEqual(expectedCount, dictionary.Count);
@@ -169,7 +175,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.IsTrue(dictionary.TryAdd("original_key_to_remove", "original_value_to_remove"));
             int[] expectedCount = { 2 };
             Assert.AreEqual(expectedCount[0], dictionary.Count);
-            string value = null;
             var foundCount = 0;
             var didAdd = 0;
             var didRemove = 0;
@@ -177,7 +182,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
             void Remover()
             {
-                var removed = dictionary.TryRemove("original_key_to_remove", out value);
+                var removed = dictionary.TryRemove("original_key_to_remove", out _);
                 if (Volatile.Read(ref didRemove) == 0 && removed)
                 {
                     expectedCount[0]--;

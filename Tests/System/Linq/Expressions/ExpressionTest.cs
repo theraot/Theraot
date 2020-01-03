@@ -53,10 +53,10 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileActionDiscardingRetValue()
         {
-            const string Name = "i";
-            const int Value = 42;
+            const string name = "i";
+            const int value = 42;
 
-            var parameter = Expression.Parameter(typeof(int), Name);
+            var parameter = Expression.Parameter(typeof(int), name);
             var identity = new Func<int, int>(Identity).GetMethodInfo();
             Assert.IsNotNull(identity);
 
@@ -66,16 +66,16 @@ namespace MonoTests.System.Linq.Expressions
 
             _buffer = 0;
 
-            compiled(Value);
-            Assert.AreEqual(Value, _buffer);
+            compiled(value);
+            Assert.AreEqual(value, _buffer);
         }
 
         [Test]
         public void ExpressionDelegateTarget()
         {
-            const string Name = "str";
+            const string name = "str";
 
-            var parameter = Expression.Parameter(typeof(string), Name);
+            var parameter = Expression.Parameter(typeof(string), name);
             var compiled = Expression.Lambda<Func<string, string>>(parameter, parameter).Compile();
 
             Assert.AreEqual(typeof(Func<string, string>), compiled.GetType());
@@ -92,9 +92,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetActionTypeArgTooBig()
         {
-            const int Value = 45; // > 16
+            const int value = 45; // > 16
 
-            AssertEx.Throws<ArgumentException>(() => Expression.GetActionType(GetTestTypeArray(Value)));
+            AssertEx.Throws<ArgumentException>(() => Expression.GetActionType(GetTestTypeArray(value)));
         }
 
         [Test]
@@ -135,9 +135,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void GetFuncTypeArgTooBig()
         {
-            const int Value = 64; // > 17
+            const int value = 64; // > 17
 
-            AssertEx.Throws<ArgumentException>(() => Expression.GetFuncType(GetTestTypeArray(Value)));
+            AssertEx.Throws<ArgumentException>(() => Expression.GetFuncType(GetTestTypeArray(value)));
         }
 
         [Test]
@@ -165,10 +165,10 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void HoistedParameter()
         {
-            const string Name = "i";
-            const int Value = 42;
+            const string name = "i";
+            const int value = 42;
 
-            var parameter = Expression.Parameter(typeof(int), Name);
+            var parameter = Expression.Parameter(typeof(int), name);
 
             var compiled = Expression.Lambda<Func<int, string>>
             (
@@ -182,58 +182,58 @@ namespace MonoTests.System.Linq.Expressions
                 parameter
             ).Compile();
 
-            Assert.AreEqual($"{Value}", compiled(Value));
+            Assert.AreEqual($"{value}", compiled(value));
         }
 
         [Test]
         public void Parameter()
         {
-            const string Name = "foo";
+            const string name = "foo";
             var type = typeof(string);
 
-            var parameter = Expression.Parameter(type, Name);
-            Assert.AreEqual(Name, parameter.Name);
+            var parameter = Expression.Parameter(type, name);
+            Assert.AreEqual(name, parameter.Name);
             Assert.AreEqual(type, parameter.Type);
-            Assert.AreEqual(Name, parameter.ToString());
+            Assert.AreEqual(name, parameter.ToString());
         }
 
         [Test]
         public void ParameterEmptyName()
         {
-            const string Name = ""; // ""
+            const string name = ""; // ""
             var type = typeof(string);
 
-            var parameter = Expression.Parameter(type, Name);
-            Assert.AreEqual(Name, parameter.Name);
+            var parameter = Expression.Parameter(type, name);
+            Assert.AreEqual(name, parameter.Name);
             Assert.AreEqual(type, parameter.Type);
         }
 
         [Test]
         public void ParameterNullName()
         {
-            const string Name = null; // null
+            const string name = null; // null
             var type = typeof(string);
 
-            var parameter = Expression.Parameter(type, Name);
-            Assert.AreEqual(Name, parameter.Name);
+            var parameter = Expression.Parameter(type, name);
+            Assert.AreEqual(name, parameter.Name);
             Assert.AreEqual(type, parameter.Type);
         }
 
         [Test]
         public void ParameterNullType()
         {
-            const string Name = "foo";
+            const string name = "foo";
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.Parameter(null, Name));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.Parameter(null, name));
         }
 
         [Test]
         public void SimpleHoistedParameter()
         {
-            const string Name = "s";
-            const string Value = "x";
+            const string name = "s";
+            const string value = "x";
 
-            var parameter = Expression.Parameter(typeof(string), Name);
+            var parameter = Expression.Parameter(typeof(string), name);
 
             var compiled = Expression.Lambda<Func<string, Func<string>>>
             (
@@ -241,22 +241,22 @@ namespace MonoTests.System.Linq.Expressions
                 parameter
             ).Compile();
 
-            var func = compiled(Value);
+            var func = compiled(value);
 
-            Assert.AreEqual(Value, func());
+            Assert.AreEqual(value, func());
         }
 
         [Test]
         public void TwoHoistingLevels()
         {
-            const string NameLeft = "x";
-            const string NameRight = "y";
-            const string ValueLeft = "Hello ";
-            const string ValueRight = "World !";
-            const string Result = ValueLeft + ValueRight;
+            const string nameLeft = "x";
+            const string nameRight = "y";
+            const string valueLeft = "Hello ";
+            const string valueRight = "World !";
+            const string result = valueLeft + valueRight;
 
-            var parameterLeft = Expression.Parameter(typeof(string), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(string), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(string), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(string), nameRight);
 
             var lambda = Expression.Lambda<Func<string, Func<string, Func<string>>>>
             (
@@ -277,18 +277,18 @@ namespace MonoTests.System.Linq.Expressions
             );
 
             var compiled = lambda.Compile();
-            var func = compiled(ValueLeft);
-            var innerFunc = func(ValueRight);
+            var func = compiled(valueLeft);
+            var innerFunc = func(valueRight);
 
-            Assert.AreEqual(Result, innerFunc());
+            Assert.AreEqual(result, innerFunc());
         }
 
         [Test]
         public void VoidParameter()
         {
-            const string Name = "hello";
+            const string name = "hello";
 
-            AssertEx.Throws<ArgumentException>(() => Expression.Parameter(typeof(void), Name));
+            AssertEx.Throws<ArgumentException>(() => Expression.Parameter(typeof(void), name));
         }
 
         private static Type[] GetTestTypeArray(int length)

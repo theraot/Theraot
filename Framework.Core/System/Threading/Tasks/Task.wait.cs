@@ -59,7 +59,7 @@ namespace System.Threading.Tasks
 #if DEBUG
             var waitResult =
 #endif
-            WaitAll(tasks, Timeout.Infinite);
+                WaitAll(tasks, Timeout.Infinite);
 
 #if DEBUG
             Contract.Assert(waitResult, "expected wait to succeed");

@@ -121,7 +121,8 @@ namespace Theraot.Threading
                     {
                         promised.SetError(exception);
                     }
-                });
+                }
+            );
             return result;
         }
 
@@ -141,7 +142,8 @@ namespace Theraot.Threading
                     {
                         promised.SetError(exception);
                     }
-                });
+                }
+            );
             return result;
         }
 

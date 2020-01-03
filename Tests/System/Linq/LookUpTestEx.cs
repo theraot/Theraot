@@ -45,9 +45,11 @@ namespace MonoTests.System.Linq
                     index++;
                     count++;
                 }
+
                 Assert.AreEqual(count, 5);
                 first = false;
             }
+
             Assert.AreEqual(index, 10);
         }
 
@@ -86,9 +88,11 @@ namespace MonoTests.System.Linq
                     index++;
                     count++;
                 }
+
                 Assert.AreEqual(count, 5);
                 first = false;
             }
+
             Assert.AreEqual(index, 10);
         }
 
@@ -123,7 +127,7 @@ namespace MonoTests.System.Linq
             {
                 for (var index = 0; index < _count; index++)
                 {
-                    Total = Total + 1;
+                    Total += 1;
                     yield return Total;
                 }
             }

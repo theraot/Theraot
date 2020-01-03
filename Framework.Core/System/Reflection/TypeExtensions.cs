@@ -915,9 +915,11 @@ namespace System.Reflection
                     return methodInfo.IsPublic;
 
                 default:
-                    return memberInfo is PropertyInfo propertyInfo &&
-                            (propertyInfo.GetGetMethod()?.IsPublic == true ||
-                             propertyInfo.GetSetMethod()?.IsPublic == true);
+                    return memberInfo is PropertyInfo propertyInfo
+                           && (
+                               propertyInfo.GetGetMethod()?.IsPublic == true
+                               || propertyInfo.GetSetMethod()?.IsPublic == true
+                           );
             }
         }
 

@@ -33,6 +33,7 @@ namespace Tests.Theraot.Collections
                     Assert.AreEqual(item, indexA);
                     indexA++;
                 }
+
                 Assert.AreEqual(6, indexA);
                 Assert.AreEqual(indexA, indexB);
             }
@@ -63,6 +64,7 @@ namespace Tests.Theraot.Collections
                     Assert.AreEqual(item, indexA);
                     indexA++;
                 }
+
                 Assert.AreEqual(6, indexA);
                 Assert.AreEqual(indexA, indexB);
             }
@@ -71,35 +73,54 @@ namespace Tests.Theraot.Collections
         [Test]
         public void ThreadedUse()
         {
-            var source = Progressor<int>.CreateFromIList(new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-            using (var handle = new ManualResetEvent(false))
+            var source = Progressor<int>.CreateFromIList
+            (
+                new List<int>
+                {
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                }
+            );
+            var manualResetEvents = new ManualResetEvent[1];
+            using (manualResetEvents[0] = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };
                 var work = new WaitCallback
-                    (
-                        _ =>
+                (
+                    _ =>
+                    {
+                        Interlocked.Increment(ref count[0]);
+                        manualResetEvents[0].WaitOne();
+                        foreach (var item in source)
                         {
-                            Interlocked.Increment(ref count[0]);
-                            handle.WaitOne();
-                            foreach (var item in source)
-                            {
-                                GC.KeepAlive(item);
-                                Interlocked.Increment(ref count[2]);
-                            }
-                            Interlocked.Increment(ref count[1]);
+                            GC.KeepAlive(item);
+                            Interlocked.Increment(ref count[2]);
                         }
-                    );
+
+                        Interlocked.Increment(ref count[1]);
+                    }
+                );
                 ThreadPool.QueueUserWorkItem(work);
                 ThreadPool.QueueUserWorkItem(work);
                 while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(1);
                 }
-                handle.Set();
+
+                manualResetEvents[0].Set();
                 while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(1);
                 }
+
                 Assert.AreEqual(10, Volatile.Read(ref count[2]));
             }
         }
@@ -108,34 +129,38 @@ namespace Tests.Theraot.Collections
         public void ThreadedUseArray()
         {
             var source = Progressor<int>.CreateFromArray(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-            using (var handle = new ManualResetEvent(false))
+            var manualResetEvents = new ManualResetEvent[1];
+            using (manualResetEvents[0] = new ManualResetEvent(false))
             {
                 int[] count = { 0, 0, 0 };
                 var work = new WaitCallback
-                    (
-                        _ =>
+                (
+                    _ =>
+                    {
+                        Interlocked.Increment(ref count[0]);
+                        manualResetEvents[0].WaitOne();
+                        foreach (var item in source)
                         {
-                            Interlocked.Increment(ref count[0]);
-                            handle.WaitOne();
-                            foreach (var item in source)
-                            {
-                                GC.KeepAlive(item);
-                                Interlocked.Increment(ref count[2]);
-                            }
-                            Interlocked.Increment(ref count[1]);
+                            GC.KeepAlive(item);
+                            Interlocked.Increment(ref count[2]);
                         }
-                    );
+
+                        Interlocked.Increment(ref count[1]);
+                    }
+                );
                 ThreadPool.QueueUserWorkItem(work);
                 ThreadPool.QueueUserWorkItem(work);
                 while (Volatile.Read(ref count[0]) != 2)
                 {
                     Thread.Sleep(1);
                 }
-                handle.Set();
+
+                manualResetEvents[0].Set();
                 while (Volatile.Read(ref count[1]) != 2)
                 {
                     Thread.Sleep(1);
                 }
+
                 Assert.AreEqual(10, Volatile.Read(ref count[2]));
             }
         }

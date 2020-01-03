@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CA2235 // Mark all non-serializable fields
+// ReSharper disable InvertIf
 
 using System;
 using System.Collections;
@@ -40,28 +41,30 @@ namespace Theraot.Collections.ThreadSafe
         ~BucketCore()
         {
             // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
-            if (!GCMonitor.FinalizingForUnload)
+            if (GCMonitor.FinalizingForUnload)
             {
-                var arrayFirst = _arrayFirst;
-                if (arrayFirst != null)
-                {
-                    ArrayReservoir<object?>.DonateArray(arrayFirst);
-                    _arrayFirst = null;
-                }
+                return;
+            }
 
-                var arraySecond = _arraySecond;
-                if (arraySecond != null)
-                {
-                    ArrayReservoir<object?>.DonateArray(arraySecond);
-                    _arraySecond = null;
-                }
+            var arrayFirst = _arrayFirst;
+            if (arrayFirst != null)
+            {
+                ArrayReservoir<object?>.DonateArray(arrayFirst);
+                _arrayFirst = null;
+            }
 
-                var arrayUse = _arrayUse;
-                if (arrayUse != null)
-                {
-                    ArrayReservoir<int>.DonateArray(arrayUse);
-                    _arrayUse = null;
-                }
+            var arraySecond = _arraySecond;
+            if (arraySecond != null)
+            {
+                ArrayReservoir<object?>.DonateArray(arraySecond);
+                _arraySecond = null;
+            }
+
+            var arrayUse = _arrayUse;
+            if (arrayUse != null)
+            {
+                ArrayReservoir<int>.DonateArray(arrayUse);
+                _arrayUse = null;
             }
         }
 
@@ -75,6 +78,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+
             var subIndex = SubIndex(index);
             return Do
             (
@@ -97,6 +101,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+
             var subIndex = SubIndex(index);
             return DoMayDecrement
             (
@@ -120,6 +125,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+
             var subIndex = SubIndex(index);
             return DoMayIncrement
             (
@@ -139,10 +145,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentOutOfRangeException(nameof(indexFrom), "indexFrom < 0");
             }
+
             if (indexTo < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexTo), "indexTo < 0");
             }
+
             var startSubIndex = SubIndex(indexFrom);
             var endSubIndex = SubIndex(indexTo);
             return PrivateEnumerableRange(indexFrom, indexTo, startSubIndex, endSubIndex);
@@ -228,24 +236,28 @@ namespace Theraot.Collections.ThreadSafe
                 // Try to restore second
                 var foundSecond = Interlocked.CompareExchange(ref second, foundFirst, null);
                 // second was set to first
-                if (foundSecond == null && foundFirst == null)
+                if (foundSecond != null || foundFirst != null)
                 {
-                    // We need to recreate the first
-                    var result = factory();
-                    // Try to set to first
-                    foundFirst = Interlocked.CompareExchange(ref first, result, null);
-                    if (foundFirst == null)
-                    {
-                        // first was set to result
-                        if (result != null)
-                        {
-                            Interlocked.Increment(ref use);
-                        }
-
-                        // Try to set to second
-                        Interlocked.CompareExchange(ref second, result, null);
-                    }
+                    return;
                 }
+
+                // We need to recreate the first
+                var result = factory();
+                // Try to set to first
+                foundFirst = Interlocked.CompareExchange(ref first, result, null);
+                if (foundFirst != null)
+                {
+                    return;
+                }
+
+                // first was set to result
+                if (result != null)
+                {
+                    Interlocked.Increment(ref use);
+                }
+
+                // Try to set to second
+                Interlocked.CompareExchange(ref second, result, null);
             }
             finally
             {
@@ -279,12 +291,13 @@ namespace Theraot.Collections.ThreadSafe
                 var foundFirst = Interlocked.CompareExchange(ref first, null, null);
                 // Try to restore second
                 Interlocked.CompareExchange(ref second, foundFirst, null);
-                if (callback(ref second))
+                if (!callback(ref second))
                 {
-                    Interlocked.Decrement(ref use);
-                    return true;
+                    return false;
                 }
-                return false;
+
+                Interlocked.Decrement(ref use);
+                return true;
             }
             finally
             {
@@ -298,12 +311,13 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Increment(ref use);
                 DoEnsureSize(ref use, ref first, ref second, factory);
-                if (callback(ref first))
+                if (!callback(ref first))
                 {
-                    Interlocked.Increment(ref use);
-                    return true;
+                    return false;
                 }
-                return false;
+
+                Interlocked.Increment(ref use);
+                return true;
             }
             finally
             {
@@ -329,6 +343,7 @@ namespace Theraot.Collections.ThreadSafe
                         {
                             continue;
                         }
+
                         yield return foundFirst;
                     }
                     else
@@ -337,6 +352,7 @@ namespace Theraot.Collections.ThreadSafe
                         {
                             continue;
                         }
+
                         var subIndexFrom = subIndex == startSubIndex ? core.SubIndex(indexFrom) : 0;
                         var subIndexTo = subIndex == endSubIndex ? core.SubIndex(indexTo) : _capacity - 1;
                         foreach (var item in core.PrivateEnumerableRange(indexFrom, indexTo, subIndexFrom, subIndexTo))

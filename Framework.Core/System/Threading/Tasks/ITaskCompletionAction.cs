@@ -36,7 +36,7 @@ namespace System.Threading.Tasks
 #if DEBUG
                 var success =
 #endif
-                TrySetResult(completingTask);
+                    TrySetResult(completingTask);
 #if DEBUG
                 Contract.Assert(success, "Only one task should have gotten to this point, and thus this must be successful.");
 #endif

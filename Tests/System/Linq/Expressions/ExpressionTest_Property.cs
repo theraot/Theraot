@@ -21,7 +21,7 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
+//      Federico Di Gregorio <fog@initd.org>
 
 using System;
 using System.Linq.Expressions;
@@ -100,13 +100,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // This will fail because access to a static field should be created using a PropertyInfo and
-                    // not an instance plus the field name.
-                    Expression.Property(Expression.Constant(new MemberClass()), "StaticProperty");
-                }
-            );
+                () => Expression.Property(Expression.Constant(new MemberClass()), "StaticProperty"));
         }
 
         [Test]
@@ -136,14 +130,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    Expression.Property
-                    (
-                        Expression.Parameter(GetType(), "t"),
-                        GetType().GetProperty("StaticProperty")
-                    );
-                }
+                () => Expression.Property
+                (
+                    Expression.Parameter(GetType(), "t"),
+                    GetType().GetProperty("StaticProperty")
+                )
             );
         }
 
@@ -156,7 +147,17 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.Property(p, typeof(Foo).GetProperty("Prop")), p
             ).Compile();
 
-            Assert.AreEqual("foo", compiled(new Foo { Prop = "foo" }));
+            Assert.AreEqual
+            (
+                "foo",
+                compiled
+                (
+                    new Foo
+                    {
+                        Prop = "foo"
+                    }
+                )
+            );
         }
 
         [Test]

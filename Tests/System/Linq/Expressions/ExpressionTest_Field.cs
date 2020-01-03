@@ -21,7 +21,7 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
+//      Federico Di Gregorio <fog@initd.org>
 
 using System;
 using System.Linq.Expressions;
@@ -94,7 +94,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(Gazonk), "gazonk");
             var compiled = Expression.Lambda<Func<Gazonk, string>>
             (
-                Expression.Field(p, typeof(Gazonk).GetField(nameof(Gazonk.Tzap))), p
+                Expression.Field(p, typeof(Gazonk).GetField(nameof(Gazonk.Zap))), p
             ).Compile();
 
             Assert.AreEqual("bang", compiled(new Gazonk("bang")));
@@ -120,13 +120,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    // This will fail because access to a static field should be created using a FieldInfo and
-                    // not an instance plus the field name.
-                    Expression.Field(Expression.Constant(new MemberClass()), "StaticField");
-                }
-            );
+                () => Expression.Field(Expression.Constant(new MemberClass()), "StaticField"));
         }
 
         [Test]
@@ -144,24 +138,21 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    Expression.Field
-                    (
-                        Expression.Parameter(GetType(), "t"),
-                        GetType().GetField("Foo")
-                    );
-                }
+                () => Expression.Field
+                (
+                    Expression.Parameter(GetType(), "t"),
+                    GetType().GetField("Foo")
+                )
             );
         }
 
         public struct Gazonk
         {
-            public string Tzap;
+            public string Zap;
 
-            public Gazonk(string tzap)
+            public Gazonk(string zap)
             {
-                Tzap = tzap;
+                Zap = zap;
             }
         }
 

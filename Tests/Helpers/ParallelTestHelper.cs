@@ -41,6 +41,7 @@ namespace Tests.Helpers
             {
                 return;
             }
+
             var threads = new Thread[threadCount];
             for (var threadIndex = 0; threadIndex < threadCount; threadIndex++)
             {
@@ -66,6 +67,7 @@ namespace Tests.Helpers
             {
                 return;
             }
+
             for (var repetitionIndex = 0; repetitionIndex < repetitionCount; repetitionIndex++)
             {
                 action();

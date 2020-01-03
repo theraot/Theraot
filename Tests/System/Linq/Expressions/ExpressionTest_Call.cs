@@ -42,19 +42,13 @@ using Theraot;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-    public class ExpressionTestCall
+    public partial class ExpressionTestCall
     {
-        public class Foo
-        {
-            public void Bar(string s)
-            {
-                No.Op(s);
-            }
-        }
+        private static bool _fOutCalled;
 
-        public static object Identity(object o)
+        public static void AcceptsIEnumerable(IEnumerable<object> o)
         {
-            return o;
+            No.Op(o);
         }
 
         public static void AGenericMethod<TX, TY>(string foo, int bar)
@@ -66,25 +60,9 @@ namespace MonoTests.System.Linq.Expressions
             No.Op(typeof(TY));
         }
 
-        private struct EineStrukt
+        public static string DoAnotherThing(ref int a, string s)
         {
-            private readonly string _value;
-
-            public EineStrukt(string value)
-            {
-                _value = value;
-            }
-
-            // Used via reflection
-            public string GetValue()
-            {
-                return _value;
-            }
-        }
-
-        public static int OneStaticMethod()
-        {
-            return 42;
+            return s + a;
         }
 
         public static int DoSomethingWith(ref int a)
@@ -92,16 +70,9 @@ namespace MonoTests.System.Linq.Expressions
             return a + 4;
         }
 
-        public static string DoAnotherThing(ref int a, string s)
-        {
-            return s + a;
-        }
-
-        private static bool _foutCalled;
-
         public static int FooOut(out int x)
         {
-            _foutCalled = true;
+            _fOutCalled = true;
             return x = 0;
         }
 
@@ -116,14 +87,19 @@ namespace MonoTests.System.Linq.Expressions
             No.Op(s);
         }
 
-        public static int Truc()
+        public static object Identity(object o)
+        {
+            return o;
+        }
+
+        public static int OneStaticMethod()
         {
             return 42;
         }
 
-        public static void AcceptsIEnumerable(IEnumerable<object> o)
+        public static int Thing()
         {
-            No.Op(o);
+            return 42;
         }
 
         [Test]
@@ -170,7 +146,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 typeof(Queryable),
                 "AsQueryable",
-                new[] {typeof(string)},
+                new[] { typeof(string) },
                 constant
             );
 
@@ -199,13 +175,13 @@ namespace MonoTests.System.Linq.Expressions
         [Category("NotWorkingInterpreter")]
         public void CallMethodOnStruct()
         {
-            var param = Expression.Parameter(typeof(EineStrukt), "s");
-            var compiled = Expression.Lambda<Func<EineStrukt, string>>
+            var param = Expression.Parameter(typeof(AStruct), "s");
+            var compiled = Expression.Lambda<Func<AStruct, string>>
             (
-                Expression.Call(param, typeof(EineStrukt).GetMethod(nameof(EineStrukt.GetValue))), param
+                Expression.Call(param, typeof(AStruct).GetMethod(nameof(AStruct.GetValue))), param
             ).Compile();
 
-            var s = new EineStrukt("foo");
+            var s = new AStruct("foo");
             Assert.AreEqual("foo", compiled(s));
         }
 
@@ -240,13 +216,13 @@ namespace MonoTests.System.Linq.Expressions
             var stringLength = Expression.Property(parameter, typeof(string).GetProperty("Length"));
             var lambda = Expression.Lambda(stringLength, parameter);
 
-            var strings = new[] {"1", "22", "333"};
+            var strings = new[] { "1", "22", "333" };
 
             var call = Expression.Call
             (
                 typeof(Queryable),
                 "Select",
-                new[] {typeof(string), typeof(int)},
+                new[] { typeof(string), typeof(int) },
                 Expression.Constant(strings.AsQueryable()),
                 lambda
             );
@@ -264,7 +240,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CallQueryableWhere()
         {
-            var queryable = new[] {1, 2, 3}.AsQueryable();
+            var queryable = new[] { 1, 2, 3 }.AsQueryable();
 
             var parameter = Expression.Parameter(typeof(int), "i");
             var lambda = Expression.Lambda<Func<int, bool>>
@@ -279,7 +255,7 @@ namespace MonoTests.System.Linq.Expressions
             (
                 typeof(Queryable),
                 "Where",
-                new[] {typeof(int)},
+                new[] { typeof(int) },
                 queryable.Expression,
                 selector
             );
@@ -294,14 +270,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    Expression.Call
-                    (
-                        Expression.Constant("la la la"),
-                        GetType().GetMethod(nameof(OneStaticMethod))
-                    );
-                }
+                () => Expression.Call
+                (
+                    Expression.Constant("la la la"),
+                    GetType().GetMethod(nameof(OneStaticMethod))
+                )
             );
         }
 
@@ -311,15 +284,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    Expression.Call
-                    (
-                        Expression.Parameter(GetType(), "t"),
-                        GetType().GetMethod(nameof(Identity)),
-                        Expression.Constant(null)
-                    );
-                }
+                () => Expression.Call
+                (
+                    Expression.Parameter(GetType(), "t"),
+                    GetType().GetMethod(nameof(Identity)),
+                    Expression.Constant(null)
+                )
             );
         }
 
@@ -384,13 +354,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CheckTypeArgsIsNotUsedForParameterLookup()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.Call(GetType(), "EineMethod", new[] {typeof(string), typeof(int)}, "foo".ToConstant(), 2.ToConstant()));
+            Assert.Throws<InvalidOperationException>(() => Expression.Call(GetType(), "AMethod", new[] { typeof(string), typeof(int) }, "foo".ToConstant(), 2.ToConstant()));
         }
 
         [Test]
         public void CheckTypeArgsIsUsedForGenericArguments()
         {
-            var m = Expression.Call(GetType(), nameof(AGenericMethod), new[] {typeof(string), typeof(int)}, "foo".ToConstant(), 2.ToConstant());
+            var m = Expression.Call(GetType(), nameof(AGenericMethod), new[] { typeof(string), typeof(int) }, "foo".ToConstant(), 2.ToConstant());
             Assert.IsNotNull(m.Method);
             Assert.AreEqual($"Void {nameof(AGenericMethod)}[String,Int32](System.String, Int32)", m.Method.ToString());
         }
@@ -417,7 +387,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompileSimpleStaticCall()
         {
-            const string Value = "Str";
+            const string value = "Str";
 
             var p = Expression.Parameter(typeof(object), "o");
             var lambda = Expression.Lambda<Func<object, object>>(Expression.Call(GetType().GetMethod(nameof(Identity)), p), p);
@@ -425,7 +395,7 @@ namespace MonoTests.System.Linq.Expressions
             var compiled = lambda.Compile();
 
             Assert.AreEqual(2, compiled(2));
-            Assert.AreEqual(Value, compiled(Value));
+            Assert.AreEqual(value, compiled(value));
         }
 
         [Test]
@@ -438,10 +408,10 @@ namespace MonoTests.System.Linq.Expressions
                 (
                     Expression.Call
                     (
-                        typeof(Delegate).GetMethod("CreateDelegate", new[] {typeof(Type), typeof(object), typeof(MethodInfo)}),
+                        typeof(Delegate).GetMethod("CreateDelegate", new[] { typeof(Type), typeof(object), typeof(MethodInfo) }),
                         Expression.Constant(typeof(Func<int>), typeof(Type)),
                         Expression.Constant(null, typeof(object)),
-                        Expression.Constant(GetType().GetMethod(nameof(Truc)))
+                        Expression.Constant(GetType().GetMethod(nameof(Thing)))
                     ),
                     typeof(Func<int>)
                 )
@@ -476,7 +446,7 @@ namespace MonoTests.System.Linq.Expressions
             ).Compile();
 
             Assert.AreEqual(0, compiled(0));
-            Assert.IsTrue(_foutCalled);
+            Assert.IsTrue(_fOutCalled);
         }
 
         [Test]
@@ -497,7 +467,7 @@ namespace MonoTests.System.Linq.Expressions
                 p
             ).Compile();
 
-            int[,] data = {{1}};
+            int[,] data = { { 1 } };
 
             Assert.AreEqual(3, compiled(data));
             Assert.AreEqual(2, data[0, 0]);
@@ -525,24 +495,6 @@ namespace MonoTests.System.Linq.Expressions
 
             compiled();
         }
-
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-        [Test]
-        [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=319190
-        public void Connect319190()
-        {
-            var compiled = Expression.Lambda<Func<bool>>
-            (
-                Expression.TypeIs
-                (
-                    Expression.New(typeof(TypedReference)),
-                    typeof(object)
-                )
-            ).Compile();
-
-            Assert.IsTrue(compiled());
-        }
-#endif
 
         [Test]
         public void InstanceMethod()
@@ -581,7 +533,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void StaticGenericMethod()
         {
-            Expression.Call(typeof(MemberClass), nameof(MemberClass.StaticGenericMethod), new[] {typeof(int)}, Expression.Constant(1));
+            Expression.Call(typeof(MemberClass), nameof(MemberClass.StaticGenericMethod), new[] { typeof(int) }, Expression.Constant(1));
         }
 
         [Test]
@@ -589,5 +541,52 @@ namespace MonoTests.System.Linq.Expressions
         {
             Expression.Call(typeof(MemberClass), nameof(MemberClass.StaticMethod), null, Expression.Constant(1));
         }
+
+        private struct AStruct
+        {
+            private readonly string _value;
+
+            public AStruct(string value)
+            {
+                _value = value;
+            }
+
+            // Used via reflection
+            public string GetValue()
+            {
+                return _value;
+            }
+        }
+
+        public class Foo
+        {
+            public void Bar(string s)
+            {
+                No.Op(s);
+            }
+        }
+    }
+
+    public partial class ExpressionTestCall
+    {
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+        [Test]
+        [Category("NotDotNet")] // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=319190
+        public void Connect319190()
+        {
+            var compiled = Expression.Lambda<Func<bool>>
+            (
+                Expression.TypeIs
+                (
+                    Expression.New(typeof(TypedReference)),
+                    typeof(object)
+                )
+            ).Compile();
+
+            Assert.IsTrue(compiled());
+        }
+
+#endif
     }
 }

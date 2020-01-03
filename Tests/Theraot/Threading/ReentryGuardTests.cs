@@ -3,7 +3,6 @@ extern alias nunitlinq;
 #endif
 
 using NUnit.Framework;
-using System;
 using System.Threading;
 using Theraot.Threading;
 
@@ -17,16 +16,19 @@ namespace Tests.Theraot.Threading
         {
             var guard = new ReentryGuard();
             var count = 0;
-            Action action = null;
-            action = () =>
+
+            void Action()
             {
-                if (count < 255)
+                if (count >= 255)
                 {
-                    count++;
-                    guard.Execute(action);
+                    return;
                 }
-            };
-            guard.Execute(action);
+
+                count++;
+                guard.Execute(Action);
+            }
+
+            guard.Execute(Action);
             Assert.AreEqual(255, count);
         }
 
@@ -35,17 +37,20 @@ namespace Tests.Theraot.Threading
         {
             var guard = new ReentryGuard();
             var count = 0;
-            Action action = null;
-            action = () =>
+
+            void Action()
             {
-                if (count < 255)
+                if (count >= 255)
                 {
-                    count++;
-                    guard.Execute(action);
+                    return;
                 }
-            };
-            var a = new Thread(() => guard.Execute(action));
-            var b = new Thread(() => guard.Execute(action));
+
+                count++;
+                guard.Execute(Action);
+            }
+
+            var a = new Thread(() => guard.Execute(Action));
+            var b = new Thread(() => guard.Execute(Action));
             a.Start();
             b.Start();
             a.Join();

@@ -168,6 +168,7 @@ namespace System
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Value => _valueFactory.Invoke();
 
+        // ReSharper disable once RedundantDefaultMemberInitializer
         internal T ValueForDebugDisplay { get; private set; } = default!;
 
         private static void AddThread(HashSet<Thread> threads)

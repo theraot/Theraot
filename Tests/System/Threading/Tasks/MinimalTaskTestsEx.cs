@@ -1,8 +1,18 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
+
+#if LESSTHAN_NET40
+
 using System.Threading;
+
+#endif
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+using System.Runtime.Serialization;
+
+#endif
 
 namespace MonoTests.System.Threading.Tasks
 {
@@ -75,8 +85,8 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WrapObjectDisposedExceptionCorrectly()
         {
-            const string ObjectName = "AAAAAAAAAAAAAAAA";
-            var x = new Task(() => throw new ObjectDisposedException(ObjectName));
+            const string objectName = "ObjectName";
+            var x = new Task(() => throw new ObjectDisposedException(objectName));
             try
             {
                 x.Start();
@@ -86,7 +96,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 Assert.IsTrue(ex is AggregateException);
                 Assert.IsTrue(ex.InnerException is ObjectDisposedException);
-                Assert.IsTrue(((ObjectDisposedException)ex.InnerException).ObjectName == ObjectName);
+                Assert.IsTrue(((ObjectDisposedException)ex.InnerException).ObjectName == objectName);
             }
         }
 
@@ -160,14 +170,18 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void Run()
         {
+            // Note: DenyChildAttach is not available before .NET 4.0
             var expectedScheduler = TaskScheduler.Current;
             TaskScheduler foundScheduler = null;
-            var t = TaskEx.Run(() =>
-            {
-                foundScheduler = TaskScheduler.Current;
-                Console.WriteLine("Task Scheduler: {0}", TaskScheduler.Current);
-                Console.WriteLine("IsThreadPoolThread: {0}", Thread.CurrentThread.IsThreadPoolThread);
-            });
+            var t = TaskEx.Run
+            (
+                () =>
+                {
+                    foundScheduler = TaskScheduler.Current;
+                    Console.WriteLine("Task Scheduler: {0}", TaskScheduler.Current);
+                    Console.WriteLine("IsThreadPoolThread: {0}", Thread.CurrentThread.IsThreadPoolThread);
+                }
+            );
             Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
             t.Wait();
             Assert.AreEqual(expectedScheduler, foundScheduler);

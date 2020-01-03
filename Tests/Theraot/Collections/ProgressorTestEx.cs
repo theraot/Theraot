@@ -13,16 +13,6 @@ namespace Tests.Theraot.Collections
     public class ProgressorTestEx
     {
         [Test]
-        [Category("Performance")]
-        public void ObservableProgressorWithPauseLoop()
-        {
-            for (int index = 0; index < 100000; index++)
-            {
-                ObservableProgressorWithPause();
-            }
-        }
-
-        [Test]
         public void ObservableProgressorWithPause()
         {
             var source = new SlowObservable<int>(new[] { 0, 1, 2, 3, 4, 5 });
@@ -64,24 +54,36 @@ namespace Tests.Theraot.Collections
                     Assert.AreEqual(item, Volatile.Read(ref data[1]));
                     Interlocked.Increment(ref data[1]);
                 }
+
                 if (Volatile.Read(ref data[0]) != 6 || Volatile.Read(ref data[1]) != 6)
                 {
                     Debugger.Break();
                 }
             }
+
             Assert.AreEqual(6, Volatile.Read(ref data[0]));
             Assert.AreEqual(Volatile.Read(ref data[0]), Volatile.Read(ref data[1]));
             Assert.IsTrue(progressor.IsClosed);
         }
 
-        private class SlowObservable<T> : IObservable<T>
+        [Test]
+        [Category("Performance")]
+        public void ObservableProgressorWithPauseLoop()
         {
-            private readonly IEnumerable<T> _source;
+            for (int index = 0; index < 100000; index++)
+            {
+                ObservableProgressorWithPause();
+            }
+        }
+
+        private sealed class SlowObservable<T> : IObservable<T>
+        {
             private readonly Bucket<IObserver<T>> _observers;
-            private int _index;
-            private object _last;
+            private readonly IEnumerable<T> _source;
             private bool _done;
             private Exception _exception;
+            private int _index;
+            private object _last;
 
             public SlowObservable(IEnumerable<T> source)
             {
@@ -93,26 +95,34 @@ namespace Tests.Theraot.Collections
             public void Show()
             {
                 ThreadPool.QueueUserWorkItem
-                    (
-                        _ =>
+                (
+                    _ =>
+                    {
+                        try
                         {
-                            try
+                            foreach (var item in _source)
                             {
-                                foreach (var item in _source)
-                                {
-                                    Volatile.Write(ref _last, item);
-                                    OnNext(item);
-                                }
-                                OnCompleted();
-                                Volatile.Write(ref _done, true);
+                                Volatile.Write(ref _last, item);
+                                OnNext(item);
                             }
-                            catch (Exception exception)
-                            {
-                                OnError(exception);
-                                Volatile.Write(ref _exception, exception);
-                            }
+
+                            OnCompleted();
+                            Volatile.Write(ref _done, true);
                         }
-                    );
+                        catch (Exception exception)
+                        {
+                            OnError(exception);
+                            Volatile.Write(ref _exception, exception);
+                        }
+                    }
+                );
+            }
+
+            public IDisposable Subscribe(IObserver<T> observer)
+            {
+                var index = Interlocked.Increment(ref _index);
+                _observers.Insert(index, observer);
+                return Disposable.Create(() => _observers.RemoveAt(index));
             }
 
             private void OnCompleted()
@@ -137,13 +147,6 @@ namespace Tests.Theraot.Collections
                 {
                     item.OnNext(value);
                 }
-            }
-
-            public IDisposable Subscribe(IObserver<T> observer)
-            {
-                var index = Interlocked.Increment(ref _index);
-                _observers.Insert(index, observer);
-                return Disposable.Create(() => _observers.RemoveAt(index));
             }
         }
     }

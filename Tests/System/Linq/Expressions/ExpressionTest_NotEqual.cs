@@ -21,15 +21,16 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//	Miguel de Icaza (miguel@novell.com)
-//	Jb Evain (jbevain@novell.com)
+//  Miguel de Icaza (miguel@novell.com)
+//  Jb Evain (jbevain@novell.com)
 //
 
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -155,12 +156,12 @@ namespace MonoTests.System.Linq.Expressions
                 () =>
                 {
                     int? a = 1;
-                    const int B = 2;
+                    const int b = 2;
 
                     Expression.NotEqual
                     (
                         Expression.Constant(a, typeof(int?)),
-                        Expression.Constant(B, typeof(int))
+                        Expression.Constant(b, typeof(int))
                     );
                 }
             );

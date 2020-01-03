@@ -37,7 +37,8 @@ using System.Linq.Expressions;
 using NUnit.Framework;
 using Theraot;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -95,13 +96,13 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void ExpressionTypeDoesnHaveAddMethod()
+        public void ExpressionTypeDoesNotHaveAddMethod()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.ListInit(Expression.New(typeof(Bar)), "foo".ToConstant()));
         }
 
         [Test]
-        public void ExpressionTypeDoesntImplementIEnumerable()
+        public void ExpressionTypeDoesNotImplementIEnumerable()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.ListInit(Expression.New(typeof(Foo)), "foo".ToConstant()));
         }

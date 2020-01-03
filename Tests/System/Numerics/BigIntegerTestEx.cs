@@ -4,7 +4,6 @@ extern alias nunitlinq;
 
 using System;
 using NUnit.Framework;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -452,284 +451,284 @@ namespace MonoTests.System.Numerics
         {
             var a = new BigInteger(0);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            0
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        0
+                    }
+                )
+            );
             a = new BigInteger(long.MinValue);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            128
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        128
+                    }
+                )
+            );
             a = new BigInteger(long.MaxValue);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            255,
-                            255,
-                            255,
-                            255,
-                            255,
-                            255,
-                            255,
-                            127
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        255,
+                        255,
+                        255,
+                        255,
+                        255,
+                        255,
+                        255,
+                        127
+                    }
+                )
+            );
             a = new BigInteger(-1);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            255
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        255
+                    }
+                )
+            );
             a = new BigInteger(1L + int.MaxValue);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            0,
-                            0,
-                            0,
-                            128,
-                            0
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        0,
+                        0,
+                        0,
+                        128,
+                        0
+                    }
+                )
+            );
             a = new BigInteger(-1L + int.MinValue);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            255,
-                            255,
-                            255,
-                            127,
-                            255
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        255,
+                        255,
+                        255,
+                        127,
+                        255
+                    }
+                )
+            );
             a = new BigInteger(0x1234);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            52,
-                            18
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        52,
+                        18
+                    }
+                )
+            );
             a = new BigInteger(0xFFFFFFFFL);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            255,
-                            255,
-                            255,
-                            255,
-                            0
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        255,
+                        255,
+                        255,
+                        255,
+                        0
+                    }
+                )
+            );
             a = new BigInteger(0x1FFFFFFFFL);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            255,
-                            255,
-                            255,
-                            255,
-                            1
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        255,
+                        255,
+                        255,
+                        255,
+                        1
+                    }
+                )
+            );
             a = new BigInteger(-0xFFFFFFFFL);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            1,
-                            0,
-                            0,
-                            0,
-                            255
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        1,
+                        0,
+                        0,
+                        0,
+                        255
+                    }
+                )
+            );
             a = new BigInteger(-0x1FFFFFFFFL);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            1,
-                            0,
-                            0,
-                            0,
-                            254
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        1,
+                        0,
+                        0,
+                        0,
+                        254
+                    }
+                )
+            );
             a = new BigInteger(0x100000000L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            0,
-                            0,
-                            0,
-                            0,
-                            1
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        0,
+                        0,
+                        0,
+                        0,
+                        1
+                    }
+                )
+            );
             a = new BigInteger(-0x100000000L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            0,
-                            0,
-                            0,
-                            0,
-                            255
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        0,
+                        0,
+                        0,
+                        0,
+                        255
+                    }
+                )
+            );
             a = new BigInteger(0x100000001L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            1,
-                            0,
-                            0,
-                            0,
-                            1
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        1,
+                        0,
+                        0,
+                        0,
+                        1
+                    }
+                )
+            );
             a = new BigInteger(-0x100000001L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            255,
-                            255,
-                            255,
-                            255,
-                            254
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        255,
+                        255,
+                        255,
+                        255,
+                        254
+                    }
+                )
+            );
             a = new BigInteger(4294967295L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            255,
-                            255,
-                            255,
-                            255,
-                            0
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        255,
+                        255,
+                        255,
+                        255,
+                        0
+                    }
+                )
+            );
             a = new BigInteger(-4294967295L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            1,
-                            0,
-                            0,
-                            0,
-                            255
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        1,
+                        0,
+                        0,
+                        0,
+                        255
+                    }
+                )
+            );
             a = new BigInteger(4294967296L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            0,
-                            0,
-                            0,
-                            0,
-                            1
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        0,
+                        0,
+                        0,
+                        0,
+                        1
+                    }
+                )
+            );
             a = new BigInteger(-4294967296L);
             Assert.IsTrue
+            (
+                a.ToByteArray().SequenceEqual
                 (
-                    a.ToByteArray().SequenceEqual
-                    (
-                        new byte[]
-                        {
-                            0,
-                            0,
-                            0,
-                            0,
-                            255
-                        }
-                    )
-                );
+                    new byte[]
+                    {
+                        0,
+                        0,
+                        0,
+                        0,
+                        255
+                    }
+                )
+            );
         }
 
         private static void Check(long value, byte[] array)
@@ -742,23 +741,27 @@ namespace MonoTests.System.Numerics
         private static void Check(byte[] array, BigInteger a, string msg)
         {
             var result = a.ToByteArray();
-            if (!result.SequenceEqual(array))
+            if (result.SequenceEqual(array))
             {
-                Console.WriteLine(" - Failed - ");
-                Console.WriteLine(msg);
-                Console.WriteLine("Value = " + a.ToString());
-                Console.WriteLine("ToByteArray returned:");
-                foreach (var item in result)
-                {
-                    Console.WriteLine(item.ToString());
-                }
-                Console.WriteLine("Expected:");
-                foreach (var item in array)
-                {
-                    Console.WriteLine(item.ToString());
-                }
-                Assert.Fail();
+                return;
             }
+
+            Console.WriteLine(" - Failed - ");
+            Console.WriteLine(msg);
+            Console.WriteLine("Value = " + a.ToString());
+            Console.WriteLine("ToByteArray returned:");
+            foreach (var item in result)
+            {
+                Console.WriteLine(item.ToString());
+            }
+
+            Console.WriteLine("Expected:");
+            foreach (var item in array)
+            {
+                Console.WriteLine(item.ToString());
+            }
+
+            Assert.Fail();
         }
     }
 }

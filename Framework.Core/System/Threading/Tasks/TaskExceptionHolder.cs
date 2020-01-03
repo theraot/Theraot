@@ -284,7 +284,7 @@ namespace System.Threading.Tasks
                     foreach (var exc in exColl)
                     {
 #if DEBUG
-                            numExceptions++;
+                        numExceptions++;
 #endif
                         exceptions.Add(ExceptionDispatchInfo.Capture(exc));
                     }

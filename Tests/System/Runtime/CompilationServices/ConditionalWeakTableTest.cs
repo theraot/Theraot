@@ -90,7 +90,12 @@ namespace MonoTests.System.Runtime.CompilerServices
             lock (_lock1)
             {
                 var cwt = new ConditionalWeakTable<object, object>();
-                void Start() => FillWithFinalizable(cwt);
+
+                void Start()
+                {
+                    FillWithFinalizable(cwt);
+                }
+
                 var th = new Thread(Start);
                 th.Start();
                 th.Join();
@@ -163,7 +168,12 @@ namespace MonoTests.System.Runtime.CompilerServices
             cwt.Add(b, new object());
 
             List<WeakReference> res = null;
-            void Start() => res = FillWithNetwork(cwt);
+
+            void Start()
+            {
+                res = FillWithNetwork(cwt);
+            }
+
             var th = new Thread(Start);
             th.Start();
             th.Join();
@@ -196,7 +206,13 @@ namespace MonoTests.System.Runtime.CompilerServices
             //
             for (var x = 0; x < 1000; x++)
             {
-                keys.Add(new Key { Foo = x });
+                keys.Add
+                (
+                    new Key
+                    {
+                        Foo = x
+                    }
+                );
             }
 
             for (var i = 0; i < 1000; ++i)
@@ -204,7 +220,14 @@ namespace MonoTests.System.Runtime.CompilerServices
                 // Insert all keys into the ConditionalWeakTable
                 foreach (var key in keys)
                 {
-                    table.Add(key, new Val { Foo = key.Foo });
+                    table.Add
+                    (
+                        key,
+                        new Val
+                        {
+                            Foo = key.Foo
+                        }
+                    );
                 }
 
                 // Look up all keys to verify that they are still there
@@ -293,7 +316,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.IsTrue(cwt.TryGetValue(keepAlive[0], out var res), "ka0");
             Assert.IsTrue(res is Link, "ka1");
 
-            var link = res as Link;
+            var link = (Link)res;
             Assert.IsTrue(cwt.TryGetValue(link.Obj, out res), "ka2");
             Assert.AreEqual("str0", res, "ka3");
         }
@@ -357,8 +380,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             return res;
         }
 
-        private static void FillStuff(ConditionalWeakTable<object, object> cwt,
-                out List<object> keepAlive, out List<WeakReference> keys)
+        private static void FillStuff(ConditionalWeakTable<object, object> cwt, out List<object> keepAlive, out List<WeakReference> keys)
         {
             keepAlive = new List<object>();
             keys = new List<WeakReference>();
@@ -393,9 +415,9 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         private static List<WeakReference> FillWithNetwork(ConditionalWeakTable<object, object> cwt)
         {
-            const int K = 500;
-            var keys = new object[K];
-            for (var i = 0; i < K; ++i)
+            const int k = 500;
+            var keys = new object[k];
+            for (var i = 0; i < k; ++i)
             {
                 keys[i] = new object();
             }
@@ -403,16 +425,16 @@ namespace MonoTests.System.Runtime.CompilerServices
             var rand = new Random();
 
             /*produce a complex enough network of links*/
-            for (var i = 0; i < K; ++i)
+            for (var i = 0; i < k; ++i)
             {
-                cwt.Add(keys[i], new Link(keys[rand.Next(K)]));
+                cwt.Add(keys[i], new Link(keys[rand.Next(k)]));
             }
 
             var res = new List<WeakReference>();
 
             for (var i = 0; i < 10; ++i)
             {
-                res.Add(new WeakReference(keys[rand.Next(K)]));
+                res.Add(new WeakReference(keys[rand.Next(k)]));
             }
 
             Array.Clear(keys, 0, keys.Length);
@@ -457,9 +479,11 @@ namespace MonoTests.System.Runtime.CompilerServices
             private readonly ConditionalWeakTable<object, object> _cwt;
 
             // For debug purposes
+            // ReSharper disable once NotAccessedField.Local
             private readonly int _id;
 
             // For debug purposes
+            // ReSharper disable once NotAccessedField.Local
             private readonly object _obj;
 
             public FinalizableLink(int id, object obj, ConditionalWeakTable<object, object> cwt)
@@ -475,18 +499,21 @@ namespace MonoTests.System.Runtime.CompilerServices
                 {
                     // Empty
                 }
+
                 var res = _cwt.TryGetValue(this, out _);
                 if (res)
                 {
                     _reachable++;
                 }
 
-                if (_reachable == 20)
+                if (_reachable != 20)
                 {
-                    lock (_lock2)
-                    {
-                        Monitor.Pulse(_lock2);
-                    }
+                    return;
+                }
+
+                lock (_lock2)
+                {
+                    Monitor.Pulse(_lock2);
                 }
             }
         }
@@ -501,7 +528,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        private class Key
+        private sealed class Key
         {
             public int Foo;
 
@@ -511,7 +538,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        private class Val
+        private sealed class Val
         {
             public int Foo;
 

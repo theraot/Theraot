@@ -49,7 +49,7 @@ namespace MonoTests.System.Linq
                 c => c.Value,
                 StringComparer.OrdinalIgnoreCase);
 
-            var l = lookup["notexist"];
+            var l = lookup["notExist"];
             Assert.IsNotNull(l);
             var values = l.AsArray();
             Assert.AreEqual(values.Length, 0);
@@ -124,7 +124,7 @@ namespace MonoTests.System.Linq
             yield return new Color("Blue", 0x0000ff);
         }
 
-        private class Color
+        private sealed class Color
         {
             public Color(string name, int value)
             {
@@ -132,9 +132,9 @@ namespace MonoTests.System.Linq
                 Value = value;
             }
 
-            public string Name { get; set; }
+            public string Name { get; }
 
-            public int Value { get; set; }
+            public int Value { get; }
         }
     }
 }

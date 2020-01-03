@@ -7,6 +7,7 @@
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
+// ReSharper disable VirtualMemberCallInConstructor
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -38,7 +39,7 @@ namespace System.Collections
     public class ArrayList : IList, ICloneable
     {
         // Copy of Array.MaxArrayLength
-        private const int MaxArrayLength = 0X7FEFFFFF;
+        private const int _maxArrayLength = 0X7FEFFFFF;
 
         private const int _defaultCapacity = 4;
         private object?[] _items;
@@ -77,6 +78,7 @@ namespace System.Collections
             {
                 throw new ArgumentNullException(nameof(c), "Collection cannot be null.");
             }
+
             var count = c.Count;
             if (count == 0)
             {
@@ -113,22 +115,24 @@ namespace System.Collections
 
                 // We don't want to update the version number when we change the capacity.
                 // Some existing applications have dependency on this.
-                if (value != _items.Length)
+                if (value == _items.Length)
                 {
-                    if (value > 0)
-                    {
-                        var newItems = new object[value];
-                        if (_size > 0)
-                        {
-                            Array.Copy(_items, 0, newItems, 0, _size);
-                        }
+                    return;
+                }
 
-                        _items = newItems;
-                    }
-                    else
+                if (value > 0)
+                {
+                    var newItems = new object[value];
+                    if (_size > 0)
                     {
-                        _items = new object[_defaultCapacity];
+                        Array.Copy(_items, 0, newItems, 0, _size);
                     }
+
+                    _items = newItems;
+                }
+                else
+                {
+                    _items = new object[_defaultCapacity];
                 }
             }
         }
@@ -374,7 +378,11 @@ namespace System.Collections
         // are not cloned).
         public virtual object Clone()
         {
-            var la = new ArrayList(_size) { _size = _size, _version = _version };
+            var la = new ArrayList(_size)
+            {
+                _size = _size,
+                _version = _version
+            };
             Array.Copy(_items, 0, la._items, 0, _size);
             return la;
         }
@@ -602,21 +610,23 @@ namespace System.Collections
             }
 
             var count = c.Count;
-            if (count > 0)
+            if (count <= 0)
             {
-                EnsureCapacity(_size + count);
-                // shift existing items
-                if (index < _size)
-                {
-                    Array.Copy(_items, index, _items, index + count, _size - index);
-                }
-
-                var itemsToInsert = new object[count];
-                c.CopyTo(itemsToInsert, 0);
-                itemsToInsert.CopyTo(_items, index);
-                _size += count;
-                _version++;
+                return;
             }
+
+            EnsureCapacity(_size + count);
+            // shift existing items
+            if (index < _size)
+            {
+                Array.Copy(_items, index, _items, index + count, _size - index);
+            }
+
+            var itemsToInsert = new object[count];
+            c.CopyTo(itemsToInsert, 0);
+            itemsToInsert.CopyTo(_items, index);
+            _size += count;
+            _version++;
         }
 
         // Returns the index of the last occurrence of a given value in a range of
@@ -731,22 +741,24 @@ namespace System.Collections
                 throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
             }
 
-            if (count > 0)
+            if (count <= 0)
             {
-                var i = _size;
-                _size -= count;
-                if (index < _size)
-                {
-                    Array.Copy(_items, index + count, _items, index, _size - index);
-                }
-
-                while (i > _size)
-                {
-                    _items[--i] = null;
-                }
-
-                _version++;
+                return;
             }
+
+            var i = _size;
+            _size -= count;
+            if (index < _size)
+            {
+                Array.Copy(_items, index + count, _items, index, _size - index);
+            }
+
+            while (i > _size)
+            {
+                _items[--i] = null;
+            }
+
+            _version++;
         }
 
         // Reverses the elements in this list.
@@ -800,11 +812,13 @@ namespace System.Collections
                 throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
             }
 
-            if (count > 0)
+            if (count <= 0)
             {
-                c.CopyTo(_items, index);
-                _version++;
+                return;
             }
+
+            c.CopyTo(_items, index);
+            _version++;
         }
 
         // Sorts the elements in this list.  Uses the default comparer and
@@ -895,23 +909,25 @@ namespace System.Collections
         // whichever is larger.
         private void EnsureCapacity(int min)
         {
-            if (_items.Length < min)
+            if (_items.Length >= min)
             {
-                var newCapacity = _items.Length == 0 ? _defaultCapacity : _items.Length * 2;
-                // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
-                // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
-                if ((uint)newCapacity > MaxArrayLength)
-                {
-                    newCapacity = MaxArrayLength;
-                }
-
-                if (newCapacity < min)
-                {
-                    newCapacity = min;
-                }
-
-                Capacity = newCapacity;
+                return;
             }
+
+            var newCapacity = _items.Length == 0 ? _defaultCapacity : _items.Length * 2;
+            // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
+            // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
+            if ((uint)newCapacity > _maxArrayLength)
+            {
+                newCapacity = _maxArrayLength;
+            }
+
+            if (newCapacity < min)
+            {
+                newCapacity = min;
+            }
+
+            Capacity = newCapacity;
         }
 
         internal class ArrayListDebugView
@@ -1023,18 +1039,18 @@ namespace System.Collections
                 get
                 {
                     var temp = _currentElement;
-                    if (_dummyObject == temp)
+                    if (_dummyObject != temp)
                     {
-                        // check if enumeration has not started or has terminated
-                        if (_index == -1)
-                        {
-                            throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-                        }
-
-                        throw new InvalidOperationException("Enumeration already finished.");
+                        return temp;
                     }
 
-                    return temp;
+                    // check if enumeration has not started or has terminated
+                    if (_index == -1)
+                    {
+                        throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+                    }
+
+                    throw new InvalidOperationException("Enumeration already finished.");
                 }
             }
 
@@ -1084,7 +1100,7 @@ namespace System.Collections
             }
         }
 
-        private class FixedSizeArrayList : ArrayList
+        private sealed class FixedSizeArrayList : ArrayList
         {
             private ArrayList _list;
 
@@ -1142,7 +1158,10 @@ namespace System.Collections
 
             public override object Clone()
             {
-                return new FixedSizeArrayList(_list) { _list = (ArrayList)_list.Clone() };
+                return new FixedSizeArrayList(_list)
+                {
+                    _list = (ArrayList)_list.Clone()
+                };
             }
 
             public override bool Contains(object? value)
@@ -1347,7 +1366,7 @@ namespace System.Collections
 
         // This class wraps an IList, exposing it as a ArrayList
         // Note this requires reimplementing half of ArrayList...
-        private class ListWrapper : ArrayList
+        private sealed class ListWrapper : ArrayList
         {
             private readonly IList _list;
 
@@ -1613,26 +1632,28 @@ namespace System.Collections
                     throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
                 }
 
-                if (c.Count > 0)
+                if (c.Count <= 0)
                 {
-                    if (_list is ArrayList al)
-                    {
-                        // We need to special case ArrayList.
-                        // When c is a range of _list, we need to handle this in a special way.
-                        // See ArrayList.InsertRange for details.
-                        al.InsertRange(index, c);
-                    }
-                    else
-                    {
-                        var en = c.GetEnumerator();
-                        while (en.MoveNext())
-                        {
-                            _list.Insert(index++, en.Current);
-                        }
-                    }
-
-                    _version++;
+                    return;
                 }
+
+                if (_list is ArrayList al)
+                {
+                    // We need to special case ArrayList.
+                    // When c is a range of _list, we need to handle this in a special way.
+                    // See ArrayList.InsertRange for details.
+                    al.InsertRange(index, c);
+                }
+                else
+                {
+                    var en = c.GetEnumerator();
+                    while (en.MoveNext())
+                    {
+                        _list.Insert(index++, en.Current);
+                    }
+                }
+
+                _version++;
             }
 
             public override int LastIndexOf(object? value)
@@ -1762,16 +1783,18 @@ namespace System.Collections
                     throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
                 }
 
-                if (c.Count > 0)
+                if (c.Count <= 0)
                 {
-                    var en = c.GetEnumerator();
-                    while (en.MoveNext())
-                    {
-                        _list[index++] = en.Current;
-                    }
-
-                    _version++;
+                    return;
                 }
+
+                var en = c.GetEnumerator();
+                while (en.MoveNext())
+                {
+                    _list[index++] = en.Current;
+                }
+
+                _version++;
             }
 
             public override void Sort(int index, int count, IComparer comparer)
@@ -1921,7 +1944,7 @@ namespace System.Collections
 
         // Implementation of a generic list subrange. An instance of this class
         // is returned by the default implementation of List.GetRange.
-        private class Range : ArrayList
+        private sealed class Range : ArrayList
         {
             private readonly int _baseIndex;
             private ArrayList _baseList;
@@ -2011,12 +2034,14 @@ namespace System.Collections
 
                 InternalUpdateRange();
                 var count = c.Count;
-                if (count > 0)
+                if (count <= 0)
                 {
-                    _baseList.InsertRange(_baseIndex + _baseSize, c);
-                    InternalUpdateVersion();
-                    _baseSize += count;
+                    return;
                 }
+
+                _baseList.InsertRange(_baseIndex + _baseSize, c);
+                InternalUpdateVersion();
+                _baseSize += count;
             }
 
             public override int BinarySearch(int index, int count, object? value, IComparer? comparer)
@@ -2045,18 +2070,23 @@ namespace System.Collections
             public override void Clear()
             {
                 InternalUpdateRange();
-                if (_baseSize != 0)
+                if (_baseSize == 0)
                 {
-                    _baseList.RemoveRange(_baseIndex, _baseSize);
-                    InternalUpdateVersion();
-                    _baseSize = 0;
+                    return;
                 }
+
+                _baseList.RemoveRange(_baseIndex, _baseSize);
+                InternalUpdateVersion();
+                _baseSize = 0;
             }
 
             public override object Clone()
             {
                 InternalUpdateRange();
-                return new Range(_baseList, _baseIndex, _baseSize) { _baseList = (ArrayList)_baseList.Clone() };
+                return new Range(_baseList, _baseIndex, _baseSize)
+                {
+                    _baseList = (ArrayList)_baseList.Clone()
+                };
             }
 
             public override bool Contains(object? value)
@@ -2263,12 +2293,14 @@ namespace System.Collections
 
                 InternalUpdateRange();
                 var count = c.Count;
-                if (count > 0)
+                if (count <= 0)
                 {
-                    _baseList.InsertRange(_baseIndex + index, c);
-                    _baseSize += count;
-                    InternalUpdateVersion();
+                    return;
                 }
+
+                _baseList.InsertRange(_baseIndex + index, c);
+                _baseSize += count;
+                InternalUpdateVersion();
             }
 
             public override int LastIndexOf(object? value)
@@ -2345,12 +2377,14 @@ namespace System.Collections
                 InternalUpdateRange();
                 // No need to call _bastList.RemoveRange if count is 0.
                 // In addition, _baseList won't change the version number if count is 0.
-                if (count > 0)
+                if (count <= 0)
                 {
-                    _baseList.RemoveRange(_baseIndex + index, count);
-                    InternalUpdateVersion();
-                    _baseSize -= count;
+                    return;
                 }
+
+                _baseList.RemoveRange(_baseIndex + index, count);
+                InternalUpdateVersion();
+                _baseSize -= count;
             }
 
             public override void Reverse(int index, int count)
@@ -2448,7 +2482,7 @@ namespace System.Collections
             }
         }
 
-        private class ReadOnlyArrayList : ArrayList
+        private sealed class ReadOnlyArrayList : ArrayList
         {
             private ArrayList _list;
 
@@ -2501,7 +2535,10 @@ namespace System.Collections
 
             public override object Clone()
             {
-                return new ReadOnlyArrayList(_list) { _list = (ArrayList)_list.Clone() };
+                return new ReadOnlyArrayList(_list)
+                {
+                    _list = (ArrayList)_list.Clone()
+                };
             }
 
             public override bool Contains(object? value)
@@ -2701,16 +2738,15 @@ namespace System.Collections
             }
         }
 
-        private class SyncArrayList : ArrayList
+        private sealed class SyncArrayList : ArrayList
         {
             private readonly ArrayList _list;
-            private readonly object _root;
 
             internal SyncArrayList(ArrayList list)
                 : base(false)
             {
                 _list = list;
-                _root = list.SyncRoot;
+                SyncRoot = list.SyncRoot;
                 IsReadOnly = _list.IsReadOnly;
                 IsFixedSize = _list.IsFixedSize;
             }
@@ -2719,14 +2755,14 @@ namespace System.Collections
             {
                 get
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         return _list.Capacity;
                     }
                 }
                 set
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         _list.Capacity = value;
                     }
@@ -2737,7 +2773,7 @@ namespace System.Collections
             {
                 get
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         return _list.Count;
                     }
@@ -2750,20 +2786,20 @@ namespace System.Collections
 
             public override bool IsSynchronized => true;
 
-            public override object SyncRoot => _root;
+            public override object SyncRoot { get; }
 
             public override object this[int index]
             {
                 get
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         return _list[index];
                     }
                 }
                 set
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         _list[index] = value;
                     }
@@ -2772,7 +2808,7 @@ namespace System.Collections
 
             public override int Add(object? value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.Add(value);
                 }
@@ -2780,7 +2816,7 @@ namespace System.Collections
 
             public override void AddRange(ICollection c)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.AddRange(c);
                 }
@@ -2788,7 +2824,7 @@ namespace System.Collections
 
             public override int BinarySearch(object? value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.BinarySearch(value);
                 }
@@ -2796,7 +2832,7 @@ namespace System.Collections
 
             public override int BinarySearch(object? value, IComparer comparer)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.BinarySearch(value, comparer);
                 }
@@ -2804,7 +2840,7 @@ namespace System.Collections
 
             public override int BinarySearch(int index, int count, object? value, IComparer? comparer)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.BinarySearch(index, count, value, comparer);
                 }
@@ -2812,7 +2848,7 @@ namespace System.Collections
 
             public override void Clear()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Clear();
                 }
@@ -2820,7 +2856,7 @@ namespace System.Collections
 
             public override object Clone()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return new SyncArrayList((ArrayList)_list.Clone());
                 }
@@ -2828,7 +2864,7 @@ namespace System.Collections
 
             public override bool Contains(object? value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.Contains(value);
                 }
@@ -2836,7 +2872,7 @@ namespace System.Collections
 
             public override void CopyTo(Array array)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.CopyTo(array);
                 }
@@ -2844,7 +2880,7 @@ namespace System.Collections
 
             public override void CopyTo(Array array, int arrayIndex)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.CopyTo(array, arrayIndex);
                 }
@@ -2852,7 +2888,7 @@ namespace System.Collections
 
             public override void CopyTo(int index, Array array, int arrayIndex, int count)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.CopyTo(index, array, arrayIndex, count);
                 }
@@ -2860,7 +2896,7 @@ namespace System.Collections
 
             public override IEnumerator GetEnumerator()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetEnumerator();
                 }
@@ -2868,7 +2904,7 @@ namespace System.Collections
 
             public override IEnumerator GetEnumerator(int index, int count)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetEnumerator(index, count);
                 }
@@ -2876,7 +2912,7 @@ namespace System.Collections
 
             public override ArrayList GetRange(int index, int count)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetRange(index, count);
                 }
@@ -2884,7 +2920,7 @@ namespace System.Collections
 
             public override int IndexOf(object? value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.IndexOf(value);
                 }
@@ -2892,7 +2928,7 @@ namespace System.Collections
 
             public override int IndexOf(object? value, int startIndex)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.IndexOf(value, startIndex);
                 }
@@ -2900,7 +2936,7 @@ namespace System.Collections
 
             public override int IndexOf(object? value, int startIndex, int count)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.IndexOf(value, startIndex, count);
                 }
@@ -2908,7 +2944,7 @@ namespace System.Collections
 
             public override void Insert(int index, object? value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Insert(index, value);
                 }
@@ -2916,7 +2952,7 @@ namespace System.Collections
 
             public override void InsertRange(int index, ICollection c)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.InsertRange(index, c);
                 }
@@ -2924,7 +2960,7 @@ namespace System.Collections
 
             public override int LastIndexOf(object? value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.LastIndexOf(value);
                 }
@@ -2932,7 +2968,7 @@ namespace System.Collections
 
             public override int LastIndexOf(object? value, int startIndex)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.LastIndexOf(value, startIndex);
                 }
@@ -2940,7 +2976,7 @@ namespace System.Collections
 
             public override int LastIndexOf(object? value, int startIndex, int count)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.LastIndexOf(value, startIndex, count);
                 }
@@ -2948,7 +2984,7 @@ namespace System.Collections
 
             public override void Remove(object? value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Remove(value);
                 }
@@ -2956,7 +2992,7 @@ namespace System.Collections
 
             public override void RemoveAt(int index)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.RemoveAt(index);
                 }
@@ -2964,7 +3000,7 @@ namespace System.Collections
 
             public override void RemoveRange(int index, int count)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.RemoveRange(index, count);
                 }
@@ -2972,7 +3008,7 @@ namespace System.Collections
 
             public override void Reverse(int index, int count)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Reverse(index, count);
                 }
@@ -2980,7 +3016,7 @@ namespace System.Collections
 
             public override void SetRange(int index, ICollection c)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.SetRange(index, c);
                 }
@@ -2988,7 +3024,7 @@ namespace System.Collections
 
             public override void Sort()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Sort();
                 }
@@ -2996,7 +3032,7 @@ namespace System.Collections
 
             public override void Sort(IComparer comparer)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Sort(comparer);
                 }
@@ -3004,7 +3040,7 @@ namespace System.Collections
 
             public override void Sort(int index, int count, IComparer comparer)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Sort(index, count, comparer);
                 }
@@ -3012,7 +3048,7 @@ namespace System.Collections
 
             public override object[] ToArray()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.ToArray();
                 }
@@ -3020,7 +3056,7 @@ namespace System.Collections
 
             public override Array ToArray(Type type)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.ToArray(type);
                 }
@@ -3028,7 +3064,7 @@ namespace System.Collections
 
             public override void TrimToSize()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.TrimToSize();
                 }

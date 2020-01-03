@@ -116,7 +116,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void MethodeGetImplementIEnumerable2()
+        public void MethodGetImplementIEnumerable2()
         {
             Assert.Throws<ArgumentException>(() => Expression.ListBind(typeof(Foo).GetProperty(nameof(Foo.BarBar)).GetGetMethod(), new List<ElementInit>()));
         }

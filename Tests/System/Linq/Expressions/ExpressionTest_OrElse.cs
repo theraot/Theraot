@@ -21,14 +21,15 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
-//		Jb Evain <jbevain@novell.com>
+//      Federico Di Gregorio <fog@initd.org>
+//      Jb Evain <jbevain@novell.com>
 
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -38,62 +39,6 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestOrElse
     {
-        public class BrokenMethod // Should not be static, instantiation is needed for testing
-        {
-            public static int operator |(BrokenMethod a, BrokenMethod b)
-            {
-                return 1;
-            }
-        }
-
-        public class BrokenMethod2 // Should not be static, instantiation is needed for testing
-        {
-            public static BrokenMethod2 operator |(BrokenMethod2 a, int b)
-            {
-                return null;
-            }
-        }
-
-        private struct Slot
-        {
-            public readonly int Value;
-
-            public Slot(int val)
-            {
-                Value = val;
-            }
-
-            public static Slot operator |(Slot a, Slot b)
-            {
-                return new Slot(a.Value | b.Value);
-            }
-
-            public static bool operator true(Slot a)
-            {
-                return a.Value != 0;
-            }
-
-            public static bool operator false(Slot a)
-            {
-                return a.Value == 0;
-            }
-        }
-
-        private struct Incomplete
-        {
-            public readonly int Value;
-
-            public Incomplete(int val)
-            {
-                Value = val;
-            }
-
-            public static Incomplete operator |(Incomplete a, Incomplete b)
-            {
-                return new Incomplete(a.Value | b.Value);
-            }
-        }
-
         [Test]
         public void Arg1Null()
         {
@@ -149,14 +94,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    Expression.OrElse
-                    (
-                        Expression.Constant(new BrokenMethod()),
-                        Expression.Constant(new BrokenMethod())
-                    );
-                }
+                () => Expression.OrElse
+                (
+                    Expression.Constant(new BrokenMethod()),
+                    Expression.Constant(new BrokenMethod())
+                )
             );
         }
 
@@ -165,14 +107,11 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<ArgumentException>
             (
-                () =>
-                {
-                    Expression.OrElse
-                    (
-                        Expression.Constant(new BrokenMethod2()),
-                        Expression.Constant(1)
-                    );
-                }
+                () => Expression.OrElse
+                (
+                    Expression.Constant(new BrokenMethod2()),
+                    Expression.Constant(1)
+                )
             );
         }
 
@@ -377,6 +316,62 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual(new Slot(1), compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
+        }
+
+        private struct Incomplete
+        {
+            private readonly int _value;
+
+            private Incomplete(int val)
+            {
+                _value = val;
+            }
+
+            public static Incomplete operator |(Incomplete a, Incomplete b)
+            {
+                return new Incomplete(a._value | b._value);
+            }
+        }
+
+        private struct Slot
+        {
+            private readonly int _value;
+
+            public Slot(int val)
+            {
+                _value = val;
+            }
+
+            public static Slot operator |(Slot a, Slot b)
+            {
+                return new Slot(a._value | b._value);
+            }
+
+            public static bool operator false(Slot a)
+            {
+                return a._value == 0;
+            }
+
+            public static bool operator true(Slot a)
+            {
+                return a._value != 0;
+            }
+        }
+
+        public class BrokenMethod // Should not be static, instantiation is needed for testing
+        {
+            public static int operator |(BrokenMethod a, BrokenMethod b)
+            {
+                return 1;
+            }
+        }
+
+        public class BrokenMethod2 // Should not be static, instantiation is needed for testing
+        {
+            public static BrokenMethod2 operator |(BrokenMethod2 a, int b)
+            {
+                return null;
+            }
         }
     }
 }

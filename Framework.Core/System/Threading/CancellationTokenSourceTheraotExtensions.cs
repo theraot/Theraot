@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET45
+﻿#if NET40
 // Needed for Workaround
 
 #pragma warning disable CA2201 // Do not raise reserved exception types

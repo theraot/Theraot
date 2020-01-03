@@ -21,14 +21,15 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
+//      Federico Di Gregorio <fog@initd.org>
 
 using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 using Tests.Helpers;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -41,37 +42,37 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Arg1Null()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.AddChecked(null, Expression.Constant(Value)));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.AddChecked(null, Expression.Constant(value)));
         }
 
         [Test]
         public void Arg2Null()
         {
-            const int Value = 1;
+            const int value = 1;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            AssertEx.Throws<ArgumentNullException>(() => Expression.AddChecked(Expression.Constant(Value), null));
+            AssertEx.Throws<ArgumentNullException>(() => Expression.AddChecked(Expression.Constant(value), null));
         }
 
         [Test]
         public void ArgTypesDifferent()
         {
-            const int ValueLeft = 1;
-            const double ValueRight = 2.0;
+            const int valueLeft = 1;
+            const double valueRight = 2.0;
 
-            AssertEx.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
         public void Boolean()
         {
-            const bool ValueLeft = true;
-            const bool ValueRight = false;
+            const bool valueLeft = true;
+            const bool valueRight = false;
 
-            AssertEx.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight)));
+            AssertEx.Throws<InvalidOperationException>(() => Expression.AddChecked(Expression.Constant(valueLeft), Expression.Constant(valueRight)));
         }
 
         [Test]
@@ -99,14 +100,14 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Numeric()
         {
-            const int ValueLeft = 1;
-            const int ValueRight = 2;
+            const int valueLeft = 1;
+            const int valueRight = 2;
 
-            var binaryExpression = Expression.AddChecked(Expression.Constant(ValueLeft), Expression.Constant(ValueRight));
+            var binaryExpression = Expression.AddChecked(Expression.Constant(valueLeft), Expression.Constant(valueRight));
             Assert.AreEqual(ExpressionType.AddChecked, binaryExpression.NodeType, "AddChecked#01");
             Assert.AreEqual(typeof(int), binaryExpression.Type, "AddChecked#02");
             Assert.IsNull(binaryExpression.Method, "AddChecked#03");
-            Assert.AreEqual($"({ValueLeft} + {ValueRight})", binaryExpression.ToString(), "AddChecked#15");
+            Assert.AreEqual($"({valueLeft} + {valueRight})", binaryExpression.ToString(), "AddChecked#15");
         }
 
         [Test]

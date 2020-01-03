@@ -34,7 +34,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -252,33 +253,33 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public Slot(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static Slot operator -(Slot s)
             {
-                return new Slot(-s.Value);
+                return new Slot(-s._value);
             }
         }
 
         private struct SlotFromNullable
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public SlotFromNullable(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static SlotFromNullable operator -(SlotFromNullable? s)
             {
                 if (s.HasValue)
                 {
-                    return new SlotFromNullable(-s.Value.Value);
+                    return new SlotFromNullable(-s.Value._value);
                 }
 
                 return new SlotFromNullable(-1);
@@ -287,18 +288,18 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct SlotFromNullableToNullable
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public SlotFromNullableToNullable(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static SlotFromNullableToNullable? operator -(SlotFromNullableToNullable? s)
             {
                 if (s.HasValue)
                 {
-                    return new SlotFromNullableToNullable(-s.Value.Value);
+                    return new SlotFromNullableToNullable(-s.Value._value);
                 }
 
                 return null;
@@ -307,16 +308,16 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct SlotToNullable
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public SlotToNullable(int value)
             {
-                Value = value;
+                _value = value;
             }
 
             public static SlotToNullable? operator -(SlotToNullable s)
             {
-                return new SlotToNullable(-s.Value);
+                return new SlotToNullable(-s._value);
             }
         }
     }

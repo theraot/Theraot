@@ -10,582 +10,122 @@ using NUnit.Framework;
 using System;
 using System.Globalization;
 using System.Numerics;
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
 using System.Threading;
+
+#endif
 
 namespace MonoTests.System.Numerics
 {
-    [TestFixture]
-    public class BigIntegerTest
+    public partial class BigIntegerTest
     {
-        private static readonly byte[] _hugeA = { 0x1D, 0x33, 0xFB, 0xFE, 0xB1, 0x2, 0x85, 0x44, 0xCA, 0xDC, 0xFB, 0x70, 0xD, 0x39, 0xB1, 0x47, 0xB6, 0xE6, 0xA2, 0xD1, 0x19, 0x1E, 0x9F, 0xE4, 0x3C, 0x1E, 0x16, 0x56, 0x13, 0x9C, 0x4D, 0xD3, 0x5C, 0x74, 0xC9, 0xBD, 0xFA, 0x56, 0x40, 0x58, 0xAC, 0x20, 0x6B, 0x55, 0xA2, 0xD5, 0x41, 0x38, 0xA4, 0x6D, 0xF6, 0x8C, };
-
-        private static readonly byte[] _hugeB = { 0x96, 0x5, 0xDA, 0xFE, 0x93, 0x17, 0xC1, 0x93, 0xEC, 0x2F, 0x30, 0x2D, 0x8F, 0x28, 0x13, 0x99, 0x70, 0xF4, 0x4C, 0x60, 0xA6, 0x49, 0x24, 0xF9, 0xB3, 0x4A, 0x41, 0x67, 0xDC, 0xDD, 0xB1, 0xA5, 0xA6, 0xC0, 0x3D, 0x57, 0x9A, 0xCB, 0x29, 0xE2, 0x94, 0xAC, 0x6C, 0x7D, 0xEF, 0x3E, 0xC6, 0x7A, 0xC1, 0xA8, 0xC8, 0xB0, 0x20, 0x95, 0xE6, 0x4C, 0xE1, 0xE0, 0x4B, 0x49, 0xD5, 0x5A, 0xB7, };
-
-        private static readonly byte[] _hugeAdd = { 0xB3, 0x38, 0xD5, 0xFD, 0x45, 0x1A, 0x46, 0xD8, 0xB6, 0xC, 0x2C, 0x9E, 0x9C, 0x61, 0xC4, 0xE0, 0x26, 0xDB, 0xEF, 0x31, 0xC0, 0x67, 0xC3, 0xDD, 0xF0, 0x68, 0x57, 0xBD, 0xEF, 0x79, 0xFF, 0x78, 0x3, 0x35, 0x7, 0x15, 0x95, 0x22, 0x6A, 0x3A, 0x41, 0xCD, 0xD7, 0xD2, 0x91, 0x14, 0x8, 0xB3, 0x65, 0x16, 0xBF, 0x3D, 0x20, 0x95, 0xE6, 0x4C, 0xE1, 0xE0, 0x4B, 0x49, 0xD5, 0x5A, 0xB7, };
-
-        private static readonly byte[] _amb = { 0x87, 0x2D, 0x21, 0x0, 0x1E, 0xEB, 0xC3, 0xB0, 0xDD, 0xAC, 0xCB, 0x43, 0x7E, 0x10, 0x9E, 0xAE, 0x45, 0xF2, 0x55, 0x71, 0x73, 0xD4, 0x7A, 0xEB, 0x88, 0xD3, 0xD4, 0xEE, 0x36, 0xBE, 0x9B, 0x2D, 0xB6, 0xB3, 0x8B, 0x66, 0x60, 0x8B, 0x16, 0x76, 0x17, 0x74, 0xFE, 0xD7, 0xB2, 0x96, 0x7B, 0xBD, 0xE2, 0xC4, 0x2D, 0xDC, 0xDE, 0x6A, 0x19, 0xB3, 0x1E, 0x1F, 0xB4, 0xB6, 0x2A, 0xA5, 0x48, };
-        private static readonly byte[] _bma = { 0x79, 0xD2, 0xDE, 0xFF, 0xE1, 0x14, 0x3C, 0x4F, 0x22, 0x53, 0x34, 0xBC, 0x81, 0xEF, 0x61, 0x51, 0xBA, 0xD, 0xAA, 0x8E, 0x8C, 0x2B, 0x85, 0x14, 0x77, 0x2C, 0x2B, 0x11, 0xC9, 0x41, 0x64, 0xD2, 0x49, 0x4C, 0x74, 0x99, 0x9F, 0x74, 0xE9, 0x89, 0xE8, 0x8B, 0x1, 0x28, 0x4D, 0x69, 0x84, 0x42, 0x1D, 0x3B, 0xD2, 0x23, 0x21, 0x95, 0xE6, 0x4C, 0xE1, 0xE0, 0x4B, 0x49, 0xD5, 0x5A, 0xB7, };
-
-        private static readonly byte[] _hugeMul = { 0xFE, 0x83, 0xE1, 0x9B, 0x8D, 0x61, 0x40, 0xD1, 0x60, 0x19, 0xBD, 0x38, 0xF0, 0xFF, 0x90, 0xAE, 0xDD, 0xAE, 0x73, 0x2C, 0x20, 0x23, 0xCF, 0x6, 0x7A, 0xB4, 0x1C, 0xE7, 0xD9, 0x64, 0x96, 0x2C, 0x87, 0x7E, 0x1D, 0xB3, 0x8F, 0xD4, 0x33, 0xBA, 0xF4, 0x22, 0xB4, 0xDB, 0xC0, 0x5B, 0xA5, 0x64, 0xA0, 0xBC, 0xCA, 0x3E, 0x94, 0x95, 0xDA, 0x49, 0xE2, 0xA8, 0x33, 0xA2, 0x6A, 0x33, 0xB1, 0xF2, 0xEA, 0x99, 0x32, 0xD0, 0xB2, 0xAE, 0x55, 0x75, 0xBD, 0x19, 0xFC, 0x9A, 0xEC, 0x54, 0x87, 0x2A, 0x6, 0xCC, 0x78, 0xDA, 0x88, 0xBB, 0xAB, 0xA5, 0x47, 0xEF, 0xC7, 0x2B, 0xC7, 0x5B, 0x32, 0x31, 0xCD, 0xD9, 0x53, 0x96, 0x1A, 0x9D, 0x9A, 0x57, 0x40, 0x51, 0xB6, 0x5D, 0xC, 0x17, 0xD1, 0x86, 0xE9, 0xA4, 0x20, };
-
-        private static readonly byte[] _hugeDiv = { 0x0, };
-        private static readonly byte[] _hugeRem = { 0x1D, 0x33, 0xFB, 0xFE, 0xB1, 0x2, 0x85, 0x44, 0xCA, 0xDC, 0xFB, 0x70, 0xD, 0x39, 0xB1, 0x47, 0xB6, 0xE6, 0xA2, 0xD1, 0x19, 0x1E, 0x9F, 0xE4, 0x3C, 0x1E, 0x16, 0x56, 0x13, 0x9C, 0x4D, 0xD3, 0x5C, 0x74, 0xC9, 0xBD, 0xFA, 0x56, 0x40, 0x58, 0xAC, 0x20, 0x6B, 0x55, 0xA2, 0xD5, 0x41, 0x38, 0xA4, 0x6D, 0xF6, 0x8C, };
-
-        private static readonly byte[][] _addA = {
-            new byte[] {1},
-            new byte[] {0xFF},
-            _hugeA
+        private static readonly byte[] _hugeA =
+        {
+            0x1D, 0x33, 0xFB, 0xFE, 0xB1, 0x2, 0x85, 0x44, 0xCA, 0xDC, 0xFB, 0x70, 0xD, 0x39, 0xB1, 0x47, 0xB6,
+            0xE6, 0xA2, 0xD1, 0x19, 0x1E, 0x9F, 0xE4, 0x3C, 0x1E, 0x16, 0x56, 0x13, 0x9C, 0x4D, 0xD3, 0x5C, 0x74,
+            0xC9, 0xBD, 0xFA, 0x56, 0x40, 0x58, 0xAC, 0x20, 0x6B, 0x55, 0xA2, 0xD5, 0x41, 0x38, 0xA4, 0x6D, 0xF6,
+            0x8C
         };
 
-        private static readonly byte[][] _addB = {
-            new byte[] {1},
-            new byte[] {1},
-            _hugeB
+        private static readonly byte[] _hugeAdd =
+        {
+            0xB3, 0x38, 0xD5, 0xFD, 0x45, 0x1A, 0x46, 0xD8, 0xB6, 0xC, 0x2C, 0x9E, 0x9C, 0x61, 0xC4, 0xE0, 0x26,
+            0xDB, 0xEF, 0x31, 0xC0, 0x67, 0xC3, 0xDD, 0xF0, 0x68, 0x57, 0xBD, 0xEF, 0x79, 0xFF, 0x78, 0x3, 0x35,
+            0x7, 0x15, 0x95, 0x22, 0x6A, 0x3A, 0x41, 0xCD, 0xD7, 0xD2, 0x91, 0x14, 0x8, 0xB3, 0x65, 0x16, 0xBF,
+            0x3D, 0x20, 0x95, 0xE6, 0x4C, 0xE1, 0xE0, 0x4B, 0x49, 0xD5, 0x5A, 0xB7
         };
 
-        private static readonly byte[][] _addC = {
-            new byte[] {2},
-            new byte[] {0},
-            _hugeAdd
+        private static readonly byte[] _hugeB =
+        {
+            0x96, 0x5, 0xDA, 0xFE, 0x93, 0x17, 0xC1, 0x93, 0xEC, 0x2F, 0x30, 0x2D, 0x8F, 0x28, 0x13, 0x99, 0x70,
+            0xF4, 0x4C, 0x60, 0xA6, 0x49, 0x24, 0xF9, 0xB3, 0x4A, 0x41, 0x67, 0xDC, 0xDD, 0xB1, 0xA5, 0xA6, 0xC0,
+            0x3D, 0x57, 0x9A, 0xCB, 0x29, 0xE2, 0x94, 0xAC, 0x6C, 0x7D, 0xEF, 0x3E, 0xC6, 0x7A, 0xC1, 0xA8, 0xC8,
+            0xB0, 0x20, 0x95, 0xE6, 0x4C, 0xE1, 0xE0, 0x4B, 0x49, 0xD5, 0x5A, 0xB7
+        };
+    }
+
+    [TestFixture]
+    public partial class BigIntegerTest
+    {
+        private static readonly byte[][] _addA = { new byte[] { 1 }, new byte[] { 0xFF }, _hugeA };
+
+        private static readonly byte[][] _addB = { new byte[] { 1 }, new byte[] { 1 }, _hugeB };
+
+        private static readonly byte[][] _addC = { new byte[] { 2 }, new byte[] { 0 }, _hugeAdd };
+
+        private static readonly byte[] _amb =
+        {
+            0x87, 0x2D, 0x21, 0x0, 0x1E, 0xEB, 0xC3, 0xB0, 0xDD, 0xAC, 0xCB, 0x43, 0x7E, 0x10, 0x9E, 0xAE, 0x45,
+            0xF2, 0x55, 0x71, 0x73, 0xD4, 0x7A, 0xEB, 0x88, 0xD3, 0xD4, 0xEE, 0x36, 0xBE, 0x9B, 0x2D, 0xB6, 0xB3,
+            0x8B, 0x66, 0x60, 0x8B, 0x16, 0x76, 0x17, 0x74, 0xFE, 0xD7, 0xB2, 0x96, 0x7B, 0xBD, 0xE2, 0xC4, 0x2D,
+            0xDC, 0xDE, 0x6A, 0x19, 0xB3, 0x1E, 0x1F, 0xB4, 0xB6, 0x2A, 0xA5, 0x48
+        };
+
+        private static readonly byte[] _bma =
+        {
+            0x79, 0xD2, 0xDE, 0xFF, 0xE1, 0x14, 0x3C, 0x4F, 0x22, 0x53, 0x34, 0xBC, 0x81, 0xEF, 0x61, 0x51, 0xBA,
+            0xD, 0xAA, 0x8E, 0x8C, 0x2B, 0x85, 0x14, 0x77, 0x2C, 0x2B, 0x11, 0xC9, 0x41, 0x64, 0xD2, 0x49, 0x4C,
+            0x74, 0x99, 0x9F, 0x74, 0xE9, 0x89, 0xE8, 0x8B, 0x1, 0x28, 0x4D, 0x69, 0x84, 0x42, 0x1D, 0x3B, 0xD2,
+            0x23, 0x21, 0x95, 0xE6, 0x4C, 0xE1, 0xE0, 0x4B, 0x49, 0xD5, 0x5A, 0xB7
+        };
+
+        private static readonly byte[] _hugeDiv = { 0x0 };
+
+        private static readonly byte[] _hugeMul =
+        {
+            0xFE, 0x83, 0xE1, 0x9B, 0x8D, 0x61, 0x40, 0xD1, 0x60, 0x19, 0xBD, 0x38, 0xF0, 0xFF, 0x90, 0xAE, 0xDD,
+            0xAE, 0x73, 0x2C, 0x20, 0x23, 0xCF, 0x6, 0x7A, 0xB4, 0x1C, 0xE7, 0xD9, 0x64, 0x96, 0x2C, 0x87, 0x7E,
+            0x1D, 0xB3, 0x8F, 0xD4, 0x33, 0xBA, 0xF4, 0x22, 0xB4, 0xDB, 0xC0, 0x5B, 0xA5, 0x64, 0xA0, 0xBC, 0xCA,
+            0x3E, 0x94, 0x95, 0xDA, 0x49, 0xE2, 0xA8, 0x33, 0xA2, 0x6A, 0x33, 0xB1, 0xF2, 0xEA, 0x99, 0x32, 0xD0,
+            0xB2, 0xAE, 0x55, 0x75, 0xBD, 0x19, 0xFC, 0x9A, 0xEC, 0x54, 0x87, 0x2A, 0x6, 0xCC, 0x78, 0xDA, 0x88,
+            0xBB, 0xAB, 0xA5, 0x47, 0xEF, 0xC7, 0x2B, 0xC7, 0x5B, 0x32, 0x31, 0xCD, 0xD9, 0x53, 0x96, 0x1A, 0x9D,
+            0x9A, 0x57, 0x40, 0x51, 0xB6, 0x5D, 0xC, 0x17, 0xD1, 0x86, 0xE9, 0xA4, 0x20
+        };
+
+        private static readonly byte[] _hugeRem =
+        {
+            0x1D, 0x33, 0xFB, 0xFE, 0xB1, 0x2, 0x85, 0x44, 0xCA, 0xDC, 0xFB, 0x70, 0xD, 0x39, 0xB1, 0x47, 0xB6,
+            0xE6, 0xA2, 0xD1, 0x19, 0x1E, 0x9F, 0xE4, 0x3C, 0x1E, 0x16, 0x56, 0x13, 0x9C, 0x4D, 0xD3, 0x5C, 0x74,
+            0xC9, 0xBD, 0xFA, 0x56, 0x40, 0x58, 0xAC, 0x20, 0x6B, 0x55, 0xA2, 0xD5, 0x41, 0x38, 0xA4, 0x6D, 0xF6,
+            0x8C
         };
 
         private readonly NumberFormatInfo _nfi = NumberFormatInfo.InvariantInfo;
         private NumberFormatInfo _nfiUser;
 
-        [OneTimeSetUp]
-        public void SetUpFixture()
-        {
-            _nfiUser = new NumberFormatInfo
-            {
-                CurrencyDecimalDigits = 3,
-                CurrencyDecimalSeparator = ":",
-                CurrencyGroupSeparator = "/",
-                CurrencyGroupSizes = new[] { 2, 1, 0 },
-                CurrencyNegativePattern = 10,  // n $-
-                CurrencyPositivePattern = 3,  // n $
-                CurrencySymbol = "XYZ",
-                PercentDecimalDigits = 1,
-                PercentDecimalSeparator = ";",
-                PercentGroupSeparator = "~",
-                PercentGroupSizes = new[] { 1 },
-                PercentNegativePattern = 2,
-                PercentPositivePattern = 2,
-                PercentSymbol = "%%%",
-                NumberDecimalSeparator = "."
-            };
-        }
-
         [Test]
-        public void Mul()
+        public void Bug10887()
         {
-            var values = new[] { -1000000000L, -1000, -1, 0, 1, 1000, 100000000L };
-            for (var i = 0; i < values.Length; ++i)
+            BigInteger b = 0;
+            for (var i = 1; i <= 16; i++)
             {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-                    var c = a * b;
-                    Assert.AreEqual(values[i] * values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
-                }
+                b = (b * 256) + i;
             }
+
+            var p = BigInteger.Pow(2, 32);
+            Assert.AreEqual("1339673755198158349044581307228491536", b.ToString(), "#1");
+            Assert.AreEqual("1339673755198158349044581307228491536", ((b << 32) / p).ToString(), "#2");
+            Assert.AreEqual("1339673755198158349044581307228491536", (b * p >> 32).ToString(), "#3");
         }
 
         [Test]
-        public void TestHugeMul()
+        public void Bug16526()
         {
-            var a = new BigInteger(_hugeA);
-            var b = new BigInteger(_hugeB);
-            Assert.AreEqual(_hugeMul, (a * b).ToByteArray(), "#1");
-        }
-
-        [Test]
-        public void DivRem()
-        {
-            var values = new[] { -10000000330L, -5000, -1, 0, 1, 1000, 333, 10234544400L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    if (values[j] == 0)
-                    {
-                        continue;
-                    }
-
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-                    var c = BigInteger.DivRem(a, b, out var d);
-
-                    Assert.AreEqual(values[i] / values[j], (long)c, "#a_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] % values[j], (long)d, "#b_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void TestHugeDivRem()
-        {
-            var a = new BigInteger(_hugeA);
-            var b = new BigInteger(_hugeB);
-            var c = BigInteger.DivRem(a, b, out var d);
-
-            Assert.AreEqual(_hugeDiv, c.ToByteArray(), "#1");
-            Assert.AreEqual(_hugeRem, d.ToByteArray(), "#2");
-        }
-
-        [Test]
-        public void Pow()
-        {
+            var x = BigInteger.Pow(2, 63);
+            x *= -1;
+            x -= 1;
+            Assert.AreEqual("-9223372036854775809", x.ToString(), "#1");
             try
             {
-                BigInteger.Pow(1, -1);
-                Assert.Fail("#1");
+                GC.KeepAlive((long)x);
+                Assert.Fail("#2 Must OVF");
             }
-            catch (ArgumentOutOfRangeException ex)
+            catch (OverflowException ex)
             {
                 Theraot.No.Op(ex);
             }
-
-            Assert.AreEqual(1, (int)BigInteger.Pow(99999, 0), "#2");
-            Assert.AreEqual(99999, (int)BigInteger.Pow(99999, 1), "#5");
-            Assert.AreEqual(59049, (int)BigInteger.Pow(3, 10), "#4");
-            Assert.AreEqual(177147, (int)BigInteger.Pow(3, 11), "#5");
-            Assert.AreEqual(-177147, (int)BigInteger.Pow(-3, 11), "#6");
-        }
-
-        [Test]
-        public void ModPow()
-        {
-            try
-            {
-                BigInteger.ModPow(1, -1, 5);
-                Assert.Fail("#1");
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-            try
-            {
-                BigInteger.ModPow(1, 5, 0);
-                Assert.Fail("#2");
-            }
-            catch (DivideByZeroException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            Assert.AreEqual(4L, (long)BigInteger.ModPow(3, 2, 5), "#2");
-            Assert.AreEqual(20L, (long)BigInteger.ModPow(555, 10, 71), "#3");
-            Assert.AreEqual(20L, (long)BigInteger.ModPow(-555, 10, 71), "#3");
-            Assert.AreEqual(-24L, (long)BigInteger.ModPow(-555, 11, 71), "#3");
-        }
-
-        [Test]
-        public void GCD()
-        {
-            Assert.AreEqual(999999, (int)BigInteger.GreatestCommonDivisor(999999, 0), "#1");
-            Assert.AreEqual(999999, (int)BigInteger.GreatestCommonDivisor(0, 999999), "#2");
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(999999, 1), "#3");
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(1, 999999), "#4");
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(1, 0), "#5");
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(0, 1), "#6");
-
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(999999, -1), "#7");
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(-1, 999999), "#8");
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(-1, 0), "#9");
-            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(0, -1), "#10");
-
-            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(12345678, 8765432), "#11");
-            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(-12345678, 8765432), "#12");
-            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(12345678, -8765432), "#13");
-            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(-12345678, -8765432), "#14");
-
-            Assert.AreEqual(40, (int)BigInteger.GreatestCommonDivisor(5581 * 40, 6671 * 40), "#15");
-
-            Assert.AreEqual(5, (int)BigInteger.GreatestCommonDivisor(-5, 0), "#16");
-            Assert.AreEqual(5, (int)BigInteger.GreatestCommonDivisor(0, -5), "#17");
-        }
-
-        [Test]
-        public void Log()
-        {
-            const double Delta = 0.000000000000001d;
-
-            Assert.AreEqual(double.NegativeInfinity, BigInteger.Log(0), "#1");
-            Assert.AreEqual(0d, BigInteger.Log(1), "#2");
-            Assert.AreEqual(double.NaN, BigInteger.Log(-1), "#3");
-            Assert.AreEqual(2.3025850929940459d, BigInteger.Log(10), Delta, "#4");
-            Assert.AreEqual(6.9077552789821368d, BigInteger.Log(1000), Delta, "#5");
-            Assert.AreEqual(double.NaN, BigInteger.Log(-234), "#6");
-        }
-
-        [Test]
-        public void LogN()
-        {
-            const double Delta = 0.000000000000001d;
-
-            Assert.AreEqual(double.NaN, BigInteger.Log(10, 1), "#1");
-            Assert.AreEqual(double.NaN, BigInteger.Log(10, 0), "#2");
-            Assert.AreEqual(double.NaN, BigInteger.Log(10, -1), "#3");
-
-            Assert.AreEqual(double.NaN, BigInteger.Log(10, double.NaN), "#4");
-            Assert.AreEqual(double.NaN, BigInteger.Log(10, double.NegativeInfinity), "#5");
-            Assert.AreEqual(double.NaN, BigInteger.Log(10, double.PositiveInfinity), "#6");
-
-            Assert.AreEqual(0d, BigInteger.Log(1, 0), "#7");
-            Assert.AreEqual(double.NaN, BigInteger.Log(1, double.NegativeInfinity), "#8");
-            Assert.AreEqual(0, BigInteger.Log(1, double.PositiveInfinity), "#9");
-            Assert.AreEqual(double.NaN, BigInteger.Log(1, double.NaN), "#10");
-
-            Assert.AreEqual(-2.5129415947320606d, BigInteger.Log(10, 0.4), Delta, "#11");
-        }
-
-        [Test]
-        public void DivRemByZero()
-        {
-            try
-            {
-                GC.KeepAlive(BigInteger.DivRem(100, 0, out var d));
-                Assert.Fail("#1");
-            }
-            catch (DivideByZeroException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-        }
-
-        [Test]
-        public void TestAdd()
-        {
-            for (var i = 0; i < _addA.Length; ++i)
-            {
-                var a = new BigInteger(_addA[i]);
-                var b = new BigInteger(_addB[i]);
-                var c = new BigInteger(_addC[i]);
-
-                Assert.AreEqual(c, a + b, "#" + i.ToString() + "a");
-                Assert.AreEqual(c, b + a, "#" + i.ToString() + "b");
-                Assert.AreEqual(c, BigInteger.Add(a, b), "#" + i.ToString() + "c");
-                Assert.AreEqual(_addC[i], (a + b).ToByteArray(), "#" + i.ToString() + "d");
-            }
-        }
-
-        [Test]
-        public void TestAdd2()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-                    var c = a + b;
-                    Assert.AreEqual(values[i] + values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void TestHugeSub()
-        {
-            var a = new BigInteger(_hugeA);
-            var b = new BigInteger(_hugeB);
-            Assert.AreEqual(_amb, (a - b).ToByteArray(), "#1");
-            Assert.AreEqual(_bma, (b - a).ToByteArray(), "#2");
-        }
-
-        [Test]
-        public void TestSub()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-                    var c = a - b;
-                    var d = BigInteger.Subtract(a, b);
-
-                    Assert.AreEqual(values[i] - values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] - values[j], (long)d, "#_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void TestMin()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-                    var c = BigInteger.Min(a, b);
-
-                    Assert.AreEqual(Math.Min(values[i], values[j]), (long)c, "#_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void TestMax()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-                    var c = BigInteger.Max(a, b);
-
-                    Assert.AreEqual(Math.Max(values[i], values[j]), (long)c, "#_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void TestAbs()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                var a = new BigInteger(values[i]);
-                var c = BigInteger.Abs(a);
-
-                Assert.AreEqual(Math.Abs(values[i]), (long)c, "#_" + i.ToString());
-            }
-        }
-
-        [Test]
-        public void TestNegate()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                var a = new BigInteger(values[i]);
-                var c = -a;
-                var d = BigInteger.Negate(a);
-
-                Assert.AreEqual(-values[i], (long)c, "#_" + i.ToString());
-                Assert.AreEqual(-values[i], (long)d, "#_" + i.ToString());
-            }
-        }
-
-        [Test]
-        public void TestInc()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                var a = new BigInteger(values[i]);
-                var b = ++a;
-
-                Assert.AreEqual(++values[i], (long)b, "#_" + i.ToString());
-            }
-        }
-
-        [Test]
-        public void TestDec()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                var a = new BigInteger(values[i]);
-                var b = --a;
-
-                Assert.AreEqual(--values[i], (long)b, "#_" + i.ToString());
-            }
-        }
-
-        [Test]
-        public void TestBitwiseOps()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xFFFF00000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-
-                    Assert.AreEqual(values[i] | values[j], (long)(a | b), "#b_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] & values[j], (long)(a & b), "#a_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] ^ values[j], (long)(a ^ b), "#c_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(~values[i], (long)~a, "#d_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void TestLeftShift()
-        {
-            Assert.AreEqual(new byte[] { 0x00, 0x28 },
-                (new BigInteger(0x0A) << 10).ToByteArray(), "#1");
-            Assert.AreEqual(new byte[] { 0x00, 0xD8 },
-                (new BigInteger(-10) << 10).ToByteArray(), "#2");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0xFF },
-                (new BigInteger(-1) << 16).ToByteArray(), "#3");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A },
-                (new BigInteger(0x0A) << 80).ToByteArray(), "#4");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF6 },
-                (new BigInteger(-10) << 80).ToByteArray(), "#5");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF },
-                (new BigInteger(-1) << 80).ToByteArray(), "#6");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x70, 0xD9 },
-                (new BigInteger(-1234) << 75).ToByteArray(), "#7");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA0, 0x91, 0x00 },
-                (new BigInteger(0x1234) << 75).ToByteArray(), "#8");
-
-            Assert.AreEqual(new byte[] { 0xFF, 0x00 }, (new BigInteger(0xFF00) << -8).ToByteArray(), "#9");
-        }
-
-        [Test]
-        public void TestRightShift()
-        {
-            Assert.AreEqual(new byte[] { 0x16, 0xB0, 0x4C, 0x02 },
-                (new BigInteger(1234567899L) >> 5).ToByteArray(), "#1");
-
-            Assert.AreEqual(new byte[] { 0x2C, 0x93, 0x00 },
-                (new BigInteger(1234567899L) >> 15).ToByteArray(), "#2");
-
-            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0x7F },
-                (new BigInteger(long.MaxValue - 100) >> 40).ToByteArray(), "#3");
-
-            Assert.AreEqual(new byte[] { 0xE9, 0x4F, 0xB3, 0xFD },
-                (new BigInteger(-1234567899L) >> 5).ToByteArray(), "#4");
-
-            Assert.AreEqual(new byte[] { 0xD3, 0x6C, 0xFF },
-                (new BigInteger(-1234567899L) >> 15).ToByteArray(), "#5");
-
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x80 },
-                (new BigInteger(long.MinValue + 100) >> 40).ToByteArray(), "#6");
-
-            Assert.AreEqual(new byte[] { 0xFF },
-                (new BigInteger(-1234567899L) >> 90).ToByteArray(), "#7");
-
-            Assert.AreEqual(new byte[] { 0x00 },
-                (new BigInteger(999999) >> 90).ToByteArray(), "#8");
-
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0xFF, 0x00 }, (new BigInteger(0xFF00) >> -8).ToByteArray(), "#9");
-        }
-
-        [Test]
-        public void CompareOps()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = new BigInteger(values[j]);
-
-                    Assert.AreEqual(values[i].CompareTo(values[j]), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i].CompareTo(values[j]), BigInteger.Compare(a, b), "#b_" + i.ToString() + "_" + j.ToString());
-
-                    Assert.AreEqual(values[i] < values[j], a < b, "#c_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] <= values[j], a <= b, "#d_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] == values[j], a == b, "#e_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] != values[j], a != b, "#f_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] >= values[j], a >= b, "#g_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(values[i] > values[j], a > b, "#h_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void CompareOps2()
-        {
-            var a = new BigInteger(100000000000L);
-            var b = new BigInteger(28282828282UL);
-
-            Assert.IsTrue(a >= b, "#1");
-            Assert.IsTrue(a >= b, "#2");
-            Assert.IsFalse(a < b, "#3");
-            Assert.IsFalse(a <= b, "#4");
-            Assert.AreEqual(1, a.CompareTo(b), "#5");
-        }
-
-        [Test]
-        public void CompareULong()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xAA00000000L };
-            var uvalues = new ulong[] { 0, 1, 1000, 100000000000L, 999999, 28282828282, 0xAA00000000, ulong.MaxValue };
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < uvalues.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = uvalues[j];
-                    var c = new BigInteger(b);
-
-                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
-
-                    Assert.AreEqual(a > c, a > b, "#b_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a < c, a < b, "#c_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a <= c, a <= b, "#d_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a == c, a == b, "#e_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a != c, a != b, "#f_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a >= c, a >= b, "#g_" + i.ToString() + "_" + j.ToString());
-
-                    Assert.AreEqual(c > a, b > a, "#ib_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c < a, b < a, "#ic_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c <= a, b <= a, "#id_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c == a, b == a, "#ie_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c != a, b != a, "#if_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void CompareLong()
-        {
-            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 9999999, 100000000000L, 0xAA00000000, long.MaxValue, long.MinValue };
-
-            for (var i = 0; i < values.Length; ++i)
-            {
-                for (var j = 0; j < values.Length; ++j)
-                {
-                    var a = new BigInteger(values[i]);
-                    var b = values[j];
-                    var c = new BigInteger(b);
-
-                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
-
-                    Assert.AreEqual(a > c, a > b, "#b_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a < c, a < b, "#c_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a <= c, a <= b, "#d_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a == c, a == b, "#e_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a != c, a != b, "#f_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(a >= c, a >= b, "#g_" + i.ToString() + "_" + j.ToString());
-
-                    Assert.AreEqual(c > a, b > a, "#ib_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c < a, b < a, "#ic_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c <= a, b <= a, "#id_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c == a, b == a, "#ie_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c != a, b != a, "#if_" + i.ToString() + "_" + j.ToString());
-                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i.ToString() + "_" + j.ToString());
-                }
-            }
-        }
-
-        [Test]
-        public void TestEquals()
-        {
-            var a = new BigInteger(10);
-            var b = new BigInteger(10);
-            var c = new BigInteger(-10);
-
-            Assert.AreEqual(a, b, "#1");
-            Assert.AreNotEqual(a, c, "#2");
-            Assert.AreNotEqual(a, 10, "#3");
         }
 
         [Test]
@@ -607,40 +147,6 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(0, (int)new BigInteger(new byte[1]), "#3");
 
             Assert.AreEqual(0, (int)new BigInteger(new byte[2]), "#4");
-        }
-
-        [Test]
-        public void IntCtorRoundTrip()
-        {
-            var values = new[] {
-                int.MinValue, -0x2F33BB, -0x1F33, -0x33, 0, 0x33,
-                0x80, 0x8190, 0xFF0011, 0x1234, 0x11BB99, 0x44BB22CC,
-                int.MaxValue };
-            foreach (var val in values)
-            {
-                var a = new BigInteger(val);
-                var b = new BigInteger(a.ToByteArray());
-
-                Assert.AreEqual(val, (int)a, "#a_" + val.ToString());
-                Assert.AreEqual(val, (int)b, "#b_" + val.ToString());
-            }
-        }
-
-        [Test]
-        public void LongCtorRoundTrip()
-        {
-            var values = new[] {
-                0, long.MinValue, long.MaxValue, -1, 1L + int.MaxValue, -1L + int.MinValue, 0x1234, 0xFFFFFFFFL, 0x1FFFFFFFFL, -0xFFFFFFFFL, -0x1FFFFFFFFL,
-                0x100000000L, -0x100000000L, 0x100000001L, -0x100000001L, 4294967295L, -4294967295L, 4294967296L, -4294967296L };
-            foreach (var val in values)
-            {
-                var a = new BigInteger(val);
-                var b = new BigInteger(a.ToByteArray());
-
-                Assert.AreEqual(val, (long)a, "#a_" + val.ToString());
-                Assert.AreEqual(val, (long)b, "#b_" + val.ToString());
-                Assert.AreEqual(a, b, "#a  == #b (" + val.ToString() + ")");
-            }
         }
 
         [Test]
@@ -685,211 +191,8 @@ namespace MonoTests.System.Numerics
             arr = new byte[] { 0xFF, 00 };
             Assert.AreEqual(arr, new BigInteger(arr).ToByteArray(), "#13");
 
-            arr = new byte[] { 1, 0, 0, 0, 0, 0, };
+            arr = new byte[] { 1, 0, 0, 0, 0, 0 };
             Assert.AreEqual(new byte[] { 1 }, new BigInteger(arr).ToByteArray(), "#14");
-        }
-
-        [Test]
-        public void TestIntCtorProperties()
-        {
-            var a = new BigInteger(10);
-            Assert.IsTrue(a.IsEven, "#1");
-            Assert.IsFalse(a.IsOne, "#2");
-            Assert.IsFalse(a.IsPowerOfTwo, "#3");
-            Assert.IsFalse(a.IsZero, "#4");
-            Assert.AreEqual(1, a.Sign, "#5");
-
-            Assert.IsFalse(new BigInteger(11).IsEven, "#6");
-            Assert.IsTrue(new BigInteger(1).IsOne, "#7");
-            Assert.IsTrue(new BigInteger(32).IsPowerOfTwo, "#8");
-            Assert.IsTrue(new BigInteger(0).IsZero, "#9");
-            Assert.IsTrue(new BigInteger().IsZero, "#9b");
-            Assert.AreEqual(0, new BigInteger(0).Sign, "#10");
-            Assert.AreEqual(-1, new BigInteger(-99999).Sign, "#11");
-
-            Assert.IsFalse(new BigInteger(0).IsPowerOfTwo, "#12");
-            Assert.IsFalse(new BigInteger().IsPowerOfTwo, "#12b");
-            Assert.IsFalse(new BigInteger(-16).IsPowerOfTwo, "#13");
-            Assert.IsTrue(new BigInteger(1).IsPowerOfTwo, "#14");
-        }
-
-        [Test]
-        public void TestIntCtorToString()
-        {
-            Assert.AreEqual("5555", new BigInteger(5555).ToString(), "#1");
-            Assert.AreEqual("-99999", new BigInteger(-99999).ToString(), "#2");
-        }
-
-        [Test]
-        public void TestToStringFmt()
-        {
-            Assert.AreEqual("123456789123456", new BigInteger(123456789123456).ToString("D2"), "#1");
-            Assert.AreEqual("0000000005", new BigInteger(5).ToString("d10"), "#2");
-            Assert.AreEqual("0A8", new BigInteger(168).ToString("X"), "#3");
-            Assert.AreEqual("0", new BigInteger(0).ToString("X"), "#4");
-            Assert.AreEqual("0", new BigInteger().ToString("X"), "#4b");
-            Assert.AreEqual("1", new BigInteger(1).ToString("X"), "#5");
-            Assert.AreEqual("0A", new BigInteger(10).ToString("X"), "#6");
-            Assert.AreEqual("F6", new BigInteger(-10).ToString("X"), "#7");
-
-            Assert.AreEqual("10000000000000000000000000000000000000000000000000000000", BigInteger.Pow(10, 55).ToString("G"), "#8");
-
-            Assert.AreEqual("10000000000000000000000000000000000000000000000000000000", BigInteger.Pow(10, 55).ToString("R"), "#9");
-
-            Assert.AreEqual("000000000A", new BigInteger(10).ToString("X10"), "#10");
-            Assert.AreEqual("0000000010", new BigInteger(10).ToString("G10"), "#11");
-        }
-
-        [Test]
-        public void TestToStringFmtProvider()
-        {
-            var info = new NumberFormatInfo
-            {
-                NegativeSign = ">",
-                PositiveSign = "%"
-            };
-
-            Assert.AreEqual("10", new BigInteger(10).ToString(info), "#1");
-            Assert.AreEqual(">10", new BigInteger(-10).ToString(info), "#2");
-            Assert.AreEqual("0A", new BigInteger(10).ToString("X", info), "#3");
-            Assert.AreEqual("F6", new BigInteger(-10).ToString("X", info), "#4");
-            Assert.AreEqual("10", new BigInteger(10).ToString("G", info), "#5");
-            Assert.AreEqual(">10", new BigInteger(-10).ToString("G", info), "#6");
-            Assert.AreEqual("10", new BigInteger(10).ToString("D", info), "#7");
-            Assert.AreEqual(">10", new BigInteger(-10).ToString("D", info), "#8");
-            Assert.AreEqual("10", new BigInteger(10).ToString("R", info), "#9");
-            Assert.AreEqual(">10", new BigInteger(-10).ToString("R", info), "#10");
-
-            info = new NumberFormatInfo
-            {
-                NegativeSign = "#$%"
-            };
-            Assert.AreEqual("#$%10", new BigInteger(-10).ToString(info), "#2");
-            Assert.AreEqual("#$%10", new BigInteger(-10).ToString(null, info), "#2");
-
-            info = new NumberFormatInfo();
-            Assert.AreEqual("-10", new BigInteger(-10).ToString(info), "#2");
-        }
-
-        [Test]
-        public void TestToIntOperator()
-        {
-            try
-            {
-                GC.KeepAlive((int)new BigInteger(_hugeA));
-                Assert.Fail("#1");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                GC.KeepAlive((int)new BigInteger(1L + int.MaxValue));
-                Assert.Fail("#2");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                GC.KeepAlive((int)new BigInteger(-1L + int.MinValue));
-                Assert.Fail("#3");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            Assert.AreEqual(int.MaxValue, (int)new BigInteger(int.MaxValue), "#4");
-            Assert.AreEqual(int.MinValue, (int)new BigInteger(int.MinValue), "#5");
-        }
-
-        [Test]
-        public void TestToLongOperator()
-        {
-            try
-            {
-                GC.KeepAlive((long)new BigInteger(_hugeA));
-                Assert.Fail("#1");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            //long.MaxValue + 1
-            try
-            {
-                GC.KeepAlive((long)new BigInteger(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00 }));
-                Assert.Fail("#2");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            //TODO long.MinValue - 1
-            try
-            {
-                GC.KeepAlive((long)new BigInteger(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF }));
-                Assert.Fail("#3");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            Assert.AreEqual(long.MaxValue, (long)new BigInteger(long.MaxValue), "#4");
-            Assert.AreEqual(long.MinValue, (long)new BigInteger(long.MinValue), "#5");
-        }
-
-        [Test]
-        public void TestIntCtorToByteArray()
-        {
-            Assert.AreEqual(new byte[] { 0xFF }, new BigInteger(-1).ToByteArray(), "#1");
-            Assert.AreEqual(new byte[] { 0xD4, 0xFE }, new BigInteger(-300).ToByteArray(), "#2");
-            Assert.AreEqual(new byte[] { 0x80, 0x00 }, new BigInteger(128).ToByteArray(), "#3");
-            Assert.AreEqual(new byte[] { 0x00, 0x60 }, new BigInteger(0x6000).ToByteArray(), "#4");
-            Assert.AreEqual(new byte[] { 0x00, 0x80, 0x00 }, new BigInteger(0x8000).ToByteArray(), "#5");
-            Assert.AreEqual(new byte[] { 0xDD, 0xBC, 0x00, 0x7A }, new BigInteger(0x7A00BCDD).ToByteArray(), "#6");
-            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0x7F }, new BigInteger(int.MaxValue).ToByteArray(), "#7");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x80 }, new BigInteger(int.MinValue).ToByteArray(), "#8");
-            Assert.AreEqual(new byte[] { 0x01, 0x00, 0x00, 0x80 }, new BigInteger(int.MinValue + 1).ToByteArray(), "#9");
-            Assert.AreEqual(new byte[] { 0x7F }, new BigInteger(0x7F).ToByteArray(), "#10");
-            Assert.AreEqual(new byte[] { 0x45, 0xCC, 0xD0 }, new BigInteger(-0x2F33BB).ToByteArray(), "#11");
-            Assert.AreEqual(new byte[] { 0 }, new BigInteger(0).ToByteArray(), "#12");
-            Assert.AreEqual(new byte[] { 0 }, new BigInteger().ToByteArray(), "#13");
-        }
-
-        [Test]
-        public void TestLongCtorToByteArray()
-        {
-            Assert.AreEqual(new byte[] { 0x01 }, new BigInteger(0x01L).ToByteArray(), "#1");
-            Assert.AreEqual(new byte[] { 0x02, 0x01 }, new BigInteger(0x0102L).ToByteArray(), "#2");
-            Assert.AreEqual(new byte[] { 0x03, 0x02, 0x01 }, new BigInteger(0x010203L).ToByteArray(), "#3");
-            Assert.AreEqual(new byte[] { 0x04, 0x03, 0x2, 0x01 }, new BigInteger(0x01020304L).ToByteArray(), "#4");
-            Assert.AreEqual(new byte[] { 0x05, 0x04, 0x03, 0x2, 0x01 }, new BigInteger(0x0102030405L).ToByteArray(), "#5");
-            Assert.AreEqual(new byte[] { 0x06, 0x05, 0x04, 0x03, 0x2, 0x01 }, new BigInteger(0x010203040506L).ToByteArray(), "#6");
-            Assert.AreEqual(new byte[] { 0x07, 0x06, 0x05, 0x04, 0x03, 0x2, 0x01 }, new BigInteger(0x01020304050607L).ToByteArray(), "#7");
-            Assert.AreEqual(new byte[] { 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x2, 0x01 }, new BigInteger(0x0102030405060708L).ToByteArray(), "#8");
-
-            Assert.AreEqual(new byte[] { 0xFF }, new BigInteger(-0x01L).ToByteArray(), "#1m");
-            Assert.AreEqual(new byte[] { 0xFE, 0xFE }, new BigInteger(-0x0102L).ToByteArray(), "#2m");
-            Assert.AreEqual(new byte[] { 0xFD, 0xFD, 0xFE }, new BigInteger(-0x010203L).ToByteArray(), "#3m");
-            Assert.AreEqual(new byte[] { 0xFC, 0xFC, 0xFD, 0xFE }, new BigInteger(-0x01020304L).ToByteArray(), "#4m");
-            Assert.AreEqual(new byte[] { 0xFB, 0xFB, 0xFC, 0xFD, 0xFE }, new BigInteger(-0x0102030405L).ToByteArray(), "#5m");
-            Assert.AreEqual(new byte[] { 0xFA, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE }, new BigInteger(-0x010203040506L).ToByteArray(), "#6m");
-            Assert.AreEqual(new byte[] { 0xF9, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE }, new BigInteger(-0x01020304050607L).ToByteArray(), "#7m");
-            Assert.AreEqual(new byte[] { 0xF8, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE }, new BigInteger(-0x0102030405060708L).ToByteArray(), "#8m");
-
-            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F }, new BigInteger(long.MaxValue).ToByteArray(), "#9");
-            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80 }, new BigInteger(long.MinValue).ToByteArray(), "#10");
-
-            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0x7F, 0xFF }, new BigInteger(-2147483649L).ToByteArray(), "11");
         }
 
         [Test]
@@ -903,115 +206,121 @@ namespace MonoTests.System.Numerics
         }
 
         [Test]
-        public void ShortOperators()
+        public void CompareLong()
         {
-            Assert.AreEqual(22, (int)new BigInteger(22), "#1");
-            Assert.AreEqual(-22, (int)new BigInteger(-22), "#2");
+            var values = new[]
+            {
+                -100000000000L, -1000, -1, 0, 1, 1000, 9999999, 100000000000L, 0xAA00000000, long.MaxValue,
+                long.MinValue
+            };
 
-            try
+            for (var i = 0; i < values.Length; ++i)
             {
-                GC.KeepAlive((short)new BigInteger(10000000));
-                Assert.Fail("#3");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = values[j];
+                    var c = new BigInteger(b);
 
-            try
-            {
-                GC.KeepAlive((short)new BigInteger(-10000000));
-                Assert.Fail("#4");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
+                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
+
+                    Assert.AreEqual(a > c, a > b, "#b_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a < c, a < b, "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a <= c, a <= b, "#d_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a == c, a == b, "#e_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a != c, a != b, "#f_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a >= c, a >= b, "#g_" + i.ToString() + "_" + j.ToString());
+
+                    Assert.AreEqual(c > a, b > a, "#ib_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c < a, b < a, "#ic_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c <= a, b <= a, "#id_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c == a, b == a, "#ie_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c != a, b != a, "#if_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i.ToString() + "_" + j.ToString());
+                }
             }
         }
 
         [Test]
-        public void DoubleCtor()
+        public void CompareOps()
         {
-            try
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
             {
-                var x = new BigInteger(double.NaN);
-                GC.KeepAlive(x);
-                Assert.Fail("#1");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-            try
-            {
-                var x = new BigInteger(double.NegativeInfinity);
-                GC.KeepAlive(x);
-                Assert.Fail("#2");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-            try
-            {
-                var x = new BigInteger(double.PositiveInfinity);
-                GC.KeepAlive(x);
-                Assert.Fail("#3");
-            }
-            catch (OverflowException ex)
-            {
-                Theraot.No.Op(ex);
-            }
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
 
-            Assert.AreEqual(10000, (int)new BigInteger(10000.2), "#4");
-            Assert.AreEqual(10000, (int)new BigInteger(10000.9), "#5");
+                    Assert.AreEqual(values[i].CompareTo(values[j]), a.CompareTo(b),
+                        "#a_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i].CompareTo(values[j]), BigInteger.Compare(a, b),
+                        "#b_" + i.ToString() + "_" + j.ToString());
 
-            Assert.AreEqual(10000, (int)new BigInteger(10000.2), "#6");
-            Assert.AreEqual(0, (int)new BigInteger(0.9), "#7");
-
-            Assert.AreEqual(12345678999L, (long)new BigInteger(12345678999.33), "#8");
+                    Assert.AreEqual(values[i] < values[j], a < b, "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] <= values[j], a <= b, "#d_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] == values[j], a == b, "#e_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] != values[j], a != b, "#f_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] >= values[j], a >= b, "#g_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] > values[j], a > b, "#h_" + i.ToString() + "_" + j.ToString());
+                }
+            }
         }
 
         [Test]
-        public void DoubleConversion()
+        public void CompareOps2()
         {
-            Assert.AreEqual(999d, (double)new BigInteger(999), "#1");
-            Assert.AreEqual(double.PositiveInfinity, (double)BigInteger.Pow(2, 1024), "#2");
-            Assert.AreEqual(double.NegativeInfinity, (double)BigInteger.Pow(-2, 1025), "#3");
+            var a = new BigInteger(100000000000L);
+            var b = new BigInteger(28282828282UL);
 
-            Assert.AreEqual(0d, (double)BigInteger.Zero, "#4");
-            Assert.AreEqual(1d, (double)BigInteger.One, "#5");
-            Assert.AreEqual(-1d, (double)BigInteger.MinusOne, "#6");
-
-            var result1 = BitConverter.Int64BitsToDouble(-4337852273739220173);
-            Assert.AreEqual(result1, (double)new BigInteger(new byte[] { 53, 152, 137, 177, 240, 81, 75, 198 }), "#7");
-            var result2 = BitConverter.Int64BitsToDouble(4893382453283402035);
-            Assert.AreEqual(result2, (double)new BigInteger(new byte[] { 53, 152, 137, 177, 240, 81, 75, 198, 0 }), "#8");
-
-            var result3 = BitConverter.Int64BitsToDouble(5010775143622804480);
-            var result4 = BitConverter.Int64BitsToDouble(5010775143622804481);
-            var result5 = BitConverter.Int64BitsToDouble(5010775143622804482);
-            Assert.AreEqual(result3, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 16, 128, 208, 159, 60, 46, 59, 3 }), "#9");
-            Assert.AreEqual(result3, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 17, 128, 208, 159, 60, 46, 59, 3 }), "#10");
-            Assert.AreEqual(result3, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 24, 128, 208, 159, 60, 46, 59, 3 }), "#11");
-            Assert.AreEqual(result4, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 32, 128, 208, 159, 60, 46, 59, 3 }), "#12");
-            Assert.AreEqual(result4, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 48, 128, 208, 159, 60, 46, 59, 3 }), "#13");
-            Assert.AreEqual(result5, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 64, 128, 208, 159, 60, 46, 59, 3 }), "#14");
-
-            Assert.AreEqual(BitConverter.Int64BitsToDouble(-2748107935317889142), (double)new BigInteger(_hugeA), "#15");
-            Assert.AreEqual(BitConverter.Int64BitsToDouble(-2354774254443231289), (double)new BigInteger(_hugeB), "#16");
-            Assert.AreEqual(BitConverter.Int64BitsToDouble(8737073938546854790), (double)new BigInteger(_hugeMul), "#17");
-
-            Assert.AreEqual(BitConverter.Int64BitsToDouble(6912920136897069886), (double)(2278888483353476799 * BigInteger.Pow(2, 451)), "#18");
-            Assert.AreEqual(double.PositiveInfinity, (double)(843942696292817306 * BigInteger.Pow(2, 965)), "#19");
+            Assert.IsTrue(a >= b, "#1");
+            Assert.IsTrue(a >= b, "#2");
+            Assert.IsFalse(a < b, "#3");
+            Assert.IsFalse(a <= b, "#4");
+            Assert.AreEqual(1, a.CompareTo(b), "#5");
         }
 
         [Test]
-        public void DecimalCtor()
+        public void CompareToLongToWithBigNumber()
         {
-            Assert.AreEqual(999, (int)new BigInteger(999.99m), "#1");
-            Assert.AreEqual(-10000, (int)new BigInteger(-10000m), "#2");
-            Assert.AreEqual(0, (int)new BigInteger(0m), "#3");
+            var a = BigInteger.Parse("123456789123456789");
+            var b = BigInteger.Parse("-123456789123456789");
+            Assert.AreEqual(1, a.CompareTo(2000));
+            Assert.AreEqual(1, a.CompareTo(-2000));
+            Assert.AreEqual(-1, b.CompareTo(2000));
+            Assert.AreEqual(-1, b.CompareTo(-2000));
+        }
+
+        [Test]
+        public void CompareULong()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xAA00000000L };
+            var uValues = new ulong[] { 0, 1, 1000, 100000000000L, 999999, 28282828282, 0xAA00000000, ulong.MaxValue };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < uValues.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = uValues[j];
+                    var c = new BigInteger(b);
+
+                    Assert.AreEqual(a.CompareTo(c), a.CompareTo(b), "#a_" + i.ToString() + "_" + j.ToString());
+
+                    Assert.AreEqual(a > c, a > b, "#b_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a < c, a < b, "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a <= c, a <= b, "#d_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a == c, a == b, "#e_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a != c, a != b, "#f_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(a >= c, a >= b, "#g_" + i.ToString() + "_" + j.ToString());
+
+                    Assert.AreEqual(c > a, b > a, "#ib_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c < a, b < a, "#ic_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c <= a, b <= a, "#id_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c == a, b == a, "#ie_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c != a, b != a, "#if_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(c >= a, b >= a, "#ig_" + i.ToString() + "_" + j.ToString());
+                }
+            }
         }
 
         [Test]
@@ -1047,232 +356,240 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(0m, (decimal)new BigInteger(), "#8");
         }
 
-#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
-        [SetCulture("pt-BR")]
         [Test]
-        public void Parse_pt_BR()
+        public void DecimalCtor()
         {
-            Parse();
+            Assert.AreEqual(999, (int)new BigInteger(999.99m), "#1");
+            Assert.AreEqual(-10000, (int)new BigInteger(-10000m), "#2");
+            Assert.AreEqual(0, (int)new BigInteger(0m), "#3");
         }
-#endif
 
         [Test]
-        public void Parse()
+        public void DefaultCtorWorks()
+        {
+            var a = new BigInteger();
+            Assert.AreEqual(BigInteger.One, ++a, "#1");
+
+            a = new BigInteger();
+            Assert.AreEqual(BigInteger.MinusOne, --a, "#2");
+
+            a = new BigInteger();
+            Assert.AreEqual(BigInteger.MinusOne, ~a, "#3");
+
+            a = new BigInteger();
+            Assert.AreEqual("0", a.ToString(), "#4");
+
+            a = new BigInteger();
+            var b = a;
+            Assert.AreEqual(true, a == b, "#5");
+            Assert.AreEqual(true, b == a, "#5");
+
+            a = new BigInteger();
+            b = a;
+            Assert.AreEqual(false, a < b, "#6");
+            Assert.AreEqual(false, b < a, "#6");
+
+            a = new BigInteger();
+            Assert.AreEqual(true, a < 10L, "#7");
+
+            a = new BigInteger();
+            Assert.AreEqual(true, a.IsEven, "#8");
+
+            a = new BigInteger();
+            Assert.AreEqual(0, (int)a, "#9");
+
+            a = new BigInteger();
+            Assert.AreEqual(0, (uint)a, "#10");
+
+            a = new BigInteger();
+            Assert.AreEqual(0, (ulong)a, "#11");
+
+            a = new BigInteger();
+            b = a;
+            Assert.AreEqual(true, a.Equals(b), "#12");
+            Assert.AreEqual(true, b.Equals(a), "#12");
+
+            a = new BigInteger();
+            Assert.AreEqual(a, BigInteger.Min(a, a), "#13");
+
+            a = new BigInteger();
+            Assert.AreEqual(a, BigInteger.GreatestCommonDivisor(a, a), "#14");
+
+            a = new BigInteger();
+            Assert.AreEqual(BigInteger.Zero.GetHashCode(), a.GetHashCode(), "#15");
+
+            a = new BigInteger();
+            Assert.AreEqual(BigInteger.Zero, a, "#16");
+        }
+
+        [Test]
+        public void DivRem()
+        {
+            var values = new[] { -10000000330L, -5000, -1, 0, 1, 1000, 333, 10234544400L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    if (values[j] == 0)
+                    {
+                        continue;
+                    }
+
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
+                    var c = BigInteger.DivRem(a, b, out var d);
+
+                    Assert.AreEqual(values[i] / values[j], (long)c, "#a_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] % values[j], (long)d, "#b_" + i.ToString() + "_" + j.ToString());
+                }
+            }
+        }
+
+        [Test]
+        public void DivRemByZero()
         {
             try
             {
-                BigInteger.Parse(null);
+                GC.KeepAlive(BigInteger.DivRem(100, 0, out _));
                 Assert.Fail("#1");
             }
-            catch (ArgumentNullException ex)
+            catch (DivideByZeroException ex)
             {
                 Theraot.No.Op(ex);
             }
+        }
 
+        [Test]
+        public void DoubleConversion()
+        {
+            Assert.AreEqual(999d, (double)new BigInteger(999), "#1");
+            Assert.AreEqual(double.PositiveInfinity, (double)BigInteger.Pow(2, 1024), "#2");
+            Assert.AreEqual(double.NegativeInfinity, (double)BigInteger.Pow(-2, 1025), "#3");
+
+            Assert.AreEqual(0d, (double)BigInteger.Zero, "#4");
+            Assert.AreEqual(1d, (double)BigInteger.One, "#5");
+            Assert.AreEqual(-1d, (double)BigInteger.MinusOne, "#6");
+
+            var result1 = BitConverter.Int64BitsToDouble(-4337852273739220173);
+            Assert.AreEqual(result1, (double)new BigInteger(new byte[] { 53, 152, 137, 177, 240, 81, 75, 198 }), "#7");
+            var result2 = BitConverter.Int64BitsToDouble(4893382453283402035);
+            Assert.AreEqual(result2, (double)new BigInteger(new byte[] { 53, 152, 137, 177, 240, 81, 75, 198, 0 }), "#8");
+
+            var result3 = BitConverter.Int64BitsToDouble(5010775143622804480);
+            var result4 = BitConverter.Int64BitsToDouble(5010775143622804481);
+            var result5 = BitConverter.Int64BitsToDouble(5010775143622804482);
+            Assert.AreEqual(result3, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 16, 128, 208, 159, 60, 46, 59, 3 }),
+                "#9");
+            Assert.AreEqual(result3, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 17, 128, 208, 159, 60, 46, 59, 3 }),
+                "#10");
+            Assert.AreEqual(result3, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 24, 128, 208, 159, 60, 46, 59, 3 }),
+                "#11");
+            Assert.AreEqual(result4, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 32, 128, 208, 159, 60, 46, 59, 3 }),
+                "#12");
+            Assert.AreEqual(result4, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 48, 128, 208, 159, 60, 46, 59, 3 }),
+                "#13");
+            Assert.AreEqual(result5, (double)new BigInteger(new byte[] { 0, 0, 0, 0, 64, 128, 208, 159, 60, 46, 59, 3 }),
+                "#14");
+
+            Assert.AreEqual(BitConverter.Int64BitsToDouble(-2748107935317889142), (double)new BigInteger(_hugeA),
+                "#15");
+            Assert.AreEqual(BitConverter.Int64BitsToDouble(-2354774254443231289), (double)new BigInteger(_hugeB),
+                "#16");
+            Assert.AreEqual(BitConverter.Int64BitsToDouble(8737073938546854790), (double)new BigInteger(_hugeMul),
+                "#17");
+
+            Assert.AreEqual(BitConverter.Int64BitsToDouble(6912920136897069886),
+                (double)(2278888483353476799 * BigInteger.Pow(2, 451)), "#18");
+            Assert.AreEqual(double.PositiveInfinity, (double)(843942696292817306 * BigInteger.Pow(2, 965)), "#19");
+        }
+
+        [Test]
+        public void DoubleCtor()
+        {
             try
             {
-                BigInteger.Parse("");
-                Assert.Fail("#2");
-            }
-            catch (FormatException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                BigInteger.Parse("  ");
-                Assert.Fail("#3");
-            }
-            catch (FormatException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                BigInteger.Parse("hh");
-                Assert.Fail("#4");
-            }
-            catch (FormatException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                BigInteger.Parse("-");
-                Assert.Fail("#5");
-            }
-            catch (FormatException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                BigInteger.Parse("-+");
-                Assert.Fail("#6");
-            }
-            catch (FormatException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            Assert.AreEqual(10, (int)BigInteger.Parse("+10"), "#7");
-            Assert.AreEqual(10, (int)BigInteger.Parse("10 "), "#8");
-            Assert.AreEqual(-10, (int)BigInteger.Parse("-10 "), "#9");
-            Assert.AreEqual(10, (int)BigInteger.Parse("    10 "), "#10");
-            Assert.AreEqual(-10, (int)BigInteger.Parse("  -10 "), "#11");
-
-            Assert.AreEqual(-1, (int)BigInteger.Parse("F", NumberStyles.AllowHexSpecifier), "#12");
-            Assert.AreEqual(-8, (int)BigInteger.Parse("8", NumberStyles.AllowHexSpecifier), "#13");
-            Assert.AreEqual(8, (int)BigInteger.Parse("08", NumberStyles.AllowHexSpecifier), "#14");
-            Assert.AreEqual(15, (int)BigInteger.Parse("0F", NumberStyles.AllowHexSpecifier), "#15");
-            Assert.AreEqual(-1, (int)BigInteger.Parse("FF", NumberStyles.AllowHexSpecifier), "#16");
-            Assert.AreEqual(255, (int)BigInteger.Parse("0FF", NumberStyles.AllowHexSpecifier), "#17");
-
-            Assert.AreEqual(-17, (int)BigInteger.Parse("   (17)   ", NumberStyles.AllowParentheses | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite), "#18");
-            Assert.AreEqual(-23, (int)BigInteger.Parse("  -23  ", NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite), "#19");
-
-            Assert.AreEqual(300000, (int)BigInteger.Parse("3E5", NumberStyles.AllowExponent), "#20");
-            var dsep = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
-            Assert.AreEqual(250, (int)BigInteger.Parse("2" + dsep + "5E2", NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint), "#21");//2.5E2 = 250
-            Assert.AreEqual(25, (int)BigInteger.Parse("2500E-2", NumberStyles.AllowExponent), "#22");
-
-            Assert.AreEqual("136236974127783066520110477975349088954559032721408", BigInteger.Parse("136236974127783066520110477975349088954559032721408", NumberStyles.None).ToString(), "#23");
-            Assert.AreEqual("136236974127783066520110477975349088954559032721408", BigInteger.Parse("136236974127783066520110477975349088954559032721408").ToString(), "#24");
-
-            try
-            {
-                BigInteger.Parse("2E3.0", NumberStyles.AllowExponent); // decimal notation for the exponent
-                Assert.Fail("#25");
-            }
-            catch (FormatException ex)
-            {
-                Theraot.No.Op(ex);
-            }
-
-            try
-            {
-                int.Parse("2" + dsep + "09E1", NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent);
-                Assert.Fail("#26");
+                var x = new BigInteger(double.NaN);
+                GC.KeepAlive(x);
+                Assert.Fail("#1");
             }
             catch (OverflowException ex)
             {
                 Theraot.No.Op(ex);
             }
-        }
-
-        [Test]
-        public void TryParse()
-        {
-            Assert.IsFalse(BigInteger.TryParse(null, out var x), "#1");
-            Assert.AreEqual(0, (int)x, "#1a");
-            Assert.IsFalse(BigInteger.TryParse("", out _), "#2");
-            Assert.IsFalse(BigInteger.TryParse(" ", out _), "#3");
-            Assert.IsFalse(BigInteger.TryParse(" -", out _), "#4");
-            Assert.IsFalse(BigInteger.TryParse(" +", out _), "#5");
-            Assert.IsFalse(BigInteger.TryParse(" FF", out _), "#6");
-
-            Assert.IsTrue(BigInteger.TryParse(" 99", out x), "#7");
-            Assert.AreEqual(99, (int)x, "#8");
-
-            Assert.IsTrue(BigInteger.TryParse("+133", out x), "#9");
-            Assert.AreEqual(133, (int)x, "#10");
-
-            Assert.IsTrue(BigInteger.TryParse("-010", out x), "#11");
-            Assert.AreEqual(-10, (int)x, "#12");
-
-            //Number style and format provider
-
-            Assert.IsFalse(BigInteger.TryParse("null", NumberStyles.None, null, out x), "#13");
-            Assert.AreEqual(0, (int)x, "#14");
-            Assert.IsFalse(BigInteger.TryParse("-10", NumberStyles.None, null, out _), "#15");
-            Assert.IsFalse(BigInteger.TryParse("(10)", NumberStyles.None, null, out _), "#16");
-            Assert.IsFalse(BigInteger.TryParse(" 10", NumberStyles.None, null, out _), "#17");
-            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out _), "#18");
-
-            Assert.IsTrue(BigInteger.TryParse("-10", NumberStyles.AllowLeadingSign, null, out x), "#19");
-            Assert.AreEqual(-10, (int)x, "#20");
-            Assert.IsTrue(BigInteger.TryParse("(10)", NumberStyles.AllowParentheses, null, out x), "#21");
-            Assert.AreEqual(-10, (int)x, "#22");
-            Assert.IsTrue(BigInteger.TryParse(" 10", NumberStyles.AllowLeadingWhite, null, out x), "#23");
-            Assert.AreEqual(10, (int)x, "#24");
-            Assert.IsTrue(BigInteger.TryParse("10 ", NumberStyles.AllowTrailingWhite, null, out x), "#25");
-            Assert.AreEqual(10, (int)x, "#26");
-
-            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, null, out _), "#26");
-            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, _nfi, out _), "#27");
-            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.None, _nfi, out _), "#28");
-            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out _), "#29");
-
-            Assert.IsTrue(BigInteger.TryParse("10", NumberStyles.None, null, out x), "#30");
-            Assert.AreEqual(10, (int)x, "#31");
-            Assert.IsTrue(BigInteger.TryParse(_nfi.CurrencySymbol + "10", NumberStyles.AllowCurrencySymbol, _nfi, out x), "#32");
-            Assert.AreEqual(10, (int)x, "#33");
-            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.AllowCurrencySymbol, _nfi, out _), "#34");
-        }
-
-        [Test]
-        public void TestUserCurrency()
-        {
-            const int Val1 = -1234567;
-            const int Val2 = 1234567;
-
-            string s;
-            BigInteger v;
-            s = Val1.ToString("c", _nfiUser);
-            Assert.AreEqual("1234/5/67:000 XYZ-", s, "Currency value type 1 is not what we want to try to parse");
-            v = BigInteger.Parse("1234/5/67:000   XYZ-", NumberStyles.Currency, _nfiUser);
-            Assert.AreEqual(Val1, (int)v);
-
-            s = Val2.ToString("c", _nfiUser);
-            Assert.AreEqual("1234/5/67:000 XYZ", s, "Currency value type 2 is not what we want to try to parse");
-            v = BigInteger.Parse(s, NumberStyles.Currency, _nfiUser);
-            Assert.AreEqual(Val2, (int)v);
-        }
-
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-        [Test]
-        public void TryParseWeirdCulture()
-        {
-            var old = Thread.CurrentThread.CurrentCulture;
-            var cur = (CultureInfo)old.Clone();
-
-            var ninfo = new NumberFormatInfo
-            {
-                NegativeSign = ">",
-                PositiveSign = "%"
-            };
-            cur.NumberFormat = ninfo;
-
-            Thread.CurrentThread.CurrentCulture = cur;
 
             try
             {
-                Assert.IsTrue(BigInteger.TryParse("%11", out var x), "#1");
-                Assert.AreEqual(11, (int)x, "#2");
-
-                Assert.IsTrue(BigInteger.TryParse(">11", out var y), "#3");
-                Assert.AreEqual(-11, (int)y, "#4");
+                var x = new BigInteger(double.NegativeInfinity);
+                GC.KeepAlive(x);
+                Assert.Fail("#2");
             }
-            finally
+            catch (OverflowException ex)
             {
-                Thread.CurrentThread.CurrentCulture = old;
+                Theraot.No.Op(ex);
             }
+
+            try
+            {
+                var x = new BigInteger(double.PositiveInfinity);
+                GC.KeepAlive(x);
+                Assert.Fail("#3");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            Assert.AreEqual(10000, (int)new BigInteger(10000.2), "#4");
+            Assert.AreEqual(10000, (int)new BigInteger(10000.9), "#5");
+
+            Assert.AreEqual(10000, (int)new BigInteger(10000.2), "#6");
+            Assert.AreEqual(0, (int)new BigInteger(0.9), "#7");
+
+            Assert.AreEqual(12345678999L, (long)new BigInteger(12345678999.33), "#8");
         }
-#endif
 
         [Test]
-        public void CompareToLongToWithBigNumber()
+        public void GCD()
         {
-            var a = BigInteger.Parse("123456789123456789");
-            var b = BigInteger.Parse("-123456789123456789");
-            Assert.AreEqual(1, a.CompareTo(2000));
-            Assert.AreEqual(1, a.CompareTo(-2000));
-            Assert.AreEqual(-1, b.CompareTo(2000));
-            Assert.AreEqual(-1, b.CompareTo(-2000));
+            Assert.AreEqual(999999, (int)BigInteger.GreatestCommonDivisor(999999, 0), "#1");
+            Assert.AreEqual(999999, (int)BigInteger.GreatestCommonDivisor(0, 999999), "#2");
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(999999, 1), "#3");
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(1, 999999), "#4");
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(1, 0), "#5");
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(0, 1), "#6");
+
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(999999, -1), "#7");
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(-1, 999999), "#8");
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(-1, 0), "#9");
+            Assert.AreEqual(1, (int)BigInteger.GreatestCommonDivisor(0, -1), "#10");
+
+            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(12345678, 8765432), "#11");
+            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(-12345678, 8765432), "#12");
+            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(12345678, -8765432), "#13");
+            Assert.AreEqual(2, (int)BigInteger.GreatestCommonDivisor(-12345678, -8765432), "#14");
+
+            Assert.AreEqual(40, (int)BigInteger.GreatestCommonDivisor(5581 * 40, 6671 * 40), "#15");
+
+            Assert.AreEqual(5, (int)BigInteger.GreatestCommonDivisor(-5, 0), "#16");
+            Assert.AreEqual(5, (int)BigInteger.GreatestCommonDivisor(0, -5), "#17");
+        }
+
+        [Test]
+        public void IntCtorRoundTrip()
+        {
+            var values = new[]
+            {
+                int.MinValue, -0x2F33BB, -0x1F33, -0x33, 0, 0x33, 0x80, 0x8190, 0xFF0011, 0x1234, 0x11BB99,
+                0x44BB22CC, int.MaxValue
+            };
+            foreach (var val in values)
+            {
+                var a = new BigInteger(val);
+                var b = new BigInteger(a.ToByteArray());
+
+                Assert.AreEqual(val, (int)a, "#a_" + val.ToString());
+                Assert.AreEqual(val, (int)b, "#b_" + val.ToString());
+            }
         }
 
         [Test]
@@ -1353,6 +670,244 @@ namespace MonoTests.System.Numerics
         }
 
         [Test]
+        public void Log()
+        {
+            const double delta = 0.000000000000001d;
+
+            Assert.AreEqual(double.NegativeInfinity, BigInteger.Log(0), "#1");
+            Assert.AreEqual(0d, BigInteger.Log(1), "#2");
+            Assert.AreEqual(double.NaN, BigInteger.Log(-1), "#3");
+            Assert.AreEqual(2.3025850929940459d, BigInteger.Log(10), delta, "#4");
+            Assert.AreEqual(6.9077552789821368d, BigInteger.Log(1000), delta, "#5");
+            Assert.AreEqual(double.NaN, BigInteger.Log(-234), "#6");
+        }
+
+        [Test]
+        public void LogN()
+        {
+            const double delta = 0.000000000000001d;
+
+            Assert.AreEqual(double.NaN, BigInteger.Log(10, 1), "#1");
+            Assert.AreEqual(double.NaN, BigInteger.Log(10, 0), "#2");
+            Assert.AreEqual(double.NaN, BigInteger.Log(10, -1), "#3");
+
+            Assert.AreEqual(double.NaN, BigInteger.Log(10, double.NaN), "#4");
+            Assert.AreEqual(double.NaN, BigInteger.Log(10, double.NegativeInfinity), "#5");
+            Assert.AreEqual(double.NaN, BigInteger.Log(10, double.PositiveInfinity), "#6");
+
+            Assert.AreEqual(0d, BigInteger.Log(1, 0), "#7");
+            Assert.AreEqual(double.NaN, BigInteger.Log(1, double.NegativeInfinity), "#8");
+            Assert.AreEqual(0, BigInteger.Log(1, double.PositiveInfinity), "#9");
+            Assert.AreEqual(double.NaN, BigInteger.Log(1, double.NaN), "#10");
+
+            Assert.AreEqual(-2.5129415947320606d, BigInteger.Log(10, 0.4), delta, "#11");
+        }
+
+        [Test]
+        public void LongCtorRoundTrip()
+        {
+            var values = new[]
+            {
+                0, long.MinValue, long.MaxValue, -1, 1L + int.MaxValue, -1L + int.MinValue, 0x1234, 0xFFFFFFFFL,
+                0x1FFFFFFFFL, -0xFFFFFFFFL, -0x1FFFFFFFFL, 0x100000000L, -0x100000000L, 0x100000001L, -0x100000001L,
+                4294967295L, -4294967295L, 4294967296L, -4294967296L
+            };
+            foreach (var val in values)
+            {
+                var a = new BigInteger(val);
+                var b = new BigInteger(a.ToByteArray());
+
+                Assert.AreEqual(val, (long)a, "#a_" + val.ToString());
+                Assert.AreEqual(val, (long)b, "#b_" + val.ToString());
+                Assert.AreEqual(a, b, "#a  == #b (" + val.ToString() + ")");
+            }
+        }
+
+        [Test]
+        public void ModPow()
+        {
+            try
+            {
+                BigInteger.ModPow(1, -1, 5);
+                Assert.Fail("#1");
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                BigInteger.ModPow(1, 5, 0);
+                Assert.Fail("#2");
+            }
+            catch (DivideByZeroException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            Assert.AreEqual(4L, (long)BigInteger.ModPow(3, 2, 5), "#2");
+            Assert.AreEqual(20L, (long)BigInteger.ModPow(555, 10, 71), "#3");
+            Assert.AreEqual(20L, (long)BigInteger.ModPow(-555, 10, 71), "#3");
+            Assert.AreEqual(-24L, (long)BigInteger.ModPow(-555, 11, 71), "#3");
+        }
+
+        [Test]
+        public void Mul()
+        {
+            var values = new[] { -1000000000L, -1000, -1, 0, 1, 1000, 100000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
+                    var c = a * b;
+                    Assert.AreEqual(values[i] * values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
+                }
+            }
+        }
+
+        [Test]
+        public void Parse()
+        {
+            try
+            {
+                BigInteger.Parse(null);
+                Assert.Fail("#1");
+            }
+            catch (ArgumentNullException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                BigInteger.Parse("");
+                Assert.Fail("#2");
+            }
+            catch (FormatException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                BigInteger.Parse("  ");
+                Assert.Fail("#3");
+            }
+            catch (FormatException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                BigInteger.Parse("hh");
+                Assert.Fail("#4");
+            }
+            catch (FormatException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                BigInteger.Parse("-");
+                Assert.Fail("#5");
+            }
+            catch (FormatException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                BigInteger.Parse("-+");
+                Assert.Fail("#6");
+            }
+            catch (FormatException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            Assert.AreEqual(10, (int)BigInteger.Parse("+10"), "#7");
+            Assert.AreEqual(10, (int)BigInteger.Parse("10 "), "#8");
+            Assert.AreEqual(-10, (int)BigInteger.Parse("-10 "), "#9");
+            Assert.AreEqual(10, (int)BigInteger.Parse("    10 "), "#10");
+            Assert.AreEqual(-10, (int)BigInteger.Parse("  -10 "), "#11");
+
+            Assert.AreEqual(-1, (int)BigInteger.Parse("F", NumberStyles.AllowHexSpecifier), "#12");
+            Assert.AreEqual(-8, (int)BigInteger.Parse("8", NumberStyles.AllowHexSpecifier), "#13");
+            Assert.AreEqual(8, (int)BigInteger.Parse("08", NumberStyles.AllowHexSpecifier), "#14");
+            Assert.AreEqual(15, (int)BigInteger.Parse("0F", NumberStyles.AllowHexSpecifier), "#15");
+            Assert.AreEqual(-1, (int)BigInteger.Parse("FF", NumberStyles.AllowHexSpecifier), "#16");
+            Assert.AreEqual(255, (int)BigInteger.Parse("0FF", NumberStyles.AllowHexSpecifier), "#17");
+
+            Assert.AreEqual(-17,
+                (int)BigInteger.Parse("   (17)   ",
+                    NumberStyles.AllowParentheses | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite),
+                "#18");
+            Assert.AreEqual(-23,
+                (int)BigInteger.Parse("  -23  ",
+                    NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite),
+                "#19");
+
+            Assert.AreEqual(300000, (int)BigInteger.Parse("3E5", NumberStyles.AllowExponent), "#20");
+            var decimalSeparator = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
+            Assert.AreEqual(250,
+                (int)BigInteger.Parse("2" + decimalSeparator + "5E2", NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint),
+                "#21"); //2.5E2 = 250
+            Assert.AreEqual(25, (int)BigInteger.Parse("2500E-2", NumberStyles.AllowExponent), "#22");
+
+            Assert.AreEqual("136236974127783066520110477975349088954559032721408",
+                BigInteger.Parse("136236974127783066520110477975349088954559032721408", NumberStyles.None).ToString(),
+                "#23");
+            Assert.AreEqual("136236974127783066520110477975349088954559032721408",
+                BigInteger.Parse("136236974127783066520110477975349088954559032721408").ToString(), "#24");
+
+            try
+            {
+                BigInteger.Parse("2E3.0", NumberStyles.AllowExponent); // decimal notation for the exponent
+                Assert.Fail("#25");
+            }
+            catch (FormatException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                int.Parse("2" + decimalSeparator + "09E1", NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent);
+                Assert.Fail("#26");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+        }
+
+        [Test]
+        public void Pow()
+        {
+            try
+            {
+                BigInteger.Pow(1, -1);
+                Assert.Fail("#1");
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            Assert.AreEqual(1, (int)BigInteger.Pow(99999, 0), "#2");
+            Assert.AreEqual(99999, (int)BigInteger.Pow(99999, 1), "#5");
+            Assert.AreEqual(59049, (int)BigInteger.Pow(3, 10), "#4");
+            Assert.AreEqual(177147, (int)BigInteger.Pow(3, 11), "#5");
+            Assert.AreEqual(-177147, (int)BigInteger.Pow(-3, 11), "#6");
+        }
+
+        [Test]
         public void RightShiftByInt()
         {
             var v = BigInteger.Parse("230794411440927908251127453634");
@@ -1430,95 +985,641 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual("461588822881855816502254907268", (v >> 69).ToString(), "#69");
         }
 
-        [Test]
-        public void Bug10887()
+        [OneTimeSetUp]
+        public void SetUpFixture()
         {
-            BigInteger b = 0;
-            for (var i = 1; i <= 16; i++)
+            _nfiUser = new NumberFormatInfo
             {
-                b = (b * 256) + i;
-            }
-
-            var p = BigInteger.Pow(2, 32);
-            Assert.AreEqual("1339673755198158349044581307228491536", b.ToString(), "#1");
-            Assert.AreEqual("1339673755198158349044581307228491536", ((b << 32) / p).ToString(), "#2");
-            Assert.AreEqual("1339673755198158349044581307228491536", (b * p >> 32).ToString(), "#3");
+                CurrencyDecimalDigits = 3,
+                CurrencyDecimalSeparator = ":",
+                CurrencyGroupSeparator = "/",
+                CurrencyGroupSizes = new[] { 2, 1, 0 },
+                CurrencyNegativePattern = 10, // n $-
+                CurrencyPositivePattern = 3, // n $
+                CurrencySymbol = "XYZ",
+                PercentDecimalDigits = 1,
+                PercentDecimalSeparator = ";",
+                PercentGroupSeparator = "~",
+                PercentGroupSizes = new[] { 1 },
+                PercentNegativePattern = 2,
+                PercentPositivePattern = 2,
+                PercentSymbol = "%%%",
+                NumberDecimalSeparator = "."
+            };
         }
 
         [Test]
-        public void DefaultCtorWorks()
+        public void ShortOperators()
         {
-            var a = new BigInteger();
-            Assert.AreEqual(BigInteger.One, ++a, "#1");
+            Assert.AreEqual(22, (int)new BigInteger(22), "#1");
+            Assert.AreEqual(-22, (int)new BigInteger(-22), "#2");
 
-            a = new BigInteger();
-            Assert.AreEqual(BigInteger.MinusOne, --a, "#2");
-
-            a = new BigInteger();
-            Assert.AreEqual(BigInteger.MinusOne, ~a, "#3");
-
-            a = new BigInteger();
-            Assert.AreEqual("0", a.ToString(), "#4");
-
-            a = new BigInteger();
-            var b = a;
-            Assert.AreEqual(true, a == b, "#5");
-            Assert.AreEqual(true, b == a, "#5");
-
-            a = new BigInteger();
-            b = a;
-            Assert.AreEqual(false, a < b, "#6");
-            Assert.AreEqual(false, b < a, "#6");
-
-            a = new BigInteger();
-            Assert.AreEqual(true, a < 10L, "#7");
-
-            a = new BigInteger();
-            Assert.AreEqual(true, a.IsEven, "#8");
-
-            a = new BigInteger();
-            Assert.AreEqual(0, (int)a, "#9");
-
-            a = new BigInteger();
-            Assert.AreEqual(0, (uint)a, "#10");
-
-            a = new BigInteger();
-            Assert.AreEqual(0, (ulong)a, "#11");
-
-            a = new BigInteger();
-            b = a;
-            Assert.AreEqual(true, a.Equals(b), "#12");
-            Assert.AreEqual(true, b.Equals(a), "#12");
-
-            a = new BigInteger();
-            Assert.AreEqual(a, BigInteger.Min(a, a), "#13");
-
-            a = new BigInteger();
-            Assert.AreEqual(a, BigInteger.GreatestCommonDivisor(a, a), "#14");
-
-            a = new BigInteger();
-            Assert.AreEqual(BigInteger.Zero.GetHashCode(), a.GetHashCode(), "#15");
-
-            a = new BigInteger();
-            Assert.AreEqual(BigInteger.Zero, a, "#16");
-        }
-
-        [Test]
-        public void Bug16526()
-        {
-            var x = BigInteger.Pow(2, 63);
-            x *= -1;
-            x -= 1;
-            Assert.AreEqual("-9223372036854775809", x.ToString(), "#1");
             try
             {
-                GC.KeepAlive((long)x);
-                Assert.Fail("#2 Must OVF");
+                GC.KeepAlive((short)new BigInteger(10000000));
+                Assert.Fail("#3");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                GC.KeepAlive((short)new BigInteger(-10000000));
+                Assert.Fail("#4");
             }
             catch (OverflowException ex)
             {
                 Theraot.No.Op(ex);
             }
         }
+
+        [Test]
+        public void TestAbs()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                var a = new BigInteger(values[i]);
+                var c = BigInteger.Abs(a);
+
+                Assert.AreEqual(Math.Abs(values[i]), (long)c, "#_" + i.ToString());
+            }
+        }
+
+        [Test]
+        public void TestAdd()
+        {
+            for (var i = 0; i < _addA.Length; ++i)
+            {
+                var a = new BigInteger(_addA[i]);
+                var b = new BigInteger(_addB[i]);
+                var c = new BigInteger(_addC[i]);
+
+                Assert.AreEqual(c, a + b, "#" + i.ToString() + "a");
+                Assert.AreEqual(c, b + a, "#" + i.ToString() + "b");
+                Assert.AreEqual(c, BigInteger.Add(a, b), "#" + i.ToString() + "c");
+                Assert.AreEqual(_addC[i], (a + b).ToByteArray(), "#" + i.ToString() + "d");
+            }
+        }
+
+        [Test]
+        public void TestAdd2()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
+                    var c = a + b;
+                    Assert.AreEqual(values[i] + values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
+                }
+            }
+        }
+
+        [Test]
+        public void TestBitwiseOps()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L, 0xFFFF00000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
+
+                    Assert.AreEqual(values[i] | values[j], (long)(a | b), "#b_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] & values[j], (long)(a & b), "#a_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] ^ values[j], (long)(a ^ b), "#c_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(~values[i], (long)~a, "#d_" + i.ToString() + "_" + j.ToString());
+                }
+            }
+        }
+
+        [Test]
+        public void TestDec()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                var a = new BigInteger(values[i]);
+                var b = --a;
+
+                Assert.AreEqual(--values[i], (long)b, "#_" + i.ToString());
+            }
+        }
+
+        [Test]
+        public void TestEquals()
+        {
+            var a = new BigInteger(10);
+            var b = new BigInteger(10);
+            var c = new BigInteger(-10);
+
+            Assert.AreEqual(a, b, "#1");
+            Assert.AreNotEqual(a, c, "#2");
+            Assert.AreNotEqual(a, 10, "#3");
+        }
+
+        [Test]
+        public void TestHugeDivRem()
+        {
+            var a = new BigInteger(_hugeA);
+            var b = new BigInteger(_hugeB);
+            var c = BigInteger.DivRem(a, b, out var d);
+
+            Assert.AreEqual(_hugeDiv, c.ToByteArray(), "#1");
+            Assert.AreEqual(_hugeRem, d.ToByteArray(), "#2");
+        }
+
+        [Test]
+        public void TestHugeMul()
+        {
+            var a = new BigInteger(_hugeA);
+            var b = new BigInteger(_hugeB);
+            Assert.AreEqual(_hugeMul, (a * b).ToByteArray(), "#1");
+        }
+
+        [Test]
+        public void TestHugeSub()
+        {
+            var a = new BigInteger(_hugeA);
+            var b = new BigInteger(_hugeB);
+            Assert.AreEqual(_amb, (a - b).ToByteArray(), "#1");
+            Assert.AreEqual(_bma, (b - a).ToByteArray(), "#2");
+        }
+
+        [Test]
+        public void TestInc()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                var a = new BigInteger(values[i]);
+                var b = ++a;
+
+                Assert.AreEqual(++values[i], (long)b, "#_" + i.ToString());
+            }
+        }
+
+        [Test]
+        public void TestIntCtorProperties()
+        {
+            var a = new BigInteger(10);
+            Assert.IsTrue(a.IsEven, "#1");
+            Assert.IsFalse(a.IsOne, "#2");
+            Assert.IsFalse(a.IsPowerOfTwo, "#3");
+            Assert.IsFalse(a.IsZero, "#4");
+            Assert.AreEqual(1, a.Sign, "#5");
+
+            Assert.IsFalse(new BigInteger(11).IsEven, "#6");
+            Assert.IsTrue(new BigInteger(1).IsOne, "#7");
+            Assert.IsTrue(new BigInteger(32).IsPowerOfTwo, "#8");
+            Assert.IsTrue(new BigInteger(0).IsZero, "#9");
+            Assert.IsTrue(new BigInteger().IsZero, "#9b");
+            Assert.AreEqual(0, new BigInteger(0).Sign, "#10");
+            Assert.AreEqual(-1, new BigInteger(-99999).Sign, "#11");
+
+            Assert.IsFalse(new BigInteger(0).IsPowerOfTwo, "#12");
+            Assert.IsFalse(new BigInteger().IsPowerOfTwo, "#12b");
+            Assert.IsFalse(new BigInteger(-16).IsPowerOfTwo, "#13");
+            Assert.IsTrue(new BigInteger(1).IsPowerOfTwo, "#14");
+        }
+
+        [Test]
+        public void TestIntCtorToByteArray()
+        {
+            Assert.AreEqual(new byte[] { 0xFF }, new BigInteger(-1).ToByteArray(), "#1");
+            Assert.AreEqual(new byte[] { 0xD4, 0xFE }, new BigInteger(-300).ToByteArray(), "#2");
+            Assert.AreEqual(new byte[] { 0x80, 0x00 }, new BigInteger(128).ToByteArray(), "#3");
+            Assert.AreEqual(new byte[] { 0x00, 0x60 }, new BigInteger(0x6000).ToByteArray(), "#4");
+            Assert.AreEqual(new byte[] { 0x00, 0x80, 0x00 }, new BigInteger(0x8000).ToByteArray(), "#5");
+            Assert.AreEqual(new byte[] { 0xDD, 0xBC, 0x00, 0x7A }, new BigInteger(0x7A00BCDD).ToByteArray(), "#6");
+            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0x7F }, new BigInteger(int.MaxValue).ToByteArray(), "#7");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x80 }, new BigInteger(int.MinValue).ToByteArray(), "#8");
+            Assert.AreEqual(new byte[] { 0x01, 0x00, 0x00, 0x80 }, new BigInteger(int.MinValue + 1).ToByteArray(), "#9");
+            Assert.AreEqual(new byte[] { 0x7F }, new BigInteger(0x7F).ToByteArray(), "#10");
+            Assert.AreEqual(new byte[] { 0x45, 0xCC, 0xD0 }, new BigInteger(-0x2F33BB).ToByteArray(), "#11");
+            Assert.AreEqual(new byte[] { 0 }, new BigInteger(0).ToByteArray(), "#12");
+            Assert.AreEqual(new byte[] { 0 }, new BigInteger().ToByteArray(), "#13");
+        }
+
+        [Test]
+        public void TestIntCtorToString()
+        {
+            Assert.AreEqual("5555", new BigInteger(5555).ToString(), "#1");
+            Assert.AreEqual("-99999", new BigInteger(-99999).ToString(), "#2");
+        }
+
+        [Test]
+        public void TestLeftShift()
+        {
+            Assert.AreEqual(new byte[] { 0x00, 0x28 },
+                (new BigInteger(0x0A) << 10).ToByteArray(), "#1");
+            Assert.AreEqual(new byte[] { 0x00, 0xD8 },
+                (new BigInteger(-10) << 10).ToByteArray(), "#2");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0xFF },
+                (new BigInteger(-1) << 16).ToByteArray(), "#3");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A },
+                (new BigInteger(0x0A) << 80).ToByteArray(), "#4");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF6 },
+                (new BigInteger(-10) << 80).ToByteArray(), "#5");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF },
+                (new BigInteger(-1) << 80).ToByteArray(), "#6");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x70, 0xD9 },
+                (new BigInteger(-1234) << 75).ToByteArray(), "#7");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA0, 0x91, 0x00 },
+                (new BigInteger(0x1234) << 75).ToByteArray(), "#8");
+
+            Assert.AreEqual(new byte[] { 0xFF, 0x00 }, (new BigInteger(0xFF00) << -8).ToByteArray(), "#9");
+        }
+
+        [Test]
+        public void TestLongCtorToByteArray()
+        {
+            Assert.AreEqual(new byte[] { 0x01 }, new BigInteger(0x01L).ToByteArray(), "#1");
+            Assert.AreEqual(new byte[] { 0x02, 0x01 }, new BigInteger(0x0102L).ToByteArray(), "#2");
+            Assert.AreEqual(new byte[] { 0x03, 0x02, 0x01 }, new BigInteger(0x010203L).ToByteArray(), "#3");
+            Assert.AreEqual(new byte[] { 0x04, 0x03, 0x2, 0x01 }, new BigInteger(0x01020304L).ToByteArray(), "#4");
+            Assert.AreEqual(new byte[] { 0x05, 0x04, 0x03, 0x2, 0x01 }, new BigInteger(0x0102030405L).ToByteArray(),
+                "#5");
+            Assert.AreEqual(new byte[] { 0x06, 0x05, 0x04, 0x03, 0x2, 0x01 },
+                new BigInteger(0x010203040506L).ToByteArray(), "#6");
+            Assert.AreEqual(new byte[] { 0x07, 0x06, 0x05, 0x04, 0x03, 0x2, 0x01 },
+                new BigInteger(0x01020304050607L).ToByteArray(), "#7");
+            Assert.AreEqual(new byte[] { 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x2, 0x01 },
+                new BigInteger(0x0102030405060708L).ToByteArray(), "#8");
+
+            Assert.AreEqual(new byte[] { 0xFF }, new BigInteger(-0x01L).ToByteArray(), "#1m");
+            Assert.AreEqual(new byte[] { 0xFE, 0xFE }, new BigInteger(-0x0102L).ToByteArray(), "#2m");
+            Assert.AreEqual(new byte[] { 0xFD, 0xFD, 0xFE }, new BigInteger(-0x010203L).ToByteArray(), "#3m");
+            Assert.AreEqual(new byte[] { 0xFC, 0xFC, 0xFD, 0xFE }, new BigInteger(-0x01020304L).ToByteArray(), "#4m");
+            Assert.AreEqual(new byte[] { 0xFB, 0xFB, 0xFC, 0xFD, 0xFE }, new BigInteger(-0x0102030405L).ToByteArray(),
+                "#5m");
+            Assert.AreEqual(new byte[] { 0xFA, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE },
+                new BigInteger(-0x010203040506L).ToByteArray(), "#6m");
+            Assert.AreEqual(new byte[] { 0xF9, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE },
+                new BigInteger(-0x01020304050607L).ToByteArray(), "#7m");
+            Assert.AreEqual(new byte[] { 0xF8, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE },
+                new BigInteger(-0x0102030405060708L).ToByteArray(), "#8m");
+
+            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F },
+                new BigInteger(long.MaxValue).ToByteArray(), "#9");
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80 },
+                new BigInteger(long.MinValue).ToByteArray(), "#10");
+
+            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0x7F, 0xFF }, new BigInteger(-2147483649L).ToByteArray(),
+                "11");
+        }
+
+        [Test]
+        public void TestMax()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
+                    var c = BigInteger.Max(a, b);
+
+                    Assert.AreEqual(Math.Max(values[i], values[j]), (long)c, "#_" + i.ToString() + "_" + j.ToString());
+                }
+            }
+        }
+
+        [Test]
+        public void TestMin()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
+                    var c = BigInteger.Min(a, b);
+
+                    Assert.AreEqual(Math.Min(values[i], values[j]), (long)c, "#_" + i.ToString() + "_" + j.ToString());
+                }
+            }
+        }
+
+        [Test]
+        public void TestNegate()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                var a = new BigInteger(values[i]);
+                var c = -a;
+                var d = BigInteger.Negate(a);
+
+                Assert.AreEqual(-values[i], (long)c, "#_" + i.ToString());
+                Assert.AreEqual(-values[i], (long)d, "#_" + i.ToString());
+            }
+        }
+
+        [Test]
+        public void TestRightShift()
+        {
+            Assert.AreEqual(new byte[] { 0x16, 0xB0, 0x4C, 0x02 },
+                (new BigInteger(1234567899L) >> 5).ToByteArray(), "#1");
+
+            Assert.AreEqual(new byte[] { 0x2C, 0x93, 0x00 },
+                (new BigInteger(1234567899L) >> 15).ToByteArray(), "#2");
+
+            Assert.AreEqual(new byte[] { 0xFF, 0xFF, 0x7F },
+                (new BigInteger(long.MaxValue - 100) >> 40).ToByteArray(), "#3");
+
+            Assert.AreEqual(new byte[] { 0xE9, 0x4F, 0xB3, 0xFD },
+                (new BigInteger(-1234567899L) >> 5).ToByteArray(), "#4");
+
+            Assert.AreEqual(new byte[] { 0xD3, 0x6C, 0xFF },
+                (new BigInteger(-1234567899L) >> 15).ToByteArray(), "#5");
+
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0x80 },
+                (new BigInteger(long.MinValue + 100) >> 40).ToByteArray(), "#6");
+
+            Assert.AreEqual(new byte[] { 0xFF },
+                (new BigInteger(-1234567899L) >> 90).ToByteArray(), "#7");
+
+            Assert.AreEqual(new byte[] { 0x00 },
+                (new BigInteger(999999) >> 90).ToByteArray(), "#8");
+
+            Assert.AreEqual(new byte[] { 0x00, 0x00, 0xFF, 0x00 }, (new BigInteger(0xFF00) >> -8).ToByteArray(), "#9");
+        }
+
+        [Test]
+        public void TestSub()
+        {
+            var values = new[] { -100000000000L, -1000, -1, 0, 1, 1000, 100000000000L };
+            for (var i = 0; i < values.Length; ++i)
+            {
+                for (var j = 0; j < values.Length; ++j)
+                {
+                    var a = new BigInteger(values[i]);
+                    var b = new BigInteger(values[j]);
+                    var c = a - b;
+                    var d = BigInteger.Subtract(a, b);
+
+                    Assert.AreEqual(values[i] - values[j], (long)c, "#_" + i.ToString() + "_" + j.ToString());
+                    Assert.AreEqual(values[i] - values[j], (long)d, "#_" + i.ToString() + "_" + j.ToString());
+                }
+            }
+        }
+
+        [Test]
+        public void TestToIntOperator()
+        {
+            try
+            {
+                GC.KeepAlive((int)new BigInteger(_hugeA));
+                Assert.Fail("#1");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                GC.KeepAlive((int)new BigInteger(1L + int.MaxValue));
+                Assert.Fail("#2");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            try
+            {
+                GC.KeepAlive((int)new BigInteger(-1L + int.MinValue));
+                Assert.Fail("#3");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            Assert.AreEqual(int.MaxValue, (int)new BigInteger(int.MaxValue), "#4");
+            Assert.AreEqual(int.MinValue, (int)new BigInteger(int.MinValue), "#5");
+        }
+
+        [Test]
+        public void TestToLongOperator()
+        {
+            try
+            {
+                GC.KeepAlive((long)new BigInteger(_hugeA));
+                Assert.Fail("#1");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            //long.MaxValue + 1
+            try
+            {
+                GC.KeepAlive((long)new BigInteger(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00 }));
+                Assert.Fail("#2");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            //TODO long.MinValue - 1
+            try
+            {
+                GC.KeepAlive((long)new BigInteger(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF }));
+                Assert.Fail("#3");
+            }
+            catch (OverflowException ex)
+            {
+                Theraot.No.Op(ex);
+            }
+
+            Assert.AreEqual(long.MaxValue, (long)new BigInteger(long.MaxValue), "#4");
+            Assert.AreEqual(long.MinValue, (long)new BigInteger(long.MinValue), "#5");
+        }
+
+        [Test]
+        public void TestToStringFmt()
+        {
+            Assert.AreEqual("123456789123456", new BigInteger(123456789123456).ToString("D2"), "#1");
+            Assert.AreEqual("0000000005", new BigInteger(5).ToString("d10"), "#2");
+            Assert.AreEqual("0A8", new BigInteger(168).ToString("X"), "#3");
+            Assert.AreEqual("0", new BigInteger(0).ToString("X"), "#4");
+            Assert.AreEqual("0", new BigInteger().ToString("X"), "#4b");
+            Assert.AreEqual("1", new BigInteger(1).ToString("X"), "#5");
+            Assert.AreEqual("0A", new BigInteger(10).ToString("X"), "#6");
+            Assert.AreEqual("F6", new BigInteger(-10).ToString("X"), "#7");
+
+            Assert.AreEqual("10000000000000000000000000000000000000000000000000000000",
+                BigInteger.Pow(10, 55).ToString("G"), "#8");
+
+            Assert.AreEqual("10000000000000000000000000000000000000000000000000000000",
+                BigInteger.Pow(10, 55).ToString("R"), "#9");
+
+            Assert.AreEqual("000000000A", new BigInteger(10).ToString("X10"), "#10");
+            Assert.AreEqual("0000000010", new BigInteger(10).ToString("G10"), "#11");
+        }
+
+        [Test]
+        public void TestToStringFmtProvider()
+        {
+            var info = new NumberFormatInfo
+            {
+                NegativeSign = ">",
+                PositiveSign = "%"
+            };
+
+            Assert.AreEqual("10", new BigInteger(10).ToString(info), "#1");
+            Assert.AreEqual(">10", new BigInteger(-10).ToString(info), "#2");
+            Assert.AreEqual("0A", new BigInteger(10).ToString("X", info), "#3");
+            Assert.AreEqual("F6", new BigInteger(-10).ToString("X", info), "#4");
+            Assert.AreEqual("10", new BigInteger(10).ToString("G", info), "#5");
+            Assert.AreEqual(">10", new BigInteger(-10).ToString("G", info), "#6");
+            Assert.AreEqual("10", new BigInteger(10).ToString("D", info), "#7");
+            Assert.AreEqual(">10", new BigInteger(-10).ToString("D", info), "#8");
+            Assert.AreEqual("10", new BigInteger(10).ToString("R", info), "#9");
+            Assert.AreEqual(">10", new BigInteger(-10).ToString("R", info), "#10");
+
+            info = new NumberFormatInfo
+            {
+                NegativeSign = "#$%"
+            };
+            Assert.AreEqual("#$%10", new BigInteger(-10).ToString(info), "#2");
+            Assert.AreEqual("#$%10", new BigInteger(-10).ToString(null, info), "#2");
+
+            info = new NumberFormatInfo();
+            Assert.AreEqual("-10", new BigInteger(-10).ToString(info), "#2");
+        }
+
+        [Test]
+        public void TestUserCurrency()
+        {
+            const int val1 = -1234567;
+            const int val2 = 1234567;
+
+            string s;
+            BigInteger v;
+            s = val1.ToString("c", _nfiUser);
+            Assert.AreEqual("1234/5/67:000 XYZ-", s, "Currency value type 1 is not what we want to try to parse");
+            v = BigInteger.Parse("1234/5/67:000   XYZ-", NumberStyles.Currency, _nfiUser);
+            Assert.AreEqual(val1, (int)v);
+
+            s = val2.ToString("c", _nfiUser);
+            Assert.AreEqual("1234/5/67:000 XYZ", s, "Currency value type 2 is not what we want to try to parse");
+            v = BigInteger.Parse(s, NumberStyles.Currency, _nfiUser);
+            Assert.AreEqual(val2, (int)v);
+        }
+
+        [Test]
+        public void TryParse()
+        {
+            Assert.IsFalse(BigInteger.TryParse(null, out var x), "#1");
+            Assert.AreEqual(0, (int)x, "#1a");
+            Assert.IsFalse(BigInteger.TryParse("", out _), "#2");
+            Assert.IsFalse(BigInteger.TryParse(" ", out _), "#3");
+            Assert.IsFalse(BigInteger.TryParse(" -", out _), "#4");
+            Assert.IsFalse(BigInteger.TryParse(" +", out _), "#5");
+            Assert.IsFalse(BigInteger.TryParse(" FF", out _), "#6");
+
+            Assert.IsTrue(BigInteger.TryParse(" 99", out x), "#7");
+            Assert.AreEqual(99, (int)x, "#8");
+
+            Assert.IsTrue(BigInteger.TryParse("+133", out x), "#9");
+            Assert.AreEqual(133, (int)x, "#10");
+
+            Assert.IsTrue(BigInteger.TryParse("-010", out x), "#11");
+            Assert.AreEqual(-10, (int)x, "#12");
+
+            //Number style and format provider
+
+            Assert.IsFalse(BigInteger.TryParse("null", NumberStyles.None, null, out x), "#13");
+            Assert.AreEqual(0, (int)x, "#14");
+            Assert.IsFalse(BigInteger.TryParse("-10", NumberStyles.None, null, out _), "#15");
+            Assert.IsFalse(BigInteger.TryParse("(10)", NumberStyles.None, null, out _), "#16");
+            Assert.IsFalse(BigInteger.TryParse(" 10", NumberStyles.None, null, out _), "#17");
+            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out _), "#18");
+
+            Assert.IsTrue(BigInteger.TryParse("-10", NumberStyles.AllowLeadingSign, null, out x), "#19");
+            Assert.AreEqual(-10, (int)x, "#20");
+            Assert.IsTrue(BigInteger.TryParse("(10)", NumberStyles.AllowParentheses, null, out x), "#21");
+            Assert.AreEqual(-10, (int)x, "#22");
+            Assert.IsTrue(BigInteger.TryParse(" 10", NumberStyles.AllowLeadingWhite, null, out x), "#23");
+            Assert.AreEqual(10, (int)x, "#24");
+            Assert.IsTrue(BigInteger.TryParse("10 ", NumberStyles.AllowTrailingWhite, null, out x), "#25");
+            Assert.AreEqual(10, (int)x, "#26");
+
+            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, null, out _), "#26");
+            Assert.IsFalse(BigInteger.TryParse("$10", NumberStyles.None, _nfi, out _), "#27");
+            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.None, _nfi, out _), "#28");
+            Assert.IsFalse(BigInteger.TryParse("10 ", NumberStyles.None, null, out _), "#29");
+
+            Assert.IsTrue(BigInteger.TryParse("10", NumberStyles.None, null, out x), "#30");
+            Assert.AreEqual(10, (int)x, "#31");
+            Assert.IsTrue(
+                BigInteger.TryParse(_nfi.CurrencySymbol + "10", NumberStyles.AllowCurrencySymbol, _nfi, out x), "#32");
+            Assert.AreEqual(10, (int)x, "#33");
+            Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.AllowCurrencySymbol, _nfi, out _), "#34");
+        }
+    }
+
+    public partial class BigIntegerTest
+    {
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+        [Test]
+        public void TryParseWeirdCulture()
+        {
+            var old = Thread.CurrentThread.CurrentCulture;
+            var cur = (CultureInfo)old.Clone();
+
+            var nInfo = new NumberFormatInfo
+            {
+                NegativeSign = ">",
+                PositiveSign = "%"
+            };
+            cur.NumberFormat = nInfo;
+
+            Thread.CurrentThread.CurrentCulture = cur;
+
+            try
+            {
+                Assert.IsTrue(BigInteger.TryParse("%11", out var x), "#1");
+                Assert.AreEqual(11, (int)x, "#2");
+
+                Assert.IsTrue(BigInteger.TryParse(">11", out var y), "#3");
+                Assert.AreEqual(-11, (int)y, "#4");
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = old;
+            }
+        }
+
+#endif
+    }
+
+    public partial class BigIntegerTest
+    {
+#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
+
+        [SetCulture("pt-BR")]
+        [Test]
+        public void Parse_pt_BR()
+        {
+            Parse();
+        }
+
+#endif
     }
 }

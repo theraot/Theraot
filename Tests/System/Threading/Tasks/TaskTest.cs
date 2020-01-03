@@ -51,17 +51,58 @@ namespace MonoTests.System.Threading.Tasks
         private Task _parentWfc;
         private Task[] _tasks;
 
-        public static void WaitAny_ManyExceptions() // TODO: Review
+        public static void WaitAny_ManyExceptions()
         {
-            using (var cde = new CountdownEvent(3))
+            var countdownEvents = new CountdownEvent[1];
+            using (countdownEvents[0] = new CountdownEvent(3))
             {
-                var tasks = new[] {
-                    Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } }),
-                    Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } }),
-                    Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } })
+                var tasks = new[]
+                {
+                    Task.Factory.StartNew
+                    (
+                        () =>
+                        {
+                            try
+                            {
+                                throw new ApplicationException();
+                            }
+                            finally
+                            {
+                                countdownEvents[0].Signal();
+                            }
+                        }
+                    ),
+                    Task.Factory.StartNew
+                    (
+                        () =>
+                        {
+                            try
+                            {
+                                throw new ApplicationException();
+                            }
+                            finally
+                            {
+                                countdownEvents[0].Signal();
+                            }
+                        }
+                    ),
+                    Task.Factory.StartNew
+                    (
+                        () =>
+                        {
+                            try
+                            {
+                                throw new ApplicationException();
+                            }
+                            finally
+                            {
+                                countdownEvents[0].Signal();
+                            }
+                        }
+                    )
                 };
 
-                Assert.IsTrue(cde.Wait(1000), "#1");
+                Assert.IsTrue(countdownEvents[0].Wait(1000), "#1");
 
                 try
                 {
@@ -108,10 +149,13 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void AsyncWaitHandleSet()
         {
-            var task = new TaskFactory().StartNew(() =>
-            {
-                // Empty
-            });
+            var task = new TaskFactory().StartNew
+            (
+                () =>
+                {
+                    // Empty
+                }
+            );
             var ar = (IAsyncResult)task;
             Assert.IsFalse(ar.CompletedSynchronously, "#1");
             Assert.IsTrue(ar.AsyncWaitHandle.WaitOne(5000), "#2");
@@ -141,21 +185,23 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this fails if serialized
         [Category("ThreadPool")]
-        public void CanceledContinuationExecuteSynchronouslyTest() // TODO: Review
+        public void CanceledContinuationExecuteSynchronouslyTest()
         {
-            using (var source = new CancellationTokenSource())
+            var cancellationTokenSources = new CancellationTokenSource[1];
+            var manualResetEvents = new ManualResetEventSlim[1];
+            using (cancellationTokenSources[0] = new CancellationTokenSource())
             {
-                using (var evt = new ManualResetEventSlim())
+                using (manualResetEvents[0] = new ManualResetEventSlim())
                 {
-                    var token = source.Token;
+                    var token = cancellationTokenSources[0].Token;
                     var result = false;
                     var thrown = false;
 
-                    var task = Task.Factory.StartNew(() => evt.Wait(100));
+                    var task = Task.Factory.StartNew(() => manualResetEvents[0].Wait(100));
                     var cont = task.ContinueWith(t => result = true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 
-                    source.Cancel();
-                    evt.Set();
+                    cancellationTokenSources[0].Cancel();
+                    manualResetEvents[0].Set();
                     task.Wait(100);
                     try
                     {
@@ -179,19 +225,27 @@ namespace MonoTests.System.Threading.Tasks
         public void ContinueWith_CustomScheduleRejected()
         {
             var scheduler = new NonInlineableScheduler();
-            var t = Task.Factory.StartNew(ActionHelper.GetNoopAction()).
-                ContinueWith(r =>
+            var t = Task.Factory.StartNew
+            (
+                ActionHelper.GetNoopAction()
+            ).ContinueWith
+            (
+                r =>
                 {
                     // Empty
-                }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler);
+                },
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously,
+                scheduler
+            );
 
             Assert.IsTrue(t.Wait(5000));
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
-        public void ContinueWithChildren() // TODO: Review
+        public void ContinueWithChildren()
         {
             ParallelTestHelper.Repeat
             (
@@ -203,15 +257,18 @@ namespace MonoTests.System.Threading.Tasks
                     {
                         // Empty
                     }, TaskCreationOptions.AttachedToParent));
-
-                    using (var mre = new ManualResetEvent(false))
+                    var manualResetEvents = new ManualResetEvent[1];
+                    using (manualResetEvents[0] = new ManualResetEvent(false))
                     {
-                        t.ContinueWith(l =>
-                        {
-                            result = true;
-                            mre.Set();
-                        });
-                        Assert.IsTrue(mre.WaitOne(1000), "#1");
+                        t.ContinueWith
+                        (
+                            l =>
+                            {
+                                result = true;
+                                manualResetEvents[0].Set();
+                            }
+                        );
+                        Assert.IsTrue(manualResetEvents[0].WaitOne(1000), "#1");
                         Assert.IsTrue(result, "#2");
                     }
                 },
@@ -220,14 +277,15 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         [Ignore("Not working")]
-        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Review
+        public void ContinueWithDifferentOptionsAreCanceledTest()
         {
-            using (var mre = new ManualResetEventSlim())
+            var manualResetEvents = new ManualResetEventSlim[1];
+            using (manualResetEvents[0] = new ManualResetEventSlim())
             {
-                var task = Task.Factory.StartNew(() => mre.Wait(200));
+                var task = Task.Factory.StartNew(() => manualResetEvents[0].Wait(200));
                 var contFailed = task.ContinueWith(t =>
                 {
                     // Empty
@@ -241,7 +299,7 @@ namespace MonoTests.System.Threading.Tasks
                     // Empty
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
-                mre.Set();
+                manualResetEvents[0].Set();
                 contSuccess.Wait(100);
 
                 Assert.IsTrue(contSuccess.IsCompleted);
@@ -380,7 +438,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         [Ignore("Not working")]
         public void ContinueWithOnFailedTestCase()
@@ -450,36 +508,46 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void DisposeUnstartedTest()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                var t = new Task(() => { });
-                t.Dispose();
-            });
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    var t = new Task(() => { });
+                    t.Dispose();
+                }
+            );
         }
 
 #endif
 
         [Test]
-        public void DoubleTimeoutedWaitTest() // TODO: Review
+        public void DoubleTimedOutWaitTest()
         {
             // Do not dispose Task
             var t = new Task(ActionHelper.GetNoopAction());
-            using (var cntd = new CountdownEvent(2))
+            var countdownEvents = new CountdownEvent[1];
+            using (countdownEvents[0] = new CountdownEvent(2))
             {
                 var r1 = false;
                 var r2 = false;
-                ThreadPool.QueueUserWorkItem(state =>
-                {
-                    r1 = !t.Wait(100);
-                    cntd.Signal();
-                });
-                ThreadPool.QueueUserWorkItem(state =>
-                {
-                    r2 = !t.Wait(100);
-                    cntd.Signal();
-                });
+                ThreadPool.QueueUserWorkItem
+                (
+                    state =>
+                    {
+                        r1 = !t.Wait(100);
+                        countdownEvents[0].Signal();
+                    }
+                );
+                ThreadPool.QueueUserWorkItem
+                (
+                    state =>
+                    {
+                        r2 = !t.Wait(100);
+                        countdownEvents[0].Signal();
+                    }
+                );
 
-                cntd.Wait(2000);
+                countdownEvents[0].Wait(2000);
                 Assert.IsTrue(r1);
                 Assert.IsTrue(r2);
             }
@@ -518,13 +586,16 @@ namespace MonoTests.System.Threading.Tasks
         {
             bool? isTp = null;
             bool? isBg = null;
-            var t = new Task(() =>
-            {
+            var t = new Task
+            (
+                () =>
+                {
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-                isTp = Thread.CurrentThread.IsThreadPoolThread;
+                    isTp = Thread.CurrentThread.IsThreadPoolThread;
 #endif
-                isBg = Thread.CurrentThread.IsBackground;
-            });
+                    isBg = Thread.CurrentThread.IsBackground;
+                }
+            );
             t.Start();
             Assert.IsTrue(t.Wait(5000), "#0");
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
@@ -533,13 +604,17 @@ namespace MonoTests.System.Threading.Tasks
             Assert.IsTrue(isBg == true, "#2");
             isTp = null;
             isBg = null;
-            var t2 = new Task(() =>
-            {
+            var t2 = new Task
+            (
+                () =>
+                {
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11
-                isTp = Thread.CurrentThread.IsThreadPoolThread;
+                    isTp = Thread.CurrentThread.IsThreadPoolThread;
 #endif
-                isBg = Thread.CurrentThread.IsBackground;
-            }, TaskCreationOptions.LongRunning);
+                    isBg = Thread.CurrentThread.IsBackground;
+                },
+                TaskCreationOptions.LongRunning
+            );
             t2.Start();
             Assert.IsTrue(t2.Wait(5000), "#10");
             Assert.IsFalse(isTp == true, "#11");
@@ -612,15 +687,15 @@ namespace MonoTests.System.Threading.Tasks
             var result = false;
             var t = new Task
             (
-                () =>
-                {
-                    Task.Factory.StartNew(() =>
-                        {
-                            Thread.Sleep(500);
-                            result = true;
-                        },
-                        TaskCreationOptions.AttachedToParent);
-                }
+                () => Task.Factory.StartNew
+                (
+                    () =>
+                    {
+                        Thread.Sleep(500);
+                        result = true;
+                    },
+                    TaskCreationOptions.AttachedToParent
+                )
             );
             t.RunSynchronously();
             Assert.IsTrue(result);
@@ -662,13 +737,16 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void StartFinishedTaskTest()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                var t = Task.Factory.StartNew(() => { });
-                t.Wait();
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    var t = Task.Factory.StartNew(() => { });
+                    t.Wait();
 
-                t.Start();
-            });
+                    t.Start();
+                }
+            );
         }
 
         [Test]
@@ -710,7 +788,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         public void UnobservedExceptionOnFinalizerThreadTest()
         {
@@ -781,15 +859,15 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         [Ignore("Not working")]
         public void WaitAll_Cancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
-                var taskA = new Task(cancelation.Cancel);
-                var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
+                var taskA = new Task(cancellation.Cancel);
+                var taskB = new Task(ActionHelper.GetNoopAction(), cancellation.Token);
                 var tasks = new[] { taskA, taskB };
 
                 tasks[0].Start();
@@ -822,6 +900,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     tasks[i] = Task.Factory.StartNew(() => Thread.Sleep(0));
                 }
+
                 Assert.IsTrue(Task.WaitAll(tasks, 5000));
 
                 Cleanup(tasks);
@@ -829,7 +908,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAll_StartedUnderWait() // TODO: Review
+        public void WaitAll_StartedUnderWait()
         {
             var task1 = new Task(ActionHelper.GetNoopAction());
             ThreadPool.QueueUserWorkItem
@@ -847,22 +926,54 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition, that when resolved sequentially will fail
-        public void WaitAll_TimeoutWithExceptionsAfter() // TODO: Review
+        public void WaitAll_TimeoutWithExceptionsAfter()
         {
-            using (var cde = new CountdownEvent(2))
+            var countdownEvents = new CountdownEvent[1];
+            var manualResetEvents = new ManualResetEvent[1];
+            using (countdownEvents[0] = new CountdownEvent(2))
             {
-                using (var mre = new ManualResetEvent(false))
+                using (manualResetEvents[0] = new ManualResetEvent(false))
                 {
-                    var tasks = new[] {
-                        Task.Factory.StartNew (()=>Assert.IsTrue (mre.WaitOne (1500), "#0")),
-                        Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } }),
-                        Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } })
+                    var tasks = new[]
+                    {
+                        Task.Factory.StartNew
+                        (
+                            () => Assert.IsTrue(manualResetEvents[0].WaitOne(1500), "#0")
+                        ),
+                        Task.Factory.StartNew
+                        (
+                            () =>
+                            {
+                                try
+                                {
+                                    throw new ApplicationException();
+                                }
+                                finally
+                                {
+                                    countdownEvents[0].Signal();
+                                }
+                            }
+                        ),
+                        Task.Factory.StartNew
+                        (
+                            () =>
+                            {
+                                try
+                                {
+                                    throw new ApplicationException();
+                                }
+                                finally
+                                {
+                                    countdownEvents[0].Signal();
+                                }
+                            }
+                        )
                     };
 
-                    Assert.IsTrue(cde.Wait(1000), "#1");
+                    Assert.IsTrue(countdownEvents[0].Wait(1000), "#1");
                     Assert.IsFalse(Task.WaitAll(tasks, 1000), "#2");
 
-                    mre.Set();
+                    manualResetEvents[0].Set();
 
                     try
                     {
@@ -879,22 +990,54 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition, that when resolved sequentially will be stuck
-        public void WaitAll_TimeoutWithExceptionsBefore() // TODO: Review
+        public void WaitAll_TimeoutWithExceptionsBefore()
         {
-            using (var cde = new CountdownEvent(2))
+            var countdownEvents = new CountdownEvent[1];
+            var manualResetEvents = new ManualResetEvent[1];
+            using (countdownEvents[0] = new CountdownEvent(2))
             {
-                using (var mre = new ManualResetEvent(false))
+                using (manualResetEvents[0] = new ManualResetEvent(false))
                 {
-                    var tasks = new[] {
-                        Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } }),
-                        Task.Factory.StartNew (()=>{ try { throw new ApplicationException (); } finally { cde.Signal (); } }),
-                        Task.Factory.StartNew (()=>mre.WaitOne ()) // Keep lambda
+                    var tasks = new[]
+                    {
+                        Task.Factory.StartNew
+                        (
+                            () =>
+                            {
+                                try
+                                {
+                                    throw new ApplicationException();
+                                }
+                                finally
+                                {
+                                    countdownEvents[0].Signal();
+                                }
+                            }
+                        ),
+                        Task.Factory.StartNew
+                        (
+                            () =>
+                            {
+                                try
+                                {
+                                    throw new ApplicationException();
+                                }
+                                finally
+                                {
+                                    countdownEvents[0].Signal();
+                                }
+                            }
+                        ),
+                        Task.Factory.StartNew
+                        (
+                            () => manualResetEvents[0].WaitOne()
+                        ) // Keep lambda
                     };
 
-                    Assert.IsTrue(cde.Wait(1000), "#1");
+                    Assert.IsTrue(countdownEvents[0].Wait(1000), "#1");
                     Assert.IsFalse(Task.WaitAll(tasks, 1000), "#2");
 
-                    mre.Set();
+                    manualResetEvents[0].Set();
 
                     try
                     {
@@ -942,18 +1085,19 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         [Ignore("Not working")]
-        public void WaitAllExceptionThenCancelled() // TODO: Review
+        public void WaitAllExceptionThenCancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            var cancellationTokenSources = new CancellationTokenSource[1];
+            using (cancellationTokenSources[0] = new CancellationTokenSource())
             {
                 var taskA = new Task
                 (
                     () =>
                     {
-                        cancelation.Cancel();
+                        cancellationTokenSources[0].Cancel();
                         throw new ApplicationException();
                     }
                 );
@@ -961,7 +1105,7 @@ namespace MonoTests.System.Threading.Tasks
                 var taskB = new Task
                 (
                     ActionHelper.GetNoopAction(),
-                    cancelation.Token
+                    cancellationTokenSources[0].Token
                 );
                 var tasks = new[] { taskA, taskB };
 
@@ -995,21 +1139,22 @@ namespace MonoTests.System.Threading.Tasks
                 Task.WaitAll(_tasks);
                 Assert.AreEqual(_max, achieved, "#1");
             }
+
             ParallelTestHelper.Repeat(Action, 1000);
         }
 
         [Test]
         public void WaitAny_Cancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 // Do not dispose Task
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 // Do not dispose Task
-                var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
+                var taskB = new Task(ActionHelper.GetNoopAction(), cancellation.Token);
                 var tasks = new[] { taskA, taskB };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 Assert.AreEqual(1, Task.WaitAny(tasks, 1000), "#1");
                 Assert.IsTrue(tasks[1].IsCompleted, "#2");
@@ -1018,9 +1163,10 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAny_CancelledWithoutExecution() // TODO: Review
+        public void WaitAny_CancelledWithoutExecution()
         {
-            using (var cancelation = new CancellationTokenSource())
+            var cancellationTokenSources = new CancellationTokenSource[1];
+            using (cancellationTokenSources[0] = new CancellationTokenSource())
             {
                 // Do not dispose Task
                 var taskA = new Task(ActionHelper.GetNoopAction());
@@ -1029,18 +1175,19 @@ namespace MonoTests.System.Threading.Tasks
                 var tasks = new[] { taskA, taskB };
 
                 var res = 0;
-                using (var mre = new ManualResetEventSlim(false))
+                var manualResetEvents = new ManualResetEventSlim[1];
+                using (manualResetEvents[0] = new ManualResetEventSlim(false))
                 {
                     ThreadPool.QueueUserWorkItem
                     (
                         state =>
                         {
                             res = Task.WaitAny(tasks, 20);
-                            mre.Set();
+                            manualResetEvents[0].Set();
                         }
                     );
-                    cancelation.Cancel();
-                    Assert.IsTrue(mre.Wait(1000), "#1");
+                    cancellationTokenSources[0].Cancel();
+                    Assert.IsTrue(manualResetEvents[0].Wait(1000), "#1");
                     Assert.AreEqual(-1, res);
                 }
             }
@@ -1057,10 +1204,11 @@ namespace MonoTests.System.Threading.Tasks
         public void WaitAny_ManyCanceled()
         {
             var cancellation = new CancellationToken(true);
-            var tasks = new[] {
-                Task.Factory.StartNew (ActionHelper.GetNoopAction(), cancellation),
-                Task.Factory.StartNew (ActionHelper.GetNoopAction(), cancellation),
-                Task.Factory.StartNew (ActionHelper.GetNoopAction(), cancellation)
+            var tasks = new[]
+            {
+                Task.Factory.StartNew(ActionHelper.GetNoopAction(), cancellation),
+                Task.Factory.StartNew(ActionHelper.GetNoopAction(), cancellation),
+                Task.Factory.StartNew(ActionHelper.GetNoopAction(), cancellation)
             };
 
             try
@@ -1075,34 +1223,41 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition, that when resolved sequentially will fail
-        public void WaitAny_OneException() // TODO: Review
+        public void WaitAny_OneException()
         {
-            using (var mre = new ManualResetEventSlim(false))
+            var manualResetEvents = new ManualResetEventSlim[1];
+            using (manualResetEvents[0] = new ManualResetEventSlim(false))
             {
-                var tasks = new[] {
-                    Task.Factory.StartNew (()=>mre.Wait (5000)),
-                    Task.Factory.StartNew (()=> throw new ApplicationException())
+                var tasks = new[]
+                {
+                    Task.Factory.StartNew(() => manualResetEvents[0].Wait(5000)),
+                    Task.Factory.StartNew(() => throw new ApplicationException())
                 };
 
                 Assert.AreEqual(1, Task.WaitAny(tasks, 3000), "#1");
                 Assert.IsFalse(tasks[0].IsCompleted, "#2");
                 Assert.IsTrue(tasks[1].IsFaulted, "#3");
 
-                mre.Set();
+                manualResetEvents[0].Set();
             }
         }
 
         [Test]
-        public void WaitAny_SingleCanceled() // TODO: Review
+        public void WaitAny_SingleCanceled()
         {
-            using (var src = new CancellationTokenSource())
+            var cancellationTokenSources = new CancellationTokenSource[1];
+            using (cancellationTokenSources[0] = new CancellationTokenSource())
             {
-                var t = Task.Factory.StartNew(() =>
-                {
-                    Thread.Sleep(200);
-                    src.Cancel();
-                    src.Token.ThrowIfCancellationRequested();
-                }, src.Token);
+                var t = Task.Factory.StartNew
+                (
+                    () =>
+                    {
+                        Thread.Sleep(200);
+                        cancellationTokenSources[0].Cancel();
+                        cancellationTokenSources[0].Token.ThrowIfCancellationRequested();
+                    },
+                    cancellationTokenSources[0].Token
+                );
                 Assert.AreEqual(0, Task.WaitAny(t));
             }
         }
@@ -1159,9 +1314,9 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
-        public void WaitChildTestCase() // TODO: Review
+        public void WaitChildTestCase()
         {
             ParallelTestHelper.Repeat
             (
@@ -1170,9 +1325,10 @@ namespace MonoTests.System.Threading.Tasks
                     var r1 = false;
                     var r2 = false;
                     var r3 = false;
-                    using (var mre = new ManualResetEventSlim(false))
+                    var manualResetEvents = new ManualResetEventSlim[2];
+                    using (manualResetEvents[0] = new ManualResetEventSlim(false))
                     {
-                        using (var mreStart = new ManualResetEventSlim(false))
+                        using (manualResetEvents[1] = new ManualResetEventSlim(false))
                         {
                             var t = Task.Factory.StartNew
                             (
@@ -1182,20 +1338,20 @@ namespace MonoTests.System.Threading.Tasks
                                     (
                                         () =>
                                         {
-                                            mre.Wait(300);
+                                            manualResetEvents[0].Wait(300);
                                             r1 = true;
                                         },
                                         TaskCreationOptions.AttachedToParent
                                     );
                                     Task.Factory.StartNew(() => r2 = true, TaskCreationOptions.AttachedToParent);
                                     Task.Factory.StartNew(() => r3 = true, TaskCreationOptions.AttachedToParent);
-                                    mreStart.Set();
+                                    manualResetEvents[1].Set();
                                 }
                             );
 
-                            mreStart.Wait(300);
+                            manualResetEvents[1].Wait(300);
                             Assert.IsFalse(t.Wait(10), "#0a");
-                            mre.Set();
+                            manualResetEvents[0].Set();
                             Assert.IsTrue(t.Wait(500), "#0b");
                             Assert.IsTrue(r2, "#1");
                             Assert.IsTrue(r3, "#2");
@@ -1216,14 +1372,19 @@ namespace MonoTests.System.Threading.Tasks
             var task = new Task
             (
                 () =>
-                {
-                    Task.Factory.StartNew(() => Thread.Sleep(200), TaskCreationOptions.AttachedToParent).ContinueWith(
+                    Task.Factory.StartNew
+                    (
+                        () => Thread.Sleep(200),
+                        TaskCreationOptions.AttachedToParent
+                    ).ContinueWith
+                    (
                         t =>
                         {
                             Thread.Sleep(200);
                             result = true;
-                        }, TaskContinuationOptions.AttachedToParent);
-                }
+                        },
+                        TaskContinuationOptions.AttachedToParent
+                    )
             );
 
             task.Start();
@@ -1237,17 +1398,14 @@ namespace MonoTests.System.Threading.Tasks
         {
             var task = new Task
             (
-                () =>
-                {
-                    Task.Factory.StartNew
-                    (
-                        () => Thread.Sleep(200),
-                        TaskCreationOptions.AttachedToParent
-                    ).ContinueWith
-                    (
-                        t => Thread.Sleep(3000)
-                    );
-                }
+                () => Task.Factory.StartNew
+                (
+                    () => Thread.Sleep(200),
+                    TaskCreationOptions.AttachedToParent
+                ).ContinueWith
+                (
+                    t => Thread.Sleep(3000)
+                )
             );
 
             task.Start();
@@ -1258,42 +1416,57 @@ namespace MonoTests.System.Threading.Tasks
         public void WaitChildWithNesting()
         {
             var result = false;
-            var t = Task.Factory.StartNew(() =>
-            {
-                Task.Factory.StartNew(() =>
+            var t = Task.Factory.StartNew
+            (
+                () =>
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        Thread.Sleep(500);
-                        result = true;
+                        Task.Factory.StartNew(() =>
+                        {
+                            Thread.Sleep(500);
+                            result = true;
+                        }, TaskCreationOptions.AttachedToParent);
                     }, TaskCreationOptions.AttachedToParent);
-                }, TaskCreationOptions.AttachedToParent);
-            });
+                }
+            );
             Assert.IsTrue(t.Wait(4000), "#1");
             Assert.IsTrue(result, "#2");
         }
 
         [Test]
-        public void WaitingForChildrenToComplete() // TODO: Review
+        public void WaitingForChildrenToComplete()
         {
             Task nested = null;
-            using (var mre = new ManualResetEvent(false))
+            var manualResetEvents = new ManualResetEvent[1];
+            using (manualResetEvents[0] = new ManualResetEvent(false))
             {
-                _parentWfc = Task.Factory.StartNew(() =>
-                {
-                    nested = Task.Factory.StartNew(() =>
+                _parentWfc = Task.Factory.StartNew
+                (
+                    () =>
                     {
-                        Assert.IsTrue(mre.WaitOne(4000), "parent_wfc needs to be set first");
-                        Assert.IsFalse(_parentWfc.Wait(10), "#1a");
-                        Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parentWfc.Status, "#1b");
-                    }, TaskCreationOptions.AttachedToParent).ContinueWith(l =>
-                    {
-                        Assert.IsTrue(_parentWfc.Wait(2000), "#2a");
-                        Assert.AreEqual(TaskStatus.RanToCompletion, _parentWfc.Status, "#2b");
-                    }, TaskContinuationOptions.ExecuteSynchronously);
-                });
+                        nested = Task.Factory.StartNew
+                        (
+                            () =>
+                            {
+                                Assert.IsTrue(manualResetEvents[0].WaitOne(4000), "parent_wfc needs to be set first");
+                                Assert.IsFalse(_parentWfc.Wait(10), "#1a");
+                                Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parentWfc.Status, "#1b");
+                            },
+                            TaskCreationOptions.AttachedToParent
+                        ).ContinueWith
+                        (
+                            l =>
+                            {
+                                Assert.IsTrue(_parentWfc.Wait(2000), "#2a");
+                                Assert.AreEqual(TaskStatus.RanToCompletion, _parentWfc.Status, "#2b");
+                            },
+                            TaskContinuationOptions.ExecuteSynchronously
+                        );
+                    }
+                );
 
-                mre.Set();
+                manualResetEvents[0].Set();
                 Assert.IsTrue(_parentWfc.Wait(2000), "#3");
                 Assert.IsTrue(nested.Wait(2000), "#4");
             }
@@ -1325,7 +1498,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute()
         {
@@ -1412,7 +1585,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.IsTrue(continuationRan);
         }
 
-        private void Cleanup(Task[] tasks)
+        private static void Cleanup(Task[] tasks)
         {
             try
             {
@@ -1445,7 +1618,7 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        private class ExceptionScheduler : TaskScheduler
+        private sealed class ExceptionScheduler : TaskScheduler
         {
             protected override IEnumerable<Task> GetScheduledTasks()
             {
@@ -1463,7 +1636,7 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        private class MockScheduler : TaskScheduler
+        private sealed class MockScheduler : TaskScheduler
         {
             public event Action<Task, bool> TryExecuteTaskInlineHandler;
 
@@ -1485,7 +1658,7 @@ namespace MonoTests.System.Threading.Tasks
             }
         }
 
-        private class NonInlineableScheduler : TaskScheduler
+        private sealed class NonInlineableScheduler : TaskScheduler
         {
             protected override IEnumerable<Task> GetScheduledTasks()
             {
@@ -1505,24 +1678,6 @@ namespace MonoTests.System.Threading.Tasks
                 return false;
             }
         }
-
-        private class SynchronousScheduler : TaskScheduler
-        {
-            protected override IEnumerable<Task> GetScheduledTasks()
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override void QueueTask(Task task)
-            {
-                TryExecuteTaskInline(task, false);
-            }
-
-            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
-            {
-                return TryExecuteTask(task);
-            }
-        }
     }
 
     public partial class TaskTests
@@ -1531,13 +1686,20 @@ namespace MonoTests.System.Threading.Tasks
         public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;
-            var child = Task.Factory.StartNew(() =>
-            {
-                inner = TaskEx.Run(() => throw new ApplicationException()).ContinueWith(task =>
-                 {
-                     // Empty
-                 }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
-            });
+            var child = Task.Factory.StartNew
+            (
+                () =>
+                {
+                    inner = TaskEx.Run(() => throw new ApplicationException()).ContinueWith
+                    (
+                        task =>
+                        {
+                            // Empty
+                        },
+                        TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously
+                    );
+                }
+            );
 
             var counter = 0;
             var t = child.ContinueWith(t2 => ++counter, TaskContinuationOptions.ExecuteSynchronously);
@@ -1548,7 +1710,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         [Ignore("Not working")]
         public void ContinuationOnBrokenScheduler()
@@ -1603,7 +1765,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
         public void ContinueWith_StateValueGeneric()
         {
@@ -1640,11 +1802,11 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void Delay_Cancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
-                var t = TaskEx.Delay(5000, cancelation.Token);
+                var t = TaskEx.Delay(5000, cancellation.Token);
                 Assert.IsTrue(TaskStatus.WaitingForActivation == t.Status || TaskStatus.Running == t.Status, "#1");
-                cancelation.Cancel();
+                cancellation.Cancel();
                 try
                 {
                     t.Wait(1000);
@@ -1655,11 +1817,12 @@ namespace MonoTests.System.Threading.Tasks
                     Assert.AreEqual(TaskStatus.Canceled, t.Status, "#3");
                 }
             }
-            using (var cancelation = new CancellationTokenSource())
+
+            using (var cancellation = new CancellationTokenSource())
             {
-                var t = TaskEx.Delay(Timeout.Infinite, cancelation.Token);
+                var t = TaskEx.Delay(Timeout.Infinite, cancellation.Token);
                 Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#11");
-                cancelation.Cancel();
+                cancellation.Cancel();
                 try
                 {
                     t.Wait(1000);
@@ -1726,11 +1889,12 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(null, t.Result, "#2");
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
             t.Dispose();
-            t.Dispose(); // Dispose should be indempotent
-                         // I lament you static analysis, but avoiding double call to Dispose to avoid ObjectDisposedException is stupid
-                         // my philosophy is that Dispose should hold itself to higher standards, one able to be called safely by multiple threads
-                         // If Dispose can be called concurrently by multiple threads without risk, it should be possible to call it serially too
-                         // This is particularly true when we talk about a class intended for threading or asynchronous operations, such as Task
+            // Dispose should be idempotent
+            // I lament you static analysis, but avoiding double call to Dispose to avoid ObjectDisposedException is stupid
+            // my philosophy is that Dispose should hold itself to higher standards, one able to be called safely by multiple threads
+            // If Dispose can be called concurrently by multiple threads without risk, it should be possible to call it serially too
+            // This is particularly true when we talk about a class intended for threading or asynchronous operations, such as Task
+            t.Dispose();
 #endif
         }
 
@@ -1767,7 +1931,7 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void Run_ExistingTask() // TODO: Review
+        public void Run_ExistingTask()
         {
             var t = new Task
             (
@@ -1797,7 +1961,7 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void Run_ExistingTaskT() // TODO: Review
+        public void Run_ExistingTaskT()
         {
             var t = new Task<int>(() => 5);
             var t2 = TaskEx.Run
@@ -1818,24 +1982,24 @@ namespace MonoTests.System.Threading.Tasks
         {
             var val = 0;
             var t = new Task
-                (
-                    () =>
-                    {
-                        Thread.Sleep(100);
-                        val = 1;
-                    }
-                );
+            (
+                () =>
+                {
+                    Thread.Sleep(100);
+                    val = 1;
+                }
+            );
             t.RunSynchronously();
 
             Assert.AreEqual(1, val, "#1");
             var t2 = new Task
-                (
-                    () =>
-                    {
-                        Thread.Sleep(0);
-                        val = 2;
-                    }
-                );
+            (
+                () =>
+                {
+                    Thread.Sleep(0);
+                    val = 2;
+                }
+            );
             bool? previouslyQueued = null;
 
             var scheduler = new MockScheduler();
@@ -1871,7 +2035,7 @@ namespace MonoTests.System.Threading.Tasks
             //
             var tester = new TaskContinuationChainLeakTester();
             tester.Run();
-            tester.TasksPilledUp.WaitOne();
+            tester.TasksPiledUp.WaitOne();
 
             // Head task should be out of scope by now.  Manually run the GC and expect that it gets collected.
             //
@@ -1903,8 +2067,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WaitAny_WithNull()
         {
-            var tasks = new Task[] {
-                TaskEx.FromResult (2),
+            var tasks = new Task[]
+            {
+                TaskEx.FromResult(2),
                 null
             };
 
@@ -1936,13 +2101,13 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAll_Cancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 var taskA = new Task(ActionHelper.GetNoopAction());
-                var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
+                var taskB = new Task(ActionHelper.GetNoopAction(), cancellation.Token);
                 var tasks = new[] { taskA, taskB };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 var t = TaskEx.WhenAll(tasks);
                 Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
@@ -1979,13 +2144,13 @@ namespace MonoTests.System.Threading.Tasks
             var tcs2 = new TaskCompletionSource<object>();
             tcs2.SetException(new MinimalTaskTestsEx.CustomException());
 
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 var taskA = new Task(ActionHelper.GetNoopAction());
-                var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
+                var taskB = new Task(ActionHelper.GetNoopAction(), cancellation.Token);
                 var tasks = new[] { taskA, taskB, tcs.Task, tcs2.Task };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 var t = TaskEx.WhenAll(tasks);
                 Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
@@ -2007,8 +2172,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAll_Start()
         {
-            Task[] tasks = {
-                TaskEx.FromResult (2),
+            Task[] tasks =
+            {
+                TaskEx.FromResult(2)
             };
 
             var t = TaskEx.WhenAll(tasks);
@@ -2023,6 +2189,7 @@ namespace MonoTests.System.Threading.Tasks
             {
                 Theraot.No.Op(ex);
             }
+
             // Do not dispose Task
             var task = new Task(ActionHelper.GetNoopAction());
             tasks = new[] { task };
@@ -2044,8 +2211,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAll_WithNull()
         {
-            var tasks = new Task[] {
-                TaskEx.FromResult (2),
+            var tasks = new Task[]
+            {
+                TaskEx.FromResult(2),
                 null
             };
 
@@ -2071,20 +2239,20 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAllResult() // TODO: Review
+        public void WhenAllResult()
         {
             var t1 = new Task<string>
-                (
-                    () => "a"
-                );
+            (
+                () => "a"
+            );
             var t2 = new Task<string>
-                (
-                    () =>
-                    {
-                        t1.Start();
-                        return "b";
-                    }
-                );
+            (
+                () =>
+                {
+                    t1.Start();
+                    return "b";
+                }
+            );
 
             var tasks = new[] { t1, t2 };
 
@@ -2101,22 +2269,22 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAllResult_Cancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 var taskA = new Task<int>
-                    (
-                        () => 9
-                    );
+                (
+                    () => 9
+                );
 
                 var taskB = new Task<int>
-                    (
-                        () => 1,
-                        cancelation.Token
-                    );
+                (
+                    () => 1,
+                    cancellation.Token
+                );
 
                 var tasks = new[] { taskA, taskB };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 var t = TaskEx.WhenAll(tasks);
                 Assert.AreEqual(TaskStatus.WaitingForActivation, t.Status, "#1");
@@ -2147,9 +2315,10 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAllResult_Completed()
         {
-            var tasks = new[] {
-                TaskEx.FromResult (1),
-                TaskEx.FromResult (2)
+            var tasks = new[]
+            {
+                TaskEx.FromResult(1),
+                TaskEx.FromResult(2)
             };
 
             var t = TaskEx.WhenAll(tasks);
@@ -2174,8 +2343,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAllResult_WithNull()
         {
-            var tasks = new[] {
-                TaskEx.FromResult (2),
+            var tasks = new[]
+            {
+                TaskEx.FromResult(2),
                 null
             };
 
@@ -2224,15 +2394,15 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAny_Cancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 // Do not dispose Task
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 // Do not dispose Task
-                var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
+                var taskB = new Task(ActionHelper.GetNoopAction(), cancellation.Token);
                 var tasks = new[] { taskA, taskB };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
@@ -2252,15 +2422,15 @@ namespace MonoTests.System.Threading.Tasks
             var tcs2 = new TaskCompletionSource<object>();
             tcs2.SetException(new MinimalTaskTestsEx.CustomException());
 
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 // Do not dispose Task
                 var taskA = new Task(ActionHelper.GetNoopAction());
                 // Do not dispose Task
-                var taskB = new Task(ActionHelper.GetNoopAction(), cancelation.Token);
+                var taskB = new Task(ActionHelper.GetNoopAction(), cancellation.Token);
                 var tasks = new[] { taskA, tcs.Task, taskB, tcs2.Task };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
@@ -2276,8 +2446,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAny_Start()
         {
-            Task[] tasks = {
-                TaskEx.FromResult (2),
+            Task[] tasks =
+            {
+                TaskEx.FromResult(2)
             };
 
             var t = TaskEx.WhenAny(tasks);
@@ -2314,8 +2485,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAny_WithNull()
         {
-            var tasks = new Task[] {
-                TaskEx.FromResult (2),
+            var tasks = new Task[]
+            {
+                TaskEx.FromResult(2),
                 null
             };
 
@@ -2351,26 +2523,26 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeeds if serialized
         [Category("ThreadPool")]
-        public void WhenAnyResult() // TODO: Review
+        public void WhenAnyResult()
         {
             var t1 = new Task<byte>
-                (
-                    () => 3
-                );
+            (
+                () => 3
+            );
             var t2 = new Task<byte>
-                (
-                    () =>
-                    {
-                        t1.Start();
-                        return 2;
-                    }
-                );
+            (
+                () =>
+                {
+                    t1.Start();
+                    return 2;
+                }
+            );
             var tasks = new[]
             {
                 t1,
-                t2,
+                t2
             };
 
             var t = TaskEx.WhenAny(tasks);
@@ -2384,7 +2556,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAnyResult_Cancelled()
         {
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 // Do not dispose Task
                 var taskA = new Task<double>
@@ -2395,11 +2567,11 @@ namespace MonoTests.System.Threading.Tasks
                 var taskB = new Task<double>
                 (
                     () => -4.4,
-                    cancelation.Token
+                    cancellation.Token
                 );
                 var tasks = new[] { taskA, taskB };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
@@ -2419,7 +2591,7 @@ namespace MonoTests.System.Threading.Tasks
             var tcs2 = new TaskCompletionSource<object>();
             tcs2.SetException(new MinimalTaskTestsEx.CustomException());
 
-            using (var cancelation = new CancellationTokenSource())
+            using (var cancellation = new CancellationTokenSource())
             {
                 // Do not dispose Task
                 var taskA = new Task<object>
@@ -2430,7 +2602,7 @@ namespace MonoTests.System.Threading.Tasks
                 var taskB = new Task<object>
                 (
                     () => "",
-                    cancelation.Token
+                    cancellation.Token
                 );
                 var tasks = new[]
                 {
@@ -2440,7 +2612,7 @@ namespace MonoTests.System.Threading.Tasks
                     tcs2.Task
                 };
 
-                cancelation.Cancel();
+                cancellation.Cancel();
 
                 var t = TaskEx.WhenAny(tasks);
                 Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#1");
@@ -2458,7 +2630,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var tasks = new[]
             {
-                TaskEx.FromResult(2),
+                TaskEx.FromResult(2)
             };
 
             var t = TaskEx.WhenAny(tasks);
@@ -2498,8 +2670,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WhenAnyResult_WithNull()
         {
-            var tasks = new[] {
-                TaskEx.FromResult (2),
+            var tasks = new[]
+            {
+                TaskEx.FromResult(2),
                 null
             };
 
@@ -2541,38 +2714,57 @@ namespace MonoTests.System.Threading.Tasks
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void DenyChildAttachTest() // TODO: Review
+        public void DenyChildAttachTest()
         {
-            using (var mre = new ManualResetEventSlim())
+            var manualResetEvents = new ManualResetEventSlim[0];
+            using (manualResetEvents[0] = new ManualResetEventSlim())
             {
                 Task nested = null;
-                var parent = Task.Factory.StartNew(() => nested = Task.Factory.StartNew(() => mre.Wait(2000), TaskCreationOptions.AttachedToParent), TaskCreationOptions.DenyChildAttach);
+                var parent = Task.Factory.StartNew
+                (
+                    () => nested = Task.Factory.StartNew
+                    (
+                        () => manualResetEvents[0].Wait(2000),
+                        TaskCreationOptions.AttachedToParent
+                    ),
+                    TaskCreationOptions.DenyChildAttach
+                );
                 Assert.IsTrue(parent.Wait(1000), "#1");
-                mre.Set();
+                manualResetEvents[0].Set();
                 Assert.IsTrue(nested.Wait(2000), "#2");
             }
         }
 
         [Test]
         [Category("RaceCondition")] // This test creates a race condition
-        public void HideSchedulerTest() // TODO: Review
+        public void HideSchedulerTest()
         {
-            using (var mre = new ManualResetEventSlim())
+            var manualResetEvents = new ManualResetEventSlim[1];
+            using (manualResetEvents[0] = new ManualResetEventSlim())
             {
                 var ranOnDefault = false;
                 var scheduler = new SynchronousScheduler();
-                Task.Factory.StartNew(() =>
-                                {
-                                    Task.Factory.StartNew(() =>
-                                    {
+                Task.Factory.StartNew
+                (
+                    () =>
+                    {
+                        Task.Factory.StartNew
+                        (
+                            () =>
+                            {
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
-                                        ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
+                                ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
 #endif
-                                        mre.Set();
-                                    });
-                                }, CancellationToken.None, TaskCreationOptions.HideScheduler, scheduler);
+                                manualResetEvents[0].Set();
+                            }
+                        );
+                    },
+                    CancellationToken.None,
+                    TaskCreationOptions.HideScheduler,
+                    scheduler
+                );
 
-                Assert.IsTrue(mre.Wait(10000), "#1");
+                Assert.IsTrue(manualResetEvents[0].Wait(10000), "#1");
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || TARGETS_NETSTANDARD
                 Assert.IsTrue(ranOnDefault, "#2");
 #endif
@@ -2580,7 +2772,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void LazyCancelationTest()
+        public void LazyCancellationTest()
         {
             using (var source = new CancellationTokenSource())
             {
@@ -2615,6 +2807,24 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
             t.Wait();
             Assert.IsTrue(ranOnDefaultScheduler, "#2");
+        }
+
+        private sealed class SynchronousScheduler : TaskScheduler
+        {
+            protected override IEnumerable<Task> GetScheduledTasks()
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void QueueTask(Task task)
+            {
+                TryExecuteTaskInline(task, false);
+            }
+
+            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+            {
+                return TryExecuteTask(task);
+            }
         }
 
 #endif

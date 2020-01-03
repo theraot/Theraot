@@ -9,20 +9,27 @@ namespace Theraot.Threading
         [Test]
         public static void TimeoutCancel()
         {
-again:
+            RootedTimeout timeout;
             var value = new[] { 0 };
-            var timeout = RootedTimeout.Launch(() => value[0] = 1, 1000);
-            Assert.IsFalse(timeout.IsCanceled);
-            timeout.Cancel();
-            while (!timeout.IsCompleted && !timeout.IsCanceled)
+            while (true)
             {
-                // Empty
-            }
-            if (timeout.IsCompleted)
-            {
+                value[0] = 0;
+                timeout = RootedTimeout.Launch(() => value[0] = 1, 1000);
+                Assert.IsFalse(timeout.IsCanceled);
+                timeout.Cancel();
+                while (!timeout.IsCompleted && !timeout.IsCanceled)
+                {
+                    // Empty
+                }
+
+                if (!timeout.IsCompleted)
+                {
+                    break;
+                }
+
                 Assert.AreEqual(1, value[0]);
-                goto again;
             }
+
             Assert.IsTrue(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
             Assert.AreEqual(0, value[0]);
@@ -31,20 +38,27 @@ again:
         [Test]
         public static void TimeoutCancelAndChange()
         {
-again:
+            RootedTimeout timeout;
             var value = new[] { 0 };
-            var timeout = RootedTimeout.Launch(() => value[0] = 1, 100);
-            Assert.IsFalse(timeout.IsCanceled);
-            timeout.Cancel();
-            while (!timeout.IsCompleted && !timeout.IsCanceled)
+            while (true)
             {
-                // Empty
-            }
-            if (timeout.IsCompleted)
-            {
+                value[0] = 0;
+                timeout = RootedTimeout.Launch(() => value[0] = 1, 100);
+                Assert.IsFalse(timeout.IsCanceled);
+                timeout.Cancel();
+                while (!timeout.IsCompleted && !timeout.IsCanceled)
+                {
+                    // Empty
+                }
+
+                if (!timeout.IsCompleted)
+                {
+                    break;
+                }
+
                 Assert.AreEqual(1, value[0]);
-                goto again;
             }
+
             Assert.IsTrue(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
             Assert.AreEqual(0, value[0]);
@@ -57,14 +71,20 @@ again:
         [Category("LongRunning")]
         public static void TimeoutChange()
         {
-again:
-            var now = DateTime.Now;
-            var value = new[] { now };
-            var timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 100);
-            if (!timeout.Change(1000))
+            RootedTimeout timeout;
+            var value = new DateTime[1];
+            DateTime now;
+            while (true)
             {
-                goto again;
+                now = DateTime.Now;
+                value[0] = now;
+                timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 100);
+                if (timeout.Change(1000))
+                {
+                    break;
+                }
             }
+
             Assert.IsFalse(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
             ThreadingHelper.SpinWaitUntil(() => timeout.IsCompleted);
@@ -117,21 +137,26 @@ again:
         [Test]
         public static void TimeoutRemaining()
         {
-again:
-            var now = DateTime.Now;
-            var value = new[] { now };
-            var timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 500);
-            var remaining = timeout.CheckRemaining();
-            if (timeout.IsCompleted)
+            long remaining;
+            RootedTimeout timeout;
+            while (true)
             {
-                goto again;
+                var now = DateTime.Now;
+                var value = new[] { now };
+                timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 500);
+                remaining = timeout.CheckRemaining();
+                if (!timeout.IsCompleted)
+                {
+                    break;
+                }
             }
+
             Assert.LessOrEqual(remaining, 500);
             Thread.Sleep(1);
-            var newremaining = timeout.CheckRemaining();
-            Assert.LessOrEqual(newremaining, remaining);
+            var newRemaining = timeout.CheckRemaining();
+            Assert.LessOrEqual(newRemaining, remaining);
             Assert.GreaterOrEqual(remaining, 0);
-            Assert.GreaterOrEqual(newremaining, 0);
+            Assert.GreaterOrEqual(newRemaining, 0);
         }
     }
 }

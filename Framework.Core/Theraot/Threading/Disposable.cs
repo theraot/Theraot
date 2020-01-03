@@ -40,7 +40,8 @@ namespace Theraot.Threading
 
                     Dispose();
                     return true;
-                });
+                }
+            );
         }
     }
 }

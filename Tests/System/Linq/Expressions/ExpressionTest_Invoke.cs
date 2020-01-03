@@ -34,7 +34,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -47,7 +48,7 @@ namespace MonoTests.System.Linq.Expressions
         private delegate string StringAction(string s);
 
         [Test]
-        public void ArgumentCountDoesntMatchParametersLength()
+        public void ArgumentCountDoesNotMatchParametersLength()
         {
             Assert.Throws<InvalidOperationException>(() => Expression.Invoke(CreateInvokable<Action<int>>(), 1.ToConstant(), 2.ToConstant()));
         }
@@ -96,13 +97,16 @@ namespace MonoTests.System.Linq.Expressions
         {
             var p = Expression.Parameter(typeof(string), "s");
 
-            Func<string, Expression<Func<string, string>>, string> caller = (s, f) => f.Compile().Invoke(s);
+            string Caller(string s, Expression<Func<string, string>> f)
+            {
+                return f.Compile().Invoke(s);
+            }
 
             var invoke = Expression.Lambda<Func<string>>
             (
                 Expression.Invoke
                 (
-                    Expression.Constant(caller),
+                    Expression.Constant((Func<string, Expression<Func<string, string>>, string>)Caller),
                     Expression.Constant("KABOOM!"),
                     Expression.Lambda<Func<string, string>>
                     (

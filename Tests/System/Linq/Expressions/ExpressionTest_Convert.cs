@@ -34,7 +34,8 @@ using System;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -44,9 +45,9 @@ namespace MonoTests.System.Linq.Expressions
     [TestFixture]
     public class ExpressionTestConvert
     {
-        private enum EineEnum
+        private enum AnEnum
         {
-            EineValue
+            AValue
         }
 
         private interface IFoo
@@ -54,7 +55,7 @@ namespace MonoTests.System.Linq.Expressions
             // Empty
         }
 
-        private interface ITzap
+        private interface IZap
         {
             // Empty
         }
@@ -328,7 +329,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ConvertEnumToInt32()
         {
-            var c = Expression.Convert(Expression.Parameter(typeof(EineEnum), ""), typeof(int));
+            var c = Expression.Convert(Expression.Parameter(typeof(AnEnum), ""), typeof(int));
             Assert.AreEqual(typeof(int), c.Type);
             Assert.IsFalse(c.IsLifted);
             Assert.IsFalse(c.IsLiftedToNull);
@@ -340,7 +341,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var node = Expression.Convert
             (
-                Expression.Constant(EineEnum.EineValue, typeof(EineEnum)),
+                Expression.Constant(AnEnum.AValue, typeof(AnEnum)),
                 typeof(Enum)
             );
 
@@ -382,9 +383,9 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual((int?)42, compiled(new ImplicitToShort(42)));
 
-            Action convnull = () => Assert.AreEqual(null, compiled(null));
+            Action convNull = () => Assert.AreEqual(null, compiled(null));
 
-            convnull.AssertThrows(typeof(InvalidOperationException));
+            convNull.AssertThrows(typeof(InvalidOperationException));
         }
 
         [Test]
@@ -428,9 +429,9 @@ namespace MonoTests.System.Linq.Expressions
         {
             var p = Expression.Parameter(typeof(IFoo), null);
 
-            var conv = Expression.Convert(p, typeof(ITzap));
-            Assert.AreEqual(typeof(ITzap), conv.Type);
-            p = Expression.Parameter(typeof(ITzap), null);
+            var conv = Expression.Convert(p, typeof(IZap));
+            Assert.AreEqual(typeof(IZap), conv.Type);
+            p = Expression.Parameter(typeof(IZap), null);
             conv = Expression.Convert(p, typeof(IFoo));
 
             Assert.AreEqual(typeof(IFoo), conv.Type);
@@ -459,7 +460,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-        public void ConvertNullableImplictToIntToNullableLong()
+        public void ConvertNullableImplicitToIntToNullableLong()
         {
             var i = Expression.Parameter(typeof(ImplicitToInt?), "i");
 
@@ -470,8 +471,8 @@ namespace MonoTests.System.Linq.Expressions
             var compiled = Expression.Lambda<Func<ImplicitToInt?, long?>>(node, i).Compile();
 
             Assert.AreEqual((long?)42, compiled(new ImplicitToInt(42)));
-            Action convnull = () => Assert.AreEqual(null, compiled(null));
-            convnull.AssertThrows(typeof(InvalidOperationException));
+            Action convNull = () => Assert.AreEqual(null, compiled(null));
+            convNull.AssertThrows(typeof(InvalidOperationException));
         }
 
         [Test]
@@ -489,15 +490,12 @@ namespace MonoTests.System.Linq.Expressions
         {
             Assert.Throws<InvalidOperationException>
             (
-                () =>
-                {
-                    Expression.Convert
-                    (
-                        Expression.Constant((int?)0),
-                        typeof(string),
-                        typeof(Convert).GetMethod("ToString", new[] { typeof(object) })
-                    );
-                }
+                () => Expression.Convert
+                (
+                    Expression.Constant((int?)0),
+                    typeof(string),
+                    typeof(Convert).GetMethod("ToString", new[] { typeof(object) })
+                )
             );
         }
 
@@ -531,7 +529,7 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void ConvertStructToFoo()
         {
-            Assert.Throws<InvalidOperationException>(() => Expression.Convert(Expression.Parameter(typeof(EineStrukt), ""), typeof(Foo)));
+            Assert.Throws<InvalidOperationException>(() => Expression.Convert(Expression.Parameter(typeof(AStruct), ""), typeof(Foo)));
         }
 
         [Test]
@@ -595,7 +593,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.IsNull(c.Method);
         }
 
-        private struct EineStrukt
+        private struct AStruct
         {
             // Empty
         }
@@ -645,12 +643,12 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        private class Bar : Foo
+        private sealed class Bar : Foo
         {
             // Empty
         }
 
-        private class Baz
+        private sealed class Baz
         {
             // Empty
         }
@@ -660,7 +658,7 @@ namespace MonoTests.System.Linq.Expressions
             // Empty
         }
 
-        private class Klang
+        private sealed class Klang
         {
             private readonly int _i;
 

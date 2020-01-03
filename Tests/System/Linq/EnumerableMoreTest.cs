@@ -47,16 +47,17 @@ namespace MonoTests.System.Linq
         {
             if (action == null)
             {
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             }
+
             try
             {
                 action();
                 Assert.Fail();
             }
-            catch (T)
+            catch (T exception)
             {
-                // Empty
+                _ = exception;
             }
             catch (Exception exception)
             {
@@ -380,7 +381,7 @@ namespace MonoTests.System.Linq
             Assert.IsTrue(data.Contains(2));
             for (var i = 0; i < 50; ++i)
             {
-                Debug.WriteLine(icoll.Contains(0));//Console.WriteLine (data.Contains (0));
+                Debug.WriteLine(icoll.Contains(0)); // Console.WriteLine (data.Contains (0));
             }
 
             IsFalse(data.Contains(0), data);
@@ -407,13 +408,13 @@ namespace MonoTests.System.Linq
         public void CountOverflowTest()
         {
             // Count<TSource> ()
-            //AssertException<OverflowException> (delegate () { data.Count (); });
+            // AssertException<OverflowException> (delegate () { data.Count (); });
 
             // Count<TSource> (Func<TSource, bool>)
-            //AssertException<OverflowException> (delegate () { data.Count (x => 3 == x); });
+            // AssertException<OverflowException> (delegate () { data.Count (x => 3 == x); });
 
             // Documentation error: http://msdn2.microsoft.com/en-us/library/bb535181.aspx
-            // An exception is only rasied if count > int.MaxValue. Not if source contains more than int.MaxValue elements.
+            // An exception is only raised if count > int.MaxValue. Not if source contains more than int.MaxValue elements.
             // AssertException<OverflowException> (delegate () { data.Count (x => 5 == x); });
         }
 
@@ -475,7 +476,7 @@ namespace MonoTests.System.Linq
             // Distinct<TSource> ()
             AssertAreSame(expected, data.Distinct());
 
-            // Distinct<iTSourcent> (IEqualityComparer<TSource>)
+            // Distinct<TSource> (IEqualityComparer<TSource>)
             AssertAreSame(expected, data.Distinct(EqualityComparer<int>.Default));
         }
 
@@ -702,8 +703,10 @@ namespace MonoTests.System.Linq
                         Assert.Fail();
                         break;
                 }
+
                 count++;
             }
+
             Assert.AreEqual(3, count);
         }
 
@@ -714,19 +717,81 @@ namespace MonoTests.System.Linq
 
             var expected = new Dictionary<string, IEnumerable<string>>
             {
-                { "2", new List<string> { "2" } },
-                { "1", new List<string> { "1" } },
-                { "5", new List<string> { "5" } },
-                { "3", new List<string> { "3", "3" } },
-                { "4", new List<string> { "4" } }
+                {
+                    "2",
+                    new List<string>
+                    {
+                        "2"
+                    }
+                },
+                {
+                    "1",
+                    new List<string>
+                    {
+                        "1"
+                    }
+                },
+                {
+                    "5",
+                    new List<string>
+                    {
+                        "5"
+                    }
+                },
+                {
+                    "3",
+                    new List<string>
+                    {
+                        "3",
+                        "3"
+                    }
+                },
+                {
+                    "4",
+                    new List<string>
+                    {
+                        "4"
+                    }
+                }
             };
             var expected2 = new Dictionary<string, IEnumerable<string>>
             {
-                { "2", new List<string> { "22" } },
-                { "1", new List<string> { "11" } },
-                { "5", new List<string> { "55" } },
-                { "3", new List<string> { "33", "33" } },
-                { "4", new List<string> { "44" } }
+                {
+                    "2",
+                    new List<string>
+                    {
+                        "22"
+                    }
+                },
+                {
+                    "1",
+                    new List<string>
+                    {
+                        "11"
+                    }
+                },
+                {
+                    "5",
+                    new List<string>
+                    {
+                        "55"
+                    }
+                },
+                {
+                    "3",
+                    new List<string>
+                    {
+                        "33",
+                        "33"
+                    }
+                },
+                {
+                    "4",
+                    new List<string>
+                    {
+                        "44"
+                    }
+                }
             };
             var expected3 = new[] { "22", "11", "55", "333", "44" };
 
@@ -944,9 +1009,18 @@ namespace MonoTests.System.Linq
         [Test]
         public void JoinTestNullKeys()
         {
-            var l1 = new[] {
-                new { Name = "name1", Nullable = (int?) null },
-                new { Name = "name2", Nullable = (int?) null }
+            var l1 = new[]
+            {
+                new
+                {
+                    Name = "name1",
+                    Nullable = (int?)null
+                },
+                new
+                {
+                    Name = "name2",
+                    Nullable = (int?)null
+                }
             };
 
             var count = l1.Join(l1, i => i.Nullable, i => i.Nullable, (x, y) => x.Name).Count();
@@ -1948,7 +2022,7 @@ namespace MonoTests.System.Linq
             int[] expected = { 2, 3, 4, 5 };
 
             // ToArray<TSource> ()
-            AssertAreSame(expected, Enumerable.ToArray(data));
+            AssertAreSame(expected, data.ToArray());
         }
 
         [Test]
@@ -2071,10 +2145,34 @@ namespace MonoTests.System.Linq
             string[] data = { "23", "12", "55", "42", "41" };
             var expected = new Dictionary<string, IEnumerable<string>>
             {
-                { "2", new List<string> { "23" } },
-                { "1", new List<string> { "12" } },
-                { "5", new List<string> { "55" } },
-                { "4", new List<string> { "42", "41" } }
+                {
+                    "2",
+                    new List<string>
+                    {
+                        "23"
+                    }
+                },
+                {
+                    "1",
+                    new List<string>
+                    {
+                        "12"
+                    }
+                },
+                {
+                    "5",
+                    new List<string>
+                    {
+                        "55"
+                    }
+                },
+                {
+                    "4", new List<string>
+                    {
+                        "42",
+                        "41"
+                    }
+                }
             };
             Assert.AreEqual(expected.Count, data.ToLookup(x => x[0].ToString()).Count);
 
@@ -2129,8 +2227,8 @@ namespace MonoTests.System.Linq
             AssertException<ArgumentNullException>(() => data.Where((Func<string, bool>)null));
 
             // Where<TSource> (Func<TSource, int, bool>)
-            AssertException<ArgumentNullException>(() => Enumerable.Where(((IEnumerable<string>)null), (x, y) => true));
-            AssertException<ArgumentNullException>(() => Enumerable.Where(data, (Func<string, int, bool>)null));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Where((x, y) => true));
+            AssertException<ArgumentNullException>(() => data.Where((Func<string, int, bool>)null));
         }
 
         [Test]
@@ -2144,7 +2242,7 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected1, data.Where(x => x < 3));
 
             // Where<TSource> (Func<TSource, int, bool>)
-            AssertAreSame(expected2, Enumerable.Where(data, (x, y) => x < 3 && y != 1));
+            AssertAreSame(expected2, data.Where((x, y) => x < 3 && y != 1));
         }
 
         private static void AssertAreSame<TK, TV>(TK expectedKey, IEnumerable<TV> expectedValues, IGrouping<TK, TV> actual)
@@ -2159,7 +2257,7 @@ namespace MonoTests.System.Linq
 
             Assert.AreEqual(expectedKey, actual.Key);
 
-            var ee = expectedValues.GetEnumerator(); // TODO: Review
+            var ee = expectedValues.GetEnumerator();
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -2184,7 +2282,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator(); // TODO: Review
+            var ee = expected.GetEnumerator();
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -2209,7 +2307,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator(); // TODO: Review
+            var ee = expected.GetEnumerator();
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -2234,7 +2332,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator(); // TODO: Review
+            var ee = expected.GetEnumerator();
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -2260,7 +2358,7 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            var ee = expected.GetEnumerator(); // TODO: Review
+            var ee = expected.GetEnumerator();
             var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
@@ -2277,14 +2375,16 @@ namespace MonoTests.System.Linq
 
         private static void IsFalse(bool b, int[] data)
         {
-            if (b)
+            if (!b)
             {
-                Debug.WriteLine(data.Contains(0));
-                const object O = null;
-                GC.KeepAlive(O.ToString());
-                Assert.IsFalse(true);
+                // Console.WriteLine ("HIT!");
+                return;
             }
-            //Console.WriteLine ("HIT!");
+
+            Debug.WriteLine(data.Contains(0));
+            const object o = null;
+            GC.KeepAlive(o.ToString());
+            Assert.IsFalse(true);
         }
 
         private class BigEnumerable : IEnumerable<int>
@@ -2307,7 +2407,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private class BigEnumerator : IEnumerator<int>
+        private sealed class BigEnumerator : IEnumerator<int>
         {
             private readonly BigEnumerable _parent;
             private ulong _current;
@@ -2346,10 +2446,10 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private class Data
+        private sealed class Data
         {
+            public readonly int Number;
             public readonly string String;
-            public int Number;
 
             public Data(int number, string str)
             {

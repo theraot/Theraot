@@ -97,7 +97,6 @@ namespace System.Threading.Tasks
         /// <param name="scheduler">A task scheduler under which the task will run.</param>
         internal Task(Delegate action, object? state, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
-#pragma warning disable IDE0016 // Usar expresión "throw"
             if (action == null)
             {
                 throw new ArgumentNullException(nameof(action));
@@ -107,7 +106,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
-#pragma warning restore IDE0016 // Usar expresión "throw"
+
             Contract.EndContractBlock();
             // This is readonly, and so must be set in the constructor
             // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
@@ -727,7 +726,6 @@ namespace System.Threading.Tasks
 
         private void PrivateWait(CancellationToken cancellationToken, bool throwIfExceptional)
         {
-            // TODO: Review performance
             var done = false;
             var spinWait = new SpinWait();
             while (!done)

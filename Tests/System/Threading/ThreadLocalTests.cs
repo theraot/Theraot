@@ -70,23 +70,29 @@ namespace MonoTests.System.Threading
         [Test]
         public void DisposedOnIsValueCreatedTest()
         {
-            Assert.Throws<ObjectDisposedException>(() =>
-            {
-                var tl = new ThreadLocal<int>();
-                tl.Dispose();
-                GC.KeepAlive(tl.IsValueCreated);
-            });
+            Assert.Throws<ObjectDisposedException>
+            (
+                () =>
+                {
+                    var tl = new ThreadLocal<int>();
+                    tl.Dispose();
+                    GC.KeepAlive(tl.IsValueCreated);
+                }
+            );
         }
 
         [Test]
         public void DisposedOnValueTest()
         {
-            Assert.Throws<ObjectDisposedException>(() =>
-            {
-                var tl = new ThreadLocal<int>();
-                tl.Dispose();
-                GC.KeepAlive(tl.Value);
-            });
+            Assert.Throws<ObjectDisposedException>
+            (
+                () =>
+                {
+                    var tl = new ThreadLocal<int>();
+                    tl.Dispose();
+                    GC.KeepAlive(tl.Value);
+                }
+            );
         }
 
         [Test]
@@ -95,11 +101,14 @@ namespace MonoTests.System.Threading
         public void InitializeThrowingTest()
         {
             var callTime = 0;
-            _threadLocal = new ThreadLocal<int>(() =>
-            {
-                Interlocked.Increment(ref callTime);
-                throw new ApplicationException("foo");
-            });
+            _threadLocal = new ThreadLocal<int>
+            (
+                () =>
+                {
+                    Interlocked.Increment(ref callTime);
+                    throw new ApplicationException("foo");
+                }
+            );
 
             Exception exception = null;
 
@@ -135,15 +144,18 @@ namespace MonoTests.System.Threading
 #if LESSTHAN_NET40
 
         [Test]
-        [Category("NotDotNet")] // nunit results in stack overflow
+        [Category("NotDotNet")] // nUnit results in stack overflow
         [Ignore("Not working")]
         public void MultipleReferenceToValueTest()
         {
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
-                GC.KeepAlive(_threadLocal.Value);
-            });
+            Assert.Throws<InvalidOperationException>
+            (
+                () =>
+                {
+                    _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
+                    GC.KeepAlive(_threadLocal.Value);
+                }
+            );
         }
 
 #endif
@@ -152,35 +164,42 @@ namespace MonoTests.System.Threading
         public void PerThreadException()
         {
             var callTime = 0;
-            _threadLocal = new ThreadLocal<int>(() =>
-            {
-                if (callTime == 1)
+            _threadLocal = new ThreadLocal<int>
+            (
+                () =>
                 {
-                    throw new ApplicationException("foo");
-                }
+                    if (callTime == 1)
+                    {
+                        throw new ApplicationException("foo");
+                    }
 
-                Interlocked.Increment(ref callTime);
-                return 43;
-            });
+                    Interlocked.Increment(ref callTime);
+                    return 43;
+                }
+            );
 
             Exception exception = null;
 
             var foo = _threadLocal.Value;
             var threadValueCreated = false;
             Assert.AreEqual(43, foo, "#3");
-            var t = new Thread(o =>
-            {
-                try
+            var t = new Thread
+            (
+                o =>
                 {
-                    GC.KeepAlive(_threadLocal.Value);
+                    try
+                    {
+                        GC.KeepAlive(_threadLocal.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        exception = e;
+                    }
+
+                    // should be false and not throw
+                    threadValueCreated = _threadLocal.IsValueCreated;
                 }
-                catch (Exception e)
-                {
-                    exception = e;
-                }
-                // should be false and not throw
-                threadValueCreated = _threadLocal.IsValueCreated;
-            });
+            );
             t.Start();
             t.Join();
             Assert.AreEqual(false, threadValueCreated, "#4");
@@ -192,11 +211,14 @@ namespace MonoTests.System.Threading
         public void Setup()
         {
             _nTimes = 0;
-            _threadLocal = new ThreadLocal<int>(() =>
-            {
-                Interlocked.Increment(ref _nTimes);
-                return 42;
-            });
+            _threadLocal = new ThreadLocal<int>
+            (
+                () =>
+                {
+                    Interlocked.Increment(ref _nTimes);
+                    return 42;
+                }
+            );
         }
 
         [Test]
@@ -210,11 +232,14 @@ namespace MonoTests.System.Threading
         {
             AssertThreadLocal();
 
-            var t = new Thread(o =>
-            {
-                Interlocked.Decrement(ref _nTimes);
-                AssertThreadLocal();
-            });
+            var t = new Thread
+            (
+                o =>
+                {
+                    Interlocked.Decrement(ref _nTimes);
+                    AssertThreadLocal();
+                }
+            );
             t.Start();
             t.Join();
         }
@@ -230,11 +255,13 @@ namespace MonoTests.System.Threading
 
         private void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposing)
             {
-                _threadLocal.Dispose();
-                GC.SuppressFinalize(this);
+                return;
             }
+
+            _threadLocal.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

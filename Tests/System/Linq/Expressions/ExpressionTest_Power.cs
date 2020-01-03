@@ -21,8 +21,8 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
-//		Miguel de Icaza <miguel@novell.com>
+//      Federico Di Gregorio <fog@initd.org>
+//      Miguel de Icaza <miguel@novell.com>
 
 using System;
 using System.Linq.Expressions;

@@ -2,7 +2,7 @@
 extern alias nunitlinq;
 #endif
 
-#pragma warning disable IDE1006 // Estilos de nombres
+#pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable RECS0014 // If all fields, properties and methods members are static, the class can be made static.
 
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -24,8 +24,8 @@ extern alias nunitlinq;
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //
 // Authors:
-//		Federico Di Gregorio <fog@initd.org>
-//		Jb Evain <jbevain@novell.com>
+//      Federico Di Gregorio <fog@initd.org>
+//      Jb Evain <jbevain@novell.com>
 
 using System;
 using System.Linq;
@@ -33,7 +33,8 @@ using System.Linq.Expressions;
 using Theraot;
 using NUnit.Framework;
 
-#if TARGETS_NETCORE || TARGETS_NETSTANDARD
+#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
 using System.Reflection;
 
 #endif
@@ -46,9 +47,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndAlsoBoolItem()
         {
-            const string Name = "i";
+            const string name = "i";
 
-            var parameter = Expression.Parameter(typeof(Item<bool>), Name);
+            var parameter = Expression.Parameter(typeof(Item<bool>), name);
             var compiled = Expression.Lambda<Func<Item<bool>, bool>>
             (
                 Expression.AndAlso
@@ -115,9 +116,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndAlsoNullableBoolItem()
         {
-            const string Name = "i";
+            const string name = "i";
 
-            var parameter = Expression.Parameter(typeof(Item<bool?>), Name);
+            var parameter = Expression.Parameter(typeof(Item<bool?>), name);
             var compiled = Expression.Lambda<Func<Item<bool?>, bool?>>
             (
                 Expression.AndAlso
@@ -152,13 +153,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndAlsoTest()
         {
-            const string NameLeft = "a";
-            const string NameRight = "b";
+            const string nameLeft = "a";
+            const string nameRight = "b";
 
             var type = typeof(bool);
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
             var lambda = Expression.Lambda<Func<bool, bool, bool>>(Expression.AndAlso(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
             var binaryExpression = lambda.Body as BinaryExpression;
@@ -178,13 +179,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void AndAlsoTestNullable()
         {
-            const string NameLeft = "a";
-            const string NameRight = "b";
+            const string nameLeft = "a";
+            const string nameRight = "b";
 
             var type = typeof(bool?);
 
-            var parameterLeft = Expression.Parameter(type, NameLeft);
-            var parameterRight = Expression.Parameter(type, NameRight);
+            var parameterLeft = Expression.Parameter(type, nameLeft);
+            var parameterRight = Expression.Parameter(type, nameRight);
             var lambda = Expression.Lambda<Func<bool?, bool?, bool?>>(Expression.AndAlso(parameterLeft, parameterRight), parameterLeft, parameterRight);
 
             var binaryExpression = lambda.Body as BinaryExpression;
@@ -231,9 +232,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void Connect350487()
         {
-            const string Name = "b";
+            const string name = "b";
 
-            var parameter = Expression.Parameter(typeof(B), Name);
+            var parameter = Expression.Parameter(typeof(B), name);
             var compiled = Expression.Lambda<Func<B, A>>
             (
                 Expression.AndAlso(parameter, parameter),
@@ -252,15 +253,15 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void IncompleteUserDefinedAndAlso()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             Assert.Throws<ArgumentException>
             (
                 () =>
                 {
-                    var parameterLeft = Expression.Parameter(typeof(Incomplete), NameLeft);
-                    var parameterRight = Expression.Parameter(typeof(Incomplete), NameRight);
+                    var parameterLeft = Expression.Parameter(typeof(Incomplete), nameLeft);
+                    var parameterRight = Expression.Parameter(typeof(Incomplete), nameRight);
 
                     var method = typeof(Incomplete).GetMethod("op_BitwiseAnd");
 
@@ -290,8 +291,8 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedAndAlso()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             var input = new[]
             {
@@ -303,8 +304,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var instances = input.Select(value => (value.Left, value.Right, Result: value.Left & value.Right));
 
-            var parameterLeft = Expression.Parameter(typeof(Slot), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(Slot), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(Slot), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(Slot), nameRight);
 
             var method = typeof(Slot).GetMethod("op_BitwiseAnd");
 
@@ -324,8 +325,8 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedAndAlsoLiftedToNull()
         {
-            const string NameLeft = "l";
-            const string NameRight = "r";
+            const string nameLeft = "l";
+            const string nameRight = "r";
 
             var input = new (int? Left, int? Right)[]
             {
@@ -340,8 +341,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var instances = input.Select(value => (value.Left, value.Right, Result: value.Left & value.Right));
 
-            var parameterLeft = Expression.Parameter(typeof(Slot?), NameLeft);
-            var parameterRight = Expression.Parameter(typeof(Slot?), NameRight);
+            var parameterLeft = Expression.Parameter(typeof(Slot?), nameLeft);
+            var parameterRight = Expression.Parameter(typeof(Slot?), nameRight);
 
             var method = typeof(Slot).GetMethod("op_BitwiseAnd");
 
@@ -369,9 +370,9 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedAndAlsoShortCircuit()
         {
-            const string Name = "i";
+            const string name = "i";
 
-            var parameter = Expression.Parameter(typeof(Item<Slot>), Name);
+            var parameter = Expression.Parameter(typeof(Item<Slot>), name);
             var compiled = Expression.Lambda<Func<Item<Slot>, Slot>>
             (
                 Expression.AndAlso
@@ -419,10 +420,10 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void UserDefinedLiftedAndAlsoShortCircuit()
         {
-            const string Name = "i";
-            const int Value = 1;
+            const string name = "i";
+            const int value = 1;
 
-            var parameter = Expression.Parameter(typeof(Item<Slot?>), Name);
+            var parameter = Expression.Parameter(typeof(Item<Slot?>), name);
             var compiled = Expression.Lambda<Func<Item<Slot?>, Slot?>>
             (
                 Expression.AndAlso
@@ -433,7 +434,7 @@ namespace MonoTests.System.Linq.Expressions
                 parameter
             ).Compile();
 
-            var item = new Item<Slot?>(null, new Slot(Value));
+            var item = new Item<Slot?>(null, new Slot(value));
             Assert.AreEqual(null, compiled(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
@@ -441,46 +442,46 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Incomplete
         {
-            public readonly int Value;
+            private readonly int _value;
 
-            public Incomplete(int val)
+            private Incomplete(int val)
             {
-                Value = val;
+                _value = val;
             }
 
             public static Incomplete operator &(Incomplete a, Incomplete b)
             {
-                return new Incomplete(a.Value & b.Value);
+                return new Incomplete(a._value & b._value);
             }
         }
 
         private struct Slot
         {
-            public readonly int Value;
+            private readonly int _value;
 
             public Slot(int val)
             {
-                Value = val;
+                _value = val;
             }
 
             public static Slot operator &(Slot a, Slot b)
             {
-                return new Slot(a.Value & b.Value);
+                return new Slot(a._value & b._value);
             }
 
             public static bool operator false(Slot a)
             {
-                return a.Value == 0;
+                return a._value == 0;
             }
 
             public static bool operator true(Slot a)
             {
-                return a.Value != 0;
+                return a._value != 0;
             }
 
             public override string ToString()
             {
-                return Value.ToString();
+                return _value.ToString();
             }
         }
 
@@ -499,7 +500,7 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        private class B : A
+        private sealed class B : A
         {
             // ReSharper disable once UnusedMember.Local
             public static bool op_False(B x)

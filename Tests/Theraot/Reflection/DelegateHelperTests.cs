@@ -3,9 +3,14 @@ extern alias nunitlinq;
 #endif
 
 using System.Collections.Generic;
-using System.Reflection;
 using NUnit.Framework;
 using Theraot.Reflection;
+
+#if LESSTHAN_NET45 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+
+using System.Reflection;
+
+#endif
 
 namespace Tests.Theraot.Reflection
 {

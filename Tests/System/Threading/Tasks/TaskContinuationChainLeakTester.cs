@@ -10,7 +10,7 @@ namespace MonoTests.System.Threading.Tasks
         private int _counter;
         private WeakReference<Task> _headTaskWeakRef;
         private volatile bool _stop;
-        public ManualResetEvent TasksPilledUp { get; } = new ManualResetEvent(false);
+        public ManualResetEvent TasksPiledUp { get; } = new ManualResetEvent(false);
 
         public void Run()
         {
@@ -26,7 +26,7 @@ namespace MonoTests.System.Threading.Tasks
 
             if (++_counter == 50)
             {
-                TasksPilledUp.Set();
+                TasksPiledUp.Set();
             }
 
             return Task.Factory.StartNew(DummyWorker).ContinueWith(task => StartNewTask());
@@ -42,7 +42,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.IsFalse(_headTaskWeakRef.TryGetTarget(out _));
         }
 
-        private void DummyWorker()
+        private static void DummyWorker()
         {
             Thread.Sleep(0);
         }

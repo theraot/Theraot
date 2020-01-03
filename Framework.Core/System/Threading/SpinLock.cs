@@ -42,9 +42,7 @@ namespace System.Threading
         {
             if (lockTaken)
             {
-#pragma warning disable IDE0059 // Asignación innecesaria de un valor
                 lockTaken = false;
-#pragma warning restore IDE0059 // Asignación innecesaria de un valor
                 throw new ArgumentException(string.Empty);
             }
 
@@ -111,9 +109,7 @@ namespace System.Threading
         {
             if (lockTaken)
             {
-#pragma warning disable IDE0059 // Asignación innecesaria de un valor
                 lockTaken = false;
-#pragma warning restore IDE0059 // Asignación innecesaria de un valor
                 throw new ArgumentException(string.Empty);
             }
 

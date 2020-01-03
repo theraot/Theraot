@@ -246,25 +246,48 @@ namespace MonoTests.System.Linq
         public void TestOrderBy()
         {
             int[] array = { 14, 53, 3, 9, 11, 14, 5, 32, 2 };
-            var q = from i in array
-                    orderby i
-                    select i;
+            var q =
+                from i in array
+                orderby i
+                select i;
             AssertIsOrdered(q);
         }
 
         [Test]
         public void TestOrderByAgeAscendingTheByNameDescending()
         {
-            var q = from b in CreateBazCollection()
-                    orderby b.Age ascending, b.Name descending
-                    select b;
+            var q =
+                from b in CreateBazCollection()
+                orderby b.Age ascending, b.Name descending
+                select b;
 
-            var expected = new[] {
-                new Baz ("jb", 7),
-                new Baz ("ana", 20),
-                new Baz ("ro", 25),
-                new Baz ("jb", 25),
-                new Baz ("reg", 28),
+            var expected = new[]
+            {
+                new Baz
+                (
+                    "jb",
+                    7
+                ),
+                new Baz
+                (
+                    "ana",
+                    20
+                ),
+                new Baz
+                (
+                    "ro",
+                    25
+                ),
+                new Baz
+                (
+                    "jb",
+                    25
+                ),
+                new Baz
+                (
+                    "reg",
+                    28
+                )
             };
 
             AssertAreSame(expected, q);
@@ -273,30 +296,112 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestOrderByDescendingStability()
         {
-            var data = new[] {
-                new { Key = true, Value = 1},
-                                                new { Key = false, Value = 2},
-                new { Key = true, Value = 3},
-                                                new { Key = false, Value = 4},
-                new { Key = true, Value = 5},
-                                                new { Key = false, Value = 6},
-                new { Key = true, Value = 7},
-                                                new { Key = false, Value = 8},
-                new { Key = true, Value = 9},
-                                                new { Key = false, Value = 10},
+            var data = new[]
+            {
+                new
+                {
+                    Key = true,
+                    Value = 1
+                },
+                new
+                {
+                    Key = false,
+                    Value = 2
+                },
+                new
+                {
+                    Key = true,
+                    Value = 3
+                },
+                new
+                {
+                    Key = false,
+                    Value = 4
+                },
+                new
+                {
+                    Key = true,
+                    Value = 5
+                },
+                new
+                {
+                    Key = false,
+                    Value = 6
+                },
+                new
+                {
+                    Key = true,
+                    Value = 7
+                },
+                new
+                {
+                    Key = false,
+                    Value = 8
+                },
+                new
+                {
+                    Key = true,
+                    Value = 9
+                },
+                new
+                {
+                    Key = false,
+                    Value = 10
+                }
             };
 
-            var expected = new[] {
-                new { Key = true, Value = 1},
-                new { Key = true, Value = 3},
-                new { Key = true, Value = 5},
-                new { Key = true, Value = 7},
-                new { Key = true, Value = 9},
-                                                new { Key = false, Value = 2},
-                                                new { Key = false, Value = 4},
-                                                new { Key = false, Value = 6},
-                                                new { Key = false, Value = 8},
-                                                new { Key = false, Value = 10},
+            var expected = new[]
+            {
+                new
+                {
+                    Key = true,
+                    Value = 1
+                },
+                new
+                {
+                    Key = true,
+                    Value = 3
+                },
+                new
+                {
+                    Key = true,
+                    Value = 5
+                },
+                new
+                {
+                    Key = true,
+                    Value = 7
+                },
+                new
+                {
+                    Key = true,
+                    Value = 9
+                },
+                new
+                {
+                    Key = false,
+                    Value = 2
+                },
+                new
+                {
+                    Key = false,
+                    Value = 4
+                },
+                new
+                {
+                    Key = false,
+                    Value = 6
+                },
+                new
+                {
+                    Key = false,
+                    Value = 8
+                },
+                new
+                {
+                    Key = false,
+                    Value = 10
+                }
             };
 
             AssertAreSame(expected, data.OrderByDescending(x => x.Key));
@@ -305,9 +410,10 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestOrderByIdDescendingThenByNameAscending()
         {
-            var q = from d in CreateData()
-                    orderby d.Id descending, d.Name ascending
-                    select d;
+            var q =
+                from d in CreateData()
+                orderby d.Id descending, d.Name ascending
+                select d;
 
             var list = new List<Data>(q);
 
@@ -482,6 +588,7 @@ namespace MonoTests.System.Linq
                 {
                     break;
                 }
+
                 yield return (byte)b;
             }
         }
@@ -522,31 +629,49 @@ namespace MonoTests.System.Linq
 
         private static IEnumerable<Baz> CreateBazCollection()
         {
-            return new[] {
-                new Baz ("jb", 25),
-                new Baz ("ana", 20),
-                new Baz ("reg", 28),
-                new Baz ("ro", 25),
-                new Baz ("jb", 7),
+            return new[]
+            {
+                new Baz("jb", 25),
+                new Baz("ana", 20),
+                new Baz("reg", 28),
+                new Baz("ro", 25),
+                new Baz("jb", 7)
             };
         }
 
-        private IEnumerable<Data> CreateData()
+        private static IEnumerable<Data> CreateData()
         {
-            return new[] {
-                new Data { Id = 10, Name = "bcd" },
-                new Data { Id = 20, Name = "Abcd" },
-                new Data { Id = 20, Name = "Ab" },
-                new Data { Id = 10, Name = "Zyx" },
+            return new[]
+            {
+                new Data
+                {
+                    Id = 10,
+                    Name = "bcd"
+                },
+                new Data
+                {
+                    Id = 20,
+                    Name = "Abcd"
+                },
+                new Data
+                {
+                    Id = 20,
+                    Name = "Ab"
+                },
+                new Data
+                {
+                    Id = 10,
+                    Name = "Zyx"
+                }
             };
         }
 
-        private class Bar : Foo
+        private sealed class Bar : Foo
         {
             // Empty
         }
 
-        private class Baz
+        private sealed class Baz
         {
             private readonly int _age;
             private readonly string _name;
@@ -578,6 +703,7 @@ namespace MonoTests.System.Linq
                 {
                     return false;
                 }
+
                 return b.Age == Age && b.Name == Name;
             }
 
@@ -592,7 +718,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private class Bingo : IEnumerable<int>, IEnumerable<string>
+        private sealed class Bingo : IEnumerable<int>, IEnumerable<string>
         {
             IEnumerator<int> IEnumerable<int>.GetEnumerator()
             {
@@ -612,7 +738,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        private class Data
+        private sealed class Data
         {
             public int Id { get; set; }
 

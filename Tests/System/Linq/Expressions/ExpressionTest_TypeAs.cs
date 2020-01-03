@@ -61,13 +61,13 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void CompiledTypeAs()
         {
-            var asbar = CreateTypeAs<Bar>();
-            var asbaz = CreateTypeAs<Baz>();
+            var asBar = CreateTypeAs<Bar>();
+            var asBaz = CreateTypeAs<Baz>();
 
-            Assert.IsNotNull(asbar(new Bar()));
-            Assert.IsNull(asbar(new Foo()));
-            Assert.IsNotNull(asbar(new Baz()));
-            Assert.IsNull(asbaz(new Bar()));
+            Assert.IsNotNull(asBar(new Bar()));
+            Assert.IsNull(asBar(new Foo()));
+            Assert.IsNotNull(asBar(new Baz()));
+            Assert.IsNull(asBaz(new Bar()));
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace MonoTests.System.Linq.Expressions
             // Empty
         }
 
-        private class Baz : Bar
+        private sealed class Baz : Bar
         {
             // Empty
         }

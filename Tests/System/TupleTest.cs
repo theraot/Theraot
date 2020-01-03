@@ -45,22 +45,28 @@ namespace MonoTests.System
         [Test]
         public void TupleWithRest_Invalid()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var tuple = new Tuple<int, int, int, int, int, int, int, int>(1, 2, 3, 4, 5, 6, 7, 8);
-                GC.KeepAlive(tuple);
-            });
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var tuple = new Tuple<int, int, int, int, int, int, int, int>(1, 2, 3, 4, 5, 6, 7, 8);
+                    GC.KeepAlive(tuple);
+                }
+            );
         }
 
         [Test]
         public void TupleWithRest_InvalidDueToNull()
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                var tuple = new Tuple<int, object, int, int, int, int, int, Tuple<string, string>>(1, null, 3, 4, 5, 6,
-                    7, null);
-                GC.KeepAlive(tuple);
-            });
+            Assert.Throws<ArgumentException>
+            (
+                () =>
+                {
+                    var tuple = new Tuple<int, object, int, int, int, int, int, Tuple<string, string>>(1, null, 3, 4, 5, 6,
+                        7, null);
+                    GC.KeepAlive(tuple);
+                }
+            );
         }
     }
 }

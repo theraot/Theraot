@@ -28,7 +28,6 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
@@ -379,7 +378,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             }
         }
 
-        private class DumbClass : IEquatable<DumbClass>
+        private sealed class DumbClass : IEquatable<DumbClass>
         {
             private readonly int _foo;
 

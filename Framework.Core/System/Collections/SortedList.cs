@@ -4,6 +4,7 @@
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
+// ReSharper disable VirtualMemberCallInConstructor
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -178,6 +179,7 @@ namespace System.Collections
             {
                 _values[i] = d[_keys[i]];
             }
+
             _size = d.Count;
         }
 
@@ -197,27 +199,30 @@ namespace System.Collections
                     throw new ArgumentOutOfRangeException(nameof(value), "capacity was less than the current size.");
                 }
 
-                if (value != _keys.Length)
+                if (value == _keys.Length)
                 {
-                    if (value > 0)
+                    return;
+                }
+
+                if (value > 0)
+                {
+                    var newKeys = new object[value];
+                    var newValues = new object[value];
+                    if (_size > 0)
                     {
-                        var newKeys = new object[value];
-                        var newValues = new object[value];
-                        if (_size > 0)
-                        {
-                            Array.Copy(_keys, 0, newKeys, 0, _size);
-                            Array.Copy(_values, 0, newValues, 0, _size);
-                        }
-                        _keys = newKeys;
-                        _values = newValues;
+                        Array.Copy(_keys, 0, newKeys, 0, _size);
+                        Array.Copy(_values, 0, newValues, 0, _size);
                     }
-                    else
-                    {
-                        // size can only be zero here.
-                        Debug.Assert(_size == 0, "Size is not zero");
-                        _keys = ArrayEx.Empty<object>();
-                        _values = ArrayEx.Empty<object>();
-                    }
+
+                    _keys = newKeys;
+                    _values = newValues;
+                }
+                else
+                {
+                    // size can only be zero here.
+                    Debug.Assert(_size == 0, "Size is not zero");
+                    _keys = ArrayEx.Empty<object>();
+                    _values = ArrayEx.Empty<object>();
                 }
             }
         }
@@ -278,6 +283,7 @@ namespace System.Collections
                     _version++;
                     return;
                 }
+
                 Insert(~i, key, value);
             }
         }
@@ -452,7 +458,7 @@ namespace System.Collections
         //
         public virtual IList GetKeyList()
         {
-            return _keyList ?? (_keyList = new KeyList(this));
+            return _keyList ??= new KeyList(this);
         }
 
         // Returns an IList representing the values of this sorted list. The
@@ -468,7 +474,7 @@ namespace System.Collections
         //
         public virtual IList GetValueList()
         {
-            return _valueList ?? (_valueList = new ValueList(this));
+            return _valueList ??= new ValueList(this);
         }
 
         // Returns the index of the entry with a given key in this sorted list. The
@@ -529,6 +535,7 @@ namespace System.Collections
                 Array.Copy(_keys, index + 1, _keys, index, _size - index);
                 Array.Copy(_values, index + 1, _values, index, _size - index);
             }
+
             _keys[_size] = null;
             _values[_size] = null;
             _version++;
@@ -563,6 +570,7 @@ namespace System.Collections
             {
                 array[i] = new KeyValuePairs(_keys[i], _values[i]);
             }
+
             return array;
         }
 
@@ -604,6 +612,7 @@ namespace System.Collections
                 Array.Copy(_keys, index, _keys, index + 1, _size - index);
                 Array.Copy(_values, index, _values, index + 1, _size - index);
             }
+
             _keys[index] = key;
             _values[index] = value;
             _size++;
@@ -686,8 +695,14 @@ namespace System.Collections
                     throw new ArgumentNullException(nameof(value), "Key cannot be null.");
                 }
 
-                var i = Array.BinarySearch(_sortedList._keys, 0,
-                                           _sortedList.Count, value, _sortedList._comparer);
+                var i = Array.BinarySearch
+                (
+                    _sortedList._keys,
+                    0,
+                    _sortedList.Count,
+                    value,
+                    _sortedList._comparer
+                );
                 if (i >= 0)
                 {
                     return i;
@@ -752,14 +767,17 @@ namespace System.Collections
                     {
                         throw new InvalidOperationException("Enumeration has either not started or has already finished.");
                     }
+
                     if (_getObjectRetType == Keys)
                     {
                         return _key;
                     }
+
                     if (_getObjectRetType == Values)
                     {
                         return _value;
                     }
+
                     return new DictionaryEntry(_key, _value);
                 }
             }
@@ -835,6 +853,7 @@ namespace System.Collections
                     _current = true;
                     return true;
                 }
+
                 _key = null;
                 _value = null;
                 _current = false;
@@ -856,46 +875,51 @@ namespace System.Collections
         }
 
         [Serializable]
-        private class SyncSortedList : SortedList
+        private sealed class SyncSortedList : SortedList
         {
             private readonly SortedList _list;
-            private readonly object _root;
 
             internal SyncSortedList(SortedList list)
             {
                 _list = list;
-                _root = list.SyncRoot;
+                SyncRoot = list.SyncRoot;
                 IsReadOnly = list.IsReadOnly;
                 IsFixedSize = list.IsFixedSize;
             }
 
             public override int Capacity
             {
-                get { lock (_root) { return _list.Capacity; } }
+                get
+                {
+                    lock (SyncRoot) { return _list.Capacity; }
+                }
             }
 
             public override int Count
             {
-                get { lock (_root) { return _list.Count; } }
+                get
+                {
+                    lock (SyncRoot) { return _list.Count; }
+                }
             }
 
             public override bool IsFixedSize { get; }
             public override bool IsReadOnly { get; }
             public override bool IsSynchronized => true;
-            public override object SyncRoot => _root;
+            public override object SyncRoot { get; }
 
             public override object? this[object key]
             {
                 get
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         return _list[key];
                     }
                 }
                 set
                 {
-                    lock (_root)
+                    lock (SyncRoot)
                     {
                         _list[key] = value;
                     }
@@ -904,7 +928,7 @@ namespace System.Collections
 
             public override void Add(object key, object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Add(key, value);
                 }
@@ -912,7 +936,7 @@ namespace System.Collections
 
             public override void Clear()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Clear();
                 }
@@ -920,7 +944,7 @@ namespace System.Collections
 
             public override object Clone()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.Clone();
                 }
@@ -928,7 +952,7 @@ namespace System.Collections
 
             public override bool Contains(object key)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.Contains(key);
                 }
@@ -936,7 +960,7 @@ namespace System.Collections
 
             public override bool ContainsKey(object key)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.ContainsKey(key);
                 }
@@ -944,7 +968,7 @@ namespace System.Collections
 
             public override bool ContainsValue(object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.ContainsValue(value);
                 }
@@ -952,7 +976,7 @@ namespace System.Collections
 
             public override void CopyTo(Array array, int arrayIndex)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.CopyTo(array, arrayIndex);
                 }
@@ -960,7 +984,7 @@ namespace System.Collections
 
             public override object? GetByIndex(int index)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetByIndex(index);
                 }
@@ -968,7 +992,7 @@ namespace System.Collections
 
             public override IDictionaryEnumerator GetEnumerator()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetEnumerator();
                 }
@@ -976,7 +1000,7 @@ namespace System.Collections
 
             public override object? GetKey(int index)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetKey(index);
                 }
@@ -984,7 +1008,7 @@ namespace System.Collections
 
             public override IList GetKeyList()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetKeyList();
                 }
@@ -992,7 +1016,7 @@ namespace System.Collections
 
             public override IList GetValueList()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.GetValueList();
                 }
@@ -1005,7 +1029,7 @@ namespace System.Collections
                     throw new ArgumentNullException(nameof(key), "Key cannot be null.");
                 }
 
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.IndexOfKey(key);
                 }
@@ -1013,7 +1037,7 @@ namespace System.Collections
 
             public override int IndexOfValue(object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     return _list.IndexOfValue(value);
                 }
@@ -1021,7 +1045,7 @@ namespace System.Collections
 
             public override void Remove(object key)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.Remove(key);
                 }
@@ -1029,7 +1053,7 @@ namespace System.Collections
 
             public override void RemoveAt(int index)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.RemoveAt(index);
                 }
@@ -1037,7 +1061,7 @@ namespace System.Collections
 
             public override void SetByIndex(int index, object value)
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.SetByIndex(index, value);
                 }
@@ -1045,7 +1069,7 @@ namespace System.Collections
 
             public override void TrimToSize()
             {
-                lock (_root)
+                lock (SyncRoot)
                 {
                     _list.TrimToSize();
                 }
