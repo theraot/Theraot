@@ -521,6 +521,7 @@ namespace MonoTests.System.Threading.Tasks
 #endif
 
         [Test]
+        [Category("RaceCondition")]
         public void DoubleTimedOutWaitTest()
         {
             // Do not dispose Task
