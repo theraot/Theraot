@@ -105,7 +105,7 @@ namespace Theraot.Threading
 
         IList<T> IThreadLocal<T>.Values => throw new InvalidOperationException();
 
-        internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default;
+        internal T ValueForDebugDisplay => TryGetValue(out var target) ? target : default!;
 
         [DebuggerNonUserCode]
         public void Dispose()

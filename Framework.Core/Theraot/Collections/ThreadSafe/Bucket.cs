@@ -49,7 +49,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
         {
-            return _bucketCore.EnumerateRange(indexFrom, indexTo).Select(value => value == BucketHelper.Null ? default : (T)value);
+            return _bucketCore.EnumerateRange(indexFrom, indexTo).Select(value => value == BucketHelper.Null ? default! : (T)value);
         }
 
         public bool Exchange(int index, T item, [MaybeNullWhen(true)] out T previous)
@@ -83,7 +83,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var value in _bucketCore)
             {
-                yield return value == BucketHelper.Null ? default : (T)value;
+                yield return value == BucketHelper.Null ? default! : (T)value;
             }
         }
 
@@ -198,7 +198,7 @@ namespace Theraot.Collections.ThreadSafe
                         return false;
                     }
 
-                    var comparisonItem = found == BucketHelper.Null ? default : (T)found;
+                    var comparisonItem = found == BucketHelper.Null ? default! : (T)found;
                     if (!check(comparisonItem))
                     {
                         return false;
@@ -281,7 +281,7 @@ namespace Theraot.Collections.ThreadSafe
                         return true;
                     }
 
-                    var comparisonItem = found == BucketHelper.Null ? default : (T)found;
+                    var comparisonItem = found == BucketHelper.Null ? default! : (T)found;
                     if (!check(comparisonItem))
                     {
                         return true;
@@ -316,7 +316,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 foreach (var value in _bucketCore)
                 {
-                    var castValue = value == BucketHelper.Null ? default : (T)value;
+                    var castValue = value == BucketHelper.Null ? default! : (T)value;
                     if (check(castValue))
                     {
                         yield return castValue;
@@ -339,7 +339,7 @@ namespace Theraot.Collections.ThreadSafe
                 var index = 0;
                 foreach (var value in _bucketCore)
                 {
-                    var castValue = value == BucketHelper.Null ? default : (T)value;
+                    var castValue = value == BucketHelper.Null ? default! : (T)value;
                     if (!check(castValue))
                     {
                         continue;

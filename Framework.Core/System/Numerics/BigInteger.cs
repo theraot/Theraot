@@ -8,7 +8,7 @@ namespace System.Numerics
 {
     /// <summary>Represents an arbitrarily large signed integer.</summary>
     [Serializable]
-    public partial struct BigInteger : IFormattable, IComparable, IComparable<BigInteger>, IEquatable<BigInteger>
+    public readonly partial struct BigInteger : IFormattable, IComparable, IComparable<BigInteger>, IEquatable<BigInteger>
     {
         internal readonly uint[]? InternalBits;
         internal readonly int InternalSign;

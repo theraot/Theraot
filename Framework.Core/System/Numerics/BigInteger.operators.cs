@@ -6,7 +6,7 @@ using Theraot.Core;
 
 namespace System.Numerics
 {
-    public partial struct BigInteger
+    public readonly partial struct BigInteger
     {
         public static explicit operator BigInteger(float value)
         {

@@ -15,7 +15,7 @@ namespace System.Runtime.CompilerServices
     /// <remarks>
     ///     This type is intended for compiler use only.
     /// </remarks>
-    public struct TaskAwaiter : ICriticalNotifyCompletion
+    public readonly struct TaskAwaiter : ICriticalNotifyCompletion
     {
         /// <summary>
         ///     An empty array to use with MethodInfo.Invoke.
@@ -332,7 +332,7 @@ namespace System.Runtime.CompilerServices
     /// <remarks>
     ///     This type is intended for compiler use only.
     /// </remarks>
-    public struct TaskAwaiter<TResult> : ICriticalNotifyCompletion
+    public readonly struct TaskAwaiter<TResult> : ICriticalNotifyCompletion
     {
         /// <summary>
         ///     The task being awaited.

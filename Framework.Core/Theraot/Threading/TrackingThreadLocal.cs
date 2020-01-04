@@ -52,7 +52,7 @@ namespace Theraot.Threading
 
         public T Value { get => GetValue(ThreadUniqueId.CurrentThreadId); set => SetValue(ThreadUniqueId.CurrentThreadId, value); }
 
-        T IThreadLocal<T>.ValueForDebugDisplay => TryGetValue(ThreadUniqueId.CurrentThreadId, out var target) ? target : default;
+        T IThreadLocal<T>.ValueForDebugDisplay => TryGetValue(ThreadUniqueId.CurrentThreadId, out var target) ? target : default!;
 
         public IList<T> Values
         {

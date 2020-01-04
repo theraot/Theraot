@@ -118,12 +118,12 @@ csharp_preserve_single_line_blocks = true
 # Other features
 csharp_style_prefer_index_operator = false:none
 csharp_style_prefer_range_operator = false:none
-# ReSharper 
-csharp_indent_preprocessor_region = no_indent 
-csharp_place_expr_property_on_single_line = always 
-csharp_place_field_attribute_on_same_line = never 
-csharp_place_type_constraints_on_same_line = true 
-csharp_wrap_object_and_collection_initializer_style = chop_always 
+# ReSharper
+csharp_indent_preprocessor_region = no_indent
+csharp_place_expr_property_on_single_line = always
+csharp_place_field_attribute_on_same_line = never
+csharp_place_type_constraints_on_same_line = true
+csharp_wrap_object_and_collection_initializer_style = chop_always
 csharp_wrap_multiple_type_parameter_constraints_style = chop_always
 resharper_check_namespace_highlighting = do_not_show
 resharper_heuristic_unreachable_code_highlighting = do_not_show
@@ -156,6 +156,7 @@ resharper_member_can_be_internal_highlighting = do_not_show
 resharper_redundant_lambda_signature_parentheses_highlighting = do_not_show
 resharper_missing_space_highlighting = do_not_show
 resharper_member_can_be_private_global_highlighting = do_not_show
+resharper_redundant_readonly_modifier_highlighting = do_not_show
 resharper_convert_if_statement_to_switch_statement_highlighting = hint
 resharper_loop_can_be_converted_to_query_highlighting = hint
 resharper_suggest_base_type_for_parameter_highlighting = hint
@@ -167,6 +168,8 @@ resharper_virtual_member_never_overridden_global_highlighting = hint
 resharper_unused_method_return_value_global_highlighting = hint
 resharper_class_with_virtual_members_never_inherited_global_highlighting = hint
 resharper_class_can_be_sealed_global_highlighting = hint
+# Roslyn analyzers
+dotnet_diagnostic.IDE0070.severity = silent
 ############################### 
 # VB Coding Conventions       # 
 ############################### 

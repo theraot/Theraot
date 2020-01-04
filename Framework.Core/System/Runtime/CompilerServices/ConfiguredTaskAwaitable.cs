@@ -14,7 +14,7 @@ namespace System.Runtime.CompilerServices
     /// <remarks>
     ///     This type is intended for compiler use only.
     /// </remarks>
-    public struct ConfiguredTaskAwaitable<TResult>
+    public readonly struct ConfiguredTaskAwaitable<TResult>
     {
         /// <summary>
         ///     The underlying awaitable on whose logic this awaitable relies.
@@ -50,7 +50,7 @@ namespace System.Runtime.CompilerServices
         /// <remarks>
         ///     This type is intended for compiler use only.
         /// </remarks>
-        public struct ConfiguredTaskAwaiter : ICriticalNotifyCompletion
+        public readonly struct ConfiguredTaskAwaiter : ICriticalNotifyCompletion
         {
             /// <summary>
             ///     Whether to attempt marshaling back to the original context.
@@ -145,7 +145,7 @@ namespace System.Runtime.CompilerServices
     /// <remarks>
     ///     This type is intended for compiler use only.
     /// </remarks>
-    public struct ConfiguredTaskAwaitable
+    public readonly struct ConfiguredTaskAwaitable
     {
         /// <summary>
         ///     The task being awaited.
@@ -181,7 +181,7 @@ namespace System.Runtime.CompilerServices
         /// <remarks>
         ///     This type is intended for compiler use only.
         /// </remarks>
-        public struct ConfiguredTaskAwaiter : ICriticalNotifyCompletion
+        public readonly struct ConfiguredTaskAwaiter : ICriticalNotifyCompletion
         {
             /// <summary>
             ///     Whether to attempt marshaling back to the original context.

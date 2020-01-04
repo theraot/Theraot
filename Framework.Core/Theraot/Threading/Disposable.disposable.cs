@@ -79,7 +79,7 @@ namespace Theraot.Threading
         {
             if (_disposeStatus == -1)
             {
-                return whenDisposed == null ? default : whenDisposed.Invoke();
+                return whenDisposed == null ? default! : whenDisposed.Invoke();
             }
 
             if (whenNotDisposed == null)
@@ -89,7 +89,7 @@ namespace Theraot.Threading
 
             if (!ThreadingHelper.SpinWaitRelativeSet(ref _disposeStatus, 1, -1))
             {
-                return whenDisposed == null ? default : whenDisposed.Invoke();
+                return whenDisposed == null ? default! : whenDisposed.Invoke();
             }
 
             try

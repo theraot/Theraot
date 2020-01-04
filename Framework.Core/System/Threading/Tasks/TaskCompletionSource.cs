@@ -384,7 +384,7 @@ namespace System.Threading.Tasks
         /// <exception cref="ObjectDisposedException">The <see cref="Task" /> was disposed.</exception>
         public bool TrySetResult([AllowNull] TResult result)
         {
-            var value = _task.Value.TrySetResult(result);
+            var value = _task.Value.TrySetResult(result!);
             if (!value && !_task.Value.IsCompleted)
             {
                 SpinUntilCompleted();

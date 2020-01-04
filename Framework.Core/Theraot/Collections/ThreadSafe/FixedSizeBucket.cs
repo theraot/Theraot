@@ -313,7 +313,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
 
-            var comparisonItem = found == BucketHelper.Null ? default : (T)found;
+            var comparisonItem = found == BucketHelper.Null ? default! : (T)found;
             if (!check(comparisonItem))
             {
                 return false;
@@ -419,7 +419,7 @@ namespace Theraot.Collections.ThreadSafe
                         continue;
                     }
 
-                    var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                    var castValue = entry == BucketHelper.Null ? default! : (T)entry;
                     if (check(castValue))
                     {
                         yield return castValue;
@@ -447,7 +447,7 @@ namespace Theraot.Collections.ThreadSafe
                         continue;
                     }
 
-                    var castValue = entry == BucketHelper.Null ? default : (T)entry;
+                    var castValue = entry == BucketHelper.Null ? default! : (T)entry;
                     if (!check(castValue))
                     {
                         continue;
@@ -551,7 +551,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
 
-            value = found == BucketHelper.Null ? default : (T)found;
+            value = found == BucketHelper.Null ? default! : (T)found;
             return true;
         }
 
@@ -562,7 +562,7 @@ namespace Theraot.Collections.ThreadSafe
             var result = false;
             if (found != null)
             {
-                var comparisonItem = found == BucketHelper.Null ? default : (T)found;
+                var comparisonItem = found == BucketHelper.Null ? default! : (T)found;
                 if (check!(comparisonItem))
                 {
                     var item = itemUpdateFactory!(comparisonItem);

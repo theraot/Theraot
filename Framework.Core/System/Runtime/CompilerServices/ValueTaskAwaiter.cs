@@ -7,7 +7,7 @@ using System.Threading.Tasks.Sources;
 
 namespace System.Runtime.CompilerServices
 {
-    public struct ValueTaskAwaiter : ICriticalNotifyCompletion
+    public readonly struct ValueTaskAwaiter : ICriticalNotifyCompletion
     {
         internal static readonly Action<object> InvokeActionDelegate = state =>
         {

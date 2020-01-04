@@ -48,7 +48,7 @@ namespace System
     /// - they are mutable rather than readonly, and
     /// - their members (such as Item1, Item2, etc) are fields rather than properties.
     /// </summary>
-    public struct ValueTuple
+    public readonly struct ValueTuple
         : IEquatable<ValueTuple>, IStructuralEquatable, IStructuralComparable, IComparable, IComparable<ValueTuple>, ITupleInternal
     {
         int ITupleInternal.Size => 0;

@@ -138,7 +138,7 @@ namespace System.Runtime.CompilerServices
                 var typedValue = value == null ? default : (T)value;
                 try
                 {
-                    this[index] = typedValue;
+                    this[index] = typedValue!;
                 }
                 catch (InvalidCastException)
                 {
@@ -185,7 +185,7 @@ namespace System.Runtime.CompilerServices
             var typedValue = value == null ? default : (T)value;
             try
             {
-                Add(typedValue);
+                Add(typedValue!);
             }
             catch (InvalidCastException)
             {
@@ -348,7 +348,7 @@ namespace System.Runtime.CompilerServices
             var typedValue = value == null ? default : (T)value;
             try
             {
-                Insert(index, typedValue);
+                Insert(index, typedValue!);
             }
             catch (InvalidCastException)
             {

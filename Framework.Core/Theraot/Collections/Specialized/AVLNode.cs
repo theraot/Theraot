@@ -323,7 +323,7 @@ namespace Theraot.Collections.Specialized
 
         private static void DoubleLeft([AllowNull] ref AVLNode<TKey, TValue> node)
         {
-            if (node._right == null)
+            if (node?._right == null)
             {
                 return;
             }
@@ -334,7 +334,7 @@ namespace Theraot.Collections.Specialized
 
         private static void DoubleRight([AllowNull] ref AVLNode<TKey, TValue> node)
         {
-            if (node._left == null)
+            if (node?._left == null)
             {
                 return;
             }
@@ -555,8 +555,8 @@ namespace Theraot.Collections.Specialized
 
         private static void RotateLeft([AllowNull] ref AVLNode<TKey, TValue> node)
         {
-            var root = node;
-            var right = node._right;
+            var root = node!;
+            var right = node!._right;
             if (right == null)
             {
                 return;
@@ -571,8 +571,8 @@ namespace Theraot.Collections.Specialized
 
         private static void RotateRight([AllowNull] ref AVLNode<TKey, TValue> node)
         {
-            var root = node;
-            var left = node._left;
+            var root = node!;
+            var left = node!._left;
             if (left == null)
             {
                 return;

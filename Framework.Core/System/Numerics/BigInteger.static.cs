@@ -1,13 +1,14 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2225 // Operator overloads have named alternates
+#pragma warning disable EPS05 // Use in-modifier for passing readonly struct
 
 using System.Globalization;
 using Theraot.Core;
 
 namespace System.Numerics
 {
-    public partial struct BigInteger
+    public readonly partial struct BigInteger
     {
         private static readonly BigInteger _bigIntegerMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
 

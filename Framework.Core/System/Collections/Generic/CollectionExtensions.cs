@@ -14,7 +14,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(dictionary));
             }
 
-            return dictionary.TryGetValue(key, out var value) ? value : default;
+            return dictionary.TryGetValue(key, out var value) ? value : default!;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

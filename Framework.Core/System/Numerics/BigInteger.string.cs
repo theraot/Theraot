@@ -10,20 +10,20 @@ using Theraot.Core;
 
 namespace System.Numerics
 {
-    public partial struct BigInteger
+    public readonly partial struct BigInteger
     {
-        internal static string FormatBigInteger(BigInteger value, string? format, NumberFormatInfo info)
+        internal static string FormatBigInteger(in BigInteger value, string? format, NumberFormatInfo info)
         {
             var fmt = ParseFormatSpecifier(format, out var digits);
             switch (fmt)
             {
                 case 'x':
                 case 'X':
-                    return FormatBigIntegerToHexString(ref value, fmt, digits, info);
+                    return FormatBigIntegerToHexString(in value, fmt, digits, info);
 
                 case 'e':
                 case 'E':
-                    return FormatBigIntegerToExponentialString(ref value, format, info, fmt, digits);
+                    return FormatBigIntegerToExponentialString(value, format, info, fmt, digits);
 
                 default:
                     var decimalFmt = fmt == 'g' || fmt == 'G' || fmt == 'd' || fmt == 'D' || fmt == 'r' || fmt == 'R';
@@ -37,7 +37,7 @@ namespace System.Numerics
                         return value.InternalSign.ToString(format, info);
                     }
 
-                    var builder = CreateBuilder(ref value, info, decimalFmt, digits);
+                    var builder = CreateBuilder(in value, info, decimalFmt, digits);
                     if (decimalFmt)
                     {
                         // Format Round-trip decimal
@@ -107,7 +107,7 @@ namespace System.Numerics
                     }
 
                     var result = new StringBuilder(builder.Length + 20);
-                    var close = SetWrap(ref value, info, type, result);
+                    var close = SetWrap(in value, info, type, result);
                     var append = builder;
                     if (groups)
                     {
@@ -415,7 +415,7 @@ namespace System.Numerics
 
             if ((style & NumberStyles.AllowHexSpecifier) != 0)
             {
-                if (!HexNumberToBigInteger(number, ref result))
+                if (!HexNumberToBigInteger(number, out result))
                 {
                     return false;
                 }
@@ -449,7 +449,7 @@ namespace System.Numerics
             return false;
         }
 
-        private static int Convert(BigInteger value, uint numericBase, int sourceLength, uint[] converted)
+        private static int Convert(in BigInteger value, uint numericBase, int sourceLength, uint[] converted)
         {
             var convertedLength = 0;
             for (var sourceIndex = sourceLength; --sourceIndex >= 0;)
@@ -481,7 +481,7 @@ namespace System.Numerics
             return convertedLength;
         }
 
-        private static ReverseStringBuilder CreateBuilder(ref BigInteger value, NumberFormatInfo info, bool decimalFmt, int digits)
+        private static ReverseStringBuilder CreateBuilder(in BigInteger value, NumberFormatInfo info, bool decimalFmt, int digits)
         {
             // First convert to base 10^9.
             const uint numericBase = 1000000000; // 10^9
@@ -494,7 +494,7 @@ namespace System.Numerics
             {
                 var maxConvertedLength = checked((sourceLength * 10 / 9) + 2);
                 converted = new uint[maxConvertedLength];
-                convertedLength = Convert(value, numericBase, sourceLength, converted);
+                convertedLength = Convert(in value, numericBase, sourceLength, converted);
                 // Each uint contributes at most 9 digits to the decimal representation.
                 stringCapacity = checked(convertedLength * numericBaseLog10);
             }
@@ -544,7 +544,7 @@ namespace System.Numerics
             return result;
         }
 
-        private static string FormatBigIntegerToExponentialString(ref BigInteger value, string? format, NumberFormatInfo info, char fmt, int digits)
+        private static string FormatBigIntegerToExponentialString(BigInteger value, string? format, NumberFormatInfo info, char fmt, int digits)
         {
             var precision = digits != -1 ? digits : 6;
 
@@ -583,7 +583,7 @@ namespace System.Numerics
             }
             else
             {
-                builder = CreateBuilder(ref value, info, false, 0);
+                builder = CreateBuilder(in value, info, false, 0);
             }
 
             // ---
@@ -619,7 +619,7 @@ namespace System.Numerics
             return result.ToString();
         }
 
-        private static string FormatBigIntegerToHexString(ref BigInteger value, char format, int digits, NumberFormatInfo info)
+        private static string FormatBigIntegerToHexString(in BigInteger value, char format, int digits, NumberFormatInfo info)
         {
             var byteArray = value.ToByteArray();
             var stringBuilder = new StringBuilder((byteArray.Length * 2) + 1);
@@ -674,10 +674,11 @@ namespace System.Numerics
             return stringBuilder.ToString();
         }
 
-        private static bool HexNumberToBigInteger(BigNumberBuffer number, ref BigInteger value)
+        private static bool HexNumberToBigInteger(BigNumberBuffer number, out BigInteger value)
         {
             if (number.Digits == null || number.Digits.Length == 0)
             {
+                value = default;
                 return false;
             }
 
@@ -822,7 +823,7 @@ namespace System.Numerics
             return reader.EndOfString;
         }
 
-        private static string SetWrap(ref BigInteger value, NumberFormatInfo info, int type, StringBuilder result)
+        private static string SetWrap(in BigInteger value, NumberFormatInfo info, int type, StringBuilder result)
         {
             var close = string.Empty;
             switch (type)

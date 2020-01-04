@@ -104,7 +104,7 @@ namespace System.Collections.Generic
 
         public bool Contains([AllowNull] T item)
         {
-            return _wrapped.ContainsKey(item);
+            return _wrapped.ContainsKey(item!);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -257,7 +257,7 @@ namespace System.Collections.Generic
         public bool Remove([AllowNull] T item)
         {
             // item can be null
-            return _wrapped.Remove(item);
+            return _wrapped.Remove(item!);
         }
 
         public int RemoveWhere(Predicate<T> match)

@@ -6,6 +6,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using Theraot;
 
 namespace System.Threading.Tasks
 {
@@ -51,7 +52,7 @@ namespace System.Threading.Tasks
 
             // Create a new Task to serve as a proxy for the actual inner task.  Attach it
             // to the parent if the original was attached to the parent.
-            var tcs = new TaskCompletionSource<VoidResult>(task.CreationOptions & TaskCreationOptions.AttachedToParent);
+            var tcs = new TaskCompletionSource<VoidStruct>(task.CreationOptions & TaskCreationOptions.AttachedToParent);
             TransferAsynchronously(tcs, task);
             return tcs.Task;
         }
@@ -234,12 +235,6 @@ namespace System.Threading.Tasks
             }
 
             return result;
-        }
-
-        /// <summary>Dummy type to use as a void TResult.</summary>
-        private struct VoidResult
-        {
-            // Empty
         }
     }
 }

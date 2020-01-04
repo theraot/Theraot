@@ -15,7 +15,7 @@ namespace System.Runtime.CompilerServices
 {
     /// <summary>Provides an awaitable type that enables configured awaits on a <see cref="ValueTask" />.</summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct ConfiguredValueTaskAwaitable
+    public readonly struct ConfiguredValueTaskAwaitable
     {
         /// <summary>The wrapped <see cref="ValueTask{TResult}" />.</summary>
         private readonly ValueTask _value;
@@ -35,7 +35,7 @@ namespace System.Runtime.CompilerServices
 
         /// <summary>Provides an awaiter for a <see cref="ConfiguredValueTaskAwaitable{TResult}" />.</summary>
         [StructLayout(LayoutKind.Auto)]
-        public struct ConfiguredValueTaskAwaiter : ICriticalNotifyCompletion
+        public readonly struct ConfiguredValueTaskAwaiter : ICriticalNotifyCompletion
         {
             /// <summary>The value being awaited.</summary>
             private readonly ValueTask _value;

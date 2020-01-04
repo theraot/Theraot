@@ -87,7 +87,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static object[] GetParent(object[] locals)
         {
-            return ((StrongBox<object[]>)locals[0]).Value;
+            return ((StrongBox<object[]>)locals[0]).Value!;
         }
     }
 }

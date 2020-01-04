@@ -19,14 +19,14 @@ namespace System.Runtime.CompilerServices
 
         public StrongBox([AllowNull] T value)
         {
-            Value = value;
+            Value = value!;
         }
 
         object? IStrongBox.Value
         {
             get => Value!;
 
-            set => Value = value is T valueAsT ? valueAsT : default;
+            set => Value = value is T valueAsT ? valueAsT : default!;
         }
     }
 }

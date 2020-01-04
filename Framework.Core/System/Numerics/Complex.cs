@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA2225 // Operator overloads have named alternates
+#pragma warning disable EPS05 // Use in-modifier for passing readonly struct
 
 // Complex.cs: Complex number support
 
@@ -32,7 +33,7 @@
 
 namespace System.Numerics
 {
-    public struct Complex : IEquatable<Complex>, IFormattable
+    public readonly struct Complex : IEquatable<Complex>, IFormattable
     {
         public static readonly Complex ImaginaryOne = new Complex(0, 1);
 

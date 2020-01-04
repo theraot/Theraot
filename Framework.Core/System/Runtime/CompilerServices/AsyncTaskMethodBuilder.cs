@@ -316,7 +316,7 @@ namespace System.Runtime.CompilerServices
             var completionSource = _task;
             if (completionSource == null)
             {
-                _task = GetTaskForResult(result);
+                _task = GetTaskForResult(result!);
             }
             else if (!completionSource.TrySetResult(result))
             {

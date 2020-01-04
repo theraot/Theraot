@@ -15,7 +15,7 @@ namespace System.Runtime.CompilerServices
     /// <summary>Provides an awaitable type that enables configured awaits on a <see cref="ValueTask{TResult}" />.</summary>
     /// <typeparam name="TResult">The type of the result produced.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public struct ConfiguredValueTaskAwaitable<TResult>
+    public readonly struct ConfiguredValueTaskAwaitable<TResult>
     {
         /// <summary>true to attempt to marshal the continuation back to the original context captured; otherwise, false.</summary>
         private readonly bool _continueOnCapturedContext;
@@ -43,7 +43,7 @@ namespace System.Runtime.CompilerServices
 
         /// <summary>Provides an awaiter for a <see cref="ConfiguredValueTaskAwaitable{TResult}" />.</summary>
         [StructLayout(LayoutKind.Auto)]
-        public struct ConfiguredValueTaskAwaiter : ICriticalNotifyCompletion
+        public readonly struct ConfiguredValueTaskAwaiter : ICriticalNotifyCompletion
         {
             /// <summary>The value to pass to ConfigureAwait.</summary>
             private readonly bool _continueOnCapturedContext;
