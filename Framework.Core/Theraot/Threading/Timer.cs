@@ -1,5 +1,7 @@
 ﻿// Needed for NET35 (TASK)
 
+#pragma warning disable CA2213 // Disposable fields should be disposed
+
 using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
