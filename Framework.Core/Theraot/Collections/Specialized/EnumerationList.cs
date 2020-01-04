@@ -16,6 +16,8 @@ namespace Theraot.Collections.Specialized
     {
         private readonly Func<T, bool> _contains;
 
+        private readonly Action<T[], int> _copyTo;
+
         private readonly Func<int> _count;
 
         private readonly Func<IEnumerator<T>> _getEnumerator;
@@ -33,7 +35,8 @@ namespace Theraot.Collections.Specialized
                     _contains = item => Array.IndexOf(array, item) != -1;
                     _index = index => array[index];
                     _indexOf = item => Array.IndexOf(array, item);
-                    _getEnumerator = array.Cast<T>().GetEnumerator;
+                    _getEnumerator = ((IList<T>)array).GetEnumerator;
+                    _copyTo = array.CopyTo;
                     break;
 
                 case IList<T> list:
@@ -42,6 +45,7 @@ namespace Theraot.Collections.Specialized
                     _index = index => list[index];
                     _indexOf = list.IndexOf;
                     _getEnumerator = list.GetEnumerator;
+                    _copyTo = list.CopyTo;
                     break;
 
                 case IReadOnlyList<T> readOnlyList:
@@ -50,6 +54,7 @@ namespace Theraot.Collections.Specialized
                     _index = index => readOnlyList[index];
                     _indexOf = readOnlyList.IndexOf;
                     _getEnumerator = readOnlyList.GetEnumerator;
+                    _copyTo = readOnlyList.CopyTo;
                     break;
 
                 case ICollection<T> collection:
@@ -58,6 +63,7 @@ namespace Theraot.Collections.Specialized
                     _index = Index;
                     _indexOf = collection.IndexOf;
                     _getEnumerator = collection.GetEnumerator;
+                    _copyTo = collection.CopyTo;
                     break;
 
                 case IReadOnlyCollection<T> readOnlyCollection:
@@ -66,6 +72,7 @@ namespace Theraot.Collections.Specialized
                     _index = Index;
                     _indexOf = readOnlyCollection.IndexOf;
                     _getEnumerator = readOnlyCollection.GetEnumerator;
+                    _copyTo = readOnlyCollection.CopyTo;
                     break;
 
                 default:
@@ -74,6 +81,7 @@ namespace Theraot.Collections.Specialized
                     _index = Index;
                     _indexOf = wrapped.IndexOf;
                     _getEnumerator = wrapped.GetEnumerator;
+                    _copyTo = wrapped.CopyTo;
                     break;
             }
 
@@ -135,8 +143,7 @@ namespace Theraot.Collections.Specialized
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Extensions.CanCopyTo(Count, array, arrayIndex);
-            Extensions.CopyTo(this, array, arrayIndex);
+            _copyTo(array, arrayIndex);
         }
 
         public IEnumerator<T> GetEnumerator()
