@@ -22,12 +22,12 @@ namespace Theraot.Core
             '\u000D' /*Carriage return*/
         };
 
-        public static char[] GetClassicWhitespace()
+        public static char[] GetClassicWhitespaceChars()
         {
             return _classicWhitespace;
         }
 
-        public static char[] GetNewLine()
+        public static char[] GetNewLineChars()
         {
             return _newLine;
         }

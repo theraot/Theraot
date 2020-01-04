@@ -505,7 +505,7 @@ namespace Theraot.Core
         /// <remarks>The string that is returned does not contain the terminating carriage return or line feed.</remarks>
         public string? ReadLine()
         {
-            var result = PrivateReadUntil(CharHelper.GetNewLine(), true);
+            var result = PrivateReadUntil(CharHelper.GetNewLineChars(), true);
             Read('\r');
             Read('\n');
             return result;
@@ -1051,7 +1051,7 @@ namespace Theraot.Core
         /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
         public bool SkipLine()
         {
-            return PrivateSkipUntil(CharHelper.GetNewLine(), true) || Read('\r') || Read('\n');
+            return PrivateSkipUntil(CharHelper.GetNewLineChars(), true) || Read('\r') || Read('\n');
         }
 
         /// <summary>
