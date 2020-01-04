@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET45
 
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
@@ -109,7 +108,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         ///     The cacheable task.
         /// </returns>
-        internal static TaskCompletionSource<TResult> CreateCompleted([AllowNull] TResult result)
+        internal static TaskCompletionSource<TResult> CreateCompleted(TResult result)
         {
             var completionSource = new TaskCompletionSource<TResult>();
             completionSource.TrySetResult(result);

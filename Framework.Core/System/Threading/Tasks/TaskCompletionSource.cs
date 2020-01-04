@@ -5,7 +5,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Permissions;
 using Theraot.Threading.Needles;
 
@@ -382,7 +381,7 @@ namespace System.Threading.Tasks
         ///     <see cref="TaskStatus.Canceled">Canceled</see>.
         /// </remarks>
         /// <exception cref="ObjectDisposedException">The <see cref="Task" /> was disposed.</exception>
-        public bool TrySetResult([AllowNull] TResult result)
+        public bool TrySetResult(TResult result)
         {
             var value = _task.Value.TrySetResult(result!);
             if (!value && !_task.Value.IsCompleted)

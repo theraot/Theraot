@@ -17,7 +17,7 @@ namespace System.Runtime.CompilerServices
             Value = default!;
         }
 
-        public StrongBox([AllowNull] T value)
+        public StrongBox(T value)
         {
             Value = value!;
         }

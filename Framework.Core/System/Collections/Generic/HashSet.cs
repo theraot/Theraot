@@ -2,7 +2,6 @@
 
 #pragma warning disable CC0091 // Use static method
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -102,7 +101,12 @@ namespace System.Collections.Generic
             _wrapped.Clear();
         }
 
-        public bool Contains([AllowNull] T item)
+        public bool Contains(T item)
+        {
+            return _wrapped.ContainsKey(item!);
+        }
+
+        bool ICollection<T>.Contains(T item)
         {
             return _wrapped.ContainsKey(item!);
         }
@@ -254,7 +258,13 @@ namespace System.Collections.Generic
             return other.Any(item => _wrapped.ContainsKey(item));
         }
 
-        public bool Remove([AllowNull] T item)
+        public bool Remove(T item)
+        {
+            // item can be null
+            return _wrapped.Remove(item!);
+        }
+
+        bool ICollection<T>.Remove(T item)
         {
             // item can be null
             return _wrapped.Remove(item!);

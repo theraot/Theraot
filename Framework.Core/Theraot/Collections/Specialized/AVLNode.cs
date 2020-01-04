@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace Theraot.Collections.Specialized
@@ -321,7 +320,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        private static void DoubleLeft([AllowNull] ref AVLNode<TKey, TValue> node)
+        private static void DoubleLeft(ref AVLNode<TKey, TValue>? node)
         {
             if (node?._right == null)
             {
@@ -332,7 +331,7 @@ namespace Theraot.Collections.Specialized
             RotateLeft(ref node);
         }
 
-        private static void DoubleRight([AllowNull] ref AVLNode<TKey, TValue> node)
+        private static void DoubleRight(ref AVLNode<TKey, TValue>? node)
         {
             if (node?._left == null)
             {
@@ -553,7 +552,7 @@ namespace Theraot.Collections.Specialized
             return tmp;
         }
 
-        private static void RotateLeft([AllowNull] ref AVLNode<TKey, TValue> node)
+        private static void RotateLeft(ref AVLNode<TKey, TValue>? node)
         {
             var root = node!;
             var right = node!._right;
@@ -569,7 +568,7 @@ namespace Theraot.Collections.Specialized
             Update(right);
         }
 
-        private static void RotateRight([AllowNull] ref AVLNode<TKey, TValue> node)
+        private static void RotateRight(ref AVLNode<TKey, TValue>? node)
         {
             var root = node!;
             var left = node!._left;

@@ -8,7 +8,6 @@
 #pragma warning disable S3459 // Unassigned members should be removed
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using System.Threading.Tasks;
 using Theraot;
@@ -311,7 +310,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         /// <param name="result">The result to use to complete the task.</param>
         /// <exception cref="InvalidOperationException">The task has already completed.</exception>
-        public void SetResult([AllowNull] TResult result)
+        public void SetResult(TResult result)
         {
             var completionSource = _task;
             if (completionSource == null)

@@ -306,7 +306,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IEnumerable<T> AsUnaryIEnumerable<T>([AllowNull] this T source)
+        public static IEnumerable<T> AsUnaryIEnumerable<T>(this T source)
         {
             yield return source!;
         }
