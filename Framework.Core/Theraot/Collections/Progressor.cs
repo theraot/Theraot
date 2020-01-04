@@ -16,13 +16,6 @@ using Theraot.Threading;
 
 namespace Theraot.Collections
 {
-    internal interface IClosable
-    {
-        bool IsClosed { get; }
-
-        void Close();
-    }
-
     [DebuggerTypeProxy(typeof(ProgressorProxy))]
     public sealed class Progressor<T> : IObservable<T>, IEnumerable<T>, IClosable
     {
