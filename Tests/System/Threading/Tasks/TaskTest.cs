@@ -512,7 +512,13 @@ namespace MonoTests.System.Threading.Tasks
             (
                 () =>
                 {
-                    var t = new Task(() => { });
+                    var t = new Task
+                    (
+                        () =>
+                        {
+                            // Empty
+                        }
+                    );
                     t.Dispose();
                 }
             );
@@ -742,7 +748,13 @@ namespace MonoTests.System.Threading.Tasks
             (
                 () =>
                 {
-                    var t = Task.Factory.StartNew(() => { });
+                    var t = Task.Factory.StartNew
+                    (
+                        () =>
+                        {
+                            // Empty
+                        }
+                    );
                     t.Wait();
 
                     t.Start();

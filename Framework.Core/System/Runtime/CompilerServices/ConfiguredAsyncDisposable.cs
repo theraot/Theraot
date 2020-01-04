@@ -26,7 +26,7 @@ namespace System.Runtime.CompilerServices
 
         public ConfiguredValueTaskAwaitable DisposeAsync() =>
             // as with other "configured" awaitable-related type in CompilerServices, we don't null check to defend against
-            // misuse like `default(ConfiguredAsyncDisposable).DisposeAsync()`, which will null ref by design.
+            // misuse like default(ConfiguredAsyncDisposable).DisposeAsync(), which will null ref by design.
             _source.DisposeAsync().ConfigureAwait(_continueOnCapturedContext);
     }
 }

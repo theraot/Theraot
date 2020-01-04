@@ -28,7 +28,13 @@ namespace TestRunner.System.Threading
         [Test]
         public static void JoinNotStartedThrows()
         {
-            var thread = new Thread(() => { });
+            var thread = new Thread
+            (
+                () =>
+                {
+                    // Empty
+                }
+            );
             Assert.Throws<ThreadStateException>(thread.Join);
         }
 
@@ -121,7 +127,13 @@ namespace TestRunner.System.Threading
         [Test]
         public static void StartingAnStartedThreadThrows()
         {
-            var thread = new Thread(() => { });
+            var thread = new Thread
+            (
+                () =>
+                {
+                    // Empty
+                }
+            );
             thread.Start();
             Assert.Throws<ThreadStateException>(thread.Start);
         }
@@ -234,7 +246,13 @@ namespace TestRunner.System.Threading
         [Test]
         public static void ThreadIsStoppedAfterJoin()
         {
-            var thread = new Thread(() => { });
+            var thread = new Thread
+            (
+                () =>
+                {
+                    // Empty
+                }
+            );
             thread.Start();
             thread.Join();
             Assert.AreEqual(ThreadState.Stopped, thread.ThreadState);
@@ -243,7 +261,13 @@ namespace TestRunner.System.Threading
         [Test]
         public static void ThreadIsUnstartedBeforeStart()
         {
-            var thread = new Thread(() => { });
+            var thread = new Thread
+            (
+                () =>
+                {
+                    // Empty
+                }
+            );
             Assert.AreEqual(ThreadState.Unstarted, thread.ThreadState);
         }
 

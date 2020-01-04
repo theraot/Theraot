@@ -418,14 +418,14 @@ namespace System.Dynamic
             {
                 // Generate a tree like:
                 //
-                // `{                                       `
-                // `  object result;                        `
-                // `  TryInvokeMember(payload, out result)  `
-                // `     ? result                           `
-                // `     : TryGetMember(payload, out result)`
-                // `         ? FallbackInvoke(result)       `
-                // `         : fallbackResult               `
-                // `}                                       `
+                // {
+                //   object result;
+                //   TryInvokeMember(payload, out result)
+                //      ? result
+                //      : TryGetMember(payload, out result)
+                //          ? FallbackInvoke(result)
+                //          : fallbackResult
+                // }
                 //
                 // Then it calls FallbackInvokeMember with this tree as the
                 // "error", giving the language the option of using this
@@ -591,10 +591,10 @@ namespace System.Dynamic
 
                 //
                 // Build a new expression like:
-                // `{                                                                            `
-                // `  object result;                                                             `
-                // `  TryGetMember(payload, out result) ? fallbackInvoke(result) : fallbackResult`
-                // `}                                                                            `
+                // {
+                //   object result;
+                //   TryGetMember(payload, out result) ? fallbackInvoke(result) : fallbackResult
+                // }
                 //
                 var result = Expression.Parameter(typeof(object), null);
                 var callArgs = method != CachedReflectionInfo.DynamicObjectTryBinaryOperation ? Expression.Parameter(typeof(object[]), null) : Expression.Parameter(typeof(object), null);
@@ -721,7 +721,7 @@ namespace System.Dynamic
 
                 //
                 // Build a new expression like:
-                // `  if (TryDeleteMember(payload)) { } else { fallbackResult }`
+                //   if (TryDeleteMember(payload)) { } else { fallbackResult }
                 //
                 var callDynamic = new DynamicMetaObject
                 (

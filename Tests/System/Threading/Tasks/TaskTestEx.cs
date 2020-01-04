@@ -16,7 +16,14 @@ namespace MonoTests.System.Threading.Tasks
                 () =>
                 {
                     var cancellation = new CancellationToken(true);
-                    var task = new Task(() => { }, cancellation);
+                    var task = new Task
+                    (
+                        () =>
+                        {
+                            // Empty
+                        },
+                        cancellation
+                    );
                     task.Start();
                 }
             );

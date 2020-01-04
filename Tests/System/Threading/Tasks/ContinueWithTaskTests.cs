@@ -47,7 +47,20 @@ namespace MonoTests.System.Threading.Tasks
         public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;
-            var child = Task.Factory.StartNew(() => inner = TaskEx.Run(() => throw new ApplicationException()).ContinueWith(_ => { }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously));
+            var child = Task.Factory.StartNew
+            (
+                () => inner = TaskEx.Run
+                (
+                    () => throw new ApplicationException()
+                ).ContinueWith
+                (
+                    _ =>
+                    {
+                        // Empty
+                    },
+                    TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted | TaskContinuationOptions.ExecuteSynchronously
+                )
+            );
 
             var counter = 0;
             var t = child.ContinueWith(t2 => ++counter, TaskContinuationOptions.ExecuteSynchronously);

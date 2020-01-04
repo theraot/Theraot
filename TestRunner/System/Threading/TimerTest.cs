@@ -133,7 +133,19 @@ namespace TestRunner.System.Threading
             int dueTime
         )
         {
-            Assert.Throws<ArgumentOutOfRangeException, Timer>(() => new Timer(_ => { }, null, -2 - dueTime, Timeout.Infinite));
+            Assert.Throws<ArgumentOutOfRangeException, Timer>
+            (
+                () => new Timer
+                (
+                    _ =>
+                    {
+                        // Empty
+                    },
+                    null,
+                    -2 - dueTime,
+                    Timeout.Infinite
+                )
+            );
         }
 
         [Test]
@@ -170,7 +182,19 @@ namespace TestRunner.System.Threading
             int period
         )
         {
-            Assert.Throws<ArgumentOutOfRangeException, Timer>(() => new Timer(_ => { }, null, Timeout.Infinite, -2 - period));
+            Assert.Throws<ArgumentOutOfRangeException, Timer>
+            (
+                () => new Timer
+                (
+                    _ =>
+                    {
+                        // Empty
+                    },
+                    null,
+                    Timeout.Infinite,
+                    -2 - period
+                )
+            );
         }
 
         [Test]

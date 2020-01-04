@@ -78,7 +78,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void SumOnEmpty()
         {
-            int[] data = { };
+            int[] data = ArrayEx.Empty<int>();
 
             Assert.AreEqual(0, data.Sum());
         }
@@ -160,7 +160,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestFirstOrDefault()
         {
-            int[] data = { };
+            int[] data = ArrayEx.Empty<int>();
 
             Assert.AreEqual(default(int), data.FirstOrDefault());
         }
@@ -185,7 +185,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestLastOrDefault()
         {
-            int[] data = { };
+            int[] data = ArrayEx.Empty<int>();
 
             Assert.AreEqual(default(int), data.LastOrDefault());
         }

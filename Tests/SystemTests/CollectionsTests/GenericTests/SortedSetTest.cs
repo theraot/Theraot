@@ -712,7 +712,7 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
             Assert.IsTrue(view.SequenceEqual(new[] { 5 }));
             Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 5, 9 }));
             view.IntersectWith(new[] { 1, 2 });
-            Assert.IsTrue(view.SequenceEqual(new int[] { }));
+            Assert.IsTrue(view.SequenceEqual(ArrayEx.Empty<int>()));
             Assert.IsTrue(set.SequenceEqual(new[] { 1, 3, 9 }));
         }
 

@@ -356,7 +356,7 @@ namespace System.Linq.Expressions.Compiler
             var i = 0;
             foreach (var v in _hoistedLocals.Variables)
             {
-                // `array[i] = new StrongBox<T>(...);`
+                // array[i] = new StrongBox<T>(...);
                 lc.IL.Emit(OpCodes.Dup);
                 lc.IL.EmitPrimitive(i++);
                 var boxType = typeof(StrongBox<>).MakeGenericType(v.Type);
@@ -364,19 +364,19 @@ namespace System.Linq.Expressions.Compiler
                 int index;
                 if (IsMethod && (index = lc.Parameters.IndexOf(v)) >= 0)
                 {
-                    // `array[i] = new StrongBox<T>(argument);`
+                    // array[i] = new StrongBox<T>(argument);
                     lc.EmitLambdaArgument(index);
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else if (v == _hoistedLocals.ParentVariable)
                 {
-                    // `array[i] = new StrongBox<T>(closure.Locals);`
+                    // array[i] = new StrongBox<T>(closure.Locals);
                     ResolveVariable(v, _closureHoistedLocals).EmitLoad();
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else
                 {
-                    // `array[i] = new StrongBox<T>();`
+                    // array[i] = new StrongBox<T>();
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(Type.EmptyTypes));
                 }
 

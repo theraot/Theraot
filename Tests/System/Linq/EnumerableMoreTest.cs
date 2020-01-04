@@ -89,7 +89,7 @@ namespace MonoTests.System.Linq
         public void AggregateTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-            string[] empty = { };
+            string[] empty = ArrayEx.Empty<string>();
 
             // Aggregate<TSource> (Func<TSource, TSource, TSource>)
             Assert.AreEqual("21534", data.Aggregate((x, y) => x + y));
@@ -116,7 +116,7 @@ namespace MonoTests.System.Linq
         public void AllTest()
         {
             int[] data = { 5, 2, 3, 1, 6 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // All<TSource> (Func<TSource, bool>)
             Assert.IsTrue(data.All(x => true));
@@ -141,7 +141,7 @@ namespace MonoTests.System.Linq
         public void AnyTest()
         {
             int[] data = { 5, 2, 3, 1, 6 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // Any<TSource> ()
             Assert.IsTrue(data.Any());
@@ -248,7 +248,7 @@ namespace MonoTests.System.Linq
         public void AverageTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-            string[] empty = { };
+            string[] empty = ArrayEx.Empty<string>();
 
             // Average<string> (Func<string, int>)
             Assert.AreEqual(3, data.Average(x => int.Parse(x)));
@@ -444,7 +444,7 @@ namespace MonoTests.System.Linq
         public void DefaultIfEmptyTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-            string[] empty = { };
+            string[] empty = ArrayEx.Empty<string>();
             string[] default1 = { null };
             string[] default2 = { "default" };
 
@@ -498,7 +498,7 @@ namespace MonoTests.System.Linq
         public void ElementAtOrDefaultTest()
         {
             int[] data = { 2, 3, 4, 5 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // ElementAtOrDefault<TSource> (int)
             Assert.AreEqual(2, data.ElementAtOrDefault(0));
@@ -595,7 +595,7 @@ namespace MonoTests.System.Linq
         public void FirstOrDefaultTest()
         {
             int[] data = { 2, 1, 5, 3, 4 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // FirstOrDefault<TSource> ()
             Assert.AreEqual(2, data.FirstOrDefault());
@@ -611,7 +611,7 @@ namespace MonoTests.System.Linq
         public void FirstTest()
         {
             int[] data = { 2, 1, 5, 3, 4 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // First<TSource> ()
             Assert.AreEqual(2, data.First());
@@ -995,7 +995,7 @@ namespace MonoTests.System.Linq
 
             string[] dataOuter2 = { "2", "1", "3", "4" };
             string[] dataInner2 = { "7", "5", "8", "9" };
-            string[] expected2 = { };
+            string[] expected2 = ArrayEx.Empty<string>();
 
             // Join<TOuter,TInner,TKey,TResult> (IEnumerable<TInner>, Func<TOuter, TKey>, Func<TInner, TKey>, Func<TOuter, TInner, TResult>)
             AssertAreSame(expected1, dataOuter1.Join(dataInner1, x => x, x => x, (x, y) => x + y));
@@ -1057,7 +1057,7 @@ namespace MonoTests.System.Linq
         public void LastOrDefaultTest()
         {
             int[] data = { 2, 1, 5, 3, 4 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // LastOrDefault<TSource> ()
             Assert.AreEqual(4, data.LastOrDefault());
@@ -1073,7 +1073,7 @@ namespace MonoTests.System.Linq
         public void LastTest()
         {
             int[] data = { 2, 1, 1, 3, 4, 5 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // Last<TSource> ()
             Assert.AreEqual(5, data.Last());
@@ -1667,7 +1667,7 @@ namespace MonoTests.System.Linq
         {
             int[] data = { 2 };
             int[] data2 = { 2, 3, 5 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // SingleOrDefault<TSource> ()
             Assert.AreEqual(2, data.SingleOrDefault());
@@ -1685,7 +1685,7 @@ namespace MonoTests.System.Linq
         {
             int[] data = { 2 };
             int[] data2 = { 2, 3, 5 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // Single<TSource> ()
             Assert.AreEqual(2, data.Single());
@@ -1920,7 +1920,7 @@ namespace MonoTests.System.Linq
         {
             int[] data = { 2, 1, 5, 3, 1 };
             int[] expected = { 2, 1 };
-            int[] empty = { };
+            int[] empty = ArrayEx.Empty<int>();
 
             // Take<TSource> (int)
             AssertAreSame(expected, data.Take(2));
