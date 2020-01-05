@@ -34,6 +34,16 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(bucket));
             }
 
+            if (itemFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemFactory));
+            }
+
+            if (itemUpdateFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
+            }
+
             isNew = true;
             var factoryUsed = false;
             var created = default(T)!;
@@ -85,6 +95,21 @@ namespace Theraot.Collections.ThreadSafe
             if (bucket == null)
             {
                 throw new ArgumentNullException(nameof(bucket));
+            }
+
+            if (itemFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemFactory));
+            }
+
+            if (itemUpdateFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
+            }
+
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
             }
 
             isNew = true;
@@ -145,6 +170,16 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(bucket));
             }
 
+            if (itemUpdateFactory == null)
+            {
+                throw new ArgumentNullException(nameof(itemUpdateFactory));
+            }
+
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
+            }
+
             isNew = true;
             while (true)
             {
@@ -192,6 +227,11 @@ namespace Theraot.Collections.ThreadSafe
             if (bucket == null)
             {
                 throw new ArgumentNullException(nameof(bucket));
+            }
+
+            if (check == null)
+            {
+                throw new ArgumentNullException(nameof(check));
             }
 
             isNew = true;

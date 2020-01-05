@@ -337,6 +337,11 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool IsGenericInstanceOf(this Type type, Type genericTypeDefinition)
         {
+            if (genericTypeDefinition == null)
+            {
+                throw new ArgumentNullException(nameof(genericTypeDefinition));
+            }
+
             var info = type.GetTypeInfo();
             if (!info.IsGenericType)
             {
@@ -629,6 +634,11 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static StructLayoutAttribute? GetStructLayoutAttribute(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
 #if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
             var attributes = type.GetAttributes<StructLayoutAttribute>(false);
             return attributes.FirstOrDefault();
@@ -641,6 +651,11 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static Type GetUnderlyingSystemType(this Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
 #if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
             return type;
 #else

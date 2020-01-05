@@ -162,6 +162,11 @@ namespace Theraot.Threading
 
         public static void SpinWaitUntil(Func<bool> verification)
         {
+            if (verification == null)
+            {
+                throw new ArgumentNullException(nameof(verification));
+            }
+
             var spinWait = new SpinWait();
             while (!verification.Invoke())
             {
@@ -171,6 +176,11 @@ namespace Theraot.Threading
 
         public static bool SpinWaitUntil(Func<bool> verification, TimeSpan timeout)
         {
+            if (verification == null)
+            {
+                throw new ArgumentNullException(nameof(verification));
+            }
+
             var milliseconds = (long)timeout.TotalMilliseconds;
             if (milliseconds < -1L || milliseconds > int.MaxValue)
             {
