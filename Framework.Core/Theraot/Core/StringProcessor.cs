@@ -1,5 +1,7 @@
 ﻿// Needed for NET35 (BigInteger)
 
+#pragma warning disable IDE0016 // Use 'throw' expression
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -28,7 +30,13 @@ namespace Theraot.Core
         /// <exception cref="ArgumentNullException">The string is null.</exception>
         public StringProcessor(string str)
         {
-            String = str ?? throw new ArgumentNullException(nameof(str), "The string is null.");
+            // ReSharper disable once JoinNullCheckWithUsage
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str), "The string is null.");
+            }
+
+            String = str;
             _length = str.Length;
         }
 
