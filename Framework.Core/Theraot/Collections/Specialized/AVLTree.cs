@@ -84,6 +84,11 @@ namespace Theraot.Collections.Specialized
 
         public AVLNode<TKey, TValue> GetOrAdd(TKey key, Func<TKey, TValue> factory)
         {
+            if (factory == null)
+            {
+                throw new ArgumentNullException(nameof(factory));
+            }
+
             var result = AVLNode<TKey, TValue>.GetOrAdd(ref _root, key, factory, _comparer, out var isNew);
             if (isNew)
             {
