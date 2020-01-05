@@ -1,4 +1,4 @@
-﻿#pragma warning disable CA1062 // Validate arguments of public methods
+#pragma warning disable CA1062 // Validate arguments of public methods
 
 using System;
 using System.Collections.Generic;
@@ -459,17 +459,6 @@ namespace Theraot.Reflection
         public static Type MakeNullable(this Type self)
         {
             return typeof(Nullable<>).MakeGenericType(self);
-        }
-
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static void SetValue(this PropertyInfo info, object? obj, object? value)
-        {
-            // Added in .NET 4.5
-#if NET45
-            info.SetValue(obj, value);
-#else
-            info.SetValue(obj, value, null);
-#endif
         }
 
         internal static Type GetNonRefTypeInternal(this Type type)

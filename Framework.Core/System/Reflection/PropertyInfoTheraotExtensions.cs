@@ -19,6 +19,17 @@ namespace System.Reflection
 
             return info.GetValue(obj, null);
         }
+
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static void SetValue(this PropertyInfo info, object? obj, object? value)
+        {
+            if (info == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            info.SetValue(obj, value, null);
+        }
     }
 }
 
