@@ -1,4 +1,4 @@
-#pragma warning disable CA1062 // Validate arguments of public methods
+﻿#pragma warning disable CA1062 // Validate arguments of public methods
 
 using System;
 using System.Collections.Generic;
@@ -405,7 +405,19 @@ namespace Theraot.Reflection
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool IsNumericOrBool(this Type type)
         {
-            return IsNumeric(type) || IsBool(type);
+            type = GetNonNullable(type);
+            return type == typeof(char)
+                   || type == typeof(sbyte)
+                   || type == typeof(byte)
+                   || type == typeof(short)
+                   || type == typeof(int)
+                   || type == typeof(long)
+                   || type == typeof(double)
+                   || type == typeof(float)
+                   || type == typeof(ushort)
+                   || type == typeof(uint)
+                   || type == typeof(ulong)
+                   || type == typeof(bool);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
