@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CA1710 // IdentifiersShouldHaveCorrectSuffix
 #pragma warning disable CC0031 // Check for null before calling a delegate
 
 using System.Collections;
