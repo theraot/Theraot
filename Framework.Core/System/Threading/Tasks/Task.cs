@@ -748,11 +748,16 @@ namespace System.Threading.Tasks
                         break;
 
                     case TaskStatus.RanToCompletion:
+                        done = true;
+                        break;
+
                     case TaskStatus.Canceled:
+                        CancellationCheck(cancellationToken);
                         done = true;
                         break;
 
                     case TaskStatus.Faulted:
+                        CancellationCheck(cancellationToken);
                         if (throwIfExceptional)
                         {
                             ThrowIfExceptional(true);
