@@ -730,10 +730,10 @@ namespace System.Threading.Tasks
             var spinWait = new SpinWait();
             while (!done)
             {
-                CancellationCheck(cancellationToken);
                 switch (Status)
                 {
                     case TaskStatus.WaitingToRun:
+                        CancellationCheck(cancellationToken);
                         WaitAntecedent(CancellationToken);
                         ExecutingTaskScheduler.InternalTryExecuteTaskInline(this, true);
                         break;
@@ -742,6 +742,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.WaitingForActivation:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
+                        CancellationCheck(cancellationToken);
                         var waitHandle = _waitHandle;
                         waitHandle?.Wait(cancellationToken);
                         break;
