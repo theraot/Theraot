@@ -620,7 +620,7 @@ namespace System.Linq.Expressions.Compiler
                     IL.BeginExceptFilterBlock();
                 }
 
-                var innerScopeInfo = GetInnerScope(node, _scope);
+                var innerScopeInfo = GetInnerScope(cb, _scope);
                 if (innerScopeInfo.HasValue)
                 {
                     _scope = innerScopeInfo.Value.child.Enter(this, innerScopeInfo.Value.parent);
