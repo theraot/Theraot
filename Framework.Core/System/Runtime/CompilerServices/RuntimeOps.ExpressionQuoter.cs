@@ -225,7 +225,7 @@ namespace System.Runtime.CompilerServices
                     locals = HoistedLocals.GetParent(locals);
                 }
 
-                // Unbound variable: an error should've been thrown already
+                // Unbound variable: an error should have been thrown already
                 // from VariableBinder
                 throw ContractUtils.Unreachable;
             }

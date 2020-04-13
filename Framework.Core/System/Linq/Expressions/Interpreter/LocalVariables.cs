@@ -121,7 +121,7 @@ namespace System.Linq.Expressions.Interpreter
             local = null;
             if (!_variables.TryGetValue(var, out var scope))
             {
-                return ClosureVariables?.TryGetValue(var, out local) == true;
+                return ClosureVariables?.TryGetValue(var, out local) == true && local != null;
             }
 
             local = scope.Variable;

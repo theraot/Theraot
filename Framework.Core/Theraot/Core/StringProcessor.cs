@@ -1535,7 +1535,7 @@ namespace Theraot.Core
         ///     characters.
         /// </summary>
         /// <remarks>
-        ///     If the end of the string is not reached, the first character not found will be the the next thing to be read
+        ///     If the end of the string is not reached, the first character not found will be the next thing to be read
         ///     afterwards.
         /// </remarks>
         /// <param name="targets">The string to look for.</param>

@@ -140,16 +140,6 @@ namespace System.Linq.Expressions.Compiler
             return result;
         }
 
-        private static bool HasVariables(object node)
-        {
-            if (node is BlockExpression block)
-            {
-                return block.Variables.Count > 0;
-            }
-
-            return ((CatchBlock)node).Variable != null;
-        }
-
         private static void MergeBuckets(List<List<SwitchLabel>> buckets)
         {
             while (buckets.Count > 1)
@@ -683,7 +673,7 @@ namespace System.Linq.Expressions.Compiler
             _labelBlock = parent;
         }
 
-        private (CompilerScope parent, CompilerScope child)? GetInnerScope(object node, CompilerScope scope)
+        private (CompilerScope parent, CompilerScope child)? GetInnerScope(BlockExpression node, CompilerScope scope)
         {
             // Very often, we want to compile nodes as reductions
             // rather than as IL, but usually they need to allocate
@@ -694,7 +684,36 @@ namespace System.Linq.Expressions.Compiler
             //
             // User-created blocks will never hit this case; only our
             // internally reduced nodes will.
-            if (!HasVariables(node) || scope.MergedScopes?.Contains(node as BlockExpression) == true)
+            var hasVariables = node.Variables.Count > 0;
+            if (!hasVariables || scope.MergedScopes?.Contains(node) == true)
+            {
+                return default;
+            }
+
+            return (
+                scope,
+                _tree.Scopes.TryGetValue(node, out var innerScope)
+                    ? innerScope
+                    : new CompilerScope(node, false)
+                    {
+                        NeedsClosure = scope.NeedsClosure
+                    }
+            );
+        }
+
+        private (CompilerScope parent, CompilerScope child)? GetInnerScope(CatchBlock node, CompilerScope scope)
+        {
+            // Very often, we want to compile nodes as reductions
+            // rather than as IL, but usually they need to allocate
+            // some IL locals. To support this, we allow emitting a
+            // BlockExpression that was not bound by VariableBinder.
+            // This works as long as the variables are only used
+            // locally -- i.e. not closed over.
+            //
+            // User-created blocks will never hit this case; only our
+            // internally reduced nodes will.
+            var hasVariables = node.Variable != null;
+            if (!hasVariables)
             {
                 return default;
             }

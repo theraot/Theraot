@@ -113,14 +113,14 @@ namespace System.Runtime.ExceptionServices
 
 #pragma warning disable CC0021 // Use nameof
             var remoteStackTraceString = typeof(Exception).GetField
-                                         (
-                                             "_remoteStackTraceString",
-                                             BindingFlags.Instance | BindingFlags.NonPublic
-                                         ) ?? typeof(Exception).GetField
-                                         (
-                                             "remote_stack_trace",
-                                             BindingFlags.Instance | BindingFlags.NonPublic
-                                         ); // MS.Net
+            (
+                "_remoteStackTraceString",
+                BindingFlags.Instance | BindingFlags.NonPublic
+            ) ?? typeof(Exception).GetField
+            (
+                "remote_stack_trace",
+                BindingFlags.Instance | BindingFlags.NonPublic
+            ); // MS.Net
 #pragma warning restore CC0021 // Use nameof
 
             // ---

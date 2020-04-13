@@ -45,7 +45,7 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
     public class HashSetTest
     {
         [Test]
-        public void Enumerator_Current()
+        public void EnumeratorCurrent()
         {
             using (var e1 = new HashSet<int>.Enumerator())
             {
@@ -132,7 +132,7 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
         [Test]
         public void TestCopyToEmpty()
         {
-            var res = new int[0];
+            var res = ArrayEx.Empty<int>();
             new HashSet<int>().CopyTo(res, 0);
         }
 
@@ -168,7 +168,7 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
         {
             var set = new HashSet<int>();
 
-            Assert.IsTrue(set.IsSubsetOf(new int[0]));
+            Assert.IsTrue(set.IsSubsetOf(ArrayEx.Empty<int>()));
             Assert.IsTrue(set.IsSubsetOf(new[] { 1, 2 }));
         }
 

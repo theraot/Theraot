@@ -191,8 +191,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         {
             string[] keys = { "foo", "bar", "foobar" };
             var occurence = new int[3];
-            var map = Setup();
-            foreach (var kvp in map)
+            foreach (var kvp in Setup())
             {
                 var index = Array.IndexOf(keys, kvp.Key);
                 Assert.AreNotEqual(-1, index, "#a");
@@ -299,8 +298,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     (
                         () =>
                         {
-                            var own = Interlocked.Increment(ref index);
-                            switch (own)
+                            switch (Interlocked.Increment(ref index))
                             {
                                 case 1:
                                     r1 = map.TryRemove("foo", out _);

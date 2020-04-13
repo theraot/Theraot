@@ -15,3 +15,15 @@ resharper_redundant_query_order_by_ascending_keyword_highlighting = do_not_show
 resharper_static_member_initializer_referes_to_member_below_highlighting = do_not_show
 resharper_join_declaration_and_initializer_highlighting = do_not_show
 resharper_method_supports_cancellation_highlighting = do_not_show
+
+# CA2201: Do not raise reserved exception types
+dotnet_diagnostic.CA2201.severity = silent
+
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = none
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = none
+
+# CA2208: Instantiate argument exceptions correctly
+dotnet_diagnostic.CA2208.severity = none

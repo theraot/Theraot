@@ -1,4 +1,5 @@
-﻿#pragma warning disable CA2201 // Do not raise reserved exception types
+﻿#pragma warning disable AsyncFixer04 // A disposable object used in a fire & forget async call
+#pragma warning disable CA2201 // Do not raise reserved exception types
 
 using System;
 using System.Threading;

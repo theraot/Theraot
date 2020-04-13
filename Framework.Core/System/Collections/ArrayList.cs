@@ -153,7 +153,7 @@ namespace System.Collections
 
         // Sets or Gets the element at the given index.
         //
-        public virtual object this[int index]
+        public virtual object? this[int index]
         {
             get
             {
@@ -162,7 +162,7 @@ namespace System.Collections
                     throw new ArgumentOutOfRangeException(nameof(index), "Index was out of range. Must be non-negative and less than the size of the collection.");
                 }
 
-                return _items[index]!;
+                return _items[index];
             }
             set
             {
@@ -1126,7 +1126,7 @@ namespace System.Collections
 
             public override object SyncRoot => _list.SyncRoot;
 
-            public override object this[int index]
+            public override object? this[int index]
             {
                 get => _list[index];
                 set
@@ -1398,7 +1398,7 @@ namespace System.Collections
 
             public override object SyncRoot => _list.SyncRoot;
 
-            public override object this[int index]
+            public override object? this[int index]
             {
                 get => _list[index];
                 set
@@ -1992,7 +1992,7 @@ namespace System.Collections
 
             public override object SyncRoot => _baseList.SyncRoot;
 
-            public override object this[int index]
+            public override object? this[int index]
             {
                 get
                 {
@@ -2507,7 +2507,7 @@ namespace System.Collections
 
             public override object SyncRoot => _list.SyncRoot;
 
-            public override object this[int index]
+            public override object? this[int index]
             {
                 get => _list[index];
                 set => throw new NotSupportedException("Collection is read-only.");
@@ -2788,7 +2788,7 @@ namespace System.Collections
 
             public override object SyncRoot { get; }
 
-            public override object this[int index]
+            public override object? this[int index]
             {
                 get
                 {

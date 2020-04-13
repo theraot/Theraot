@@ -250,7 +250,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[Index] = new StrongBox<object>(frame.Data[Index]);
+                frame.Data[Index] = new StrongBox<object?>(frame.Data[Index]);
                 return 1;
             }
         }

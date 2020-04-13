@@ -166,7 +166,7 @@ namespace MonoTests.System.Threading
             for (var i = 0; i < 50000; i++)
             {
                 _sl.Enter(ref taken);
-                Assert.IsTrue(taken, "#" + i.ToString());
+                Assert.IsTrue(taken, $"#{i}");
                 _sl.Exit();
                 taken = false;
             }

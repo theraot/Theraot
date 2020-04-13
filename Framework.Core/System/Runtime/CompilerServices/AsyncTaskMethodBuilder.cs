@@ -170,7 +170,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     A cached task for default(TResult).
         /// </summary>
-        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default);
+        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default!);
 
         /// <summary>
         ///     State related to the IAsyncStateMachine.
@@ -380,7 +380,7 @@ namespace System.Runtime.CompilerServices
             }
             else
             {
-                SetResult(default(TResult));
+                SetResult(default(TResult)!);
             }
         }
 

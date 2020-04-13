@@ -22,7 +22,6 @@ namespace System.Collections.Generic
         /// was successfully advanced to the next element, or <c>false</c> if the enumerator has passed the end
         /// of the collection.
         /// </returns>
-
         ValueTask<bool> MoveNextAsync();
     }
 }

@@ -227,7 +227,7 @@ namespace System.Threading.Tasks
                     break;
 
                 case TaskStatus.RanToCompletion:
-                    result = task is Task<TResult> resultTask ? completionSource.TrySetResult(resultTask.Result) : completionSource.TrySetResult(default);
+                    result = task is Task<TResult> resultTask ? completionSource.TrySetResult(resultTask.Result) : completionSource.TrySetResult(default!);
                     break;
 
                 default:

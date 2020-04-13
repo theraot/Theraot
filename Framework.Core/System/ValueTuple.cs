@@ -441,7 +441,6 @@ namespace System
         /// Returns the hash code for the current <see cref="ValueTuple{T1}"/> instance.
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
-
         public override int GetHashCode()
         {
             return EqualityComparer<T1>.Default.GetHashCode(Item1);

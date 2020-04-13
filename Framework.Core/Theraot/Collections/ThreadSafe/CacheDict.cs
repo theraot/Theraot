@@ -74,7 +74,7 @@ namespace Theraot.Collections.ThreadSafe
             if (entry != null && entry.Hash == hash && entry.Key.Equals(key))
             {
                 value = entry.Value;
-                return true;
+                return value != null!;
             }
 
             value = default!;

@@ -155,28 +155,28 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         }
 
         [Test]
-        public void ToExistingArray_IndexOverflow()
+        public void ToExistingArrayIndexOverflow()
         {
             var queue = Setup();
             Assert.Throws<ArgumentException>(() => queue.CopyTo(new int[3], 4));
         }
 
         [Test]
-        public void ToExistingArray_Null()
+        public void ToExistingArrayNull()
         {
             var queue = Setup();
             Assert.Throws<ArgumentNullException>(() => queue.CopyTo(null, 0));
         }
 
         [Test]
-        public void ToExistingArray_OutOfRange()
+        public void ToExistingArrayOutOfRange()
         {
             var queue = Setup();
             Assert.Throws<ArgumentOutOfRangeException>(() => queue.CopyTo(new int[3], -1));
         }
 
         [Test]
-        public void ToExistingArray_Overflow()
+        public void ToExistingArrayOverflow()
         {
             var queue = Setup();
             Assert.Throws<ArgumentException>(() => queue.CopyTo(new int[3], 0));

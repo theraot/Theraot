@@ -246,7 +246,7 @@ namespace System.Linq.Expressions.Compiler
                     label = _labelBlock.Parent.GetLabelInfo(node.Target);
                 }
 
-                // if we're in a switch or block, we should've found the label
+                // if we're in a switch or block, we should have found the label
                 Debug.Assert(label != null);
             }
 

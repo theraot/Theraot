@@ -97,17 +97,10 @@ namespace System.Threading.Tasks
         /// <param name="scheduler">A task scheduler under which the task will run.</param>
         internal Task(Delegate action, object? state, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            if (scheduler == null)
-            {
-                throw new ArgumentNullException(nameof(scheduler));
-            }
-
+            ExecutingTaskScheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
+            Action = action ?? throw new ArgumentNullException(nameof(action));
             Contract.EndContractBlock();
+
             // This is readonly, and so must be set in the constructor
             // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
             if
@@ -131,8 +124,6 @@ namespace System.Threading.Tasks
                 _parent.AddNewChild();
             }
 
-            ExecutingTaskScheduler = scheduler;
-            Action = action;
             State = state;
             _waitHandle = new ManualResetEventSlim(false);
             if ((creationOptions

@@ -169,6 +169,8 @@ resharper_unused_method_return_value_global_highlighting = hint
 resharper_class_with_virtual_members_never_inherited_global_highlighting = hint
 resharper_class_can_be_sealed_global_highlighting = hint
 resharper_switch_statement_handles_some_known_enum_values_with_default_highlighting = hint
+resharper_condition_is_always_true_or_false_highlighting = hint
+resharper_constant_null_coalescing_condition_highlighting = hint
 # Roslyn analyzers
 dotnet_diagnostic.IDE0070.severity = silent
 ############################### 

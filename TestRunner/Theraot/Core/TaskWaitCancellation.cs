@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable AsyncFixer04 // A disposable object used in a fire & forget async call
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +16,7 @@ namespace TestRunner.Theraot.Core
             {
                 var task = CreateTask(cts);
                 cts.CancelAfter(10);
+                // ReSharper disable once MethodSupportsCancellation
                 task.Wait(); // never completes
             }
         }

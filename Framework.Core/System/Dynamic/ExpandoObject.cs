@@ -101,7 +101,7 @@ namespace System.Dynamic
                     throw new KeyNotFoundException($"The specified key '{key}' does not exist in the ExpandoObject.");
                 }
 
-                return value;
+                return value!;
             }
             set
             {
@@ -288,7 +288,7 @@ namespace System.Dynamic
             return true;
         }
 
-        internal bool TryGetValue(object? indexClass, int index, string name, bool ignoreCase, [MaybeNullWhen(false)] out object? value)
+        internal bool TryGetValue(object? indexClass, int index, string name, bool ignoreCase, [NotNullWhen(true)] out object? value)
         {
             // read the data now.  The data is immutable so we get a consistent view.
             // If there's a concurrent writer they will replace data and it just appears

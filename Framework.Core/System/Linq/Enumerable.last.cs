@@ -82,7 +82,7 @@ namespace System.Linq
 
             if (source is IList<TSource> list)
             {
-                return list.Count > 0 ? list[list.Count - 1] : default;
+                return list.Count > 0 ? list[list.Count - 1] : default!;
             }
 
             var found = false;
@@ -93,7 +93,7 @@ namespace System.Linq
                 found = true;
             }
 
-            return found ? result : default;
+            return found ? result : default!;
         }
 
         [return: MaybeNull]

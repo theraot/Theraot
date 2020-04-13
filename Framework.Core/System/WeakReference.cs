@@ -95,7 +95,7 @@ namespace System
                 }
 
                 target = obj as T;
-                return true;
+                return target != null;
             }
             catch (InvalidOperationException)
             {

@@ -125,7 +125,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitConstantsArray(LambdaCompiler lc)
         {
-            Debug.Assert(lc.CanEmitBoundConstants); // this should've been checked already
+            Debug.Assert(lc.CanEmitBoundConstants); // this should have been checked already
 
             lc.EmitClosureArgument();
             lc.IL.Emit(OpCodes.Ldfld, CachedReflectionInfo.ClosureConstants);
