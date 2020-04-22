@@ -2,6 +2,7 @@
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable S112 // General exceptions should never be thrown
+#pragma warning disable AsyncFixer02 // Long running or blocking operations under an async method
 
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
