@@ -41,6 +41,12 @@ namespace Theraot
 #elif NETCOREAPP2_1
 
             "netcoreapp2.1"
+#elif NETCOREAPP2_2
+
+            "netcoreapp2.2"
+#elif NETCOREAPP3_0
+
+            "netcoreapp3.0"
 #elif NETSTANDARD1_0
 
             "netstandard1.0"
