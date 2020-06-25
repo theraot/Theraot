@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Core
 {
@@ -19,12 +20,24 @@ namespace Theraot.Core
 
         public static ReferenceEqualityComparer<T> Instance { get; } = new ReferenceEqualityComparer<T>();
 
-        bool IEqualityComparer<T>.Equals(T x, T y)
+        bool IEqualityComparer<T>.Equals
+        (
+            [AllowNull]
+            T x,
+            [AllowNull]
+            T y
+        )
         {
             return ReferenceEquals(x, y);
         }
 
-        public int GetHashCode(T obj)
+        public int GetHashCode
+        (
+#if GREATERTHAN_NETCOREAPP22
+            [DisallowNull]
+#endif
+            T obj
+        )
         {
             if (obj == null!)
             {

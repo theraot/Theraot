@@ -84,7 +84,7 @@ namespace Theraot.Threading.Needles
             return true;
         }
 
-        public bool TryInvoke(object[] args, [NotNullWhen(true)] out object? result)
+        public bool TryInvoke(object[] args, out object? result)
         {
             if (TryGetValue(out var value))
             {

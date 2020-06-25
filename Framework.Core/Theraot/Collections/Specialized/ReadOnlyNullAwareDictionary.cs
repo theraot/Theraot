@@ -6,6 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Theraot.Threading.Needles;
 
+#if GREATERTHAN_NETCOREAPP22
+
+using System.Diagnostics.CodeAnalysis;
+
+#endif
+
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
@@ -89,7 +95,14 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        public bool TryGetValue(ReadOnlyStructNeedle<TKey> key, out TValue value)
+        public bool TryGetValue
+        (
+            ReadOnlyStructNeedle<TKey> key,
+#if GREATERTHAN_NETCOREAPP22
+            [MaybeNullWhen(false)]
+#endif
+            out TValue value
+        )
         {
             return Dictionary.TryGetValue(key, out value);
         }

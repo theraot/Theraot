@@ -1,8 +1,9 @@
-// Needed for NET35 (ConditionalWeakTable)
+﻿// Needed for NET35 (ConditionalWeakTable)
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Collections.Specialized
 {
@@ -19,14 +20,26 @@ namespace Theraot.Collections.Specialized
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
 
-        public bool Equals(TInput x, TInput y)
+        public bool Equals
+        (
+            [AllowNull]
+            TInput x,
+            [AllowNull]
+            TInput y
+        )
         {
-            return _comparer.Equals(_converter.Invoke(x), _converter.Invoke(y));
+            return _comparer.Equals(_converter.Invoke(x!), _converter.Invoke(y!));
         }
 
-        public int GetHashCode(TInput obj)
+        public int GetHashCode
+        (
+#if GREATERTHAN_NETCOREAPP22
+            [DisallowNull]
+#endif
+            TInput obj
+        )
         {
-            return _comparer.GetHashCode(_converter.Invoke(obj));
+            return _comparer.GetHashCode(_converter.Invoke(obj)!);
         }
     }
 }

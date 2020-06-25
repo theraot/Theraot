@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -11,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
 
         void CopyTo(T[] array, int arrayIndex);
 
-        bool Exchange(int index, T item, out T previous);
+        bool Exchange(int index, T item, [MaybeNullWhen(true)] out T previous);
 
         bool Insert(int index, T item);
 

@@ -12,6 +12,12 @@ using System.Diagnostics;
 using Theraot.Reflection;
 using Theraot.Threading.Needles;
 
+#if GREATERTHAN_NETCOREAPP22
+
+using System.Diagnostics.CodeAnalysis;
+
+#endif
+
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
@@ -868,19 +874,50 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
+        bool IDictionary<TKey, TValue>.TryGetValue
+        (
+            TKey key,
+#if GREATERTHAN_NETCOREAPP22
+            [MaybeNullWhen(false)]
+#endif
+            out TValue value
+        )
         {
             return TryGetValue(key, out value);
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue
+        (
+            TKey key,
+#if GREATERTHAN_NETCOREAPP22
+            [MaybeNullWhen(false)]
+#endif
+            out TValue value
+        )
         {
-            return key == null ? TryGetValueForNullKey(out value) : _wrapped.TryGetValue(key, out value);
+            if (key == null)
+            {
+                return TryGetValueForNullKey(out value);
+            }
+
+            return _wrapped.TryGetValue(key, out value);
         }
 
-        public bool TryGetValue(ReadOnlyStructNeedle<TKey> key, out TValue value)
+        public bool TryGetValue
+        (
+            ReadOnlyStructNeedle<TKey> key,
+#if GREATERTHAN_NETCOREAPP22
+            [MaybeNullWhen(false)]
+#endif
+            out TValue value
+        )
         {
-            return key.IsAlive ? _wrapped.TryGetValue(key.Value, out value) : TryGetValueForNullKey(out value);
+            if (key.IsAlive)
+            {
+                return _wrapped.TryGetValue(key.Value, out value);
+            }
+
+            return TryGetValueForNullKey(out value);
         }
 
         public bool TryGetValueForNullKey(out TValue value)

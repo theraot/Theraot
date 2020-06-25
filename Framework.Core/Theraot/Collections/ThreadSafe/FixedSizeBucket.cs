@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Threading;
 
@@ -515,7 +516,7 @@ namespace Theraot.Collections.ThreadSafe
             return true;
         }
 
-        internal bool RemoveAtInternal(int index, out T previous)
+        internal bool RemoveAtInternal(int index, [NotNullWhen(true)] out T previous)
         {
             previous = default!;
             var found = Interlocked.Exchange(ref _entries[index], null);
@@ -542,7 +543,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal bool TryGetInternal(int index, out T value)
+        internal bool TryGetInternal(int index, [NotNullWhen(true)] out T value)
         {
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found == null)

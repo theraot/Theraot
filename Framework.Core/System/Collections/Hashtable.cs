@@ -541,7 +541,7 @@ namespace System.Collections
         // ArgumentException is thrown if the key is null or if the key is already
         // present in the hashtable.
         //
-        public virtual void Add(object key, object value)
+        public virtual void Add(object key, object? value)
         {
             Insert(key, value, true);
         }
@@ -1531,7 +1531,7 @@ namespace System.Collections
                 }
             }
 
-            public override void Add(object key, object value)
+            public override void Add(object key, object? value)
             {
                 lock (_table.SyncRoot)
                 {

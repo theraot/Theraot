@@ -2,6 +2,7 @@
 
 #pragma warning disable CC0091 // Use static method
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -322,7 +323,7 @@ namespace System.Collections.Generic
             // Empty
         }
 
-        public bool TryGetValue(T equalValue, out T actualValue)
+        public bool TryGetValue(T equalValue, [MaybeNullWhen(false)] out T actualValue)
         {
             if (_wrapped.TryGetValue(equalValue, out actualValue))
             {

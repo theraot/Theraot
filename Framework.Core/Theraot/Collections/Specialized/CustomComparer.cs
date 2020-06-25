@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Collections.Specialized
 {
@@ -21,9 +22,9 @@ namespace Theraot.Collections.Specialized
             _comparison = comparison.Invoke;
         }
 
-        public override int Compare(T x, T y)
+        public override int Compare([AllowNull] T x, [AllowNull] T y)
         {
-            return _comparison.Invoke(x, y);
+            return _comparison.Invoke(x!, y!);
         }
     }
 }
