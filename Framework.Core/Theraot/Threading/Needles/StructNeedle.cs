@@ -77,8 +77,15 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
-            // ReSharper disable once NonReadonlyMemberInGetHashCode
-            return EqualityComparer<T>.Default.GetHashCode(Value);
+            try
+            {
+                // ReSharper disable once NonReadonlyMemberInGetHashCode
+                return EqualityComparer<T>.Default.GetHashCode(Value!);
+            }
+            catch (ArgumentNullException)
+            {
+                return 0;
+            }
         }
 
         public override string ToString()

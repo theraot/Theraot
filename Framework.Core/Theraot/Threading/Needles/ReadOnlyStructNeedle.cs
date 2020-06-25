@@ -73,7 +73,14 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
-            return EqualityComparer<T>.Default.GetHashCode(Value);
+            try
+            {
+                return EqualityComparer<T>.Default.GetHashCode(Value!);
+            }
+            catch (ArgumentNullException)
+            {
+                return 0;
+            }
         }
 
         public override string ToString()

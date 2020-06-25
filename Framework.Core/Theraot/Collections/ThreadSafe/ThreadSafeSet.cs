@@ -68,7 +68,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Add(T item)
         {
-            var hashCode = Comparer.GetHashCode(item);
+            var hashCode = GetHashCode(item);
             for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
@@ -96,7 +96,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="ArgumentException">the value is already present</exception>
         public void AddNew(T value)
         {
-            var hashCode = Comparer.GetHashCode(value);
+            var hashCode = GetHashCode(value);
             for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
@@ -146,7 +146,7 @@ namespace Theraot.Collections.ThreadSafe
 
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.GetHashCode(found) == hashCode && check(found))
+                if (_bucket.TryGet(hashCode + attempts, out var found) && GetHashCode(found) == hashCode && check(found))
                 {
                     return true;
                 }
@@ -164,7 +164,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Contains(T item)
         {
-            var hashCode = Comparer.GetHashCode(item);
+            var hashCode = GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 if (_bucket.TryGet(hashCode + attempts, out var found) && Comparer.Equals(found, item))
@@ -283,7 +283,7 @@ namespace Theraot.Collections.ThreadSafe
                     found =>
                     {
                         previous = found;
-                        if (Comparer.GetHashCode(found) != hashCode || !check(found))
+                        if (GetHashCode(found) != hashCode || !check(found))
                         {
                             return false;
                         }
@@ -313,7 +313,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T item)
         {
-            var hashCode = Comparer.GetHashCode(item);
+            var hashCode = GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -350,7 +350,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(T item, out T previous)
         {
-            var hashCode = Comparer.GetHashCode(item);
+            var hashCode = GetHashCode(item);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -464,7 +464,7 @@ namespace Theraot.Collections.ThreadSafe
             value = default!;
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                if (!_bucket.TryGet(hashCode + attempts, out var found) || Comparer.GetHashCode(found) != hashCode || !check(found))
+                if (!_bucket.TryGet(hashCode + attempts, out var found) || GetHashCode(found) != hashCode || !check(found))
                 {
                     continue;
                 }
@@ -516,7 +516,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException(nameof(valueOverwriteCheck));
             }
 
-            var hashCode = Comparer.GetHashCode(value);
+            var hashCode = GetHashCode(value);
             for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
@@ -556,6 +556,18 @@ namespace Theraot.Collections.ThreadSafe
             if (diff > 0)
             {
                 Interlocked.Add(ref _probing, diff);
+            }
+        }
+
+        private int GetHashCode(T item)
+        {
+            try
+            {
+                return Comparer.GetHashCode(item!);
+            }
+            catch (ArgumentNullException)
+            {
+                return 0;
             }
         }
     }
