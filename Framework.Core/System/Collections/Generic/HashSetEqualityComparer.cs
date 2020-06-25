@@ -39,6 +39,11 @@ namespace System.Collections.Generic
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public int GetHashCode(HashSet<T> obj)
         {
+            if (obj == null)
+            {
+                return 0;
+            }
+
             var cmp = EqualityComparer<T>.Default;
             var h = 0;
             foreach (var t in obj)
