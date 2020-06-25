@@ -157,7 +157,7 @@ namespace System.Linq.Expressions.Compiler
 
             referenceScope ??= definition;
 
-            (referenceScope.ReferenceCount ?? (referenceScope.ReferenceCount = new Dictionary<ParameterExpression, int>())).TryGetValue(node, out var count);
+            (referenceScope.ReferenceCount ??= new Dictionary<ParameterExpression, int>()).TryGetValue(node, out var count);
             referenceScope.ReferenceCount[node] = count + 1;
             return node;
         }
@@ -272,7 +272,7 @@ namespace System.Linq.Expressions.Compiler
 
                     // Otherwise, merge it
 
-                    (currentScope.MergedScopes ?? (currentScope.MergedScopes = new HashSet<BlockExpression>(ReferenceEqualityComparer<BlockExpression>.Instance))).Add(block);
+                    (currentScope.MergedScopes ??= new HashSet<BlockExpression>(ReferenceEqualityComparer<BlockExpression>.Instance)).Add(block);
                     foreach (var v in block.Variables)
                     {
                         currentScope.Definitions.Add(v, VariableStorageKind.Local);

@@ -105,7 +105,7 @@ namespace System.Linq.Expressions.Interpreter
             if (_variables.TryGetValue(variable, out var existing))
             {
                 newScope = new VariableScope(result, start, existing);
-                (existing.ChildScopes ?? (existing.ChildScopes = new List<VariableScope>())).Add(newScope);
+                (existing.ChildScopes ??= new List<VariableScope>()).Add(newScope);
             }
             else
             {
