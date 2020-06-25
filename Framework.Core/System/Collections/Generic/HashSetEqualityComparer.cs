@@ -1,5 +1,4 @@
-﻿using Theraot.Collections;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace System.Collections.Generic
@@ -40,7 +39,23 @@ namespace System.Collections.Generic
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public int GetHashCode(HashSet<T> obj)
         {
-            return Extensions.ComputeHashCode(obj);
+            var cmp = EqualityComparer<T>.Default;
+            var h = 0;
+            foreach (var t in obj)
+            {
+                int next;
+                try
+                {
+                    next = cmp.GetHashCode(t!);
+                }
+                catch (ArgumentNullException)
+                {
+                    next = 0;
+                }
+                h ^= next;
+            }
+
+            return h;
         }
     }
 }
