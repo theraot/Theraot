@@ -1226,9 +1226,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(targets), "The targets collection is null.");
             }
 
-            found = null;
-            var bestPosition = 0;
-            var result = false;
+            KeyValuePair<int, string>? best = null;
             foreach (var target in targets)
             {
                 if (target == null)
@@ -1242,26 +1240,27 @@ namespace Theraot.Core
                 }
 
                 var position = String.IndexOf(target, _position, stringComparison);
-                if (position == -1 || (result && position >= bestPosition))
+                if (position == -1 || (best.HasValue && position >= best.Value.Key))
                 {
                     continue;
                 }
 
-                found = target;
-                bestPosition = position;
-                result = true;
+                best = new KeyValuePair<int, string>(position, target);
             }
 
-            if (result)
+            if (best.HasValue)
             {
-                _position = bestPosition;
+                _position = best.Value.Key;
+                found = best.Value.Value;
+                return true;
             }
             else if (greedy)
             {
                 _position = _length;
             }
 
-            return result;
+            found = null;
+            return false;
         }
 
         /// <summary>
