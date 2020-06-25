@@ -233,9 +233,10 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found != null)
+            if (found is T foundNotNull)
             {
-                return found;
+                target = foundNotNull;
+                return foundNotNull;
             }
 
             T created;
@@ -257,9 +258,10 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found != null)
+            if (found is T foundNotNull)
             {
-                return found;
+                target = foundNotNull;
+                return foundNotNull;
             }
 
             if (valueFactory == null)
@@ -281,9 +283,10 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found != null)
+            if (found is T foundNotNull)
             {
-                return found;
+                target = foundNotNull;
+                return foundNotNull;
             }
 
             lock (syncRoot)
@@ -297,9 +300,10 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found != null)
+            if (found is T foundNotNull)
             {
-                return found;
+                target = foundNotNull;
+                return foundNotNull;
             }
 
             lock (syncRoot)
@@ -313,9 +317,10 @@ namespace Theraot.Reflection
             where T : class, new()
         {
             var found = target;
-            if (found != null)
+            if (found is T foundNotNull)
             {
-                return found;
+                target = foundNotNull;
+                return foundNotNull;
             }
 
             var created = new T();
@@ -329,9 +334,10 @@ namespace Theraot.Reflection
             where T : class, new()
         {
             var found = target;
-            if (found != null)
+            if (found is T foundNotNull)
             {
-                return found;
+                target = foundNotNull;
+                return foundNotNull;
             }
 
             lock (syncRoot)
