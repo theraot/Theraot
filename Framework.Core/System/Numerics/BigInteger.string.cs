@@ -23,7 +23,7 @@ namespace System.Numerics
 
                 case 'e':
                 case 'E':
-                    return FormatBigIntegerToExponentialString(value, format, info, fmt, digits);
+                    return FormatBigIntegerToExponentialString(in value, format, info, fmt, digits);
 
                 default:
                     var decimalFmt = fmt == 'g' || fmt == 'G' || fmt == 'd' || fmt == 'D' || fmt == 'r' || fmt == 'R';
@@ -544,7 +544,7 @@ namespace System.Numerics
             return result;
         }
 
-        private static string FormatBigIntegerToExponentialString(BigInteger value, string? format, NumberFormatInfo info, char fmt, int digits)
+        private static string FormatBigIntegerToExponentialString(in BigInteger value, string? format, NumberFormatInfo info, char fmt, int digits)
         {
             var precision = digits != -1 ? digits : 6;
 
@@ -553,6 +553,11 @@ namespace System.Numerics
                 return value.InternalSign.ToString(format, info);
             }
 
+            return FormatBigIntegerToExponentialStringExtracted(value, info, fmt, ref precision);
+        }
+
+        private static string FormatBigIntegerToExponentialStringExtracted(BigInteger value, NumberFormatInfo info, char fmt, ref int precision)
+        {
             var scale = (int)Math.Floor(Log10(value));
             // ---
             if (scale > precision + 10)
