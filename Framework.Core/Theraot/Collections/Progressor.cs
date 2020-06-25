@@ -332,7 +332,7 @@ namespace Theraot.Collections
         {
             var proxy = new ProxyObservable<T>();
             // ReSharper disable once RedundantExplicitArrayCreation
-            var enumeratorBox = new IEnumerator<T>?[] { enumerator };
+            IEnumerator<T>?[] enumeratorBox = { enumerator };
             return new Progressor<T>(proxy, (out T value) => Take(out value));
 
             bool Take(out T value)

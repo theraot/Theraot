@@ -108,7 +108,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool Equals(WeakNeedle<T> other)
+        public bool Equals(WeakNeedle<T>? other)
         {
             return !(other is null) && EqualsExtractedExtracted(this, other);
         }

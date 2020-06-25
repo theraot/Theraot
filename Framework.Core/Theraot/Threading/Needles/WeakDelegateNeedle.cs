@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Theraot.Reflection;
 
@@ -33,10 +32,9 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool Equals(Delegate other)
+        public bool Equals(Delegate? other)
         {
-            var method = other.GetMethodInfo();
-            return !(other is null) && Equals(method, other.Target);
+            return !(other is null) && Equals(other.GetMethodInfo(), other.Target);
         }
 
         public bool Equals(MethodInfo? method, object? target)
@@ -44,7 +42,7 @@ namespace Theraot.Threading.Needles
             return TryGetValue(out var value) && value.DelegateEquals(method, target);
         }
 
-        public bool Equals(WeakDelegateNeedle other)
+        public bool Equals(WeakDelegateNeedle? other)
         {
             if (other is null)
             {

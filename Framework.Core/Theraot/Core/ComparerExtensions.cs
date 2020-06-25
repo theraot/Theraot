@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Core
 {
@@ -23,9 +24,9 @@ namespace Theraot.Core
 
             internal IComparer<T> Wrapped { get; }
 
-            public int Compare(T x, T y)
+            public int Compare([AllowNull] T x, [AllowNull] T y)
             {
-                return Wrapped.Compare(y, x);
+                return Wrapped.Compare(y!, x!);
             }
         }
     }
