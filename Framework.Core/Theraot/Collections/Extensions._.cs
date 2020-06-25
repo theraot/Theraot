@@ -1205,4 +1205,35 @@ namespace Theraot.Collections
 
 #endif
     }
+
+    public static partial class Extensions
+    {
+        public static int ComputeHashCode<T>(this IEnumerable<T> collection)
+        {
+            if (collection == null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
+
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+            var cmp = EqualityComparer<T>.Default;
+            var h = 6551;
+            foreach (var t in collection)
+            {
+                int next;
+                try
+                {
+                    next = cmp.GetHashCode(t!);
+                }
+                catch (ArgumentNullException)
+                {
+                    next = 0;
+                }
+                h ^= (h << 5) ^ next;
+            }
+
+            return h;
+        }
+    }
 }

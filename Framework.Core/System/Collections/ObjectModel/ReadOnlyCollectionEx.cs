@@ -61,18 +61,10 @@ namespace System.Collections.ObjectModel
             Extensions.CopyTo(this, array, index, count);
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public override int GetHashCode()
         {
-            // Copyright (c) Microsoft. All rights reserved.
-            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
-            var cmp = EqualityComparer<T>.Default;
-            var h = 6551;
-            foreach (var t in this)
-            {
-                h ^= (h << 5) ^ cmp.GetHashCode(t);
-            }
-
-            return h;
+            return Extensions.ComputeHashCode(this);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

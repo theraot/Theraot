@@ -1,10 +1,20 @@
-﻿namespace System.Collections.Generic
+﻿using Theraot.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+namespace System.Collections.Generic
 {
     internal sealed class HashSetEqualityComparer<T> : IEqualityComparer<HashSet<T>>
     {
         public static readonly HashSetEqualityComparer<T> Instance = new HashSetEqualityComparer<T>();
 
-        public bool Equals(HashSet<T> x, HashSet<T> y)
+        public bool Equals
+        (
+            [AllowNull]
+            HashSet<T> x,
+            [AllowNull]
+            HashSet<T> y
+        )
         {
             if (x == y)
             {
@@ -27,23 +37,10 @@
             return true;
         }
 
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public int GetHashCode(HashSet<T> obj)
         {
-            try
-            {
-                var comparer = EqualityComparer<T>.Default;
-                var hash = 0;
-                foreach (var item in obj)
-                {
-                    hash ^= comparer.GetHashCode(item);
-                }
-
-                return hash;
-            }
-            catch (NullReferenceException)
-            {
-                return 0;
-            }
+            return Extensions.ComputeHashCode(obj);
         }
     }
 }
