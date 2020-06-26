@@ -553,10 +553,11 @@ namespace System.Numerics
                 return value.InternalSign.ToString(format, info);
             }
 
-            return FormatBigIntegerToExponentialStringExtracted(value, info, fmt, ref precision);
+            var copy = value;
+            return FormatBigIntegerToExponentialStringExtracted(ref copy, info, fmt, ref precision);
         }
 
-        private static string FormatBigIntegerToExponentialStringExtracted(BigInteger value, NumberFormatInfo info, char fmt, ref int precision)
+        private static string FormatBigIntegerToExponentialStringExtracted(ref BigInteger value, NumberFormatInfo info, char fmt, ref int precision)
         {
             var scale = (int)Math.Floor(Log10(value));
             // ---
