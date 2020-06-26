@@ -23,7 +23,7 @@ namespace Theraot
 #elif NET46
 
             "net46"
-#elif NET47
+#elif NET47 || NET471 || NET472
 
             "net47"
 #elif NET48
@@ -47,6 +47,9 @@ namespace Theraot
 #elif NETCOREAPP3_0
 
             "netcoreapp3.0"
+#elif NETCOREAPP3_1
+
+            "netcoreapp3.1"
 #elif NETSTANDARD1_0
 
             "netstandard1.0"
