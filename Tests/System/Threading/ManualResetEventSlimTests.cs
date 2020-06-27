@@ -49,7 +49,7 @@ namespace MonoTests.System.Threading
         public void ConstructorDefaults()
         {
             Assert.IsFalse(_mre.IsSet, "#1");
-#if GREATERTHAN_NETCOREAPP11 && LESSTHAN_NETCOREAPP31
+#if GREATERTHAN_NETCOREAPP11 && !NETCOREAPP30
             // .NET Core has different defaults
             // This means we should not rely on these defaults for portable code
             // Specify the SpinCount in the constructor if you need it
