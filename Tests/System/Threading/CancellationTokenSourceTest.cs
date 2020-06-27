@@ -477,11 +477,11 @@ namespace MonoTests.System.Threading
 #if GREATERTHAN_NETCOREAPP11 && LESSTHAN_NETCOREAPP30
                 // Apparently callback execution order changed in .NET Core
                 // This would also mean we should not rely on it for portable code
-                Assert.IsTrue(unregister);
+                Assert.IsTrue(unregister, Theraot.Platform.Moniker);
 #else
-                Assert.IsFalse(unregister);
+                Assert.IsFalse(unregister, Theraot.Platform.Moniker);
 #endif
-                Assert.IsTrue(register);
+                Assert.IsTrue(register, Theraot.Platform.Moniker);
             }
         }
 
