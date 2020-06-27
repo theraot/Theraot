@@ -46,20 +46,6 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void ConstructorDefaults()
-        {
-            Assert.IsFalse(_mre.IsSet, "#1");
-#if GREATERTHAN_NETCOREAPP11 && !NETCOREAPP3_0
-            // .NET Core has different defaults
-            // This means we should not rely on these defaults for portable code
-            // Specify the SpinCount in the constructor if you need it
-            Assert.AreEqual(35, _mre.SpinCount, Theraot.Platform.Moniker);
-#else
-            Assert.AreEqual(10, _mre.SpinCount, Theraot.Platform.Moniker);
-#endif
-        }
-
-        [Test]
         public void ConstructorInvalid()
         {
             try

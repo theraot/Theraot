@@ -458,34 +458,6 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void ReEntrantRegistrationTest()
-        {
-            var unregister = false;
-            var register = false;
-            using (var source = new CancellationTokenSource())
-            {
-                var token = source.Token;
-
-                Debug.WriteLine("Test1");
-                var reg = token.Register(() => unregister = true);
-                token.Register(reg.Dispose);
-                token.Register
-                (
-                    () => token.Register(() => register = true));
-                source.Cancel();
-
-#if GREATERTHAN_NETCOREAPP11 && LESSTHAN_NETCOREAPP30
-                // Apparently callback execution order changed in .NET Core
-                // This would also mean we should not rely on it for portable code
-                Assert.IsTrue(unregister, Theraot.Platform.Moniker);
-#else
-                Assert.IsFalse(unregister, Theraot.Platform.Moniker);
-#endif
-                Assert.IsTrue(register, Theraot.Platform.Moniker);
-            }
-        }
-
-        [Test]
         public void RegisterThenDispose()
         {
             var src = new CancellationTokenSource[2];
