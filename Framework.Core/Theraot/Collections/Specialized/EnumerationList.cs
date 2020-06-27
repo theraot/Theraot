@@ -1,6 +1,8 @@
 ﻿// Needed for NET30
 
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
+#pragma warning disable 8622 // Nullability of reference types in type of parameter
+
 // ReSharper disable PossibleMultipleEnumeration
 
 using System;
@@ -50,29 +52,29 @@ namespace Theraot.Collections.Specialized
 
                 case IReadOnlyList<T> readOnlyList:
                     _count = () => readOnlyList.Count;
-                    _contains = value => readOnlyList.Contains(value);
+                    _contains = readOnlyList.Contains;
                     _index = index => readOnlyList[index];
-                    _indexOf = item => readOnlyList.IndexOf(item);
+                    _indexOf = readOnlyList.IndexOf;
                     _getEnumerator = readOnlyList.GetEnumerator;
-                    _copyTo = (array, arrayIndex) => readOnlyList.CopyTo(array, arrayIndex);
+                    _copyTo = readOnlyList.CopyTo;
                     break;
 
                 case ICollection<T> collection:
                     _count = () => collection.Count;
                     _contains = collection.Contains;
                     _index = Index;
-                    _indexOf = item => collection.IndexOf(item);
+                    _indexOf = collection.IndexOf;
                     _getEnumerator = collection.GetEnumerator;
                     _copyTo = collection.CopyTo;
                     break;
 
                 case IReadOnlyCollection<T> readOnlyCollection:
                     _count = () => readOnlyCollection.Count;
-                    _contains = value => readOnlyCollection.Contains(value);
+                    _contains = readOnlyCollection.Contains;
                     _index = Index;
-                    _indexOf = item => readOnlyCollection.IndexOf(item);
+                    _indexOf = readOnlyCollection.IndexOf;
                     _getEnumerator = readOnlyCollection.GetEnumerator;
-                    _copyTo = (array, arrayIndex) => readOnlyCollection.CopyTo(array, arrayIndex);
+                    _copyTo = readOnlyCollection.CopyTo;
                     break;
 
                 default:
