@@ -611,7 +611,7 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 var innerScopeInfo = GetInnerScope(cb, _scope);
-                if (innerScopeInfo.HasValue)
+                if (innerScopeInfo != null)
                 {
                     _scope = innerScopeInfo.Value.child.Enter(this, innerScopeInfo.Value.parent);
                 }
@@ -627,7 +627,7 @@ namespace System.Linq.Expressions.Compiler
                     IL.Emit(OpCodes.Stloc, value);
                 }
 
-                if (innerScopeInfo.HasValue)
+                if (innerScopeInfo != null)
                 {
                     innerScopeInfo.Value.child.Exit();
                     _scope = innerScopeInfo.Value.parent;

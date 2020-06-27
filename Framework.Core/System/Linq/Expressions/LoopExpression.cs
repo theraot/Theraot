@@ -91,7 +91,7 @@ namespace System.Linq.Expressions
         ///     Gets the static type of the expression that this <see cref="Expression" /> represents.
         /// </summary>
         /// <returns>The <see cref="System.Type" /> that represents the static type of the expression.</returns>
-        public override Type Type => BreakLabel == null ? typeof(void) : BreakLabel.Type;
+        public override Type Type => BreakLabel?.Type ?? typeof(void);
 
         /// <summary>
         ///     Creates a new expression that is like this one, but using the

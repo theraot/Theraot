@@ -1254,7 +1254,8 @@ namespace Theraot.Core
                 found = best.Value.Value;
                 return true;
             }
-            else if (greedy)
+
+            if (greedy)
             {
                 _position = _length;
             }

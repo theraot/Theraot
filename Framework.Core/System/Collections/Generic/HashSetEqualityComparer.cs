@@ -9,10 +9,8 @@ namespace System.Collections.Generic
 
         public bool Equals
         (
-            [AllowNull]
-            HashSet<T> x,
-            [AllowNull]
-            HashSet<T> y
+            [AllowNull] HashSet<T> x,
+            [AllowNull] HashSet<T> y
         )
         {
             if (x == y)
@@ -57,6 +55,7 @@ namespace System.Collections.Generic
                 {
                     next = 0;
                 }
+
                 h ^= next;
             }
 

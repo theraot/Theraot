@@ -168,7 +168,7 @@ namespace Theraot.Core
                 yield return resultSelector!(current.Value);
 
                 var found = next!(current.Value);
-                if (!found.HasValue)
+                if (found == null)
                 {
                     break;
                 }
@@ -329,7 +329,7 @@ namespace Theraot.Core
                 yield return resultSelector!(current.Value);
 
                 var found = next!(current.Value);
-                if (!found.HasValue)
+                if (found == null)
                 {
                     break;
                 }

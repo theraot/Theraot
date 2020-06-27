@@ -233,7 +233,7 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found is T foundNotNull)
+            if (found is { } foundNotNull)
             {
                 target = foundNotNull;
                 return foundNotNull;
@@ -249,7 +249,7 @@ namespace Theraot.Reflection
                 throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
             }
 
-            found = Interlocked.CompareExchange(ref target, created, null!);
+            found = Interlocked.CompareExchange(ref target!, created, null!);
             return found ?? created;
         }
 
@@ -258,7 +258,7 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found is T foundNotNull)
+            if (found is { } foundNotNull)
             {
                 target = foundNotNull;
                 return foundNotNull;
@@ -275,7 +275,7 @@ namespace Theraot.Reflection
                 throw new InvalidOperationException("valueFactory returned null");
             }
 
-            found = Interlocked.CompareExchange(ref target, created, null!);
+            found = Interlocked.CompareExchange(ref target!, created, null!);
             return found ?? created;
         }
 
@@ -283,7 +283,7 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found is T foundNotNull)
+            if (found is { } foundNotNull)
             {
                 target = foundNotNull;
                 return foundNotNull;
@@ -300,7 +300,7 @@ namespace Theraot.Reflection
             where T : class
         {
             var found = target;
-            if (found is T foundNotNull)
+            if (found is { } foundNotNull)
             {
                 target = foundNotNull;
                 return foundNotNull;
@@ -317,7 +317,7 @@ namespace Theraot.Reflection
             where T : class, new()
         {
             var found = target;
-            if (found is T foundNotNull)
+            if (found is { } foundNotNull)
             {
                 target = foundNotNull;
                 return foundNotNull;
@@ -325,7 +325,7 @@ namespace Theraot.Reflection
 
             var created = new T();
 
-            found = Interlocked.CompareExchange(ref target, created, null!);
+            found = Interlocked.CompareExchange(ref target!, created, null!);
             return found ?? created;
         }
 
@@ -334,7 +334,7 @@ namespace Theraot.Reflection
             where T : class, new()
         {
             var found = target;
-            if (found is T foundNotNull)
+            if (found is { } foundNotNull)
             {
                 target = foundNotNull;
                 return foundNotNull;

@@ -93,7 +93,7 @@ namespace Theraot.Collections
         }
 
         private sealed class NullableStructEnumerable<TSource> : IEnumerable<TSource?>
-                    where TSource : struct
+            where TSource : struct
         {
             private readonly IEnumerable<TSource> _source;
 

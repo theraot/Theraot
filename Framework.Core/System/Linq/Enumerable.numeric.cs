@@ -1857,7 +1857,7 @@ namespace System.Linq
             foreach (var element in source)
             {
                 var item = selector(element);
-                if (!item.HasValue)
+                if (item == null)
                 {
                     continue;
                 }
@@ -1903,7 +1903,7 @@ namespace System.Linq
             foreach (var element in source)
             {
                 var item = selector(element);
-                if (!item.HasValue)
+                if (item == null)
                 {
                     continue;
                 }

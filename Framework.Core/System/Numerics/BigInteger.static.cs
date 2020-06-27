@@ -2,6 +2,7 @@
 
 #pragma warning disable CA2225 // Operator overloads have named alternates
 #pragma warning disable EPS05 // Use in-modifier for passing readonly struct
+// ReSharper disable UselessBinaryOperation
 
 using System.Globalization;
 using Theraot.Core;

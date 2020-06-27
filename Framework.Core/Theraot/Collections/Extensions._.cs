@@ -1230,6 +1230,7 @@ namespace Theraot.Collections
                 {
                     next = 0;
                 }
+
                 h ^= (h << 5) ^ next;
             }
 

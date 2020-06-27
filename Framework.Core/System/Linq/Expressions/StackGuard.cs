@@ -17,26 +17,26 @@ namespace System.Linq.Expressions
 
         public void RunOnEmptyStack<T1, T2>(Action<T1, T2> action, T1 arg1, T2 arg2)
         {
-            RunOnEmptyStackCore
+            RunOnEmptyStackCore<object?>
             (
                 s =>
                 {
                     var t = (Tuple<Action<T1, T2>, T1, T2>)s;
                     t.Item1(t.Item2, t.Item3);
-                    return default(object);
+                    return null;
                 }, Tuple.Create(action, arg1, arg2)
             );
         }
 
         public void RunOnEmptyStack<T1, T2, T3>(Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3)
         {
-            RunOnEmptyStackCore
+            RunOnEmptyStackCore<object?>
             (
                 s =>
                 {
                     var t = (Tuple<Action<T1, T2, T3>, T1, T2, T3>)s;
                     t.Item1(t.Item2, t.Item3, t.Item4);
-                    return default(object);
+                    return null;
                 }, Tuple.Create(action, arg1, arg2, arg3)
             );
         }

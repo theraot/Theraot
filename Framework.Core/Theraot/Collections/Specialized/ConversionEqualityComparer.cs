@@ -22,10 +22,8 @@ namespace Theraot.Collections.Specialized
 
         public bool Equals
         (
-            [AllowNull]
-            TInput x,
-            [AllowNull]
-            TInput y
+            [AllowNull] TInput x,
+            [AllowNull] TInput y
         )
         {
             return _comparer.Equals(_converter.Invoke(x!), _converter.Invoke(y!));

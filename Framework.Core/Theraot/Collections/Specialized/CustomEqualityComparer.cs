@@ -22,10 +22,8 @@ namespace Theraot.Collections.Specialized
 
         public bool Equals
         (
-            [AllowNull]
-            T x,
-            [AllowNull]
-            T y
+            [AllowNull] T x,
+            [AllowNull] T y
         )
         {
             return _comparison.Invoke(x!, y!);

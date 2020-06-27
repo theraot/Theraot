@@ -395,7 +395,7 @@ namespace System.Runtime.CompilerServices
         private static TaskCompletionSource<TResult> GetTaskForResult(TResult result)
         {
             var asyncMethodTaskCache = AsyncMethodTaskCache<TResult>.Singleton;
-            return asyncMethodTaskCache == null ? AsyncMethodTaskCache<TResult>.CreateCompleted(result) : asyncMethodTaskCache.FromResult(result);
+            return asyncMethodTaskCache?.FromResult(result) ?? AsyncMethodTaskCache<TResult>.CreateCompleted(result);
         }
     }
 }

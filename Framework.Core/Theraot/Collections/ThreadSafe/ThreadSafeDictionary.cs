@@ -1216,7 +1216,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private int GetHashCode(TKey key)
         {
-            var hashCode = ComputeHashCode(key);
+            var hashCode = ComputeHashCode();
             if (hashCode < 0)
             {
                 hashCode = -hashCode;
@@ -1229,7 +1229,7 @@ namespace Theraot.Collections.ThreadSafe
 
             return hashCode;
 
-            int ComputeHashCode(TKey key)
+            int ComputeHashCode()
             {
                 try
                 {

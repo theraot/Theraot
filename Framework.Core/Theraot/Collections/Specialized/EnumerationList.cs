@@ -50,38 +50,38 @@ namespace Theraot.Collections.Specialized
 
                 case IReadOnlyList<T> readOnlyList:
                     _count = () => readOnlyList.Count;
-                    _contains = readOnlyList.Contains;
+                    _contains = value => readOnlyList.Contains(value);
                     _index = index => readOnlyList[index];
-                    _indexOf = readOnlyList.IndexOf;
+                    _indexOf = item => readOnlyList.IndexOf(item);
                     _getEnumerator = readOnlyList.GetEnumerator;
-                    _copyTo = readOnlyList.CopyTo;
+                    _copyTo = (array, arrayIndex) => readOnlyList.CopyTo(array, arrayIndex);
                     break;
 
                 case ICollection<T> collection:
                     _count = () => collection.Count;
                     _contains = collection.Contains;
                     _index = Index;
-                    _indexOf = collection.IndexOf;
+                    _indexOf = item => collection.IndexOf(item);
                     _getEnumerator = collection.GetEnumerator;
                     _copyTo = collection.CopyTo;
                     break;
 
                 case IReadOnlyCollection<T> readOnlyCollection:
                     _count = () => readOnlyCollection.Count;
-                    _contains = readOnlyCollection.Contains;
+                    _contains = value => readOnlyCollection.Contains(value);
                     _index = Index;
-                    _indexOf = readOnlyCollection.IndexOf;
+                    _indexOf = item => readOnlyCollection.IndexOf(item);
                     _getEnumerator = readOnlyCollection.GetEnumerator;
-                    _copyTo = readOnlyCollection.CopyTo;
+                    _copyTo = (array, arrayIndex) => readOnlyCollection.CopyTo(array, arrayIndex);
                     break;
 
                 default:
                     _count = wrapped.Count;
-                    _contains = wrapped.Contains;
+                    _contains = wrapped.Contains!;
                     _index = Index;
-                    _indexOf = wrapped.IndexOf;
+                    _indexOf = wrapped.IndexOf!;
                     _getEnumerator = wrapped.GetEnumerator;
-                    _copyTo = wrapped.CopyTo;
+                    _copyTo = wrapped.CopyTo!;
                     break;
             }
 

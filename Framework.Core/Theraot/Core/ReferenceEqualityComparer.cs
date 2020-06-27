@@ -22,10 +22,8 @@ namespace Theraot.Core
 
         bool IEqualityComparer<T>.Equals
         (
-            [AllowNull]
-            T x,
-            [AllowNull]
-            T y
+            [AllowNull] T x,
+            [AllowNull] T y
         )
         {
             return ReferenceEquals(x, y);

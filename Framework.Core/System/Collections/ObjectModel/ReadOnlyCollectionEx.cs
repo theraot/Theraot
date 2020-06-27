@@ -64,7 +64,7 @@ namespace System.Collections.ObjectModel
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public override int GetHashCode()
         {
-            return Extensions.ComputeHashCode(this);
+            return this.ComputeHashCode();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

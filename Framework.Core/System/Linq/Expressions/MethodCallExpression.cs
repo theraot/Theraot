@@ -1027,7 +1027,7 @@ namespace System.Linq.Expressions
         {
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
-            return Call(instance, Method, args == null ? _arguments : args.AsArrayInternal());
+            return Call(instance, Method, args?.AsArrayInternal() ?? _arguments);
         }
 
         internal override bool SameArguments(ICollection<Expression>? arguments)
@@ -1448,7 +1448,7 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == _arguments.Length);
 
-            return Call(Method, args == null ? _arguments : args.AsArrayInternal());
+            return Call(Method, args?.AsArrayInternal() ?? _arguments);
         }
 
         internal override bool SameArguments(ICollection<Expression>? arguments)

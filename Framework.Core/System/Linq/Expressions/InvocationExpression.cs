@@ -594,7 +594,7 @@ namespace System.Linq.Expressions
         {
             Debug.Assert(arguments == null || arguments.Length == 1);
 
-            return Invoke(lambda, arguments != null ? arguments[0] : ExpressionUtils.ReturnObject<Expression>(_arg0));
+            return Invoke(lambda, arguments?[0] ?? ExpressionUtils.ReturnObject<Expression>(_arg0));
         }
     }
 

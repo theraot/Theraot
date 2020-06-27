@@ -19,7 +19,7 @@ namespace System.Threading.Tasks
             get
             {
                 var currentTask = Task.InternalCurrent;
-                return currentTask != null ? currentTask.ExecutingTaskScheduler : Default;
+                return currentTask?.ExecutingTaskScheduler ?? Default;
             }
         }
 
