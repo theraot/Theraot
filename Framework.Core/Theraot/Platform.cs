@@ -77,6 +77,8 @@ namespace Theraot
 #elif NETSTANDARD2_1
 
             "netstandard2.1"
+#elif NET50
+            "net5.0"
 #else
 
             "unknown"
@@ -122,6 +124,8 @@ namespace Theraot
             3
 #elif NET40 || NET45 || NET46 || NET47 || NET471 || NET472 || NET48
             4
+#elif NET50
+            5
 #else
             -1
 #endif
@@ -146,6 +150,8 @@ namespace Theraot
             7
 #elif NET48
             8
+#elif NET50
+            0
 #else
             -1
 #endif
