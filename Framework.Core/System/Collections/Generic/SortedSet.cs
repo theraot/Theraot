@@ -13,7 +13,7 @@ using Theraot.Collections.Specialized;
 namespace System.Collections.Generic
 {
     [Serializable]
-    public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
+    public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback, IReadOnlySet<T>, IReadOnlyCollection<T>
     {
         private readonly AVLTree<T, VoidStruct> _wrapped;
 
@@ -100,6 +100,16 @@ namespace System.Collections.Generic
         public T Min => GetMin();
 
         object ICollection.SyncRoot => this;
+
+        public static IEqualityComparer<SortedSet<T>> CreateSetComparer()
+        {
+            return SortedSetEqualityComparer<T>.Instance;
+        }
+
+        public static IEqualityComparer<SortedSet<T>> CreateSetComparer(IEqualityComparer<T>? memberEqualityComparer)
+        {
+            return new SortedSetEqualityComparer<T>(memberEqualityComparer);
+        }
 
         public bool Add(T item)
         {
