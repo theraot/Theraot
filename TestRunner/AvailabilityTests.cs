@@ -126,6 +126,7 @@ namespace TestRunner
             No.Op(typeof(IReadOnlyDictionary<TKey, TValue>));
             No.Op(typeof(IReadOnlyList<T>));
             No.Op(typeof(ISet<T>));
+            No.Op(typeof(IReadOnlySet<T>));
             No.Op(typeof(KeyNotFoundException));
             No.Op(typeof(KeyValuePair<TKey, TValue>));
             No.Op(typeof(LinkedList<T>));
