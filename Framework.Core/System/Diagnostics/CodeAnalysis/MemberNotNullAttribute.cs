@@ -1,4 +1,6 @@
-#if TARGETS_NET || LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
+﻿#if TARGETS_NET || LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
+
+#pragma warning disable CA1019 // Attributes are not full implemented in this listing
 
 namespace System.Diagnostics.CodeAnalysis
 {

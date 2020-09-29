@@ -1,4 +1,6 @@
-#if TARGETS_NET || LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
+﻿#if TARGETS_NET || LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
+
+#pragma warning disable CA1019 // Attributes are not full implemented in this listing
 
 namespace System.Diagnostics.CodeAnalysis
 {
@@ -32,11 +34,11 @@ namespace System.Diagnostics.CodeAnalysis
             Members = members;
         }
 
-        /// <summary>Gets the return value condition.</summary>
-        public bool ReturnValue { get; }
-
         /// <summary>Gets field or property member names.</summary>
         public string[] Members { get; }
+
+        /// <summary>Gets the return value condition.</summary>
+        public bool ReturnValue { get; }
     }
 }
 
