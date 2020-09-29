@@ -5,61 +5,24 @@ namespace System.Collections.Generic
 {
     internal sealed class HashSetEqualityComparer<T> : IEqualityComparer<HashSet<T>>
     {
-        public static readonly HashSetEqualityComparer<T> Instance = new HashSetEqualityComparer<T>();
+        public static readonly HashSetEqualityComparer<T> Instance = new HashSetEqualityComparer<T>(null);
 
-        public bool Equals
-        (
-            [AllowNull] HashSet<T> x,
-            [AllowNull] HashSet<T> y
-        )
+        private readonly IEqualityComparer<T>? _equalityComparer;
+
+        public HashSetEqualityComparer(IEqualityComparer<T>? equalityComparer)
         {
-            if (x == y)
-            {
-                return true;
-            }
+            _equalityComparer = equalityComparer;
+        }
 
-            if (x == null || y == null || x.Count != y.Count)
-            {
-                return false;
-            }
-
-            foreach (var item in x)
-            {
-                if (!y.Contains(item))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+        public bool Equals([AllowNull] HashSet<T> x, [AllowNull] HashSet<T> y)
+        {
+            return SetEqualityComparer<T>.Equals(x, y, _equalityComparer);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public int GetHashCode(HashSet<T> obj)
         {
-            if (obj == null)
-            {
-                return 0;
-            }
-
-            var cmp = EqualityComparer<T>.Default;
-            var h = 0;
-            foreach (var t in obj)
-            {
-                int next;
-                try
-                {
-                    next = cmp.GetHashCode(t!);
-                }
-                catch (ArgumentNullException)
-                {
-                    next = 0;
-                }
-
-                h ^= next;
-            }
-
-            return h;
+            return SetEqualityComparer<T>.GetHashCode(obj, _equalityComparer);
         }
     }
 }
