@@ -4,6 +4,7 @@
 #pragma warning disable S2971 // "IEnumerable" LINQs should be simplified
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Linq
 {
@@ -60,6 +61,7 @@ namespace System.Linq
             throw new InvalidOperationException();
         }
 
+        [return: MaybeNull]
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null)
@@ -75,6 +77,7 @@ namespace System.Linq
             return default!;
         }
 
+        [return: MaybeNull]
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
             return FirstOrDefault(source.Where(predicate));
