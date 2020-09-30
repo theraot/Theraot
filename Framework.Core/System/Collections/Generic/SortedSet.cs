@@ -3,6 +3,7 @@
 #pragma warning disable CA1721 // Property names should not match get methods
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -95,8 +96,10 @@ namespace System.Collections.Generic
 
         bool ICollection.IsSynchronized => false;
 
+        [MaybeNull]
         public T Max => GetMax();
 
+        [MaybeNull]
         public T Min => GetMin();
 
         object ICollection.SyncRoot => this;
@@ -246,7 +249,7 @@ namespace System.Collections.Generic
             Extensions.SymmetricExceptWith(this, other);
         }
 
-        public bool TryGetValue(T equalValue, out T actualValue)
+        public bool TryGetValue(T equalValue, [MaybeNullWhen(false)] out T actualValue)
         {
             var node = _wrapped.Get(equalValue);
             if (node != null)
@@ -255,7 +258,7 @@ namespace System.Collections.Generic
                 return true;
             }
 
-            actualValue = default!;
+            actualValue = default;
             return false;
         }
 
@@ -264,27 +267,28 @@ namespace System.Collections.Generic
             Extensions.UnionWith(this, other);
         }
 
-        protected virtual bool AddExtracted(T item)
+        internal virtual bool AddExtracted(T item)
         {
             return _wrapped.AddNonDuplicate(item, default);
         }
 
-        protected virtual int GetCount()
+        internal virtual int GetCount()
         {
             return _wrapped.Count;
         }
 
-        protected virtual IEnumerator<T> GetEnumeratorExtracted()
+        internal virtual IEnumerator<T> GetEnumeratorExtracted()
         {
             return _wrapped.ConvertProgressive(input => input.Key).GetEnumerator();
         }
 
-        protected virtual T GetMax()
+        [return: MaybeNull]
+        internal virtual T GetMax()
         {
             var node = _wrapped.Root;
             if (node == null)
             {
-                return default!;
+                return default;
             }
 
             while (node.Right != null)
@@ -295,12 +299,13 @@ namespace System.Collections.Generic
             return node.Key;
         }
 
-        protected virtual T GetMin()
+        [return: MaybeNull]
+        internal virtual T GetMin()
         {
             var node = _wrapped.Root;
             if (node == null)
             {
-                return default!;
+                return default;
             }
 
             while (node.Left != null)
@@ -309,6 +314,11 @@ namespace System.Collections.Generic
             }
 
             return node.Key;
+        }
+
+        internal virtual bool RemoveExtracted(T item)
+        {
+            return _wrapped.Remove(item);
         }
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -327,11 +337,6 @@ namespace System.Collections.Generic
             }
 
             info.AddValue("Version", 0);
-        }
-
-        protected virtual bool RemoveExtracted(T item)
-        {
-            return _wrapped.Remove(item);
         }
 
         [Serializable]
@@ -392,7 +397,7 @@ namespace System.Collections.Generic
                 _wrapped.UnionWith(slice);
             }
 
-            protected override bool AddExtracted(T item)
+            internal override bool AddExtracted(T item)
             {
                 if (!InRange(item))
                 {
@@ -402,36 +407,43 @@ namespace System.Collections.Generic
                 return _wrapped.AddExtracted(item);
             }
 
-            protected override int GetCount()
+            internal override int GetCount()
             {
                 return _wrapped._wrapped.Range(_lower, _upper).Count();
             }
 
-            protected override IEnumerator<T> GetEnumeratorExtracted()
+            internal override IEnumerator<T> GetEnumeratorExtracted()
             {
                 return _wrapped._wrapped.Range(_lower, _upper).ConvertProgressive(input => input.Key).GetEnumerator();
             }
 
-            protected override T GetMax()
+            [return: MaybeNull]
+            internal override T GetMax()
             {
                 var bound = _wrapped._wrapped.GetNearestLeft(_upper);
                 if (bound == null || Comparer.Compare(_lower, bound.Key) > 0)
                 {
-                    return default!;
+                    return default;
                 }
 
                 return bound.Key;
             }
 
-            protected override T GetMin()
+            [return: MaybeNull]
+            internal override T GetMin()
             {
                 var bound = _wrapped._wrapped.GetNearestRight(_lower);
                 if (bound == null || Comparer.Compare(_upper, bound.Key) < 0)
                 {
-                    return default!;
+                    return default;
                 }
 
                 return bound.Key;
+            }
+
+            internal override bool RemoveExtracted(T item)
+            {
+                return InRange(item) && _wrapped.RemoveExtracted(item);
             }
 
             protected override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -446,11 +458,6 @@ namespace System.Collections.Generic
                 info.AddValue("lBoundActive", true);
                 info.AddValue("uBoundActive", true);
                 base.GetObjectData(info, context);
-            }
-
-            protected override bool RemoveExtracted(T item)
-            {
-                return InRange(item) && _wrapped.RemoveExtracted(item);
             }
 
             private bool InRange(T item)
