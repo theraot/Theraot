@@ -7,6 +7,12 @@ using System.Runtime.CompilerServices;
 
 #endif
 
+#if (GREATERTHAN_NET30 && LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+
+using System.Diagnostics.CodeAnalysis;
+
+#endif
+
 namespace System.Collections.Generic
 {
     // ReSharper disable once BadPreprocessorIndent
@@ -152,10 +158,10 @@ namespace System.Collections.Generic
 
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
-        public bool TryGetValue(T equalValue, out T actualValue)
+        public bool TryGetValue(T equalValue, [MaybeNullWhen(false)] out T actualValue)
         {
             var spy = (Comparer as SpyEqualityComparer)!;
-            var found = equalValue;
+            var found = equalValue!;
             spy.SetCallback
             (
                 (stored, check) =>
@@ -166,8 +172,14 @@ namespace System.Collections.Generic
             );
             var result = Contains(equalValue);
             spy.SetCallback(null);
-            actualValue = result ? found : default!;
-            return result;
+            if (result)
+            {
+                actualValue = found;
+                return true;
+            }
+
+            actualValue = default;
+            return false;
         }
 
         private sealed class SpyEqualityComparer : IEqualityComparer<T>
