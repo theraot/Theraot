@@ -49,7 +49,14 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
         {
-            return _bucketCore.EnumerateRange(indexFrom, indexTo).Select(value => value == BucketHelper.Null ? default! : (T)value);
+            var range = _bucketCore.EnumerateRange(indexFrom, indexTo);
+
+            static T Selector(object value)
+            {
+                return value == BucketHelper.Null ? default! : (T)value;
+            }
+
+            return range.Select(Selector);
         }
 
         public bool Exchange(int index, T item, [MaybeNullWhen(true)] out T previous)
