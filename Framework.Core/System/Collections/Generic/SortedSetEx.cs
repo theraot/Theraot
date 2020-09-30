@@ -7,10 +7,10 @@ namespace System.Collections.Generic
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class SortedSetEx<T> : SortedSet<T>
-#if TARGETS_NET || LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
+#if GREATERTHAN_NET35 || LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
         , IReadOnlySet<T>
 #endif
-#if (LESSTHAN_NET46 && GREATERTHAN_NET30) || LESSTHAN_NETSTANDARD13
+#if (LESSTHAN_NET46 && GREATERTHAN_NET45)
         , IReadOnlyCollection<T>
 #endif
     {

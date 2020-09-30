@@ -13,7 +13,7 @@ using Theraot.Collections.Specialized;
 namespace System.Collections.Generic
 {
     [Serializable]
-    public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback, IReadOnlySet<T>, IReadOnlyCollection<T>
+    public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback, IReadOnlySet<T>
     {
         private readonly AVLTree<T, VoidStruct> _wrapped;
 

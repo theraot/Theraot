@@ -13,7 +13,7 @@ using Theraot.Threading.Needles;
 namespace System.Collections.Generic
 {
     [Serializable]
-    public class HashSet<T> : ISet<T>, IReadOnlyCollection<T>, ISerializable, IReadOnlySet<T>
+    public class HashSet<T> : ISet<T>, ISerializable, IReadOnlySet<T>
     {
         private readonly NullAwareDictionary<T, T> _wrapped;
 

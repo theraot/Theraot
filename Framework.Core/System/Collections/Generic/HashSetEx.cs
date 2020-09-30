@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace System.Collections.Generic
 {
+    // ReSharper disable once BadPreprocessorIndent
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
@@ -16,11 +17,8 @@ namespace System.Collections.Generic
 #if NET35
         , ISet<T>
 #endif
-#if TARGETS_NET|| LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
+#if GREATERTHAN_NET30 || LESSTHAN_NET50 || LESSTHAN_NETSTANDARD22
         , IReadOnlySet<T>
-#endif
-#if (LESSTHAN_NET46 && GREATERTHAN_NET30) || LESSTHAN_NETSTANDARD13
-        , IReadOnlyCollection<T>
 #endif
     {
         public HashSetEx()
