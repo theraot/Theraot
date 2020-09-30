@@ -540,7 +540,7 @@ namespace Theraot.Collections.Specialized
 
         public ICollection<TValue> Values { get; }
 
-        TValue IDictionary<TKey, TValue>.this[TKey key]
+        TValue IDictionary<TKey, TValue>.this[[AllowNull] TKey key]
         {
             get
             {
@@ -589,7 +589,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        void IDictionary<TKey, TValue>.Add([AllowNull] TKey key, TValue value)
         {
             Add(key, value);
         }
@@ -690,7 +690,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        bool IDictionary<TKey, TValue>.ContainsKey(TKey key)
+        bool IDictionary<TKey, TValue>.ContainsKey([AllowNull] TKey key)
         {
             return ContainsKey(key);
         }
@@ -772,7 +772,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        bool IDictionary<TKey, TValue>.Remove([AllowNull] TKey key)
         {
             return Remove(key);
         }
@@ -871,7 +871,7 @@ namespace Theraot.Collections.Specialized
 
         bool IDictionary<TKey, TValue>.TryGetValue
         (
-            TKey key,
+            [AllowNull] TKey key,
 #if GREATERTHAN_NETCOREAPP22
             [MaybeNullWhen(false)]
 #endif
