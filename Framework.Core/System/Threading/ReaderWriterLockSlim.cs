@@ -306,7 +306,7 @@ namespace System.Threading
             catch (Exception ex)
             {
                 _ = ex;
-                // An async exception occured, if we had taken the upgradable mode, release it
+                // An async exception occurred, if we had taken the upgradable mode, release it
                 _upgradableTaken.Value &= !taken || success;
             }
 
