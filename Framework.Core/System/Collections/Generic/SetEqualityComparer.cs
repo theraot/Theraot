@@ -8,7 +8,7 @@ namespace System.Collections.Generic
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool Equals(ICollection<T>? x, ICollection<T>? y, IEqualityComparer<T>? memberEqualityComparer)
         {
-            if (x == y)
+            if (ReferenceEquals(x, y))
             {
                 return true;
             }
