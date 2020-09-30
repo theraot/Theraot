@@ -330,7 +330,7 @@ namespace System.Collections.Generic
                 return true;
             }
 
-            actualValue = default!;
+            actualValue = default;
             return false;
         }
 
@@ -404,6 +404,7 @@ namespace System.Collections.Generic
         public struct Enumerator : IEnumerator<T>
         {
             private readonly IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, T>> _enumerator;
+
             private bool _valid;
 
             internal Enumerator(HashSet<T> hashSet)
@@ -413,15 +414,16 @@ namespace System.Collections.Generic
                 Current = default!;
             }
 
+            [field: MaybeNull]
             public T Current { get; private set; }
 
-            object IEnumerator.Current
+            object? IEnumerator.Current
             {
                 get
                 {
                     if (_valid)
                     {
-                        return Current!;
+                        return Current;
                     }
 
                     throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
@@ -431,19 +433,14 @@ namespace System.Collections.Generic
             public void Dispose()
             {
                 var enumerator = _enumerator;
-                enumerator?.Dispose();
+                enumerator.Dispose();
             }
 
             public bool MoveNext()
             {
                 var enumerator = _enumerator;
-                if (enumerator == null)
-                {
-                    return false;
-                }
-
-                _valid = _enumerator.MoveNext();
-                Current = _enumerator.Current.Key.Value;
+                _valid = enumerator.MoveNext();
+                Current = enumerator.Current.Key.Value;
                 return _valid;
             }
 
@@ -451,13 +448,8 @@ namespace System.Collections.Generic
             {
                 _valid = false;
                 var enumerator = _enumerator;
-                if (enumerator == null)
-                {
-                    return;
-                }
-
-                Current = _enumerator.Current.Key.Value;
-                _enumerator.Reset();
+                Current = enumerator.Current.Key.Value;
+                enumerator.Reset();
             }
         }
     }
