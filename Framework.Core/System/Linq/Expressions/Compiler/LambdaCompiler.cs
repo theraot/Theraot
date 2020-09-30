@@ -216,7 +216,7 @@ namespace System.Linq.Expressions.Compiler
         private MemberExpression CreateLazyInitializedField<T>(string name)
         {
             return _method is DynamicMethod
-                ? Expression.Field(Expression.Constant(new StrongBox<T>(default!)), "Value")
+                ? Expression.Field(Expression.Constant(new StrongBox<T>()), "Value")
                 : Expression.Field(null, CreateStaticField(name, typeof(T)));
         }
 
