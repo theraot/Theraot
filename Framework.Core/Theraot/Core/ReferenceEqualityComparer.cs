@@ -1,17 +1,9 @@
-﻿// Needed for NET30
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
 
 namespace Theraot.Core
 {
-    public static class ReferenceEqualityComparer
-    {
-        public static ReferenceEqualityComparer<object> Default { get; } = ReferenceEqualityComparer<object>.Instance;
-    }
-
     public sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+        where T : class
     {
         private ReferenceEqualityComparer()
         {
@@ -20,26 +12,16 @@ namespace Theraot.Core
 
         public static ReferenceEqualityComparer<T> Instance { get; } = new ReferenceEqualityComparer<T>();
 
-        bool IEqualityComparer<T>.Equals
-        (
-            [AllowNull] T x,
-            [AllowNull] T y
-        )
+        bool IEqualityComparer<T>.Equals(T? x, T? y)
         {
             return ReferenceEquals(x, y);
         }
 
-        public int GetHashCode
-        (
-#if GREATERTHAN_NETCOREAPP22
-            [DisallowNull]
-#endif
-            T obj
-        )
+        public int GetHashCode(T? obj)
         {
-            if (obj == null!)
+            if (obj == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                return 0;
             }
 
             return obj.GetHashCode();

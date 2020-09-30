@@ -9,14 +9,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Theraot.Reflection;
 using Theraot.Threading.Needles;
-
-#if GREATERTHAN_NETCOREAPP22
-
-using System.Diagnostics.CodeAnalysis;
-
-#endif
 
 namespace Theraot.Collections.Specialized
 {
@@ -557,7 +552,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public TValue this[TKey key]
+        public TValue this[[AllowNull] TKey key]
         {
             get
             {
@@ -599,7 +594,7 @@ namespace Theraot.Collections.Specialized
             Add(key, value);
         }
 
-        public void Add(TKey key, TValue value)
+        public void Add([AllowNull] TKey key, TValue value)
         {
             if (key == null)
             {
@@ -700,7 +695,7 @@ namespace Theraot.Collections.Specialized
             return ContainsKey(key);
         }
 
-        public bool ContainsKey(TKey key)
+        public bool ContainsKey([AllowNull] TKey key)
         {
             return key == null ? ContainsNullKey() : _wrapped.ContainsKey(key);
         }
@@ -782,7 +777,7 @@ namespace Theraot.Collections.Specialized
             return Remove(key);
         }
 
-        public bool Remove(TKey key)
+        public bool Remove([AllowNull] TKey key)
         {
             return key == null ? RemoveNullKey() : _wrapped.Remove(key);
         }
@@ -853,7 +848,7 @@ namespace Theraot.Collections.Specialized
             return true;
         }
 
-        public bool TryAdd(TKey key, TValue value)
+        public bool TryAdd([AllowNull] TKey key, TValue value)
         {
             return key == null ? TryAddNullKey(value) : _wrapped.TryAdd(key, value);
         }
@@ -888,7 +883,7 @@ namespace Theraot.Collections.Specialized
 
         public bool TryGetValue
         (
-            TKey key,
+            [AllowNull] TKey key,
 #if GREATERTHAN_NETCOREAPP22
             [MaybeNullWhen(false)]
 #endif
