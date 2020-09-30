@@ -74,7 +74,7 @@ namespace System.Linq
                 return item;
             }
 
-            return default!;
+            return default;
         }
 
         [return: MaybeNull]

@@ -53,7 +53,7 @@ namespace System.Linq
 
             if (index < 0)
             {
-                return default!;
+                return default;
             }
 
             switch (source)
@@ -76,7 +76,7 @@ namespace System.Linq
                         count++;
                     }
 
-                    return default!;
+                    return default;
             }
         }
     }
