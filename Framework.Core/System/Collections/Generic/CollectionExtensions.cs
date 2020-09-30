@@ -1,5 +1,6 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace System.Collections.Generic
@@ -7,6 +8,7 @@ namespace System.Collections.Generic
     public static class CollectionExtensions
     {
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        [return: MaybeNull]
         public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary, TKey key)
         {
             if (dictionary == null)
@@ -14,7 +16,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException(nameof(dictionary));
             }
 
-            return dictionary.TryGetValue(key, out var value) ? value : default!;
+            return dictionary.TryGetValue(key, out var value) ? value : default;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -29,7 +31,7 @@ namespace System.Collections.Generic
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static bool Remove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue value)
+        public static bool Remove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, [MaybeNullWhen(false)] out TValue value)
         {
             if (dictionary == null)
             {
@@ -41,7 +43,7 @@ namespace System.Collections.Generic
                 return true;
             }
 
-            value = default!;
+            value = default;
             return false;
         }
 
