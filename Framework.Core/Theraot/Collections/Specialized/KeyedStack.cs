@@ -3,6 +3,7 @@
 #pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Collections.Specialized
 {
@@ -26,14 +27,14 @@ namespace Theraot.Collections.Specialized
             stack.Push(item);
         }
 
-        public bool TryTake(TKey key, out TValue item)
+        public bool TryTake(TKey key, [MaybeNullWhen(false)] out TValue item)
         {
             if (_data.TryGetValue(key, out var stack))
             {
                 return stack.TryTake(out item);
             }
 
-            item = default!;
+            item = default;
             return false;
         }
     }

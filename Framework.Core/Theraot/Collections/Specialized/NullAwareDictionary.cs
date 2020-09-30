@@ -878,16 +878,13 @@ namespace Theraot.Collections.Specialized
             out TValue value
         )
         {
-            return TryGetValue(key, out value);
+            return TryGetValue(key, out value!);
         }
 
         public bool TryGetValue
         (
             [AllowNull] TKey key,
-#if GREATERTHAN_NETCOREAPP22
-            [MaybeNullWhen(false)]
-#endif
-            out TValue value
+            [MaybeNullWhen(false)] out TValue value
         )
         {
             if (key == null)
@@ -898,13 +895,22 @@ namespace Theraot.Collections.Specialized
             return _wrapped.TryGetValue(key, out value);
         }
 
-        public bool TryGetValue
+        bool IDictionary<ReadOnlyStructNeedle<TKey>, TValue>.TryGetValue
         (
             ReadOnlyStructNeedle<TKey> key,
 #if GREATERTHAN_NETCOREAPP22
             [MaybeNullWhen(false)]
 #endif
             out TValue value
+        )
+        {
+            return TryGetValue(key, out value!);
+        }
+
+        public bool TryGetValue
+        (
+            ReadOnlyStructNeedle<TKey> key,
+            [MaybeNullWhen(false)] out TValue value
         )
         {
             if (key.IsAlive)
@@ -915,7 +921,7 @@ namespace Theraot.Collections.Specialized
             return TryGetValueForNullKey(out value);
         }
 
-        public bool TryGetValueForNullKey(out TValue value)
+        public bool TryGetValueForNullKey([MaybeNullWhen(false)] out TValue value)
         {
             if (_hasNull)
             {
@@ -923,7 +929,7 @@ namespace Theraot.Collections.Specialized
                 return true;
             }
 
-            value = default!;
+            value = default;
             return false;
         }
     }

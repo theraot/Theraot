@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -873,7 +874,7 @@ namespace Theraot.Collections
             return source.AddRange(other.Distinct().Where(input => !source.Remove(input)));
         }
 
-        public static bool TryTake<T>(this Stack<T> stack, out T item)
+        public static bool TryTake<T>(this Stack<T> stack, [MaybeNullWhen(false)] out T item)
         {
             if (stack == null)
             {
@@ -887,7 +888,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default!;
+                item = default;
                 return false;
             }
         }
@@ -1127,7 +1128,7 @@ namespace Theraot.Collections
 
 #if TARGETS_NET || LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
-        public static bool TryDequeue<T>(this Queue<T> source, out T item)
+        public static bool TryDequeue<T>(this Queue<T> source, [MaybeNullWhen(false)] out T item)
         {
             if (source == null)
             {
@@ -1141,12 +1142,12 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default!;
+                item = default;
                 return false;
             }
         }
 
-        public static bool TryPeek<T>(this Stack<T> source, out T item)
+        public static bool TryPeek<T>(this Stack<T> source, [MaybeNullWhen(false)] out T item)
         {
             if (source == null)
             {
@@ -1160,12 +1161,12 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default!;
+                item = default;
                 return false;
             }
         }
 
-        public static bool TryPeek<T>(this Queue<T> source, out T item)
+        public static bool TryPeek<T>(this Queue<T> source, [MaybeNullWhen(false)] out T item)
         {
             if (source == null)
             {
@@ -1179,12 +1180,12 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default!;
+                item = default;
                 return false;
             }
         }
 
-        public static bool TryPop<T>(this Stack<T> source, out T item)
+        public static bool TryPop<T>(this Stack<T> source, [MaybeNullWhen(false)] out T item)
         {
             if (source == null)
             {
@@ -1198,7 +1199,7 @@ namespace Theraot.Collections
             }
             catch (InvalidOperationException)
             {
-                item = default!;
+                item = default;
                 return false;
             }
         }

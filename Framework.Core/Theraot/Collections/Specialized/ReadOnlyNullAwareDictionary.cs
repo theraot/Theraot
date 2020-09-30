@@ -4,13 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Theraot.Threading.Needles;
-
-#if GREATERTHAN_NETCOREAPP22
-
 using System.Diagnostics.CodeAnalysis;
-
-#endif
+using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized
 {
@@ -98,13 +93,34 @@ namespace Theraot.Collections.Specialized
         public bool TryGetValue
         (
             ReadOnlyStructNeedle<TKey> key,
+            [MaybeNullWhen(false)] out TValue value
+        )
+        {
+            return Dictionary.TryGetValue(key, out value);
+        }
+
+        bool IReadOnlyDictionary<ReadOnlyStructNeedle<TKey>, TValue>.TryGetValue
+        (
+            ReadOnlyStructNeedle<TKey> key,
 #if GREATERTHAN_NETCOREAPP22
             [MaybeNullWhen(false)]
 #endif
             out TValue value
         )
         {
-            return Dictionary.TryGetValue(key, out value);
+            return TryGetValue(key, out value!);
+        }
+
+        bool IDictionary<ReadOnlyStructNeedle<TKey>, TValue>.TryGetValue
+        (
+            ReadOnlyStructNeedle<TKey> key,
+#if GREATERTHAN_NETCOREAPP22
+            [MaybeNullWhen(false)]
+#endif
+            out TValue value
+        )
+        {
+            return TryGetValue(key, out value!);
         }
     }
 }
