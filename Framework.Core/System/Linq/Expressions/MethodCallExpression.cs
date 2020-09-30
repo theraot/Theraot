@@ -784,7 +784,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class InstanceMethodCallExpression0 : InstanceMethodCallExpression, IArgumentProvider
+    internal sealed class InstanceMethodCallExpression0 : InstanceMethodCallExpression
     {
         public InstanceMethodCallExpression0(MethodInfo method, Expression instance)
             : base(method, instance)
@@ -817,7 +817,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class InstanceMethodCallExpression1 : InstanceMethodCallExpression, IArgumentProvider
+    internal sealed class InstanceMethodCallExpression1 : InstanceMethodCallExpression
     {
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
 
@@ -865,7 +865,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class InstanceMethodCallExpression2 : InstanceMethodCallExpression, IArgumentProvider
+    internal sealed class InstanceMethodCallExpression2 : InstanceMethodCallExpression
     {
         private readonly Expression _arg1; // storage for the 2nd argument
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
@@ -928,7 +928,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class InstanceMethodCallExpression3 : InstanceMethodCallExpression, IArgumentProvider
+    internal sealed class InstanceMethodCallExpression3 : InstanceMethodCallExpression
     {
         private readonly Expression _arg1, _arg2; // storage for the 2nd - 3rd argument
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
@@ -999,7 +999,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class InstanceMethodCallExpressionN : InstanceMethodCallExpression, IArgumentProvider
+    internal sealed class InstanceMethodCallExpressionN : InstanceMethodCallExpression
     {
         private readonly Expression[] _arguments;
         private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
@@ -1036,7 +1036,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class MethodCallExpression0 : MethodCallExpression, IArgumentProvider
+    internal sealed class MethodCallExpression0 : MethodCallExpression
     {
         public MethodCallExpression0(MethodInfo method)
             : base(method)
@@ -1070,7 +1070,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class MethodCallExpression1 : MethodCallExpression, IArgumentProvider
+    internal sealed class MethodCallExpression1 : MethodCallExpression
     {
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
 
@@ -1119,7 +1119,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class MethodCallExpression2 : MethodCallExpression, IArgumentProvider
+    internal sealed class MethodCallExpression2 : MethodCallExpression
     {
         private readonly Expression _arg1; // storage for the 2nd arg
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
@@ -1182,7 +1182,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class MethodCallExpression3 : MethodCallExpression, IArgumentProvider
+    internal sealed class MethodCallExpression3 : MethodCallExpression
     {
         private readonly Expression _arg1, _arg2; // storage for the 2nd - 3rd args.
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
@@ -1253,7 +1253,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class MethodCallExpression4 : MethodCallExpression, IArgumentProvider
+    internal sealed class MethodCallExpression4 : MethodCallExpression
     {
         private readonly Expression _arg1, _arg2, _arg3; // storage for the 2nd - 4th args.
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
@@ -1332,7 +1332,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class MethodCallExpression5 : MethodCallExpression, IArgumentProvider
+    internal sealed class MethodCallExpression5 : MethodCallExpression
     {
         private readonly Expression _arg1, _arg2, _arg3, _arg4; // storage for the 2nd - 5th args.
         private object _arg0; // storage for the 1st argument or a read-only collection.  See IArgumentProvider
@@ -1419,7 +1419,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    internal sealed class MethodCallExpressionN : MethodCallExpression, IArgumentProvider
+    internal sealed class MethodCallExpressionN : MethodCallExpression
     {
         private readonly Expression[] _arguments;
         private readonly ReadOnlyCollectionEx<Expression> _argumentsAsReadOnlyCollection;
