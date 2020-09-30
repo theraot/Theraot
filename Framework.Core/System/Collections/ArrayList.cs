@@ -4,7 +4,7 @@
 #pragma warning disable CA2214 // Do not call overridable methods in constructors
 #pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
-#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+#pragma warning disable RECS0021 // Warns about calls to virtual member functions occurring in the constructor
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 // ReSharper disable VirtualMemberCallInConstructor

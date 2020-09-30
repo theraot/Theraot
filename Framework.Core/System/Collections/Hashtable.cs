@@ -6,7 +6,7 @@
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
-#pragma warning disable RECS0021 // Warns about calls to virtual member functions occuring in the constructor
+#pragma warning disable RECS0021 // Warns about calls to virtual member functions occurring in the constructor
 #pragma warning disable S112 // General exceptions should never be thrown
 #pragma warning disable S125 // Sections of code should not be commented out
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
@@ -52,13 +52,13 @@ namespace System.Collections
     // buckets based on the hashcode of their keys. Subsequent lookups of
     // keys will use the hashcode of the keys to only search a particular bucket,
     // thus substantially reducing the number of key comparisons required to find
-    // an entry. A hashtable's maximum load factor, which can be specified
+    // an entry. The maximum load factor of a hashtable, which can be specified
     // when the hashtable is instantiated, determines the maximum ratio of
     // hashtable entries to hashtable buckets. Smaller load factors cause faster
     // average lookup times at the cost of increased memory consumption. The
     // default maximum load factor of 1.0 generally provides the best balance
-    // between speed and size. As entries are added to a hashtable, the hashtable's
-    // actual load factor increases, and when the actual load factor reaches the
+    // between speed and size. As entries are added to a hashtable, the actual load
+    // factor of the hashtable increases, and when the actual load factor reaches the
     // maximum load factor value, the number of buckets in the hashtable is
     // automatically increased by approximately a factor of two (to be precise, the
     // number of hashtable buckets is increased to the smallest prime number that
@@ -209,7 +209,7 @@ namespace System.Collections
             double rawSize = capacity / _loadFactor;
             if (rawSize > int.MaxValue)
             {
-                throw new ArgumentException("Hashtable's capacity overflowed and went negative. Check load factor, capacity and the current size of the table.", nameof(capacity));
+                throw new ArgumentException("Capacity overflowed and went negative. Check load factor, capacity and the current size of the table.", nameof(capacity));
             }
 
             // Avoid awfully small sizes
@@ -1268,6 +1268,7 @@ namespace System.Collections
         {
             // Version might become negative when version is int.MaxValue, but the oddity will be still be correct.
             // So we don't need to special case this.
+            // ReSharper disable once NonAtomicCompoundOperator
             _version++;
         }
 
@@ -1726,7 +1727,7 @@ namespace System.Collections
         {
             if (min < 0)
             {
-                throw new ArgumentException("Hashtable's capacity overflowed and went negative. Check load factor, capacity and the current size of the table.");
+                throw new ArgumentException("Capacity overflowed and went negative. Check load factor, capacity and the current size of the table.");
             }
 
             foreach (var prime in Primes)
