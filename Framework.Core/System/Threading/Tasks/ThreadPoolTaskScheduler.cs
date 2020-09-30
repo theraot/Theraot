@@ -42,7 +42,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal override void NotifyWorkItemProgress()
         {
-            // TODO ?
+            // Empty
         }
 
         /// <summary>
@@ -63,15 +63,13 @@ namespace System.Threading.Tasks
             }
             else
             {
-                // TODO: TaskCreationOptions.PreferFairness ?
                 ThreadPool.QueueUserWorkItem(_executeCallback, task);
             }
         }
 
         [SecurityCritical]
-        protected override IEnumerable<Task>? GetScheduledTasks()
+        protected override IEnumerable<Task> GetScheduledTasks()
         {
-            // TODO ?
             return ArrayEx.Empty<Task>();
         }
 
