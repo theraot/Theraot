@@ -1,5 +1,7 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP30 || LESSTHAN_NETSTANDARD21
 
+// ReSharper disable once RedundantAttributeUsageProperty
+
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>Specifies that the output will be non-null if the named parameter is non-null.</summary>
