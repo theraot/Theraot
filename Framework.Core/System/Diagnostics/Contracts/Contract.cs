@@ -421,7 +421,7 @@ namespace System.Diagnostics.Contracts
         public static T OldValue<T>(T value)
         {
             _ = value;
-            return default!;
+            return default;
         }
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace System.Diagnostics.Contracts
         [return: MaybeNull]
         public static T Result<T>()
         {
-            return default!;
+            return default;
         }
 
         /// <summary>
@@ -532,9 +532,9 @@ namespace System.Diagnostics.Contracts
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         [return: MaybeNull]
-        public static T ValueAtReturn<T>(out T value)
+        public static T ValueAtReturn<T>([MaybeNull] out T value)
         {
-            value = default!;
+            value = default;
             return value;
         }
     }
