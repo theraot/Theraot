@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Core;
 using Theraot.Reflection;
@@ -168,8 +169,7 @@ namespace System
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Value => _valueFactory.Invoke();
 
-        // ReSharper disable once RedundantDefaultMemberInitializer
-        internal T ValueForDebugDisplay { get; private set; } = default!;
+        [MaybeNull] internal T ValueForDebugDisplay { get; private set; } = default!;
 
         private static void AddThread(HashSet<Thread> threads)
         {
