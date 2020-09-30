@@ -107,7 +107,7 @@ namespace System.Threading.Tasks
         /// <exception cref="NotSupportedException">
         ///     This scheduler is unable to generate a list of queued tasks at this time.
         /// </exception>
-        internal Task[]? GetScheduledTasksForDebugger()
+        internal Task[] GetScheduledTasksForDebugger()
         {
             // this can throw InvalidOperationException indicating that they are unable to provide the info
             // at the moment. We should let the debugger receive that exception so that it can indicate it in the UI
