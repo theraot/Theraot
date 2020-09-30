@@ -9,6 +9,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Theraot.Reflection;
 
 namespace System.Runtime.CompilerServices
@@ -542,6 +543,7 @@ namespace System.Runtime.CompilerServices
                 Current = default!;
             }
 
+            [field: MaybeNull]
             public T Current { get; private set; }
 
             object? IEnumerator.Current
