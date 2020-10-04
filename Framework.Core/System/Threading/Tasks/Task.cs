@@ -679,7 +679,13 @@ namespace System.Threading.Tasks
         {
             try
             {
+                var status = Status;
                 cancellationToken.ThrowIfCancellationRequested();
+                if (status == TaskStatus.Canceled)
+                {
+                    throw new OperationCanceledExceptionEx(cancellationToken);
+                }
+
                 GC.KeepAlive(cancellationToken.WaitHandle);
             }
             catch (OperationCanceledExceptionEx)
