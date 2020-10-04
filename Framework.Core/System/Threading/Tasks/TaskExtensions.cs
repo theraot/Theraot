@@ -94,28 +94,6 @@ namespace System.Threading.Tasks
             return tcs.Task;
         }
 
-        private static CancellationToken ExtractCancellationToken(Task task)
-        {
-            // With the public Task APIs as of .NET 4.6, the only way to extract a CancellationToken
-            // that was associated with a Task is by awaiting it, catching the resulting
-            // OperationCanceledException, and getting the token from the OCE.
-            Debug.Assert(task.IsCanceled);
-            try
-            {
-                task.GetAwaiter().GetResult();
-            }
-            catch (OperationCanceledExceptionEx oce)
-            {
-                var ct = oce.CancellationToken;
-                if (ct.IsCancellationRequested)
-                {
-                    return ct;
-                }
-            }
-
-            return new CancellationToken(true);
-        }
-
         /// <summary>
         ///     Transfer the results of the <paramref name="outer" /> task's inner task to the <paramref name="completionSource" />
         ///     .
@@ -125,7 +103,8 @@ namespace System.Threading.Tasks
         ///     The outer task that when completed will yield an inner task whose results we want marshaled to the
         ///     <paramref name="completionSource" />.
         /// </param>
-        private static void TransferAsynchronously<TResult, TInner>(TaskCompletionSource<TResult> completionSource, Task<TInner> outer) where TInner : Task
+        private static void TransferAsynchronously<TResult, TInner>(TaskCompletionSource<TResult> completionSource, Task<TInner> outer)
+            where TInner : Task
         {
             Action?[] callback = { null };
 
@@ -167,7 +146,7 @@ namespace System.Threading.Tasks
                             {
                                 // The outer task completed successfully, but with a null inner task.
                                 // cancel the completionSource, and we're done.
-                                result = completionSource.TrySetCanceled();
+                                result = completionSource.TrySetCanceled(outer.CancellationToken);
                             }
                             else
                             {
@@ -219,7 +198,7 @@ namespace System.Threading.Tasks
             switch (task.Status)
             {
                 case TaskStatus.Canceled:
-                    result = completionSource.TrySetCanceled(ExtractCancellationToken(task));
+                    result = completionSource.TrySetCanceled(task.CancellationToken);
                     break;
 
                 case TaskStatus.Faulted:
