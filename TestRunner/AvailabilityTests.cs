@@ -79,11 +79,17 @@ namespace TestRunner
 
         public static void TaskCompletionSourceMethodAvailability()
         {
-            const TaskCompletionSource<int> source = null;
+            const TaskCompletionSource<int> intSource = null;
+            No.Op<Func<bool>>(intSource.TrySetCanceled);
+            No.Op<Func<CancellationToken, bool>>(intSource.TrySetCanceled);
+            No.Op<Action>(intSource.SetCanceled);
+            No.Op<Action<CancellationToken>>(intSource.SetCanceled);
+
+            const TaskCompletionSource source = null;
             No.Op<Func<bool>>(source.TrySetCanceled);
-#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD12
             No.Op<Func<CancellationToken, bool>>(source.TrySetCanceled);
-#endif
+            No.Op<Action>(source.SetCanceled);
+            No.Op<Action<CancellationToken>>(source.SetCanceled);
         }
 
         public static void ToStringMethodAvailability()
