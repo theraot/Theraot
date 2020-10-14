@@ -28,11 +28,7 @@ namespace System.Threading.Tasks
             var taskCompleteSource = new TaskCompletionSource<TResult>();
             if (token.CanBeCanceled)
             {
-#if LESSTHAN_NETSTANDARD13
-                token.Register(() => taskCompleteSource.TrySetCanceled());
-#else
                 token.Register(() => taskCompleteSource.TrySetCanceled(token));
-#endif
             }
 
             return taskCompleteSource.Task;

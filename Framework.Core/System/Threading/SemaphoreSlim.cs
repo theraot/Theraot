@@ -235,7 +235,7 @@ namespace System.Threading
                 {
                     try
                     {
-                        source.SetCanceled();
+                        source.SetCanceled(cancellationToken);
                     }
                     catch (InvalidOperationException exception)
                     {

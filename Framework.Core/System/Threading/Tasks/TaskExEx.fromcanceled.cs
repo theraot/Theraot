@@ -33,7 +33,7 @@ namespace System.Threading.Tasks
             }
 
             var taskCompleteSource = new TaskCompletionSource<TResult>();
-            taskCompleteSource.TrySetCanceled();
+            taskCompleteSource.TrySetCanceled(cancellationToken);
             return taskCompleteSource.Task;
 #endif
 #if GREATERTHAN_NET45 || GREATERTHAN_NETSTANDARD12 || TARGETS_NETCORE
