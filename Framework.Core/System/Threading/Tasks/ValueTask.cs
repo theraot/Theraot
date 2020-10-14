@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET45
+#if LESSTHAN_NET45
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -367,19 +367,49 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}" /> represents a canceled operation.</summary>
-        public bool IsCanceled => _task?.IsCanceled == true;
+        public bool IsCanceled
+        {
+            get
+            {
+                return _task?.IsCanceled == true;
+            }
+        }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}" /> represents a completed operation.</summary>
-        public bool IsCompleted => _task?.IsCompleted != false;
+        public bool IsCompleted
+        {
+            get
+            {
+                return _task?.IsCompleted != false;
+            }
+        }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}" /> represents a successfully completed operation.</summary>
-        public bool IsCompletedSuccessfully => _task == null || _task.Status == TaskStatus.RanToCompletion;
+        public bool IsCompletedSuccessfully
+        {
+            get
+            {
+                return _task == null || _task.Status == TaskStatus.RanToCompletion;
+            }
+        }
 
         /// <summary>Gets whether the <see cref="ValueTask{TResult}" /> represents a failed operation.</summary>
-        public bool IsFaulted => _task?.IsFaulted == true;
+        public bool IsFaulted
+        {
+            get
+            {
+                return _task?.IsFaulted == true;
+            }
+        }
 
         /// <summary>Gets the result.</summary>
-        public TResult Result => _task == null ? _result : _task.GetAwaiter().GetResult();
+        public TResult Result
+        {
+            get
+            {
+                return _task == null ? _result : _task.GetAwaiter().GetResult();
+            }
+        }
 
         /// <summary>Creates a method builder for use with an async method.</summary>
         /// <returns>The created builder.</returns>
