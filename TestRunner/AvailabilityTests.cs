@@ -18,7 +18,6 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
-using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
 using System.Threading;
@@ -292,7 +291,6 @@ namespace TestRunner
             No.Op(typeof(EnumerableExecutor));
             No.Op(typeof(HostProtectionAttribute));
             No.Op(typeof(HostProtectionResource));
-            No.Op(typeof(IFormatterConverter));
             No.Op(typeof(IInvokeOnGetBinder));
             No.Op(typeof(IUnrestrictedPermission));
             No.Op(typeof(PureAttribute));
@@ -301,9 +299,6 @@ namespace TestRunner
             No.Op(typeof(SecurityAction));
             No.Op(typeof(SecurityElement));
             No.Op(typeof(SecurityPermissionAttribute));
-            No.Op(typeof(SerializableAttribute));
-            No.Op(typeof(SerializationInfo));
-            No.Op(typeof(StreamingContext));
             No.Op(typeof(Task));
             No.Op(typeof(TupleElementNamesAttribute));
             No.Op(typeof(TupleExtensions));
