@@ -1,7 +1,7 @@
-﻿#if GREATERTHAN_NET35 && LESSTHAN_NET46
-
-#pragma warning disable RECS0108 // Warns about static fields in generic types
+﻿#pragma warning disable RECS0108 // Warns about static fields in generic types
 #pragma warning disable RECS0146 // Member hides static member from outer class
+
+#if GREATERTHAN_NET35 && LESSTHAN_NET46
 
 using System.Reflection;
 
@@ -9,14 +9,14 @@ namespace System.Threading.Tasks
 {
     public static class TaskCompletionSourceTheraotExtensions
     {
-        public static bool TrySetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken token)
+        public static bool TrySetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken)
         {
             if (taskCompletionSource == null)
             {
                 throw new ArgumentNullException(nameof(taskCompletionSource));
             }
 
-            return TrySetCanceledCachedDelegate<T>.TrySetCanceled(taskCompletionSource, token);
+            return TrySetCanceledCachedDelegate<T>.TrySetCanceled(taskCompletionSource, cancellationToken);
         }
 
         /// <summary>
@@ -50,6 +50,45 @@ namespace System.Threading.Tasks
                     typeof(Func<TaskCompletionSource<T>, CancellationToken, bool>),
                     trySetCanceled
                 );
+            }
+        }
+    }
+}
+
+#elif LESSTHAN_NETSTANDARD14
+
+namespace System.Threading.Tasks
+{
+    public static class TaskCompletionSourceTheraotExtensions
+    {
+        public static bool TrySetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken)
+        {
+            if (taskCompletionSource == null)
+            {
+                throw new ArgumentNullException(nameof(taskCompletionSource));
+            }
+
+            if (taskCompletionSource.Task.IsCompleted)
+            {
+                return false;
+            }
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return taskCompletionSource.TrySetCanceled();
+            }
+
+            cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
+            SpinUntilCompleted(taskCompletionSource.Task);
+            return taskCompletionSource.Task.Status == TaskStatus.Canceled;
+        }
+
+        private static void SpinUntilCompleted(Task task)
+        {
+            var sw = new SpinWait();
+            while (!task.IsCompleted)
+            {
+                sw.SpinOnce();
             }
         }
     }
