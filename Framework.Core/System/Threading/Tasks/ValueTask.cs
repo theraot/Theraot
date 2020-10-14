@@ -1,4 +1,4 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -119,6 +119,47 @@ namespace System.Threading.Tasks
         }
 
         internal static Task CompletedTask { get; } = TaskExEx.CompletedTask;
+
+        /// <summary>Creates a <see cref="ValueTask"/> that has completed due to cancellation with the specified cancellation token.</summary>
+        /// <param name="cancellationToken">The cancellation token with which to complete the task.</param>
+        /// <returns>The canceled task.</returns>
+        public static ValueTask FromCanceled(CancellationToken cancellationToken)
+        {
+            return new ValueTask(TaskExEx.FromCanceled(cancellationToken));
+        }
+
+        /// <summary>Creates a <see cref="ValueTask{TResult}"/> that has completed due to cancellation with the specified cancellation token.</summary>
+        /// <param name="cancellationToken">The cancellation token with which to complete the task.</param>
+        /// <returns>The canceled task.</returns>
+        public static ValueTask<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
+        {
+            return new ValueTask<TResult>(TaskExEx.FromCanceled<TResult>(cancellationToken));
+        }
+
+        /// <summary>Creates a <see cref="ValueTask"/> that has completed with the specified exception.</summary>
+        /// <param name="exception">The exception with which to complete the task.</param>
+        /// <returns>The faulted task.</returns>
+        public static ValueTask FromException(Exception exception)
+        {
+            return new ValueTask(TaskExEx.FromException(exception));
+        }
+
+        /// <summary>Creates a <see cref="ValueTask{TResult}"/> that has completed with the specified exception.</summary>
+        /// <param name="exception">The exception with which to complete the task.</param>
+        /// <returns>The faulted task.</returns>
+        public static ValueTask<TResult> FromException<TResult>(Exception exception)
+        {
+            return new ValueTask<TResult>(TaskExEx.FromException<TResult>(exception));
+        }
+
+        /// <summary>Creates a <see cref="ValueTask{TResult}"/> that's completed successfully with the specified result.</summary>
+        /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
+        /// <param name="result">The result to store into the completed task.</param>
+        /// <returns>The successfully completed task.</returns>
+        public static ValueTask<TResult> FromResult<TResult>(TResult result)
+        {
+            return new ValueTask<TResult>(result);
+        }
 
         public static bool operator !=(ValueTask left, ValueTask right)
         {
