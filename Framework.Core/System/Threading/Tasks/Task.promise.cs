@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
             _waitHandle = new ManualResetEventSlim(false);
         }
 
-        internal Task(object? state, TaskCreationOptions creationOptions)
+        internal Task(TaskCreationOptions creationOptions, object? state)
         {
             if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
             {
@@ -229,6 +229,28 @@ namespace System.Threading.Tasks
             return true;
         }
 
+        internal bool TrySetResult()
+        {
+            if (IsFaulted)
+            {
+                return false;
+            }
+
+            if (IsCanceled)
+            {
+                return false;
+            }
+
+            if (!SetCompleted(true))
+            {
+                return false;
+            }
+
+            MarkCompleted();
+            FinishStageThree();
+            return true;
+        }
+
         private void PromiseCheck()
         {
             _promiseCheck.Invoke();
@@ -244,7 +266,7 @@ namespace System.Threading.Tasks
         }
 
         internal Task(TaskCreationOptions creationOptions, object? state)
-            : base(state, creationOptions)
+            : base(creationOptions, state)
         {
             // Empty
         }
