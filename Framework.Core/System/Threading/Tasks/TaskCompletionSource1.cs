@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40
+#if LESSTHAN_NET40
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -143,6 +143,14 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
             }
+        }
+
+        public void SetCanceled(CancellationToken cancellationToken)
+        {
+            if (!TrySetCanceled(cancellationToken))
+            {
+                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
+        }
         }
 
         /// <summary>
