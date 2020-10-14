@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace System.Threading.Tasks
 {
-    public static class TaskCompletionSourceTheraotExtensions
+    public static partial class TaskCompletionSourceTheraotExtensions
     {
         public static bool TrySetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken)
         {
@@ -59,7 +59,7 @@ namespace System.Threading.Tasks
 
 namespace System.Threading.Tasks
 {
-    public static class TaskCompletionSourceTheraotExtensions
+    public static partial class TaskCompletionSourceTheraotExtensions
     {
         public static bool TrySetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken)
         {
@@ -89,6 +89,33 @@ namespace System.Threading.Tasks
             while (!task.IsCompleted)
             {
                 sw.SpinOnce();
+            }
+        }
+    }
+}
+
+#endif
+
+#if GREATERTHAN_NET35 || TARGETS_NETSTANDARD || LESSTHAN_NET50
+
+namespace System.Threading.Tasks
+{
+    public static
+#if LESSTHAN_NET46 || LESSTHAN_NETSTANDARD14
+        partial
+#endif
+        class TaskCompletionSourceTheraotExtensions
+    {
+        public static void SetCanceled<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken)
+        {
+            if (taskCompletionSource == null)
+            {
+                throw new ArgumentNullException(nameof(taskCompletionSource));
+            }
+
+            if (!taskCompletionSource.TrySetCanceled(cancellationToken))
+            {
+                throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
             }
         }
     }
