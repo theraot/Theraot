@@ -1,4 +1,6 @@
-#if LESSTHAN_NET40
+﻿#if LESSTHAN_NET40
+
+#pragma warning disable ET001 // Type name does not match file name
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -117,7 +119,7 @@ namespace System.Threading.Tasks
         ///     controlled by this instance.
         ///     The <see cref="SetResult" />, <see cref="SetException(Exception)" />,
         ///     <see cref="SetException(IEnumerable{Exception})" />, and
-        ///     <see cref="SetCanceled" />
+        ///     <see cref="SetCanceled()" />
         ///     methods (and their "Try" variants) on this instance all result in the relevant state
         ///     transitions on this underlying Task.
         /// </remarks>
@@ -150,7 +152,7 @@ namespace System.Threading.Tasks
             if (!TrySetCanceled(cancellationToken))
             {
                 throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
-        }
+            }
         }
 
         /// <summary>
@@ -261,7 +263,7 @@ namespace System.Threading.Tasks
         ///     state.
         ///     Enables a token to be stored into the canceled task
         /// </summary>
-        /// <param name="tokenToRecord"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns>True if the operation was successful; otherwise, false.</returns>
         /// <remarks>
         ///     This operation will return false if the
@@ -272,9 +274,9 @@ namespace System.Threading.Tasks
         ///     <see cref="TaskStatus.Canceled">Canceled</see>.
         /// </remarks>
         /// <exception cref="ObjectDisposedException">The <see cref="Task" /> was disposed.</exception>
-        public bool TrySetCanceled(CancellationToken tokenToRecord)
+        public bool TrySetCanceled(CancellationToken cancellationToken)
         {
-            var value = _task.Value.TrySetCanceled(tokenToRecord);
+            var value = _task.Value.TrySetCanceled(cancellationToken);
             if (!value && !_task.Value.IsCompleted)
             {
                 SpinUntilCompleted();
