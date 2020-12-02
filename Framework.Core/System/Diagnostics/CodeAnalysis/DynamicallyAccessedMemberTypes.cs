@@ -4,6 +4,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #pragma warning disable CA2217 // Do not mark enums with FlagsAttribute
+#pragma warning disable RCS1157 // Composite enum value contains undefined flag.
 
 namespace System.Diagnostics.CodeAnalysis
 {
