@@ -37,10 +37,10 @@ namespace System.Runtime.CompilerServices
         ///     second as a tuple without element names. In which case, the
         ///     appropriate attribute specification should use a
         ///     <c>transformNames</c> value of
-        ///     <c>
+        ///     <code>
         ///         { "name1", "name2", null, null,
         ///         null }
-        ///     </c>
+        ///     </code>
         ///     .
         /// </remarks>
         public TupleElementNamesAttribute(string[] transformNames)

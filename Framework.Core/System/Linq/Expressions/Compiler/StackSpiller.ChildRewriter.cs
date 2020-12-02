@@ -59,15 +59,15 @@ namespace System.Linq.Expressions.Compiler
             /// </summary>
             /// <example>
             ///     When stack spilling the following expression:
-            ///     <c>
+            ///     <code>
             ///         bar.Foo(try { 42 } finally { ; })
-            ///     </c>
+            ///     </code>
             ///     the resulting comma will contain three expressions:
-            ///     <c>
+            ///     <code>
             ///         $temp$0 = bar
             ///         $temp$1 = try { 42 } finally { ; }
             ///         $temp$0.Foo($temp$1)
-            ///     </c>
+            ///     </code>
             ///     These get wrapped in a Block in the <see cref="Rewrite" /> method.
             /// </example>
             private List<Expression>? _comma;
