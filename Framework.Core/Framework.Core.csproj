@@ -11,21 +11,21 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
     <Authors>Theraot</Authors>
     <Company>Theraot</Company>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/theraot/Theraot/</PackageProjectUrl>
-    <Description>Theraot.Core is a .NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, etc...) for .NET Framework. .NET Core, .NET Standard</Description>
-    <PackageTags>Backport Polyfill Bridge ValueTask ValueTuple Async Task Linq Expressions ThreadLocal IAsyncEnumerable</PackageTags>
+    <Description>Theraot.Core is a .NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, IsExternalInit, etc...) for .NET Framework. .NET Core, .NET Standard</Description>
+    <PackageTags>Backport Polyfill Bridge ValueTask ValueTuple Async Task Linq Expressions ThreadLocal IAsyncEnumerable IsExternalInit</PackageTags>
     <Copyright>Copyright 2020</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/theraot/Theraot/</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <CodeAnalysisRuleSet>../rules.ruleset</CodeAnalysisRuleSet>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
-    <FileVersion>3.2.0.0</FileVersion>
+    <AssemblyVersion>3.2.1.0</AssemblyVersion>
+    <FileVersion>3.2.1.0</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
