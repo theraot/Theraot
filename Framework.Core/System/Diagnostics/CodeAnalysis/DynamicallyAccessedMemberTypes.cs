@@ -8,10 +8,11 @@
 namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>
-    /// Specifies the types of members that are dynamically accessed.
-    ///
+    /// <para>Specifies the types of members that are dynamically accessed.</para>
+    /// <para>
     /// This enumeration has a <see cref="FlagsAttribute"/> attribute that allows a
     /// bitwise combination of its member values.
+    /// </para>
     /// </summary>
     [Flags]
     public enum DynamicallyAccessedMemberTypes

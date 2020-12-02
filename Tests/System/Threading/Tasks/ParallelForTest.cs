@@ -618,12 +618,15 @@ namespace System.Threading.Tasks.Tests
         }
 
         /// <summary>
+        /// <para>
         /// Checks if the ThreadLocal Functions - Init and Locally were run correctly
         /// Init creates a new List. Each body, pushes in a unique index and Finally consolidates
         /// the lists into 'sequences' array
-        ///
+        /// </para>
+        /// <para>
         /// Expected: The consolidated list contains all indices that were executed.
         /// Duplicates indicate that the body for a certain index was executed more than once
+        /// </para>
         /// </summary>
         /// <returns>true if consolidated list contains indices for all executed loops</returns>
         private void VerifySequences()
