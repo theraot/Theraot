@@ -5,13 +5,12 @@ extern alias nunitlinq;
 #endif
 
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 
 namespace Tests.SystemTests.CollectionsTests.GenericTests
 {
     [TestFixture]
-    class KeyValuePairTest
+    internal class KeyValuePairTest
     {
         [Test]
         public void Create_ReturnsExpected()
