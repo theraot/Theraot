@@ -543,12 +543,12 @@ namespace System.Dynamic.Utils
 
         private static bool PrivateIsContravariant(Type type)
         {
-            return 0 != (type.GenericParameterAttributes & GenericParameterAttributes.Contravariant);
+            return (type.GenericParameterAttributes & GenericParameterAttributes.Contravariant) != 0;
         }
 
         private static bool PrivateIsCovariant(Type type)
         {
-            return 0 != (type.GenericParameterAttributes & GenericParameterAttributes.Covariant);
+            return (type.GenericParameterAttributes & GenericParameterAttributes.Covariant) != 0;
         }
 
         private static bool PrivateIsDelegate(Type type)
@@ -558,7 +558,7 @@ namespace System.Dynamic.Utils
 
         private static bool PrivateIsInvariant(Type type)
         {
-            return 0 == (type.GenericParameterAttributes & GenericParameterAttributes.VarianceMask);
+            return (type.GenericParameterAttributes & GenericParameterAttributes.VarianceMask) == 0;
         }
 
         private static bool StrictHasReferenceConversionTo(this Type source, Type target, bool skipNonArray)

@@ -613,7 +613,7 @@ namespace System.Threading.Tasks.Tests
 
             Assert.False(double.MinValue == _results[i], $"results[{i}] has been revisited");
 
-            Assert.True(_parameters.StateOption == ActionWithState.Stop && 0 == _results[i],
+            Assert.True(_parameters.StateOption == ActionWithState.Stop && _results[i] == 0,
                 $"Incorrect results[{i}]. Expected result to lie between {minLimit} and {maxLimit} but got {_results[i]})");
         }
 
