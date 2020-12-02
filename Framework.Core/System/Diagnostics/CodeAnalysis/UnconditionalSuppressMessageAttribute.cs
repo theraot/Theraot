@@ -48,6 +48,23 @@ namespace System.Diagnostics.CodeAnalysis
         public string CheckId { get; }
 
         /// <summary>
+        /// Gets or sets the justification for suppressing the code analysis message.
+        /// </summary>
+        public string? Justification { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional argument expanding on exclusion criteria.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="MessageId "/> property is an optional argument that specifies additional
+        /// exclusion where the literal metadata target is not sufficiently precise. For example,
+        /// the <see cref="UnconditionalSuppressMessageAttribute"/> cannot be applied within a method,
+        /// and it may be desirable to suppress a violation against a statement in the method that will
+        /// give a rule violation, but not against all statements in the method.
+        /// </remarks>
+        public string? MessageId { get; set; }
+
+        /// <summary>
         /// Gets or sets the scope of the code that is relevant for the attribute.
         /// </summary>
         /// <remarks>
@@ -66,23 +83,6 @@ namespace System.Diagnostics.CodeAnalysis
         /// The analysis tool user interface should be capable of automatically formatting the parameter.
         /// </remarks>
         public string? Target { get; set; }
-
-        /// <summary>
-        /// Gets or sets an optional argument expanding on exclusion criteria.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="MessageId "/> property is an optional argument that specifies additional
-        /// exclusion where the literal metadata target is not sufficiently precise. For example,
-        /// the <see cref="UnconditionalSuppressMessageAttribute"/> cannot be applied within a method,
-        /// and it may be desirable to suppress a violation against a statement in the method that will
-        /// give a rule violation, but not against all statements in the method.
-        /// </remarks>
-        public string? MessageId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the justification for suppressing the code analysis message.
-        /// </summary>
-        public string? Justification { get; set; }
     }
 }
 
