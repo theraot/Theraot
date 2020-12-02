@@ -190,13 +190,13 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         public void IterateTest()
         {
             string[] keys = { "foo", "bar", "foobar" };
-            var occurence = new int[3];
+            var occurrence = new int[3];
             foreach (var kvp in Setup())
             {
                 var index = Array.IndexOf(keys, kvp.Key);
                 Assert.AreNotEqual(-1, index, "#a");
                 Assert.AreEqual(index + 1, kvp.Value, "#b");
-                Assert.That(++occurence[index], Is.LessThan(2), "#c");
+                Assert.That(++occurrence[index], Is.LessThan(2), "#c");
             }
         }
 
