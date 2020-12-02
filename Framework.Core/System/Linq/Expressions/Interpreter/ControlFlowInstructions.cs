@@ -55,7 +55,7 @@ namespace System.Linq.Expressions.Interpreter
             get
             {
                 var caches = GetCaches();
-                return caches[ConsumedStack][ProducedStack] ?? (caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
+                return caches[ConsumedStack][ProducedStack] ??= new Instruction[CacheSize];
             }
         }
 
@@ -208,7 +208,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (labelIndex < CacheSize)
             {
-                return _cache[labelIndex] ?? (_cache[labelIndex] = new EnterFaultInstruction(labelIndex));
+                return _cache[labelIndex] ??= new EnterFaultInstruction(labelIndex);
             }
 
             return new EnterFaultInstruction(labelIndex);
@@ -251,7 +251,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (labelIndex < CacheSize)
             {
-                return _cache[labelIndex] ?? (_cache[labelIndex] = new EnterFinallyInstruction(labelIndex));
+                return _cache[labelIndex] ??= new EnterFinallyInstruction(labelIndex);
             }
 
             return new EnterFinallyInstruction(labelIndex);
@@ -535,7 +535,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var index = (_variants * labelIndex) | (labelTargetGetsValue ? 4 : 0) | (hasResult ? 2 : 0) | (hasValue ? 1 : 0);
-            return _cache[index] ?? (_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
+            return _cache[index] ??= new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue);
         }
     }
 
@@ -614,7 +614,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var index = (2 * labelIndex) | (hasValue ? 1 : 0);
-            return _cache[index] ?? (_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
+            return _cache[index] ??= new LeaveExceptionHandlerInstruction(labelIndex, hasValue);
         }
     }
 
@@ -685,7 +685,7 @@ namespace System.Linq.Expressions.Interpreter
             var cache = Cache;
             if (cache != null && offset >= 0 && offset < cache.Length)
             {
-                return cache[offset] ?? (cache[offset] = this);
+                return cache[offset] ??= this;
             }
 
             return this;

@@ -637,7 +637,7 @@ namespace System.Threading
         {
             if (managedThreadId < _fastStateCache.Length)
             {
-                return _fastStateCache[managedThreadId] ?? (_fastStateCache[managedThreadId] = new ThreadLockState());
+                return _fastStateCache[managedThreadId] ??= new ThreadLockState();
             }
 
             return null;
