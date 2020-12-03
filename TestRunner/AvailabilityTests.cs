@@ -133,6 +133,7 @@ namespace TestRunner
             No.Op(typeof(ISet<T>));
             No.Op(typeof(IReadOnlySet<T>));
             No.Op(typeof(KeyNotFoundException));
+            No.Op(typeof(KeyValuePair));
             No.Op(typeof(KeyValuePair<TKey, TValue>));
             No.Op(typeof(LinkedList<T>));
             No.Op(typeof(LinkedListNode<T>));
