@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET35
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -100,7 +100,6 @@ namespace System.Dynamic
                 case ExpressionType.Power:
                 case ExpressionType.RightShift:
                 case ExpressionType.Subtract:
-#if LESSTHAN_NET35
                 case ExpressionType.AddAssign:
                 case ExpressionType.AndAssign:
                 case ExpressionType.DivideAssign:
@@ -113,7 +112,6 @@ namespace System.Dynamic
                 case ExpressionType.RightShiftAssign:
                 case ExpressionType.SubtractAssign:
                 case ExpressionType.Extension:
-#endif
                     return true;
 
                 default:

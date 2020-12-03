@@ -1,7 +1,9 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
+#pragma warning disable CA1725 // Parameter names should match base declaration
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2235 // Mark all non-serializable fields
+#pragma warning disable CA5362 // Potential reference cycle in deserialized object graph
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occurring in the constructor
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 // ReSharper disable VirtualMemberCallInConstructor

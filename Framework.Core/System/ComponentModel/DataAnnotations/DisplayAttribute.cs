@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable CA1024 // Use properties where appropriate
 #pragma warning disable CA1721 // Property names should not match get methods
 #pragma warning disable S4275 // Getters and setters should access the expected fields
 

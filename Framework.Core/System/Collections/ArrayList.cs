@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
+#pragma warning disable CA1725 // Parameter names should match base declaration
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2214 // Do not call overridable methods in constructors
 #pragma warning disable CA2235 // Mark all non-serializable fields
