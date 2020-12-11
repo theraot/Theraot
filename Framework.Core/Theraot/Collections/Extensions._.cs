@@ -1,6 +1,5 @@
 ﻿// Needed for NET40
 
-#pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable RCS1224 // Make method an extension method.
 
 using System;

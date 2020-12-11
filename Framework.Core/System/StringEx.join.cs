@@ -1,7 +1,4 @@
-﻿#pragma warning disable CA1062 // Validate arguments of public methods
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace System
@@ -58,7 +55,7 @@ namespace System
             var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (item == null)
+                if (item is null)
                 {
                     continue;
                 }

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable CA1836 // Prefer IsEmpty over Count when available
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;

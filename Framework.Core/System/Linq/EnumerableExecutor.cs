@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable S2326 // Unused type parameters should be removed
-
 namespace System.Linq
 {
     public abstract class EnumerableExecutor

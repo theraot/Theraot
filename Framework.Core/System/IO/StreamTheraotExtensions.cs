@@ -1,9 +1,6 @@
 ﻿#if LESSTHAN_NET45
 
-#pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA2201 // Do not raise reserved exception types
-#pragma warning disable RECS0002 // Convert anonymous method to method group
-#pragma warning disable S112 // General exceptions should never be thrown
 
 using System.Runtime.CompilerServices;
 using System.Threading;

@@ -26,6 +26,10 @@ namespace System.Collections.Generic
             {
                 Buffer = new T[capacity];
             }
+            else
+            {
+                Buffer = ArrayEx.Empty<T>();
+            }
         }
 
         /// <summary>Gets the current underlying array.</summary>

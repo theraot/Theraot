@@ -1,7 +1,6 @@
 ﻿#if NET40
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
-#pragma warning disable S112 // General exceptions should never be thrown
 #pragma warning disable AsyncFixer02 // Long running or blocking operations under an async method
 
 using System.Runtime.CompilerServices;
@@ -155,7 +154,7 @@ namespace System.Threading
         private static async Task<bool> WaitPrivateAsync(SemaphoreSlim semaphore, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (semaphore.Wait(0))
+            if (semaphore.Wait(0, cancellationToken))
             {
                 return true;
             }
@@ -163,7 +162,7 @@ namespace System.Threading
             while (true)
             {
                 await TaskExEx.FromWaitHandleInternal(semaphore.AvailableWaitHandle, cancellationToken).ConfigureAwait(false);
-                if (semaphore.Wait(0))
+                if (semaphore.Wait(0, cancellationToken))
                 {
                     return true;
                 }
@@ -172,7 +171,7 @@ namespace System.Threading
 
         private static async Task<bool> WaitPrivateAsync(SemaphoreSlim semaphore, int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            if (semaphore.Wait(0))
+            if (semaphore.Wait(0, cancellationToken))
             {
                 return true;
             }
@@ -190,7 +189,7 @@ namespace System.Threading
                 ).ConfigureAwait(false)
             )
             {
-                if (semaphore.Wait(0))
+                if (semaphore.Wait(0, cancellationToken))
                 {
                     return true;
                 }

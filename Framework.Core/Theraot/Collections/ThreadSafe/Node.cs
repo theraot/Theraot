@@ -1,9 +1,8 @@
 ﻿// Needed for NET40
 
-using System;
-
-#pragma warning disable CA2235 // Mark all non-serializable fields
 #pragma warning disable RECS0108 // Warns about static fields in generic types
+
+using System;
 
 namespace Theraot.Collections.ThreadSafe
 {

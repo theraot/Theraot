@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1051 // Do not declare visible instance fields
-#pragma warning disable S1104 // Fields should not have public accessibility
 
 using System.Diagnostics.CodeAnalysis;
 

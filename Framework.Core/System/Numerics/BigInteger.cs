@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#pragma warning disable CA2225 // Operator overloads have named alternates
-
 using System.Globalization;
 
 namespace System.Numerics

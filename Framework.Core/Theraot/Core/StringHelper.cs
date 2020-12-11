@@ -1,14 +1,13 @@
 ﻿// Needed for NET40
 
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
-#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
-
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 #if LESSTHAN_NET45 || GREATERTHAN_NETCOREAPP11
+
+#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
 
 using System.Globalization;
 

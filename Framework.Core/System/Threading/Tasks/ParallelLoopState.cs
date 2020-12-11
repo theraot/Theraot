@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
-#pragma warning disable IDE1006 // Naming Styles
 
 // BASEDON: https://raw.githubusercontent.com/dotnet/corefx/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/ParallelLoopState.cs
 

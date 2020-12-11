@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1066 // Implement IEquatable when overriding Object.Equals
-#pragma warning disable CA1068 // CancellationToken parameters must come last
 
 // CancellationToken.cs
 //

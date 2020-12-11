@@ -88,75 +88,72 @@ namespace Theraot
 
     public static partial class Platform
     {
-        public static bool TargetsDotNetCore { get; } =
+        static Platform()
+        {
 #if TARGETS_NETCORE
-            true
+            TargetsDotNetCore = true;
 #else
-            false
+            TargetsDotNetCore = false;
 #endif
-            ;
 
-        public static bool TargetsDotNetFramework { get; } =
 #if TARGETS_NET
-            true
+            TargetsDotNetFramework = true;
 #else
-            false
+            TargetsDotNetFramework = false;
 #endif
-            ;
 
-        public static bool TargetsDotNetStandard { get; } =
 #if TARGETS_NETSTANDARD
-            true
+            TargetsDotNetStandard = true;
 #else
-            false
+            TargetsDotNetStandard = false;
 #endif
-            ;
-    }
 
-    public static partial class Platform
-    {
-        public static int MajorVersion { get; } =
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || NETCOREAPP1_2 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-            1
+            MajorVersion = 1;
 #elif NET20 || NETCOREAPP2_0 || NETCOREAPP2_1 || NETCOREAPP2_2 || NETSTANDARD2_0 || NETSTANDARD2_1
-            2
+            MajorVersion = 2;
 #elif NET30 || NET35 || NETCOREAPP3_0 || NETCOREAPP3_1
-            3
+            MajorVersion = 3;
 #elif NET40 || NET45 || NET46 || NET47 || NET471 || NET472 || NET48
-            4
+            MajorVersion = 4;
 #elif NET50
-            5
+            MajorVersion = 5;
 #else
-            -1
+            MajorVersion = -1;
 #endif
-            ;
 
-        public static int MinorVersion { get; } =
 #if NET20 || NET30 || NET40 || NETCOREAPP1_0 || NETCOREAPP2_0 || NETCOREAPP3_0 || NETCOREAPP3_1 || NETSTANDARD1_0 || NETSTANDARD2_0
-            0
+            MinorVersion = 0;
 #elif NETCOREAPP1_1 || NETCOREAPP2_1 || NETSTANDARD1_1 || NETSTANDARD2_1
-            1
+            MinorVersion = 1;
 #elif NETCOREAPP1_2 || NETCOREAPP2_2 || NETSTANDARD1_2
-            2
+            MinorVersion = 2;
 #elif NETSTANDARD1_3
-            3
+            MinorVersion = 3;
 #elif NETSTANDARD1_4
-            4
+            MinorVersion = 4;
 #elif NET35 || NET45 || NETSTANDARD1_5
-            5
+            MinorVersion = 5;
 #elif NET46 || NETSTANDARD1_6
-            6
+            MinorVersion = 6;
 #elif NET47 || NET471 || NET472
-            7
+            MinorVersion = 7;
 #elif NET48
-            8
+            MinorVersion = 8;
 #elif NET50
-            0
+            MinorVersion = 0;
 #else
-            -1
+            MinorVersion = -1;
 #endif
-            ;
+        }
 
+        public static int MajorVersion { get; }
+        public static int MinorVersion { get; }
+        public static bool TargetsDotNetCore { get; }
+
+        public static bool TargetsDotNetFramework { get; }
+
+        public static bool TargetsDotNetStandard { get; }
         public static Version Version { get; } = new Version(MajorVersion, MinorVersion);
     }
 }

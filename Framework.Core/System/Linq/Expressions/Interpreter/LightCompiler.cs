@@ -1,9 +1,6 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CC0021 // Use nameof
-#pragma warning disable S125 // Sections of code should not be commented out
-#pragma warning disable S907 // "goto" statement should not be used
-#pragma warning disable 8619 // Nullability of reference types in value
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

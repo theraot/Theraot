@@ -1,7 +1,5 @@
 ﻿// Needed for NET40
 
-#pragma warning disable RCS1169 // Make field read-only.
-
 using System;
 using System.Collections;
 using System.Collections.Concurrent;

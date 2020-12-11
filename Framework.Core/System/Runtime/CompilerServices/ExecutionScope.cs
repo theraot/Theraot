@@ -4,7 +4,6 @@
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CC0074 // Make field readonly
 #pragma warning disable CC0091 // Use static method
-#pragma warning disable S1104 // Fields should not have public accessibility
 
 using System.Linq.Expressions;
 

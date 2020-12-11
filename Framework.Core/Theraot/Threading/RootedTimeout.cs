@@ -1,8 +1,6 @@
 ﻿// Needed for NET35 (TASK)
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-#pragma warning disable RCS1231 // Make parameter ref read-only.
-#pragma warning disable S3971 // "GC.SuppressFinalize" should not be called
 
 using System;
 using System.Threading;

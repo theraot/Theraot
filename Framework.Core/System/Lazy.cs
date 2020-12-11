@@ -66,13 +66,13 @@ namespace System
                     {
                         var threads = new HashSet<Thread>();
                         _valueFactory =
-                            () => CachingNoneMode(threads);
+                            () => CachingNoneMode(threads, valueFactory);
                     }
                     else
                     {
                         var threads = new HashSet<Thread>();
                         _valueFactory =
-                            () => NoneMode(threads);
+                            () => NoneMode(threads, valueFactory);
                     }
 
                     break;
@@ -100,58 +100,6 @@ namespace System
                     break;
             }
 
-            T CachingNoneMode(HashSet<Thread> threads)
-            {
-                if (Volatile.Read(ref _isValueCreated) != 0)
-                {
-                    return _valueFactory.Invoke();
-                }
-
-                try
-                {
-                    AddThread(threads);
-                    ValueForDebugDisplay = valueFactory();
-                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
-                    Volatile.Write(ref _isValueCreated, 1);
-                    return ValueForDebugDisplay;
-                }
-                catch (Exception exception)
-                {
-                    _valueFactory = FuncHelper.GetThrowFunc<T>(exception);
-                    throw;
-                }
-                finally
-                {
-                    RemoveThread(threads);
-                }
-            }
-
-            T NoneMode(HashSet<Thread> threads)
-            {
-                if (Volatile.Read(ref _isValueCreated) != 0)
-                {
-                    return _valueFactory.Invoke();
-                }
-
-                try
-                {
-                    AddThread(threads);
-                    ValueForDebugDisplay = valueFactory();
-                    _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
-                    Volatile.Write(ref _isValueCreated, 1);
-                    return ValueForDebugDisplay;
-                }
-                catch (Exception)
-                {
-                    Volatile.Write(ref _isValueCreated, 0);
-                    throw;
-                }
-                finally
-                {
-                    RemoveThread(threads);
-                }
-            }
-
             T PublicationOnlyMode()
             {
                 ValueForDebugDisplay = valueFactory();
@@ -169,7 +117,8 @@ namespace System
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Value => _valueFactory.Invoke();
 
-        [MaybeNull] internal T ValueForDebugDisplay { get; private set; } = default!;
+        [MaybeNull]
+        internal T ValueForDebugDisplay { get; private set; } = default!;
 
         private static void AddThread(HashSet<Thread> threads)
         {
@@ -240,6 +189,32 @@ namespace System
             return _valueFactory.Invoke();
         }
 
+        private T CachingNoneMode(HashSet<Thread> threads, Func<T> valueFactory)
+        {
+            if (Volatile.Read(ref _isValueCreated) != 0)
+            {
+                return _valueFactory.Invoke();
+            }
+
+            try
+            {
+                AddThread(threads);
+                ValueForDebugDisplay = valueFactory();
+                _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                Volatile.Write(ref _isValueCreated, 1);
+                return ValueForDebugDisplay;
+            }
+            catch (Exception exception)
+            {
+                _valueFactory = FuncHelper.GetThrowFunc<T>(exception);
+                throw;
+            }
+            finally
+            {
+                RemoveThread(threads);
+            }
+        }
+
         private T FullMode(Func<T> valueFactory, ref ManualResetEvent? waitHandle, ref Thread? thread)
         {
             if (waitHandle == null)
@@ -261,7 +236,7 @@ namespace System
                     }
                     finally
                     {
-                        Volatile.Write(ref thread, null);
+                        Volatile.Write(ref thread, default);
                         waitHandle.Set();
                         if (Volatile.Read(ref _isValueCreated) == 1)
                         {
@@ -291,6 +266,32 @@ namespace System
             }
 
             return _valueFactory.Invoke();
+        }
+
+        private T NoneMode(HashSet<Thread> threads, Func<T> valueFactory)
+        {
+            if (Volatile.Read(ref _isValueCreated) != 0)
+            {
+                return _valueFactory.Invoke();
+            }
+
+            try
+            {
+                AddThread(threads);
+                ValueForDebugDisplay = valueFactory();
+                _valueFactory = FuncHelper.GetReturnFunc(ValueForDebugDisplay);
+                Volatile.Write(ref _isValueCreated, 1);
+                return ValueForDebugDisplay;
+            }
+            catch (Exception)
+            {
+                Volatile.Write(ref _isValueCreated, 0);
+                throw;
+            }
+            finally
+            {
+                RemoveThread(threads);
+            }
         }
     }
 

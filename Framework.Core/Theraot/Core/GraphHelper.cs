@@ -49,6 +49,16 @@ namespace Theraot.Core
 
         public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(TInput initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector, IEqualityComparer<TInput> comparer)
         {
+            if (next == null)
+            {
+                throw new ArgumentNullException(nameof(next));
+            }
+
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException(nameof(resultSelector));
+            }
+
             var branches = new[] { initial };
             return ExploreBreadthFirstGraphExtracted(branches, next, resultSelector, comparer ?? EqualityComparer<TInput>.Default);
         }

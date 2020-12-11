@@ -19,7 +19,6 @@ namespace Theraot.Collections.Specialized
             // Empty
         }
 
-        [return: NotNullIfNotNull("needle")]
         private static T Conversion([AllowNull] TNeedle needle)
         {
             if (needle == null)

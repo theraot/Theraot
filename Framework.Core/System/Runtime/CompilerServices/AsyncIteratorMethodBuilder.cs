@@ -2,7 +2,6 @@
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA1822 // Mark members as static
-#pragma warning disable RECS0081 // Validate Xml docs
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -35,7 +34,7 @@ namespace System.Runtime.CompilerServices
             return default;
         }
 
-        /// <summary>Invokes <see cref="IAsyncStateMachine.MoveNext"/> on the state machine while guarding the <see cref="Threading.ExecutionContext"/>.</summary>
+        /// <summary>Invokes <see cref="IAsyncStateMachine.MoveNext"/> on the state machine.</summary>
         /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
         /// <param name="stateMachine">The state machine instance, passed by reference.</param>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

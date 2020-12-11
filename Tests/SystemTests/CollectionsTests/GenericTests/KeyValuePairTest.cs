@@ -23,8 +23,7 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
         [Test]
         public void Deconstruct()
         {
-            KeyValuePair<int, string> keyValuePair = KeyValuePair.Create(1, "2");
-            (int key, string value) = keyValuePair;
+            (int key, string value) = KeyValuePair.Create(1, "2");
             Assert.AreEqual(1, key);
             Assert.AreEqual("2", value);
         }

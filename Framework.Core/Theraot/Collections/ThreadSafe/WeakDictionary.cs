@@ -1,6 +1,5 @@
 ﻿// Needed for NET35 (ConditionalWeakTable)
 
-#pragma warning disable RCS1231 // Make parameter ref read-only.
 // ReSharper disable ImplicitlyCapturedClosure
 // ReSharper disable UseDeconstructionOnParameter
 

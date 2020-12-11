@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable RCS1193 // Overriding member cannot change 'params' modifier.
-#pragma warning disable S3600 // "params" should not be introduced on overrides
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

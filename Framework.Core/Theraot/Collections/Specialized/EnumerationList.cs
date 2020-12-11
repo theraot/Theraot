@@ -1,8 +1,5 @@
 ﻿// Needed for NET30
 
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-#pragma warning disable 8622 // Nullability of reference types in type of parameter
-
 // ReSharper disable PossibleMultipleEnumeration
 
 using System;

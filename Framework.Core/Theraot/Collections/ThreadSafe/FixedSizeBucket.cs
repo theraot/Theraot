@@ -1,7 +1,5 @@
 ﻿// Needed for NET40
 
-#pragma warning disable CA2235 // Mark all non-serializable fields
-
 using System;
 using System.Collections;
 using System.Collections.Generic;

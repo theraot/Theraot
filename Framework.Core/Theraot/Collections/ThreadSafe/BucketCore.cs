@@ -1,5 +1,4 @@
-﻿#pragma warning disable CA2235 // Mark all non-serializable fields
-// ReSharper disable InvertIf
+﻿// ReSharper disable InvertIf
 
 using System;
 using System.Collections;

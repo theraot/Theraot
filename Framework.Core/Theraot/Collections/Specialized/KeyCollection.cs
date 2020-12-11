@@ -1,7 +1,5 @@
 ﻿// Needed for NET40
 
-#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint
-
 using System;
 using System.Collections;
 using System.Collections.Generic;

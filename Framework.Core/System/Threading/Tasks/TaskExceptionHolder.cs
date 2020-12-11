@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-#pragma warning disable S3971 // "GC.SuppressFinalize" should not be called
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

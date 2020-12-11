@@ -1,4 +1,8 @@
-﻿#pragma warning disable CA1062 // Validate arguments of public methods
+﻿#if GREATERTHAN_NET40 || GREATERTHAN_NETCOREAPP11 || LESSTHAN_NETSTANDARD12
+
+#pragma warning disable CA1062
+
+#endif
 
 using System;
 using System.Collections.Generic;

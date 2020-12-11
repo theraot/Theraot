@@ -5,7 +5,6 @@
 #pragma warning disable CC0074 // Make field readonly
 #pragma warning disable CC0091 // Use static method
 #pragma warning disable RCS1225 // Make class sealed.
-#pragma warning disable S1104 // Fields should not have public accessibility
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

@@ -54,7 +54,7 @@ namespace System.Linq.Expressions.Compiler
             var sb = new StringBuilder(name);
 
             var index = Interlocked.Increment(ref _index);
-            sb.Append("$");
+            sb.Append('$');
             sb.Append(index);
 
             // An unhandled Exception: System.Runtime.InteropServices.COMException (0x80131130): Record not found on lookup.

@@ -1,9 +1,5 @@
 ﻿// Needed for NET35 (SortedSet, OrderedCollection)
 
-#pragma warning disable CA1823 // Avoid unused private fields
-#pragma warning disable CC0052 // Make field readonly
-#pragma warning disable IDE0044 // Add readonly modifier
-
 using System;
 using System.Collections.Generic;
 using System.Threading;

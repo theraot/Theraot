@@ -1,8 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable S2386 // Mutable fields should not be "public static"
-#pragma warning disable S3887 // Mutable, non-private fields should not be "readonly"
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.

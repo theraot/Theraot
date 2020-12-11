@@ -2,16 +2,11 @@
 
 #pragma warning disable CA1036 // Override methods on comparable types
 #pragma warning disable CA1051 // Do not declare visible instance fields
-#pragma warning disable CA1066 // Implement IEquatable when overriding Object.Equals
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CC0074 // Make field readonly
 #pragma warning disable RECS0017 // Possible compare of value type with 'null'
 #pragma warning disable RECS0025 // Non-readonly field referenced in 'GetHashCode()'
-#pragma warning disable S1104 // Fields should not have public accessibility
-#pragma warning disable S3358 // Ternary operators should not be nested
-#pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
-#pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable UseDeconstructionOnParameter

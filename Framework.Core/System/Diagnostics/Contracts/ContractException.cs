@@ -3,8 +3,6 @@
 #pragma warning disable CA1032 // Implement standard exception constructors
 #pragma warning disable CA1064 // Exceptions should be public
 #pragma warning disable RCS1194 // Implement exception constructors.
-#pragma warning disable S1144 // Unused private types or members should be removed
-#pragma warning disable S3871 // Exception types should be "public"
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

@@ -2,8 +2,6 @@
 
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CA1068 // CancellationToken parameters must come last
-#pragma warning disable S1168 // Empty arrays and collections should be returned instead of null
-#pragma warning disable S907 // "goto" statement should not be used
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;

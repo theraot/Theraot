@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable CA1717 // Only FlagsAttribute enums should have plural names
-
 namespace System.Threading.Tasks
 {
     /// <summary>

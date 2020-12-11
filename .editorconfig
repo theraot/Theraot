@@ -178,6 +178,13 @@ dotnet_diagnostic.CA1033.severity = silent
 dotnet_diagnostic.CA1021.severity = silent
 dotnet_diagnostic.CA1711.severity = silent
 dotnet_diagnostic.CA1502.severity = silent
+dotnet_diagnostic.CA1005.severity = silent
+dotnet_diagnostic.CA1024.severity = silent
+dotnet_diagnostic.CA1506.severity = silent
+dotnet_diagnostic.CA1045.severity = silent
+dotnet_diagnostic.CA1002.severity = silent
+dotnet_diagnostic.CA5362.severity = silent
+dotnet_diagnostic.CS8714.severity = silent
 ############################### 
 # VB Coding Conventions       # 
 ############################### 

@@ -5,7 +5,6 @@
 #pragma warning disable CC0091 // Use static method
 #pragma warning disable CS8653 // A default expression introduces a null value when 'T' is a non-nullable reference type.
 #pragma warning disable CS0649 // Field is never assigned
-#pragma warning disable S3459 // Unassigned members should be removed
 
 using System.Diagnostics;
 using System.Security;

@@ -1,7 +1,6 @@
-﻿#pragma warning disable RECS0108 // Warns about static fields in generic types
-#pragma warning disable RECS0146 // Member hides static member from outer class
+﻿#if GREATERTHAN_NET35 && LESSTHAN_NET46
 
-#if GREATERTHAN_NET35 && LESSTHAN_NET46
+#pragma warning disable RECS0108 // Warns about static fields in generic types
 
 using System.Reflection;
 
@@ -16,7 +15,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(taskCompletionSource));
             }
 
-            return TrySetCanceledCachedDelegate<T>.TrySetCanceled(taskCompletionSource, cancellationToken);
+            return TrySetCanceledCachedDelegate<T>.TrySetCanceledCached(taskCompletionSource, cancellationToken);
         }
 
         /// <summary>
@@ -24,14 +23,14 @@ namespace System.Threading.Tasks
         /// </summary>
         private static class TrySetCanceledCachedDelegate<T>
         {
-            public static Func<TaskCompletionSource<T>, CancellationToken, bool> TrySetCanceled =>
-                _trySetCanceled ??= CreateTrySetCanceledDelegate();
+            public static Func<TaskCompletionSource<T>, CancellationToken, bool> TrySetCanceledCached =>
+                _trySetCanceledCached ??= CreateTrySetCanceledDelegate();
 
-            private static Func<TaskCompletionSource<T>, CancellationToken, bool>? _trySetCanceled;
+            private static Func<TaskCompletionSource<T>, CancellationToken, bool>? _trySetCanceledCached;
 
             private static Func<TaskCompletionSource<T>, CancellationToken, bool> CreateTrySetCanceledDelegate()
             {
-                var trySetCanceled = typeof(TaskCompletionSource<T>).GetMethod
+                var trySetCanceledCached = typeof(TaskCompletionSource<T>).GetMethod
                 (
                     nameof(TrySetCanceled),
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod,
@@ -40,7 +39,7 @@ namespace System.Threading.Tasks
                     new[] { typeof(CancellationToken) },
                     null
                 );
-                if (trySetCanceled == null)
+                if (trySetCanceledCached == null)
                 {
                     throw new PlatformNotSupportedException();
                 }
@@ -48,7 +47,7 @@ namespace System.Threading.Tasks
                 return (Func<TaskCompletionSource<T>, CancellationToken, bool>)Delegate.CreateDelegate
                 (
                     typeof(Func<TaskCompletionSource<T>, CancellationToken, bool>),
-                    trySetCanceled
+                    trySetCanceledCached
                 );
             }
         }
@@ -75,7 +74,7 @@ namespace System.Threading.Tasks
 
             if (cancellationToken.IsCancellationRequested)
             {
-                return taskCompletionSource.TrySetCanceled();
+                return taskCompletionSource.TrySetCanceled(cancellationToken);
             }
 
             cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());

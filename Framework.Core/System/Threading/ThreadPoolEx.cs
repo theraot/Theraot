@@ -1,7 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-#pragma warning disable S4144 // Methods should not have identical implementations
-
 namespace System.Threading
 {
     public static class ThreadPoolEx

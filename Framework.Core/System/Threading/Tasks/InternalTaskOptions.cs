@@ -2,7 +2,6 @@
 
 #pragma warning disable RCS1154 // Sort enum members.
 #pragma warning disable RCS1157 // Composite enum value contains undefined flag.
-#pragma warning disable S4070 // Non-flags enums should not be marked with "FlagsAttribute"
 
 namespace System.Threading.Tasks
 {

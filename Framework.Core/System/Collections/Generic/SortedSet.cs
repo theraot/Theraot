@@ -1,8 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable CA1721 // Property names should not match get methods
-#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
-
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;

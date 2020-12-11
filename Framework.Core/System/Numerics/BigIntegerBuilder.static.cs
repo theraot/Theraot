@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#pragma warning disable S4143 // Collection elements should not be replaced unconditionally
-
 using Theraot.Core;
 
 namespace System.Numerics

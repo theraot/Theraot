@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#pragma warning disable RCS1169 // Make field read-only.
-
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;

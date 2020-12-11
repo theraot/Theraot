@@ -2,7 +2,6 @@
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
-#pragma warning disable IDE0067 // Disposable object is never disposed
 // ReSharper disable ImplicitlyCapturedClosure
 
 using System;

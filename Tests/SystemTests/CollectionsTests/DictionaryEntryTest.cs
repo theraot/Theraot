@@ -10,13 +10,12 @@ using System.Collections;
 namespace Tests.SystemTests.CollectionsTests
 {
     [TestFixture]
-    class DictionaryEntryTest
+    internal class DictionaryEntryTest
     {
         [Test]
         public void Deconstruct()
         {
-            DictionaryEntry dictionaryEntry = new DictionaryEntry(1, "2");
-            (object key, object value) = dictionaryEntry;
+            (object key, object value) = new DictionaryEntry(1, "2");
             Assert.AreEqual(1, key);
             Assert.AreEqual("2", value);
         }

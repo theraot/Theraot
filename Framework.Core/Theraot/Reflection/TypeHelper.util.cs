@@ -3,8 +3,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#pragma warning disable S1121 // Assignments should not be made from within sub-expressions
-
 using System;
 using System.Reflection;
 

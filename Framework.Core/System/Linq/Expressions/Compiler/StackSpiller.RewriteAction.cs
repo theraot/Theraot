@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable RCS1157 // Composite enum value contains undefined flag.
-#pragma warning disable S4070 // Non-flags enums should not be marked with "FlagsAttribute"
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

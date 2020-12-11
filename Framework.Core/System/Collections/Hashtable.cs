@@ -1,18 +1,11 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
-#pragma warning disable CA1725 // Parameter names should match base declaration
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CA2214 // Do not call overridable methods in constructors
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occurring in the constructor
-#pragma warning disable S112 // General exceptions should never be thrown
-#pragma warning disable S125 // Sections of code should not be commented out
-#pragma warning disable S1699 // Constructors should only call non-overridable methods
-#pragma warning disable S2372 // Exceptions should not be thrown from property getters
-#pragma warning disable S927 // parameter names should match base declaration and other partial definitions
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

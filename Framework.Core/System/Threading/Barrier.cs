@@ -2,8 +2,6 @@
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
 #pragma warning disable CA1068 // CancellationToken parameters must come last
-#pragma warning disable S3877 // Exceptions should not be thrown from unexpected methods
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET47 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
-#pragma warning disable RCS1047 // Non-asynchronous method name should not end with 'Async'.
-
 using System.Threading.Tasks;
 
 namespace System

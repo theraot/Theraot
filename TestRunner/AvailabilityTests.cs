@@ -1,6 +1,4 @@
-﻿#pragma warning disable CC0037 // Remove commented code.
-#pragma warning disable S125 // Sections of code should not be commented out
-// ReSharper disable StyleCop.SA1512
+﻿// ReSharper disable StyleCop.SA1512
 // ReSharper disable StyleCop.SA1515
 
 using System;

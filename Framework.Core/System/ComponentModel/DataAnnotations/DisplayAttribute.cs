@@ -2,7 +2,6 @@
 
 #pragma warning disable CA1024 // Use properties where appropriate
 #pragma warning disable CA1721 // Property names should not match get methods
-#pragma warning disable S4275 // Getters and setters should access the expected fields
 
 // BASEDON: https://github.com/dotnet/corefx/blob/master/src/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/DisplayAttribute.cs
 
