@@ -1,11 +1,5 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || TARGETS_NETSTANDARD
 
-#if TARGETS_NETSTANDARD
-
-#pragma warning disable CA1305 // Specify IFormatProvider
-
-#endif
-
 using System.Runtime.CompilerServices;
 
 namespace System

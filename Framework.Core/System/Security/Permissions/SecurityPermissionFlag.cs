@@ -4,12 +4,6 @@
 #pragma warning disable CA1714 // Flags enums should have plural names
 #pragma warning disable RCS1191 // Declare enum value as combination of names.
 
-#if TARGETS_NETSTANDARD
-
-#pragma warning disable S2346 // Flags enumerations zero-value members should be named "None"
-
-#endif
-
 namespace System.Security.Permissions
 {
     [Flags]

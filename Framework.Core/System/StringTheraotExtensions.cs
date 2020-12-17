@@ -2,12 +2,6 @@
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 
-#if TARGETS_NETSTANDARD
-
-#pragma warning disable S112 // General exceptions should never be thrown
-
-#endif
-
 using System.Runtime.CompilerServices;
 
 namespace System

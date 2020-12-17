@@ -3,12 +3,6 @@
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CA2227 // Collection properties should be read only
 
-#if TARGETS_NETSTANDARD
-
-#pragma warning disable S1168 // Empty arrays and collections should be returned instead of null
-
-#endif
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
