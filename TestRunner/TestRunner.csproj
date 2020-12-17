@@ -16,6 +16,8 @@
     <PackageId>TestRunner</PackageId>
     <CodeAnalysisRuleSet>../rules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1701;1702;NU1701;NU1702</NoWarn>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugSymbols>true</DebugSymbols>

@@ -1,7 +1,12 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
 #pragma warning disable CA1041 // Provide ObsoleteAttribute message
+
+#if TARGETS_NETSTANDARD
+
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
+
+#endif
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

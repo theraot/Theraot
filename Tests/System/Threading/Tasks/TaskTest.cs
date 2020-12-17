@@ -1700,6 +1700,7 @@ namespace MonoTests.System.Threading.Tasks
     public partial class TaskTests
     {
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;

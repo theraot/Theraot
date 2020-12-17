@@ -1,7 +1,12 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
 #pragma warning disable RECS0133 // Parameter name differs in base declaration
+
+#if TARGETS_NETSTANDARD
+
 #pragma warning disable S927 // parameter names should match base declaration and other partial definitions
+
+#endif
 
 using System.Diagnostics;
 
