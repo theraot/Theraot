@@ -14,9 +14,6 @@
     <CodeAnalysisRuleSet>../rules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1701;1702;NU1701;NU1702</NoWarn>
     <SonarQubeExclude>True</SonarQubeExclude>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-    <UseNETCoreGenerator>true</UseNETCoreGenerator>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugSymbols>True</DebugSymbols>
@@ -147,11 +144,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
     <PackageReference Include="System.Diagnostics.Contracts">
