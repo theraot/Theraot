@@ -254,6 +254,13 @@ namespace TestRunner
             No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6>));
             No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6, T7>));
             No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>));
+            
+#if LESSTHAN_NETSTANDARD11 && LESSTHAN_NET45
+
+            No.Op(typeof(Span<T>));
+            No.Op(typeof(ReadOnlySpan<T>));
+
+#endif
 
             // System.Threading.Tasks.Extensions
 
