@@ -1,4 +1,4 @@
-<!--EXTERNAL_PROPERTIES: TargetFramework-->
+﻿<!--EXTERNAL_PROPERTIES: TargetFramework-->
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
@@ -27,7 +27,7 @@
     <AssemblyVersion>3.2.1.0</AssemblyVersion>
     <FileVersion>3.2.1.0</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <NullableContextOptions>enable</NullableContextOptions>
     <PackageIcon>icon.png</PackageIcon>
@@ -178,6 +178,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="System\Collections\Resources\SR.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SR.resx</DependentUpon>
+    </Compile>
     <Compile Update="Theraot\Core\ActionHelper.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -413,5 +418,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="System\Collections\Resources\SR.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

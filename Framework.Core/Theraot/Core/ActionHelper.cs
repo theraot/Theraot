@@ -5,7 +5,7 @@ using System;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    //[System.Diagnostics.DebuggerNonUserCode]
     public static class ActionHelper
     {
         public static Action GetNoopAction()

@@ -5,7 +5,7 @@ using System;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    //[System.Diagnostics.DebuggerNonUserCode]
     public static partial class FuncHelper
     {
         public static Func<TReturn> GetDefaultFunc<TReturn>()
