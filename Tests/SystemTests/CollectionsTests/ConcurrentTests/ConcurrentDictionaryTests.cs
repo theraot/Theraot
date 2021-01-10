@@ -30,6 +30,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Tests.Helpers;
 using Theraot;
@@ -346,6 +347,57 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
             Assert.AreEqual(nameof(class1), classMap[class1], "class 1 check");
             Assert.AreEqual(nameof(class2), classMap[class2], "class 2 check");
+        }
+
+        [Test]
+        public void ToArrayConcurrentFail()
+        {
+            var map = Setup();
+            var evs = new ManualResetEventSlim[1];
+            using (evs[0] = new ManualResetEventSlim())
+            {
+                var x = new int[1];
+                var tasks = new Task[3];
+                for (int taskIndex = 0; taskIndex < tasks.Length; taskIndex++)
+                {
+                    tasks[taskIndex] = TaskEx.Run
+                    (
+                        () =>
+                        {
+                            var i = 0;
+                            while (i % 10 != 0 || Volatile.Read(ref x[0]) == 0)
+                            {
+                                map["a" + i] = i;
+                                i++;
+                            }
+                        }
+                    );
+                }
+
+                var u = TaskEx.Run
+                (
+                    () =>
+                    {
+                        var i = 0;
+                        while (i % 10 != 0 || Volatile.Read(ref x[0]) == 0)
+                        {
+                            map["b" + i] = i;
+                            if (i == 0)
+                            {
+                                evs[0].Set();
+                            }
+
+                            i++;
+                        }
+                    }
+                );
+
+                evs[0].Wait();
+                var keyValuePairs = map.ToArray();
+                Volatile.Write(ref x[0], 1);
+                Task.WaitAll(tasks);
+                u.Wait();
+            }
         }
 
         [Test]
