@@ -1,9 +1,11 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 #pragma warning disable CA1836 // Prefer IsEmpty over Count when available
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
@@ -15,6 +17,17 @@ namespace System.Collections.Concurrent
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
         private readonly ThreadSafeDictionary<TKey, TValue> _wrapped;
+
+        // Odd use, but writes will take a read lock, and ToArray (and CopyTo) will take a write lock.
+        // This class allows multiple writes concurrently. There is no reason to worry about concurrent reads other than ToArray (and CopyTo).
+        // Also everything except ToArray (and CopyTo) is atomic.
+        // Thus, there is no need for reads to take a lock.
+        // Since multiple writes can enter they take a read lock.
+        // And ToArray (and CopyTo) takes a write lock.
+        // Using the slim version so we do not allocate a wait handle if we don't have to.
+        // We technically leak it too.
+        [NonSerialized]
+        private ReaderWriterLockSlim _lock;
 
         [NonSerialized]
         private ValueCollection<TKey, TValue>? _valueCollection;
@@ -34,7 +47,10 @@ namespace System.Collections.Concurrent
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
             : this(4, 31, EqualityComparer<TKey>.Default)
         {
-            AddRange(collection ?? throw new ArgumentNullException(nameof(collection)));
+            if ((collection ?? throw new ArgumentNullException(nameof(collection))).Any(pair => !_wrapped.TryAdd(pair.Key, pair.Value)))
+            {
+                throw new ArgumentException("The source contains duplicate keys.");
+            }
         }
 
         public ConcurrentDictionary(IEqualityComparer<TKey> comparer)
@@ -46,13 +62,19 @@ namespace System.Collections.Concurrent
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
             : this(4, 31, comparer)
         {
-            AddRange(collection ?? throw new ArgumentNullException(nameof(collection)));
+            if ((collection ?? throw new ArgumentNullException(nameof(collection))).Any(pair => !_wrapped.TryAdd(pair.Key, pair.Value)))
+            {
+                throw new ArgumentException("The source contains duplicate keys.");
+            }
         }
 
         public ConcurrentDictionary(int concurrencyLevel, IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
             : this(concurrencyLevel, 31, comparer)
         {
-            AddRange(collection ?? throw new ArgumentNullException(nameof(collection)));
+            if ((collection ?? throw new ArgumentNullException(nameof(collection))).Any(pair => !_wrapped.TryAdd(pair.Key, pair.Value)))
+            {
+                throw new ArgumentException("The source contains duplicate keys.");
+            }
         }
 
         public ConcurrentDictionary(int concurrencyLevel, int capacity, IEqualityComparer<TKey> comparer)
@@ -69,6 +91,7 @@ namespace System.Collections.Concurrent
 
             _wrapped = new ThreadSafeDictionary<TKey, TValue>(comparer ?? throw new ArgumentNullException(nameof(comparer)));
             _valueCollection = new ValueCollection<TKey, TValue>(this);
+            _lock = new ReaderWriterLockSlim();
         }
 
         public int Count => _wrapped.Count;
@@ -105,7 +128,15 @@ namespace System.Collections.Concurrent
                     throw new ArgumentNullException(nameof(key));
                 }
 
-                _wrapped.Set(key, value);
+                try
+                {
+                    _lock.EnterReadLock();
+                    _wrapped.Set(key, value);
+                }
+                finally
+                {
+                    _lock.ExitReadLock();
+                }
             }
         }
 
@@ -154,7 +185,16 @@ namespace System.Collections.Concurrent
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException(nameof(key));
                 case TKey keyAsTKey when value is TValue valueAsTValue:
-                    _wrapped.AddNew(keyAsTKey, valueAsTValue);
+                    try
+                    {
+                        _lock.EnterReadLock();
+                        _wrapped.AddNew(keyAsTKey, valueAsTValue);
+                    }
+                    finally
+                    {
+                        _lock.ExitReadLock();
+                    }
+
                     break;
 
                 default:
@@ -173,7 +213,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            _wrapped.AddNew(key, value);
+            try
+            {
+                _lock.EnterReadLock();
+                _wrapped.AddNew(key, value);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -187,7 +235,15 @@ namespace System.Collections.Concurrent
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
 
-            _wrapped.AddNew(item.Key, item.Value);
+            try
+            {
+                _lock.EnterReadLock();
+                _wrapped.AddNew(item.Key, item.Value);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
@@ -199,13 +255,21 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            // addValueFactory and updateValueFactory are checked for null inside the call
-            return _wrapped.AddOrUpdate
-            (
-                key,
-                addValueFactory,
-                updateValueFactory
-            );
+            try
+            {
+                _lock.EnterReadLock();
+                // addValueFactory and updateValueFactory are checked for null inside the call
+                return _wrapped.AddOrUpdate
+                (
+                    key,
+                    addValueFactory,
+                    updateValueFactory
+                );
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
@@ -217,19 +281,35 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            // updateValueFactory is checked for null inside the call
-            return _wrapped.AddOrUpdate
-            (
-                key,
-                addValue,
-                updateValueFactory
-            );
+            try
+            {
+                _lock.EnterReadLock();
+                // updateValueFactory is checked for null inside the call
+                return _wrapped.AddOrUpdate
+                (
+                    key,
+                    addValue,
+                    updateValueFactory
+                );
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         public void Clear()
         {
-            // This should be an snapshot operation
-            _wrapped.Clear();
+            try
+            {
+                _lock.EnterReadLock();
+                // This should be an snapshot operation, however this is atomic.
+                _wrapped.Clear();
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         bool IDictionary.Contains(object key)
@@ -283,6 +363,9 @@ namespace System.Collections.Concurrent
             Extensions.CanCopyTo(_wrapped.Count, array, index);
             try
             {
+                // This should be an snapshot operation, I'll make it so.
+                // Please don't use this API.
+                _lock.EnterWriteLock();
                 switch (array)
                 {
                     case KeyValuePair<TKey, TValue>[] pairs:
@@ -326,13 +409,25 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentException(exception.Message, nameof(array));
             }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            // This should be an snapshot operation
-            Extensions.CanCopyTo(Count, array, arrayIndex);
-            this.CopyTo(array, arrayIndex);
+            try
+            {
+                // This should be an snapshot operation
+                _lock.EnterWriteLock();
+                Extensions.CanCopyTo(Count, array, arrayIndex);
+                this.CopyTo(array, arrayIndex);
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -359,8 +454,16 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            // valueFactory is checked for null inside the call
-            return _wrapped.GetOrAdd(key, valueFactory);
+            try
+            {
+                _lock.EnterReadLock();
+                // valueFactory is checked for null inside the call
+                return _wrapped.GetOrAdd(key, valueFactory);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         public TValue GetOrAdd(TKey key, TValue value)
@@ -372,7 +475,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return _wrapped.GetOrAdd(key, value);
+            try
+            {
+                _lock.EnterReadLock();
+                return _wrapped.GetOrAdd(key, value);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         void IDictionary.Remove(object key)
@@ -384,7 +495,16 @@ namespace System.Collections.Concurrent
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException(nameof(key));
                 case TKey keyAsTKey:
-                    _wrapped.Remove(keyAsTKey);
+                    try
+                    {
+                        _lock.EnterReadLock();
+                        _wrapped.Remove(keyAsTKey);
+                    }
+                    finally
+                    {
+                        _lock.ExitReadLock();
+                    }
+
                     break;
 
                 default:
@@ -403,7 +523,15 @@ namespace System.Collections.Concurrent
                 throw CreateArgumentNullExceptionKey(item.Key);
             }
 
-            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
+            try
+            {
+                _lock.EnterReadLock();
+                return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
@@ -413,10 +541,18 @@ namespace System.Collections.Concurrent
 
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
-            // This should be an snapshot operation
-            var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
-            result.AddRange(_wrapped);
-            return result.ToArray();
+            try
+            {
+                _lock.EnterWriteLock();
+                // This should be an snapshot operation
+                var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
+                result.AddRange(_wrapped);
+                return result.ToArray();
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
         }
 
         public bool TryAdd(TKey key, TValue value)
@@ -428,7 +564,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return _wrapped.TryAdd(key, value);
+            try
+            {
+                _lock.EnterReadLock();
+                return _wrapped.TryAdd(key, value);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         public bool TryGetValue(TKey key, out TValue value)
@@ -452,7 +596,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return _wrapped.Remove(key, out value);
+            try
+            {
+                _lock.EnterReadLock();
+                return _wrapped.Remove(key, out value);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
@@ -464,21 +616,21 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return _wrapped.TryUpdate(key, newValue, comparisonValue);
+            try
+            {
+                _lock.EnterReadLock();
+                return _wrapped.TryUpdate(key, newValue, comparisonValue);
+            }
+            finally
+            {
+                _lock.ExitReadLock();
+            }
         }
 
         private static ArgumentNullException CreateArgumentNullExceptionKey(TKey key)
         {
             _ = key;
             return new ArgumentNullException(nameof(key));
-        }
-
-        private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)
-        {
-            if (collection.Any(pair => !_wrapped.TryAdd(pair.Key, pair.Value)))
-            {
-                throw new ArgumentException("The source contains duplicate keys.");
-            }
         }
 
         private ValueCollection<TKey, TValue> GetValues()
