@@ -14,7 +14,14 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            if (!(source is IList<TSource> list))
+            if (source is IList<TSource> list)
+            {
+                if (list.Count != 0)
+                {
+                    return list[0];
+                }
+            }
+            else
             {
                 using (var enumerator = source.GetEnumerator())
                 {
@@ -22,13 +29,6 @@ namespace System.Linq
                     {
                         return enumerator.Current;
                     }
-                }
-            }
-            else
-            {
-                if (list.Count != 0)
-                {
-                    return list[0];
                 }
             }
 

@@ -90,7 +90,7 @@ namespace System.Threading.Tasks.Sources
                 return ValueTaskSourceStatus.Pending;
             }
 
-            if (!(_result is ExceptionStructNeedle<TResult> error))
+            if (_result is not ExceptionStructNeedle<TResult> error)
             {
                 return ValueTaskSourceStatus.Succeeded;
             }

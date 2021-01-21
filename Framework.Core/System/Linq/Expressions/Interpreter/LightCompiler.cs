@@ -2794,7 +2794,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void DefineBlockLabels(Expression node)
         {
-            if (!(node is BlockExpression block))
+            if (node is not BlockExpression block)
             {
                 return;
             }

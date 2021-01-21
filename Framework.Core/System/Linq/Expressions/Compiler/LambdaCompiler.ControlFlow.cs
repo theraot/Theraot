@@ -163,7 +163,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void DefineBlockLabels(Expression node)
         {
-            if (!(node is BlockExpression block) || block is SpilledExpressionBlock)
+            if (node is not BlockExpression block || block is SpilledExpressionBlock)
             {
                 return;
             }

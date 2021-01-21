@@ -30,12 +30,12 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool NotEmpty(Expression node)
         {
-            return !(node is DefaultExpression empty) || empty.Type != typeof(void);
+            return node is not DefaultExpression empty || empty.Type != typeof(void);
         }
 
         private static bool Significant(Expression node)
         {
-            if (!(node is BlockExpression block))
+            if (node is not BlockExpression block)
             {
                 return NotEmpty(node) && !(node is DebugInfoExpression);
             }

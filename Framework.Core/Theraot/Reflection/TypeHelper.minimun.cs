@@ -32,12 +32,7 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(alternative));
             }
 
-            if (!(source is TTarget sourceAsTarget))
-            {
-                return alternative();
-            }
-
-            return sourceAsTarget;
+            return source is not TTarget sourceAsTarget ? alternative() : sourceAsTarget;
         }
 
         public static TTarget As<TTarget>(object source, TTarget def)

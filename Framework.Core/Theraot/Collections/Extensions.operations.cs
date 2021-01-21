@@ -63,7 +63,7 @@ namespace Theraot.Collections
                 return array;
             }
 
-            if (!(source is ICollection<T> collection))
+            if (source is not ICollection<T> collection)
             {
                 // ReSharper disable once RemoveConstructorInvocation
                 return new List<T>(source).ToArray();
@@ -170,7 +170,7 @@ namespace Theraot.Collections
                 return list;
             }
 
-            if (!(source is ICollection<T> collection))
+            if (source is not ICollection<T> collection)
             {
                 return EnumerationList<T>.Create(source);
             }
@@ -321,7 +321,7 @@ namespace Theraot.Collections
                 return list;
             }
 
-            if (!(source is ICollection<T> collection))
+            if (source is not ICollection<T> collection)
             {
                 return new List<T>(source);
             }
@@ -362,7 +362,7 @@ namespace Theraot.Collections
                 return array.Length == 0 ? EmptyCollection<T>.Instance : new ReadOnlyCollectionEx<T>(array);
             }
 
-            if (!(enumerable is ICollection<T> collection))
+            if (enumerable is not ICollection<T> collection)
             {
                 return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
             }
@@ -582,7 +582,7 @@ namespace Theraot.Collections
                 return ArrayEx.Empty<T>();
             }
 
-            if (!(source is ICollection<T> collection2))
+            if (source is not ICollection<T> collection2)
             {
                 // ReSharper disable once RemoveConstructorInvocation
                 return new List<T>(source).ToArray();

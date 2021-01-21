@@ -227,7 +227,7 @@ namespace System.Linq.Expressions
 
         private Expression ReduceConstantTypeEqual()
         {
-            return !(Expression is ConstantExpression ce) || ce.Value == null
+            return Expression is not ConstantExpression ce || ce.Value == null
                 ? Utils.Constant(false)
                 : Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
         }

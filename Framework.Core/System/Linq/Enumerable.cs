@@ -617,7 +617,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            if (!(source is string str))
+            if (source is not string str)
             {
                 return new List<TSource>(source);
             }

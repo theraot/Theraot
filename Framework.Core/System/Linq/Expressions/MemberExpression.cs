@@ -364,7 +364,7 @@ namespace System.Linq.Expressions
         [return: NotNull]
         internal static MemberExpression Make(Expression expression, MemberInfo member)
         {
-            return !(member is FieldInfo fi) ? (MemberExpression)Make(expression, (PropertyInfo)member) : Make(expression, fi);
+            return member is FieldInfo fi ? Make(expression, fi) : (MemberExpression)Make(expression, (PropertyInfo)member);
         }
 
         internal virtual MemberInfo GetMember()

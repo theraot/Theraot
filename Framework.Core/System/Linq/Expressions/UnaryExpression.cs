@@ -802,12 +802,12 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(expression, nameof(expression));
             ExpressionUtils.RequiresCanRead(expression, nameof(expression));
-            if (!(expression is LambdaExpression lambda))
+            if (expression is LambdaExpression lambda)
             {
-                throw new ArgumentException("Quoted expression must be a lambda", nameof(expression));
+                return new UnaryExpression(ExpressionType.Quote, lambda, lambda.PublicType, null);
             }
 
-            return new UnaryExpression(ExpressionType.Quote, lambda, lambda.PublicType, null);
+            throw new ArgumentException("Quoted expression must be a lambda", nameof(expression));
         }
 
         /// <summary>

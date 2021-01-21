@@ -166,7 +166,7 @@ namespace Theraot.Threading
             }
 
             var bundle = Thread.GetData(slot);
-            if (!(bundle is INeedle<T> container))
+            if (bundle is not INeedle<T> container)
             {
                 value = default!;
                 return false;

@@ -3624,7 +3624,7 @@ namespace System.Threading.Tasks
                                 {
                                     // first check if there's saved state from a previous replica that we might be replacing.
                                     // the only state to be passed down in such a transition is the enumerator
-                                    if (!(partitionState is IEnumerator<KeyValuePair<long, TSource>> myPartition))
+                                    if (partitionState is not IEnumerator<KeyValuePair<long, TSource>> myPartition)
                                     {
                                         myPartition = orderablePartitionerSource.GetEnumerator();
                                         partitionState = myPartition;

@@ -809,7 +809,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                if (!(binding.Member is PropertyInfo propertyInfo))
+                if (binding.Member is not PropertyInfo propertyInfo)
                 {
                     throw new ArgumentException(string.Empty, nameof(binding));
                 }

@@ -56,7 +56,7 @@ namespace System.Dynamic
 
                 for (var i = 0; i < infos.Count; i++)
                 {
-                    if (!(infos[i].Target is ExpandoClass @class))
+                    if (infos[i].Target is not ExpandoClass @class)
                     {
                         infos.RemoveAt(i);
                         i--;

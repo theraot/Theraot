@@ -139,7 +139,7 @@ namespace System.Linq.Expressions.Compiler
 
         private Action<LambdaCompiler>? AddressOfWriteBack(MemberExpression node)
         {
-            if (!(node.Member is PropertyInfo property) || !property.CanWrite)
+            if (node.Member is not PropertyInfo property || !property.CanWrite)
             {
                 return null;
             }

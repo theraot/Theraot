@@ -43,7 +43,7 @@ namespace System.Linq
     {
         protected override Expression VisitConstant(ConstantExpression constant)
         {
-            if (!(constant.Value is IQueryableEnumerable qe))
+            if (constant.Value is not IQueryableEnumerable qe)
             {
                 return constant;
             }
