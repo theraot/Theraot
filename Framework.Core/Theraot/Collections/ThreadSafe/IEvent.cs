@@ -1,7 +1,5 @@
 ﻿// Needed for NET30 (Dynamic)
 
-#pragma warning disable CA2109 // Review visible event handlers
-
 using System;
 using System.Reflection;
 

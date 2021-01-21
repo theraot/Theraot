@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
-#pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
