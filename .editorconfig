@@ -225,6 +225,8 @@ dotnet_diagnostic.CA1045.severity = silent
 dotnet_diagnostic.CA1002.severity = silent
 dotnet_diagnostic.CA5362.severity = silent
 dotnet_diagnostic.CS8714.severity = silent
+# Disable checking if suppression are not necessary (because IDE performance)
+dotnet_diagnostic.IDE0079.severity = silent
 ############################### 
 # VB Coding Conventions       # 
 ############################### 
