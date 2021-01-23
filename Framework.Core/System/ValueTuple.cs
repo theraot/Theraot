@@ -5,8 +5,6 @@
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CC0074 // Make field readonly
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
-#pragma warning disable RECS0025 // Non-readonly field referenced in 'GetHashCode()'
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable UseDeconstructionOnParameter
@@ -203,12 +201,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple))
+            if (obj is ValueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return 0;
             }
 
-            return 0;
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -218,12 +216,12 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple))
+            if (other is ValueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                return 0;
             }
 
-            return 0;
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         /// <summary>
@@ -360,14 +358,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1>))
+            if (obj is ValueTuple<T1> other)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return Comparer<T1>.Default.Compare(Item1, other.Item1);
             }
 
-            var objTuple = (ValueTuple<T1>)obj;
-
-            return Comparer<T1>.Default.Compare(Item1, objTuple.Item1);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -377,14 +373,12 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1>))
+            if (other is ValueTuple<T1> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                return comparer.Compare(Item1, valueTuple.Item1);
             }
 
-            var objTuple = (ValueTuple<T1>)other;
-
-            return comparer.Compare(Item1, objTuple.Item1);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         /// <summary>
@@ -422,14 +416,12 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1>))
+            if (other is ValueTuple<T1> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1);
             }
 
-            var objTuple = (ValueTuple<T1>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1);
+            return false;
         }
 
         /// <summary>
@@ -513,8 +505,13 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2> other)
         {
-            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            return c != 0 ? c : Comparer<T2>.Default.Compare(Item2, other.Item2);
+            var result = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            if (result == 0)
+            {
+                result = Comparer<T2>.Default.Compare(Item2, other.Item2);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -548,7 +545,7 @@ namespace System
         public bool Equals(ValueTuple<T1, T2> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2);
+                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2);
         }
 
         /// <summary>
@@ -586,12 +583,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1, T2>))
+            if (obj is ValueTuple<T1, T2> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return CompareTo(valueTuple);
             }
 
-            return CompareTo((ValueTuple<T1, T2>)obj);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -601,15 +598,18 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2>))
+            if (other is ValueTuple<T1, T2> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                var result = comparer.Compare(Item1, valueTuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, valueTuple.Item2);
+                }
+
+                return result;
             }
 
-            var objTuple = (ValueTuple<T1, T2>)other;
-
-            var c = comparer.Compare(Item1, objTuple.Item1);
-            return c != 0 ? c : comparer.Compare(Item2, objTuple.Item2);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         /// <summary>
@@ -635,15 +635,13 @@ namespace System
         /// </remarks>
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1, T2>))
+            if (other is ValueTuple<T1, T2> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1)
+                    && comparer.Equals(Item2, valueTuple.Item2);
             }
 
-            var objTuple = (ValueTuple<T1, T2>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1)
-                   && comparer.Equals(Item2, objTuple.Item2);
+            return false;
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -721,14 +719,18 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3> other)
         {
-            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
+            var result = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T2>.Default.Compare(Item2, other.Item2);
             }
 
-            c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            return c != 0 ? c : Comparer<T3>.Default.Compare(Item3, other.Item3);
+            if (result == 0)
+            {
+                result = Comparer<T3>.Default.Compare(Item3, other.Item3);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -762,8 +764,8 @@ namespace System
         public bool Equals(ValueTuple<T1, T2, T3> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3);
+                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3);
         }
 
         /// <summary>
@@ -800,12 +802,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1, T2, T3>))
+            if (obj is ValueTuple<T1, T2, T3> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return CompareTo(valueTuple);
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3>)obj);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -815,35 +817,35 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3>))
+            if (other is ValueTuple<T1, T2, T3> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                var result = comparer.Compare(Item1, valueTuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, valueTuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, valueTuple.Item3);
+                }
+
+                return result;
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3>)other;
-
-            var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item2, objTuple.Item2);
-            return c != 0 ? c : comparer.Compare(Item3, objTuple.Item3);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1, T2, T3>))
+            if (other is ValueTuple<T1, T2, T3> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1)
+                    && comparer.Equals(Item2, valueTuple.Item2)
+                    && comparer.Equals(Item3, valueTuple.Item3);
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1)
-                   && comparer.Equals(Item2, objTuple.Item2)
-                   && comparer.Equals(Item3, objTuple.Item3);
+            return false;
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -930,20 +932,23 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4> other)
         {
-            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
+            var result = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T2>.Default.Compare(Item2, other.Item2);
             }
 
-            c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T3>.Default.Compare(Item3, other.Item3);
             }
 
-            c = Comparer<T3>.Default.Compare(Item3, other.Item3);
-            return c != 0 ? c : Comparer<T4>.Default.Compare(Item4, other.Item4);
+            if (result == 0)
+            {
+                result = Comparer<T4>.Default.Compare(Item4, other.Item4);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -977,9 +982,9 @@ namespace System
         public bool Equals(ValueTuple<T1, T2, T3, T4> other)
         {
             return EqualityComparer<T1>.Default.Equals(Item1, other.Item1)
-                   && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
-                   && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
-                   && EqualityComparer<T4>.Default.Equals(Item4, other.Item4);
+                && EqualityComparer<T2>.Default.Equals(Item2, other.Item2)
+                && EqualityComparer<T3>.Default.Equals(Item3, other.Item3)
+                && EqualityComparer<T4>.Default.Equals(Item4, other.Item4);
         }
 
         /// <summary>
@@ -1017,12 +1022,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1, T2, T3, T4>))
+            if (obj is ValueTuple<T1, T2, T3, T4> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return CompareTo(valueTuple);
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4>)obj);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -1032,42 +1037,41 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4>))
+            if (other is ValueTuple<T1, T2, T3, T4> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                var result = comparer.Compare(Item1, valueTuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, valueTuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, valueTuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, valueTuple.Item4);
+                }
+
+                return result;
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4>)other;
-
-            var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item2, objTuple.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item3, objTuple.Item3);
-            return c != 0 ? c : comparer.Compare(Item4, objTuple.Item4);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1, T2, T3, T4>))
+            if (other is ValueTuple<T1, T2, T3, T4> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1)
+                    && comparer.Equals(Item2, valueTuple.Item2)
+                    && comparer.Equals(Item3, valueTuple.Item3)
+                    && comparer.Equals(Item4, valueTuple.Item4);
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1)
-                   && comparer.Equals(Item2, objTuple.Item2)
-                   && comparer.Equals(Item3, objTuple.Item3)
-                   && comparer.Equals(Item4, objTuple.Item4);
+            return false;
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1163,26 +1167,28 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5> other)
         {
-            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
+            var result = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T2>.Default.Compare(Item2, other.Item2);
             }
 
-            c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T3>.Default.Compare(Item3, other.Item3);
             }
 
-            c = Comparer<T3>.Default.Compare(Item3, other.Item3);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T4>.Default.Compare(Item4, other.Item4);
             }
 
-            c = Comparer<T4>.Default.Compare(Item4, other.Item4);
-            return c != 0 ? c : Comparer<T5>.Default.Compare(Item5, other.Item5);
+            if (result == 0)
+            {
+                result = Comparer<T5>.Default.Compare(Item5, other.Item5);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -1258,12 +1264,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1, T2, T3, T4, T5>))
+            if (obj is ValueTuple<T1, T2, T3, T4, T5> valueTask)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return CompareTo(valueTask);
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5>)obj);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -1273,49 +1279,47 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                var result = comparer.Compare(Item1, valueTuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, valueTuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, valueTuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, valueTuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, valueTuple.Item5);
+                }
+
+                return result;
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5>)other;
-
-            var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item2, objTuple.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item3, objTuple.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item4, objTuple.Item4);
-            return c != 0 ? c : comparer.Compare(Item5, objTuple.Item5);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1)
+                    && comparer.Equals(Item2, valueTuple.Item2)
+                    && comparer.Equals(Item3, valueTuple.Item3)
+                    && comparer.Equals(Item4, valueTuple.Item4)
+                    && comparer.Equals(Item5, valueTuple.Item5);
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1)
-                   && comparer.Equals(Item2, objTuple.Item2)
-                   && comparer.Equals(Item3, objTuple.Item3)
-                   && comparer.Equals(Item4, objTuple.Item4)
-                   && comparer.Equals(Item5, objTuple.Item5);
+            return false;
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1420,32 +1424,33 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6> other)
         {
-            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
+            var result = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T2>.Default.Compare(Item2, other.Item2);
             }
 
-            c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T3>.Default.Compare(Item3, other.Item3);
             }
 
-            c = Comparer<T3>.Default.Compare(Item3, other.Item3);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T4>.Default.Compare(Item4, other.Item4);
             }
 
-            c = Comparer<T4>.Default.Compare(Item4, other.Item4);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T5>.Default.Compare(Item5, other.Item5);
             }
 
-            c = Comparer<T5>.Default.Compare(Item5, other.Item5);
-            return c != 0 ? c : Comparer<T6>.Default.Compare(Item6, other.Item6);
+            if (result == 0)
+            {
+                result = Comparer<T6>.Default.Compare(Item6, other.Item6);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -1523,12 +1528,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1, T2, T3, T4, T5, T6>))
+            if (obj is ValueTuple<T1, T2, T3, T4, T5, T6> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return CompareTo(valueTuple);
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6>)obj);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -1538,56 +1543,53 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5, T6> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                var result = comparer.Compare(Item1, valueTuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, valueTuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, valueTuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, valueTuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, valueTuple.Item5);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item6, valueTuple.Item6);
+                }
+
+                return result;
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6>)other;
-
-            var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item2, objTuple.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item3, objTuple.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item4, objTuple.Item4);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item5, objTuple.Item5);
-            return c != 0 ? c : comparer.Compare(Item6, objTuple.Item6);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5, T6> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1)
+                    && comparer.Equals(Item2, valueTuple.Item2)
+                    && comparer.Equals(Item3, valueTuple.Item3)
+                    && comparer.Equals(Item4, valueTuple.Item4)
+                    && comparer.Equals(Item5, valueTuple.Item5)
+                    && comparer.Equals(Item6, valueTuple.Item6);
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1)
-                   && comparer.Equals(Item2, objTuple.Item2)
-                   && comparer.Equals(Item3, objTuple.Item3)
-                   && comparer.Equals(Item4, objTuple.Item4)
-                   && comparer.Equals(Item5, objTuple.Item5)
-                   && comparer.Equals(Item6, objTuple.Item6);
+            return false;
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1701,38 +1703,38 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7> other)
         {
-            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
+            var result = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T2>.Default.Compare(Item2, other.Item2);
             }
 
-            c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T3>.Default.Compare(Item3, other.Item3);
             }
 
-            c = Comparer<T3>.Default.Compare(Item3, other.Item3);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T4>.Default.Compare(Item4, other.Item4);
             }
 
-            c = Comparer<T4>.Default.Compare(Item4, other.Item4);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T5>.Default.Compare(Item5, other.Item5);
             }
 
-            c = Comparer<T5>.Default.Compare(Item5, other.Item5);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T6>.Default.Compare(Item6, other.Item6);
             }
 
-            c = Comparer<T6>.Default.Compare(Item6, other.Item6);
-            return c != 0 ? c : Comparer<T7>.Default.Compare(Item7, other.Item7);
+            if (result == 0)
+            {
+                result = Comparer<T7>.Default.Compare(Item7, other.Item7);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -1812,12 +1814,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
+            if (obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return CompareTo(valueTuple);
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6, T7>)obj);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -1827,63 +1829,59 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5, T6, T7> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                var result = comparer.Compare(Item1, valueTuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, valueTuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, valueTuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, valueTuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, valueTuple.Item5);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item6, valueTuple.Item6);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item7, valueTuple.Item7);
+                }
+
+                return result;
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7>)other;
-
-            var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item2, objTuple.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item3, objTuple.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item4, objTuple.Item4);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item5, objTuple.Item5);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item6, objTuple.Item6);
-            return c != 0 ? c : comparer.Compare(Item7, objTuple.Item7);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5, T6, T7> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1)
+                    && comparer.Equals(Item2, valueTuple.Item2)
+                    && comparer.Equals(Item3, valueTuple.Item3)
+                    && comparer.Equals(Item4, valueTuple.Item4)
+                    && comparer.Equals(Item5, valueTuple.Item5)
+                    && comparer.Equals(Item6, valueTuple.Item6)
+                    && comparer.Equals(Item7, valueTuple.Item7);
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1)
-                   && comparer.Equals(Item2, objTuple.Item2)
-                   && comparer.Equals(Item3, objTuple.Item3)
-                   && comparer.Equals(Item4, objTuple.Item4)
-                   && comparer.Equals(Item5, objTuple.Item5)
-                   && comparer.Equals(Item6, objTuple.Item6)
-                   && comparer.Equals(Item7, objTuple.Item7);
+            return false;
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -1985,22 +1983,22 @@ namespace System
         /// <param name="rest">The value of the tuple's eight component.</param>
         public ValueTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
         {
-            if (!(rest is ITupleInternal))
+            if (rest is ITupleInternal)
             {
-                throw new ArgumentException("The TRest type argument of ValueTuple`8 must be a ValueTuple.");
+                Item1 = item1;
+                Item2 = item2;
+                Item3 = item3;
+                Item4 = item4;
+                Item5 = item5;
+                Item6 = item6;
+                Item7 = item7;
+                Rest = rest;
             }
 
-            Item1 = item1;
-            Item2 = item2;
-            Item3 = item3;
-            Item4 = item4;
-            Item5 = item5;
-            Item6 = item6;
-            Item7 = item7;
-            Rest = rest;
+            throw new ArgumentException("The TRest type argument of ValueTuple`8 must be a ValueTuple.");
         }
 
-        int ITupleInternal.Size => !(Rest is ITupleInternal rest) ? 8 : 7 + rest.Size;
+        int ITupleInternal.Size => Rest is ITupleInternal rest ? 7 + rest.Size : 8;
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -2012,44 +2010,43 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> other)
         {
-            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
-            if (c != 0)
+            var result = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T2>.Default.Compare(Item2, other.Item2);
             }
 
-            c = Comparer<T2>.Default.Compare(Item2, other.Item2);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T3>.Default.Compare(Item3, other.Item3);
             }
 
-            c = Comparer<T3>.Default.Compare(Item3, other.Item3);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T4>.Default.Compare(Item4, other.Item4);
             }
 
-            c = Comparer<T4>.Default.Compare(Item4, other.Item4);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T5>.Default.Compare(Item5, other.Item5);
             }
 
-            c = Comparer<T5>.Default.Compare(Item5, other.Item5);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T6>.Default.Compare(Item6, other.Item6);
             }
 
-            c = Comparer<T6>.Default.Compare(Item6, other.Item6);
-            if (c != 0)
+            if (result == 0)
             {
-                return c;
+                result = Comparer<T7>.Default.Compare(Item7, other.Item7);
             }
 
-            c = Comparer<T7>.Default.Compare(Item7, other.Item7);
-            return c != 0 ? c : Comparer<TRest>.Default.Compare(Rest, other.Rest);
+            if (result == 0)
+            {
+                result = Comparer<TRest>.Default.Compare(Rest, other.Rest);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -2099,7 +2096,7 @@ namespace System
         public override int GetHashCode()
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
-            if (!(Rest is ITupleInternal rest))
+            if (Rest is not ITupleInternal rest)
             {
                 return ValueTuple.CombineHashCodes
                 (
@@ -2209,7 +2206,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return !(Rest is ITupleInternal rest) ? $"({(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})" : "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd();
+            return Rest is ITupleInternal rest ? "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd() : $"({(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})";
         }
 
         int IComparable.CompareTo(object obj)
@@ -2219,12 +2216,12 @@ namespace System
                 return 1;
             }
 
-            if (!(obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
+            if (obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
+                return CompareTo(valueTuple);
             }
 
-            return CompareTo((ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>)obj);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
@@ -2234,70 +2231,65 @@ namespace System
                 return 1;
             }
 
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> valueTuple)
             {
-                throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
+                var result = comparer.Compare(Item1, valueTuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, valueTuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, valueTuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, valueTuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, valueTuple.Item5);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item6, valueTuple.Item6);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item7, valueTuple.Item7);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Rest, valueTuple.Rest);
+                }
+
+                return result;
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>)other;
-
-            var c = comparer.Compare(Item1, objTuple.Item1);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item2, objTuple.Item2);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item3, objTuple.Item3);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item4, objTuple.Item4);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item5, objTuple.Item5);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item6, objTuple.Item6);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = comparer.Compare(Item7, objTuple.Item7);
-            return c != 0 ? c : comparer.Compare(Rest, objTuple.Rest);
+            throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(other));
         }
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>))
+            if (other is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> valueTuple)
             {
-                return false;
+                return comparer.Equals(Item1, valueTuple.Item1)
+                    && comparer.Equals(Item2, valueTuple.Item2)
+                    && comparer.Equals(Item3, valueTuple.Item3)
+                    && comparer.Equals(Item4, valueTuple.Item4)
+                    && comparer.Equals(Item5, valueTuple.Item5)
+                    && comparer.Equals(Item6, valueTuple.Item6)
+                    && comparer.Equals(Item7, valueTuple.Item7)
+                    && comparer.Equals(Rest, valueTuple.Rest);
             }
 
-            var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>)other;
-
-            return comparer.Equals(Item1, objTuple.Item1)
-                   && comparer.Equals(Item2, objTuple.Item2)
-                   && comparer.Equals(Item3, objTuple.Item3)
-                   && comparer.Equals(Item4, objTuple.Item4)
-                   && comparer.Equals(Item5, objTuple.Item5)
-                   && comparer.Equals(Item6, objTuple.Item6)
-                   && comparer.Equals(Item7, objTuple.Item7)
-                   && comparer.Equals(Rest, objTuple.Rest);
+            return false;
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
@@ -2313,12 +2305,16 @@ namespace System
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
-            if (!(Rest is ITupleInternal rest))
+            if (Rest is not ITupleInternal rest)
             {
                 return ValueTuple.CombineHashCodes
                 (
-                    comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
-                    comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
+                    comparer.GetHashCode(Item1),
+                    comparer.GetHashCode(Item2),
+                    comparer.GetHashCode(Item3),
+                    comparer.GetHashCode(Item4),
+                    comparer.GetHashCode(Item5),
+                    comparer.GetHashCode(Item6),
                     comparer.GetHashCode(Item7)
                 );
             }
@@ -2333,37 +2329,59 @@ namespace System
             switch (8 - size)
             {
                 case 1:
-                    return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
+                    return ValueTuple.CombineHashCodes
+                    (
+                        comparer.GetHashCode(Item7),
+                        rest.GetHashCode(comparer)
+                    );
 
                 case 2:
-                    return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), rest.GetHashCode(comparer));
+                    return ValueTuple.CombineHashCodes
+                    (
+                        comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7),
+                        rest.GetHashCode(comparer)
+                    );
 
                 case 3:
                     return ValueTuple.CombineHashCodes
                     (
-                        comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7),
+                        comparer.GetHashCode(Item5),
+                        comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7),
                         rest.GetHashCode(comparer)
                     );
 
                 case 4:
                     return ValueTuple.CombineHashCodes
                     (
-                        comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
-                        comparer.GetHashCode(Item7), rest.GetHashCode(comparer)
+                        comparer.GetHashCode(Item4),
+                        comparer.GetHashCode(Item5),
+                        comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7),
+                        rest.GetHashCode(comparer)
                     );
 
                 case 5:
                     return ValueTuple.CombineHashCodes
                     (
-                        comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5),
-                        comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), rest.GetHashCode(comparer)
+                        comparer.GetHashCode(Item3),
+                        comparer.GetHashCode(Item4),
+                        comparer.GetHashCode(Item5),
+                        comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7),
+                        rest.GetHashCode(comparer)
                     );
 
                 case 6:
                     return ValueTuple.CombineHashCodes
                     (
-                        comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4),
-                        comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7),
+                        comparer.GetHashCode(Item2),
+                        comparer.GetHashCode(Item3),
+                        comparer.GetHashCode(Item4),
+                        comparer.GetHashCode(Item5),
+                        comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7),
                         rest.GetHashCode(comparer)
                     );
 
@@ -2371,9 +2389,14 @@ namespace System
                 case 8:
                     return ValueTuple.CombineHashCodes
                     (
-                        comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
-                        comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6),
-                        comparer.GetHashCode(Item7), rest.GetHashCode(comparer)
+                        comparer.GetHashCode(Item1),
+                        comparer.GetHashCode(Item2),
+                        comparer.GetHashCode(Item3),
+                        comparer.GetHashCode(Item4),
+                        comparer.GetHashCode(Item5),
+                        comparer.GetHashCode(Item6),
+                        comparer.GetHashCode(Item7),
+                        rest.GetHashCode(comparer)
                     );
 
                 default:
@@ -2384,7 +2407,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return !(Rest is ITupleInternal rest) ? $"{(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})" : (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd();
+            return Rest is ITupleInternal rest ? (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd() : $"{(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})";
         }
     }
 }

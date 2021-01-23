@@ -1,8 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1036 // Override methods on comparable types
-#pragma warning disable RCS1212 // Remove redundant assignment.
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
 
 using System.Collections;
 using System.Collections.Generic;
@@ -105,12 +103,12 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1> tuple))
+            if (other is Tuple<T1> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                return comparer.Compare(Item1, tuple.Item1);
             }
 
-            return comparer.Compare(Item1, tuple.Item1);
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 
@@ -144,13 +142,13 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is Tuple<T1, T2> tuple))
+            if (other is Tuple<T1, T2> tuple)
             {
-                return false;
+                return comparer.Equals(Item1, tuple.Item1)
+                    && comparer.Equals(Item2, tuple.Item2);
             }
 
-            return comparer.Equals(Item1, tuple.Item1)
-                   && comparer.Equals(Item2, tuple.Item2);
+            return false;
         }
 
         public override int GetHashCode()
@@ -161,8 +159,7 @@ namespace System
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
         {
             var hash = comparer.GetHashCode(Item1);
-            hash = (hash << 5) - hash + comparer.GetHashCode(Item2);
-            return hash;
+            return (hash << 5) - hash + comparer.GetHashCode(Item2);
         }
 
         public override string ToString()
@@ -177,18 +174,18 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1, T2> tuple))
+            if (other is Tuple<T1, T2> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                var result = comparer.Compare(Item1, tuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, tuple.Item2);
+                }
+
+                return result;
             }
 
-            var result = comparer.Compare(Item1, tuple.Item1);
-            if (result == 0)
-            {
-                result = comparer.Compare(Item2, tuple.Item2);
-            }
-
-            return result;
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 
@@ -225,14 +222,14 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is Tuple<T1, T2, T3> tuple))
+            if (other is Tuple<T1, T2, T3> tuple)
             {
-                return false;
+                return comparer.Equals(Item1, tuple.Item1)
+                    && comparer.Equals(Item2, tuple.Item2)
+                    && comparer.Equals(Item3, tuple.Item3);
             }
 
-            return comparer.Equals(Item1, tuple.Item1)
-                   && comparer.Equals(Item2, tuple.Item2)
-                   && comparer.Equals(Item3, tuple.Item3);
+            return false;
         }
 
         public override int GetHashCode()
@@ -260,23 +257,23 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1, T2, T3> tuple))
+            if (other is Tuple<T1, T2, T3> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                var result = comparer.Compare(Item1, tuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, tuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, tuple.Item3);
+                }
+
+                return result;
             }
 
-            var result = comparer.Compare(Item1, tuple.Item1);
-            if (result == 0)
-            {
-                result = comparer.Compare(Item2, tuple.Item2);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item3, tuple.Item3);
-            }
-
-            return result;
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 
@@ -316,15 +313,15 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is Tuple<T1, T2, T3, T4> tuple))
+            if (other is Tuple<T1, T2, T3, T4> tuple)
             {
-                return false;
+                return comparer.Equals(Item1, tuple.Item1)
+                    && comparer.Equals(Item2, tuple.Item2)
+                    && comparer.Equals(Item3, tuple.Item3)
+                    && comparer.Equals(Item4, tuple.Item4);
             }
 
-            return comparer.Equals(Item1, tuple.Item1)
-                   && comparer.Equals(Item2, tuple.Item2)
-                   && comparer.Equals(Item3, tuple.Item3)
-                   && comparer.Equals(Item4, tuple.Item4);
+            return false;
         }
 
         public override int GetHashCode()
@@ -353,28 +350,28 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1, T2, T3, T4> tuple))
+            if (other is Tuple<T1, T2, T3, T4> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                var result = comparer.Compare(Item1, tuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, tuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, tuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, tuple.Item4);
+                }
+
+                return result;
             }
 
-            var result = comparer.Compare(Item1, tuple.Item1);
-            if (result == 0)
-            {
-                result = comparer.Compare(Item2, tuple.Item2);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item3, tuple.Item3);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item4, tuple.Item4);
-            }
-
-            return result;
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 
@@ -417,16 +414,16 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is Tuple<T1, T2, T3, T4, T5> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5> tuple)
             {
-                return false;
+                return comparer.Equals(Item1, tuple.Item1)
+                    && comparer.Equals(Item2, tuple.Item2)
+                    && comparer.Equals(Item3, tuple.Item3)
+                    && comparer.Equals(Item4, tuple.Item4)
+                    && comparer.Equals(Item5, tuple.Item5);
             }
 
-            return comparer.Equals(Item1, tuple.Item1)
-                   && comparer.Equals(Item2, tuple.Item2)
-                   && comparer.Equals(Item3, tuple.Item3)
-                   && comparer.Equals(Item4, tuple.Item4)
-                   && comparer.Equals(Item5, tuple.Item5);
+            return false;
         }
 
         public override int GetHashCode()
@@ -456,33 +453,33 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1, T2, T3, T4, T5> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                var result = comparer.Compare(Item1, tuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, tuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, tuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, tuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, tuple.Item5);
+                }
+
+                return result;
             }
 
-            var result = comparer.Compare(Item1, tuple.Item1);
-            if (result == 0)
-            {
-                result = comparer.Compare(Item2, tuple.Item2);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item3, tuple.Item3);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item4, tuple.Item4);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item5, tuple.Item5);
-            }
-
-            return result;
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 
@@ -528,17 +525,17 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5, T6> tuple)
             {
-                return false;
+                return comparer.Equals(Item1, tuple.Item1)
+                    && comparer.Equals(Item2, tuple.Item2)
+                    && comparer.Equals(Item3, tuple.Item3)
+                    && comparer.Equals(Item4, tuple.Item4)
+                    && comparer.Equals(Item5, tuple.Item5)
+                    && comparer.Equals(Item6, tuple.Item6);
             }
 
-            return comparer.Equals(Item1, tuple.Item1)
-                   && comparer.Equals(Item2, tuple.Item2)
-                   && comparer.Equals(Item3, tuple.Item3)
-                   && comparer.Equals(Item4, tuple.Item4)
-                   && comparer.Equals(Item5, tuple.Item5)
-                   && comparer.Equals(Item6, tuple.Item6);
+            return false;
         }
 
         public override int GetHashCode()
@@ -569,38 +566,38 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5, T6> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                var result = comparer.Compare(Item1, tuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, tuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, tuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, tuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, tuple.Item5);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item6, tuple.Item6);
+                }
+
+                return result;
             }
 
-            var result = comparer.Compare(Item1, tuple.Item1);
-            if (result == 0)
-            {
-                result = comparer.Compare(Item2, tuple.Item2);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item3, tuple.Item3);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item4, tuple.Item4);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item5, tuple.Item5);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item6, tuple.Item6);
-            }
-
-            return result;
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 
@@ -649,18 +646,18 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple)
             {
-                return false;
+                return comparer.Equals(Item1, tuple.Item1)
+                    && comparer.Equals(Item2, tuple.Item2)
+                    && comparer.Equals(Item3, tuple.Item3)
+                    && comparer.Equals(Item4, tuple.Item4)
+                    && comparer.Equals(Item5, tuple.Item5)
+                    && comparer.Equals(Item6, tuple.Item6)
+                    && comparer.Equals(Item7, tuple.Item7);
             }
 
-            return comparer.Equals(Item1, tuple.Item1)
-                   && comparer.Equals(Item2, tuple.Item2)
-                   && comparer.Equals(Item3, tuple.Item3)
-                   && comparer.Equals(Item4, tuple.Item4)
-                   && comparer.Equals(Item5, tuple.Item5)
-                   && comparer.Equals(Item6, tuple.Item6)
-                   && comparer.Equals(Item7, tuple.Item7);
+            return false;
         }
 
         public override int GetHashCode()
@@ -692,43 +689,43 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                var result = comparer.Compare(Item1, tuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, tuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, tuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, tuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, tuple.Item5);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item6, tuple.Item6);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item7, tuple.Item7);
+                }
+
+                return result;
             }
 
-            var result = comparer.Compare(Item1, tuple.Item1);
-            if (result == 0)
-            {
-                result = comparer.Compare(Item2, tuple.Item2);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item3, tuple.Item3);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item4, tuple.Item4);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item5, tuple.Item5);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item6, tuple.Item6);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item7, tuple.Item7);
-            }
-
-            return result;
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 
@@ -781,19 +778,19 @@ namespace System
 
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
-            if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple)
             {
-                return false;
+                return comparer.Equals(Item1, tuple.Item1)
+                    && comparer.Equals(Item2, tuple.Item2)
+                    && comparer.Equals(Item3, tuple.Item3)
+                    && comparer.Equals(Item4, tuple.Item4)
+                    && comparer.Equals(Item5, tuple.Item5)
+                    && comparer.Equals(Item6, tuple.Item6)
+                    && comparer.Equals(Item7, tuple.Item7)
+                    && comparer.Equals(Rest, tuple.Rest);
             }
 
-            return comparer.Equals(Item1, tuple.Item1)
-                   && comparer.Equals(Item2, tuple.Item2)
-                   && comparer.Equals(Item3, tuple.Item3)
-                   && comparer.Equals(Item4, tuple.Item4)
-                   && comparer.Equals(Item5, tuple.Item5)
-                   && comparer.Equals(Item6, tuple.Item6)
-                   && comparer.Equals(Item7, tuple.Item7)
-                   && comparer.Equals(Rest, tuple.Rest);
+            return false;
         }
 
         public override int GetHashCode()
@@ -853,48 +850,48 @@ namespace System
                 return 1;
             }
 
-            if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple))
+            if (other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple)
             {
-                throw new ArgumentException(string.Empty, nameof(other));
+                var result = comparer.Compare(Item1, tuple.Item1);
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item2, tuple.Item2);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item3, tuple.Item3);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item4, tuple.Item4);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item5, tuple.Item5);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item6, tuple.Item6);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item7, tuple.Item7);
+                }
+
+                if (result == 0)
+                {
+                    result = comparer.Compare(Item7, tuple.Item7);
+                }
+
+                return result;
             }
 
-            var result = comparer.Compare(Item1, tuple.Item1);
-            if (result == 0)
-            {
-                result = comparer.Compare(Item2, tuple.Item2);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item3, tuple.Item3);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item4, tuple.Item4);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item5, tuple.Item5);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item6, tuple.Item6);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item7, tuple.Item7);
-            }
-
-            if (result == 0)
-            {
-                result = comparer.Compare(Item7, tuple.Item7);
-            }
-
-            return result;
+            throw new ArgumentException(string.Empty, nameof(other));
         }
     }
 }
