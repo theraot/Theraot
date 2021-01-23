@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET47 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
-#pragma warning disable CC0072 // Remove Async termination when method is not asynchronous.
-
 using System.Threading.Tasks;
 
 namespace System.Collections.Generic
