@@ -132,17 +132,20 @@ namespace System.Threading
             finally
             {
                 var currentThreadState = CurrentThreadState;
-                if (!((currentThreadState.LockState & LockState.Read) > 0))
+                if ((currentThreadState.LockState & LockState.Read) > 0)
+                {
+                    if (--currentThreadState.ReaderRecursiveCount == 0)
+                    {
+                        currentThreadState.LockState ^= LockState.Read;
+                        if (Interlocked.Add(ref _rwLock, -_rwRead) >> _rwReadBit == 0)
+                        {
+                            _readerDoneEvent.Set();
+                        }
+                    }
+                }
+                else
                 {
                     exception = new SynchronizationLockException("The current thread has not entered the lock in read mode");
-                }
-                else if (--currentThreadState.ReaderRecursiveCount == 0)
-                {
-                    currentThreadState.LockState ^= LockState.Read;
-                    if (Interlocked.Add(ref _rwLock, -_rwRead) >> _rwReadBit == 0)
-                    {
-                        _readerDoneEvent.Set();
-                    }
                 }
             }
 
@@ -163,20 +166,23 @@ namespace System.Threading
             finally
             {
                 var currentThreadState = CurrentThreadState;
-                if (!((currentThreadState.LockState & (LockState.Upgradable | LockState.Read)) > 0))
+                if ((currentThreadState.LockState & (LockState.Upgradable | LockState.Read)) > 0)
+                {
+                    if (--currentThreadState.UpgradeableRecursiveCount == 0)
+                    {
+                        _upgradableTaken.Value = false;
+                        _upgradableEvent.Set();
+
+                        currentThreadState.LockState &= ~LockState.Upgradable;
+                        if (Interlocked.Add(ref _rwLock, -_rwRead) >> _rwReadBit == 0)
+                        {
+                            _readerDoneEvent.Set();
+                        }
+                    }
+                }
+                else
                 {
                     exception = new SynchronizationLockException("The current thread has not entered the lock in upgradable mode");
-                }
-                else if (--currentThreadState.UpgradeableRecursiveCount == 0)
-                {
-                    _upgradableTaken.Value = false;
-                    _upgradableEvent.Set();
-
-                    currentThreadState.LockState &= ~LockState.Upgradable;
-                    if (Interlocked.Add(ref _rwLock, -_rwRead) >> _rwReadBit == 0)
-                    {
-                        _readerDoneEvent.Set();
-                    }
                 }
             }
 
@@ -197,21 +203,24 @@ namespace System.Threading
             finally
             {
                 var currentThreadState = CurrentThreadState;
-                if (!((currentThreadState.LockState & LockState.Write) > 0))
+                if ((currentThreadState.LockState & LockState.Write) > 0)
+                {
+                    if (--currentThreadState.WriterRecursiveCount == 0)
+                    {
+                        var isUpgradable = (currentThreadState.LockState & LockState.Upgradable) > 0;
+                        currentThreadState.LockState ^= LockState.Write;
+
+                        var value = Interlocked.Add(ref _rwLock, isUpgradable ? _rwRead - _rwWrite : -_rwWrite);
+                        _writerDoneEvent.Set();
+                        if (isUpgradable && value >> _rwReadBit == 1)
+                        {
+                            _readerDoneEvent.Reset();
+                        }
+                    }
+                }
+                else
                 {
                     exception = new SynchronizationLockException("The current thread has not entered the lock in write mode");
-                }
-                else if (--currentThreadState.WriterRecursiveCount == 0)
-                {
-                    var isUpgradable = (currentThreadState.LockState & LockState.Upgradable) > 0;
-                    currentThreadState.LockState ^= LockState.Write;
-
-                    var value = Interlocked.Add(ref _rwLock, isUpgradable ? _rwRead - _rwWrite : -_rwWrite);
-                    _writerDoneEvent.Set();
-                    if (isUpgradable && value >> _rwReadBit == 1)
-                    {
-                        _readerDoneEvent.Reset();
-                    }
                 }
             }
 
