@@ -219,7 +219,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitDynamicExpression(Expression expr)
         {
-            if (!(_method is DynamicMethod))
+            if (_method is not DynamicMethod)
             {
                 throw new NotSupportedException("Dynamic expressions are not supported by CompileToMethod. Instead, create an expression tree that uses System.Runtime.CompilerServices.CallSite.");
             }

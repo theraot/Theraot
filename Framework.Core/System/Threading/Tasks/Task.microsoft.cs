@@ -362,9 +362,9 @@ namespace System.Threading.Tasks
 
         private static void TaskCancelCallback(object? obj)
         {
-            if (!(obj is Task task))
+            if (obj is not Task task)
             {
-                if (!(obj is Tuple<Task, Task, TaskContinuation> tuple))
+                if (obj is not Tuple<Task, Task, TaskContinuation> tuple)
                 {
                     Contract.Assert(false, "task should have been non-null");
                     return;
@@ -510,13 +510,13 @@ namespace System.Threading.Tasks
 
             static void ExecutionContextCallback(object obj)
             {
-                if (!(obj is Task task))
+                if (obj is Task task)
                 {
-                    Contract.Assert(false, "expected a task object");
+                    task.Execute();
                 }
                 else
                 {
-                    task.Execute();
+                    Contract.Assert(false, "expected a task object");
                 }
             }
         }

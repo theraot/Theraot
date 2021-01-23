@@ -46,13 +46,12 @@ namespace System.Runtime.Serialization
 
         public override bool Equals(object obj)
         {
-            if (!(obj is StreamingContext))
+            if (obj is StreamingContext ctx)
             {
-                return false;
+                return ctx.Context == Context && ctx.State == State;
             }
 
-            var ctx = (StreamingContext)obj;
-            return ctx.Context == Context && ctx.State == State;
+            return false;
         }
 
         public override int GetHashCode() => (int)State;

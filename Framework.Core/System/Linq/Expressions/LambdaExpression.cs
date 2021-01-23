@@ -963,12 +963,12 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.Requires(method.IsStatic, nameof(method));
-            if (!(method.DeclaringType is TypeBuilder))
+            if (method.DeclaringType is TypeBuilder)
             {
-                throw new ArgumentException("MethodBuilder does not have a valid TypeBuilder");
+                LambdaCompiler.Compile(this, method);
             }
 
-            LambdaCompiler.Compile(this, method);
+            throw new ArgumentException("MethodBuilder does not have a valid TypeBuilder");
         }
 
         ParameterExpression IParameterProvider.GetParameter(int index)

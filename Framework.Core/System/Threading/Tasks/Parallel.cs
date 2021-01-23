@@ -3684,7 +3684,7 @@ namespace System.Threading.Tasks
                                 {
                                     // first check if there's saved state from a previous replica that we might be replacing.
                                     // the only state to be passed down in such a transition is the enumerator
-                                    if (!(partitionState is IEnumerator<TSource> myPartition))
+                                    if (partitionState is not IEnumerator<TSource> myPartition)
                                     {
                                         myPartition = partitionerSource.GetEnumerator();
                                         partitionState = myPartition;
@@ -3833,7 +3833,7 @@ namespace System.Threading.Tasks
                 }
 
                 // If mismatch found, fail-fast:
-                if (!(ex is OperationCanceledExceptionEx ocEx) || !cancelToken.Equals(ocEx.CancellationToken))
+                if (ex is not OperationCanceledExceptionEx ocEx || !cancelToken.Equals(ocEx.CancellationToken))
                 {
                     return null;
                 }

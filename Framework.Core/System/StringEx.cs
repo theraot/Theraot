@@ -206,10 +206,12 @@ namespace System
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (!(item is null))
+                if (item is null)
                 {
-                    length += item.Length;
+                    continue;
                 }
+
+                length += item.Length;
             }
 
             return ConcatExtractedExtracted(array, startIndex, maxIndex, length);
@@ -507,10 +509,12 @@ namespace System
             for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
-                if (!(item is null))
+                if (item is null)
                 {
-                    length += item.Length;
+                    continue;
                 }
+
+                length += item.Length;
             }
 
             length += separator.Length * (count - 1);

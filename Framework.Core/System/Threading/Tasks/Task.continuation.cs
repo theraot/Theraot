@@ -825,7 +825,7 @@ namespace System.Threading.Tasks
             {
                 // Synchronous continuation tasks will have the ExecuteSynchronously option,
                 // and we're looking for asynchronous tasks...
-                if (!(continuations[index] is StandardTaskContinuation tc) || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
+                if (continuations[index] is not StandardTaskContinuation tc || (tc.Options & TaskContinuationOptions.ExecuteSynchronously) != 0)
                 {
                     continue;
                 }

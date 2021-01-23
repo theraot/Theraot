@@ -702,12 +702,12 @@ namespace System.Numerics
                 return 1;
             }
 
-            if (!(obj is BigInteger))
+            if (obj is BigInteger other)
             {
-                throw new ArgumentException("The parameter must be a BigInteger.");
+                return CompareTo(other);
             }
 
-            return CompareTo((BigInteger)obj);
+            throw new ArgumentException("The parameter must be a BigInteger.");
         }
 
         /// <summary>Returns a value that indicates whether the current instance and a specified object have the same value.</summary>
