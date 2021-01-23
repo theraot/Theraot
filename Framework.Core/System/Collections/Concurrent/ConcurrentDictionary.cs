@@ -1,8 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-#pragma warning disable CA1836 // Prefer IsEmpty over Count when available
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,7 +24,7 @@ namespace System.Collections.Concurrent
         // Using the slim version so we do not allocate a wait handle if we don't have to.
         // We technically leak it too.
         [NonSerialized]
-        private ReaderWriterLockSlim _lock;
+        private ReaderWriterLockSlim? _lock;
 
         [NonSerialized]
         private ValueCollection<TKey, TValue>? _valueCollection;
@@ -95,16 +92,34 @@ namespace System.Collections.Concurrent
         }
 
         public int Count => _wrapped.Count;
+
         public bool IsEmpty => Count == 0;
+
         bool IDictionary.IsFixedSize => false;
+
         bool IDictionary.IsReadOnly => false;
+
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
+
         bool ICollection.IsSynchronized => false;
+
         public ICollection<TKey> Keys => _wrapped.Keys;
+
         ICollection IDictionary.Keys => (ICollection)_wrapped.Keys;
+
         object ICollection.SyncRoot => this;
+
         public ICollection<TValue> Values => GetValues();
+
         ICollection IDictionary.Values => GetValues();
+
+        private ReaderWriterLockSlim Lock
+        {
+            get
+            {
+                return TypeHelper.LazyCreate(ref _lock, _wrapped);
+            }
+        }
 
         public TValue this[TKey key]
         {
@@ -130,12 +145,12 @@ namespace System.Collections.Concurrent
 
                 try
                 {
-                    _lock.EnterReadLock();
+                    Lock.EnterReadLock();
                     _wrapped.Set(key, value);
                 }
                 finally
                 {
-                    _lock.ExitReadLock();
+                    Lock.ExitReadLock();
                 }
             }
         }
@@ -187,12 +202,12 @@ namespace System.Collections.Concurrent
                 case TKey keyAsTKey when value is TValue valueAsTValue:
                     try
                     {
-                        _lock.EnterReadLock();
+                        Lock.EnterReadLock();
                         _wrapped.AddNew(keyAsTKey, valueAsTValue);
                     }
                     finally
                     {
-                        _lock.ExitReadLock();
+                        Lock.ExitReadLock();
                     }
 
                     break;
@@ -215,12 +230,12 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 _wrapped.AddNew(key, value);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -237,12 +252,12 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 _wrapped.AddNew(item.Key, item.Value);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -257,7 +272,7 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 // addValueFactory and updateValueFactory are checked for null inside the call
                 return _wrapped.AddOrUpdate
                 (
@@ -268,7 +283,7 @@ namespace System.Collections.Concurrent
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -283,7 +298,7 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 // updateValueFactory is checked for null inside the call
                 return _wrapped.AddOrUpdate
                 (
@@ -294,7 +309,7 @@ namespace System.Collections.Concurrent
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -302,13 +317,13 @@ namespace System.Collections.Concurrent
         {
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 // This should be an snapshot operation, however this is atomic.
                 _wrapped.Clear();
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -365,7 +380,7 @@ namespace System.Collections.Concurrent
             {
                 // This should be an snapshot operation, I'll make it so.
                 // Please don't use this API.
-                _lock.EnterWriteLock();
+                Lock.EnterWriteLock();
                 switch (array)
                 {
                     case KeyValuePair<TKey, TValue>[] pairs:
@@ -411,7 +426,7 @@ namespace System.Collections.Concurrent
             }
             finally
             {
-                _lock.ExitWriteLock();
+                Lock.ExitWriteLock();
             }
         }
 
@@ -420,13 +435,13 @@ namespace System.Collections.Concurrent
             try
             {
                 // This should be an snapshot operation
-                _lock.EnterWriteLock();
+                Lock.EnterWriteLock();
                 Extensions.CanCopyTo(Count, array, arrayIndex);
                 this.CopyTo(array, arrayIndex);
             }
             finally
             {
-                _lock.ExitWriteLock();
+                Lock.ExitWriteLock();
             }
         }
 
@@ -456,13 +471,13 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 // valueFactory is checked for null inside the call
                 return _wrapped.GetOrAdd(key, valueFactory);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -477,12 +492,12 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 return _wrapped.GetOrAdd(key, value);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -497,12 +512,12 @@ namespace System.Collections.Concurrent
                 case TKey keyAsTKey:
                     try
                     {
-                        _lock.EnterReadLock();
+                        Lock.EnterReadLock();
                         _wrapped.Remove(keyAsTKey);
                     }
                     finally
                     {
-                        _lock.ExitReadLock();
+                        Lock.ExitReadLock();
                     }
 
                     break;
@@ -525,12 +540,12 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(input, item.Value), out _);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -543,7 +558,7 @@ namespace System.Collections.Concurrent
         {
             try
             {
-                _lock.EnterWriteLock();
+                Lock.EnterWriteLock();
                 // This should be an snapshot operation
                 var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
                 result.AddRange(_wrapped);
@@ -551,7 +566,7 @@ namespace System.Collections.Concurrent
             }
             finally
             {
-                _lock.ExitWriteLock();
+                Lock.ExitWriteLock();
             }
         }
 
@@ -566,12 +581,12 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 return _wrapped.TryAdd(key, value);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -598,12 +613,12 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 return _wrapped.Remove(key, out value);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
@@ -618,12 +633,12 @@ namespace System.Collections.Concurrent
 
             try
             {
-                _lock.EnterReadLock();
+                Lock.EnterReadLock();
                 return _wrapped.TryUpdate(key, newValue, comparisonValue);
             }
             finally
             {
-                _lock.ExitReadLock();
+                Lock.ExitReadLock();
             }
         }
 
