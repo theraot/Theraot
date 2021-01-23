@@ -156,8 +156,6 @@ namespace System.Collections.Generic
 
 #if (GREATERTHAN_NET30 && LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
         public bool TryGetValue(T equalValue, [MaybeNullWhen(false)] out T actualValue)
         {
             var spy = (Comparer as SpyEqualityComparer)!;

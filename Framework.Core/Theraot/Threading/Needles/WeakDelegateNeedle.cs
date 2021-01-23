@@ -1,7 +1,5 @@
 ﻿// Needed for Workaround
 
-#pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

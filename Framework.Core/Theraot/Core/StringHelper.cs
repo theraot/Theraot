@@ -7,8 +7,6 @@ using System.Text.RegularExpressions;
 
 #if LESSTHAN_NET45 || GREATERTHAN_NETCOREAPP11
 
-#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
-
 using System.Globalization;
 
 #endif

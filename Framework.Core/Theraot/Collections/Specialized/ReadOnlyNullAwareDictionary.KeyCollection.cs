@@ -1,5 +1,4 @@
-﻿#pragma warning disable RECS0096 // Type parameter is never used
-#pragma warning disable CA1034 // Nested types should not be visible
+﻿#pragma warning disable CA1034 // Nested types should not be visible
 
 using System;
 using System.Collections;

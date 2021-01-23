@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET45
 
-#pragma warning disable RECS0004 // An empty public constructor without parameters is redundant.
-
 namespace System.Runtime.CompilerServices
 {
     /// <summary>

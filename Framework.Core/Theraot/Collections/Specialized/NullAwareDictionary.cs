@@ -1,7 +1,6 @@
 ﻿// Needed for NET30
 
 #pragma warning disable CA1043 // Use Integral Or String Argument For Indexers
-#pragma warning disable RECS0017 // Possible compare of value type with 'null'
 // ReSharper disable UseDeconstructionOnParameter
 
 using System;

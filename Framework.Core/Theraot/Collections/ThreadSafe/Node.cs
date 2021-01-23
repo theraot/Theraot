@@ -1,7 +1,5 @@
 ﻿// Needed for NET40
 
-#pragma warning disable RECS0108 // Warns about static fields in generic types
-
 using System;
 
 namespace Theraot.Collections.ThreadSafe

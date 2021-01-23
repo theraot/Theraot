@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET45
 
-#pragma warning disable RECS0096 // Type parameter is never used
 #pragma warning disable CA1034 // Nested types should not be visible
 
 using System.Collections.Generic;

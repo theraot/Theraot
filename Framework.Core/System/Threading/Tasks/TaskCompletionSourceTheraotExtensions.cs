@@ -1,7 +1,5 @@
 ﻿#if GREATERTHAN_NET35 && LESSTHAN_NET46
 
-#pragma warning disable RECS0108 // Warns about static fields in generic types
-
 using System.Reflection;
 
 namespace System.Threading.Tasks
