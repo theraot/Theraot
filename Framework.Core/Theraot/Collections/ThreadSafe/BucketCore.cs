@@ -7,10 +7,12 @@ using System.Threading;
 using Theraot.Core;
 using Theraot.Threading;
 
+using System.Runtime.Serialization;
+
 namespace Theraot.Collections.ThreadSafe
 {
     [Serializable]
-    internal sealed class BucketCore : IEnumerable<object>
+    internal sealed class BucketCore : IEnumerable<object>, ISerializable
     {
         private const int _capacity = 1 << _capacityLog2;
         private const int _capacityLog2 = 8;
@@ -28,13 +30,44 @@ namespace Theraot.Collections.ThreadSafe
             // Empty
         }
 
-        private BucketCore(int level)
+        private BucketCore(SerializationInfo info, StreamingContext context)
         {
+            var _ = context;
+            if (info.GetValue("childFactory", typeof(Func<object>)) is not Func<object> childFactory)
+            {
+                throw new SerializationException();
+            }
+
+            if (info.GetValue("level", typeof(int)) is not int level)
+            {
+                throw new SerializationException();
+            }
+
+            if (info.GetValue("contents", typeof(object?[])) is not object?[] contents)
+            {
+                throw new SerializationException();
+            }
+
+            _childFactory = childFactory;
             _level = level;
             _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
             _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
             _arrayUse = ArrayReservoir<int>.GetArray(_capacity);
+            for (int subIndex = 0; subIndex < Math.Min(_capacity, contents.Length); subIndex++)
+            {
+                _arrayFirst[subIndex] = contents[subIndex];
+                _arraySecond[subIndex] = contents[subIndex];
+                _arrayUse[subIndex] = 1;
+            }
+        }
+
+        private BucketCore(int level)
+        {
             _childFactory = level == 1 ? FuncHelper.GetDefaultFunc<object>() : () => new BucketCore(_level - 1);
+            _level = level;
+            _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
+            _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
+            _arrayUse = ArrayReservoir<int>.GetArray(_capacity);
         }
 
         ~BucketCore()
@@ -211,6 +244,13 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("level", _level, typeof(int));
+            info.AddValue("childFactory", _childFactory, typeof(Func<object>));
+            info.AddValue("contents", _arrayFirst, typeof(object?[]));
+        }
+
         private static bool Do(ref int use, ref object? first, ref object? second, DoAction callback)
         {
             try
@@ -347,7 +387,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     else
                     {
-                        if (!(foundFirst is BucketCore core))
+                        if (foundFirst is not BucketCore core)
                         {
                             continue;
                         }
