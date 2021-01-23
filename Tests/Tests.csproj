@@ -14,6 +14,8 @@
     <CodeAnalysisRuleSet>../rules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1701;1702;NU1701;NU1702</NoWarn>
     <SonarQubeExclude>True</SonarQubeExclude>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugSymbols>True</DebugSymbols>
