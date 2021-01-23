@@ -528,7 +528,7 @@ namespace System.Linq.Expressions
                     {
                         Debug.Assert(member is FieldInfo);
                         var field = (FieldInfo)member;
-                        if (!(field.IsInitOnly || field.IsLiteral))
+                        if (!field.IsInitOnly && !field.IsLiteral)
                         {
                             return;
                         }
