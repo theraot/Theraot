@@ -90,17 +90,12 @@ namespace System.Threading.Tasks.Sources
                 return ValueTaskSourceStatus.Pending;
             }
 
-            if (_result is not ExceptionStructNeedle<TResult> error)
+            if (_result is ExceptionStructNeedle<TResult> error)
             {
-                return ValueTaskSourceStatus.Succeeded;
+                return error.Exception is OperationCanceledException ? ValueTaskSourceStatus.Canceled : ValueTaskSourceStatus.Faulted;
             }
 
-            if (error.Exception is OperationCanceledException)
-            {
-                return ValueTaskSourceStatus.Canceled;
-            }
-
-            return ValueTaskSourceStatus.Faulted;
+            return ValueTaskSourceStatus.Succeeded;
         }
 
         /// <summary>Gets the result of the operation.</summary>

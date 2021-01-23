@@ -11,7 +11,7 @@ namespace System.Runtime.CompilerServices
     {
         internal static readonly Action<object> InvokeActionDelegate = state =>
         {
-            if (state is not Action action)
+            if (!(state is Action action))
             {
                 throw new ArgumentNullException(nameof(state));
             }

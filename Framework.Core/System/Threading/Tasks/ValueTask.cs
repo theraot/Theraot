@@ -290,7 +290,7 @@ namespace System.Threading.Tasks
 
             private static void CompletionAction(object state)
             {
-                if (state is not ValueTaskSourceAsTask valueTaskSourceAsTask)
+                if (!(state is ValueTaskSourceAsTask valueTaskSourceAsTask))
                 {
                     throw new ArgumentOutOfRangeException(nameof(state));
                 }

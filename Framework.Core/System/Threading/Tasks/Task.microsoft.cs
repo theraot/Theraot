@@ -362,21 +362,23 @@ namespace System.Threading.Tasks
 
         private static void TaskCancelCallback(object? obj)
         {
-            if (obj is not Task task)
+            if (obj is Task task)
             {
-                if (obj is not Tuple<Task, Task, TaskContinuation> tuple)
-                {
-                    Contract.Assert(false, "task should have been non-null");
-                    return;
-                }
-
+                task.InternalCancel(false);
+                return;
+            }
+            
+            if (obj is Tuple<Task, Task, TaskContinuation> tuple)
+            {
                 task = tuple.Item1;
                 var antecedent = tuple.Item2;
                 var continuation = tuple.Item3;
                 antecedent.RemoveContinuation(continuation);
+                task.InternalCancel(false);
+                return;
             }
-
-            task.InternalCancel(false);
+            
+            Contract.Assert(false, "task should have been non-null");
         }
 
         /// <summary>

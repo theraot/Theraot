@@ -741,7 +741,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 foreach (var t in c.TestValues)
                 {
-                    if (t is not ConstantExpression)
+                    if (!(t is ConstantExpression))
                     {
                         return false;
                     }

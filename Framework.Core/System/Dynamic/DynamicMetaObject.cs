@@ -125,7 +125,7 @@ namespace System.Dynamic
         {
             ContractUtils.RequiresNotNull(expression, nameof(expression));
 
-            if (value is not IDynamicMetaObjectProvider ido)
+            if (!(value is IDynamicMetaObjectProvider ido))
             {
                 return new DynamicMetaObject(expression, BindingRestrictions.Empty, value);
             }

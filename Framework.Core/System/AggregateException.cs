@@ -62,7 +62,7 @@ namespace System
         protected AggregateException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            if (info.GetValue(nameof(InnerExceptions), typeof(Exception[])) is not Exception[] value)
+            if (!(info.GetValue(nameof(InnerExceptions), typeof(Exception[])) is Exception[] value))
             {
                 throw new SerializationException("Deserialization Failure");
             }
@@ -119,7 +119,7 @@ namespace System
                     return result;
                 }
 
-                if (item is not AggregateException tmp)
+                if (!(item is AggregateException tmp))
                 {
                     return item;
                 }

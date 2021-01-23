@@ -33,22 +33,17 @@ namespace Theraot.Collections.ThreadSafe
         private BucketCore(SerializationInfo info, StreamingContext context)
         {
             var _ = context;
-            if (info.GetValue("childFactory", typeof(Func<object>)) is not Func<object> childFactory)
+            if
+            (
+                !(info.GetValue("childFactory", typeof(Func<object>)) is Func<object> childFactory)
+                || !(info.GetValue("level", typeof(int)) is int level)
+                || !(info.GetValue("contents", typeof(object?[])) is object?[] contents)
+            )
             {
                 throw new SerializationException();
             }
 
-            if (info.GetValue("level", typeof(int)) is not int level)
-            {
-                throw new SerializationException();
-            }
-
-            if (info.GetValue("contents", typeof(object?[])) is not object?[] contents)
-            {
-                throw new SerializationException();
-            }
-
-            _childFactory = childFactory;
+             _childFactory = childFactory;
             _level = level;
             _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
             _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
@@ -387,7 +382,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     else
                     {
-                        if (foundFirst is not BucketCore core)
+                        if (!(foundFirst is BucketCore core))
                         {
                             continue;
                         }

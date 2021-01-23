@@ -139,12 +139,12 @@ namespace System.Linq.Expressions.Compiler
 
         private Action<LambdaCompiler>? AddressOfWriteBack(MemberExpression node)
         {
-            if (node.Member is not PropertyInfo property || !property.CanWrite)
+            if (node.Member is PropertyInfo property && property.CanWrite)
             {
-                return null;
+                return AddressOfWriteBackCore(node); // avoids closure allocation
             }
 
-            return AddressOfWriteBackCore(node); // avoids closure allocation
+            return null;
         }
 
         private Action<LambdaCompiler>? AddressOfWriteBack(IndexExpression node)

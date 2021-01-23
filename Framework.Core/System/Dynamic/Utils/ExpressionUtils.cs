@@ -253,7 +253,7 @@ namespace System.Dynamic.Utils
             // Ensure arguments is safe to enumerate twice.
             // If we have to build a collection, build a ArrayReadOnlyCollection<T>
             // so it won't be built a second time if used.
-            if (replacement is not ICollection<T> replacementCol)
+            if (!(replacement is ICollection<T> replacementCol))
             {
                 replacement = replacementCol = replacement.ToReadOnlyCollection();
             }
@@ -321,7 +321,7 @@ namespace System.Dynamic.Utils
             // Ensure arguments is safe to enumerate twice.
             // If we have to build a collection, build a ArrayReadOnlyCollection<T>
             // so it won't be built a second time if used.
-            if (replacement is not ICollection<T?> replacementCol)
+            if (!(replacement is ICollection<T?> replacementCol))
             {
                 replacement = replacementCol = replacement.ToReadOnlyCollection();
             }

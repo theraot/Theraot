@@ -566,7 +566,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void SwitchToBoxed(int index, int instructionIndex)
         {
-            if (_instructions[instructionIndex] is not IBoxableInstruction instruction)
+            if (!(_instructions[instructionIndex] is IBoxableInstruction instruction))
             {
                 return;
             }

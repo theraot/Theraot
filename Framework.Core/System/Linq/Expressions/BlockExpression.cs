@@ -96,7 +96,7 @@ namespace System.Linq.Expressions
 
             // Ensure expressions is safe to enumerate twice.
             // (If this means a second call to ToReadOnlyCollection it will return quickly).
-            if (expressions is not ICollection<Expression> expressionsAsCollection)
+            if (!(expressions is ICollection<Expression> expressionsAsCollection))
             {
                 expressions = expressionsAsCollection = expressions.ToReadOnlyCollection();
             }

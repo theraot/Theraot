@@ -152,7 +152,7 @@ namespace System.Linq.Expressions
             T[]? newNodes = null;
             for (int i = 0, n = nodes.Count; i < n; i++)
             {
-                if (Visit(nodes[i]) is not T node)
+                if (!(Visit(nodes[i]) is T node))
                 {
                     throw new InvalidOperationException($"When called from '{callerName}', rewriting a node of type '{typeof(T)}' must return a non-null value of the same type. Alternatively, override '{callerName}' and change it to not visit children of this type.");
                 }

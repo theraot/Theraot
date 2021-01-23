@@ -544,7 +544,7 @@ namespace System.Dynamic
 
                 for (var i = 0; i < args.Length; i++)
                 {
-                    if (args[i] is not ParameterExpression variable)
+                    if (!(args[i] is ParameterExpression variable))
                     {
                         throw new ArgumentException("Invalid argument value", nameof(args));
                     }

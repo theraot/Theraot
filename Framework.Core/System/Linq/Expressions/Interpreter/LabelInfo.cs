@@ -168,7 +168,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                if (_definitions is not HashSet<LabelScopeInfo> set)
+                if (!(_definitions is HashSet<LabelScopeInfo> set))
                 {
                     _definitions = set = new HashSet<LabelScopeInfo>
                     {

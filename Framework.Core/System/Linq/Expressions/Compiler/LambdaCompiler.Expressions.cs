@@ -219,7 +219,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitDynamicExpression(Expression expr)
         {
-            if (_method is not DynamicMethod)
+            if (!(_method is DynamicMethod))
             {
                 throw new NotSupportedException("Dynamic expressions are not supported by CompileToMethod. Instead, create an expression tree that uses System.Runtime.CompilerServices.CallSite.");
             }
@@ -809,7 +809,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                if (binding.Member is not PropertyInfo propertyInfo)
+                if (!(binding.Member is PropertyInfo propertyInfo))
                 {
                     throw new ArgumentException(string.Empty, nameof(binding));
                 }

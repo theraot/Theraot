@@ -615,15 +615,15 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            if (source is not string str)
+            if (source is string str)
             {
-                return new List<TSource>(source);
+                var array = (TSource[])(object)str.ToCharArray();
+                var result = new List<TSource>(array.Length);
+                result.AddRange(array);
+                return result;
             }
 
-            var array = (TSource[])(object)str.ToCharArray();
-            var result = new List<TSource>(array.Length);
-            result.AddRange(array);
-            return result;
+            return new List<TSource>(source);
         }
 
         public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
