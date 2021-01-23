@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable CA1062 // Validate arguments of public methods
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -377,7 +379,12 @@ namespace System
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
 
-            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, array.Length - arrayIndex);
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+
+            return ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, array.Length - arrayIndex);
         }
 
         public static string Implode(string separator, object[] array, int arrayIndex, int countLimit)
@@ -402,7 +409,12 @@ namespace System
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
 
-            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+
+            return ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
         }
 
         public static string Implode(string separator, params object[] values)
@@ -449,7 +461,12 @@ namespace System
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Non-negative number is required.");
             }
 
-            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, array.Length - arrayIndex);
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+
+            return ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, array.Length - arrayIndex);
         }
 
         public static string Implode(string separator, string[] array, int arrayIndex, int countLimit)
@@ -474,7 +491,12 @@ namespace System
                 throw new ArgumentException("The array can not contain the number of elements.", nameof(array));
             }
 
-            return arrayIndex == array.Length ? string.Empty : ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+
+            return ImplodeExtracted(separator ?? string.Empty, array, arrayIndex, countLimit);
         }
 
         private static string ImplodeExtracted(string separator, object[] array, int startIndex, int count)
