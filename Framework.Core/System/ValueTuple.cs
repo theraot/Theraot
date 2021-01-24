@@ -2096,7 +2096,7 @@ namespace System
         public override int GetHashCode()
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
-            if (!(Rest is ITupleInternal rest))
+            if (Rest is not ITupleInternal rest)
             {
                 return ValueTuple.CombineHashCodes
                 (
@@ -2305,7 +2305,7 @@ namespace System
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
-            if (!(Rest is ITupleInternal rest))
+            if (Rest is not ITupleInternal rest)
             {
                 return ValueTuple.CombineHashCodes
                 (

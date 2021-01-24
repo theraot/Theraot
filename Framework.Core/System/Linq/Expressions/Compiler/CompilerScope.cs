@@ -302,7 +302,7 @@ namespace System.Linq.Expressions.Compiler
 
             foreach (var refCount in ReferenceCount)
             {
-                if (!ShouldCache(refCount.Key, refCount.Value) || !(ResolveVariable(refCount.Key) is ElementBoxStorage storage))
+                if (!ShouldCache(refCount.Key, refCount.Value) || ResolveVariable(refCount.Key) is not ElementBoxStorage storage)
                 {
                     continue;
                 }

@@ -35,9 +35,9 @@ namespace Theraot.Collections.ThreadSafe
             var _ = context;
             if
             (
-                !(info.GetValue("childFactory", typeof(Func<object>)) is Func<object> childFactory)
-                || !(info.GetValue("level", typeof(int)) is int level)
-                || !(info.GetValue("contents", typeof(object?[])) is object?[] contents)
+                info.GetValue("childFactory", typeof(Func<object>)) is not Func<object> childFactory
+                || info.GetValue("level", typeof(int)) is not int level
+                || info.GetValue("contents", typeof(object?[])) is not object?[] contents
             )
             {
                 throw new SerializationException();
@@ -382,7 +382,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     else
                     {
-                        if (!(foundFirst is BucketCore core))
+                        if (foundFirst is not BucketCore core)
                         {
                             continue;
                         }
