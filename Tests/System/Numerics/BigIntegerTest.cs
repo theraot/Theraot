@@ -1608,18 +1608,4 @@ namespace MonoTests.System.Numerics
 
 #endif
     }
-
-    public partial class BigIntegerTest
-    {
-#if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
-
-        [SetCulture("pt-BR")]
-        [Test]
-        public void Parse_pt_BR()
-        {
-            Parse();
-        }
-
-#endif
-    }
 }
