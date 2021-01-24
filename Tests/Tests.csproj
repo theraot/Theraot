@@ -124,21 +124,21 @@
     <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net20'">
-    <PackageReference Include="NUnit" Version="[3.11.0]" />
+    <PackageReference Include="NUnit" Version="[3.9.0]" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net30'">
     <Reference Include="WindowsBase" />
-    <PackageReference Include="NUnit" Version="[3.11.0]" />
+    <PackageReference Include="NUnit" Version="[3.9.0]" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
     <Reference Include="WindowsBase" />
-    <PackageReference Include="NUnit" Version="[3.11.0]" />
+    <PackageReference Include="NUnit" Version="[3.9.0]" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="System.ValueTuple">
