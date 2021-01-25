@@ -212,7 +212,8 @@ namespace Theraot.Collections.ThreadSafe
 
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            throw new NotImplementedException();
+            info.AddValue("count", _count, typeof(int));
+            info.AddValue("contents", _entries, typeof(object?[]));
         }
 
         /// <summary>
