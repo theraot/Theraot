@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
 using Theraot.Threading;
-
 using System.Runtime.Serialization;
 
 namespace Theraot.Collections.ThreadSafe
@@ -43,7 +42,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new SerializationException();
             }
 
-             _childFactory = childFactory;
+            _childFactory = childFactory;
             _level = level;
             _arrayFirst = ArrayReservoir<object>.GetArray(_capacity);
             _arraySecond = ArrayReservoir<object>.GetArray(_capacity);
