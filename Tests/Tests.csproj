@@ -19,6 +19,7 @@
     <LangVersion>9.0</LangVersion>
     <AnalysisLevel>none</AnalysisLevel>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DebugSymbols>True</DebugSymbols>
