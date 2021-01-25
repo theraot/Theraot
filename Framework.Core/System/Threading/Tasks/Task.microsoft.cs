@@ -367,7 +367,7 @@ namespace System.Threading.Tasks
                 task.InternalCancel(false);
                 return;
             }
-            
+
             if (obj is Tuple<Task, Task, TaskContinuation> tuple)
             {
                 task = tuple.Item1;
@@ -377,7 +377,7 @@ namespace System.Threading.Tasks
                 task.InternalCancel(false);
                 return;
             }
-            
+
             Contract.Assert(false, "task should have been non-null");
         }
 
