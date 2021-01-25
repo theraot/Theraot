@@ -418,6 +418,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
+        [Category("NotDotNet")]
         public void UserDefinedLiftedAndAlsoShortCircuit()
         {
             const string name = "i";
