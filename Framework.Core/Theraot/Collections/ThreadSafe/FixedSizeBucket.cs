@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Threading;
+using System.Runtime.Serialization;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -14,7 +15,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
     [Serializable]
-    public sealed class FixedSizeBucket<T> : IBucket<T>
+    public sealed class FixedSizeBucket<T> : IBucket<T>, ISerializable
     {
         private readonly object?[] _entries;
         private int _count;
@@ -61,6 +62,23 @@ namespace Theraot.Collections.ThreadSafe
                 _entries[_count] = (object?)item ?? BucketHelper.Null;
                 _count++;
             }
+        }
+
+        private FixedSizeBucket(SerializationInfo info, StreamingContext context)
+        {
+            var _ = context;
+            if
+            (
+                info.GetValue("count", typeof(int)) is not int count
+                || info.GetValue("contents", typeof(object?[])) is not object?[] contents
+            )
+            {
+                throw new SerializationException();
+            }
+
+            _count = Math.Min(count, contents.Length);
+            _entries = contents;
+            Capacity = _entries.Length;
         }
 
         ~FixedSizeBucket()
@@ -190,6 +208,11 @@ namespace Theraot.Collections.ThreadSafe
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
