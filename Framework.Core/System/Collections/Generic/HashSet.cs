@@ -403,7 +403,7 @@ namespace System.Collections.Generic
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, T>> _enumerator;
+            private readonly IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, T>>? _enumerator;
 
             private bool _valid;
 
@@ -433,12 +433,19 @@ namespace System.Collections.Generic
             public void Dispose()
             {
                 var enumerator = _enumerator;
-                enumerator.Dispose();
+                enumerator?.Dispose();
             }
 
             public bool MoveNext()
             {
                 var enumerator = _enumerator;
+                if (enumerator == null)
+                {
+                    _valid = false;
+                    Current = default!;
+                    return _valid;
+                }
+
                 _valid = enumerator.MoveNext();
                 Current = enumerator.Current.Key.Value;
                 return _valid;
@@ -448,6 +455,11 @@ namespace System.Collections.Generic
             {
                 _valid = false;
                 var enumerator = _enumerator;
+                if (enumerator == null)
+                {
+                    return;
+                }
+
                 Current = enumerator.Current.Key.Value;
                 enumerator.Reset();
             }
