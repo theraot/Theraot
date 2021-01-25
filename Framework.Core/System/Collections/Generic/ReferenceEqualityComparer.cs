@@ -1,4 +1,6 @@
-﻿namespace System.Collections.Generic
+﻿#if TARGETS_NET || LESSTHAN_NET50 || TARGETS_NETSTANDARD
+
+namespace System.Collections.Generic
 {
     public sealed class ReferenceEqualityComparer : IEqualityComparer<object>, IEqualityComparer
     {
@@ -25,3 +27,5 @@
         }
     }
 }
+
+#endif

@@ -118,7 +118,9 @@ namespace System.Threading.Tasks
             private bool Unregister()
             {
                 Volatile.Read(ref _registeredWaitHandle[0])!.Unregister(null);
+#pragma warning disable EPS06 // Hidden struct copy operation
                 if (!_cancellationToken.IsCancellationRequested)
+#pragma warning restore EPS06 // Hidden struct copy operation
                 {
                     return false;
                 }
