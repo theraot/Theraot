@@ -7,9 +7,12 @@
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
 #pragma warning disable RECS0021 // Warns about calls to virtual member functions occurring in the constructor
 
+// ReSharper disable PartialTypeWithSinglePart
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+
 
 /*============================================================
 **
@@ -1666,7 +1669,7 @@ namespace System.Collections
         }
     }
 
-    internal static class HashHelpers
+    internal static partial class HashHelpers
     {
         public const int HashCollisionThreshold = 100;
 
