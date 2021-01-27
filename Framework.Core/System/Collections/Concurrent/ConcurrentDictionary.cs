@@ -12,7 +12,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+#if LESSTHAN_NET40
 using System.Security.Permissions;
+#endif
 using System.Threading;
 // ReSharper disable InvertIf
 // ReSharper disable ForCanBeConvertedToForeach
@@ -36,12 +38,16 @@ namespace System.Collections.Concurrent
     /// </remarks>
     [DebuggerTypeProxy(typeof(IDictionaryDebugView<,>))]
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
+#if LESSTHAN_NET40
     [Serializable]
     [HostProtection(Synchronization = true, ExternalThreading = true)]
+#endif
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue> where TKey : notnull
     {
         /// <summary>Internal tables of the dictionary.</summary>
+#if LESSTHAN_NET40
         [NonSerialized]
+#endif
         private volatile Tables _tables;
 
         /// <summary>Key equality comparer.</summary>
@@ -55,18 +61,24 @@ namespace System.Collections.Concurrent
         private readonly EqualityComparer<TKey> _defaultComparer;
 
         /// <summary>Whether to dynamically increase the size of the striped lock.</summary>
+#if LESSTHAN_NET40
         [NonSerialized]
+#endif
         private readonly bool _growLockArray;
 
         /// <summary>The maximum number of elements per lock before a resize operation is triggered.</summary>
+#if LESSTHAN_NET40
         [NonSerialized]
+#endif
         private int _budget;
 
+#if LESSTHAN_NET40
         private KeyValuePair<TKey, TValue>[]? _serializationArray; // Used for custom serialization
 
         private int _serializationConcurrencyLevel; // used to save the concurrency level in serialization
 
         private int _serializationCapacity; // used to save the capacity in serialization
+#endif
 
         /// <summary>The default capacity, i.e. the initial # of buckets.</summary>
         /// <remarks>
@@ -2285,6 +2297,8 @@ namespace System.Collections.Concurrent
             public void Reset() => _enumerator.Reset();
         }
 
+#if LESSTHAN_NET40
+
         /// <summary>
         /// Get the data array to be serialized
         /// </summary>
@@ -2320,6 +2334,8 @@ namespace System.Collections.Concurrent
             InitializeFromCollection(array);
             _serializationArray = null;
         }
+
+#endif
     }
 
     internal sealed class IDictionaryDebugView<TKey, TValue> where TKey : notnull
