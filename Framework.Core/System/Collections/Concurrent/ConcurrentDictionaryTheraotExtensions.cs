@@ -9,6 +9,8 @@ namespace System.Collections.Concurrent
 {
     public static class ConcurrentDictionaryTheraotExtensions
     {
+#if (GREATERTHAN_NET35 && LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
+
         /// <summary>
         /// Adds a key/value pair to the <see cref="ConcurrentDictionary{TKey,TValue}"/>
         /// if the key does not already exist.
@@ -104,6 +106,10 @@ namespace System.Collections.Concurrent
                 (elementKey, elementValue) => updateValueFactory(elementKey, elementValue, factoryArgument));
         }
 
+#endif
+
+#if GREATERTHAN_NET35 || GREATERTHAN_NETSTANDARD10 || NETCOREAPP1_0 || GREATERTHAN_NETCOREAPP10
+
         /// <summary>Removes a key and value from the dictionary.</summary>
         /// <param name="item">The <see cref="KeyValuePair{TKey,TValue}"/> representing the key and value to remove.</param>
         /// <returns>
@@ -135,5 +141,8 @@ namespace System.Collections.Concurrent
 
             return ((ICollection<KeyValuePair<TKey, TValue>>)concurrentDictionary).Remove(item);
         }
+
+#endif
+
     }
 }

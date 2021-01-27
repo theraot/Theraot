@@ -1,11 +1,18 @@
-﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿#if !(LESSTHAN_NET40 || NETSTANDARD1_0)
+using System.Runtime.CompilerServices;
+#endif
 
 namespace System.Threading
 {
     public class MonitorEx
     {
+#if !(LESSTHAN_NET40 || NETSTANDARD1_0)
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+#endif
         public static void Enter(object obj, ref bool lockTaken)
         {
+#if LESSTHAN_NET40 || NETSTANDARD1_0
+
             if (obj is null)
             {
                 throw new ArgumentNullException(nameof(obj));
@@ -16,16 +23,11 @@ namespace System.Threading
                 throw new ArgumentException("Lock taken", nameof(lockTaken));
             }
 
-            var taken = Monitor.TryEnter(obj);
-
-            if (!taken)
-            {
-                Monitor.Enter(obj);
-            }
-
-            lockTaken = taken;
+            Monitor.Enter(obj);
+            Volatile.Write(ref lockTaken, true);
+#else
+            Monitor.Enter(obj, ref lockTaken);
+#endif
         }
     }
 }
-
-#endif
