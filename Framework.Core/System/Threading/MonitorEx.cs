@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace System.Threading
 {
-    public class MonitorEx
+    public static class MonitorEx
     {
 #if !(LESSTHAN_NET40 || NETSTANDARD1_0)
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
