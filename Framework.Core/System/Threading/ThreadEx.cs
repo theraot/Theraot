@@ -165,7 +165,9 @@ namespace System.Threading
 #if LESSTHAN_NETSTANDARD20 || LESSTHAN_NETCOREAPP20
             return Volatile.Read(ref address);
 #else
-            return Interlocked.CompareExchange(ref address, address, address);
+            T obj = address;
+            Thread.MemoryBarrier();
+            return obj;
 #endif
         }
 
