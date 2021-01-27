@@ -79,8 +79,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             dict2.Add("key2", null);
         }
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         public static void TestAddNullValue_IDictionary_ReferenceType_null()
         {
@@ -93,8 +91,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 #endif
             dict3.Add("key2", null);
         }
-
-#endif
 
         [Test]
         public static void TestAddNullValue_IDictionary_ValueType_null_indexer()
@@ -215,8 +211,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.AreEqual(expectedCount, dictConcurrent.ToArray().Length);
         }
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         [TestCase(1, 1, 10000)]
         [TestCase(5, 1, 10000)]
@@ -291,8 +285,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                   );
             }
         }
-
-#endif
 
         [Test]
         [TestCase(1, 1, 10000)]
@@ -421,8 +413,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.AreEqual(expectKeys.Count, dict.ToArray().Length);
         }
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         [TestCase(1)]
         [TestCase(10)]
@@ -482,8 +472,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     );
             }
         }
-
-#endif
 
         [Test]
         public static void TestRemove3()
@@ -553,8 +541,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.True(dict.TryRemove(KeyValuePair.Create("KEY", "value")));
         }
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         public static void TestGetOrAdd()
         {
@@ -580,8 +566,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             TestGetOrAddOrUpdate(64, 5, 5, 5000, false);
             TestGetOrAddOrUpdate(5, 5, 5, 25000, false);
         }
-
-#endif
 
         private static void TestGetOrAddOrUpdate(int cLevel, int initSize, int threads, int addsPerThread, bool isAdd)
         {
@@ -610,7 +594,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                                             dict.GetOrAdd(j, x => -x);
                                             break;
                                         case 2:
-                                            dict.GetOrAdd(j, (x,m) => x * m, -1);
+                                            dict.GetOrAdd(j, (x, m) => x * m, -1);
                                             break;
                                     }
                                 }
@@ -740,8 +724,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
 #else
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         public static void TestNullComparer()
         {
@@ -767,8 +749,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
 #endif
 
-#endif
-
         private sealed class EqualityApiSpy : IEquatable<EqualityApiSpy>
         {
             public bool ObjectApiUsed { get; private set; }
@@ -790,21 +770,19 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             }
         }
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         public static void TestConstructor_Negative()
         {
             Assert.Throws<ArgumentNullException>(
-               () => new ConcurrentDictionary<int, int>((ICollection<KeyValuePair<int, int>>)null));
+               () => _ = new ConcurrentDictionary<int, int>((ICollection<KeyValuePair<int, int>>)null));
             // "TestConstructor:  FAILED.  Constructor didn't throw ANE when null collection is passed");
 
             Assert.Throws<ArgumentNullException>(
-               () => new ConcurrentDictionary<int, int>((ICollection<KeyValuePair<int, int>>)null, EqualityComparer<int>.Default));
+               () => _ = new ConcurrentDictionary<int, int>((ICollection<KeyValuePair<int, int>>)null, EqualityComparer<int>.Default));
             // "TestConstructor:  FAILED.  Constructor didn't throw ANE when null collection and non null IEqualityComparer passed");
 
             Assert.Throws<ArgumentNullException>(
-               () => new ConcurrentDictionary<string, int>(new[] { new KeyValuePair<string, int>(null, 1) }));
+               () => _ = new ConcurrentDictionary<string, int>(new[] { new KeyValuePair<string, int>(null, 1) }));
             // "TestConstructor:  FAILED.  Constructor didn't throw ANE when collection has null key passed");
 
             // Duplicate keys.
@@ -817,19 +795,17 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     }));
 
             Assert.Throws<ArgumentNullException>(
-               () => new ConcurrentDictionary<int, int>(1, null, EqualityComparer<int>.Default));
+               () => _ = new ConcurrentDictionary<int, int>(1, null, EqualityComparer<int>.Default));
             // "TestConstructor:  FAILED.  Constructor didn't throw ANE when null collection is passed");
 
             Assert.Throws<ArgumentOutOfRangeException>(
-               () => new ConcurrentDictionary<int, int>(0, 10));
+               () => _ = new ConcurrentDictionary<int, int>(0, 10));
             // "TestConstructor:  FAILED.  Constructor didn't throw AORE when <1 concurrencyLevel passed");
 
             Assert.Throws<ArgumentOutOfRangeException>(
-               () => new ConcurrentDictionary<int, int>(-1, 0));
+               () => _ = new ConcurrentDictionary<int, int>(-1, 0));
             // "TestConstructor:  FAILED.  Constructor didn't throw AORE when < 0 capacity passed");
         }
-
-#endif
 
         [Test]
         public static void TestExceptions()
@@ -902,8 +878,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.Throws<ArgumentException>(() => ((IDictionary<string, int>)dictionary).Add("1", 2));
         }
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         public static void TestIDictionary()
         {
@@ -959,8 +933,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             //non-existing key
             Assert.Null(dictionary["NotAKey"]);
         }
-
-#endif
 
         [Test]
         public static void TestIDictionary_Negative()
@@ -1035,8 +1007,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.AreEqual(value, (int)entryArray[0].Value);
         }
 
-#if !NET20 && !NET30 && !NET35
-
         [Test]
         public static void TestICollection_Negative()
         {
@@ -1055,8 +1025,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             Assert.Throws<ArgumentException>(() => dictionary.CopyTo(new object[] { }, 0));
             // "TestICollection:  FAILED.  CopyTo didn't throw AE when the Array size is smaller than the dictionary count");
         }
-
-#endif
 
         [Test]
         public static void TestClear()
