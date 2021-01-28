@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -11,8 +9,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 #if LESSTHAN_NET40
+using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 using System.Threading;
@@ -457,7 +455,7 @@ namespace System.Collections.Concurrent
         /// </param>
         /// <returns>true if the key was found in the <see cref="ConcurrentDictionary{TKey,TValue}"/>; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference (Nothing in Visual Basic).</exception>
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+        public bool TryGetValue(TKey key, out TValue value)
         {
             if (key is null)
             {
@@ -509,7 +507,7 @@ namespace System.Collections.Concurrent
                 }
             }
 
-            value = default;
+            value = default!;
             return false;
         }
 
