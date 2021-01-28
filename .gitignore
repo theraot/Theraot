@@ -175,3 +175,6 @@ package/
 .vscode/
 .github/
 .idea/
+
+# Roslyn Analyzers
+Framework.Core/Framework.Core.analyzers.csproj
