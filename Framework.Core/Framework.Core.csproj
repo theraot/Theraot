@@ -150,7 +150,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
-  <Import Project=".\Framework.Core.analyzers.csproj" />
+  <Import Project=".\*.analyzers.csproj" />
   <ItemGroup>
     <None Update="Theraot\Core\ActionHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

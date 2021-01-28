@@ -177,4 +177,4 @@ package/
 .idea/
 
 # Roslyn Analyzers
-Framework.Core/Framework.Core.analyzers.csproj
+Framework.Core/*.analyzers.csproj
