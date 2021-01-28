@@ -984,8 +984,8 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             ICollection dictionary = new ConcurrentDictionary<int, int>();
             Assert.False(dictionary.IsSynchronized, "TestICollection:  FAILED.  IsSynchronized returned true!");
 
-            var key = -1;
-            var value = +1;
+            const int key = -1;
+            const int value = +1;
             //add one item to the dictionary
             ((ConcurrentDictionary<int, int>)dictionary).TryAdd(key, value);
 
