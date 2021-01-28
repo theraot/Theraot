@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 
@@ -2052,7 +2052,10 @@ namespace System.Collections.Concurrent
         {
             private readonly IEnumerator<KeyValuePair<TKey, TValue>> _enumerator; // Enumerator over the dictionary.
 
-            internal DictionaryEnumerator(ConcurrentDictionary<TKey, TValue> dictionary) => _enumerator = dictionary.GetEnumerator();
+            internal DictionaryEnumerator(ConcurrentDictionary<TKey, TValue> dictionary)
+            {
+                _enumerator = dictionary.GetEnumerator();
+            }
 
             public object Current => Entry;
             public DictionaryEntry Entry => new DictionaryEntry(_enumerator.Current.Key, _enumerator.Current.Value);
