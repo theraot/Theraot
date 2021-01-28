@@ -185,7 +185,7 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(43, foo, "#3");
             var t = new Thread
             (
-                o =>
+                _ =>
                 {
                     try
                     {
@@ -234,7 +234,7 @@ namespace MonoTests.System.Threading
 
             var t = new Thread
             (
-                o =>
+                _ =>
                 {
                     Interlocked.Decrement(ref _nTimes);
                     AssertThreadLocal();

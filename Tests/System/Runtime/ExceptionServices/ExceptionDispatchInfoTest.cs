@@ -57,7 +57,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (ArgumentNullException ex)
             {
-                var _ = ex;
+                _ = ex;
             }
         }
 

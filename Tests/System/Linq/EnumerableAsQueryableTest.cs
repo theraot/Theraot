@@ -133,7 +133,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void Average()
         {
-            Assert.AreEqual(_src.Average(n => 11), _array.Average(n => 11));
+            Assert.AreEqual(_src.Average(_ => 11), _array.Average(_ => 11));
         }
 
         [Test]

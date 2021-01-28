@@ -31,7 +31,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private BucketCore(SerializationInfo info, StreamingContext context)
         {
-            var _ = context;
+            _ = context;
             if
             (
                 info.GetValue("childFactory", typeof(Func<object>)) is not Func<object> childFactory

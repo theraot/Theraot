@@ -46,44 +46,44 @@ namespace Tests.Theraot.Collections
             string[] data = { "2", "1", "5", "3", "4" };
 
             // GroupProgressiveBy<string,string> (Func<string, string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test"));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test"));
             AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string>(null));
 
             // GroupProgressiveBy<string,string> (Func<string, string>, IEqualityComparer<string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test", EqualityComparer<string>.Default));
             AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(null, EqualityComparer<string>.Default));
 
             // GroupProgressiveBy<string,string,string> (Func<string, string>, Func<string, string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test", x => "test"));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string>(null, x => "test"));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(x => "test", (Func<string, string>)null));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test", _ => "test"));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string>(null, _ => "test"));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(_ => "test", (Func<string, string>)null));
 
             // GroupProgressiveBy<string,string,string> (Func<string, string>, Func<string, string>, IEqualityComparer<string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test", x => "test", EqualityComparer<string>.Default));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(null, x => "test", EqualityComparer<string>.Default));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(x => "test", (Func<string, string>)null, EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test", _ => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(null, _ => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(_ => "test", (Func<string, string>)null, EqualityComparer<string>.Default));
 
             // GroupProgressiveBy<string,string,string> (Func<string, string>, Func<string, IEnumerable<string>, string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test", (x, y) => "test"));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string>(null, (x, y) => "test"));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(x => "test", (Func<string, IEnumerable<string>, string>)null));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test", (_, _) => "test"));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string>(null, (_, _) => "test"));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(_ => "test", (Func<string, IEnumerable<string>, string>)null));
 
             // GroupProgressiveBy<string,string,string,string> (Func<string, string>, Func<string, string>, Func<string, IEnumerable<string>, string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test", x => "test", (x, y) => "test"));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(null, x => "test", (x, y) => "test"));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(x => "test", null, (x, y) => "test"));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(x => "test", x => "test", null));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test", _ => "test", (_, _) => "test"));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(null, _ => "test", (_, _) => "test"));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(_ => "test", null, (_, _) => "test"));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(_ => "test", _ => "test", null));
 
             // GroupProgressiveBy<string,string,string> (Func<string, string>, Func<string, IEnumerable<string>, string>, IEqualityComparer<string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test", (x, y) => "test", EqualityComparer<string>.Default));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(null, (x, y) => "test", EqualityComparer<string>.Default));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(x => "test", (Func<string, IEnumerable<string>, string>)null, EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test", (_, _) => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(null, (_, _) => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(_ => "test", (Func<string, IEnumerable<string>, string>)null, EqualityComparer<string>.Default));
 
             // GroupProgressiveBy<string,string,string,string> (Func<string, string>, Func<string, string>, Func<string, IEnumerable<string>, string>, IEqualityComparer<string>)
-            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(x => "test", x => "test", (x, y) => "test", EqualityComparer<string>.Default));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(null, x => "test", (x, y) => "test", EqualityComparer<string>.Default));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(x => "test", null, (x, y) => "test", EqualityComparer<string>.Default));
-            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(x => "test", x => "test", null, EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupProgressiveBy(_ => "test", _ => "test", (_, _) => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy(null, _ => "test", (_, _) => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(_ => "test", null, (_, _) => "test", EqualityComparer<string>.Default));
+            AssertException<ArgumentNullException>(() => data.GroupProgressiveBy<string, string, string, string>(_ => "test", _ => "test", null, EqualityComparer<string>.Default));
         }
 
         [Test]
@@ -92,8 +92,8 @@ namespace Tests.Theraot.Collections
             var src = new IterateAndCount(10);
             var a = src.GroupProgressiveBy(i => i > 5, null);
             var b = src.GroupProgressiveBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            var c = src.GroupProgressiveBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
-            var d = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
+            var c = src.GroupProgressiveBy(i => i > 5, (_, group) => StringEx.Concat(group.ToArray()), null);
+            var d = src.GroupProgressiveBy(i => i > 5, j => j + 1, (_, group) => StringEx.Concat(group.ToArray()), null);
             Assert.AreEqual(src.Total, 0);
             a.Consume();
             b.Consume();
@@ -257,7 +257,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadC()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, (key, group) => StringEx.Concat(group.ToArray()), null);
+            var r = src.GroupProgressiveBy(i => i > 5, (_, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "12345");
@@ -268,7 +268,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadD()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, j => j + 1, (key, group) => StringEx.Concat(group.ToArray()), null);
+            var r = src.GroupProgressiveBy(i => i > 5, j => j + 1, (_, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "23456");
@@ -279,7 +279,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadDEx()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringEx.Concat(group.ToArray()), null);
+            var r = src.GroupProgressiveBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (_, group) => StringEx.Concat(group.ToArray()), null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             Assert.AreEqual(rArray[0], "12345");

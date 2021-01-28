@@ -64,7 +64,7 @@ namespace MonoTests.System.Threading.Tasks
             );
 
             var counter = 0;
-            var t = child.ContinueWith(t2 => ++counter, TaskContinuationOptions.ExecuteSynchronously);
+            var t = child.ContinueWith(_ => ++counter, TaskContinuationOptions.ExecuteSynchronously);
             Assert.IsTrue(t.Wait(5000), "#1");
             Assert.AreEqual(1, counter, "#2");
             Assert.AreEqual(TaskStatus.RanToCompletion, child.Status, "#3");
@@ -117,7 +117,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
             ).ContinueWith
             (
-                r =>
+                _ =>
                 {
                     // Empty
                 },
@@ -210,7 +210,7 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     t.ContinueWith
                     (
-                        l =>
+                        _ =>
                         {
                             result = true;
                             manualResetEvents[0].Set();
@@ -232,15 +232,15 @@ namespace MonoTests.System.Threading.Tasks
             using (manualResetEvents[0] = new ManualResetEventSlim())
             {
                 var task = Task.Factory.StartNew(() => manualResetEvents[0].Wait(200));
-                var contFailed = task.ContinueWith(t =>
+                var contFailed = task.ContinueWith(_ =>
                 {
                     // Empty
                 }, TaskContinuationOptions.OnlyOnFaulted);
-                var contCanceled = task.ContinueWith(t =>
+                var contCanceled = task.ContinueWith(_ =>
                 {
                     // Empty
                 }, TaskContinuationOptions.OnlyOnCanceled);
-                var contSuccess = task.ContinueWith(t =>
+                var contSuccess = task.ContinueWith(_ =>
                 {
                     // Empty
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -516,7 +516,7 @@ namespace MonoTests.System.Threading.Tasks
                     TaskCreationOptions.AttachedToParent
                 ).ContinueWith
                 (
-                    t =>
+                    _ =>
                     {
                         Thread.Sleep(200);
                         result = true;
@@ -542,7 +542,7 @@ namespace MonoTests.System.Threading.Tasks
                     TaskCreationOptions.AttachedToParent
                 ).ContinueWith
                 (
-                    t => Thread.Sleep(3000)
+                    _ => Thread.Sleep(3000)
                 )
             );
             task.Start();
@@ -565,7 +565,7 @@ namespace MonoTests.System.Threading.Tasks
                             Assert.IsTrue(manualResetEvents[0].WaitOne(4000), "parent_wfc needs to be set first");
                             Assert.IsFalse(_parentWfc.Wait(10), "#1a");
                             Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, _parentWfc.Status, "#1b");
-                        }, TaskCreationOptions.AttachedToParent).ContinueWith(l =>
+                        }, TaskCreationOptions.AttachedToParent).ContinueWith(_ =>
                         {
                             Assert.IsTrue(_parentWfc.Wait(2000), "#2a");
                             Assert.AreEqual(TaskStatus.RanToCompletion, _parentWfc.Status, "#2b");
@@ -592,7 +592,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
             );
 
-            var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.NotOnFaulted);
+            var onErrorTask = testTask.ContinueWith(_ => continuationRan = true, TaskContinuationOptions.NotOnFaulted);
             testTask.RunSynchronously();
             Assert.IsTrue(onErrorTask.IsCompleted);
             Assert.IsFalse(onErrorTask.IsFaulted);
@@ -618,7 +618,7 @@ namespace MonoTests.System.Threading.Tasks
                 }
             );
 
-            var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
+            var onErrorTask = testTask.ContinueWith(_ => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
             testTask.RunSynchronously();
             onErrorTask.Wait(200);
             Assert.IsTrue(continuationRan);
@@ -642,11 +642,11 @@ namespace MonoTests.System.Threading.Tasks
 
                     child1.RunSynchronously();
                     e = child1.Exception;
-                    child1.Exception.Handle(ex => true);
+                    child1.Exception.Handle(_ => true);
                 }
             );
 
-            var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
+            var onErrorTask = testTask.ContinueWith(_ => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
             testTask.RunSynchronously();
             onErrorTask.Wait(1000);
             Assert.IsNotNull(e);

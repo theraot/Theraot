@@ -29,7 +29,7 @@ namespace MonoTests.System.Threading.Tasks
                 TasksPiledUp.Set();
             }
 
-            return Task.Factory.StartNew(DummyWorker).ContinueWith(task => StartNewTask());
+            return Task.Factory.StartNew(DummyWorker).ContinueWith(_ => StartNewTask());
         }
 
         public void Stop()

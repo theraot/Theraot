@@ -66,7 +66,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private FixedSizeBucket(SerializationInfo info, StreamingContext context)
         {
-            var _ = context;
+            _ = context;
             if
             (
                 info.GetValue("count", typeof(int)) is not int count

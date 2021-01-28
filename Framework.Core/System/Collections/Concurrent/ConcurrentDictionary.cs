@@ -2256,7 +2256,7 @@ namespace System.Collections.Concurrent
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
-            var _ = context;
+            _ = context;
             var buckets = new Node[_serializationCapacity];
             var countPerLock = new int[_serializationConcurrencyLevel];
 
@@ -2276,7 +2276,7 @@ namespace System.Collections.Concurrent
         [OnSerializing]
         private void OnSerializing(StreamingContext context)
         {
-            var _ = context;
+            _ = context;
             var tables = _tables;
 
             // save the data into the serialization array to be saved

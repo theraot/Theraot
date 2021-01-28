@@ -69,7 +69,7 @@ namespace MonoTests.System
         [Test]
         public void Handle_AllHandled()
         {
-            _e.Handle(l => true);
+            _e.Handle(_ => true);
         }
 
         [Test]

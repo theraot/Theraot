@@ -291,9 +291,9 @@ namespace MonoTests.System.Threading
 
                 var b = true;
 
-                ThreadPool.QueueUserWorkItem(state => mre.Set());
+                ThreadPool.QueueUserWorkItem(_ => mre.Set());
 
-                ThreadPool.QueueUserWorkItem(state => b &= mre.Wait(1000));
+                ThreadPool.QueueUserWorkItem(_ => b &= mre.Wait(1000));
 
                 Assert.IsTrue(mre.Wait(1000), $"{i}");
                 Assert.IsTrue(b, $"{i}");

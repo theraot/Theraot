@@ -362,6 +362,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static int operator |(BrokenMethod a, BrokenMethod b)
             {
+                _ = a;
+                _ = b;
                 return 1;
             }
         }
@@ -370,6 +372,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static BrokenMethod2 operator |(BrokenMethod2 a, int b)
             {
+                _ = a;
+                _ = b;
                 return null;
             }
         }

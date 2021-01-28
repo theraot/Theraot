@@ -122,7 +122,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             try
             {
-                cwt.GetValue(null, k => null);
+                cwt.GetValue(null, _ => null);
                 Assert.Fail("#0");
             }
             catch (ArgumentNullException ex)
@@ -145,7 +145,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.IsTrue(val != null, "#2");
             Assert.AreEqual(typeof(Link), val.GetType(), "#3");
 
-            Assert.AreEqual(val, cwt.GetValue(key, k => new object()), "#4");
+            Assert.AreEqual(val, cwt.GetValue(key, _ => new object()), "#4");
         }
 
         [Test]

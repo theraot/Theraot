@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
@@ -603,13 +603,13 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                                     switch (j % 3)
                                     {
                                         case 0:
-                                            dict.AddOrUpdate(j, -j, (k, v) => -j);
+                                            dict.AddOrUpdate(j, -j, (_, _) => -j);
                                             break;
                                         case 1:
-                                            dict.AddOrUpdate(j, (k) => -k, (k, v) => -k);
+                                            dict.AddOrUpdate(j, (k) => -k, (k, _) => -k);
                                             break;
                                         case 2:
-                                            dict.AddOrUpdate(j, (k,m) => k*m, (k, v, m) => k * m, -1);
+                                            dict.AddOrUpdate(j, (k,m) => k*m, (k, _, m) => k * m, -1);
                                             break;
                                     }
                                 }
@@ -839,13 +839,13 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             // "TestExceptions:  FAILED.  this[] didn't throw ANE when null key is passed");
 
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.GetOrAdd(null, (k,m) => 0, 0));
+               () => dictionary.GetOrAdd(null, (_,_) => 0, 0));
             // "TestExceptions:  FAILED.  GetOrAdd didn't throw ANE when null key is passed");
             Assert.Throws<ArgumentNullException>(
                () => dictionary.GetOrAdd("1", null, 0));
             // "TestExceptions:  FAILED.  GetOrAdd didn't throw ANE when null valueFactory is passed");
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.GetOrAdd(null, (k) => 0));
+               () => dictionary.GetOrAdd(null, (_) => 0));
             // "TestExceptions:  FAILED.  GetOrAdd didn't throw ANE when null key is passed");
             Assert.Throws<ArgumentNullException>(
                () => dictionary.GetOrAdd("1", null));
@@ -855,22 +855,22 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             // "TestExceptions:  FAILED.  GetOrAdd didn't throw ANE when null key is passed");
 
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.AddOrUpdate(null, (k, m) => 0, (k, v, m) => 0, 42));
+               () => dictionary.AddOrUpdate(null, (_, _) => 0, (_, _, _) => 0, 42));
             // "TestExceptions:  FAILED.  AddOrUpdate didn't throw ANE when null key is passed");
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.AddOrUpdate("1", (k, m) => 0, null, 42));
+               () => dictionary.AddOrUpdate("1", (_, _) => 0, null, 42));
             // "TestExceptions:  FAILED.  AddOrUpdate didn't throw ANE when null updateFactory is passed");
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.AddOrUpdate("1", null, (k, v, m) => 0, 42));
+               () => dictionary.AddOrUpdate("1", null, (_, _, _) => 0, 42));
             // "TestExceptions:  FAILED.  AddOrUpdate didn't throw ANE when null addFactory is passed");
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.AddOrUpdate(null, (k) => 0, (k, v) => 0));
+               () => dictionary.AddOrUpdate(null, (_) => 0, (_, _) => 0));
             // "TestExceptions:  FAILED.  AddOrUpdate didn't throw ANE when null key is passed");
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.AddOrUpdate("1", null, (k, v) => 0));
+               () => dictionary.AddOrUpdate("1", null, (_, _) => 0));
             // "TestExceptions:  FAILED.  AddOrUpdate didn't throw ANE when null updateFactory is passed");
             Assert.Throws<ArgumentNullException>(
-               () => dictionary.AddOrUpdate(null, (k) => 0, null));
+               () => dictionary.AddOrUpdate(null, (_) => 0, null));
             // "TestExceptions:  FAILED.  AddOrUpdate didn't throw ANE when null addFactory is passed");
 
             // Duplicate key.
