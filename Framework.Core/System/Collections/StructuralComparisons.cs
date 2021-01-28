@@ -6,7 +6,7 @@ namespace System.Collections
 {
     public static class StructuralComparisons
     {
-        private static readonly InternalComparer _comparer = new InternalComparer();
+        private static readonly InternalComparer _comparer = new();
 
         public static IComparer StructuralComparer => _comparer;
 

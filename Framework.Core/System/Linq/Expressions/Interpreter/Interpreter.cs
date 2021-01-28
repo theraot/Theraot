@@ -22,7 +22,7 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class Interpreter
     {
         internal const int RethrowOnReturn = int.MaxValue;
-        internal static readonly object NoValue = new object();
+        internal static readonly object NoValue = new();
         internal readonly DebugInfo[] DebugInfos;
         internal readonly RuntimeLabel[] Labels;
         internal readonly object[] Objects;

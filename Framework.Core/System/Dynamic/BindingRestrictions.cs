@@ -301,8 +301,8 @@ namespace System.Dynamic
         /// </summary>
         private sealed class TestBuilder
         {
-            private readonly Stack<AndNode> _tests = new Stack<AndNode>();
-            private readonly HashSet<BindingRestrictions> _unique = new HashSet<BindingRestrictions>();
+            private readonly Stack<AndNode> _tests = new();
+            private readonly HashSet<BindingRestrictions> _unique = new();
 
             internal void Append(BindingRestrictions restrictions)
             {

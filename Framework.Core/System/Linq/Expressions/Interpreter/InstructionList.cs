@@ -20,8 +20,8 @@ namespace System.Linq.Expressions.Interpreter
         private const int _pushIntMaxCachedValue = 100;
         private const int _pushIntMinCachedValue = -100;
         private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
-        private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
-        private readonly List<Instruction> _instructions = new List<Instruction>();
+        private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new();
+        private readonly List<Instruction> _instructions = new();
 
         // list of (instruction index, cookie) sorted by instruction index:
         // Not readonly for debug

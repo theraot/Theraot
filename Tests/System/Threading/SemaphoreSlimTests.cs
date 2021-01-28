@@ -519,7 +519,7 @@ namespace System.Threading.Tests
 
         private sealed class AsyncLock
         {
-            private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+            private readonly SemaphoreSlim _semaphore = new(1, 1);
 
             public async Task<IDisposable> AcquireAsync(TimeSpan timeout, CancellationToken cancellation)
             {

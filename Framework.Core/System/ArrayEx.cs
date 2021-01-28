@@ -14,7 +14,7 @@ namespace System
 
     public static partial class ArrayEx
     {
-        private static readonly CacheDict<Type, Array> _emptyArrays = new CacheDict<Type, Array>(256);
+        private static readonly CacheDict<Type, Array> _emptyArrays = new(256);
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static T[] Empty<T>()

@@ -21,22 +21,22 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     IL locals for storing frequently used constants
         /// </summary>
-        private readonly Dictionary<TypedConstant, LocalBuilder> _cache = new Dictionary<TypedConstant, LocalBuilder>();
+        private readonly Dictionary<TypedConstant, LocalBuilder> _cache = new();
 
         /// <summary>
         ///     The index of each constant in the constant array
         /// </summary>
-        private readonly NullAwareDictionary<object, int> _indexes = new NullAwareDictionary<object, int>(ReferenceEqualityComparer<object>.Instance);
+        private readonly NullAwareDictionary<object, int> _indexes = new(ReferenceEqualityComparer<object>.Instance);
 
         /// <summary>
         ///     Each constant referenced within this lambda, and how often it was referenced
         /// </summary>
-        private readonly Dictionary<TypedConstant, int> _references = new Dictionary<TypedConstant, int>();
+        private readonly Dictionary<TypedConstant, int> _references = new();
 
         /// <summary>
         ///     The list of constants in the order they appear in the constant array
         /// </summary>
-        private readonly List<object?> _values = new List<object?>();
+        private readonly List<object?> _values = new();
 
         internal int Count => _values.Count;
 

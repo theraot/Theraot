@@ -20,7 +20,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class ArrayLengthInstruction : Instruction
     {
-        public static readonly ArrayLengthInstruction Instance = new ArrayLengthInstruction();
+        public static readonly ArrayLengthInstruction Instance = new();
 
         private ArrayLengthInstruction()
         {
@@ -41,7 +41,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class GetArrayItemInstruction : Instruction
     {
-        internal static readonly GetArrayItemInstruction Instance = new GetArrayItemInstruction();
+        internal static readonly GetArrayItemInstruction Instance = new();
 
         private GetArrayItemInstruction()
         {
@@ -150,7 +150,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class SetArrayItemInstruction : Instruction
     {
-        internal static readonly SetArrayItemInstruction Instance = new SetArrayItemInstruction();
+        internal static readonly SetArrayItemInstruction Instance = new();
 
         private SetArrayItemInstruction()
         {

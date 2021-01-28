@@ -18,11 +18,11 @@ namespace System.ComponentModel.DataAnnotations
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Method)]
     public sealed class DisplayAttribute : Attribute
     {
-        private readonly LocalizableString _description = new LocalizableString(nameof(Description));
-        private readonly LocalizableString _groupName = new LocalizableString(nameof(GroupName));
-        private readonly LocalizableString _name = new LocalizableString(nameof(Name));
-        private readonly LocalizableString _prompt = new LocalizableString(nameof(Prompt));
-        private readonly LocalizableString _shortName = new LocalizableString(nameof(ShortName));
+        private readonly LocalizableString _description = new(nameof(Description));
+        private readonly LocalizableString _groupName = new(nameof(GroupName));
+        private readonly LocalizableString _name = new(nameof(Name));
+        private readonly LocalizableString _prompt = new(nameof(Prompt));
+        private readonly LocalizableString _shortName = new(nameof(ShortName));
         private bool? _autoGenerateField;
         private bool? _autoGenerateFilter;
         private int? _order;

@@ -2069,7 +2069,7 @@ namespace System.Collections.Concurrent
 
             public object Current => Entry;
 
-            public DictionaryEntry Entry => new DictionaryEntry(_enumerator.Current.Key, _enumerator.Current.Value);
+            public DictionaryEntry Entry => new(_enumerator.Current.Key, _enumerator.Current.Value);
 
             public object Key => _enumerator.Current.Key;
 

@@ -174,7 +174,7 @@ namespace MonoTests.System.Threading
 
         internal class SpinLockWrapper
         {
-            public SpinLock Lock = new SpinLock(false);
+            public SpinLock Lock = new(false);
         }
     }
 }

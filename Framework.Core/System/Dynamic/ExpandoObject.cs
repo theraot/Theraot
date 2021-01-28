@@ -33,7 +33,7 @@ namespace System.Dynamic
         // The value is used to indicate there exists ambiguous match in the Expando object
         internal const int NoMatch = -1;
 
-        internal static readonly object Uninitialized = new object();
+        internal static readonly object Uninitialized = new();
 
         internal readonly object LockObject;
 
@@ -464,7 +464,7 @@ namespace System.Dynamic
         /// </summary>
         private sealed class ExpandoData
         {
-            internal static readonly ExpandoData Empty = new ExpandoData();
+            internal static readonly ExpandoData Empty = new();
 
             /// <summary>
             ///     the dynamically assigned class associated with the Expando object

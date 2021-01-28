@@ -19,7 +19,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal const int PoolSize = 16;
 
-        private static readonly CacheDict<Type, Pool<Array>[]> _pools = new CacheDict<Type, Pool<Array>[]>(256);
+        private static readonly CacheDict<Type, Pool<Array>[]> _pools = new(256);
 
         public static Pool<Array>? GetPool<T>(int index)
         {

@@ -15,7 +15,7 @@ namespace Theraot.Reflection
 {
     public static class ConstructorHelper
     {
-        private static readonly CacheDict<Type, object?> _constructorCache = new CacheDict<Type, object?>(256);
+        private static readonly CacheDict<Type, object?> _constructorCache = new(256);
 
         public static TReturn Create<TReturn>()
         {

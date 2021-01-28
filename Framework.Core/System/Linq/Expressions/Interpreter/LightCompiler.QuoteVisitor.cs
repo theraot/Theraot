@@ -12,8 +12,8 @@ namespace System.Linq.Expressions.Interpreter
     {
         private sealed class QuoteVisitor : ExpressionVisitor
         {
-            public readonly HashSet<ParameterExpression> HoistedParameters = new HashSet<ParameterExpression>();
-            private readonly Dictionary<ParameterExpression, int> _definedParameters = new Dictionary<ParameterExpression, int>();
+            public readonly HashSet<ParameterExpression> HoistedParameters = new();
+            private readonly Dictionary<ParameterExpression, int> _definedParameters = new();
 
             protected internal override Expression VisitBlock(BlockExpression node)
             {

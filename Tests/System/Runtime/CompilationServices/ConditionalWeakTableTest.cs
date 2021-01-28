@@ -39,9 +39,9 @@ namespace MonoTests.System.Runtime.CompilerServices
     [TestFixture]
     public partial class ConditionalWeakTableTest
     {
-        private static readonly object _lock1 = new object();
+        private static readonly object _lock1 = new();
 
-        private static readonly object _lock2 = new object();
+        private static readonly object _lock2 = new();
 
         private static int _reachable;
 

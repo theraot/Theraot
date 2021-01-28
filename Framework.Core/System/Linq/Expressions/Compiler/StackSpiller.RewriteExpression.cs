@@ -8,7 +8,7 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class StackSpiller
     {
-        private readonly StackGuard _guard = new StackGuard();
+        private readonly StackGuard _guard = new();
 
         /// <summary>
         ///     Rewrite the expression by performing stack spilling where necessary.

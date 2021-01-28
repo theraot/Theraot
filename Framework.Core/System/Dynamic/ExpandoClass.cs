@@ -15,7 +15,7 @@ namespace System.Dynamic
     /// </summary>
     internal class ExpandoClass
     {
-        internal static readonly ExpandoClass Empty = new ExpandoClass();
+        internal static readonly ExpandoClass Empty = new();
         internal readonly string[] Keys; // list of names associated with each element in the data array, sorted
         private const int _emptyHashCode = 6551;
         private readonly int _hashCode; // pre-calculated hash code of all the keys the class contains

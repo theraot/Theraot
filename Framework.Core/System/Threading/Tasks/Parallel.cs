@@ -38,7 +38,7 @@ namespace System.Threading.Tasks
         internal const int Default_Loop_Stride = 16;
 
         // Static variable to hold default parallel options
-        private static readonly ParallelOptions _defaultParallelOptions = new ParallelOptions();
+        private static readonly ParallelOptions _defaultParallelOptions = new();
 
         /// <summary>
         /// Executes a for loop in which iterations may run in parallel.

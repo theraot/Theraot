@@ -25,7 +25,7 @@ namespace System.Runtime.CompilerServices
         private const int _insertPosition = _maxRules / 2;
 
         private const int _maxRules = 128;
-        private readonly object _cacheLock = new object();
+        private readonly object _cacheLock = new();
         private T[] _rules = ArrayEx.Empty<T>();
 
         internal RuleCache()

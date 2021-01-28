@@ -15,7 +15,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         ///     The source of temporary variables introduced during stack spilling.
         /// </summary>
-        private readonly TempMaker _tm = new TempMaker();
+        private readonly TempMaker _tm = new();
 
         /// <summary>
         ///     Frees temporaries created since the last marking using <see cref="Mark" />.

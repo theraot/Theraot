@@ -7,10 +7,10 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class ThrowInstruction : Instruction
     {
-        internal static readonly ThrowInstruction Rethrow = new ThrowInstruction(true, true);
-        internal static readonly ThrowInstruction Throw = new ThrowInstruction(true, false);
-        internal static readonly ThrowInstruction VoidRethrow = new ThrowInstruction(false, true);
-        internal static readonly ThrowInstruction VoidThrow = new ThrowInstruction(false, false);
+        internal static readonly ThrowInstruction Rethrow = new(true, true);
+        internal static readonly ThrowInstruction Throw = new(true, false);
+        internal static readonly ThrowInstruction VoidRethrow = new(false, true);
+        internal static readonly ThrowInstruction VoidThrow = new(false, false);
         private readonly bool _hasResult, _rethrow;
 
         private ThrowInstruction(bool hasResult, bool isRethrow)

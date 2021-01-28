@@ -15,7 +15,7 @@ namespace System.Linq.Expressions.Interpreter
         public int Index;
         public bool IsClear;
         public int StartLine, EndLine;
-        private static readonly DebugInfoComparer _debugComparer = new DebugInfoComparer();
+        private static readonly DebugInfoComparer _debugComparer = new();
 
         public static DebugInfo? GetMatchingDebugInfo(DebugInfo[] debugInfos, int index)
         {

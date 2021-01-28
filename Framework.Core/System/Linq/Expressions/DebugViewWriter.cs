@@ -21,7 +21,7 @@ namespace System.Linq.Expressions
         private const int _tab = 4;
 
         private readonly TextWriter _out;
-        private readonly Stack<int> _stack = new Stack<int>();
+        private readonly Stack<int> _stack = new();
         private int _column;
         private Flow _flow;
 

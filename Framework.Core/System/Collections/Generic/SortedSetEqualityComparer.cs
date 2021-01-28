@@ -5,7 +5,7 @@ namespace System.Collections.Generic
 {
     internal sealed class SortedSetEqualityComparer<T> : IEqualityComparer<SortedSet<T>>
     {
-        public static readonly SortedSetEqualityComparer<T> Instance = new SortedSetEqualityComparer<T>(null);
+        public static readonly SortedSetEqualityComparer<T> Instance = new(null);
 
         private readonly IEqualityComparer<T>? _equalityComparer;
 

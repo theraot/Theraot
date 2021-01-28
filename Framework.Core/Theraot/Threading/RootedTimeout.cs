@@ -26,7 +26,7 @@ namespace Theraot.Threading
 
         private const int _started = 1;
 
-        private static readonly Bucket<RootedTimeout> _root = new Bucket<RootedTimeout>();
+        private static readonly Bucket<RootedTimeout> _root = new();
         private static int _lastRootIndex = -1;
         private readonly int _hashcode;
         private Action? _callback;

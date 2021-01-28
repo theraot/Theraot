@@ -13,7 +13,7 @@ namespace System.Threading.Tasks
 {
     public partial class TaskFactory
     {
-        internal static readonly TaskFactory DefaultInstance = new TaskFactory();
+        internal static readonly TaskFactory DefaultInstance = new();
 
         private readonly TaskScheduler _scheduler;
 

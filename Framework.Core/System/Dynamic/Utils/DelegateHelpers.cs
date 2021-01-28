@@ -17,7 +17,7 @@ namespace System.Dynamic.Utils
 
         private static readonly MethodInfo _funcInvoke = typeof(Func<object[], object>).GetMethod("Invoke");
 
-        private static readonly CacheDict<Type, DynamicMethod> _thunks = new CacheDict<Type, DynamicMethod>(256);
+        private static readonly CacheDict<Type, DynamicMethod> _thunks = new(256);
 
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object?> handler)
         {

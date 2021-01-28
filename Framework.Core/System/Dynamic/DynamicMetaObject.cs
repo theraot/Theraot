@@ -22,7 +22,7 @@ namespace System.Dynamic
         public static readonly DynamicMetaObject[] EmptyMetaObjects = ArrayEx.Empty<DynamicMetaObject>();
 
         // having sentinel value means having no value. (this way we do not need a separate hasValue field)
-        private static readonly object _noValueSentinel = new object();
+        private static readonly object _noValueSentinel = new();
 
         private readonly object _value = _noValueSentinel;
 

@@ -28,7 +28,7 @@ namespace Theraot.Reflection
 
         private static readonly Type[] _delegateCtorSignature = { typeof(object), typeof(IntPtr) };
 
-        private static readonly object _syncLock = new object();
+        private static readonly object _syncLock = new();
 
         public static Type GetDelegateType(params Type[] types)
         {

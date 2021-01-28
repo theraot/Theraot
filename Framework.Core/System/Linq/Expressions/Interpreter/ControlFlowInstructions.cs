@@ -129,7 +129,7 @@ namespace System.Linq.Expressions.Interpreter
     // no-op: we need this just to balance the stack depth and aid debugging of the instruction list.
     internal sealed class EnterExceptionFilterInstruction : Instruction
     {
-        internal static readonly EnterExceptionFilterInstruction Instance = new EnterExceptionFilterInstruction();
+        internal static readonly EnterExceptionFilterInstruction Instance = new();
 
         private EnterExceptionFilterInstruction()
         {
@@ -150,8 +150,8 @@ namespace System.Linq.Expressions.Interpreter
     // no-op: we need this just to balance the stack depth.
     internal sealed class EnterExceptionHandlerInstruction : Instruction
     {
-        internal static readonly EnterExceptionHandlerInstruction NonVoid = new EnterExceptionHandlerInstruction(true);
-        internal static readonly EnterExceptionHandlerInstruction Void = new EnterExceptionHandlerInstruction(false);
+        internal static readonly EnterExceptionHandlerInstruction NonVoid = new(true);
+        internal static readonly EnterExceptionHandlerInstruction Void = new(false);
 
         // True if try-expression is non-void.
         private readonly bool _hasValue;
@@ -561,7 +561,7 @@ namespace System.Linq.Expressions.Interpreter
     // no-op: we need this just to balance the stack depth and aid debugging of the instruction list.
     internal sealed class LeaveExceptionFilterInstruction : Instruction
     {
-        internal static readonly LeaveExceptionFilterInstruction Instance = new LeaveExceptionFilterInstruction();
+        internal static readonly LeaveExceptionFilterInstruction Instance = new();
 
         private LeaveExceptionFilterInstruction()
         {

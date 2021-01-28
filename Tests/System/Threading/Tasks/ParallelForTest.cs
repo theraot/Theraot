@@ -109,7 +109,7 @@ namespace System.Threading.Tasks.Tests
         private const int _zetaSeedOffset = 10000;
         private readonly TestParameters _parameters;
 
-        private readonly ThreadLocal<Random> _random = new ThreadLocal<Random>(() => new Random(unchecked((int)(DateTime.Now.Ticks))));
+        private readonly ThreadLocal<Random> _random = new(() => new Random(unchecked((int)(DateTime.Now.Ticks))));
         private readonly double[] _results;
         private readonly List<int>[] _sequences;
         private IList<int> _collection; // the collection used in Foreach

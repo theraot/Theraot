@@ -42,7 +42,7 @@ namespace System.Linq.Expressions.Compiler
     {
         // The blocks where this label is defined. If it has more than one item,
         // the blocks can't be jumped to except from a child block
-        private readonly HashSet<LabelScopeInfo> _definitions = new HashSet<LabelScopeInfo>();
+        private readonly HashSet<LabelScopeInfo> _definitions = new();
 
         private readonly ILGenerator _ilg;
 
@@ -50,7 +50,7 @@ namespace System.Linq.Expressions.Compiler
         private readonly LabelTarget? _node;
 
         // Blocks that jump to this block
-        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
+        private readonly List<LabelScopeInfo> _references = new();
 
         // True if at least one jump is across blocks
         // If we have any jump across blocks to this label, then the

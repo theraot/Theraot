@@ -48,7 +48,7 @@ namespace System.Threading
             _source = source;
         }
 
-        public static CancellationToken None => new CancellationToken();
+        public static CancellationToken None => new();
 
         public bool CanBeCanceled => _source != null;
 

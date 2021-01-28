@@ -87,7 +87,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class LocalVariables
     {
-        private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new HybridReferenceDictionary<ParameterExpression, VariableScope>();
+        private readonly HybridReferenceDictionary<ParameterExpression, VariableScope> _variables = new();
         private int _localCount;
         public int LocalCount { get; private set; }
 

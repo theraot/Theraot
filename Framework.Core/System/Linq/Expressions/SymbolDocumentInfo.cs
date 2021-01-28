@@ -84,7 +84,7 @@ namespace System.Linq.Expressions
     /// </summary>
     public class SymbolDocumentInfo
     {
-        internal static readonly Guid DocumentTypeText = new Guid(0x5a869d0b, 0x6611, 0x11d3, 0xbd, 0x2a, 0, 0, 0xf8, 8, 0x49, 0xbd);
+        internal static readonly Guid DocumentTypeText = new(0x5a869d0b, 0x6611, 0x11d3, 0xbd, 0x2a, 0, 0, 0xf8, 8, 0x49, 0xbd);
 
         internal SymbolDocumentInfo(string fileName)
         {

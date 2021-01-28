@@ -10,7 +10,7 @@ namespace System.Numerics
 {
     public readonly partial struct BigInteger
     {
-        private static readonly BigInteger _bigIntegerMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
+        private static readonly BigInteger _bigIntegerMinInt = new(-1, new[] { unchecked((uint)int.MinValue) });
 
         /// <summary>Gets a value that represents the number negative one (-1).</summary>
         /// <returns>An integer whose value is negative one (-1).</returns>

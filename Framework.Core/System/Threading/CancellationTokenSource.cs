@@ -40,12 +40,12 @@ namespace System.Threading
 {
     public class CancellationTokenSource : IDisposable
     {
-        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource
+        internal static readonly CancellationTokenSource CanceledSource = new()
         {
             _cancelRequested = 1
         }; // Leaked
 
-        internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
+        internal static readonly CancellationTokenSource NoneSource = new(); // Leaked
         private static readonly Action<CancellationTokenSource> _timerCallback = TimerCallback;
         private readonly ManualResetEvent _handle;
         private Bucket<Action>? _callbacks;

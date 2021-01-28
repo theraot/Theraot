@@ -17,10 +17,10 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal sealed class VariableBinder : ExpressionVisitor
     {
-        private readonly Stack<BoundConstants> _constants = new Stack<BoundConstants>();
-        private readonly StackGuard _guard = new StackGuard();
-        private readonly Stack<CompilerScope> _scopes = new Stack<CompilerScope>();
-        private readonly AnalyzedTree _tree = new AnalyzedTree();
+        private readonly Stack<BoundConstants> _constants = new();
+        private readonly StackGuard _guard = new();
+        private readonly Stack<CompilerScope> _scopes = new();
+        private readonly AnalyzedTree _tree = new();
         private bool _inQuote;
 
         private VariableBinder()

@@ -11,7 +11,7 @@ namespace TestRunner
     public static class DataGenerator
     {
         private static readonly Dictionary<Type, SortedDictionary<Type, Delegate>> _dataGenerators = FindAllGenerators();
-        private static readonly Dictionary<Type, object> _instances = new Dictionary<Type, object>();
+        private static readonly Dictionary<Type, object> _instances = new();
 
         public static object Get(Type type, IEnumerable<Type> preferredTypes)
         {
@@ -123,7 +123,7 @@ namespace TestRunner
 
     public static class NumericGenerator
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
 
         [DataGenerator]
         public static int GenerateInt()
@@ -136,7 +136,7 @@ namespace TestRunner
 
     public static class SmallPositiveNumericGenerator
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
 
         [DataGenerator]
         public static byte GenerateByte()
@@ -156,7 +156,7 @@ namespace TestRunner
     public static class StringGenerator
     {
         private static readonly char[] _chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new();
 
         [DataGenerator]
         public static string GenerateString()

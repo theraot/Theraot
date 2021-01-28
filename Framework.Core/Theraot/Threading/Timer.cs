@@ -10,7 +10,7 @@ namespace Theraot.Threading
 {
     internal sealed class Timer : IDisposable
     {
-        private static readonly Pool<Timer> _pool = new Pool<Timer>(64, time => time.Stop());
+        private static readonly Pool<Timer> _pool = new(64, time => time.Stop());
 
         private Action? _callback;
         private System.Threading.Timer? _timer;

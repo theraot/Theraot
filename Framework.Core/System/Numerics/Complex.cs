@@ -34,11 +34,11 @@ namespace System.Numerics
 {
     public readonly struct Complex : IEquatable<Complex>, IFormattable
     {
-        public static readonly Complex ImaginaryOne = new Complex(0, 1);
+        public static readonly Complex ImaginaryOne = new(0, 1);
 
-        public static readonly Complex One = new Complex(1, 0);
+        public static readonly Complex One = new(1, 0);
 
-        public static readonly Complex Zero = new Complex(0, 0);
+        public static readonly Complex Zero = new(0, 0);
 
         public Complex(double real, double imaginary)
         {

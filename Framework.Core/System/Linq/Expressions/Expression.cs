@@ -22,7 +22,7 @@ namespace System.Linq.Expressions
     /// </summary>
     public abstract partial class Expression
     {
-        private static readonly CacheDict<Type, MethodInfo> _lambdaDelegateCache = new CacheDict<Type, MethodInfo>(40);
+        private static readonly CacheDict<Type, MethodInfo> _lambdaDelegateCache = new(40);
         private static CacheDict<Type, Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>>? _lambdaFactories;
 
         // For 4.0, many frequently used Expression nodes have had their memory

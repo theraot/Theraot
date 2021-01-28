@@ -449,7 +449,7 @@ namespace System.Linq.Expressions.Interpreter
             // A stack of variables that are defined in nested scopes. We search
             // this first when resolving a variable in case a nested scope shadows
             // one of our variable instances.
-            private readonly Stack<HashSet<ParameterExpression>> _shadowedVars = new Stack<HashSet<ParameterExpression>>();
+            private readonly Stack<HashSet<ParameterExpression>> _shadowedVars = new();
 
             private readonly Dictionary<ParameterExpression, LocalVariable> _variables;
 
@@ -631,7 +631,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class TypeEqualsInstruction : Instruction
     {
-        public static readonly TypeEqualsInstruction Instance = new TypeEqualsInstruction();
+        public static readonly TypeEqualsInstruction Instance = new();
 
         private TypeEqualsInstruction()
         {

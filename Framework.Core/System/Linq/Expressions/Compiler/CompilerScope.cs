@@ -99,7 +99,7 @@ namespace System.Linq.Expressions.Compiler
         ///     Mutable dictionary that maps non-hoisted variables to either local
         ///     slots or argument slots
         /// </summary>
-        private readonly Dictionary<ParameterExpression, Storage> _locals = new Dictionary<ParameterExpression, Storage>();
+        private readonly Dictionary<ParameterExpression, Storage> _locals = new();
 
         /// <summary>
         ///     The closed over hoisted locals

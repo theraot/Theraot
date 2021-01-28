@@ -20,13 +20,13 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed partial class LightCompiler
     {
         private static readonly LocalDefinition[] _emptyLocals = ArrayEx.Empty<LocalDefinition>();
-        private readonly List<DebugInfo> _debugInfos = new List<DebugInfo>();
-        private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new Stack<ParameterExpression>();
-        private readonly StackGuard _guard = new StackGuard();
-        private readonly LocalVariables _locals = new LocalVariables();
+        private readonly List<DebugInfo> _debugInfos = new();
+        private readonly Stack<ParameterExpression> _exceptionForRethrowStack = new();
+        private readonly StackGuard _guard = new();
+        private readonly LocalVariables _locals = new();
         private readonly LightCompiler? _parent;
-        private readonly HybridReferenceDictionary<LabelTarget, LabelInfo> _treeLabels = new HybridReferenceDictionary<LabelTarget, LabelInfo>();
-        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+        private readonly HybridReferenceDictionary<LabelTarget, LabelInfo> _treeLabels = new();
+        private LabelScopeInfo _labelBlock = new(null, LabelScopeKind.Lambda);
 
         public LightCompiler()
         {

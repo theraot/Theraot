@@ -1176,7 +1176,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         {
             public int ThreadIndex;
             public bool Succeeded = true;
-            public List<string> Keys = new List<string>();
+            public List<string> Keys = new();
         }
 
         private struct Struct16 : IEqualityComparer<Struct16>

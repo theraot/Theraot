@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Interpreter
         private readonly LabelTarget? _node;
 
         // Blocks that jump to this block
-        private readonly List<LabelScopeInfo> _references = new List<LabelScopeInfo>();
+        private readonly List<LabelScopeInfo> _references = new();
 
         // True if at least one jump is across blocks
         // If we have any jump across blocks to this label, then the

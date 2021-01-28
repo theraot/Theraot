@@ -11,7 +11,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class DupInstruction : Instruction
     {
-        internal static readonly DupInstruction Instance = new DupInstruction();
+        internal static readonly DupInstruction Instance = new();
 
         private DupInstruction()
         {
@@ -83,7 +83,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class PopInstruction : Instruction
     {
-        internal static readonly PopInstruction Instance = new PopInstruction();
+        internal static readonly PopInstruction Instance = new();
 
         private PopInstruction()
         {

@@ -26,13 +26,13 @@ namespace System.Linq.Expressions.Compiler
         private readonly BoundConstants _boundConstants;
 
         // Free list of locals, so we reuse them rather than creating new ones
-        private readonly KeyedStack<Type, LocalBuilder> _freeLocals = new KeyedStack<Type, LocalBuilder>();
+        private readonly KeyedStack<Type, LocalBuilder> _freeLocals = new();
 
         // True if the method's first argument is of type Closure
         private readonly bool _hasClosureArgument;
 
         // Mapping of labels used for "long" jumps (jumping out and into blocks)
-        private readonly Dictionary<LabelTarget, LabelInfo> _labelInfo = new Dictionary<LabelTarget, LabelInfo>();
+        private readonly Dictionary<LabelTarget, LabelInfo> _labelInfo = new();
 
         // The lambda we are compiling
         private readonly LambdaExpression _lambda;
@@ -46,7 +46,7 @@ namespace System.Linq.Expressions.Compiler
         private readonly TypeBuilder? _typeBuilder;
 
         // Currently active LabelTargets and their mapping to IL labels
-        private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+        private LabelScopeInfo _labelBlock = new(null, LabelScopeKind.Lambda);
 
         // The currently active variable scope
         private CompilerScope _scope;

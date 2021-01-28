@@ -34,19 +34,19 @@ namespace System.Runtime.CompilerServices
         /// <returns>The configured enumerable.</returns>
         /// <remarks>This will replace any previous value set by <see cref="ConfigureAwait(bool)"/> for this iteration.</remarks>
         public ConfiguredCancelableAsyncEnumerable<T> ConfigureAwait(bool continueOnCapturedContext) =>
-            new ConfiguredCancelableAsyncEnumerable<T>(_enumerable, continueOnCapturedContext, _cancellationToken);
+            new(_enumerable, continueOnCapturedContext, _cancellationToken);
 
         /// <summary>Sets the <see cref="CancellationToken"/> to be passed to <see cref="IAsyncEnumerable{T}.GetAsyncEnumerator(CancellationToken)"/> when iterating.</summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to use.</param>
         /// <returns>The configured enumerable.</returns>
         /// <remarks>This will replace any previous <see cref="CancellationToken"/> set by <see cref="WithCancellation(CancellationToken)"/> for this iteration.</remarks>
         public ConfiguredCancelableAsyncEnumerable<T> WithCancellation(CancellationToken cancellationToken) =>
-            new ConfiguredCancelableAsyncEnumerable<T>(_enumerable, _continueOnCapturedContext, cancellationToken);
+            new(_enumerable, _continueOnCapturedContext, cancellationToken);
 
         public Enumerator GetAsyncEnumerator() =>
             // as with other "configured" awaitable-related type in CompilerServices, we don't null check to defend against
             // misuse like default(ConfiguredCancelableAsyncEnumerable<T>).GetAsyncEnumerator(), which will null ref by design.
-            new Enumerator(_enumerable.GetAsyncEnumerator(_cancellationToken), _continueOnCapturedContext);
+            new(_enumerable.GetAsyncEnumerator(_cancellationToken), _continueOnCapturedContext);
 
         /// <summary>Provides an awaitable async enumerator that enables cancelable iteration and configured awaits.</summary>
         [StructLayout(LayoutKind.Auto)]

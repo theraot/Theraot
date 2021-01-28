@@ -8,7 +8,7 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        private readonly StackGuard _guard = new StackGuard();
+        private readonly StackGuard _guard = new();
 
         private static bool IsChecked(ExpressionType op)
         {

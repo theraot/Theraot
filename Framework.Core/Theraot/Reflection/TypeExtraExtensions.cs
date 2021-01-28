@@ -17,11 +17,11 @@ namespace Theraot.Reflection
 {
     public static partial class TypeExtraExtensions
     {
-        private static readonly CacheDict<Type, bool> _binaryPortableCache = new CacheDict<Type, bool>(256);
+        private static readonly CacheDict<Type, bool> _binaryPortableCache = new(256);
 
-        private static readonly CacheDict<Type, bool> _blittableCache = new CacheDict<Type, bool>(256);
+        private static readonly CacheDict<Type, bool> _blittableCache = new(256);
 
-        private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new CacheDict<Type, bool>(256);
+        private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new(256);
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool CanBeNull(this Type type)

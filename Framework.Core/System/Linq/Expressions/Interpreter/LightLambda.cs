@@ -93,10 +93,10 @@ namespace System.Linq.Expressions.Interpreter
 
         private sealed class DebugViewPrinter
         {
-            private readonly Dictionary<int, string> _handlerEnter = new Dictionary<int, string>();
-            private readonly Dictionary<int, int> _handlerExit = new Dictionary<int, int>();
+            private readonly Dictionary<int, string> _handlerEnter = new();
+            private readonly Dictionary<int, int> _handlerExit = new();
             private readonly Interpreter _interpreter;
-            private readonly Dictionary<int, int> _tryStart = new Dictionary<int, int>();
+            private readonly Dictionary<int, int> _tryStart = new();
             private string _indent = "  ";
 
             public DebugViewPrinter(Interpreter interpreter)
