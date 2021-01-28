@@ -181,11 +181,9 @@ namespace System.Threading.Tasks.Tests
         {
             duplicates = new List<int>();
             List<int> processedIndexes = new List<int>();
-            //foreach (List<int> perThreadSequences in sequences)
             for (int thread = 0; thread < _threadCount; thread++)
             {
-                List<int> perThreadSequences = _sequences[thread];
-                foreach (int i in perThreadSequences)
+                foreach (int i in _sequences[thread])
                 {
                     if (processedIndexes.Contains(i))
                     {
