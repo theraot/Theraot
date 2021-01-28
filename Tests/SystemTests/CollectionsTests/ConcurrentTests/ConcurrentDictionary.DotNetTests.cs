@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
-    public class ConcurrentDictionaryDotNetTests
+    public static class ConcurrentDictionaryDotNetTests
     {
         [Test]
         public static void TestBasicScenarios()
