@@ -754,7 +754,6 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             public bool ObjectApiUsed { get; private set; }
             public bool IEquatableApiUsed { get; private set; }
 
-
             public override bool Equals(object obj)
             {
                 ObjectApiUsed = true;
