@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#pragma warning disable RCS1210 // Return completed task instead of returning null
+
+using NUnit.Framework;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

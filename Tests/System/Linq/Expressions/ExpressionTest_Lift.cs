@@ -97,9 +97,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private static MethodInfo Gm(string n)
         {
-            var m = typeof(ExpressionTestLifting).GetMethods(BindingFlags.Static | BindingFlags.Public);
-
-            foreach (var mm in m)
+            foreach (var mm in typeof(ExpressionTestLifting).GetMethods(BindingFlags.Static | BindingFlags.Public))
             {
                 if (mm.Name == n)
                 {

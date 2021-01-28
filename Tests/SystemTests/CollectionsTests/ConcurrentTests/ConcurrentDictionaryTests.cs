@@ -364,11 +364,9 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     (
                         () =>
                         {
-                            var i = 0;
-                            while (i % 10 != 0 || Volatile.Read(ref x[0]) == 0)
+                            for (var i = 0; i % 10 != 0 || Volatile.Read(ref x[0]) == 0; i++)
                             {
                                 map["a" + i] = i;
-                                i++;
                             }
                         }
                     );
@@ -378,16 +376,13 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                 (
                     () =>
                     {
-                        var i = 0;
-                        while (i % 10 != 0 || Volatile.Read(ref x[0]) == 0)
+                        for (var i = 0; i % 10 != 0 || Volatile.Read(ref x[0]) == 0; i++)
                         {
                             map["b" + i] = i;
                             if (i == 0)
                             {
                                 evs[0].Set();
                             }
-
-                            i++;
                         }
                     }
                 );

@@ -1,4 +1,6 @@
-﻿//
+﻿#pragma warning disable IDE0052 // Remove unread private member
+
+//
 // ConditionalWeakTableTest.cs
 //
 // Author:
@@ -449,9 +451,7 @@ namespace MonoTests.System.Runtime.CompilerServices
                 cwt[0] = new ConditionalWeakTable<object, object>();
             }
 
-            var res = FillWithNetwork(cwt[0]);
-
-            return res;
+            return FillWithNetwork(cwt[0]);
         }
 
         private static void ForceMinor()

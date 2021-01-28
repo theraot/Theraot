@@ -1,5 +1,7 @@
 ﻿#if !NET40
 
+#pragma warning disable RCS1090 // Add call to 'ConfigureAwait' (or vice versa)
+
 using NUnit.Framework;
 using System;
 using System.Linq;

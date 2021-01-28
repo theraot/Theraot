@@ -74,16 +74,13 @@ namespace Theraot.Threading
             RootedTimeout timeout;
             var value = new DateTime[1];
             DateTime now;
-            while (true)
+            do
             {
                 now = DateTime.Now;
                 value[0] = now;
                 timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 100);
-                if (timeout.Change(1000))
-                {
-                    break;
-                }
             }
+            while (!timeout.Change(1000));
 
             Assert.IsFalse(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
@@ -139,17 +136,14 @@ namespace Theraot.Threading
         {
             long remaining;
             RootedTimeout timeout;
-            while (true)
+            do
             {
                 var now = DateTime.Now;
                 var value = new[] { now };
                 timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 500);
                 remaining = timeout.CheckRemaining();
-                if (!timeout.IsCompleted)
-                {
-                    break;
-                }
             }
+            while (timeout.IsCompleted);
 
             Assert.LessOrEqual(remaining, 500);
             Thread.Sleep(1);

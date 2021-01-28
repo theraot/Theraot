@@ -19,8 +19,6 @@ namespace Tests.TheraotTests.CollectionsTests.ThreadSafeTests
             var random = new Random();
             var values = new List<int>();
             var bucket = new Bucket<int>();
-            Bucket<int> result = null;
-
             for (int i = 0; i < 1000; i++)
             {
                 var value = random.Next();
@@ -44,6 +42,7 @@ namespace Tests.TheraotTests.CollectionsTests.ThreadSafeTests
 
             stream.Seek(0, SeekOrigin.Begin);
 
+            Bucket<int> result;
             try
             {
                 result = (Bucket<int>)formatter.Deserialize(stream);

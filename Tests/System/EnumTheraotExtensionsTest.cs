@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#pragma warning disable RCS1135 // Declare enum member with zero value (when enum has FlagsAttribute)
+
+using NUnit.Framework;
 using System;
 using Tests.Helpers;
 

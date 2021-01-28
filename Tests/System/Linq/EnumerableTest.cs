@@ -2,6 +2,8 @@
 extern alias nunitlinq;
 #endif
 
+#pragma warning disable RCS1246	// Use element access
+
 //
 // EnumerableTest.cs
 //
@@ -699,12 +701,12 @@ namespace MonoTests.System.Linq
 
             public override bool Equals(object obj)
             {
-                if (!(obj is Baz b))
+                if (obj is Baz b)
                 {
-                    return false;
+                    return b.Age == Age && b.Name == Name;
                 }
 
-                return b.Age == Age && b.Name == Name;
+                return false;
             }
 
             public override int GetHashCode()

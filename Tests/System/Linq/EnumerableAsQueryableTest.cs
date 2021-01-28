@@ -2,6 +2,10 @@
 extern alias nunitlinq;
 #endif
 
+#pragma warning disable RCS1077	// Optimize LINQ method call
+#pragma warning disable RCS1079	// Throwing of new NotImplementedException
+#pragma warning disable RCS1246	// Use element access
+
 //
 // EnumerableAsQueryableTest.cs
 //
@@ -232,7 +236,7 @@ namespace MonoTests.System.Linq
                             && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
                         )
                         select m
-                    ).FirstOrDefault().MakeGenericMethod(typeof(int));
+                    ).FirstOrDefault()?.MakeGenericMethod(typeof(int));
 
                     Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
                     _src.Provider.Execute(e);
@@ -480,7 +484,7 @@ namespace MonoTests.System.Linq
                     && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
                 )
                 select m
-            ).FirstOrDefault().MakeGenericMethod(typeof(int));
+            ).FirstOrDefault()?.MakeGenericMethod(typeof(int));
             Expression<Func<int, int>> exp = i => i;
             Expression expression = Expression.Equal
             (
@@ -497,7 +501,7 @@ namespace MonoTests.System.Linq
                     m.Name == "UserQueryableExt2" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
                 )
                 select m
-            ).FirstOrDefault().MakeGenericMethod(typeof(int));
+            ).FirstOrDefault()?.MakeGenericMethod(typeof(int));
             expression = Expression.Equal
             (
                 Expression.Constant("UserEnumerableExt2"),
@@ -523,7 +527,7 @@ namespace MonoTests.System.Linq
                             && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>)
                         )
                         select m
-                    ).FirstOrDefault().MakeGenericMethod(typeof(int));
+                    ).FirstOrDefault()?.MakeGenericMethod(typeof(int));
                     Expression<Func<int, int>> exp = i => i;
                     Expression e = Expression.Call(method, _src.Expression, Expression.Quote(exp), Expression.Constant(10));
                     _src.Provider.Execute(e);

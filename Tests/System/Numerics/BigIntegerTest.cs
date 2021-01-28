@@ -1583,12 +1583,11 @@ namespace MonoTests.System.Numerics
             var old = Thread.CurrentThread.CurrentCulture;
             var cur = (CultureInfo)old.Clone();
 
-            var nInfo = new NumberFormatInfo
+            cur.NumberFormat = new NumberFormatInfo
             {
                 NegativeSign = ">",
                 PositiveSign = "%"
             };
-            cur.NumberFormat = nInfo;
 
             Thread.CurrentThread.CurrentCulture = cur;
 

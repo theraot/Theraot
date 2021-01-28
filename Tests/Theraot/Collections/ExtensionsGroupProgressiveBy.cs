@@ -301,7 +301,7 @@ namespace Tests.Theraot.Collections
             {
                 for (var index = 0; index < _count; index++)
                 {
-                    Total += 1;
+                    Total++;
                     yield return Total;
                 }
             }

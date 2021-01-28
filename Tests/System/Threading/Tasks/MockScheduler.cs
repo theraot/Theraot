@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable RCS1079	// Throwing of new NotImplementedException
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

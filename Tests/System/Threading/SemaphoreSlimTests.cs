@@ -1,4 +1,8 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿#pragma warning disable IDE0039 // Use local function instead of lambda
+#pragma warning disable RCS1090 // Add call to 'ConfigureAwait' (or vice versa)
+#pragma warning disable RCS1047 // Non-asynchronous method name should not end with 'Async'
+
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -167,9 +171,9 @@ namespace System.Threading.Tests
                             await semaphores[0].WaitAsync();
                             nonZeroObserved |= counters[0].Value > 0;
 
-                            counters[0].Value += 1;
+                            counters[0].Value++;
                             semaphores[0].Release();
-                            counters[0].Value -= 1;
+                            counters[0].Value--;
 
                             if (Interlocked.Decrement(ref remAsyncActions) == 0)
                             {

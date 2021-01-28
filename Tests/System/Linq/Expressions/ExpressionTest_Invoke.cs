@@ -97,7 +97,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var p = Expression.Parameter(typeof(string), "s");
 
-            string Caller(string s, Expression<Func<string, string>> f)
+            static string Caller(string s, Expression<Func<string, string>> f)
             {
                 return f.Compile().Invoke(s);
             }
@@ -118,7 +118,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual
             (
                 ExpressionType.Quote,
-                (invoke.Body as InvocationExpression).Arguments[1].NodeType
+                (invoke.Body as InvocationExpression)?.Arguments[1].NodeType
             );
 
             Assert.AreEqual("kaboom!", invoke.Compile().DynamicInvoke());

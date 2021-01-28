@@ -470,7 +470,7 @@ namespace System.Threading.Tasks.Tests
 
             //if source is partitioner
             if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
-                _rangePartitioner = PartitionerFactory<Tuple<int, int>>.Create(_parameters.PartitionerType, _parameters.StartIndex, _parameters.StartIndex + _parameters.Count, _parameters.ChunkSize);
+                _rangePartitioner = PartitionerFactory.Create(_parameters.PartitionerType, _parameters.StartIndex, _parameters.StartIndex + _parameters.Count, _parameters.ChunkSize);
             else
                 _partitioner = PartitionerFactory<int>.Create(_parameters.PartitionerType, _collection);
 
@@ -846,8 +846,28 @@ namespace System.Threading.Tasks.Tests
     /// <summary>
     /// used for partitioner creation
     /// </summary>
+    public static class PartitionerFactory
+    {
+        public static OrderablePartitioner<Tuple<int, int>> Create(PartitionerType partitionerName, int from, int to, int chunkSize = -1)
+        {
+            switch (partitionerName)
+            {
+                case PartitionerType.RangePartitioner:
+                    return (chunkSize == -1) ? Partitioner.Create(from, to) : Partitioner.Create(from, to, chunkSize);
+
+                default:
+                    break;
+            }
+
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// used for partitioner creation
+    /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PartitionerFactory<T>
+    public static class PartitionerFactory<T>
     {
         public static OrderablePartitioner<T> Create(PartitionerType partitionerName, IEnumerable<T> dataSource)
         {
@@ -864,20 +884,6 @@ namespace System.Threading.Tasks.Tests
 
                 case PartitionerType.Enumerable1Chunk:
                     return PartitionerEx.Create(dataSource, EnumerablePartitionerOptions.NoBuffering);
-
-                default:
-                    break;
-            }
-
-            return null;
-        }
-
-        public static OrderablePartitioner<Tuple<int, int>> Create(PartitionerType partitionerName, int from, int to, int chunkSize = -1)
-        {
-            switch (partitionerName)
-            {
-                case PartitionerType.RangePartitioner:
-                    return (chunkSize == -1) ? Partitioner.Create(from, to) : Partitioner.Create(from, to, chunkSize);
 
                 default:
                     break;
