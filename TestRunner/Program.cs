@@ -226,14 +226,14 @@ namespace TestRunner
                     }
                 }
 
-                if (!(capturedResult is Task task))
+                if (capturedResult is Task task)
                 {
-                    return capturedResult;
+                    capturedResult = null;
+                    task.Wait();
+                    return task.GetType().GetProperty("Result")?.GetValue(task, ArrayEx.Empty<object>());
                 }
 
-                capturedResult = null;
-                task.Wait();
-                return task.GetType().GetProperty("Result")?.GetValue(task, ArrayEx.Empty<object>());
+                return capturedResult;
             }
         }
 
