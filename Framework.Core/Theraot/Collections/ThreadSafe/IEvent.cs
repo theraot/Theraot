@@ -3,6 +3,8 @@
 using System;
 using System.Reflection;
 
+#pragma warning disable CA2109 // Consider making 'Invoke' not externally visible
+
 namespace Theraot.Collections.ThreadSafe
 {
     public interface IEvent<TEventArgs>

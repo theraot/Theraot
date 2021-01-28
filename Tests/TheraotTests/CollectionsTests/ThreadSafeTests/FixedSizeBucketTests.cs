@@ -19,7 +19,7 @@ namespace Tests.TheraotTests.CollectionsTests.ThreadSafeTests
             var random = new Random();
             var values = new List<int>();
             var bucket = new FixedSizeBucket<int>(1000);
-            FixedSizeBucket<int> result = null;
+            FixedSizeBucket<int> result;
 
             for (int i = 0; i < 1000; i++)
             {

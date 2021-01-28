@@ -15,7 +15,7 @@
     <ApplicationIcon />
     <PackageId>TestRunner</PackageId>
     <CodeAnalysisRuleSet>../rules.ruleset</CodeAnalysisRuleSet>
-    <NoWarn>1701;1702;NU1701;NU1702</NoWarn>
+    <NoWarn>1701;1702;NU1701;NU1702;SYSLIB0003;SYSLIB0004;SYSLIB0011</NoWarn>
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <LangVersion>9.0</LangVersion>
