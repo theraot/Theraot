@@ -156,19 +156,29 @@ namespace System.Threading.Tasks.Tests
         internal void RealRun()
         {
             if (_parameters.Api == Api.For64)
+            {
                 RunParallelFor64Test();
+            }
             else if (_parameters.Api == Api.For)
+            {
                 RunParallelForTest();
+            }
             else
+            {
                 RunParallelForeachTest();
+            }
 
             // verify result
             for (int i = 0; i < _parameters.Count; i++)
+            {
                 Verify(i);
+            }
 
             // verify unique  index sequences if run WithLocal
             if (_parameters.LocalOption != ActionWithLocal.None)
+            {
                 VerifySequences();
+            }
         }
 
         private static List<int> ThreadLocalInit()
@@ -255,9 +265,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, Work);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, Work);
+                }
             }
             else
             {
@@ -271,9 +285,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, WorkWithIndexAndStopPartitioner);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, WorkWithIndexAndStopPartitioner);
+                }
             }
             else
             {
@@ -286,9 +304,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, ThreadLocalInit, WorkWithLocal, ThreadLocalFinally);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, ThreadLocalInit, WorkWithLocal, ThreadLocalFinally);
+                }
             }
             else
             {
@@ -301,9 +323,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, ThreadLocalInit, WorkWithLocalAndIndexPartitioner, ThreadLocalFinally);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, ThreadLocalInit, WorkWithLocalAndIndexPartitioner, ThreadLocalFinally);
+                }
             }
             else
             {
@@ -316,9 +342,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, _parallelOption, Work);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, _parallelOption, Work);
+                }
             }
             else
             {
@@ -331,9 +361,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, _parallelOption, WorkWithIndexAndStopPartitioner);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, _parallelOption, WorkWithIndexAndStopPartitioner);
+                }
             }
             else
             {
@@ -346,9 +380,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, _parallelOption, ThreadLocalInit, WorkWithLocal, ThreadLocalFinally);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, _parallelOption, ThreadLocalInit, WorkWithLocal, ThreadLocalFinally);
+                }
             }
             else
             {
@@ -361,9 +399,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, _parallelOption, ThreadLocalInit, WorkWithLocalAndIndexPartitioner, ThreadLocalFinally);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, _parallelOption, ThreadLocalInit, WorkWithLocalAndIndexPartitioner, ThreadLocalFinally);
+                }
             }
             else
             {
@@ -376,9 +418,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, _parallelOption, WorkWithStop);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, _parallelOption, WorkWithStop);
+                }
             }
             else
             {
@@ -391,9 +437,13 @@ namespace System.Threading.Tasks.Tests
             if (_parameters.ParallelForeachDataSourceType == DataSourceType.Partitioner)
             {
                 if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+                {
                     Parallel.ForEach(_rangePartitioner, WorkWithStop);
+                }
                 else
+                {
                     Parallel.ForEach(_partitioner, WorkWithStop);
+                }
             }
             else
             {
@@ -455,24 +505,38 @@ namespace System.Threading.Tasks.Tests
         {
             int length = _parameters.Count;
             if (length < 0)
+            {
                 length = 0;
+            }
 
             int[] arrayCollection = new int[length];
             for (int i = 0; i < length; i++)
+            {
                 arrayCollection[i] = _parameters.StartIndex + i;
+            }
 
             if (_parameters.Api == Api.ForeachOnArray)
+            {
                 _collection = arrayCollection;
+            }
             else if (_parameters.Api == Api.ForeachOnList)
+            {
                 _collection = new List<int>(arrayCollection);
+            }
             else
+            {
                 _collection = arrayCollection;
+            }
 
             //if source is partitioner
             if (_parameters.PartitionerType == PartitionerType.RangePartitioner)
+            {
                 _rangePartitioner = PartitionerFactory.Create(_parameters.PartitionerType, _parameters.StartIndex, _parameters.StartIndex + _parameters.Count, _parameters.ChunkSize);
+            }
             else
+            {
                 _partitioner = PartitionerFactory<int>.Create(_parameters.PartitionerType, _collection);
+            }
 
             if (_parameters.ParallelOption != WithParallelOption.None)
             {
@@ -489,18 +553,26 @@ namespace System.Threading.Tasks.Tests
                     {
                         // call Parallel.Foreach with ParallelLoopState and ParallelOptions
                         if (_parameters.Api == Api.Foreach)
+                        {
                             ParallelForEachWithOptionsAndState();
+                        }
                         else // call indexed version for array / list overloads - to avoid calling too many combinations
+                        {
                             ParallelForEachWithOptionsAndIndexAndState();
+                        }
                     }
                 }
                 else if (_parameters.LocalOption == ActionWithLocal.HasFinally)
                 {
                     // call Parallel.Foreach and ParallelLoopState<TLocal>, plus threadLocalFinally, plus ParallelOptions
                     if (_parameters.Api == Api.Foreach)
+                    {
                         ParallelForEachWithOptionsAndLocal();
+                    }
                     else // call indexed version for array / list overloads - to avoid calling too many combinations
+                    {
                         ParallelForEachWithOptionsAndLocalAndIndex();
+                    }
                 }
             }
             else
@@ -516,18 +588,26 @@ namespace System.Threading.Tasks.Tests
                     {
                         // call Parallel.Foreach with ParallelLoopState
                         if (_parameters.Api == Api.Foreach)
+                        {
                             ParallelForEachWithState();
+                        }
                         else // call indexed version for array / list overloads - to avoid calling too many combinations
+                        {
                             ParallelForEachWithIndexAndState();
+                        }
                     }
                 }
                 else if (_parameters.LocalOption == ActionWithLocal.HasFinally)
                 {
                     // call Parallel.Foreach and ParallelLoopState<TLocal>, plus threadLocalFinally
                     if (_parameters.Api == Api.Foreach)
+                    {
                         ParallelForeachWithLocal();
+                    }
                     else // call indexed version for array / list overloads - to avoid calling too many combinations
+                    {
                         ParallelForeachWithLocalAndIndex();
+                    }
                 }
             }
         }
@@ -676,7 +756,9 @@ namespace System.Threading.Tasks.Tests
                 }
 
                 if (index > (_parameters.StartIndex + (_parameters.Count / 2)))
+                {
                     state.Stop();
+                }
             }
 
             return threadLocalValue;
@@ -694,7 +776,9 @@ namespace System.Threading.Tasks.Tests
             }
 
             if (index > (_parameters.StartIndex + (_parameters.Count / 2)))
+            {
                 state.Stop();
+            }
 
             return threadLocalValue;
         }
@@ -715,7 +799,9 @@ namespace System.Threading.Tasks.Tests
             Work(i);
 
             if (index > (_parameters.Count / 2))
+            {
                 state.Stop();
+            }
         }
 
         // workload for Foreach overload that takes a range partitioner
@@ -761,7 +847,9 @@ namespace System.Threading.Tasks.Tests
             }
 
             if (i > (_parameters.StartIndex + (_parameters.Count / 2)))
+            {
                 state.Stop();
+            }
 
             return threadLocalValue;
         }
@@ -778,7 +866,9 @@ namespace System.Threading.Tasks.Tests
             }
 
             if (i > (_parameters.StartIndex64 + (_parameters.Count / 2)))
+            {
                 state.Stop();
+            }
 
             return threadLocalValue;
         }
@@ -821,7 +911,9 @@ namespace System.Threading.Tasks.Tests
         {
             Work(i);
             if (i > (_parameters.StartIndex + (_parameters.Count / 2)))
+            {
                 state.Stop(); // if the current index is in the second half range, try stop all
+            }
         }
 
         // workload for Foreach overload that takes a range partitioner
@@ -839,7 +931,9 @@ namespace System.Threading.Tasks.Tests
         {
             Work(i);
             if (i > (_parameters.StartIndex64 + (_parameters.Count / 2)))
+            {
                 state.Stop();
+            }
         }
     }
 
