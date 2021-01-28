@@ -13,7 +13,7 @@ namespace System.Collections
         /// <summary>Returns approximate reciprocal of the divisor: ceil(2**64 / divisor).</summary>
         /// <remarks>This should only be used on 64-bit.</remarks>
         public static ulong GetFastModMultiplier(uint divisor) =>
-            ulong.MaxValue / divisor + 1;
+            (ulong.MaxValue / divisor) + 1;
 
         /// <summary>Performs a mod operation using the multiplier pre-computed with <see cref="GetFastModMultiplier"/>.</summary>
         /// <remarks>This should only be used on 64-bit.</remarks>

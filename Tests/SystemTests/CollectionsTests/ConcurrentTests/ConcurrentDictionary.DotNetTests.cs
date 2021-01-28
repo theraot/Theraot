@@ -164,7 +164,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                         {
                             for (var j = 0; j < addsPerThread; j++)
                             {
-                                dict.Add(j + ii * addsPerThread, -(j + ii * addsPerThread));
+                                dict.Add(j + (ii * addsPerThread), -(j + (ii * addsPerThread)));
                             }
                             if (Interlocked.Decrement(ref count) == 0)
                             {
@@ -367,7 +367,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                         {
                             for (var j = 0; j < removesPerThread; j++)
                             {
-                                var key = 2 * (ii + j * threads);
+                                var key = 2 * (ii + (j * threads));
                                 Assert.True(dict.TryRemove(key, out var value), "Failed to remove an element! " + methodparameters);
 
                                 Assert.AreEqual(-key, value);
@@ -398,7 +398,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
             var expectKeys = new List<int>();
             for (var i = 0; i < (threads * removesPerThread); i++)
             {
-                expectKeys.Add(2 * i + 1);
+                expectKeys.Add((2 * i) + 1);
             }
 
             Assert.AreEqual(expectKeys.Count, gotKeys.Count);
