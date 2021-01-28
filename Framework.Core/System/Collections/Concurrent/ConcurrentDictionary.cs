@@ -2210,10 +2210,8 @@ namespace System.Collections.Concurrent
                 {
                     return ref buckets[HashHelpers.FastMod((uint)hashcode, (uint)buckets.Length, _fastModBucketsMultiplier)];
                 }
-                else
-                {
-                    return ref buckets[(uint)hashcode % (uint)buckets.Length];
-                }
+
+                return ref buckets[(uint)hashcode % (uint)buckets.Length];
             }
 
             [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
