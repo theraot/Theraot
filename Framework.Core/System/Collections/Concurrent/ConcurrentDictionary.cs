@@ -1454,8 +1454,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        #region IDictionary<TKey,TValue> members
-
         /// <summary>
         /// Adds the specified key and value to the <see
         /// cref="IDictionary{TKey,TValue}"/>.
@@ -1523,9 +1521,6 @@ namespace System.Collections.Concurrent
         /// <value>An <see cref="IEnumerable{TValue}"/> containing the
         /// values in the <see cref="IReadOnlyDictionary{TKey,TValue}"/>.</value>
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => GetValues();
-        #endregion
-
-        #region ICollection<KeyValuePair<TKey,TValue>> Members
 
         /// <summary>
         /// Adds the specified value to the <see cref="ICollection{TValue}"/>
@@ -1584,10 +1579,6 @@ namespace System.Collections.Concurrent
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> keyValuePair) =>
             TryRemove(keyValuePair);
 
-        #endregion
-
-        #region IEnumerable Members
-
         /// <summary>Returns an enumerator that iterates through the <see
         /// cref="ConcurrentDictionary{TKey,TValue}"/>.</summary>
         /// <returns>An enumerator for the <see cref="ConcurrentDictionary{TKey,TValue}"/>.</returns>
@@ -1598,10 +1589,6 @@ namespace System.Collections.Concurrent
         /// made to the dictionary after <see cref="GetEnumerator"/> was called.
         /// </remarks>
         IEnumerator IEnumerable.GetEnumerator() => ((ConcurrentDictionary<TKey, TValue>)this).GetEnumerator();
-
-        #endregion
-
-        #region IDictionary Members
 
         /// <summary>
         /// Adds the specified key and value to the dictionary.
@@ -1787,10 +1774,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        #endregion
-
-        #region ICollection Members
-
         /// <summary>
         /// Copies the elements of the <see cref="ICollection"/> to an array, starting
         /// at the specified array index.
@@ -1887,9 +1870,6 @@ namespace System.Collections.Concurrent
         /// </summary>
         /// <exception cref="NotSupportedException">The SyncRoot property is not supported.</exception>
         object ICollection.SyncRoot => throw new NotSupportedException("SyncRoot_NotSupported");
-
-        #endregion
-
 
         private bool AreAllBucketsEmpty()
         {
