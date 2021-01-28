@@ -1368,16 +1368,9 @@ namespace System.Collections.Concurrent
             }
         }
 
-        /// <summary>Throws a KeyNotFoundException.</summary>
-        /// <remarks>Separate from ThrowHelper to avoid boxing at call site while reusing this generic instantiation.</remarks>
         [DoesNotReturn]
         private static void ThrowKeyNotFoundException(TKey key) => throw new KeyNotFoundException(key.ToString());
 
-        /// <summary>
-        /// Acquires all locks for this hash table, and increments locksAcquired by the number
-        /// of locks that were successfully acquired. The locks are acquired in an increasing
-        /// order.
-        /// </summary>
         private void AcquireAllLocks(ref int locksAcquired)
         {
             // First, acquire lock 0
@@ -1389,11 +1382,6 @@ namespace System.Collections.Concurrent
             Debug.Assert(locksAcquired == _tables._locks.Length);
         }
 
-        /// <summary>
-        /// Acquires a contiguous range of locks for this hash table, and increments locksAcquired
-        /// by the number of locks that were successfully acquired. The locks are acquired in an
-        /// increasing order.
-        /// </summary>
         private void AcquireLocks(int fromInclusive, int toExclusive, ref int locksAcquired)
         {
             Debug.Assert(fromInclusive <= toExclusive);
@@ -1431,8 +1419,6 @@ namespace System.Collections.Concurrent
             return true;
         }
 
-        /// <summary>Copy dictionary contents to an array - shared implementation between ToArray and CopyTo.</summary>
-        /// <remarks>Important: the caller must hold all locks in _locks before calling CopyToPairs.</remarks>
         private void CopyToEntries(DictionaryEntry[] array, int index)
         {
             var buckets = _tables._buckets;
@@ -1446,8 +1432,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        /// <summary>Copy dictionary contents to an array - shared implementation between ToArray and CopyTo.</summary>
-        /// <remarks>Important: the caller must hold all locks in _locks before calling CopyToPairs.</remarks>
         private void CopyToObjects(object[] array, int index)
         {
             var buckets = _tables._buckets;
@@ -1461,8 +1445,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        /// <summary>Copy dictionary contents to an array - shared implementation between ToArray and CopyTo.</summary>
-        /// <remarks>Important: the caller must hold all locks in _locks before calling CopyToPairs.</remarks>
         private void CopyToPairs(KeyValuePair<TKey, TValue>[] array, int index)
         {
             var buckets = _tables._buckets;
@@ -1570,12 +1552,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        /// <summary>
-        /// Replaces the bucket table with a larger one. To prevent multiple threads from resizing the
-        /// table as a result of races, the Tables instance that holds the table of buckets deemed too
-        /// small is passed in as an argument to GrowTable(). GrowTable() obtains a lock, and then checks
-        /// the Tables instance has been replaced in the meantime or not.
-        /// </summary>
         private void GrowTable(Tables tables)
         {
             const int MaxArrayLength = 0X7FEFFFFF;
@@ -1732,9 +1708,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        /// <summary>
-        /// Releases a contiguous range of locks.
-        /// </summary>
         private void ReleaseLocks(int fromInclusive, int toExclusive)
         {
             Debug.Assert(fromInclusive <= toExclusive);
@@ -1746,11 +1719,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        /// <summary>
-        /// Shared internal implementation for inserts and updates.
-        /// If key exists, we always return false; and if updateIfExists == true we force update with value;
-        /// If key doesn't exist, we always add value and return true;
-        /// </summary>
         private bool TryAddInternal(TKey key, int? nullableHashcode, TValue value, bool updateIfExists, bool acquireLock, out TValue resultingValue)
         {
             var comparer = _comparer;
@@ -2229,7 +2197,6 @@ namespace System.Collections.Concurrent
                 }
             }
 
-            /// <summary>Computes a ref to the bucket for a particular key.</summary>
             [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             internal ref Node? GetBucket(int hashcode)
             {
@@ -2244,7 +2211,6 @@ namespace System.Collections.Concurrent
                 }
             }
 
-            /// <summary>Computes the bucket and lock number for a particular key.</summary>
             [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             internal ref Node? GetBucketAndLock(int hashcode, out uint lockNo)
             {
@@ -2274,9 +2240,6 @@ namespace System.Collections.Concurrent
         private int _serializationCapacity; // used to save the capacity in serialization
         private int _serializationConcurrencyLevel; // used to save the concurrency level in serialization
 
-        /// <summary>
-        /// Construct the dictionary from a previously serialized one
-        /// </summary>
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {
@@ -2296,9 +2259,6 @@ namespace System.Collections.Concurrent
             _serializationArray = null;
         }
 
-        /// <summary>
-        /// Get the data array to be serialized
-        /// </summary>
         [OnSerializing]
         private void OnSerializing(StreamingContext context)
         {
