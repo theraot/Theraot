@@ -58,7 +58,6 @@ namespace System.Threading.Tasks.Tests
     /// <summary>
     /// Partitioner types used for ParallelForeach with partitioners
     /// </summary>
-    [Flags]
     public enum PartitionerType
     {
         // Out of the box List Partitioner
