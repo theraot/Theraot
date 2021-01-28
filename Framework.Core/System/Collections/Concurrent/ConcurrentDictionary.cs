@@ -192,6 +192,7 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel), "ConcurrencyLevelMustBePositive");
             }
+
             if (capacity < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity), "CapacityMustNotBeNegative");
@@ -222,6 +223,7 @@ namespace System.Collections.Concurrent
             {
                 _comparer = comparer;
             }
+
             _growLockArray = growLockArray;
             _budget = buckets.Length / locks.Length;
         }
@@ -411,6 +413,7 @@ namespace System.Collections.Concurrent
                 {
                     ThrowKeyNotFoundException(key);
                 }
+
                 return value;
             }
             set
@@ -767,6 +770,7 @@ namespace System.Collections.Concurrent
             {
                 return false;
             }
+
             return EqualityComparer<TValue>.Default.Equals(value, keyValuePair.Value);
         }
 
@@ -1590,6 +1594,7 @@ namespace System.Collections.Concurrent
                     {
                         _budget = int.MaxValue;
                     }
+
                     return;
                 }
 
@@ -1785,14 +1790,17 @@ namespace System.Collections.Concurrent
                                         prev._next = newNode;
                                     }
                                 }
+
                                 resultingValue = value;
                             }
                             else
                             {
                                 resultingValue = node._value;
                             }
+
                             return false;
                         }
+
                         prev = node;
                     }
 
@@ -1949,6 +1957,7 @@ namespace System.Collections.Concurrent
                             tables._countPerLock[lockNo]--;
                             return true;
                         }
+
                         prev = curr;
                     }
                 }
@@ -2059,6 +2068,7 @@ namespace System.Collections.Concurrent
             }
 
             public object Current => Entry;
+
             public DictionaryEntry Entry => new DictionaryEntry(_enumerator.Current.Key, _enumerator.Current.Value);
 
             public object Key => _enumerator.Current.Key;
@@ -2084,7 +2094,6 @@ namespace System.Collections.Concurrent
             private const int StateOuterloop = 1;
             private const int StateUninitialized = 0;
             private readonly ConcurrentDictionary<TKey, TValue> _dictionary;
-
             private ConcurrentDictionary<TKey, TValue>.Node?[]? _buckets;
             private int _i;
             private Node? _node;
