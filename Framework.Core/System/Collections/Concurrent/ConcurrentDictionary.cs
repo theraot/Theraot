@@ -203,7 +203,7 @@ namespace System.Collections.Concurrent
 
             var locks = new object[concurrencyLevel];
             locks[0] = locks; // reuse array as the first lock object just to avoid an additional allocation
-            for (int i = 1; i < locks.Length; i++)
+            for (var i = 1; i < locks.Length; i++)
             {
                 locks[i] = new object();
             }
@@ -238,7 +238,7 @@ namespace System.Collections.Concurrent
         {
             get
             {
-                int acquiredLocks = 0;
+                var acquiredLocks = 0;
                 try
                 {
                     // Acquire all locks
@@ -274,7 +274,7 @@ namespace System.Collections.Concurrent
                 // the collection was actually empty at any point in time as items may have been
                 // added and removed while iterating over the buckets such that we never saw an
                 // empty bucket, but there was always an item present in at least one bucket.
-                int acquiredLocks = 0;
+                var acquiredLocks = 0;
                 try
                 {
                     // Acquire all locks
@@ -404,7 +404,7 @@ namespace System.Collections.Concurrent
         {
             get
             {
-                if (!TryGetValue(key, out TValue? value))
+                if (!TryGetValue(key, out var value))
                 {
                     ThrowKeyNotFoundException(key);
                 }
@@ -448,7 +448,7 @@ namespace System.Collections.Concurrent
                     throw new ArgumentNullException(nameof(key));
                 }
 
-                if (key is TKey tkey && TryGetValue(tkey, out TValue? value))
+                if (key is TKey tkey && TryGetValue(tkey, out var value))
                 {
                     return value;
                 }
@@ -582,15 +582,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
 
-            IEqualityComparer<TKey>? comparer = _comparer;
-            int hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
+            var comparer = _comparer;
+            var hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
 
             while (true)
             {
-                if (TryGetValueInternal(key, hashcode, out TValue? oldValue))
+                if (TryGetValueInternal(key, hashcode, out var oldValue))
                 {
                     // key exists, try to update
-                    TValue newValue = updateValueFactory(key, oldValue, factoryArgument);
+                    var newValue = updateValueFactory(key, oldValue, factoryArgument);
                     if (TryUpdateInternal(key, hashcode, newValue, oldValue))
                     {
                         return newValue;
@@ -599,7 +599,7 @@ namespace System.Collections.Concurrent
                 else
                 {
                     // key doesn't exist, try to add
-                    if (TryAddInternal(key, hashcode, addValueFactory(key, factoryArgument), updateIfExists: false, acquireLock: true, out TValue resultingValue))
+                    if (TryAddInternal(key, hashcode, addValueFactory(key, factoryArgument), updateIfExists: false, acquireLock: true, out var resultingValue))
                     {
                         return resultingValue;
                     }
@@ -643,15 +643,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
 
-            IEqualityComparer<TKey>? comparer = _comparer;
-            int hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
+            var comparer = _comparer;
+            var hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
 
             while (true)
             {
-                if (TryGetValueInternal(key, hashcode, out TValue? oldValue))
+                if (TryGetValueInternal(key, hashcode, out var oldValue))
                 {
                     // key exists, try to update
-                    TValue newValue = updateValueFactory(key, oldValue);
+                    var newValue = updateValueFactory(key, oldValue);
                     if (TryUpdateInternal(key, hashcode, newValue, oldValue))
                     {
                         return newValue;
@@ -660,7 +660,7 @@ namespace System.Collections.Concurrent
                 else
                 {
                     // key doesn't exist, try to add
-                    if (TryAddInternal(key, hashcode, addValueFactory(key), updateIfExists: false, acquireLock: true, out TValue resultingValue))
+                    if (TryAddInternal(key, hashcode, addValueFactory(key), updateIfExists: false, acquireLock: true, out var resultingValue))
                     {
                         return resultingValue;
                     }
@@ -697,15 +697,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(updateValueFactory));
             }
 
-            IEqualityComparer<TKey>? comparer = _comparer;
-            int hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
+            var comparer = _comparer;
+            var hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
 
             while (true)
             {
-                if (TryGetValueInternal(key, hashcode, out TValue? oldValue))
+                if (TryGetValueInternal(key, hashcode, out var oldValue))
                 {
                     // key exists, try to update
-                    TValue newValue = updateValueFactory(key, oldValue);
+                    var newValue = updateValueFactory(key, oldValue);
                     if (TryUpdateInternal(key, hashcode, newValue, oldValue))
                     {
                         return newValue;
@@ -714,7 +714,7 @@ namespace System.Collections.Concurrent
                 else
                 {
                     // key doesn't exist, try to add
-                    if (TryAddInternal(key, hashcode, addValue, updateIfExists: false, acquireLock: true, out TValue resultingValue))
+                    if (TryAddInternal(key, hashcode, addValue, updateIfExists: false, acquireLock: true, out var resultingValue))
                     {
                         return resultingValue;
                     }
@@ -727,7 +727,7 @@ namespace System.Collections.Concurrent
         /// </summary>
         public void Clear()
         {
-            int locksAcquired = 0;
+            var locksAcquired = 0;
             try
             {
                 AcquireAllLocks(ref locksAcquired);
@@ -738,7 +738,7 @@ namespace System.Collections.Concurrent
                     return;
                 }
 
-                Tables tables = _tables;
+                var tables = _tables;
                 var newTables = new Tables(new Node[DefaultCapacity], tables._locks, new int[tables._countPerLock.Length]);
                 _tables = newTables;
                 _budget = Math.Max(1, newTables._buckets.Length / newTables._locks.Length);
@@ -760,7 +760,7 @@ namespace System.Collections.Concurrent
         /// cref="ICollection{T}"/>; otherwise, false.</returns>
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> keyValuePair)
         {
-            if (!TryGetValue(keyValuePair.Key, out TValue? value))
+            if (!TryGetValue(keyValuePair.Key, out var value))
             {
                 return false;
             }
@@ -831,14 +831,14 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(index), "IndexIsNegative");
             }
 
-            int locksAcquired = 0;
+            var locksAcquired = 0;
             try
             {
                 AcquireAllLocks(ref locksAcquired);
 
-                int count = 0;
-                int[] countPerLock = _tables._countPerLock;
-                for (int i = 0; i < countPerLock.Length && count >= 0; i++)
+                var count = 0;
+                var countPerLock = _tables._countPerLock;
+                for (var i = 0; i < countPerLock.Length && count >= 0; i++)
                 {
                     count += countPerLock[i];
                 }
@@ -886,15 +886,15 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(index), "IndexIsNegative");
             }
 
-            int locksAcquired = 0;
+            var locksAcquired = 0;
             try
             {
                 AcquireAllLocks(ref locksAcquired);
-                Tables tables = _tables;
+                var tables = _tables;
 
-                int count = 0;
-                int[] countPerLock = tables._countPerLock;
-                for (int i = 0; i < countPerLock.Length && count >= 0; i++)
+                var count = 0;
+                var countPerLock = tables._countPerLock;
+                for (var i = 0; i < countPerLock.Length && count >= 0; i++)
                 {
                     count += countPerLock[i];
                 }
@@ -991,10 +991,10 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(valueFactory));
             }
 
-            IEqualityComparer<TKey>? comparer = _comparer;
-            int hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
+            var comparer = _comparer;
+            var hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
 
-            if (!TryGetValueInternal(key, hashcode, out TValue? resultingValue))
+            if (!TryGetValueInternal(key, hashcode, out var resultingValue))
             {
                 TryAddInternal(key, hashcode, valueFactory(key), updateIfExists: false, acquireLock: true, out resultingValue);
             }
@@ -1030,10 +1030,10 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(valueFactory));
             }
 
-            IEqualityComparer<TKey>? comparer = _comparer;
-            int hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
+            var comparer = _comparer;
+            var hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
 
-            if (!TryGetValueInternal(key, hashcode, out TValue? resultingValue))
+            if (!TryGetValueInternal(key, hashcode, out var resultingValue))
             {
                 TryAddInternal(key, hashcode, valueFactory(key, factoryArgument), updateIfExists: false, acquireLock: true, out resultingValue);
             }
@@ -1060,10 +1060,10 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            IEqualityComparer<TKey>? comparer = _comparer;
-            int hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
+            var comparer = _comparer;
+            var hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
 
-            if (!TryGetValueInternal(key, hashcode, out TValue? resultingValue))
+            if (!TryGetValueInternal(key, hashcode, out var resultingValue))
             {
                 TryAddInternal(key, hashcode, value, updateIfExists: false, acquireLock: true, out resultingValue);
             }
@@ -1127,14 +1127,14 @@ namespace System.Collections.Concurrent
         /// </returns>
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
-            int locksAcquired = 0;
+            var locksAcquired = 0;
             try
             {
                 AcquireAllLocks(ref locksAcquired);
 
-                int count = 0;
-                int[] countPerLock = _tables._countPerLock;
-                for (int i = 0; i < countPerLock.Length; i++)
+                var count = 0;
+                var countPerLock = _tables._countPerLock;
+                for (var i = 0; i < countPerLock.Length; i++)
                 {
                     checked
                     {
@@ -1199,15 +1199,15 @@ namespace System.Collections.Concurrent
             // We must capture the volatile _tables field into a local variable: it is set to a new table on each table resize.
             // The Volatile.Read on the array element then ensures that we have a copy of the reference to tables._buckets[bucketNo]:
             // this protects us from reading fields ('_hashcode', '_key', '_value' and '_next') of different instances.
-            Tables tables = _tables;
+            var tables = _tables;
 
-            IEqualityComparer<TKey>? comparer = _comparer;
+            var comparer = _comparer;
             if (comparer is null)
             {
-                int hashcode = key.GetHashCode();
+                var hashcode = key.GetHashCode();
                 if (typeof(TKey).GetTypeInfo().IsValueType)
                 {
-                    for (Node? n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
+                    for (var n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
                     {
                         if (hashcode == n._hashcode && EqualityComparer<TKey>.Default.Equals(n._key, key))
                         {
@@ -1218,7 +1218,7 @@ namespace System.Collections.Concurrent
                 }
                 else
                 {
-                    for (Node? n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
+                    for (var n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
                     {
                         if (hashcode == n._hashcode && _defaultComparer.Equals(n._key, key))
                         {
@@ -1230,8 +1230,8 @@ namespace System.Collections.Concurrent
             }
             else
             {
-                int hashcode = comparer.GetHashCode(key);
-                for (Node? n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
+                var hashcode = comparer.GetHashCode(key);
+                for (var n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
                 {
                     if (hashcode == n._hashcode && comparer.Equals(n._key, key))
                     {
@@ -1397,11 +1397,11 @@ namespace System.Collections.Concurrent
         private void AcquireLocks(int fromInclusive, int toExclusive, ref int locksAcquired)
         {
             Debug.Assert(fromInclusive <= toExclusive);
-            object[] locks = _tables._locks;
+            var locks = _tables._locks;
 
-            for (int i = fromInclusive; i < toExclusive; i++)
+            for (var i = fromInclusive; i < toExclusive; i++)
             {
-                bool lockTaken = false;
+                var lockTaken = false;
                 try
                 {
                     MonitorEx.Enter(locks[i], ref lockTaken);
@@ -1418,9 +1418,9 @@ namespace System.Collections.Concurrent
 
         private bool AreAllBucketsEmpty()
         {
-            int[] countPerLock = _tables._countPerLock;
+            var countPerLock = _tables._countPerLock;
 
-            for (int i = 0; i < countPerLock.Length; i++)
+            for (var i = 0; i < countPerLock.Length; i++)
             {
                 if (countPerLock[i] != 0)
                 {
@@ -1435,10 +1435,10 @@ namespace System.Collections.Concurrent
         /// <remarks>Important: the caller must hold all locks in _locks before calling CopyToPairs.</remarks>
         private void CopyToEntries(DictionaryEntry[] array, int index)
         {
-            Node?[] buckets = _tables._buckets;
-            for (int i = 0; i < buckets.Length; i++)
+            var buckets = _tables._buckets;
+            for (var i = 0; i < buckets.Length; i++)
             {
-                for (Node? current = buckets[i]; current != null; current = current._next)
+                for (var current = buckets[i]; current != null; current = current._next)
                 {
                     array[index] = new DictionaryEntry(current._key, current._value);
                     index++;  //this should never flow, CopyToEntries is only called when there's no overflow risk
@@ -1450,10 +1450,10 @@ namespace System.Collections.Concurrent
         /// <remarks>Important: the caller must hold all locks in _locks before calling CopyToPairs.</remarks>
         private void CopyToObjects(object[] array, int index)
         {
-            Node?[] buckets = _tables._buckets;
-            for (int i = 0; i < buckets.Length; i++)
+            var buckets = _tables._buckets;
+            for (var i = 0; i < buckets.Length; i++)
             {
-                for (Node? current = buckets[i]; current != null; current = current._next)
+                for (var current = buckets[i]; current != null; current = current._next)
                 {
                     array[index] = new KeyValuePair<TKey, TValue>(current._key, current._value);
                     index++; // this should never overflow, CopyToObjects is only called when there's no overflow risk
@@ -1465,10 +1465,10 @@ namespace System.Collections.Concurrent
         /// <remarks>Important: the caller must hold all locks in _locks before calling CopyToPairs.</remarks>
         private void CopyToPairs(KeyValuePair<TKey, TValue>[] array, int index)
         {
-            Node?[] buckets = _tables._buckets;
-            for (int i = 0; i < buckets.Length; i++)
+            var buckets = _tables._buckets;
+            for (var i = 0; i < buckets.Length; i++)
             {
-                for (Node? current = buckets[i]; current != null; current = current._next)
+                for (var current = buckets[i]; current != null; current = current._next)
                 {
                     array[index] = new KeyValuePair<TKey, TValue>(current._key, current._value);
                     index++; // this should never overflow, CopyToPairs is only called when there's no overflow risk
@@ -1490,11 +1490,11 @@ namespace System.Collections.Concurrent
         /// at the moment when Count was accessed.</remarks>
         private int GetCountInternal()
         {
-            int count = 0;
-            int[] countPerLocks = _tables._countPerLock;
+            var count = 0;
+            var countPerLocks = _tables._countPerLock;
 
             // Compute the count, we allow overflow
-            for (int i = 0; i < countPerLocks.Length; i++)
+            for (var i = 0; i < countPerLocks.Length; i++)
             {
                 count += countPerLocks[i];
             }
@@ -1507,22 +1507,22 @@ namespace System.Collections.Concurrent
         /// </summary>
         private ReadOnlyCollection<TKey> GetKeys()
         {
-            int locksAcquired = 0;
+            var locksAcquired = 0;
             try
             {
                 AcquireAllLocks(ref locksAcquired);
 
-                int count = GetCountInternal();
+                var count = GetCountInternal();
                 if (count < 0)
                 {
                     throw new OutOfMemoryException();
                 }
 
                 var keys = new List<TKey>(count);
-                Node?[] buckets = _tables._buckets;
-                for (int i = 0; i < buckets.Length; i++)
+                var buckets = _tables._buckets;
+                for (var i = 0; i < buckets.Length; i++)
                 {
-                    for (Node? current = buckets[i]; current != null; current = current._next)
+                    for (var current = buckets[i]; current != null; current = current._next)
                     {
                         keys.Add(current._key);
                     }
@@ -1541,22 +1541,22 @@ namespace System.Collections.Concurrent
         /// </summary>
         private ReadOnlyCollection<TValue> GetValues()
         {
-            int locksAcquired = 0;
+            var locksAcquired = 0;
             try
             {
                 AcquireAllLocks(ref locksAcquired);
 
-                int count = GetCountInternal();
+                var count = GetCountInternal();
                 if (count < 0)
                 {
                     throw new OutOfMemoryException();
                 }
 
                 var values = new List<TValue>(count);
-                Node?[] buckets = _tables._buckets;
-                for (int i = 0; i < buckets.Length; i++)
+                var buckets = _tables._buckets;
+                for (var i = 0; i < buckets.Length; i++)
                 {
-                    for (Node? current = buckets[i]; current != null; current = current._next)
+                    for (var current = buckets[i]; current != null; current = current._next)
                     {
                         values.Add(current._value);
                     }
@@ -1579,7 +1579,7 @@ namespace System.Collections.Concurrent
         private void GrowTable(Tables tables)
         {
             const int MaxArrayLength = 0X7FEFFFFF;
-            int locksAcquired = 0;
+            var locksAcquired = 0;
             try
             {
                 // The thread that first obtains _locks[0] will be the one doing the resize operation
@@ -1596,7 +1596,7 @@ namespace System.Collections.Concurrent
 
                 // Compute the (approx.) total size. Use an Int64 accumulation variable to avoid an overflow.
                 long approxCount = 0;
-                for (int i = 0; i < tables._countPerLock.Length; i++)
+                for (var i = 0; i < tables._countPerLock.Length; i++)
                 {
                     approxCount += tables._countPerLock[i];
                 }
@@ -1616,8 +1616,8 @@ namespace System.Collections.Concurrent
 
                 // Compute the new table size. We find the smallest integer larger than twice the previous table size, and not divisible by
                 // 2,3,5 or 7. We can consider a different table-sizing policy in the future.
-                int newLength = 0;
-                bool maximizeTableSize = false;
+                var newLength = 0;
+                var maximizeTableSize = false;
                 try
                 {
                     checked
@@ -1660,14 +1660,14 @@ namespace System.Collections.Concurrent
                 // Now acquire all other locks for the table
                 AcquireLocks(1, tables._locks.Length, ref locksAcquired);
 
-                object[] newLocks = tables._locks;
+                var newLocks = tables._locks;
 
                 // Add more locks
                 if (_growLockArray && tables._locks.Length < MaxLockNumber)
                 {
                     newLocks = new object[tables._locks.Length * 2];
                     Array.Copy(tables._locks, newLocks, tables._locks.Length);
-                    for (int i = tables._locks.Length; i < newLocks.Length; i++)
+                    for (var i = tables._locks.Length; i < newLocks.Length; i++)
                     {
                         newLocks[i] = new object();
                     }
@@ -1678,13 +1678,13 @@ namespace System.Collections.Concurrent
                 var newTables = new Tables(newBuckets, newLocks, newCountPerLock);
 
                 // Copy all data into a new table, creating new nodes for all elements
-                foreach (Node? bucket in tables._buckets)
+                foreach (var bucket in tables._buckets)
                 {
-                    Node? current = bucket;
+                    var current = bucket;
                     while (current != null)
                     {
-                        Node? next = current._next;
-                        ref Node? newBucket = ref newTables.GetBucketAndLock(current._hashcode, out uint newLockNo);
+                        var next = current._next;
+                        ref var newBucket = ref newTables.GetBucketAndLock(current._hashcode, out var newLockNo);
 
                         newBucket = new Node(current._key, current._value, current._hashcode, newBucket);
 
@@ -1712,7 +1712,7 @@ namespace System.Collections.Concurrent
 
         private void InitializeFromCollection(IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
-            foreach (KeyValuePair<TKey, TValue> pair in collection)
+            foreach (var pair in collection)
             {
                 if (pair.Key is null)
                 {
@@ -1727,7 +1727,7 @@ namespace System.Collections.Concurrent
 
             if (_budget == 0)
             {
-                Tables tables = _tables;
+                var tables = _tables;
                 _budget = tables._buckets.Length / tables._locks.Length;
             }
         }
@@ -1739,8 +1739,8 @@ namespace System.Collections.Concurrent
         {
             Debug.Assert(fromInclusive <= toExclusive);
 
-            Tables tables = _tables;
-            for (int i = fromInclusive; i < toExclusive; i++)
+            var tables = _tables;
+            for (var i = fromInclusive; i < toExclusive; i++)
             {
                 Monitor.Exit(tables._locks[i]);
             }
@@ -1753,25 +1753,25 @@ namespace System.Collections.Concurrent
         /// </summary>
         private bool TryAddInternal(TKey key, int? nullableHashcode, TValue value, bool updateIfExists, bool acquireLock, out TValue resultingValue)
         {
-            IEqualityComparer<TKey>? comparer = _comparer;
+            var comparer = _comparer;
 
             Debug.Assert(
                 nullableHashcode is null ||
                 (comparer is null && key.GetHashCode() == nullableHashcode) ||
                 (comparer != null && comparer.GetHashCode(key) == nullableHashcode));
 
-            int hashcode =
+            var hashcode =
                 nullableHashcode ??
                 (comparer is null ? key.GetHashCode() : comparer.GetHashCode(key));
 
             while (true)
             {
-                Tables tables = _tables;
-                object[] locks = tables._locks;
-                ref Node? bucket = ref tables.GetBucketAndLock(hashcode, out uint lockNo);
+                var tables = _tables;
+                var locks = tables._locks;
+                ref var bucket = ref tables.GetBucketAndLock(hashcode, out var lockNo);
 
-                bool resizeDesired = false;
-                bool lockTaken = false;
+                var resizeDesired = false;
+                var lockTaken = false;
                 try
                 {
                     if (acquireLock)
@@ -1788,7 +1788,7 @@ namespace System.Collections.Concurrent
 
                     // Try to find this key in the bucket
                     Node? prev = null;
-                    for (Node? node = bucket; node != null; node = node._next)
+                    for (var node = bucket; node != null; node = node._next)
                     {
                         Debug.Assert((prev is null && node == bucket) || prev!._next == node);
                         if (hashcode == node._hashcode && (comparer is null ? _defaultComparer.Equals(node._key, key) : comparer.Equals(node._key, key)))
@@ -1876,14 +1876,14 @@ namespace System.Collections.Concurrent
             // We must capture the volatile _tables field into a local variable: it is set to a new table on each table resize.
             // The Volatile.Read on the array element then ensures that we have a copy of the reference to tables._buckets[bucketNo]:
             // this protects us from reading fields ('_hashcode', '_key', '_value' and '_next') of different instances.
-            Tables tables = _tables;
+            var tables = _tables;
 
-            IEqualityComparer<TKey>? comparer = _comparer;
+            var comparer = _comparer;
             if (comparer is null)
             {
                 if (typeof(TKey).GetTypeInfo().IsValueType)
                 {
-                    for (Node? n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
+                    for (var n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
                     {
                         if (hashcode == n._hashcode && EqualityComparer<TKey>.Default.Equals(n._key, key))
                         {
@@ -1894,7 +1894,7 @@ namespace System.Collections.Concurrent
                 }
                 else
                 {
-                    for (Node? n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
+                    for (var n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
                     {
                         if (hashcode == n._hashcode && _defaultComparer.Equals(n._key, key))
                         {
@@ -1906,7 +1906,7 @@ namespace System.Collections.Concurrent
             }
             else
             {
-                for (Node? n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
+                for (var n = Volatile.Read(ref tables.GetBucket(hashcode)); n != null; n = n._next)
                 {
                     if (hashcode == n._hashcode && comparer.Equals(n._key, key))
                     {
@@ -1931,13 +1931,13 @@ namespace System.Collections.Concurrent
         /// <param name="oldValue">The conditional value to compare against if <paramref name="matchValue"/> is true</param>
         private bool TryRemoveInternal(TKey key, [MaybeNullWhen(false)] out TValue value, bool matchValue, TValue? oldValue)
         {
-            IEqualityComparer<TKey>? comparer = _comparer;
-            int hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
+            var comparer = _comparer;
+            var hashcode = comparer is null ? key.GetHashCode() : comparer.GetHashCode(key);
             while (true)
             {
-                Tables tables = _tables;
-                object[] locks = tables._locks;
-                ref Node? bucket = ref tables.GetBucketAndLock(hashcode, out uint lockNo);
+                var tables = _tables;
+                var locks = tables._locks;
+                ref var bucket = ref tables.GetBucketAndLock(hashcode, out var lockNo);
 
                 lock (locks[lockNo])
                 {
@@ -1949,7 +1949,7 @@ namespace System.Collections.Concurrent
                     }
 
                     Node? prev = null;
-                    for (Node? curr = bucket; curr != null; curr = curr._next)
+                    for (var curr = bucket; curr != null; curr = curr._next)
                     {
                         Debug.Assert((prev is null && curr == bucket) || prev!._next == curr);
 
@@ -1957,7 +1957,7 @@ namespace System.Collections.Concurrent
                         {
                             if (matchValue)
                             {
-                                bool valuesMatch = EqualityComparer<TValue>.Default.Equals(oldValue!, curr._value);
+                                var valuesMatch = EqualityComparer<TValue>.Default.Equals(oldValue!, curr._value);
                                 if (!valuesMatch)
                                 {
                                     value = default;
@@ -2005,23 +2005,23 @@ namespace System.Collections.Concurrent
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference.</exception>
         private bool TryUpdateInternal(TKey key, int? nullableHashcode, TValue newValue, TValue comparisonValue)
         {
-            IEqualityComparer<TKey>? comparer = _comparer;
+            var comparer = _comparer;
 
             Debug.Assert(
                 nullableHashcode is null ||
                 (comparer is null ? key.GetHashCode() : comparer.GetHashCode(key)) == nullableHashcode);
 
-            int hashcode =
+            var hashcode =
                 nullableHashcode ??
                 (comparer is null ? key.GetHashCode() : comparer.GetHashCode(key));
 
-            EqualityComparer<TValue> valueComparer = EqualityComparer<TValue>.Default;
+            var valueComparer = EqualityComparer<TValue>.Default;
 
             while (true)
             {
-                Tables tables = _tables;
-                object[] locks = tables._locks;
-                ref Node? bucket = ref tables.GetBucketAndLock(hashcode, out uint lockNo);
+                var tables = _tables;
+                var locks = tables._locks;
+                ref var bucket = ref tables.GetBucketAndLock(hashcode, out var lockNo);
 
                 lock (locks[lockNo])
                 {
@@ -2034,7 +2034,7 @@ namespace System.Collections.Concurrent
 
                     // Try to find this key in the bucket
                     Node? prev = null;
-                    for (Node? node = bucket; node != null; node = node._next)
+                    for (var node = bucket; node != null; node = node._next)
                     {
                         Debug.Assert((prev is null && node == bucket) || prev!._next == node);
                         if (hashcode == node._hashcode && (comparer is null ? _defaultComparer.Equals(node._key, key) : comparer.Equals(node._key, key)))
@@ -2140,10 +2140,10 @@ namespace System.Collections.Concurrent
                         goto case StateOuterloop;
 
                     case StateOuterloop:
-                        ConcurrentDictionary<TKey, TValue>.Node?[]? buckets = _buckets;
+                        var buckets = _buckets;
                         Debug.Assert(buckets != null);
 
-                        int i = ++_i;
+                        var i = ++_i;
                         if ((uint)i < (uint)buckets!.Length)
                         {
                             // The Volatile.Read ensures that we have a copy of the reference to buckets[i]:
@@ -2155,7 +2155,7 @@ namespace System.Collections.Concurrent
                         goto default;
 
                     case StateInnerLoop:
-                        Node? node = _node;
+                        var node = _node;
                         if (node != null)
                         {
                             Current = new KeyValuePair<TKey, TValue>(node._key, node._value);
@@ -2233,7 +2233,7 @@ namespace System.Collections.Concurrent
             [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             internal ref Node? GetBucket(int hashcode)
             {
-                Node?[] buckets = _buckets;
+                var buckets = _buckets;
                 if (IntPtr.Size == 8)
                 {
                     return ref buckets[HashHelpers.FastMod((uint)hashcode, (uint)buckets.Length, _fastModBucketsMultiplier)];
@@ -2248,7 +2248,7 @@ namespace System.Collections.Concurrent
             [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
             internal ref Node? GetBucketAndLock(int hashcode, out uint lockNo)
             {
-                Node?[] buckets = _buckets;
+                var buckets = _buckets;
                 uint bucketNo;
                 if (IntPtr.Size == 8)
                 {
@@ -2284,14 +2284,14 @@ namespace System.Collections.Concurrent
             var countPerLock = new int[_serializationConcurrencyLevel];
 
             var locks = new object[_serializationConcurrencyLevel];
-            for (int i = 0; i < locks.Length; i++)
+            for (var i = 0; i < locks.Length; i++)
             {
                 locks[i] = new object();
             }
 
             _tables = new Tables(buckets, locks, countPerLock);
 
-            KeyValuePair<TKey, TValue>[] array = _serializationArray!;
+            var array = _serializationArray!;
             InitializeFromCollection(array);
             _serializationArray = null;
         }
@@ -2302,7 +2302,7 @@ namespace System.Collections.Concurrent
         [OnSerializing]
         private void OnSerializing(StreamingContext context)
         {
-            Tables tables = _tables;
+            var tables = _tables;
 
             // save the data into the serialization array to be saved
             _serializationArray = ToArray();
