@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET30
 
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
-#pragma warning disable CA1002 // Do not expose generic lists
 
 using System.Collections.Generic;
 using System.Collections.Specialized;

@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#pragma warning disable CA1021 // Avoid out parameters
 #pragma warning disable CA2213 // Disposable fields should be disposed
 
 using System.Collections.Generic;

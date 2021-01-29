@@ -1,5 +1,7 @@
 ﻿// Needed for NET35 (TASK)
 
+#pragma warning disable S3376 // Make this class name end with 'Exception'
+
 using System.Runtime.Serialization;
 using System.Threading;
 

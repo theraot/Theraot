@@ -22,7 +22,7 @@ namespace System.Dynamic.Utils
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object?> handler)
         {
             // We will generate the following code:
-            //
+            #pragma warning disable S125 // Sections of code should not be commented out
             // object ret;
             // object[] args = new object[parameterCount];
             // args[0] = param0;
@@ -34,6 +34,7 @@ namespace System.Dynamic.Utils
             //      param0 = (T0)args[0];   // only generated for each byref argument
             // }
             // return (TRet)ret;
+            #pragma warning restore S125 // Sections of code should not be commented out
             if (_thunks.TryGetValue(delegateType, out var thunkMethod))
             {
                 return thunkMethod.CreateDelegate(delegateType, handler);

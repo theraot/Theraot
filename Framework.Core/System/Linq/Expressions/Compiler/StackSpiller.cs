@@ -135,8 +135,6 @@ namespace System.Linq.Expressions.Compiler
         private static void VerifyRewrite(in Result result, Expression node)
         {
             Debug.Assert(result.Node != null);
-
-            // (result.Action == RewriteAction.None) if and only if (node == result.Node)
             Debug.Assert((result.Action == RewriteAction.None) ^ (node != result.Node), "rewrite action does not match node object identity");
 
             // if the original node is an extension node, it should have been rewritten

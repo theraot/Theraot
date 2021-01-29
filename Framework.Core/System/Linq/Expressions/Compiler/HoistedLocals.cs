@@ -11,6 +11,7 @@ using Theraot.Collections;
 
 namespace System.Linq.Expressions.Compiler
 {
+    #pragma warning disable S125 // Sections of code should not be commented out
     // Suppose we have something like:
     //
     //    (string s)=>()=>s.
@@ -35,7 +36,7 @@ namespace System.Linq.Expressions.Compiler
     //
     // This class tracks that "s" was hoisted into a closure, as the 0th
     // element in the array
-    //
+    #pragma warning restore S125 // Sections of code should not be commented out
     /// <summary>
     ///     <para>
     ///         Stores information about locals and arguments that are hoisted into

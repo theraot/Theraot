@@ -1,7 +1,5 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
-#pragma warning disable CA1021 // Avoid out parameters
-
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 

@@ -5,6 +5,7 @@
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CC0074 // Make field readonly
+#pragma warning disable S2328 // GetHashCode should not reference mutable fields
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable UseDeconstructionOnParameter
@@ -454,12 +455,12 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ")";
+            return $"({Item1?.ToString() ?? string.Empty})";
         }
 
         string ITupleInternal.ToStringEnd()
         {
-            return (Item1 == null ? string.Empty : Item1.ToString()) + ")";
+            return $"{Item1?.ToString() ?? string.Empty})";
         }
     }
 
@@ -573,7 +574,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ")";
+            return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty})";
         }
 
         int IComparable.CompareTo(object obj)
@@ -665,7 +666,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ")";
+            return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty})";
         }
     }
 
@@ -792,7 +793,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ")";
+            return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty})";
         }
 
         int IComparable.CompareTo(object obj)
@@ -870,7 +871,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ")";
+            return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty})";
         }
     }
 
@@ -1012,7 +1013,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ")";
+            return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty})";
         }
 
         int IComparable.CompareTo(object obj)
@@ -1097,7 +1098,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ")";
+            return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty})";
         }
     }
 
@@ -1254,7 +1255,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ")";
+            return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty})";
         }
 
         int IComparable.CompareTo(object obj)
@@ -1346,7 +1347,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ")";
+            return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty})";
         }
     }
 
@@ -1518,7 +1519,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ")";
+            return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty})";
         }
 
         int IComparable.CompareTo(object obj)
@@ -1617,7 +1618,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ")";
+            return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty})";
         }
     }
 
@@ -1804,7 +1805,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ")";
+            return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty})";
         }
 
         int IComparable.CompareTo(object obj)
@@ -1910,7 +1911,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ")";
+            return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty})";
         }
     }
 
@@ -2206,7 +2207,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            return Rest is ITupleInternal rest ? "(" + (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd() : $"({(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})";
+            return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty}, {(Rest is ITupleInternal rest ? rest.ToStringEnd() : (Rest.ToString() + ")"))}";
         }
 
         int IComparable.CompareTo(object obj)
@@ -2407,7 +2408,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            return Rest is ITupleInternal rest ? (Item1 == null ? string.Empty : Item1.ToString()) + ", " + (Item2 == null ? string.Empty : Item2.ToString()) + ", " + (Item3 == null ? string.Empty : Item3.ToString()) + ", " + (Item4 == null ? string.Empty : Item4.ToString()) + ", " + (Item5 == null ? string.Empty : Item5.ToString()) + ", " + (Item6 == null ? string.Empty : Item6.ToString()) + ", " + (Item7 == null ? string.Empty : Item7.ToString()) + ", " + rest.ToStringEnd() : $"{(Item1 == null ? string.Empty : Item1.ToString())}, {(Item2 == null ? string.Empty : Item2.ToString())}, {(Item3 == null ? string.Empty : Item3.ToString())}, {(Item4 == null ? string.Empty : Item4.ToString())}, {(Item5 == null ? string.Empty : Item5.ToString())}, {(Item6 == null ? string.Empty : Item6.ToString())}, {(Item7 == null ? string.Empty : Item7.ToString())}, {Rest})";
+            return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty}, {(Rest is ITupleInternal rest ? rest.ToStringEnd() : (Rest.ToString() + ")"))}";
         }
     }
 }
