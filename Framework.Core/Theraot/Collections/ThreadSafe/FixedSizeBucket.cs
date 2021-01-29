@@ -50,12 +50,8 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     var old = _entries;
                     _entries = ArrayReservoir<object>.GetArray(Capacity << 1);
-                    if (old != null)
-                    {
-                        Array.Copy(old, 0, _entries, 0, _count);
-                        ArrayReservoir<object?>.DonateArray(old);
-                    }
-
+                    Array.Copy(old, 0, _entries, 0, _count);
+                    ArrayReservoir<object?>.DonateArray(old);
                     Capacity = _entries.Length;
                 }
 
