@@ -721,6 +721,7 @@ namespace System.Linq.Expressions
         ///     The modified expression, if it or any subexpression was modified;
         ///     otherwise, returns the original expression.
         /// </returns>
+        [return: NotNullIfNotNull("node")]
         protected virtual LabelTarget? VisitLabelTarget(LabelTarget? node)
         {
             return node;
