@@ -10,10 +10,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
-using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
 namespace System.Runtime.CompilerServices
@@ -180,27 +178,6 @@ namespace System.Runtime.CompilerServices
         internal CallSite<T> CreateMatchMaker()
         {
             return new CallSite<T>();
-        }
-
-        internal CallSite GetMatchmaker()
-        {
-            // check if we have a cached matchmaker and attempt to atomically grab it.
-            var matchmaker = CachedMatchmaker;
-            if (matchmaker == null)
-            {
-                return matchmaker ?? new CallSite<T>
-                {
-                    Match = true
-                };
-            }
-
-            matchmaker = Interlocked.Exchange(ref CachedMatchmaker, null);
-            Debug.Assert(matchmaker?.Match != false, "cached site should be set up for matchmaking");
-
-            return matchmaker ?? new CallSite<T>
-            {
-                Match = true
-            };
         }
 
         // moves rule +2 up.
