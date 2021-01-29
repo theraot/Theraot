@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
+#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
@@ -2037,10 +2037,12 @@ namespace System.Collections.Concurrent
         private sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
             // Provides a manually-implemented version of (approximately) this iterator:
+            #pragma warning disable S125 // Sections of code should not be commented out
             //     Node?[] buckets = _tables._buckets;
             //     for (int i = 0; i < buckets.Length; i++)
             //         for (Node? current = Volatile.Read(ref buckets[i]); current != null; current = current._next)
             //             yield return new KeyValuePair<TKey, TValue>(current._key, current._value);
+            #pragma warning restore S125 // Sections of code should not be commented out
 
             private const int StateDone = 3;
             private const int StateInnerLoop = 2;
