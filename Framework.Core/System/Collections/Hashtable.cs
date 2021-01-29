@@ -5,7 +5,6 @@
 #pragma warning disable CA2214 // Do not call overridable methods in constructors
 #pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
-#pragma warning disable RECS0021 // Warns about calls to virtual member functions occurring in the constructor
 
 // ReSharper disable PartialTypeWithSinglePart
 

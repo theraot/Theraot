@@ -3,7 +3,6 @@
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2214 // Do not call overridable methods in constructors
 #pragma warning disable CA2235 // Mark all non-serializable fields
-#pragma warning disable RECS0021 // Warns about calls to virtual member functions occurring in the constructor
 // ReSharper disable VirtualMemberCallInConstructor
 
 // Licensed to the .NET Foundation under one or more agreements.

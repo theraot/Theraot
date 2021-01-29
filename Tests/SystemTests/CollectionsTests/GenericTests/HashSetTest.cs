@@ -2,8 +2,6 @@
 extern alias nunitlinq;
 #endif
 
-#pragma warning disable RECS0030 // Suggests using the class declaring a static function when calling it
-
 //
 // HashSetTest.cs
 //

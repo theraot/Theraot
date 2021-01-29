@@ -3,7 +3,6 @@ extern alias nunitlinq;
 #endif
 
 #pragma warning disable IDE1006 // Naming Styles
-#pragma warning disable RECS0014 // If all fields, properties and methods members are static, the class can be made static.
 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the

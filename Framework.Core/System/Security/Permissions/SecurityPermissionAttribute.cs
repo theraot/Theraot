@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
-#pragma warning disable RECS0133 // Parameter name differs in base declaration
-
 using System.Diagnostics;
 
 namespace System.Security.Permissions
