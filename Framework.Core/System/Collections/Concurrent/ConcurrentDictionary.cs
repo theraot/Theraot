@@ -455,7 +455,7 @@ namespace System.Collections.Concurrent
 
                 ThrowIfInvalidObjectValue(value);
 
-                ((ConcurrentDictionary<TKey, TValue>)this)[(TKey)key] = (TValue)value!;
+                this[(TKey)key] = (TValue)value!;
             }
         }
 
@@ -929,7 +929,7 @@ namespace System.Collections.Concurrent
         /// of the dictionary.  The contents exposed through the enumerator may contain modifications
         /// made to the dictionary after <see cref="GetEnumerator"/> was called.
         /// </remarks>
-        IEnumerator IEnumerable.GetEnumerator() => ((ConcurrentDictionary<TKey, TValue>)this).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>Provides an <see cref="IDictionaryEnumerator"/> for the
         /// <see cref="IDictionary"/>.</summary>
