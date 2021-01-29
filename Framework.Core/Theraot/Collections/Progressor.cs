@@ -330,11 +330,9 @@ namespace Theraot.Collections
         private static Progressor<T> CreateFromIEnumerableExtracted(IEnumerator<T> enumerator)
         {
             var proxy = new ProxyObservable<T>();
-            // ReSharper disable once RedundantExplicitArrayCreation
-            IEnumerator<T>?[] enumeratorBox = { enumerator };
-            return new Progressor<T>(proxy, (out T value) => Take(out value));
+            return new Progressor<T>(proxy, (out T value) => Take(new []{ enumerator }, out value));
 
-            bool Take(out T value)
+            static bool Take(IEnumerator<T>?[] enumeratorBox, out T value)
             {
                 // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
                 var enumeratorCopy = Volatile.Read(ref enumeratorBox[0]);
