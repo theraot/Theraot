@@ -215,7 +215,6 @@ resharper_use_deconstruction_on_parameter_highlighting = do_not_show
 # Roslyn analyzers
 dotnet_diagnostic.IDE0070.severity = silent
 dotnet_diagnostic.CA1033.severity = silent
-dotnet_diagnostic.CA1021.severity = silent
 dotnet_diagnostic.CA1711.severity = silent
 dotnet_diagnostic.CA1502.severity = silent
 dotnet_diagnostic.CA1005.severity = silent
