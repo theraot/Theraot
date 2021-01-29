@@ -482,14 +482,14 @@ namespace System.Collections.Concurrent
         /// Adds the specified value to the <see cref="ICollection{TValue}"/>
         /// with the specified key.
         /// </summary>
-        /// <param name="keyValuePair">The <see cref="KeyValuePair{TKey,TValue}"/>
+        /// <param name="item">The <see cref="KeyValuePair{TKey,TValue}"/>
         /// structure representing the key and value to add to the <see cref="Dictionary{TKey,TValue}"/>.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="keyValuePair"/> of <paramref name="keyValuePair"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="item"/> of <paramref name="item"/> is null.</exception>
         /// <exception cref="OverflowException">The <see cref="Dictionary{TKey,TValue}"/>
         /// contains too many elements.</exception>
         /// <exception cref="ArgumentException">An element with the same key already exists in the
         /// <see cref="Dictionary{TKey,TValue}"/></exception>
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> keyValuePair) => ((IDictionary<TKey, TValue>)this).Add(keyValuePair.Key, keyValuePair.Value);
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item) => ((IDictionary<TKey, TValue>)this).Add(item.Key, item.Value);
 
         /// <summary>
         /// Adds the specified key and value to the dictionary.
@@ -732,17 +732,17 @@ namespace System.Collections.Concurrent
         /// Determines whether the <see cref="ICollection{T}"/>
         /// contains a specific key and value.
         /// </summary>
-        /// <param name="keyValuePair">The <see cref="KeyValuePair{TKey,TValue}"/>
+        /// <param name="item">The <see cref="KeyValuePair{TKey,TValue}"/>
         /// structure to locate in the <see cref="ICollection{TValue}"/>.</param>
-        /// <returns>true if the <paramref name="keyValuePair"/> is found in the <see cref="ICollection{T}"/>; otherwise, false.</returns>
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> keyValuePair)
+        /// <returns>true if the <paramref name="item"/> is found in the <see cref="ICollection{T}"/>; otherwise, false.</returns>
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
         {
-            if (!TryGetValue(keyValuePair.Key, out var value))
+            if (!TryGetValue(item.Key, out var value))
             {
                 return false;
             }
 
-            return EqualityComparer<TValue>.Default.Equals(value, keyValuePair.Value);
+            return EqualityComparer<TValue>.Default.Equals(value, item.Value);
         }
 
         /// <summary>
@@ -787,24 +787,24 @@ namespace System.Collections.Concurrent
         /// <param name="array">
         /// The one-dimensional array of type <see cref="KeyValuePair{TKey,TValue}"/> that is the destination of the <see cref="KeyValuePair{TKey,TValue}"/> elements copied from the <see  cref="ICollection"/>. The array must have zero-based indexing.
         /// </param>
-        /// <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is a null reference (Nothing in Visual Basic).</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
         /// <exception cref="ArgumentException">
-        /// <paramref name="index"/> is equal to or greater than the length of the <paramref name="array"/>. -or- The number of
-        /// elements in the source <see cref="ICollection"/> is greater than the available space from <paramref name="index"/> to
+        /// <paramref name="arrayIndex"/> is equal to or greater than the length of the <paramref name="array"/>. -or- The number of
+        /// elements in the source <see cref="ICollection"/> is greater than the available space from <paramref name="arrayIndex"/> to
         /// the end of the destination <paramref name="array"/>.
         /// </exception>
-        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int index)
+        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             if (array is null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
 
-            if (index < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), "IndexIsNegative");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "IndexIsNegative");
             }
 
             var locksAcquired = 0;
@@ -819,12 +819,12 @@ namespace System.Collections.Concurrent
                     count += countPerLock[i];
                 }
 
-                if (array.Length - count < index || count < 0) //"count" itself or "count + index" can overflow
+                if (array.Length - count < arrayIndex || count < 0) //"count" itself or "count + index" can overflow
                 {
                     throw new ArgumentException("ArrayNotLargeEnough");
                 }
 
-                CopyToPairs(array, index);
+                CopyToPairs(array, arrayIndex);
             }
             finally
             {
@@ -1058,13 +1058,13 @@ namespace System.Collections.Concurrent
         /// <summary>
         /// Removes a key and value from the dictionary.
         /// </summary>
-        /// <param name="keyValuePair">The <see cref="KeyValuePair{TKey,TValue}"/>
+        /// <param name="item">The <see cref="KeyValuePair{TKey,TValue}"/>
         /// structure representing the key and value to remove from the <see cref="Dictionary{TKey,TValue}"/>.</param>
-        /// <returns>true if the key and value represented by <paramref name="keyValuePair"/> is successfully
+        /// <returns>true if the key and value represented by <paramref name="item"/> is successfully
         /// found and removed; otherwise, false.</returns>
-        /// <exception cref="ArgumentNullException">The Key property of <paramref name="keyValuePair"/> is a null reference (Nothing in Visual Basic).</exception>
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> keyValuePair) =>
-            TryRemove(keyValuePair);
+        /// <exception cref="ArgumentNullException">The Key property of <paramref name="item"/> is a null reference (Nothing in Visual Basic).</exception>
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item) =>
+            TryRemove(item);
 
         /// <summary>
         /// Removes the element with the specified key from the <see cref="IDictionary"/>.
