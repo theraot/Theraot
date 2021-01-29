@@ -33,9 +33,9 @@ namespace TestRunner
             No.Op<Func<IEnumerable<Task>, Task>>(TaskEx.WhenAny);
             No.Op<Func<IEnumerable<Task<TResult>>, Task<Task<TResult>>>>(TaskEx.WhenAny);
 #if LESSTHAN_NET45 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-            No.Op<Func<System.Runtime.CompilerServices.YieldAwaitable>>(TaskEx.Yield);
+            No.Op<Func<global::System.Runtime.CompilerServices.YieldAwaitable>>(TaskEx.Yield);
 #else
-            // No.Op<Func<Microsoft.Runtime.CompilerServices.YieldAwaitable>>(TaskEx.Yield);
+            // No.Op<Func<global::Microsoft.Runtime.CompilerServices.YieldAwaitable>>(TaskEx.Yield);
 #endif
         }
     }
