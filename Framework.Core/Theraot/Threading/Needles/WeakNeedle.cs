@@ -93,7 +93,7 @@ namespace Theraot.Threading.Needles
             return !(right is null) && EqualsExtractedExtracted(left, right);
         }
 
-        public sealed override bool Equals(object? obj)
+        public override bool Equals(object? obj)
         {
             switch (obj)
             {
@@ -118,7 +118,7 @@ namespace Theraot.Threading.Needles
             SetTargetValue(null);
         }
 
-        public sealed override int GetHashCode()
+        public override int GetHashCode()
         {
             return _hashCode;
         }

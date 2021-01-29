@@ -1,5 +1,7 @@
 ﻿// Needed for Workaround
 
+#pragma warning disable RCS1132	// Remove redundant overriding member
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -102,6 +104,34 @@ namespace Theraot.Threading.Needles
 
             result = default!;
             return false;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            switch (obj)
+            {
+                case WeakDelegateNeedle delegateNeedle:
+                    return Equals(delegateNeedle);
+
+                case INeedle<Delegate> needle:
+                    if (needle.TryGetValue(out var value))
+                    {
+                        return Equals(value);
+                    }
+
+                    return !IsAlive;
+
+                case Delegate other:
+                    return Equals(other);
+
+                default:
+                    return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }
