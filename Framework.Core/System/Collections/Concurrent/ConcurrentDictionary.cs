@@ -2161,7 +2161,7 @@ namespace System.Collections.Concurrent
                 _countPerLock = countPerLock;
                 if (IntPtr.Size == 8)
                 {
-                    _fastModBucketsMultiplier = HashHelpers.GetFastModMultiplier((uint)buckets.Length);
+                    _fastModBucketsMultiplier = FastModHelper.GetFastModMultiplier((uint)buckets.Length);
                 }
             }
 
@@ -2171,7 +2171,7 @@ namespace System.Collections.Concurrent
                 var buckets = _buckets;
                 if (IntPtr.Size == 8)
                 {
-                    return ref buckets[HashHelpers.FastMod((uint)hashcode, (uint)buckets.Length, _fastModBucketsMultiplier)];
+                    return ref buckets[FastModHelper.FastMod((uint)hashcode, (uint)buckets.Length, _fastModBucketsMultiplier)];
                 }
 
                 return ref buckets[(uint)hashcode % (uint)buckets.Length];
@@ -2184,7 +2184,7 @@ namespace System.Collections.Concurrent
                 uint bucketNo;
                 if (IntPtr.Size == 8)
                 {
-                    bucketNo = HashHelpers.FastMod((uint)hashcode, (uint)buckets.Length, _fastModBucketsMultiplier);
+                    bucketNo = FastModHelper.FastMod((uint)hashcode, (uint)buckets.Length, _fastModBucketsMultiplier);
                 }
                 else
                 {

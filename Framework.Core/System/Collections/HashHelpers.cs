@@ -1,14 +1,14 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-// ReSharper disable PartialTypeWithSinglePart
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace System.Collections
 {
-    internal static partial class HashHelpers
+    internal static class FastModHelper
     {
         /// <summary>Returns approximate reciprocal of the divisor: ceil(2**64 / divisor).</summary>
         /// <remarks>This should only be used on 64-bit.</remarks>
@@ -33,3 +33,5 @@ namespace System.Collections
         }
     }
 }
+
+#endif

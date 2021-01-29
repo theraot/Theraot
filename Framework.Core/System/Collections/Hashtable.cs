@@ -1669,7 +1669,7 @@ namespace System.Collections
         }
     }
 
-    internal static partial class HashHelpers
+    internal static class HashHelpers
     {
         public const int HashCollisionThreshold = 100;
 
