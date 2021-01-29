@@ -1139,7 +1139,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         }
 
         [Test]
-        public void ConcurrentWriteRead_NoTornValues()
+        public static void ConcurrentWriteRead_NoTornValues()
         {
             var cd = new ConcurrentDictionary<int, KeyValuePair<long, long>>();
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
