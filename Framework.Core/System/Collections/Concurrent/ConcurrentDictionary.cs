@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
@@ -2066,6 +2066,7 @@ namespace System.Collections.Concurrent
 
             public void Dispose()
             {
+                // Empty
             }
 
             public bool MoveNext()
