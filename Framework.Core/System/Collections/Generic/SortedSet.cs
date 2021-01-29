@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable S927 // Parameter names should match base declaration
+
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;

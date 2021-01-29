@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable CA1005 // Avoid excessive parameters on generic types
+
 namespace System
 {
     /// <summary>Encapsulates a method that has no parameters and does not return a value.</summary>
