@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
@@ -1623,8 +1623,7 @@ namespace System.Collections.Concurrent
                     {
                         var next = current._next;
                         ref var newBucket = ref newTables.GetBucketAndLock(current._hashcode, out var newLockNo);
-
-                        newBucket = new Node(current._key, current._value, current._hashcode, newBucket);
+                        Volatile.Write(ref newBucket, new Node(current._key, current._value, current._hashcode, newBucket));
 
                         checked
                         {
