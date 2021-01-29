@@ -65,7 +65,7 @@ namespace System.Collections.Concurrent
         private const int MaxLockNumber = 1024;
 
         /// <summary>Whether TValue is a type that can be written atomically (i.e., with no danger of torn reads).</summary>
-        private static readonly bool s_isValueWriteAtomic = IsValueWriteAtomic();
+        private static readonly bool _isValueWriteAtomic = IsValueWriteAtomic();
 
         /// <summary>Key equality comparer.</summary>
         private readonly IEqualityComparer<TKey>? _comparer;
@@ -1774,7 +1774,7 @@ namespace System.Collections.Concurrent
                             // be written atomically, since lock-free reads may be happening concurrently.
                             if (updateIfExists)
                             {
-                                if (s_isValueWriteAtomic)
+                                if (_isValueWriteAtomic)
                                 {
                                     node._value = value;
                                 }
@@ -2021,7 +2021,7 @@ namespace System.Collections.Concurrent
                         {
                             if (valueComparer.Equals(node._value, comparisonValue))
                             {
-                                if (s_isValueWriteAtomic)
+                                if (_isValueWriteAtomic)
                                 {
                                     node._value = newValue;
                                 }
