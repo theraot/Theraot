@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
+#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
@@ -1326,7 +1326,7 @@ namespace System.Collections.Concurrent
                     throw new ArgumentException("Type of value is incorrect");
                 }
             }
-            else if (default(TValue) != null)
+            else if (default(TValue) is not null)
             {
                 throw new ArgumentException("Type of value is incorrect");
             }
