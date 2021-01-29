@@ -141,7 +141,6 @@ namespace System.Threading.Tasks
                         continue;
                     }
 
-                    current = null;
                     break;
                 }
 
