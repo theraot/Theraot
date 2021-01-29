@@ -213,7 +213,7 @@ namespace System.Dynamic.Utils
                 return false;
             }
 
-            return type.GetArrayRank() == target.GetArrayRank() && type.GetElementType().IsAssignableToInternal(target.GetElementType());
+            return type.GetArrayRank() == target.GetArrayRank() && type.GetElementType().IsAssignableTo(target.GetElementType());
         }
 
         internal static bool IsArrayTypeAssignableToInterface(Type type, Type target)
@@ -233,21 +233,6 @@ namespace System.Dynamic.Utils
         }
 
         internal static bool IsAssignableTo(this Type type, Type target)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-
-            return type.IsAssignableToInternal(target);
-        }
-
-        internal static bool IsAssignableToInternal(this Type type, Type target)
         {
             return target.IsAssignableFrom(type)
                    || IsArrayTypeAssignableTo(type, target)
