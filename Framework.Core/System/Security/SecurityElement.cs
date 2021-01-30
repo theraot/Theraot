@@ -2,6 +2,7 @@
 
 #pragma warning disable CC0031 // Check for null before calling a delegate
 #pragma warning disable CA2227 // Collection properties should be read only
+#pragma warning disable S1168 // Return empty collection
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

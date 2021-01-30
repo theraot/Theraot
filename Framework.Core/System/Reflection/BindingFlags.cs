@@ -1,6 +1,8 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
 #pragma warning disable CA1008 // Enums should have zero value
+#pragma warning disable S2346 // Flags enumerations zero-value members should be named "None".
+#pragma warning disable S2344 // Rename this enumeration to remove the 'Flags' suffix.
 
 using System.Runtime.InteropServices;
 

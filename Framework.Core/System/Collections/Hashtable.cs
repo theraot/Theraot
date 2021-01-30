@@ -5,13 +5,13 @@
 #pragma warning disable CA2214 // Do not call overridable methods in constructors
 #pragma warning disable CS0618 // Type or member is obsolete
 #pragma warning disable CS8618 // Non-nullable field 'testField' is uninitialized.
+#pragma warning disable S2372 // Remove the exception throwing from this property getter, or refactor the property into a method.
 
 // ReSharper disable PartialTypeWithSinglePart
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
-
 
 /*============================================================
 **
@@ -72,6 +72,7 @@ namespace System.Collections
     [TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")]
     public class Hashtable : IDictionary, ISerializable, IDeserializationCallback, ICloneable
     {
+#pragma warning disable S125 // Sections of code should not be commented out
         /*
           This Hashtable uses double hashing.  There are hashsize buckets in the
           table, and each bucket can contain 0 or 1 element.  We use a bit to mark
@@ -122,6 +123,7 @@ namespace System.Collections
 
            --
         */
+#pragma warning restore S125 // Sections of code should not be commented out
 
         private const string _comparerName = nameof(Comparer);
         private const string _hashCodeProviderName = "HashCodeProvider";
