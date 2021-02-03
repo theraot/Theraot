@@ -12,13 +12,20 @@ namespace System.Runtime.CompilerServices
     public struct AsyncValueTaskMethodBuilder
     {
         private bool _haveResult;
-        private AsyncTaskMethodBuilder? _methodBuilder;
+        private AsyncTaskMethodBuilder _methodBuilder;
+        private bool _useBuilder;
 
         public ValueTask Task
         {
             get
             {
-                return _haveResult ? new ValueTask() : new ValueTask(GetMethodBuilder().Task);
+                if (_haveResult)
+                {
+                    return new ValueTask();
+                }
+
+                _useBuilder = true;
+                return new ValueTask(_methodBuilder.Task);
             }
         }
 
@@ -31,7 +38,8 @@ namespace System.Runtime.CompilerServices
             where TAwaiter : INotifyCompletion
             where TStateMachine : IAsyncStateMachine
         {
-            GetMethodBuilder().AwaitOnCompleted(ref awaiter, ref stateMachine);
+            _useBuilder = true;
+            _methodBuilder.AwaitOnCompleted(ref awaiter, ref stateMachine);
         }
 
         [SecuritySafeCritical]
@@ -39,40 +47,37 @@ namespace System.Runtime.CompilerServices
             where TAwaiter : ICriticalNotifyCompletion
             where TStateMachine : IAsyncStateMachine
         {
-            GetMethodBuilder().AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+            _useBuilder = true;
+            _methodBuilder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
         }
 
         public void SetException(Exception exception)
         {
-            GetMethodBuilder().SetException(exception);
+            _useBuilder = true;
+            _methodBuilder.SetException(exception);
         }
 
         public void SetResult()
         {
-            if (!_methodBuilder.HasValue)
+            if (_useBuilder)
             {
-                _haveResult = true;
+                _methodBuilder.SetResult();
             }
             else
             {
-                _methodBuilder.Value.SetResult();
+                _haveResult = true;
             }
         }
 
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            GetMethodBuilder().SetStateMachine(stateMachine);
+            _methodBuilder.SetStateMachine(stateMachine);
         }
 
         public void Start<TStateMachine>(ref TStateMachine stateMachine)
             where TStateMachine : IAsyncStateMachine
         {
-            GetMethodBuilder().Start(ref stateMachine);
-        }
-
-        private AsyncTaskMethodBuilder GetMethodBuilder()
-        {
-            return _methodBuilder ??= new AsyncTaskMethodBuilder();
+            _methodBuilder.Start(ref stateMachine);
         }
     }
 
