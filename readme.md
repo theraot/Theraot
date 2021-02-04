@@ -18,6 +18,7 @@ Similar projects with limited functionality
 * AsyncBridge: https://github.com/OmerMor/AsyncBridge
 * NUnit.System.Linq: https://github.com/nunit/NUnit.System.Linq
 * ReflectionBridge: https://github.com/StefH/ReflectionBridge
+* MinimumAsyncBridge: https://github.com/OrangeCube/MinimumAsyncBridge
 
 ---
 License
