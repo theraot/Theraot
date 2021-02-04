@@ -132,7 +132,7 @@ namespace System.Threading.Tasks
 
                 // Find the completing task and set it to null
                 // If we do not find it, it means the continuation executed before the task was added
-                // Do not use IndexOf
+                // Do not use IndexOf, this is a micro-optimization
                 for (var index = 0; index < tasks.Length; index++)
                 {
                     ref var current = ref tasks[index];
@@ -141,6 +141,8 @@ namespace System.Threading.Tasks
                         continue;
                     }
 
+                    // Set to null so the GC can take it early
+                    current = null; // equivalent to tasks[index] = null
                     break;
                 }
 
