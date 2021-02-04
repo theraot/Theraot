@@ -321,6 +321,8 @@ namespace TestRunner
             No.Op(typeof(HashCode));
             No.Op(typeof(FormattableString));
             No.Op(typeof(FormattableStringFactory));
+            No.Op(typeof(IsReadOnlyAttribute));
+            No.Op(typeof(SwitchExpressionException));
         }
 
         public static void TypeMethodAvailability()
