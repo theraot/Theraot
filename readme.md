@@ -11,6 +11,15 @@ These Libraries are an ongoing effort to ease the work on .NET, including a back
 Theraot.Core is as close as I am to a ".NET Compatibility Pack" capable to provide a uniform API surface for many .NET platforms.
 
 ---
+Similar projects with limited functionality
+---
+
+LinqBridge: https://github.com/waninlezu/linqbridge
+AsyncBridge: https://github.com/OmerMor/AsyncBridge
+NUnit.System.Linq: https://github.com/nunit/NUnit.System.Linq
+ReflectionBridge:https://github.com/ StefH/ReflectionBridge
+
+---
 License
 ---
 
