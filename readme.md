@@ -14,10 +14,10 @@ Theraot.Core is as close as I am to a ".NET Compatibility Pack" capable to provi
 Similar projects with limited functionality
 ---
 
-LinqBridge: https://github.com/waninlezu/linqbridge
-AsyncBridge: https://github.com/OmerMor/AsyncBridge
-NUnit.System.Linq: https://github.com/nunit/NUnit.System.Linq
-ReflectionBridge:https://github.com/ StefH/ReflectionBridge
+* LinqBridge: https://github.com/waninlezu/linqbridge
+* AsyncBridge: https://github.com/OmerMor/AsyncBridge
+* NUnit.System.Linq: https://github.com/nunit/NUnit.System.Linq
+* ReflectionBridge: https://github.com/StefH/ReflectionBridge
 
 ---
 License
