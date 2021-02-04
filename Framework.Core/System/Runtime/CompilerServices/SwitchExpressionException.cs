@@ -9,7 +9,10 @@ namespace System.Runtime.CompilerServices
 {
     /// <summary>
     /// Indicates that a switch expression that was non-exhaustive failed to match its input
-    /// at runtime, e.g. in the C# 8 expression <code>3 switch { 4 => 5 }</code>.
+    /// at runtime, e.g. in the C# 8 expression
+    /// <code>
+    /// 3 switch { 4 => 5 }
+    /// </code>.
     /// The exception optionally contains an object representing the unmatched value.
     /// </summary>
     [Serializable]
