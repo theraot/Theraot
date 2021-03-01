@@ -517,7 +517,7 @@ namespace System.Threading
 
                 var handle = GetOrCreateWaitHandle();
                 var remaining = millisecondsTimeout - (int)elapsed;
-                return remaining > 0 && handle.WaitOne(remaining);
+                return remaining > 0 && handle.WaitOne(remaining, false);
             }
         }
 

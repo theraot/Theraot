@@ -100,7 +100,7 @@ namespace System.Threading.Tasks
         internal static Task FromWaitHandleInternal(WaitHandle waitHandle)
         {
             var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
+            if (waitHandle.WaitOne(0, false))
             {
                 source.SetResult(true);
             }
@@ -117,7 +117,7 @@ namespace System.Threading.Tasks
             }
 
             var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
+            if (waitHandle.WaitOne(0, false))
             {
                 source.SetResult(true);
             }
@@ -134,7 +134,7 @@ namespace System.Threading.Tasks
             }
 
             var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
+            if (waitHandle.WaitOne(0, false))
             {
                 source.SetResult(true);
             }
@@ -163,7 +163,7 @@ namespace System.Threading.Tasks
             }
 
             var source = new TaskCompletionSource<bool>();
-            if (waitHandle.WaitOne(0))
+            if (waitHandle.WaitOne(0, false))
             {
                 source.SetResult(true);
             }
@@ -182,7 +182,7 @@ namespace System.Threading.Tasks
         internal static Task FromWaitHandleInternal(WaitHandle waitHandle, TaskCreationOptions creationOptions)
         {
             var source = new TaskCompletionSource<bool>(creationOptions);
-            if (waitHandle.WaitOne(0))
+            if (waitHandle.WaitOne(0, false))
             {
                 source.SetResult(true);
             }
