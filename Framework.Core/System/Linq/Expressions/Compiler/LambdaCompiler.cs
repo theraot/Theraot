@@ -58,7 +58,9 @@ namespace System.Linq.Expressions.Compiler
         {
             var parameterTypes = GetParameterTypes(lambda, typeof(Closure));
 
-            var method = new DynamicMethod(lambda.Name ?? "lambda_method", lambda.ReturnType, parameterTypes, true);
+            // Constructors for anonymously hosted dynamic methods were only introduced in .NET 3.5 so simply host it in this module itself
+            // (https://docs.microsoft.com/en-us/dotnet/api/system.reflection.emit.dynamicmethod.-ctor?view=netframework-2.0)
+            var method = new DynamicMethod(lambda.Name ?? "lambda_method", lambda.ReturnType, parameterTypes, typeof(LambdaCompiler).Module, true);
 
             _tree = tree;
             _lambda = lambda;
