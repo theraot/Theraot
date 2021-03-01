@@ -22,6 +22,14 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal sealed partial class LambdaCompiler : ILocalCache
     {
+        private static readonly object _moduleLock = new();
+
+        private static Func<Type[], string, Type, DynamicMethod>? _constructor;
+
+        private static bool _constructorNotAvailable;
+
+        private static volatile ModuleBuilder? _module;
+
         // Runtime constants bound to the delegate
         private readonly BoundConstants _boundConstants;
 
@@ -208,44 +216,6 @@ namespace System.Linq.Expressions.Compiler
             return VariableBinder.Bind(lambda);
         }
 
-        private Delegate CreateDelegate()
-        {
-            Debug.Assert(_method is DynamicMethod);
-
-            return _method.CreateDelegate(_lambda.Type, new Closure(_boundConstants.ToArray(), null));
-        }
-
-        private MemberExpression CreateLazyInitializedField<T>(string name)
-        {
-            return _method is DynamicMethod
-                ? Expression.Field(Expression.Constant(new StrongBox<T>()), "Value")
-                : Expression.Field(null, CreateStaticField(name, typeof(T)));
-        }
-
-        private FieldBuilder CreateStaticField(string name, Type type)
-        {
-            // We are emitting into a third party type. We don't want name
-            // conflicts, so choose a long name that is unlikely to conflict.
-            // Naming scheme chosen here is similar to what the C# compiler
-            // uses.
-            return _typeBuilder!.DefineField("<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
-        }
-
-        private void InitializeMethod()
-        {
-            // See if we can find a return label, so we can emit better IL
-            AddReturnLabel(_lambda);
-            _boundConstants.EmitCacheConstants(this);
-        }
-    }
-
-    internal sealed partial class LambdaCompiler
-    {
-        private static readonly object _moduleLock = new();
-        private static Func<Type[], string, Type, DynamicMethod>? _constructor;
-        private static bool _constructorNotAvailable;
-        private static volatile ModuleBuilder? _module;
-
         private static Func<Type[], string, Type, DynamicMethod>? GetConstructor()
         {
             if (_constructor != null)
@@ -311,6 +281,36 @@ namespace System.Linq.Expressions.Compiler
                 _module = result;
                 return result;
             }
+        }
+
+        private Delegate CreateDelegate()
+        {
+            Debug.Assert(_method is DynamicMethod);
+
+            return _method.CreateDelegate(_lambda.Type, new Closure(_boundConstants.ToArray(), null));
+        }
+
+        private MemberExpression CreateLazyInitializedField<T>(string name)
+        {
+            return _method is DynamicMethod
+                ? Expression.Field(Expression.Constant(new StrongBox<T>()), "Value")
+                : Expression.Field(null, CreateStaticField(name, typeof(T)));
+        }
+
+        private FieldBuilder CreateStaticField(string name, Type type)
+        {
+            // We are emitting into a third party type. We don't want name
+            // conflicts, so choose a long name that is unlikely to conflict.
+            // Naming scheme chosen here is similar to what the C# compiler
+            // uses.
+            return _typeBuilder!.DefineField("<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
+        }
+
+        private void InitializeMethod()
+        {
+            // See if we can find a return label, so we can emit better IL
+            AddReturnLabel(_lambda);
+            _boundConstants.EmitCacheConstants(this);
         }
     }
 }
