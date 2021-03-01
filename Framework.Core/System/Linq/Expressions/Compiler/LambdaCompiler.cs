@@ -57,8 +57,10 @@ namespace System.Linq.Expressions.Compiler
         private LambdaCompiler(AnalyzedTree tree, LambdaExpression lambda)
         {
             var parameterTypes = GetParameterTypes(lambda, typeof(Closure));
+            var lambdaName = lambda.Name ?? "lambda_method";
+            var lambdaReturnType = lambda.ReturnType;
 
-            var method = new DynamicMethod(lambda.Name ?? "lambda_method", lambda.ReturnType, parameterTypes, true);
+            var method = GetMethod(parameterTypes, lambdaName, lambdaReturnType);
 
             _tree = tree;
             _lambda = lambda;
@@ -236,6 +238,95 @@ namespace System.Linq.Expressions.Compiler
             _boundConstants.EmitCacheConstants(this);
         }
     }
+
+#if NET35
+
+    internal sealed partial class LambdaCompiler
+    {
+        private static DynamicMethod GetMethod(Type[] parameterTypes, string lambdaName, Type lambdaReturnType)
+        {
+            return new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, true);
+        }
+    }
+
+#else
+
+    internal sealed partial class LambdaCompiler
+    {
+        private static readonly object _moduleLock = new();
+        private static Func<Type[], string, Type, DynamicMethod>? _constructor;
+        private static bool _constructorNotAvailable;
+        private static ModuleBuilder? _module;
+
+        private static Func<Type[], string, Type, DynamicMethod>? GetConstructor()
+        {
+            if (_constructorNotAvailable)
+            {
+                return null;
+            }
+
+            if (_constructor != null)
+            {
+                return _constructor;
+            }
+
+            var parameters = new[] { typeof(Type[]), typeof(string), typeof(Type), typeof(bool) };
+            var constructorInfo = typeof(DynamicMethod).GetConstructor(parameters);
+            if (constructorInfo == null)
+            {
+                _constructorNotAvailable = true;
+                return null;
+            }
+
+            _constructor = GetConstructorDelegate();
+            return _constructor;
+
+            static Func<Type[], string, Type, DynamicMethod> GetConstructorDelegate()
+            {
+                return (parameterTypes, lambdaName, lambdaReturnType) => new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, true);
+            }
+        }
+
+        private static DynamicMethod GetMethod(Type[] parameterTypes, string lambdaName, Type lambdaReturnType)
+        {
+            var constructor = GetConstructor();
+            if (constructor != null)
+            {
+                return constructor(parameterTypes, lambdaName, lambdaReturnType);
+            }
+
+            var module = GetModule();
+            return new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, module, true);
+        }
+
+        private static Module GetModule()
+        {
+            if (_module != null)
+            {
+                return _module;
+            }
+
+            lock (_moduleLock)
+            {
+                if (_module != null)
+                {
+                    return _module;
+                }
+
+                AssemblyName assemblyName = new()
+                {
+                    Name = "Anonymously Hosted DynamicMethods Assembly"
+                };
+                AppDomain thisDomain = Thread.GetDomain();
+                var asmBuilder = thisDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+                var result = asmBuilder.DefineDynamicModule(asmBuilder.GetName().Name, false);
+                _module = result;
+                return result;
+            }
+        }
+    }
+
+#endif
 }
 
 #endif
