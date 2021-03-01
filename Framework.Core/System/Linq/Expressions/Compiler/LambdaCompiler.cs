@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET35
+#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -260,14 +260,14 @@ namespace System.Linq.Expressions.Compiler
 
         private static Func<Type[], string, Type, DynamicMethod>? GetConstructor()
         {
-            if (_constructorNotAvailable)
-            {
-                return null;
-            }
-
             if (_constructor != null)
             {
                 return _constructor;
+            }
+
+            if (_constructorNotAvailable)
+            {
+                return null;
             }
 
             var parameters = new[] { typeof(Type[]), typeof(string), typeof(Type), typeof(bool) };
