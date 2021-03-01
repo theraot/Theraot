@@ -239,18 +239,6 @@ namespace System.Linq.Expressions.Compiler
         }
     }
 
-#if NET35
-
-    internal sealed partial class LambdaCompiler
-    {
-        private static DynamicMethod GetMethod(Type[] parameterTypes, string lambdaName, Type lambdaReturnType)
-        {
-            return new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, true);
-        }
-    }
-
-#else
-
     internal sealed partial class LambdaCompiler
     {
         private static readonly object _moduleLock = new();
@@ -325,8 +313,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
     }
-
-#endif
 }
 
 #endif
