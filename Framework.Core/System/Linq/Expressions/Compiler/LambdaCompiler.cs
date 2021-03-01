@@ -28,7 +28,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool _constructorNotAvailable;
 
-        private static volatile ModuleBuilder? _module;
+        private static ModuleBuilder? _module;
 
         // Runtime constants bound to the delegate
         private readonly BoundConstants _boundConstants;
@@ -259,16 +259,18 @@ namespace System.Linq.Expressions.Compiler
 
         private static Module GetModule()
         {
-            if (_module != null)
+            var module = ThreadEx.VolatileRead(ref _module);
+            if (module != null)
             {
-                return _module;
+                return module;
             }
 
             lock (_moduleLock)
             {
-                if (_module != null)
+                module = ThreadEx.VolatileRead(ref _module);
+                if (module != null)
                 {
-                    return _module;
+                    return module;
                 }
 
                 AssemblyName assemblyName = new()
@@ -278,7 +280,7 @@ namespace System.Linq.Expressions.Compiler
                 AppDomain thisDomain = Thread.GetDomain();
                 var asmBuilder = thisDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
                 var result = asmBuilder.DefineDynamicModule(asmBuilder.GetName().Name, false);
-                _module = result;
+                ThreadEx.VolatileWrite(ref _module, result);
                 return result;
             }
         }
