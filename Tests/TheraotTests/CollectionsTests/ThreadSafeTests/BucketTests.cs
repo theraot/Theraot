@@ -1,4 +1,4 @@
-﻿#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+﻿#if TARGETS_NET || GREATERTHAN_NETSTANDARD16
 
 using System;
 using System.Collections.Generic;
@@ -54,7 +54,7 @@ namespace Tests.TheraotTests.CollectionsTests.ThreadSafeTests
             }
 
             var index = 0;
-            foreach(var item in result)
+            foreach (var item in result)
             {
                 Assert.AreEqual(values[index], item);
                 index++;
