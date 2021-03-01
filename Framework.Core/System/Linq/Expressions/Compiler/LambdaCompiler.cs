@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -256,7 +256,7 @@ namespace System.Linq.Expressions.Compiler
         private static readonly object _moduleLock = new();
         private static Func<Type[], string, Type, DynamicMethod>? _constructor;
         private static bool _constructorNotAvailable;
-        private static ModuleBuilder? _module;
+        private static volatile ModuleBuilder? _module;
 
         private static Func<Type[], string, Type, DynamicMethod>? GetConstructor()
         {
