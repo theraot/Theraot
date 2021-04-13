@@ -439,7 +439,7 @@ namespace System.Dynamic
                         new GetBinderAdapter(binder),
                         _noArgs,
                         binder.FallbackInvokeMember(this, args, null),
-                        (MetaDynamic _, GetMemberBinder __, DynamicMetaObject? e) => binder.FallbackInvoke(e, args, null)
+                        (MetaDynamic _, GetMemberBinder _, DynamicMetaObject? e) => binder.FallbackInvoke(e, args, null)
                     ),
                     null
                 );
