@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -10,11 +10,6 @@ namespace System.Collections
 {
     internal static class FastModHelper
     {
-        /// <summary>Returns approximate reciprocal of the divisor: ceil(2**64 / divisor).</summary>
-        /// <remarks>This should only be used on 64-bit.</remarks>
-        public static ulong GetFastModMultiplier(uint divisor) =>
-            (ulong.MaxValue / divisor) + 1;
-
         /// <summary>Performs a mod operation using the multiplier pre-computed with <see cref="GetFastModMultiplier"/>.</summary>
         /// <remarks>This should only be used on 64-bit.</remarks>
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -31,6 +26,11 @@ namespace System.Collections
             Debug.Assert(highBits == value % divisor);
             return highBits;
         }
+
+        /// <summary>Returns approximate reciprocal of the divisor: ceil(2**64 / divisor).</summary>
+        /// <remarks>This should only be used on 64-bit.</remarks>
+        public static ulong GetFastModMultiplier(uint divisor) =>
+            (ulong.MaxValue / divisor) + 1;
     }
 }
 
