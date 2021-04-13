@@ -45,7 +45,11 @@ namespace System.Collections.Concurrent
     /// </remarks>
     [DebuggerTypeProxy(typeof(IDictionaryDebugView<,>))]
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
-    public partial class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue> where TKey : notnull
+    public
+#if LESSTHAN_NET40
+        partial
+#endif
+        class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue> where TKey : notnull
     {
         /// <summary>The default capacity, i.e. the initial # of buckets.</summary>
         /// <remarks>
