@@ -1240,7 +1240,7 @@ namespace Theraot.Core
                 }
 
                 var position = String.IndexOf(target, _position, stringComparison);
-                if (position == -1 || (best.HasValue && position >= best.Value.Key))
+                if (position == -1 || (position >= best?.Key))
                 {
                     continue;
                 }

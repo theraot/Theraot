@@ -55,7 +55,7 @@ namespace Theraot.Collections.ThreadSafe
             var hash = key.GetHashCode();
             var index = hash & (_entries.Length - 1);
             var entry = Volatile.Read(ref _entries[index]);
-            if (entry == null || entry.Hash != hash || !entry.Key.Equals(key))
+            if (entry?.Hash != hash || !entry.Key.Equals(key))
             {
                 Volatile.Write(ref _entries[index], new Entry(hash, key, value));
             }
@@ -71,7 +71,7 @@ namespace Theraot.Collections.ThreadSafe
             var hash = key.GetHashCode();
             var idx = hash & (_entries.Length - 1);
             var entry = Volatile.Read(ref _entries[idx]);
-            if (entry != null && entry.Hash == hash && entry.Key.Equals(key))
+            if (entry?.Hash == hash && entry.Key.Equals(key))
             {
                 value = entry.Value;
                 return value != null!;

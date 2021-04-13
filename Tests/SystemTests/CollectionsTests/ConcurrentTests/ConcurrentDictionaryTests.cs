@@ -434,7 +434,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 
             public bool Equals(DumbClass other)
             {
-                return other != null && _foo == other._foo;
+                return _foo == other?._foo;
             }
 
             public override bool Equals(object obj)

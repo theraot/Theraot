@@ -43,13 +43,13 @@ namespace System.Linq
     {
         protected override Expression VisitConstant(ConstantExpression constant)
         {
-            if (constant.Value is IQueryableEnumerable qe)
+            if (constant.Value is not IQueryableEnumerable qe)
             {
-                var enumerable = qe.GetEnumerable();
-                return enumerable != null ? Expression.Constant(enumerable) : Visit(qe.Expression);
+                return constant;
             }
 
-            return constant;
+            var enumerable = qe.GetEnumerable();
+            return enumerable != null ? Expression.Constant(enumerable) : Visit(qe.Expression);
         }
 
         protected override Expression VisitLambda(LambdaExpression lambda)
