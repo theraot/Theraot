@@ -414,7 +414,7 @@ namespace System.Dynamic
             public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
             {
                 // Generate a tree like:
-                #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
                 // {
                 //   object result;
                 //   TryInvokeMember(payload, out result)
@@ -423,7 +423,7 @@ namespace System.Dynamic
                 //          ? FallbackInvoke(result)
                 //          : fallbackResult
                 // }
-                #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
                 // Then it calls FallbackInvokeMember with this tree as the
                 // "error", giving the language the option of using this
                 // tree or doing .NET binding.
@@ -587,12 +587,12 @@ namespace System.Dynamic
                 }
 
                 // Build a new expression like:
-                #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
                 // {
                 //   object result;
                 //   TryGetMember(payload, out result) ? fallbackInvoke(result) : fallbackResult
                 // }
-                #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
 
                 var result = Expression.Parameter(typeof(object), null);
                 var callArgs = method != CachedReflectionInfo.DynamicObjectTryBinaryOperation ? Expression.Parameter(typeof(object[]), null) : Expression.Parameter(typeof(object), null);
@@ -718,9 +718,9 @@ namespace System.Dynamic
                 var callArgsValue = GetConvertedArgs(args);
 
                 // Build a new expression like:
-                #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
                 //   if (TryDeleteMember(payload)) { } else { fallbackResult }
-                #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
 
                 var callDynamic = new DynamicMetaObject
                 (
@@ -778,12 +778,12 @@ namespace System.Dynamic
                 var fallbackResult = fallback(this, binder, null);
 
                 // Build a new expression like:
-                #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
                 // {
                 //   object result;
                 //   TrySetMember(payload, result = value) ? result : fallbackResult
                 // }
-                #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
 
                 var result = Expression.Parameter(typeof(object), null);
                 var callArgs = Expression.Parameter(typeof(object[]), null);

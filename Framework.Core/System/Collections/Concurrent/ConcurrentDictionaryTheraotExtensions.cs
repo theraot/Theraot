@@ -1,4 +1,5 @@
 ﻿// ReSharper disable RedundantUsingDirective
+
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable IDE0005 // Using directive is unnecessary.
 
@@ -143,6 +144,5 @@ namespace System.Collections.Concurrent
         }
 
 #endif
-
     }
 }

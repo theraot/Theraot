@@ -1392,7 +1392,7 @@ namespace System.Collections.Concurrent
                 for (var current = buckets[i]; current != null; current = current._next)
                 {
                     array[index] = new DictionaryEntry(current._key, current._value);
-                    index++;  //this should never flow, CopyToEntries is only called when there's no overflow risk
+                    index++; // this should never flow, CopyToEntries is only called when there's no overflow risk
                 }
             }
         }
@@ -2037,12 +2037,12 @@ namespace System.Collections.Concurrent
         private sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
             // Provides a manually-implemented version of (approximately) this iterator:
-            #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
             //     Node?[] buckets = _tables._buckets;
             //     for (int i = 0; i < buckets.Length; i++)
             //         for (Node? current = Volatile.Read(ref buckets[i]); current != null; current = current._next)
             //             yield return new KeyValuePair<TKey, TValue>(current._key, current._value);
-            #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
 
             private const int StateDone = 3;
             private const int StateInnerLoop = 2;
@@ -2091,6 +2091,7 @@ namespace System.Collections.Concurrent
                             _state = StateInnerLoop;
                             goto case StateInnerLoop;
                         }
+
                         goto default;
 
                     case StateInnerLoop:
@@ -2101,6 +2102,7 @@ namespace System.Collections.Concurrent
                             _node = node._next;
                             return true;
                         }
+
                         goto case StateOuterloop;
 
                     default:
@@ -2193,6 +2195,7 @@ namespace System.Collections.Concurrent
                 {
                     bucketNo = (uint)hashcode % (uint)buckets.Length;
                 }
+
                 lockNo = bucketNo % (uint)_locks.Length; // doesn't use FastMod, as it would require maintaining a different multiplier
                 return ref buckets[bucketNo];
             }

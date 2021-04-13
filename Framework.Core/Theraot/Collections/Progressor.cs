@@ -330,7 +330,7 @@ namespace Theraot.Collections
         private static Progressor<T> CreateFromIEnumerableExtracted(IEnumerator<T> enumerator)
         {
             var proxy = new ProxyObservable<T>();
-            return new Progressor<T>(proxy, (out T value) => Take(new []{ enumerator }, out value));
+            return new Progressor<T>(proxy, (out T value) => Take(new[] { enumerator }, out value));
 
             static bool Take(IEnumerator<T>?[] enumeratorBox, out T value)
             {

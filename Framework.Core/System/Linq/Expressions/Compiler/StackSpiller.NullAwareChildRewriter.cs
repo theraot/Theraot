@@ -306,7 +306,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // Some expressions have no side-effects and don't have to be
                 // stored into temporaries, e.g.
-                #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
                 //     xs[0] = try { ... }
                 //           |
                 //           v
@@ -319,7 +319,7 @@ namespace System.Linq.Expressions.Compiler
                 //        t0 = xs
                 //        t1 = try { ... }
                 //     t0[0] = t1
-                #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
                 switch (expression.NodeType)
                 {
                     // Emits ldnull, ldc, initobj, closure constant access, etc.

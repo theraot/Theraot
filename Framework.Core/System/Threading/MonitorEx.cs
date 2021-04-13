@@ -1,5 +1,7 @@
 ﻿#if !(LESSTHAN_NET40 || NETSTANDARD1_0)
+
 using System.Runtime.CompilerServices;
+
 #endif
 
 namespace System.Threading
@@ -9,6 +11,7 @@ namespace System.Threading
 #if !(LESSTHAN_NET40 || NETSTANDARD1_0)
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
 #endif
+
         public static void Enter(object obj, ref bool lockTaken)
         {
 #if LESSTHAN_NET40 || NETSTANDARD1_0
