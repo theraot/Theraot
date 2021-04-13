@@ -695,7 +695,7 @@ namespace System.Linq.Expressions.Compiler
 
                     return true;
 
-                case Type _:
+                case Type:
                     return false;
 
                 case MethodBase mb when ShouldLdtoken(mb):

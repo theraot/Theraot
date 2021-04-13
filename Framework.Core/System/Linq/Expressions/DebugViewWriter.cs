@@ -331,7 +331,7 @@ namespace System.Linq.Expressions
                     Out("null");
                     break;
 
-                case string _ when node.Type == typeof(string):
+                case string when node.Type == typeof(string):
                     Out
                     (
                         string.Format
@@ -343,7 +343,7 @@ namespace System.Linq.Expressions
                     );
                     break;
 
-                case char _ when node.Type == typeof(char):
+                case char when node.Type == typeof(char):
                     Out
                     (
                         string.Format
@@ -355,8 +355,8 @@ namespace System.Linq.Expressions
                     );
                     break;
 
-                case int _ when node.Type == typeof(int):
-                case bool _ when node.Type == typeof(bool):
+                case int when node.Type == typeof(int):
+                case bool when node.Type == typeof(bool):
                     Out(value.ToString());
                     break;
 

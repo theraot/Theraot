@@ -89,7 +89,7 @@ namespace System.Threading.Tasks
 
                         break;
 
-                    case ThreadAbortException _:
+                    case ThreadAbortException:
                         return;
 
                     default:

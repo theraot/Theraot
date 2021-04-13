@@ -3420,7 +3420,7 @@ namespace System.Threading.Tasks
 
                     switch (e)
                     {
-                        case ObjectDisposedException _:
+                        case ObjectDisposedException:
                             throw;
 
                         case AggregateException ae:
