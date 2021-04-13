@@ -1,4 +1,4 @@
-#if TARGETS_NET || LESSTHAN_NETCOREAPP30 || LESSTHAN_NETSTANDARD21
+﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP30 || LESSTHAN_NETSTANDARD21
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -19,7 +19,10 @@ namespace System.Runtime.CompilerServices
     public sealed class SwitchExpressionException : InvalidOperationException
     {
         public SwitchExpressionException()
-            : base("SwitchExpressionException") { }
+            : base("SwitchExpressionException")
+        {
+            // Empty
+        }
 
         public SwitchExpressionException(Exception? innerException) :
             base("SwitchExpressionException", innerException)
@@ -33,27 +36,22 @@ namespace System.Runtime.CompilerServices
 
 #if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
 
+        public SwitchExpressionException(string? message)
+            : base(message)
+        {
+            // Empty
+        }
+
+        public SwitchExpressionException(string? message, Exception? innerException)
+            : base(message, innerException)
+        {
+            // Empty
+        }
+
         private SwitchExpressionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             UnmatchedValue = info.GetValue(nameof(UnmatchedValue), typeof(object));
-        }
-
-#endif
-
-        public SwitchExpressionException(string? message) : base(message) { }
-
-        public SwitchExpressionException(string? message, Exception? innerException)
-            : base(message, innerException) { }
-
-        public object? UnmatchedValue { get; }
-
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue(nameof(UnmatchedValue), UnmatchedValue, typeof(object));
         }
 
 #endif
@@ -70,6 +68,18 @@ namespace System.Runtime.CompilerServices
                 return base.Message + Environment.NewLine + UnmatchedValue;
             }
         }
+
+        public object? UnmatchedValue { get; }
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(UnmatchedValue), UnmatchedValue, typeof(object));
+        }
+
+#endif
     }
 }
 
