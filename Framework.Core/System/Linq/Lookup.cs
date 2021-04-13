@@ -16,7 +16,7 @@ namespace System.Linq
         internal Lookup(IEqualityComparer<TKey> comparer)
         {
             _groupings = typeof(TKey).CanBeNull()
-                ? (IDictionary<TKey, Grouping<TKey, TElement>>)new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(comparer)
+                ? new NullAwareDictionary<TKey, Grouping<TKey, TElement>>(comparer)
                 : new Dictionary<TKey, Grouping<TKey, TElement>>(comparer);
         }
 

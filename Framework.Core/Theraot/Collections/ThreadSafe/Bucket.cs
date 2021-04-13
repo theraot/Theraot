@@ -68,7 +68,7 @@ namespace Theraot.Collections.ThreadSafe
                 index,
                 (ref object? target) =>
                 {
-                    found = Interlocked.Exchange(ref target, (object?)item ?? BucketHelper.Null);
+                    found = Interlocked.Exchange(ref target, item ?? BucketHelper.Null);
                     return found == null;
                 }
             );
@@ -106,7 +106,7 @@ namespace Theraot.Collections.ThreadSafe
                 index,
                 (ref object? target) =>
                 {
-                    var found = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, null);
+                    var found = Interlocked.CompareExchange(ref target, item ?? BucketHelper.Null, null);
                     return found == null;
                 }
             );
@@ -127,7 +127,7 @@ namespace Theraot.Collections.ThreadSafe
                 index,
                 (ref object? target) =>
                 {
-                    found = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, null);
+                    found = Interlocked.CompareExchange(ref target, item ?? BucketHelper.Null, null);
                     return found == null;
                 }
             );
@@ -228,7 +228,7 @@ namespace Theraot.Collections.ThreadSafe
             isNew = _bucketCore.DoMayIncrement
             (
                 index,
-                (ref object? target) => Interlocked.Exchange(ref target, (object?)item ?? BucketHelper.Null) == null
+                (ref object? target) => Interlocked.Exchange(ref target, item ?? BucketHelper.Null) == null
             );
             if (isNew)
             {
@@ -295,7 +295,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
 
                     var item = itemUpdateFactory(comparisonItem);
-                    compare = Interlocked.CompareExchange(ref target, (object?)item ?? BucketHelper.Null, found);
+                    compare = Interlocked.CompareExchange(ref target, item ?? BucketHelper.Null, found);
                     result = found == compare;
                     return true;
                 }

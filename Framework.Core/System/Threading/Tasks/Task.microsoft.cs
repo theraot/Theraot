@@ -435,7 +435,7 @@ namespace System.Threading.Tasks
                 else
                 {
                     // Regular path for an uncanceled cancellationToken
-                    var registration = cancellationToken.Register(_taskCancelCallback, antecedent == null ? (object)this : new Tuple<Task, Task, TaskContinuation?>(this, antecedent, continuation));
+                    var registration = cancellationToken.Register(_taskCancelCallback, antecedent == null ? this : new Tuple<Task, Task, TaskContinuation?>(this, antecedent, continuation));
                     _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                 }
             }

@@ -167,7 +167,7 @@ namespace System.Linq.Expressions.Interpreter
             var curChild = 0;
             for (var i = scope.Start; i < scope.Stop && i < instructions.Count; i++)
             {
-                if (scope.ChildScopes != null && scope.ChildScopes[curChild].Start == i)
+                if (scope.ChildScopes?[curChild].Start == i)
                 {
                     // skip boxing in the child scope
                     var child = scope.ChildScopes[curChild];

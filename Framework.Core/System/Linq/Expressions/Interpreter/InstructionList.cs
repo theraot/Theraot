@@ -587,7 +587,7 @@ namespace System.Linq.Expressions.Interpreter
                     return instruction;
                 }
 
-                instruction = field.IsStatic ? (Instruction)new LoadStaticFieldInstruction(field) : new LoadFieldInstruction(field);
+                instruction = field.IsStatic ? new LoadStaticFieldInstruction(field) : new LoadFieldInstruction(field);
                 _loadFields.Add(field, instruction);
                 return instruction;
             }

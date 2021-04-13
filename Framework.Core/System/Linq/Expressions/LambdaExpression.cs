@@ -262,7 +262,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static Expression<TDelegate> Lambda<TDelegate>(Expression body, params ParameterExpression[]? parameters)
         {
-            return Lambda<TDelegate>(body, null, false, (IEnumerable<ParameterExpression>?)parameters);
+            return Lambda<TDelegate>(body, null, false, parameters);
         }
 
         /// <summary>

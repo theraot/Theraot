@@ -52,7 +52,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)((double)left * (double)right);
+                    stack[index - 2] = right == null ? null : (double)left * (double)right;
                 }
 
                 frame.StackIndex = index - 1;
@@ -70,7 +70,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)unchecked((short)((short)left * (short)right));
+                    stack[index - 2] = right == null ? null : unchecked((short)((short)left * (short)right));
                 }
 
                 frame.StackIndex = index - 1;
@@ -106,7 +106,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)unchecked((long)left * (long)right);
+                    stack[index - 2] = right == null ? null : unchecked((long)left * (long)right);
                 }
 
                 frame.StackIndex = index - 1;
@@ -124,7 +124,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)((float)left * (float)right);
+                    stack[index - 2] = right == null ? null : (float)left * (float)right;
                 }
 
                 frame.StackIndex = index - 1;
@@ -142,7 +142,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)unchecked((ushort)((ushort)left * (ushort)right));
+                    stack[index - 2] = right == null ? null : unchecked((ushort)((ushort)left * (ushort)right));
                 }
 
                 frame.StackIndex = index - 1;
@@ -160,7 +160,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)unchecked((uint)left * (uint)right);
+                    stack[index - 2] = right == null ? null : unchecked((uint)left * (uint)right);
                 }
 
                 frame.StackIndex = index - 1;
@@ -178,7 +178,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)unchecked((ulong)left * (ulong)right);
+                    stack[index - 2] = right == null ? null : unchecked((ulong)left * (ulong)right);
                 }
 
                 frame.StackIndex = index - 1;
@@ -226,7 +226,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)checked((short)((short)left * (short)right));
+                    stack[index - 2] = right == null ? null : checked((short)((short)left * (short)right));
                 }
 
                 frame.StackIndex = index - 1;
@@ -262,7 +262,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)checked((long)left * (long)right);
+                    stack[index - 2] = right == null ? null : checked((long)left * (long)right);
                 }
 
                 frame.StackIndex = index - 1;
@@ -280,7 +280,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)checked((ushort)((ushort)left * (ushort)right));
+                    stack[index - 2] = right == null ? null : checked((ushort)((ushort)left * (ushort)right));
                 }
 
                 frame.StackIndex = index - 1;
@@ -298,7 +298,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)checked((uint)left * (uint)right);
+                    stack[index - 2] = right == null ? null : checked((uint)left * (uint)right);
                 }
 
                 frame.StackIndex = index - 1;
@@ -316,7 +316,7 @@ namespace System.Linq.Expressions.Interpreter
                 if (left != null)
                 {
                     var right = stack[index - 1];
-                    stack[index - 2] = right == null ? null : (object)checked((ulong)left * (ulong)right);
+                    stack[index - 2] = right == null ? null : checked((ulong)left * (ulong)right);
                 }
 
                 frame.StackIndex = index - 1;

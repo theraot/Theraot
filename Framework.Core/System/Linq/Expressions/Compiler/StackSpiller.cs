@@ -864,7 +864,7 @@ namespace System.Linq.Expressions.Compiler
             if (cr.Rewrite)
             {
                 expr = node.Object != null
-                    ? (Expression)new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1]!)
+                    ? new InstanceMethodCallExpressionN(node.Method, cr[0], cr[1, -1]!)
                     : new MethodCallExpressionN(node.Method, cr[1, -1]!);
             }
 
