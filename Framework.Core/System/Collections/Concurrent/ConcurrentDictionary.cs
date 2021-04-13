@@ -2049,7 +2049,7 @@ namespace System.Collections.Concurrent
             private const int StateOuterloop = 1;
             private const int StateUninitialized = 0;
             private readonly ConcurrentDictionary<TKey, TValue> _dictionary;
-            private ConcurrentDictionary<TKey, TValue>.Node?[]? _buckets;
+            private Node?[]? _buckets;
             private int _i;
             private Node? _node;
             private int _state;
