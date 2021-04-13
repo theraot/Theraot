@@ -212,6 +212,7 @@ resharper_switch_statement_handles_some_known_enum_values_with_default_highlight
 resharper_condition_is_always_true_or_false_highlighting = hint
 resharper_constant_null_coalescing_condition_highlighting = hint
 resharper_use_deconstruction_on_parameter_highlighting = do_not_show
+resharper_arguments_style_literal_highlighting = do_not_show
 # Roslyn analyzers
 dotnet_diagnostic.IDE0070.severity = silent
 dotnet_diagnostic.CA1002.severity = silent
@@ -237,8 +238,10 @@ dotnet_diagnostic.S1751.severity = silent
 dotnet_diagnostic.S1764.severity = silent
 dotnet_diagnostic.S1854.severity = silent
 dotnet_diagnostic.S2386.severity = silent
+dotnet_diagnostic.S2437.severity = silent
 dotnet_diagnostic.S2589.severity = silent
 dotnet_diagnostic.S2971.severity = silent
+dotnet_diagnostic.S3011.severity = silent
 dotnet_diagnostic.S3453.severity = silent
 dotnet_diagnostic.S3454.severity = silent
 dotnet_diagnostic.S3459.severity = silent
