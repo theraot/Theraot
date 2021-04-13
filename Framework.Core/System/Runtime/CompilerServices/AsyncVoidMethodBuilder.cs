@@ -201,7 +201,7 @@ namespace System.Runtime.CompilerServices
                     return;
                 }
 
-                TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
+                TaskScheduler.UnobservedTaskException += (_, e) => e.SetObserved();
             }
             catch (Exception ex)
             {
