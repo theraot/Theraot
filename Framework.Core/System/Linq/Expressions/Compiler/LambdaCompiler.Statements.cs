@@ -812,7 +812,7 @@ namespace System.Linq.Expressions.Compiler
 
             //
             // Create a tree like:
-            #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
             // switchValue = switchValueExpression;
             // if (switchValue == null) {
             //     switchIndex = nullCase;
@@ -830,7 +830,7 @@ namespace System.Linq.Expressions.Compiler
             //     ...
             //     default:
             // }
-            #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
             var switchValue = Expression.Variable(typeof(string), "switchValue");
             var switchIndex = Expression.Variable(typeof(int), "switchIndex");
             var reduced = Expression.Block

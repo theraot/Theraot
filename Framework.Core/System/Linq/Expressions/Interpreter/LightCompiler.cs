@@ -531,7 +531,7 @@ namespace System.Linq.Expressions.Interpreter
                         case ExpressionType.NotEqual:
 
                             // generating (equal/not equal):
-                            #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
                             // if(left == null) {
                             //      right == null/right != null
                             // }else if(right == null) {
@@ -539,7 +539,7 @@ namespace System.Linq.Expressions.Interpreter
                             // }else{
                             //      op_Equality(left, right)/op_Inequality(left, right)
                             // }
-                            #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
                             if (node.IsLiftedToNull)
                             {
                                 goto default;
@@ -2371,11 +2371,11 @@ namespace System.Linq.Expressions.Interpreter
             {
                 foreach (var val in @case.TestValues)
                 {
-                    #pragma warning disable S125 // Sections of code should not be commented out
+#pragma warning disable S125 // Sections of code should not be commented out
                     //  temp == val ?
                     //          goto(Body) doneLabel:
                     //          {};
-                    #pragma warning restore S125 // Sections of code should not be commented out
+#pragma warning restore S125 // Sections of code should not be commented out
                     CompileConditionalExpression
                     (
                         Expression.Condition
