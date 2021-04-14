@@ -63,20 +63,20 @@ namespace Theraot.Collections
                 return array;
             }
 
-            if (source is ICollection<T> collection)
+            if (source is not ICollection<T> collection)
             {
-                if (collection.Count == 0)
-                {
-                    return ArrayEx.Empty<T>();
-                }
-
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return result;
+                // ReSharper disable once RemoveConstructorInvocation
+                return new List<T>(source).ToArray();
             }
 
-            // ReSharper disable once RemoveConstructorInvocation
-            return new List<T>(source).ToArray();
+            if (collection.Count == 0)
+            {
+                return ArrayEx.Empty<T>();
+            }
+
+            var result = new T[collection.Count];
+            collection.CopyTo(result, 0);
+            return result;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -170,19 +170,19 @@ namespace Theraot.Collections
                 return list;
             }
 
-            if (source is ICollection<T> collection)
+            if (source is not ICollection<T> collection)
             {
-                if (collection.Count == 0)
-                {
-                    return ArrayEx.Empty<T>();
-                }
-
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return result;
+                return EnumerationList<T>.Create(source);
             }
 
-            return EnumerationList<T>.Create(source);
+            if (collection.Count == 0)
+            {
+                return ArrayEx.Empty<T>();
+            }
+
+            var result = new T[collection.Count];
+            collection.CopyTo(result, 0);
+            return result;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -321,19 +321,19 @@ namespace Theraot.Collections
                 return list;
             }
 
-            if (source is ICollection<T> collection)
+            if (source is not ICollection<T> collection)
             {
-                if (collection.Count == 0)
-                {
-                    return new List<T>();
-                }
-
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return new List<T>(result);
+                return new List<T>(source);
             }
 
-            return new List<T>(source);
+            if (collection.Count == 0)
+            {
+                return new List<T>();
+            }
+
+            var result = new T[collection.Count];
+            collection.CopyTo(result, 0);
+            return new List<T>(result);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -362,19 +362,19 @@ namespace Theraot.Collections
                 return array.Length == 0 ? EmptyCollection<T>.Instance : new ReadOnlyCollectionEx<T>(array);
             }
 
-            if (enumerable is ICollection<T> collection)
+            if (enumerable is not ICollection<T> collection)
             {
-                if (collection.Count == 0)
-                {
-                    return EmptyCollection<T>.Instance;
-                }
-
-                var result = new T[collection.Count];
-                collection.CopyTo(result, 0);
-                return new ReadOnlyCollectionEx<T>(result);
+                return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
             }
 
-            return new ReadOnlyCollectionEx<T>(new List<T>(enumerable));
+            if (collection.Count == 0)
+            {
+                return EmptyCollection<T>.Instance;
+            }
+
+            var result = new T[collection.Count];
+            collection.CopyTo(result, 0);
+            return new ReadOnlyCollectionEx<T>(result);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -582,15 +582,15 @@ namespace Theraot.Collections
                 return ArrayEx.Empty<T>();
             }
 
-            if (source is ICollection<T> collection2)
+            if (source is not ICollection<T> collection2)
             {
-                var result = new T[collection2.Count];
-                collection2.CopyTo(result, 0);
-                return result;
+                // ReSharper disable once RemoveConstructorInvocation
+                return new List<T>(source).ToArray();
             }
 
-            // ReSharper disable once RemoveConstructorInvocation
-            return new List<T>(source).ToArray();
+            var result = new T[collection2.Count];
+            collection2.CopyTo(result, 0);
+            return result;
         }
     }
 

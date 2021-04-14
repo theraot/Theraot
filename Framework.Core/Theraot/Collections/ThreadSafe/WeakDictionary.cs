@@ -62,7 +62,7 @@ namespace Theraot.Collections.ThreadSafe
                 var handle = _handle;
                 if (value)
                 {
-                    var created = new EventHandler((sender, args) => RemoveDeadItems());
+                    var created = new EventHandler((_, _) => RemoveDeadItems());
                     if (handle == null && Interlocked.CompareExchange(ref _handle, created, null) == null)
                     {
                         GCMonitor.Collected += created;

@@ -1227,11 +1227,11 @@ namespace Theraot.Collections.ThreadSafe
 
             return hashCode;
 
-            int ComputeHashCode(TKey key)
+            int ComputeHashCode(TKey obj)
             {
                 try
                 {
-                    return Comparer.GetHashCode(key!);
+                    return Comparer.GetHashCode(obj!);
                 }
                 catch (ArgumentNullException)
                 {
