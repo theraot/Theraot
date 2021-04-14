@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace Theraot.Threading.Needles
 {
     [DebuggerNonUserCode]
-    public class PromiseNeedle<T> : Promise, ICacheNeedle<T>
+    public class PromiseNeedle<T> : Promise, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
     {
         private readonly int _hashCode;
 
@@ -97,7 +97,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool Equals(PromiseNeedle<T> other)
+        public bool Equals(PromiseNeedle<T>? other)
         {
             if (other is null)
             {
