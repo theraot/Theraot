@@ -19,7 +19,7 @@ namespace System.Linq.Expressions.Interpreter
         private const int _localInstrCacheSize = 64;
         private const int _pushIntMaxCachedValue = 100;
         private const int _pushIntMinCachedValue = -100;
-        private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
+        private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(InterpreterCore.RethrowOnReturn, 0, 0) };
         private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new();
         private readonly List<Instruction> _instructions = new();
 
@@ -660,7 +660,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             // "return and rethrow" label:
-            result[result.Length - 1] = new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0);
+            result[result.Length - 1] = new RuntimeLabel(InterpreterCore.RethrowOnReturn, 0, 0);
             return result;
         }
     }

@@ -24,7 +24,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public int StackIndex;
 
-        internal readonly Interpreter Interpreter;
+        internal readonly InterpreterCore Interpreter;
 
         [ThreadStatic]
         private static InterpretedFrame? _currentFrame;
@@ -34,7 +34,7 @@ namespace System.Linq.Expressions.Interpreter
         private int _pendingContinuation;
         private object? _pendingValue;
 
-        internal InterpretedFrame(Interpreter interpreter, IStrongBox[]? closure)
+        internal InterpretedFrame(InterpreterCore interpreter, IStrongBox[]? closure)
         {
             Interpreter = interpreter;
             StackIndex = interpreter.LocalCount;
@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Interpreter
             Closure = closure;
 
             _pendingContinuation = -1;
-            _pendingValue = Interpreter.NoValue;
+            _pendingValue = InterpreterCore.NoValue;
         }
 
         public string? Name => Interpreter.Name;
@@ -69,7 +69,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public static bool IsInterpretedFrame(MethodBase method)
         {
-            return method.DeclaringType == typeof(Interpreter) && string.Equals(method.Name, "Run", StringComparison.Ordinal);
+            return method.DeclaringType == typeof(InterpreterCore) && string.Equals(method.Name, "Run", StringComparison.Ordinal);
         }
 
         public void Dup()
@@ -106,7 +106,7 @@ namespace System.Linq.Expressions.Interpreter
             if (_continuationIndex == target.ContinuationStackDepth)
             {
                 SetStackDepth(target.StackDepth);
-                if (value != Interpreter.NoValue)
+                if (value != InterpreterCore.NoValue)
                 {
                     Data[StackIndex - 1] = value;
                 }
@@ -199,14 +199,14 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             SetStackDepth(pendingTarget.StackDepth);
-            if (_pendingValue != Interpreter.NoValue)
+            if (_pendingValue != InterpreterCore.NoValue)
             {
                 Data[StackIndex - 1] = _pendingValue;
             }
 
             // Set the _pendingContinuation and _pendingValue to the default values if we finally gets to the Goto target
             _pendingContinuation = -1;
-            _pendingValue = Interpreter.NoValue;
+            _pendingValue = InterpreterCore.NoValue;
             return pendingTarget.Index - InstructionIndex;
         }
 
@@ -238,7 +238,7 @@ namespace System.Linq.Expressions.Interpreter
             Push(_pendingValue);
 
             _pendingContinuation = -1;
-            _pendingValue = Interpreter.NoValue;
+            _pendingValue = InterpreterCore.NoValue;
         }
 
         internal void SaveTraceToException(Exception exception)

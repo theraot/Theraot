@@ -2952,7 +2952,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private Interpreter MakeInterpreter(string? lambdaName)
+        private InterpreterCore MakeInterpreter(string? lambdaName)
         {
             var debugInfos = _debugInfos.ToArray();
             foreach (var kvp in _treeLabels)
@@ -2960,7 +2960,7 @@ namespace System.Linq.Expressions.Interpreter
                 kvp.Value.ValidateFinish();
             }
 
-            return new Interpreter(lambdaName, _locals, Instructions.ToArray(), debugInfos);
+            return new InterpreterCore(lambdaName, _locals, Instructions.ToArray(), debugInfos);
         }
 
         private LabelInfo ReferenceLabel(LabelTarget node)

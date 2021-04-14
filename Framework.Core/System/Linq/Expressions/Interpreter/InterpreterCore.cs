@@ -19,7 +19,7 @@ namespace System.Linq.Expressions.Interpreter
     ///     </para>
     ///     <para>The core loop in the interpreter is the <see cref="Run(InterpretedFrame)" />  method.</para>
     /// </summary>
-    internal sealed class Interpreter
+    internal sealed class InterpreterCore
     {
         internal const int RethrowOnReturn = int.MaxValue;
         internal static readonly object NoValue = new();
@@ -27,7 +27,7 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly RuntimeLabel[] Labels;
         internal readonly object[] Objects;
 
-        internal Interpreter(string? name, LocalVariables locals, InstructionArray instructions, DebugInfo[] debugInfos)
+        internal InterpreterCore(string? name, LocalVariables locals, InstructionArray instructions, DebugInfo[] debugInfos)
         {
             Name = name;
             LocalCount = locals.LocalCount;

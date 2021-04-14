@@ -15,13 +15,13 @@ namespace System.Linq.Expressions.Interpreter
     {
         private readonly LambdaExpression _lambda;
 
-        internal LightDelegateCreator(Interpreter interpreter, LambdaExpression lambda)
+        internal LightDelegateCreator(InterpreterCore interpreter, LambdaExpression lambda)
         {
             Interpreter = interpreter;
             _lambda = lambda;
         }
 
-        internal Interpreter Interpreter { get; }
+        internal InterpreterCore Interpreter { get; }
 
         internal Delegate CreateDelegate(IStrongBox[]? closure)
         {

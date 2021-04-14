@@ -523,8 +523,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             // Are we jumping out of catch/finally while aborting the current thread?
             // goto the target label or the current finally continuation:
-            var value = _hasValue ? frame.Pop()! : Interpreter.NoValue;
-            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, false);
+            var value = _hasValue ? frame.Pop()! : InterpreterCore.NoValue;
+            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : InterpreterCore.NoValue, false);
         }
 
         internal static GotoInstruction Create(int labelIndex, bool hasResult, bool hasValue, bool labelTargetGetsValue)

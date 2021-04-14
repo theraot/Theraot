@@ -18,7 +18,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         private readonly IStrongBox[]? _closure;
 
-        private readonly Interpreter _interpreter;
+        private readonly InterpreterCore _interpreter;
 
         internal LightLambda(LightDelegateCreator delegateCreator, IStrongBox[]? closure)
         {
@@ -95,11 +95,11 @@ namespace System.Linq.Expressions.Interpreter
         {
             private readonly Dictionary<int, string> _handlerEnter = new();
             private readonly Dictionary<int, int> _handlerExit = new();
-            private readonly Interpreter _interpreter;
+            private readonly InterpreterCore _interpreter;
             private readonly Dictionary<int, int> _tryStart = new();
             private string _indent = "  ";
 
-            public DebugViewPrinter(Interpreter interpreter)
+            public DebugViewPrinter(InterpreterCore interpreter)
             {
                 _interpreter = interpreter;
 
