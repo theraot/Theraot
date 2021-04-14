@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET40
+#if LESSTHAN_NET40
 
 #pragma warning disable CA1036 // Override methods on comparable types
 #pragma warning disable CA1051 // Do not declare visible instance fields
@@ -1984,8 +1984,11 @@ namespace System
         /// <param name="rest">The value of the tuple's eight component.</param>
         public ValueTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
         {
-            if (rest is ITupleInternal)
+            if (rest is not ITupleInternal)
             {
+                throw new ArgumentException("The TRest type argument of ValueTuple`8 must be a ValueTuple.");
+            }
+
                 Item1 = item1;
                 Item2 = item2;
                 Item3 = item3;
@@ -1995,9 +1998,6 @@ namespace System
                 Item7 = item7;
                 Rest = rest;
             }
-
-            throw new ArgumentException("The TRest type argument of ValueTuple`8 must be a ValueTuple.");
-        }
 
         int ITupleInternal.Size => Rest is ITupleInternal rest ? 7 + rest.Size : 8;
 
