@@ -275,13 +275,13 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase)
         {
-            return text.Matches(regexPattern, ignoreCase ? RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.ExplicitCapture, 0);
+            return text.Matches(regexPattern, ignoreCase ? RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture : RegexOptions.ExplicitCapture, 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase, int startAt)
         {
-            var regex = new Regex(regexPattern, ignoreCase ? RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.ExplicitCapture);
+            var regex = new Regex(regexPattern, ignoreCase ? RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture : RegexOptions.ExplicitCapture);
             return regex.Matches(text, startAt);
         }
 
