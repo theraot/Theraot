@@ -140,7 +140,7 @@ namespace System.Linq.Expressions
 
             if (!TypeUtils.AreEquivalent(ifTrue.Type, ifFalse.Type))
             {
-                throw new ArgumentException("Argument types do not match");
+                throw new ArgumentException("Argument types do not match", string.Empty);
             }
 
             return ConditionalExpression.Make(test, ifTrue, ifFalse, ifTrue.Type);
@@ -189,7 +189,7 @@ namespace System.Linq.Expressions
 
             if (type != typeof(void) && (!type.IsReferenceAssignableFromInternal(ifTrue.Type) || !type.IsReferenceAssignableFromInternal(ifFalse.Type)))
             {
-                throw new ArgumentException("Argument types do not match");
+                throw new ArgumentException("Argument types do not match", string.Empty);
             }
 
             return ConditionalExpression.Make(test, ifTrue, ifFalse, type);

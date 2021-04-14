@@ -54,7 +54,7 @@ namespace System.Collections
                 if (xLengthInfo == null || yLengthInfo == null)
                 {
                     // should never happen
-                    throw new ArgumentException("Valid arrays required");
+                    throw new ArgumentException("Valid arrays required", string.Empty);
                 }
 
                 if ((int)xLengthInfo.GetValue(x, ArrayEx.Empty<object>()) != (int)yLengthInfo.GetValue(y, ArrayEx.Empty<object>()))
@@ -118,7 +118,7 @@ namespace System.Collections
                 if (xRankInfo == null || yRankInfo == null)
                 {
                     // should never happen
-                    throw new ArgumentException("Valid arrays required");
+                    throw new ArgumentException("Valid arrays required", string.Empty);
                 }
 
                 if ((int)xRankInfo.GetValue(x, ArrayEx.Empty<object>()) != 1)

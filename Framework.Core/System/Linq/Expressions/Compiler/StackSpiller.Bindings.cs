@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Compiler
                         break;
                 }
 
-                throw new ArgumentException("Unhandled binding ");
+                throw new ArgumentException("Unhandled binding", string.Empty);
             }
 
             internal abstract MemberBinding AsBinding();

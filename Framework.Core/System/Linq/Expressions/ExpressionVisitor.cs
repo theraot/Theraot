@@ -772,7 +772,7 @@ namespace System.Linq.Expressions
                     return VisitMemberListBinding((MemberListBinding)node);
 
                 default:
-                    throw new ArgumentException($"Unhandled Binding Type: {node.BindingType}");
+                    throw new ArgumentException($"Unhandled Binding Type: {node.BindingType}", nameof(node));
             }
         }
 

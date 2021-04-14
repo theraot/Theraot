@@ -144,12 +144,12 @@ namespace System.Linq.Expressions
 
             if (startLine > endLine)
             {
-                throw new ArgumentException("Start and End must be well ordered");
+                throw new ArgumentException("Start and End must be well ordered", string.Empty);
             }
 
             if (startLine == endLine && startColumn > endColumn)
             {
-                throw new ArgumentException("Start and End must be well ordered");
+                throw new ArgumentException("Start and End must be well ordered", string.Empty);
             }
         }
     }

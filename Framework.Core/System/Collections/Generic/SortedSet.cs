@@ -183,7 +183,7 @@ namespace System.Collections.Generic
                 return new SortedSubSet(this, lowerValue, upperValue);
             }
 
-            throw new ArgumentException("lowerBound is greater than upperBound.");
+            throw new ArgumentException("lowerBound is greater than upperBound.", string.Empty);
         }
 
         public virtual void IntersectWith(IEnumerable<T> other)
@@ -365,7 +365,7 @@ namespace System.Collections.Generic
             {
                 if (Comparer.Compare(lowerValue, upperValue) > 0)
                 {
-                    throw new ArgumentException("The lowerValue is bigger than upperValue");
+                    throw new ArgumentException("The lowerValue is bigger than upperValue", string.Empty);
                 }
 
                 if (!InRange(lowerValue))

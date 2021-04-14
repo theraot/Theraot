@@ -1130,7 +1130,7 @@ namespace System.Linq.Expressions
             // return type must be assignable back to the operand type
             if (!expression.Type.IsReferenceAssignableFromInternal(result.Type))
             {
-                throw new ArgumentException($"The user-defined operator method '{method?.Name}' for operator '{kind}' must return the same type as its parameter or a derived type.");
+                throw new ArgumentException($"The user-defined operator method '{method?.Name}' for operator '{kind}' must return the same type as its parameter or a derived type.", string.Empty);
             }
 
             return result;

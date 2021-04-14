@@ -27,7 +27,7 @@ namespace System
 
             if (flag.GetType() != type)
             {
-                throw new ArgumentException("Enum types don't match");
+                throw new ArgumentException("Enum types don't match", nameof(flag));
             }
 
             var typeCode = TypeEx.GetTypeCode(type);

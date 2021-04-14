@@ -433,7 +433,7 @@ namespace System.Linq.Expressions
         {
             if (arrayType.GetArrayRank() != indexList.Count)
             {
-                throw new ArgumentException("Incorrect number of indexes");
+                throw new ArgumentException("Incorrect number of indexes", string.Empty);
             }
 
             for (int i = 0, n = indexList.Count; i < n; i++)
@@ -610,7 +610,7 @@ namespace System.Linq.Expressions
         {
             if (!TypeUtils.IsValidInstanceType(method, instanceType))
             {
-                throw new ArgumentException($"Method '{method}' declared on type '{method.DeclaringType}' cannot be called with instance of type '{instanceType}'");
+                throw new ArgumentException($"Method '{method}' declared on type '{method.DeclaringType}' cannot be called with instance of type '{instanceType}'", string.Empty);
             }
         }
 
@@ -633,14 +633,14 @@ namespace System.Linq.Expressions
             {
                 if (instance != null)
                 {
-                    throw new ArgumentException("Static method requires null instance, non-static method requires non-null instance.");
+                    throw new ArgumentException("Static method requires null instance, non-static method requires non-null instance.", string.Empty);
                 }
             }
             else
             {
                 if (instance == null)
                 {
-                    throw new ArgumentException("Static method requires null instance, non-static method requires non-null instance.");
+                    throw new ArgumentException("Static method requires null instance, non-static method requires non-null instance.", string.Empty);
                 }
 
                 ExpressionUtils.RequiresCanRead(instance, nameof(instance));

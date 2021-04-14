@@ -85,7 +85,7 @@ namespace System.Linq.Expressions
                     return;
 
                 default:
-                    throw new ArgumentException(string.Empty);
+                    throw new ArgumentException(string.Empty, string.Empty);
             }
         }
 
@@ -100,7 +100,7 @@ namespace System.Linq.Expressions
                     return onProperty!((PropertyInfo)self);
 
                 default:
-                    throw new ArgumentException(string.Empty);
+                    throw new ArgumentException(string.Empty, string.Empty);
             }
         }
     }

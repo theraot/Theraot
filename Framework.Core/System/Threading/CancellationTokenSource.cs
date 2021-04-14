@@ -115,7 +115,7 @@ namespace System.Threading
 
             if (tokens.Length == 0)
             {
-                throw new ArgumentException("Empty tokens array");
+                throw new ArgumentException("Empty tokens array", nameof(tokens));
             }
 
             var src = new CancellationTokenSource();

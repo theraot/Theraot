@@ -123,7 +123,7 @@ namespace System.Dynamic.Utils
             switch (nodeKind)
             {
                 case ExpressionType.New:
-                    throw new ArgumentException("Incorrect number of arguments for constructor");
+                    throw new ArgumentException("Incorrect number of arguments for constructor", string.Empty);
                 case ExpressionType.Invoke:
                     throw new InvalidOperationException("Incorrect number of arguments supplied for lambda invocation");
                 case ExpressionType.Dynamic:

@@ -776,7 +776,7 @@ namespace System.Linq.Expressions
             {
                 if (pis.Length != parameters.Length)
                 {
-                    throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
+                    throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration", string.Empty);
                 }
 
                 var set = new HashSet<ParameterExpression>();
@@ -792,7 +792,7 @@ namespace System.Linq.Expressions
                         if (!pType.IsByRef)
                         {
                             //We cannot pass a parameter of T& to a delegate that takes T or any non-ByRef type.
-                            throw new ArgumentException($"ParameterExpression of type '{pex.Type.MakeByRefType()}' cannot be used for delegate parameter of type '{pType}'");
+                            throw new ArgumentException($"ParameterExpression of type '{pex.Type.MakeByRefType()}' cannot be used for delegate parameter of type '{pType}'", string.Empty);
                         }
 
                         pType = pType.GetElementType();
@@ -800,7 +800,7 @@ namespace System.Linq.Expressions
 
                     if (!pex.Type.IsReferenceAssignableFromInternal(pType))
                     {
-                        throw new ArgumentException($"ParameterExpression of type '{pex.Type}' cannot be used for delegate parameter of type '{pType}'");
+                        throw new ArgumentException($"ParameterExpression of type '{pex.Type}' cannot be used for delegate parameter of type '{pType}'", string.Empty);
                     }
 
                     if (!set.Add(pex))
@@ -811,12 +811,12 @@ namespace System.Linq.Expressions
             }
             else if (parameters.Length > 0)
             {
-                throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration");
+                throw new ArgumentException("Incorrect number of parameters supplied for lambda declaration", nameof(parameters));
             }
 
             if (mi.ReturnType != typeof(void) && !mi.ReturnType.IsReferenceAssignableFromInternal(body.Type) && !TryQuote(mi.ReturnType, ref body))
             {
-                throw new ArgumentException($"Expression of type '{body.Type}' cannot be used for return type '{mi.ReturnType}'");
+                throw new ArgumentException($"Expression of type '{body.Type}' cannot be used for return type '{mi.ReturnType}'", string.Empty);
             }
         }
 
@@ -968,7 +968,7 @@ namespace System.Linq.Expressions
                 LambdaCompiler.Compile(this, method);
             }
 
-            throw new ArgumentException("MethodBuilder does not have a valid TypeBuilder");
+            throw new ArgumentException("MethodBuilder does not have a valid TypeBuilder", nameof(method));
         }
 
         ParameterExpression IParameterProvider.GetParameter(int index)

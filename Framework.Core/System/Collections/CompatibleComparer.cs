@@ -46,7 +46,7 @@ namespace System.Collections
                 return ia.CompareTo(b);
             }
 
-            throw new ArgumentException("At least one object must implement IComparable.");
+            throw new ArgumentException("At least one object must implement IComparable.", string.Empty);
         }
 
         public new bool Equals(object x, object y) => Compare(x, y) == 0;

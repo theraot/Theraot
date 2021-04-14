@@ -40,7 +40,7 @@ namespace System.Linq.Expressions
                 ExpressionUtils.RequiresCanRead(expression, nameof(expression));
                 if (!field.DeclaringType.IsReferenceAssignableFromInternal(expression.Type))
                 {
-                    throw new ArgumentException($"Field '{field.DeclaringType}.{field.Name}' is not defined for type '{expression.Type}'");
+                    throw new ArgumentException($"Field '{field.DeclaringType}.{field.Name}' is not defined for type '{expression.Type}'", string.Empty);
                 }
             }
 
@@ -64,7 +64,7 @@ namespace System.Linq.Expressions
                      ?? expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (fi == null)
             {
-                throw new ArgumentException($"Instance field '{fieldName}' is not defined for type '{expression.Type}'");
+                throw new ArgumentException($"Instance field '{fieldName}' is not defined for type '{expression.Type}'", string.Empty);
             }
 
             return Field(expression, fi);
@@ -87,7 +87,7 @@ namespace System.Linq.Expressions
 
             if (fi == null)
             {
-                throw new ArgumentException($"Field '{fieldName}' is not defined for type '{type}'");
+                throw new ArgumentException($"Field '{fieldName}' is not defined for type '{type}'", string.Empty);
             }
 
             return Field(expression, fi);

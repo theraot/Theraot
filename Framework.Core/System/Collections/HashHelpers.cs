@@ -68,7 +68,7 @@ namespace System.Collections
         {
             if (min < 0)
             {
-                throw new ArgumentException("Capacity overflowed and went negative. Check load factor, capacity and the current size of the table.");
+                throw new ArgumentException("Capacity overflowed and went negative. Check load factor, capacity and the current size of the table.", nameof(min));
             }
 
             foreach (var prime in Primes)

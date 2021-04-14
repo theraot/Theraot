@@ -445,7 +445,7 @@ namespace System.Numerics
                 return true;
             }
 
-            e = new ArgumentException("With the AllowHexSpecifier bit set in the enum bit field, the only other valid bits that can be combined into the enum value must be a subset of those in HexNumber.");
+            e = new ArgumentException("With the AllowHexSpecifier bit set in the enum bit field, the only other valid bits that can be combined into the enum value must be a subset of those in HexNumber.", nameof(style));
             return false;
         }
 

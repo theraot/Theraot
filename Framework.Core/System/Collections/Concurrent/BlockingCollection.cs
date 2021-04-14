@@ -50,7 +50,7 @@ namespace System.Collections.Concurrent
 
             if (boundedCapacity < collection.Count)
             {
-                throw new ArgumentException("The collection argument contains more items than are allowed by the boundedCapacity.");
+                throw new ArgumentException("The collection argument contains more items than are allowed by the boundedCapacity.", nameof(boundedCapacity));
             }
 
             _data = new PrivateData(collection, boundedCapacity);

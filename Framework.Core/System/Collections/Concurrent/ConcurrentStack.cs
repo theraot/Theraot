@@ -96,9 +96,9 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
 
-            if (startIndex + count > items.Length)
+            if (items.Length - startIndex < count)
             {
-                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
+                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.", items.Length < count ? nameof(count) : nameof(startIndex));
             }
 
             for (var index = 0; index < count; index++)
@@ -164,9 +164,9 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
 
-            if (startIndex + count > items.Length)
+            if (items.Length - startIndex < count)
             {
-                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.");
+                throw new ArgumentException("The sum of the startIndex and count arguments must be less than or equal to the collection's Count.", items.Length < count ? nameof(count) : nameof(startIndex));
             }
 
             var index = 0;

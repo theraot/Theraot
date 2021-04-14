@@ -9,15 +9,7 @@ namespace System.Runtime.CompilerServices
 {
     public readonly struct ValueTaskAwaiter : ICriticalNotifyCompletion
     {
-        internal static readonly Action<object> InvokeActionDelegate = state =>
-        {
-            if (state is not Action action)
-            {
-                throw new ArgumentNullException(nameof(state));
-            }
-
-            action();
-        };
+        internal static readonly Action<object> InvokeActionDelegate = ActionDelegate;
 
         private readonly ValueTask _value;
 
@@ -75,6 +67,16 @@ namespace System.Runtime.CompilerServices
                     ((IValueTaskSource)obj).OnCompleted(InvokeActionDelegate, continuation, _value.Token, ValueTaskSourceOnCompletedFlags.UseSchedulingContext);
                     break;
             }
+        }
+
+        private static void ActionDelegate(object state)
+        {
+            if (state is not Action action)
+            {
+                throw new ArgumentNullException(nameof(state));
+            }
+
+            action();
         }
     }
 

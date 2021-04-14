@@ -29,7 +29,7 @@ namespace System.Linq.Expressions
             ValidateSettableFieldOrPropertyMember(member, out var memberType);
             if (!memberType.IsAssignableFrom(expression.Type))
             {
-                throw new ArgumentException("Argument types do not match");
+                throw new ArgumentException("Argument types do not match", string.Empty);
             }
 
             return new MemberAssignment(member, expression);

@@ -2438,7 +2438,7 @@ namespace System.Threading.Tasks
                 actionsCopy[i] = actions[i];
                 if (actionsCopy[i] == null)
                 {
-                    throw new ArgumentException("One of the actions was null.");
+                    throw new ArgumentException("One of the actions was null.", nameof(actions));
                 }
             }
 

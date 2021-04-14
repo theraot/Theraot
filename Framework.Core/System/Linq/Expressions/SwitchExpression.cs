@@ -153,7 +153,7 @@ namespace System.Linq.Expressions
                     liftedCall = ParameterIsAssignable(leftParam, switchValue.Type.GetNonNullable());
                     if (!liftedCall)
                     {
-                        throw new ArgumentException($"Switch value of type '{switchValue.Type}' cannot be used for the comparison method parameter of type '{leftParam.ParameterType}'");
+                        throw new ArgumentException($"Switch value of type '{switchValue.Type}' cannot be used for the comparison method parameter of type '{leftParam.ParameterType}'", string.Empty);
                     }
                 }
 
@@ -171,7 +171,7 @@ namespace System.Linq.Expressions
                         {
                             if (!rightOperandType.IsNullable())
                             {
-                                throw new ArgumentException($"Test value of type '{rightOperandType}' cannot be used for the comparison method parameter of type '{rightParam.ParameterType}'");
+                                throw new ArgumentException($"Test value of type '{rightOperandType}' cannot be used for the comparison method parameter of type '{rightParam.ParameterType}'", string.Empty);
                             }
 
                             rightOperandType = rightOperandType.GetNonNullable();
@@ -179,7 +179,7 @@ namespace System.Linq.Expressions
 
                         if (!ParameterIsAssignable(rightParam, rightOperandType))
                         {
-                            throw new ArgumentException($"Test value of type '{rightOperandType}' cannot be used for the comparison method parameter of type '{rightParam.ParameterType}'");
+                            throw new ArgumentException($"Test value of type '{rightOperandType}' cannot be used for the comparison method parameter of type '{rightParam.ParameterType}'", string.Empty);
                         }
                     }
                 }

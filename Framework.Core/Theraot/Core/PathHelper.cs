@@ -36,7 +36,7 @@ namespace Theraot.Core
                 ref var current = ref paths[index];
                 if (HasInvalidPathChars(current))
                 {
-                    throw new ArgumentException("invalid characters in path");
+                    throw new ArgumentException("invalid characters in path", nameof(paths));
                 }
 
                 if (current.Length == 0)
@@ -72,10 +72,14 @@ namespace Theraot.Core
         public static string Combine(string path1, string path2)
         {
 #if LESSTHAN_NET40
-
-            if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2))
+            if (HasInvalidPathChars(path1))
             {
-                throw new ArgumentException("invalid characters in path");
+                throw new ArgumentException("invalid characters in path", nameof(path1));
+            }
+
+            if (HasInvalidPathChars(path2))
+            {
+                throw new ArgumentException("invalid characters in path", nameof(path2));
             }
 
             if (path2.Length != 0 && Path.IsPathRooted(path2))
@@ -104,9 +108,19 @@ namespace Theraot.Core
         public static string Combine(string path1, string path2, string path3)
         {
 #if LESSTHAN_NET40
-            if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2) || HasInvalidPathChars(path3))
+            if (HasInvalidPathChars(path1))
             {
-                throw new ArgumentException("invalid characters in path");
+                throw new ArgumentException("invalid characters in path", nameof(path1));
+            }
+
+            if (HasInvalidPathChars(path2))
+            {
+                throw new ArgumentException("invalid characters in path", nameof(path2));
+            }
+
+            if (HasInvalidPathChars(path3))
+            {
+                throw new ArgumentException("invalid characters in path", nameof(path3));
             }
 
             if (path3.Length != 0 && Path.IsPathRooted(path3))
@@ -150,9 +164,24 @@ namespace Theraot.Core
         public static string Combine(string path1, string path2, string path3, string path4)
         {
 #if LESSTHAN_NET40
-            if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2) || HasInvalidPathChars(path3) || HasInvalidPathChars(path4))
+            if (HasInvalidPathChars(path1))
             {
-                throw new ArgumentException("invalid characters in path");
+                throw new ArgumentException("invalid characters in path", nameof(path1));
+            }
+
+            if (HasInvalidPathChars(path2))
+            {
+                throw new ArgumentException("invalid characters in path", nameof(path2));
+            }
+
+            if (HasInvalidPathChars(path3))
+            {
+                throw new ArgumentException("invalid characters in path", nameof(path3));
+            }
+
+            if (HasInvalidPathChars(path4))
+            {
+                throw new ArgumentException("invalid characters in path", nameof(path3));
             }
 
             if (path4.Length != 0 && Path.IsPathRooted(path4))

@@ -107,7 +107,7 @@ namespace Theraot.Collections.ThreadSafe
 
                 if (Comparer.Equals(found, value))
                 {
-                    throw new ArgumentException("the value is already present");
+                    throw new ArgumentException("the value is already present", nameof(value));
                 }
             }
         }
@@ -542,7 +542,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     // This is the item that has been stored with the key
                     // Throw to abort overwrite
-                    throw new ArgumentException("The item has already been added");
+                    throw new ArgumentException("The item has already been added", nameof(value));
                 }
 
                 // This is not the value, overwrite?

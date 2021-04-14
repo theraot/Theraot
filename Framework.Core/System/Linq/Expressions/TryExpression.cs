@@ -110,7 +110,7 @@ namespace System.Linq.Expressions
             }
             else if (@catch.Length == 0)
             {
-                throw new ArgumentException("try must have at least one catch, finally, or fault clause");
+                throw new ArgumentException("try must have at least one catch, finally, or fault clause", nameof(handlers));
             }
 
             return new TryExpression(type ?? body.Type, body, @finally, fault, @catch);
@@ -129,12 +129,12 @@ namespace System.Linq.Expressions
 
                 if (!type.IsReferenceAssignableFromInternal(tryBody.Type))
                 {
-                    throw new ArgumentException("Argument types do not match");
+                    throw new ArgumentException("Argument types do not match", string.Empty);
                 }
 
                 if (handlers.Any(cb => !type.IsReferenceAssignableFromInternal(cb.Body.Type)))
                 {
-                    throw new ArgumentException("Argument types do not match");
+                    throw new ArgumentException("Argument types do not match", string.Empty);
                 }
             }
             else if (tryBody.Type == typeof(void))
@@ -144,7 +144,7 @@ namespace System.Linq.Expressions
                 {
                     if (cb.Body.Type != typeof(void))
                     {
-                        throw new ArgumentException("Body of catch must have the same type as body of try.");
+                        throw new ArgumentException("Body of catch must have the same type as body of try.", string.Empty);
                     }
                 }
             }
@@ -156,7 +156,7 @@ namespace System.Linq.Expressions
                 {
                     if (!TypeUtils.AreEquivalent(cb.Body.Type, type))
                     {
-                        throw new ArgumentException("Body of catch must have the same type as body of try.");
+                        throw new ArgumentException("Body of catch must have the same type as body of try.", string.Empty);
                     }
                 }
             }

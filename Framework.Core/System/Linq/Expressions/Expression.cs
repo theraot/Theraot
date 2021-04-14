@@ -380,7 +380,7 @@ namespace System.Linq.Expressions
         {
             if (CanReduce)
             {
-                throw new ArgumentException("reducible nodes must override Expression.Reduce()");
+                throw new ArgumentException("reducible nodes must override Expression.Reduce()", string.Empty);
             }
 
             return this;
@@ -400,7 +400,7 @@ namespace System.Linq.Expressions
         {
             if (!CanReduce)
             {
-                throw new ArgumentException("must be reducible node");
+                throw new ArgumentException("must be reducible node", string.Empty);
             }
 
             var newNode = Reduce();
@@ -409,12 +409,12 @@ namespace System.Linq.Expressions
             // 2. Reduction must return a new node whose result type can be assigned to the type of the original node
             if (newNode == null || newNode == this)
             {
-                throw new ArgumentException("node cannot reduce to itself or null");
+                throw new ArgumentException("node cannot reduce to itself or null", string.Empty);
             }
 
             if (!Type.IsReferenceAssignableFromInternal(newNode.Type))
             {
-                throw new ArgumentException("cannot assign from the reduced node type to the original node type");
+                throw new ArgumentException("cannot assign from the reduced node type to the original node type", string.Empty);
             }
 
             return newNode;
@@ -486,7 +486,7 @@ namespace System.Linq.Expressions
         {
             if (!CanReduce)
             {
-                throw new ArgumentException("must be reducible node");
+                throw new ArgumentException("must be reducible node", string.Empty);
             }
 
             return visitor.Visit(ReduceAndCheck());

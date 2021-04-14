@@ -327,7 +327,7 @@ namespace System.Linq.Expressions
             // C# auto-quotes return values, so we'll do that here
             if (expectedType != typeof(void) && !expectedType.IsReferenceAssignableFromInternal(value.Type) && !TryQuote(expectedType, ref value))
             {
-                throw new ArgumentException($"Expression of type '{value.Type}' cannot be used for label of type '{expectedType}'");
+                throw new ArgumentException($"Expression of type '{value.Type}' cannot be used for label of type '{expectedType}'", string.Empty);
             }
         }
     }

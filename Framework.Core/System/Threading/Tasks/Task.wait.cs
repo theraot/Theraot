@@ -235,7 +235,7 @@ namespace System.Threading.Tasks
                 var task = tasks[taskIndex];
                 if (task == null)
                 {
-                    throw new ArgumentException("The tasks array included at least one null element.");
+                    throw new ArgumentException("The tasks array included at least one null element.", nameof(tasks));
                 }
 
                 var taskIsCompleted = task.IsCompleted;

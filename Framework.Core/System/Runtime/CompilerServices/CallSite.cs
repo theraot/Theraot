@@ -81,7 +81,7 @@ namespace System.Runtime.CompilerServices
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             if (!delegateType.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                throw new ArgumentException("Type must be derived from System.Delegate");
+                throw new ArgumentException("Type must be derived from System.Delegate", nameof(delegateType));
             }
 
             var constructors = _siteConstructors;

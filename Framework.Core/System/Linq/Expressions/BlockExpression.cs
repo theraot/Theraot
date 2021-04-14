@@ -404,7 +404,7 @@ namespace System.Linq.Expressions
                 {
                     if (type != typeof(void))
                     {
-                        throw new ArgumentException("Argument types do not match");
+                        throw new ArgumentException("Argument types do not match", nameof(type));
                     }
 
                     return new ScopeWithType(variables, expressions, type);
@@ -413,7 +413,7 @@ namespace System.Linq.Expressions
                 var last = expressions.Last();
                 if (type != typeof(void) && !type.IsReferenceAssignableFromInternal(last.Type))
                 {
-                    throw new ArgumentException("Argument types do not match");
+                    throw new ArgumentException("Argument types do not match", nameof(type));
                 }
 
                 if (type != last.Type)

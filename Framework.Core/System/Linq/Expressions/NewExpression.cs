@@ -226,12 +226,12 @@ namespace System.Linq.Expressions
             {
                 if (arguments.Length != pis.Length)
                 {
-                    throw new ArgumentException("Incorrect number of arguments for constructor");
+                    throw new ArgumentException("Incorrect number of arguments for constructor", string.Empty);
                 }
 
                 if (arguments.Length != members.Count)
                 {
-                    throw new ArgumentException("Incorrect number of arguments for the given members ");
+                    throw new ArgumentException("Incorrect number of arguments for the given members ", string.Empty);
                 }
 
                 Expression[]? newArguments = null;
@@ -307,11 +307,11 @@ namespace System.Linq.Expressions
             }
             else if (arguments?.Length > 0)
             {
-                throw new ArgumentException("Incorrect number of arguments for constructor");
+                throw new ArgumentException("Incorrect number of arguments for constructor", string.Empty);
             }
             else if (members?.Count > 0)
             {
-                throw new ArgumentException("Incorrect number of members for constructor");
+                throw new ArgumentException("Incorrect number of members for constructor", string.Empty);
             }
         }
     }

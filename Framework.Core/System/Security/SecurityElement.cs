@@ -48,7 +48,7 @@ namespace System.Security
 
             if (!IsValidTag(tag))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", tag));
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", tag), nameof(tag));
             }
 
             _tag = tag;
@@ -64,12 +64,12 @@ namespace System.Security
 
             if (!IsValidTag(tag))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", tag));
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", tag), nameof(tag));
             }
 
             if (text != null && !IsValidText(text))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element text '{0}'.", text));
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element text '{0}'.", text), nameof(tag));
             }
 
             _tag = tag;
@@ -116,12 +116,12 @@ namespace System.Security
 
                         if (!IsValidAttributeName(attrName))
                         {
-                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element name '{0}'.", attrName));
+                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element name '{0}'.", attrName), nameof(value));
                         }
 
                         if (!IsValidAttributeValue(attrValue))
                         {
-                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element value '{0}'.", attrValue));
+                            throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element value '{0}'.", attrValue), nameof(value));
                         }
 
                         list.Add(attrName);
@@ -145,7 +145,7 @@ namespace System.Security
             {
                 if (value?.Contains(item: null) == true)
                 {
-                    throw new ArgumentException("Cannot have a null child.");
+                    throw new ArgumentException("Cannot have a null child.", nameof(value));
                 }
 
                 _children = value;
@@ -165,7 +165,7 @@ namespace System.Security
 
                 if (!IsValidTag(value))
                 {
-                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", value));
+                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", value), nameof(value));
                 }
 
                 _tag = value;
@@ -186,7 +186,7 @@ namespace System.Security
                 {
                     if (!IsValidText(value))
                     {
-                        throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", value));
+                        throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element tag '{0}'.", value), nameof(value));
                     }
 
                     _text = value;
@@ -274,12 +274,12 @@ namespace System.Security
 
             if (!IsValidAttributeName(name))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element name '{0}'.", name));
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element name '{0}'.", name), nameof(name));
             }
 
             if (!IsValidAttributeValue(value))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element value '{0}'.", value));
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid element value '{0}'.", value), nameof(value));
             }
 
             AddAttributeSafe(name, value);
@@ -538,7 +538,7 @@ namespace System.Security
 
                     if (string.Equals(strAttrName, name, StringComparison.Ordinal))
                     {
-                        throw new ArgumentException("Attribute names must be unique.");
+                        throw new ArgumentException("Attribute names must be unique.", nameof(name));
                     }
                 }
             }

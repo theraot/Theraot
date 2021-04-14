@@ -108,7 +108,7 @@ namespace System.Linq.Expressions
                 }
             }
 
-            throw new ArgumentException("Argument types do not match");
+            throw new ArgumentException("Argument types do not match", nameof(type));
         }
     }
 

@@ -391,7 +391,7 @@ namespace System.Collections
                         return compatibleComparer.Comparer;
 
                     default:
-                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.", string.Empty);
                 }
             }
             set
@@ -407,7 +407,7 @@ namespace System.Collections
                         break;
 
                     default:
-                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.", string.Empty);
                 }
             }
         }
@@ -429,7 +429,7 @@ namespace System.Collections
                         return compatibleComparer.HashCodeProvider;
 
                     default:
-                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.", string.Empty);
                 }
             }
             set
@@ -445,7 +445,7 @@ namespace System.Collections
                         break;
 
                     default:
-                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.");
+                        throw new ArgumentException("The usage of IKeyComparer and IHashCodeProvider/IComparer interfaces cannot be mixed; use one or the other.", string.Empty);
                 }
             }
         }
@@ -689,7 +689,7 @@ namespace System.Collections
 
             if (array.Length - arrayIndex < Count)
             {
-                throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
+                throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.", nameof(arrayIndex));
             }
 
             CopyEntries(array, arrayIndex);
@@ -1655,7 +1655,7 @@ namespace System.Collections
 
                 if (array.Length - index < _hashtable._count)
                 {
-                    throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.");
+                    throw new ArgumentException("Destination array is not long enough to copy all the items in the collection. Check array index and length.", nameof(index));
                 }
 
                 _hashtable.CopyValues(array, index);

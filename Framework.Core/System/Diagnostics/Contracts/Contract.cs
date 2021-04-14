@@ -237,7 +237,7 @@ namespace System.Diagnostics.Contracts
         {
             if (fromInclusive > toExclusive)
             {
-                throw new ArgumentException("fromInclusive must be less than or equal to toExclusive.");
+                throw new ArgumentException("fromInclusive must be less than or equal to toExclusive.", string.Empty);
             }
 
             if (predicate == null)
@@ -313,7 +313,7 @@ namespace System.Diagnostics.Contracts
         {
             if (fromInclusive > toExclusive)
             {
-                throw new ArgumentException("fromInclusive must be less than or equal to toExclusive.");
+                throw new ArgumentException("fromInclusive must be less than or equal to toExclusive.", string.Empty);
             }
 
             if (predicate == null)

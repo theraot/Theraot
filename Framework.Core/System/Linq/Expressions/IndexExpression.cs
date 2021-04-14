@@ -65,7 +65,7 @@ namespace System.Linq.Expressions
 
             if (arrayType.GetArrayRank() != 0)
             {
-                throw new ArgumentException("Incorrect number of indexes");
+                throw new ArgumentException("Incorrect number of indexes", nameof(array));
             }
 
             return new IndexExpression(array, indexer: null, ArrayEx.Empty<Expression>());
@@ -149,7 +149,7 @@ namespace System.Linq.Expressions
 
             if (arrayType.GetArrayRank() != indexList.Length)
             {
-                throw new ArgumentException("Incorrect number of indexes");
+                throw new ArgumentException("Incorrect number of indexes", string.Empty);
             }
 
             foreach (var e in indexList)
@@ -183,7 +183,7 @@ namespace System.Linq.Expressions
 
             if (arguments == null || arguments.Length == 0)
             {
-                throw new ArgumentException($"Instance property '{propertyName}' that takes no argument is not defined for type '{type}'");
+                throw new ArgumentException($"Instance property '{propertyName}' that takes no argument is not defined for type '{type}'", string.Empty);
             }
 
             throw new ArgumentException($"Instance property '{propertyName}{GetArgTypesString(arguments)}' is not defined for type '{type}'", nameof(propertyName));

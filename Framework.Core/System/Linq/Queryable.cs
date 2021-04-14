@@ -178,7 +178,7 @@ namespace System.Linq
 
             if (!source.GetType().IsGenericImplementationOf(typeof(IEnumerable<>), out var iEnumerable))
             {
-                throw new ArgumentException("source is not IEnumerable<>");
+                throw new ArgumentException("source is not IEnumerable<>", nameof(source));
             }
 
             return (IQueryable)Activator.CreateInstance

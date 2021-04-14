@@ -873,7 +873,7 @@ namespace System.Linq.Expressions
 
             if (arrayType.GetArrayRank() != 1)
             {
-                throw new ArgumentException("Incorrect number of indexes");
+                throw new ArgumentException("Incorrect number of indexes", nameof(array));
             }
 
             return new SimpleBinaryExpression(ExpressionType.ArrayIndex, array, index, arrayType.GetElementType());
@@ -901,7 +901,7 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(right.Type, nameof(right), allowByRef: true, allowPointer: true);
             if (!left.Type.IsReferenceAssignableFromInternal(right.Type))
             {
-                throw new ArgumentException($"Expression of type '{right.Type}' cannot be used for assignment to type '{left.Type}'");
+                throw new ArgumentException($"Expression of type '{right.Type}' cannot be used for assignment to type '{left.Type}'", string.Empty);
             }
 
             return new AssignBinaryExpression(left, right);
@@ -2664,7 +2664,7 @@ namespace System.Linq.Expressions
                 // return type must be assignable back to the left type
                 if (!left.Type.IsReferenceAssignableFromInternal(b.Type))
                 {
-                    throw new ArgumentException($"The user-defined operator method '{bMethod.Name}' for operator '{binaryType}' must return the same type as its parameter or a derived type.");
+                    throw new ArgumentException($"The user-defined operator method '{bMethod.Name}' for operator '{binaryType}' must return the same type as its parameter or a derived type.", string.Empty);
                 }
             }
             else
@@ -2727,7 +2727,7 @@ namespace System.Linq.Expressions
                 // return type must be assignable back to the left type
                 if (!left.Type.IsReferenceAssignableFromInternal(b.Type))
                 {
-                    throw new ArgumentException($"The user-defined operator method '{bMethod.Name}' for operator '{binaryType}' must return the same type as its parameter or a derived type.");
+                    throw new ArgumentException($"The user-defined operator method '{bMethod.Name}' for operator '{binaryType}' must return the same type as its parameter or a derived type.", string.Empty);
                 }
             }
             else
@@ -2870,7 +2870,7 @@ namespace System.Linq.Expressions
                 return right;
             }
 
-            throw new ArgumentException("Argument types do not match");
+            throw new ArgumentException("Argument types do not match", string.Empty);
         }
 
         private static void ValidateMethodInfo(MethodInfo method, string paramName)
@@ -2950,12 +2950,12 @@ namespace System.Linq.Expressions
 
             if (pms[0].ParameterType != pms[1].ParameterType)
             {
-                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have identical parameter and return types.");
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have identical parameter and return types.", string.Empty);
             }
 
             if (method.ReturnType != pms[0].ParameterType)
             {
-                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have identical parameter and return types.");
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have identical parameter and return types.", string.Empty);
             }
 
             if (IsValidLiftedConditionalLogicalOperator(left, right, pms))
@@ -2966,14 +2966,14 @@ namespace System.Linq.Expressions
             var declaringType = method.DeclaringType;
             if (declaringType == null)
             {
-                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have associated boolean True and False operators.");
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have associated boolean True and False operators.", string.Empty);
             }
 
             var opTrue = TypeUtils.GetBooleanOperator(declaringType, "op_True");
             var opFalse = TypeUtils.GetBooleanOperator(declaringType, "op_False");
             if (opTrue == null || opTrue.ReturnType != typeof(bool) || opFalse == null || opFalse.ReturnType != typeof(bool))
             {
-                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have associated boolean True and False operators.");
+                throw new ArgumentException($"The user-defined operator method '{method.Name}' for operator '{nodeType}' must have associated boolean True and False operators.", string.Empty);
             }
 
             VerifyOpTrueFalse(nodeType, left, opFalse, nameof(method));

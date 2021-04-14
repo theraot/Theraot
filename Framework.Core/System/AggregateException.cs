@@ -199,7 +199,7 @@ namespace System
                 {
                     if (exception == null)
                     {
-                        throw new ArgumentException("An element of innerExceptions is null.");
+                        throw new ArgumentException("An element of innerExceptions is null.", nameof(innerExceptions));
                     }
 
                     if (first)

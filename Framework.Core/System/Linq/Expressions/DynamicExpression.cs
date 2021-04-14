@@ -657,7 +657,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             if (!delegateType.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                throw new ArgumentException("Type must be derived from System.Delegate");
+                throw new ArgumentException("Type must be derived from System.Delegate", nameof(delegateType));
             }
 
             var method = GetValidMethodForDynamic(delegateType);
@@ -687,7 +687,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             if (!delegateType.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                throw new ArgumentException("Type must be derived from System.Delegate");
+                throw new ArgumentException("Type must be derived from System.Delegate", nameof(delegateType));
             }
 
             var method = GetValidMethodForDynamic(delegateType);
@@ -721,7 +721,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             if (!delegateType.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                throw new ArgumentException("Type must be derived from System.Delegate");
+                throw new ArgumentException("Type must be derived from System.Delegate", nameof(delegateType));
             }
 
             var method = GetValidMethodForDynamic(delegateType);
@@ -758,7 +758,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             if (!delegateType.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                throw new ArgumentException("Type must be derived from System.Delegate");
+                throw new ArgumentException("Type must be derived from System.Delegate", nameof(delegateType));
             }
 
             var method = GetValidMethodForDynamic(delegateType);
@@ -798,7 +798,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(binder, nameof(binder));
             if (!delegateType.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                throw new ArgumentException("Type must be derived from System.Delegate");
+                throw new ArgumentException("Type must be derived from System.Delegate", nameof(delegateType));
             }
 
             var method = GetValidMethodForDynamic(delegateType);
@@ -823,7 +823,7 @@ namespace System.Linq.Expressions
             var pi = method.GetParameters();
             if (pi.Length == 0 || pi[0].ParameterType != typeof(CallSite))
             {
-                throw new ArgumentException("First argument of delegate must be CallSite");
+                throw new ArgumentException("First argument of delegate must be CallSite", nameof(delegateType));
             }
 
             return method;
@@ -866,7 +866,7 @@ namespace System.Linq.Expressions
             TypeUtils.ValidateType(type, nameof(type), allowByRef: true, allowPointer: true);
             if (type == typeof(void))
             {
-                throw new ArgumentException("Argument type cannot be void");
+                throw new ArgumentException("Argument type cannot be void", nameof(arg));
             }
         }
     }

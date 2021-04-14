@@ -341,7 +341,7 @@ namespace System.Collections
 
             if (_size - index < count)
             {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _size < count ? nameof(count) : nameof(index));
             }
 
             return Array.BinarySearch(_items, index, count, value, comparer);
@@ -443,7 +443,7 @@ namespace System.Collections
         {
             if (_size - index < count)
             {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _size < count ? nameof(count) : nameof(index));
             }
 
             if (array != null && array.Rank != 1)
@@ -484,7 +484,7 @@ namespace System.Collections
 
             if (_size - index < count)
             {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _size < count ? nameof(count) : nameof(index));
             }
 
             return new ArrayListEnumerator(this, index, count);
@@ -499,7 +499,7 @@ namespace System.Collections
 
             if (_size - index < count)
             {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _size < count ? nameof(count) : nameof(index));
             }
 
             return new Range(this, index, count);
@@ -734,7 +734,7 @@ namespace System.Collections
 
             if (_size - index < count)
             {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _size < count ? nameof(count) : nameof(index));
             }
 
             if (count <= 0)
@@ -785,7 +785,7 @@ namespace System.Collections
 
             if (_size - index < count)
             {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _size < count ? nameof(count) : nameof(index));
             }
 
             Array.Reverse(_items, index, count);
@@ -853,7 +853,7 @@ namespace System.Collections
 
             if (_size - index < count)
             {
-                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _size < count ? nameof(count) : nameof(index));
             }
 
             Array.Sort(_items, index, count, comparer);
@@ -1194,7 +1194,7 @@ namespace System.Collections
 
                 if (Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", Count < count ? nameof(count) : nameof(index));
                 }
 
                 return new Range(this, index, count);
@@ -1426,7 +1426,7 @@ namespace System.Collections
 
                 if (Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", Count < count ? nameof(count) : nameof(index));
                 }
 
                 if (comparer == null)
@@ -1509,7 +1509,7 @@ namespace System.Collections
 
                 if (array.Length - arrayIndex < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", array.Length < count ? nameof(count) : nameof(arrayIndex));
                 }
 
                 if (array.Rank != 1)
@@ -1519,7 +1519,7 @@ namespace System.Collections
 
                 if (_list.Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _list.Count < count ? nameof(count) : nameof(index));
                 }
 
                 for (var i = index; i < index + count; i++)
@@ -1542,7 +1542,7 @@ namespace System.Collections
 
                 if (_list.Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _list.Count < count ? nameof(count) : nameof(index));
                 }
 
                 return new ListWrapperEnumWrapper(this, index, count);
@@ -1557,7 +1557,7 @@ namespace System.Collections
 
                 if (_list.Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _list.Count < count ? nameof(count) : nameof(index));
                 }
 
                 return new Range(this, index, count);
@@ -1728,7 +1728,7 @@ namespace System.Collections
 
                 if (_list.Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _list.Count < count ? nameof(count) : nameof(index));
                 }
 
                 if (count > 0) // be consistent with ArrayList
@@ -1752,7 +1752,7 @@ namespace System.Collections
 
                 if (_list.Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _list.Count < count ? nameof(count) : nameof(index));
                 }
 
                 var i = index;
@@ -1802,7 +1802,7 @@ namespace System.Collections
 
                 if (_list.Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _list.Count < count ? nameof(count) : nameof(index));
                 }
 
                 var array = new object[count];
@@ -2049,7 +2049,7 @@ namespace System.Collections
 
                 if (_baseSize - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _baseSize < count ? nameof(count) : nameof(index));
                 }
 
                 InternalUpdateRange();
@@ -2131,7 +2131,7 @@ namespace System.Collections
 
                 if (array.Length - arrayIndex < _baseSize)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", nameof(arrayIndex));
                 }
 
                 InternalUpdateRange();
@@ -2157,12 +2157,12 @@ namespace System.Collections
 
                 if (array.Length - arrayIndex < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", array.Length < count ? nameof(count) : nameof(arrayIndex));
                 }
 
                 if (_baseSize - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _baseSize < count ? nameof(count) : nameof(index));
                 }
 
                 InternalUpdateRange();
@@ -2183,7 +2183,7 @@ namespace System.Collections
 
                 if (_baseSize - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _baseSize < count ? nameof(count) : nameof(index));
                 }
 
                 InternalUpdateRange();
@@ -2199,7 +2199,7 @@ namespace System.Collections
 
                 if (_baseSize - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _baseSize < count ? nameof(count) : nameof(index));
                 }
 
                 InternalUpdateRange();
@@ -2367,7 +2367,7 @@ namespace System.Collections
 
                 if (_baseSize - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _baseSize < count ? nameof(count) : nameof(index));
                 }
 
                 InternalUpdateRange();
@@ -2392,7 +2392,7 @@ namespace System.Collections
 
                 if (_baseSize - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _baseSize < count ? nameof(count) : nameof(index));
                 }
 
                 InternalUpdateRange();
@@ -2424,7 +2424,7 @@ namespace System.Collections
 
                 if (_baseSize - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", _baseSize < count ? nameof(count) : nameof(index));
                 }
 
                 InternalUpdateRange();
@@ -2571,7 +2571,7 @@ namespace System.Collections
 
                 if (Count - index < count)
                 {
-                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
+                    throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.", Count < count ? nameof(count) : nameof(index));
                 }
 
                 return new Range(this, index, count);
