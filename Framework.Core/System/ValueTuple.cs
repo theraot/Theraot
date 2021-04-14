@@ -6,6 +6,8 @@
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CC0074 // Make field readonly
 #pragma warning disable S2328 // GetHashCode should not reference mutable fields
+#pragma warning disable MA0102 // Make member readonly
+
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable UseDeconstructionOnParameter
@@ -482,7 +484,7 @@ namespace System
             Item2 = item2;
         }
 
-        int ITupleInternal.Size => 2;
+        readonly int ITupleInternal.Size => 2;
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -580,7 +582,7 @@ namespace System
             return CompareTo(valueTuple);
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        readonly int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
@@ -622,7 +624,7 @@ namespace System
         ///  called again and passed the <see cref="Item2"/> values of the two <see cref="ValueTuple{T1, T2}"/> instances.
         /// </para>
         /// </remarks>
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        readonly bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
             if (other is ValueTuple<T1, T2> valueTuple)
             {
@@ -643,7 +645,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        private int GetHashCodeCore(IEqualityComparer comparer)
+        private readonly int GetHashCodeCore(IEqualityComparer comparer)
         {
             return ValueTuple.CombineHashCodes
             (
@@ -652,7 +654,7 @@ namespace System
             );
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty})";
         }
@@ -784,7 +786,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty})";
         }
 
-        int IComparable.CompareTo(object obj)
+        readonly int IComparable.CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -847,7 +849,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        private int GetHashCodeCore(IEqualityComparer comparer)
+        private readonly int GetHashCodeCore(IEqualityComparer comparer)
         {
             return ValueTuple.CombineHashCodes
             (
@@ -857,7 +859,7 @@ namespace System
             );
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty})";
         }
@@ -1004,7 +1006,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty})";
         }
 
-        int IComparable.CompareTo(object obj)
+        readonly int IComparable.CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -1019,7 +1021,7 @@ namespace System
             return CompareTo(valueTuple);
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        readonly int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
@@ -1073,7 +1075,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        private int GetHashCodeCore(IEqualityComparer comparer)
+        private readonly int GetHashCodeCore(IEqualityComparer comparer)
         {
             return ValueTuple.CombineHashCodes
             (
@@ -1084,7 +1086,7 @@ namespace System
             );
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty})";
         }
@@ -1246,7 +1248,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty})";
         }
 
-        int IComparable.CompareTo(object obj)
+        readonly int IComparable.CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -1261,7 +1263,7 @@ namespace System
             return CompareTo(valueTask);
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        readonly int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
@@ -1321,7 +1323,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        private int GetHashCodeCore(IEqualityComparer comparer)
+        private readonly int GetHashCodeCore(IEqualityComparer comparer)
         {
             return ValueTuple.CombineHashCodes
             (
@@ -1333,7 +1335,7 @@ namespace System
             );
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty})";
         }
@@ -1510,7 +1512,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty})";
         }
 
-        int IComparable.CompareTo(object obj)
+        readonly int IComparable.CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -1525,7 +1527,7 @@ namespace System
             return CompareTo(valueTuple);
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        readonly int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
@@ -1591,7 +1593,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        private int GetHashCodeCore(IEqualityComparer comparer)
+        private readonly int GetHashCodeCore(IEqualityComparer comparer)
         {
             return ValueTuple.CombineHashCodes
             (
@@ -1604,7 +1606,7 @@ namespace System
             );
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty})";
         }
@@ -1796,7 +1798,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty})";
         }
 
-        int IComparable.CompareTo(object obj)
+        readonly int IComparable.CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -1811,7 +1813,7 @@ namespace System
             return CompareTo(valueTuple);
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        readonly int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
@@ -1883,7 +1885,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        private int GetHashCodeCore(IEqualityComparer comparer)
+        private readonly int GetHashCodeCore(IEqualityComparer comparer)
         {
             return ValueTuple.CombineHashCodes
             (
@@ -1897,7 +1899,7 @@ namespace System
             );
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty})";
         }
@@ -2213,7 +2215,7 @@ namespace System
             throw new ArgumentException("The parameter should be a ValueTuple type of appropriate arity.", nameof(obj));
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        readonly int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
@@ -2286,7 +2288,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        int ITupleInternal.GetHashCode(IEqualityComparer comparer)
+        readonly int ITupleInternal.GetHashCode(IEqualityComparer comparer)
         {
             return GetHashCodeCore(comparer);
         }

@@ -74,7 +74,7 @@ namespace System.Runtime.CompilerServices
             _methodBuilder.SetStateMachine(stateMachine);
         }
 
-        public void Start<TStateMachine>(ref TStateMachine stateMachine)
+        public readonly void Start<TStateMachine>(ref TStateMachine stateMachine)
             where TStateMachine : IAsyncStateMachine
         {
             _methodBuilder.Start(ref stateMachine);

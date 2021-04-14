@@ -57,7 +57,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool Equals(StructNeedle<T> other)
+        public readonly bool Equals(StructNeedle<T> other)
         {
             var value = other.Value;
             if (other.IsAlive)
