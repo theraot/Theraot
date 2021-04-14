@@ -103,12 +103,12 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1> tuple)
+            if (other is not Tuple<T1> tuple)
             {
-                return comparer.Compare(Item1, tuple.Item1);
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            return comparer.Compare(Item1, tuple.Item1);
         }
     }
 
@@ -145,7 +145,7 @@ namespace System
             if (other is Tuple<T1, T2> tuple)
             {
                 return comparer.Equals(Item1, tuple.Item1)
-                    && comparer.Equals(Item2, tuple.Item2);
+                       && comparer.Equals(Item2, tuple.Item2);
             }
 
             return false;
@@ -174,18 +174,18 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1, T2> tuple)
+            if (other is not Tuple<T1, T2> tuple)
             {
-                var result = comparer.Compare(Item1, tuple.Item1);
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item2, tuple.Item2);
-                }
-
-                return result;
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            var result = comparer.Compare(Item1, tuple.Item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(Item2, tuple.Item2);
+            }
+
+            return result;
         }
     }
 
@@ -225,8 +225,8 @@ namespace System
             if (other is Tuple<T1, T2, T3> tuple)
             {
                 return comparer.Equals(Item1, tuple.Item1)
-                    && comparer.Equals(Item2, tuple.Item2)
-                    && comparer.Equals(Item3, tuple.Item3);
+                       && comparer.Equals(Item2, tuple.Item2)
+                       && comparer.Equals(Item3, tuple.Item3);
             }
 
             return false;
@@ -257,23 +257,23 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1, T2, T3> tuple)
+            if (other is not Tuple<T1, T2, T3> tuple)
             {
-                var result = comparer.Compare(Item1, tuple.Item1);
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item2, tuple.Item2);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item3, tuple.Item3);
-                }
-
-                return result;
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            var result = comparer.Compare(Item1, tuple.Item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(Item2, tuple.Item2);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item3, tuple.Item3);
+            }
+
+            return result;
         }
     }
 
@@ -315,7 +315,8 @@ namespace System
         {
             if (other is Tuple<T1, T2, T3, T4> tuple)
             {
-                return comparer.Equals(Item1, tuple.Item1)
+                return
+                    comparer.Equals(Item1, tuple.Item1)
                     && comparer.Equals(Item2, tuple.Item2)
                     && comparer.Equals(Item3, tuple.Item3)
                     && comparer.Equals(Item4, tuple.Item4);
@@ -350,28 +351,28 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1, T2, T3, T4> tuple)
+            if (other is not Tuple<T1, T2, T3, T4> tuple)
             {
-                var result = comparer.Compare(Item1, tuple.Item1);
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item2, tuple.Item2);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item3, tuple.Item3);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item4, tuple.Item4);
-                }
-
-                return result;
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            var result = comparer.Compare(Item1, tuple.Item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(Item2, tuple.Item2);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item3, tuple.Item3);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item4, tuple.Item4);
+            }
+
+            return result;
         }
     }
 
@@ -417,10 +418,10 @@ namespace System
             if (other is Tuple<T1, T2, T3, T4, T5> tuple)
             {
                 return comparer.Equals(Item1, tuple.Item1)
-                    && comparer.Equals(Item2, tuple.Item2)
-                    && comparer.Equals(Item3, tuple.Item3)
-                    && comparer.Equals(Item4, tuple.Item4)
-                    && comparer.Equals(Item5, tuple.Item5);
+                       && comparer.Equals(Item2, tuple.Item2)
+                       && comparer.Equals(Item3, tuple.Item3)
+                       && comparer.Equals(Item4, tuple.Item4)
+                       && comparer.Equals(Item5, tuple.Item5);
             }
 
             return false;
@@ -453,33 +454,33 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1, T2, T3, T4, T5> tuple)
+            if (other is not Tuple<T1, T2, T3, T4, T5> tuple)
             {
-                var result = comparer.Compare(Item1, tuple.Item1);
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item2, tuple.Item2);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item3, tuple.Item3);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item4, tuple.Item4);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item5, tuple.Item5);
-                }
-
-                return result;
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            var result = comparer.Compare(Item1, tuple.Item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(Item2, tuple.Item2);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item3, tuple.Item3);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item4, tuple.Item4);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item5, tuple.Item5);
+            }
+
+            return result;
         }
     }
 
@@ -528,11 +529,11 @@ namespace System
             if (other is Tuple<T1, T2, T3, T4, T5, T6> tuple)
             {
                 return comparer.Equals(Item1, tuple.Item1)
-                    && comparer.Equals(Item2, tuple.Item2)
-                    && comparer.Equals(Item3, tuple.Item3)
-                    && comparer.Equals(Item4, tuple.Item4)
-                    && comparer.Equals(Item5, tuple.Item5)
-                    && comparer.Equals(Item6, tuple.Item6);
+                       && comparer.Equals(Item2, tuple.Item2)
+                       && comparer.Equals(Item3, tuple.Item3)
+                       && comparer.Equals(Item4, tuple.Item4)
+                       && comparer.Equals(Item5, tuple.Item5)
+                       && comparer.Equals(Item6, tuple.Item6);
             }
 
             return false;
@@ -566,38 +567,38 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1, T2, T3, T4, T5, T6> tuple)
+            if (other is not Tuple<T1, T2, T3, T4, T5, T6> tuple)
             {
-                var result = comparer.Compare(Item1, tuple.Item1);
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item2, tuple.Item2);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item3, tuple.Item3);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item4, tuple.Item4);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item5, tuple.Item5);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item6, tuple.Item6);
-                }
-
-                return result;
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            var result = comparer.Compare(Item1, tuple.Item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(Item2, tuple.Item2);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item3, tuple.Item3);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item4, tuple.Item4);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item5, tuple.Item5);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item6, tuple.Item6);
+            }
+
+            return result;
         }
     }
 
@@ -649,12 +650,12 @@ namespace System
             if (other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple)
             {
                 return comparer.Equals(Item1, tuple.Item1)
-                    && comparer.Equals(Item2, tuple.Item2)
-                    && comparer.Equals(Item3, tuple.Item3)
-                    && comparer.Equals(Item4, tuple.Item4)
-                    && comparer.Equals(Item5, tuple.Item5)
-                    && comparer.Equals(Item6, tuple.Item6)
-                    && comparer.Equals(Item7, tuple.Item7);
+                       && comparer.Equals(Item2, tuple.Item2)
+                       && comparer.Equals(Item3, tuple.Item3)
+                       && comparer.Equals(Item4, tuple.Item4)
+                       && comparer.Equals(Item5, tuple.Item5)
+                       && comparer.Equals(Item6, tuple.Item6)
+                       && comparer.Equals(Item7, tuple.Item7);
             }
 
             return false;
@@ -689,43 +690,43 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple)
+            if (other is not Tuple<T1, T2, T3, T4, T5, T6, T7> tuple)
             {
-                var result = comparer.Compare(Item1, tuple.Item1);
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item2, tuple.Item2);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item3, tuple.Item3);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item4, tuple.Item4);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item5, tuple.Item5);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item6, tuple.Item6);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item7, tuple.Item7);
-                }
-
-                return result;
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            var result = comparer.Compare(Item1, tuple.Item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(Item2, tuple.Item2);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item3, tuple.Item3);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item4, tuple.Item4);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item5, tuple.Item5);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item6, tuple.Item6);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item7, tuple.Item7);
+            }
+
+            return result;
         }
     }
 
@@ -781,13 +782,13 @@ namespace System
             if (other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple)
             {
                 return comparer.Equals(Item1, tuple.Item1)
-                    && comparer.Equals(Item2, tuple.Item2)
-                    && comparer.Equals(Item3, tuple.Item3)
-                    && comparer.Equals(Item4, tuple.Item4)
-                    && comparer.Equals(Item5, tuple.Item5)
-                    && comparer.Equals(Item6, tuple.Item6)
-                    && comparer.Equals(Item7, tuple.Item7)
-                    && comparer.Equals(Rest, tuple.Rest);
+                       && comparer.Equals(Item2, tuple.Item2)
+                       && comparer.Equals(Item3, tuple.Item3)
+                       && comparer.Equals(Item4, tuple.Item4)
+                       && comparer.Equals(Item5, tuple.Item5)
+                       && comparer.Equals(Item6, tuple.Item6)
+                       && comparer.Equals(Item7, tuple.Item7)
+                       && comparer.Equals(Rest, tuple.Rest);
             }
 
             return false;
@@ -850,48 +851,48 @@ namespace System
                 return 1;
             }
 
-            if (other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple)
+            if (other is not Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple)
             {
-                var result = comparer.Compare(Item1, tuple.Item1);
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item2, tuple.Item2);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item3, tuple.Item3);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item4, tuple.Item4);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item5, tuple.Item5);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item6, tuple.Item6);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item7, tuple.Item7);
-                }
-
-                if (result == 0)
-                {
-                    result = comparer.Compare(Item7, tuple.Item7);
-                }
-
-                return result;
+                throw new ArgumentException(string.Empty, nameof(other));
             }
 
-            throw new ArgumentException(string.Empty, nameof(other));
+            var result = comparer.Compare(Item1, tuple.Item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(Item2, tuple.Item2);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item3, tuple.Item3);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item4, tuple.Item4);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item5, tuple.Item5);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item6, tuple.Item6);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item7, tuple.Item7);
+            }
+
+            if (result == 0)
+            {
+                result = comparer.Compare(Item7, tuple.Item7);
+            }
+
+            return result;
         }
     }
 }
