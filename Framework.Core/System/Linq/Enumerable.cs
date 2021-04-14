@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET35
 
+#pragma warning disable MA0016 // Prefer return collection abstraction instead of implementation
+
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Core;

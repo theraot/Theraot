@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable MA0016 // Prefer return collection abstraction instead of implementation
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 

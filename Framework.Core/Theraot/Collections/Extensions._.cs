@@ -1,5 +1,6 @@
 ﻿// Needed for NET40
 
+#pragma warning disable MA0016 // Prefer return collection abstraction instead of implementation
 #pragma warning disable RCS1224 // Make method an extension method.
 
 using System;

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET472 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
+#pragma warning disable MA0016 // Prefer return collection abstraction instead of implementation
+
 using System.Collections.Generic;
 
 namespace System.Linq
