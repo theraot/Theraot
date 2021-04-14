@@ -186,9 +186,13 @@ namespace System.Threading.Tasks
         {
             Action = null;
             // Notify parent if this was an attached task
-            if (_parent != null && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0 && (CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
+            if ((CreationOptions & TaskCreationOptions.AttachedToParent) != 0)
             {
-                _parent.ProcessChildCompletion(this);
+                var parent = _parent;
+                if (parent != null && (parent.CreationOptions & TaskCreationOptions.DenyChildAttach) != TaskCreationOptions.DenyChildAttach)
+                {
+                    parent.ProcessChildCompletion(this);
+                }
             }
 
             // Activate continuations (if any).
