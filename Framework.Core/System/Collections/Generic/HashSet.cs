@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable MA0018 // Do not declare static members on generic types
-
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;

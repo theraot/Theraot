@@ -256,6 +256,7 @@ dotnet_diagnostic.S3971.severity = silent
 dotnet_diagnostic.S4143.severity = silent
 dotnet_diagnostic.S4144.severity = silent
 dotnet_diagnostic.MA0012.severity = silent
+dotnet_diagnostic.MA0018.severity = silent
 dotnet_diagnostic.MA0097.severity = silent
 dotnet_diagnostic.MA0051.severity = silent
 dotnet_diagnostic.MA0056.severity = silent

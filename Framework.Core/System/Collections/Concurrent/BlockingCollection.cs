@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2213 // Disposable fields should be disposed
-#pragma warning disable MA0018 // Do not declare static members on generic types
 
 using System.Collections.Generic;
 using System.Diagnostics;
