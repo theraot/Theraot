@@ -2246,7 +2246,7 @@ namespace System.Linq.Expressions.Interpreter
             var hasValue = node.Type != typeof(void);
 
             Compile(node.SwitchValue);
-            var caseDict = new Dictionary<string, int>();
+            var caseDict = new Dictionary<string, int>(StringComparer.Ordinal);
             var switchIndex = Instructions.Count;
             // by default same as default
             var nullCase = new StrongBox<int>(1);
