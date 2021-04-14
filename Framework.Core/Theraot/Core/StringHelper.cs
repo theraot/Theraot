@@ -269,26 +269,26 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern)
         {
-            return text.Matches(regexPattern, RegexOptions.IgnoreCase, 0);
+            return text.Matches(regexPattern, RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase)
         {
-            return text.Matches(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None, 0);
+            return text.Matches(regexPattern, ignoreCase ? RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.ExplicitCapture, 0);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, bool ignoreCase, int startAt)
         {
-            var regex = new Regex(regexPattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+            var regex = new Regex(regexPattern, ignoreCase ? RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.ExplicitCapture);
             return regex.Matches(text, startAt);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static MatchCollection Matches(this string text, string regexPattern, int startAt)
         {
-            var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
+            var regex = new Regex(regexPattern, RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
             return regex.Matches(text, startAt);
         }
 
