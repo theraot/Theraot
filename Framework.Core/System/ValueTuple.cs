@@ -23,18 +23,6 @@ using System.Runtime.InteropServices;
 namespace System
 {
     /// <summary>
-    /// Helper so we can call some tuple methods recursively without knowing the underlying types.
-    /// </summary>
-    internal interface ITupleInternal
-    {
-        int Size { get; }
-
-        int GetHashCode(IEqualityComparer comparer);
-
-        string ToStringEnd();
-    }
-
-    /// <summary>
     /// The ValueTuple types (from arity 0 to 8) comprise the runtime implementation that underlies tuples in C# and struct tuples in F#.
     /// Aside from created via language syntax, they are most easily created via the ValueTuple.Create factory methods.
     /// The System.ValueTuple types differ from the System.Tuple types in that:
