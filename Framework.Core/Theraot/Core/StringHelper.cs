@@ -1,5 +1,7 @@
 ﻿// Needed for NET40
 
+#pragma warning disable MA0009 // Add regex evaluation timeout
+
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
