@@ -3,6 +3,7 @@
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 #pragma warning disable S2743 // Static fields in generic types
+#pragma warning disable MA0015 // Specify the parameter name in ArgumentException
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
