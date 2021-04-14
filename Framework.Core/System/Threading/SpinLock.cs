@@ -43,7 +43,7 @@ namespace System.Threading
             if (lockTaken)
             {
                 lockTaken = false;
-                throw new ArgumentException(string.Empty);
+                throw new ArgumentException(string.Empty, nameof(lockTaken));
             }
 
             if (IsThreadOwnerTrackingEnabled)
@@ -110,7 +110,7 @@ namespace System.Threading
             if (lockTaken)
             {
                 lockTaken = false;
-                throw new ArgumentException(string.Empty);
+                throw new ArgumentException(string.Empty, nameof(lockTaken));
             }
 
             TryEnter(0, ref lockTaken);

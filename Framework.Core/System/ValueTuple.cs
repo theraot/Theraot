@@ -1974,7 +1974,7 @@ namespace System
         {
             if (rest is not ITupleInternal)
             {
-                throw new ArgumentException("The TRest type argument of ValueTuple`8 must be a ValueTuple.");
+                throw new ArgumentException("The TRest type argument of ValueTuple`8 must be a ValueTuple.", nameof(rest));
             }
 
             Item1 = item1;
