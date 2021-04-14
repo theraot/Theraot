@@ -98,7 +98,7 @@ namespace System.Runtime.Serialization
         {
             if (value == null)
             {
-                AddValue(name, null, typeof(object));
+                AddValue(name, value: null, typeof(object));
             }
             else
             {

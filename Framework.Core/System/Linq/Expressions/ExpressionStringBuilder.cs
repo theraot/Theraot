@@ -521,7 +521,7 @@ namespace System.Linq.Expressions
             var start = 0;
             var ob = node.Object;
 
-            if (node.Method.GetCustomAttributes(typeof(ExtensionAttribute), true).Length > 0)
+            if (node.Method.GetCustomAttributes(typeof(ExtensionAttribute), inherit: true).Length > 0)
             {
                 start = 1;
                 ob = node.GetArgument(0);

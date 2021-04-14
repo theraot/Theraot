@@ -32,10 +32,10 @@ namespace System.Threading.Tasks
                 (
                     nameof(TrySetCanceled),
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.InvokeMethod,
-                    null,
+                    binder: null,
                     CallingConventions.Any,
                     new[] { typeof(CancellationToken) },
-                    null
+                    modifiers: null
                 );
                 if (trySetCanceledCached == null)
                 {

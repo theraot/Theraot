@@ -49,7 +49,7 @@ namespace System.Threading.Tasks
                     return;
 
                 default:
-                    Contract.Assert(false, "Invalid Action in ContinuationResultTaskFromResultTask");
+                    Contract.Assert(condition: false, "Invalid Action in ContinuationResultTaskFromResultTask");
                     break;
             }
         }

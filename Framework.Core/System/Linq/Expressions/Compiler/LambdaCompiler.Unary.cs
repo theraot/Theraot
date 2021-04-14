@@ -181,7 +181,7 @@ namespace System.Linq.Expressions.Compiler
                     IL.EmitDefault(nnType);
                     IL.Emit(OpCodes.Ldloca, loc);
                     IL.EmitGetValueOrDefault(type);
-                    EmitBinaryOperator(ExpressionType.SubtractChecked, nnType, nnType, nnType, false);
+                    EmitBinaryOperator(ExpressionType.SubtractChecked, nnType, nnType, nnType, liftedToNull: false);
 
                     // construct result
                     IL.Emit(OpCodes.Newobj, type.GetConstructor(new[] { nnType }));
@@ -197,7 +197,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     IL.EmitDefault(type);
                     EmitExpression(node.Operand);
-                    EmitBinaryOperator(ExpressionType.SubtractChecked, type, type, type, false);
+                    EmitBinaryOperator(ExpressionType.SubtractChecked, type, type, type, liftedToNull: false);
                 }
             }
             else
@@ -216,12 +216,12 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.IsLifted)
             {
-                var v = Expression.Variable(node.Operand!.Type.GetNonNullable(), null);
+                var v = Expression.Variable(node.Operand!.Type.GetNonNullable(), name: null);
                 var mc = Expression.Call(node.Method, v);
 
                 var resultType = mc.Type.GetNullable();
                 EmitLift(node.NodeType, resultType, mc, new[] { v }, new[] { node.Operand });
-                IL.EmitConvertToType(resultType, node.Type, false, this);
+                IL.EmitConvertToType(resultType, node.Type, isChecked: false, this);
             }
             else
             {

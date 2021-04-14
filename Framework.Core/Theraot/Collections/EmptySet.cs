@@ -16,7 +16,7 @@ namespace Theraot.Collections
         }
 
         private EmptySet()
-            : this(null)
+            : this(comparer: null)
         {
             // Empty
         }

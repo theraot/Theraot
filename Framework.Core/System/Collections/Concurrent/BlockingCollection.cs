@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA2213 // Disposable fields should be disposed
+#pragma warning disable MA0018 // Do not declare static members on generic types
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -447,7 +448,7 @@ namespace System.Collections.Concurrent
 
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -550,7 +551,7 @@ namespace System.Collections.Concurrent
                 return;
             }
 
-            Interlocked.Exchange(ref _data, null)?.Dispose();
+            Interlocked.Exchange(ref _data, value: null)?.Dispose();
         }
 
         private sealed class PrivateData : IDisposable, IReadOnlyCollection<T>

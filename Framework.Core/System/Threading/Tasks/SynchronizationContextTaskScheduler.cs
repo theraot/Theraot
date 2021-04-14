@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
 
         private static void Callback(object state)
         {
-            ((Task)state).ExecuteEntry(true);
+            ((Task)state).ExecuteEntry(preventDoubleExecution: true);
         }
     }
 }

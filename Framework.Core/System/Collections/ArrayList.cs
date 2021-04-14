@@ -349,7 +349,7 @@ namespace System.Collections
 
         public virtual int BinarySearch(object? value)
         {
-            return BinarySearch(0, Count, value, null);
+            return BinarySearch(0, Count, value, comparer: null);
         }
 
         public virtual int BinarySearch(object? value, IComparer comparer)
@@ -387,9 +387,9 @@ namespace System.Collections
         // It does a linear, O(n) search.  Equality is determined by calling
         // item.Equals().
         //
-        public virtual bool Contains(object? value)
+        public virtual bool Contains(object? item)
         {
-            if (value == null)
+            if (item == null)
             {
                 for (var i = 0; i < _size; i++)
                 {
@@ -404,7 +404,7 @@ namespace System.Collections
 
             for (var i = 0; i < _size; i++)
             {
-                if (_items[i]?.Equals(value) == true)
+                if (_items[i]?.Equals(item) == true)
                 {
                     return true;
                 }
@@ -1948,7 +1948,7 @@ namespace System.Collections
             private int _baseVersion;
 
             internal Range(ArrayList list, int index, int count)
-                : base(false)
+                : base(trash: false)
             {
                 _baseList = list;
                 _baseIndex = index;
@@ -2739,7 +2739,7 @@ namespace System.Collections
             private readonly ArrayList _list;
 
             internal SyncArrayList(ArrayList list)
-                : base(false)
+                : base(trash: false)
             {
                 _list = list;
                 SyncRoot = list.SyncRoot;

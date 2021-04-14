@@ -741,7 +741,7 @@ namespace System.Threading.Tasks
                     // list.  In either of these two cases, we will pass "null" for the antecedent,
                     // meaning "the cancellation callback should not attempt to remove the
                     // continuation from its antecedent's continuation list".
-                    continuationTask.AssignCancellationToken(cancellationToken, null, null);
+                    continuationTask.AssignCancellationToken(cancellationToken, antecedent: null, continuation: null);
                 }
                 else
                 {
@@ -766,12 +766,12 @@ namespace System.Threading.Tasks
             }
 
             // Attempt to enqueue the continuation
-            var continuationQueued = AddTaskContinuation(continuation, /*addBeforeOthers:*/ false);
+            var continuationQueued = AddTaskContinuation(continuation, /*addBeforeOthers:*/ addBeforeOthers: false);
 
             // If the continuation was not queued (because the task completed), then run it now.
             if (!continuationQueued)
             {
-                continuation.Run(this, true);
+                continuation.Run(this, canInlineContinuationTask: true);
             }
         }
 
@@ -790,7 +790,7 @@ namespace System.Threading.Tasks
                 return;
             }
 
-            var continuations = Interlocked.CompareExchange(ref _continuations, null, null);
+            var continuations = Interlocked.CompareExchange(ref _continuations, value: null, comparand: null);
             if (continuations == null)
             {
                 return;
@@ -801,7 +801,7 @@ namespace System.Threading.Tasks
             {
                 var spinWait = new SpinWait();
                 LockEnter(spinWait);
-                Interlocked.CompareExchange(ref _continuations, null, continuations);
+                Interlocked.CompareExchange(ref _continuations, value: null, continuations);
                 Volatile.Write(ref _continuationsStatus, _runningContinuations);
             }
             finally
@@ -944,7 +944,7 @@ namespace System.Threading.Tasks
             (
                 this,
                 continuationAction,
-                null,
+                state: null,
                 creationOptions,
                 internalOptions
             );
@@ -1006,7 +1006,7 @@ namespace System.Threading.Tasks
             (
                 this,
                 continuationFunction,
-                null,
+                state: null,
                 creationOptions,
                 internalOptions
             );
@@ -1059,7 +1059,7 @@ namespace System.Threading.Tasks
             // Initializing or initialized
             var spinWait = new SpinWait();
             List<object?>? continuations;
-            while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+            while ((continuations = Interlocked.CompareExchange(ref _continuations, value: null, comparand: null)) == null)
             {
                 spinWait.SpinOnce();
             }
@@ -1072,12 +1072,12 @@ namespace System.Threading.Tasks
         {
             while (true)
             {
-                if (Interlocked.CompareExchange(ref _continuations, null, null) == null)
+                if (Interlocked.CompareExchange(ref _continuations, value: null, comparand: null) == null)
                 {
                     return;
                 }
 
-                var thread = Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null);
+                var thread = Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, comparand: null);
                 if (thread == null)
                 {
                     return;
@@ -1089,7 +1089,7 @@ namespace System.Threading.Tasks
 
         private void LockExit()
         {
-            Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
+            Interlocked.CompareExchange(ref _continuationsOwner, value: null, Thread.CurrentThread);
         }
 
         private List<object?>? RetrieveContinuations()
@@ -1109,14 +1109,14 @@ namespace System.Threading.Tasks
                     if (Interlocked.CompareExchange(ref _continuationsStatus, _continuationsInitialization, _continuationsNotInitialized) == _continuationsNotInitialized)
                     {
                         var created = new List<object?>();
-                        continuations = Interlocked.CompareExchange(ref _continuations, created, null) ?? created;
+                        continuations = Interlocked.CompareExchange(ref _continuations, created, comparand: null) ?? created;
                         goto default;
                     }
 
                     goto case _continuationsInitialization;
                 case _continuationsInitialization:
                     // Initializing or initialized
-                    while (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization && (continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+                    while (Volatile.Read(ref _continuationsStatus) == _continuationsInitialization && (continuations = Interlocked.CompareExchange(ref _continuations, value: null, comparand: null)) == null)
                     {
                         spinWait.SpinOnce();
                     }
@@ -1860,7 +1860,7 @@ namespace System.Threading.Tasks
             (
                 this,
                 continuationAction,
-                null,
+                state: null,
                 creationOptions,
                 internalOptions
             );
@@ -1927,7 +1927,7 @@ namespace System.Threading.Tasks
             (
                 this,
                 continuationFunction,
-                null,
+                state: null,
                 creationOptions,
                 internalOptions
             );

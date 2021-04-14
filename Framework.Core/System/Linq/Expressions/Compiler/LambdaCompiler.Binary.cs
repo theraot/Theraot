@@ -69,9 +69,9 @@ namespace System.Linq.Expressions.Compiler
         {
             if (b.IsLifted)
             {
-                var p1 = Expression.Variable(b.Left.Type.GetNonNullable(), null);
-                var p2 = Expression.Variable(b.Right.Type.GetNonNullable(), null);
-                var mc = Expression.Call(null, b.Method!, p1, p2);
+                var p1 = Expression.Variable(b.Left.Type.GetNonNullable(), name: null);
+                var p2 = Expression.Variable(b.Right.Type.GetNonNullable(), name: null);
+                var mc = Expression.Call(instance: null, b.Method!, p1, p2);
                 Type resultType;
                 if (b.IsLiftedToNull)
                 {
@@ -99,7 +99,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                EmitMethodCallExpression(Expression.Call(null, b.Method!, b.Left, b.Right), flags);
+                EmitMethodCallExpression(Expression.Call(instance: null, b.Method!, b.Left, b.Right), flags);
             }
         }
 
@@ -214,7 +214,7 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locLeft);
             FreeLocal(locRight);
 
-            EmitBinaryOperator(op, leftType.GetNonNullable(), rightType.GetNonNullable(), resultType.GetNonNullable(), false);
+            EmitBinaryOperator(op, leftType.GetNonNullable(), rightType.GetNonNullable(), resultType.GetNonNullable(), liftedToNull: false);
 
             // construct result type
             var ci = resultType.GetConstructor(new[] { resultType.GetNonNullable() });

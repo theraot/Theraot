@@ -127,7 +127,7 @@ namespace Theraot.Threading
             }
 
             var slot = _slot ?? InitializeSlot();
-            Thread.SetData(slot, null);
+            Thread.SetData(slot, data: null);
         }
 
         void IObserver<T>.OnCompleted()
@@ -179,7 +179,7 @@ namespace Theraot.Threading
         private LocalDataStoreSlot InitializeSlot()
         {
             var slot = Thread.AllocateDataSlot();
-            var found = Interlocked.CompareExchange(ref _slot, slot, null);
+            var found = Interlocked.CompareExchange(ref _slot, slot, comparand: null);
             if (found != null)
             {
                 slot = found;

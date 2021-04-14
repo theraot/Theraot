@@ -293,7 +293,7 @@ namespace System.Linq.Expressions.Compiler
             if (clone != null)
             {
                 // Okay to wrap since we know no one can mutate the clone array.
-                expr = node.Rewrite(null, clone);
+                expr = node.Rewrite(variables: null, clone);
             }
 
             return new Result(action, expr);
@@ -389,7 +389,7 @@ namespace System.Linq.Expressions.Compiler
                 // so if stack is not empty, rewrite to empty the stack.
                 if (stack != Stack.Empty)
                 {
-                    expr = Expression.MakeGoto(node.Kind, node.Target, null, node.Type);
+                    expr = Expression.MakeGoto(node.Kind, node.Target, value: null, node.Type);
                 }
 
                 return new Result(RewriteAction.None, expr);
@@ -1020,7 +1020,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (stack != Stack.Empty)
                 {
-                    expr = new UnaryExpression(ExpressionType.Throw, null, node.Type, null);
+                    expr = new UnaryExpression(ExpressionType.Throw, expression: null, node.Type, method: null);
                 }
 
                 return new Result(RewriteAction.None, expr);
@@ -1036,7 +1036,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (action != RewriteAction.None)
             {
-                expr = new UnaryExpression(ExpressionType.Throw, value.Node, node.Type, null);
+                expr = new UnaryExpression(ExpressionType.Throw, value.Node, node.Type, method: null);
             }
 
             return new Result(action, expr);

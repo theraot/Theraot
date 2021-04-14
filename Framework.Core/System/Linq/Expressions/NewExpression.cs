@@ -73,12 +73,12 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(constructor, nameof(constructor));
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
-            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), true, true);
+            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
             var argList = arguments.AsArrayInternal();
             ValidateArgumentTypes(constructor, ExpressionType.New, ref argList, nameof(constructor));
 
-            return new NewExpression(constructor, argList, null);
+            return new NewExpression(constructor, argList, members: null);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(constructor, nameof(constructor));
             ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
-            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), true, true);
+            TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
             return NewExtracted(constructor, arguments, members);
         }
@@ -160,7 +160,7 @@ namespace System.Linq.Expressions
 
             if (type.IsValueType)
             {
-                return new NewValueTypeExpression(type, ArrayEx.Empty<Expression>(), null);
+                return new NewValueTypeExpression(type, ArrayEx.Empty<Expression>(), members: null);
             }
 
             var ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
@@ -408,7 +408,7 @@ namespace System.Linq.Expressions
     internal sealed class NewValueTypeExpression : NewExpression
     {
         internal NewValueTypeExpression(Type type, Expression[] arguments, ReadOnlyCollection<MemberInfo>? members)
-            : base(null, arguments, members)
+            : base(constructor: null, arguments, members)
         {
             Type = type;
         }

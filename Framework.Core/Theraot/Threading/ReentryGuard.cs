@@ -106,7 +106,7 @@ namespace Theraot.Threading
 
         private static IPromise AddExecution(Action action, ThreadSafeQueue<Action> queue)
         {
-            var promised = new Promise(false);
+            var promised = new Promise(done: false);
             var result = new ReadOnlyPromise(promised);
             queue.Add
             (
@@ -128,7 +128,7 @@ namespace Theraot.Threading
 
         private static IPromise<T> AddExecution<T>(Func<T> action, ThreadSafeQueue<Action> queue)
         {
-            var promised = new PromiseNeedle<T>(false);
+            var promised = new PromiseNeedle<T>(done: false);
             var result = new ReadOnlyPromiseNeedle<T>(promised);
             queue.Add
             (

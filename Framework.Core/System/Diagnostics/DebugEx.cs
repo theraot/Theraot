@@ -9,7 +9,7 @@ namespace System.Diagnostics
         public static void Fail(string message)
         {
 #if LESSTHAN_NETSTANDARD13
-            Debug.Assert(false, message);
+            Debug.Assert(condition: false, message);
 #else
             Debug.Fail(message);
 #endif

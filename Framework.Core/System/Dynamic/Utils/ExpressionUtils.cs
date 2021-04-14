@@ -188,7 +188,7 @@ namespace System.Dynamic.Utils
                 pType = pType.GetElementType();
             }
 
-            TypeUtils.ValidateType(pType, methodParamName, true, true);
+            TypeUtils.ValidateType(pType, methodParamName, allowByRef: true, allowPointer: true);
             if (pType.IsReferenceAssignableFromInternal(arguments.Type) || TryQuote(pType, ref arguments))
             {
                 return arguments;

@@ -85,7 +85,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="CatchBlock" />.</returns>
         public static CatchBlock Catch(Type type, Expression body)
         {
-            return MakeCatchBlock(type, null, body, null);
+            return MakeCatchBlock(type, variable: null, body, filter: null);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace System.Linq.Expressions
         public static CatchBlock Catch(ParameterExpression variable, Expression body)
         {
             ContractUtils.RequiresNotNull(variable, nameof(variable));
-            return MakeCatchBlock(variable.Type, variable, body, null);
+            return MakeCatchBlock(variable.Type, variable, body, filter: null);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="CatchBlock" />.</returns>
         public static CatchBlock Catch(Type type, Expression body, Expression filter)
         {
-            return MakeCatchBlock(type, null, body, filter);
+            return MakeCatchBlock(type, variable: null, body, filter);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace System.Linq.Expressions
             ExpressionUtils.RequiresCanRead(body, nameof(body));
             if (filter == null)
             {
-                return new CatchBlock(type, variable, body, null);
+                return new CatchBlock(type, variable, body, filter: null);
             }
 
             ContractUtils.RequiresNotNull(filter, nameof(filter));

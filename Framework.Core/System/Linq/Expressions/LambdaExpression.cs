@@ -44,7 +44,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public new TDelegate Compile()
         {
-            return Compile(false);
+            return Compile(preferInterpretation: false);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static Expression<TDelegate> Lambda<TDelegate>(Expression body, params ParameterExpression[]? parameters)
         {
-            return Lambda<TDelegate>(body, null, false, parameters);
+            return Lambda<TDelegate>(body, name: null, tailCall: false, parameters);
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static Expression<TDelegate> Lambda<TDelegate>(Expression body, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda<TDelegate>(body, null, false, parameters);
+            return Lambda<TDelegate>(body, name: null, tailCall: false, parameters);
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static Expression<TDelegate> Lambda<TDelegate>(Expression body, bool tailCall, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda<TDelegate>(body, null, tailCall, parameters);
+            return Lambda<TDelegate>(body, name: null, tailCall, parameters);
         }
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static Expression<TDelegate> Lambda<TDelegate>(Expression body, string name, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda<TDelegate>(body, name, false, parameters);
+            return Lambda<TDelegate>(body, name, tailCall: false, parameters);
         }
 
         /// <summary>
@@ -390,7 +390,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Expression body, params ParameterExpression[]? parameters)
         {
-            return Lambda(body, false, (IEnumerable<ParameterExpression>?)parameters);
+            return Lambda(body, tailCall: false, (IEnumerable<ParameterExpression>?)parameters);
         }
 
         /// <summary>
@@ -430,7 +430,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Expression body, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda(body, null, false, parameters);
+            return Lambda(body, name: null, tailCall: false, parameters);
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Expression body, bool tailCall, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda(body, null, tailCall, parameters);
+            return Lambda(body, name: null, tailCall, parameters);
         }
 
         /// <summary>
@@ -471,7 +471,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, params ParameterExpression[]? parameters)
         {
-            return Lambda(delegateType, body, null, false, parameters);
+            return Lambda(delegateType, body, name: null, tailCall: false, parameters);
         }
 
         /// <summary>
@@ -494,7 +494,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, bool tailCall, params ParameterExpression[]? parameters)
         {
-            return Lambda(delegateType, body, null, tailCall, parameters);
+            return Lambda(delegateType, body, name: null, tailCall, parameters);
         }
 
         /// <summary>
@@ -513,7 +513,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda(delegateType, body, null, false, parameters);
+            return Lambda(delegateType, body, name: null, tailCall: false, parameters);
         }
 
         /// <summary>
@@ -536,7 +536,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Type delegateType, Expression body, bool tailCall, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda(delegateType, body, null, tailCall, parameters);
+            return Lambda(delegateType, body, name: null, tailCall, parameters);
         }
 
         /// <summary>
@@ -555,7 +555,7 @@ namespace System.Linq.Expressions
         /// </returns>
         public static LambdaExpression Lambda(Expression body, string name, IEnumerable<ParameterExpression>? parameters)
         {
-            return Lambda(body, name, false, parameters);
+            return Lambda(body, name, tailCall: false, parameters);
         }
 
         /// <summary>
@@ -745,7 +745,7 @@ namespace System.Linq.Expressions
         {
             var paramList = parameters.AsArrayInternal();
             ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
-            return CreateLambda(delegateType, body, name, false, paramList);
+            return CreateLambda(delegateType, body, name, tailCall: false, paramList);
         }
 
         private static LambdaExpression LambdaExtracted(Type delegateType, ref Expression body, string? name, bool tailCall, IEnumerable<ParameterExpression> parameters)
@@ -764,7 +764,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Lambda type parameter must be derived from System.Delegate", paramName);
             }
 
-            TypeUtils.ValidateType(delegateType, nameof(delegateType), true, true);
+            TypeUtils.ValidateType(delegateType, nameof(delegateType), allowByRef: true, allowPointer: true);
             var ldc = _lambdaDelegateCache;
             if (!ldc.TryGetValue(delegateType, out var mi))
             {
@@ -924,7 +924,7 @@ namespace System.Linq.Expressions
         /// <returns>A delegate containing the compiled version of the lambda.</returns>
         public Delegate Compile()
         {
-            return Compile(false);
+            return Compile(preferInterpretation: false);
         }
 
         /// <summary>

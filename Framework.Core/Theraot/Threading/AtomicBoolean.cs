@@ -58,12 +58,12 @@ namespace Theraot.Threading
 
         public bool TrySet()
         {
-            return !Exchange(true);
+            return !Exchange(newVal: true);
         }
 
         internal bool TryRelaxedSet()
         {
-            return _value == _unset && !Exchange(true);
+            return _value == _unset && !Exchange(newVal: true);
         }
     }
 }

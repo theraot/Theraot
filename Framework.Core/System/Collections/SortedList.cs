@@ -146,7 +146,7 @@ namespace System.Collections
         // subsequently added to the sorted list.
         //
         public SortedList(IDictionary d)
-            : this(d, null)
+            : this(d, comparer: null)
         {
             // Empty
         }

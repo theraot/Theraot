@@ -33,8 +33,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -55,8 +55,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -82,8 +82,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -113,8 +113,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -144,8 +144,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -177,8 +177,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -219,8 +219,8 @@ namespace Theraot.Collections.Specialized
 
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -264,8 +264,8 @@ namespace Theraot.Collections.Specialized
 
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -292,8 +292,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -328,8 +328,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -373,8 +373,8 @@ namespace Theraot.Collections.Specialized
 
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -421,8 +421,8 @@ namespace Theraot.Collections.Specialized
 
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -452,8 +452,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {
@@ -483,8 +483,8 @@ namespace Theraot.Collections.Specialized
             _wrapped = new DictionaryEx<TKey, TValue>(Comparer);
             if (typeof(TKey).CanBeNull())
             {
-                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, null);
-                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, null);
+                Keys = new ConditionalExtendedList<ReadOnlyStructNeedle<TKey>>(new[] { default(ReadOnlyStructNeedle<TKey>) }, _wrapped.Keys.AsNeedleEnumerable(), () => _hasNull, enumerateAppend: null);
+                Values = new ConditionalExtendedList<TValue>(_valueForNull, _wrapped.Values, () => _hasNull, enumerateAppend: null);
             }
             else
             {

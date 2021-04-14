@@ -228,7 +228,7 @@ namespace System.Numerics
             }
 
             var bigIntegerBuilder = new BigIntegerBuilder();
-            ModDivCore(ref this, ref regDen, true, ref bigIntegerBuilder);
+            ModDivCore(ref this, ref regDen, fQuo: true, ref bigIntegerBuilder);
             NumericHelper.Swap(ref this, ref bigIntegerBuilder);
         }
 
@@ -382,7 +382,7 @@ namespace System.Numerics
             }
 
             var bigIntegerBuilder = new BigIntegerBuilder();
-            ModDivCore(ref this, ref regDen, false, ref bigIntegerBuilder);
+            ModDivCore(ref this, ref regDen, fQuo: false, ref bigIntegerBuilder);
         }
 
         public void ModDiv(ref BigIntegerBuilder regDen, ref BigIntegerBuilder regQuo)
@@ -399,7 +399,7 @@ namespace System.Numerics
                 return;
             }
 
-            ModDivCore(ref this, ref regDen, true, ref regQuo);
+            ModDivCore(ref this, ref regDen, fQuo: true, ref regQuo);
         }
 
         public void Mul(uint u)

@@ -63,7 +63,7 @@ namespace System.Dynamic
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public DynamicMetaObject FallbackGetIndex(DynamicMetaObject target, DynamicMetaObject[] indexes)
         {
-            return FallbackGetIndex(target, indexes, null);
+            return FallbackGetIndex(target, indexes, errorSuggestion: null);
         }
 
         /// <summary>

@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         internal BranchInstruction()
-            : this(false, false)
+            : this(hasResult: false, hasValue: false)
         {
             // Empty
         }
@@ -308,7 +308,7 @@ namespace System.Linq.Expressions.Interpreter
             catch (Exception exception) when (Handler!.HasHandler(frame, exception, out var exHandler, out var unwrappedException))
             {
                 Debug.Assert(!(unwrappedException is RethrowException));
-                frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, true);
+                frame.InstructionIndex += frame.Goto(exHandler.LabelIndex, unwrappedException, gotoExceptionHandler: true);
                 var rethrow = false;
                 try
                 {
@@ -375,12 +375,12 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static EnterTryCatchFinallyInstruction CreateTryCatch()
         {
-            return new EnterTryCatchFinallyInstruction(UnknownInstrIndex, false);
+            return new EnterTryCatchFinallyInstruction(UnknownInstrIndex, hasFinally: false);
         }
 
         internal static EnterTryCatchFinallyInstruction CreateTryFinally(int labelIndex)
         {
-            return new EnterTryCatchFinallyInstruction(labelIndex, true);
+            return new EnterTryCatchFinallyInstruction(labelIndex, hasFinally: true);
         }
 
         internal void SetTryHandler(TryCatchFinallyHandler tryHandler)
@@ -524,7 +524,7 @@ namespace System.Linq.Expressions.Interpreter
             // Are we jumping out of catch/finally while aborting the current thread?
             // goto the target label or the current finally continuation:
             var value = _hasValue ? frame.Pop()! : InterpreterCore.NoValue;
-            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : InterpreterCore.NoValue, false);
+            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : InterpreterCore.NoValue, gotoExceptionHandler: false);
         }
 
         internal static GotoInstruction Create(int labelIndex, bool hasResult, bool hasValue, bool labelTargetGetsValue)

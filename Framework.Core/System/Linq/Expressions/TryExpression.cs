@@ -48,7 +48,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="TryExpression" />.</returns>
         public static TryExpression TryCatch(Expression body, params CatchBlock[] handlers)
         {
-            return MakeTry(null, body, null, null, handlers);
+            return MakeTry(type: null, body, @finally: null, fault: null, handlers);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="TryExpression" />.</returns>
         public static TryExpression TryCatchFinally(Expression body, Expression @finally, params CatchBlock[] handlers)
         {
-            return MakeTry(null, body, @finally, null, handlers);
+            return MakeTry(type: null, body, @finally, fault: null, handlers);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="TryExpression" />.</returns>
         public static TryExpression TryFault(Expression body, Expression fault)
         {
-            return MakeTry(null, body, null, fault, null);
+            return MakeTry(type: null, body, @finally: null, fault, handlers: null);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="TryExpression" />.</returns>
         public static TryExpression TryFinally(Expression body, Expression @finally)
         {
-            return MakeTry(null, body, @finally, null, null);
+            return MakeTry(type: null, body, @finally, fault: null, handlers: null);
         }
 
         private static TryExpression MakeTryExtracted(Type? type, Expression body, Expression? @finally, Expression? fault, IEnumerable<CatchBlock> handlers)

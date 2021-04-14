@@ -11,7 +11,7 @@ namespace System.Collections.Concurrent
         private readonly IEnumerable<T> _source;
 
         public DynamicOrderablePartitioner(IEnumerable<T> source)
-            : base(true, false, true)
+            : base(keysOrderedInEachPartition: true, keysOrderedAcrossPartitions: false, keysNormalized: true)
         {
             _source = source;
         }

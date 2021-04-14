@@ -167,7 +167,7 @@ namespace Theraot.Collections
                 {
                     if (Interlocked.CompareExchange(ref tryTake[0], (out T value1) => TakeReplacement(out value1), tryTake[0]) == tryTake[0])
                     {
-                        Interlocked.Exchange(ref subscription[0], null)?.Dispose();
+                        Interlocked.Exchange(ref subscription[0], value: null)?.Dispose();
                         semaphore.Dispose();
                         source.Dispose();
                     }
@@ -252,8 +252,8 @@ namespace Theraot.Collections
 
         public void Close()
         {
-            Volatile.Write(ref _tryTake, null);
-            var proxy = Interlocked.Exchange(ref _proxy, null);
+            Volatile.Write(ref _tryTake, value: null);
+            var proxy = Interlocked.Exchange(ref _proxy, value: null);
             proxy?.OnCompleted();
         }
 
@@ -348,7 +348,7 @@ namespace Theraot.Collections
                                 return true;
                             }
 
-                            Interlocked.Exchange(ref enumeratorBox[0], null)?.Dispose();
+                            Interlocked.Exchange(ref enumeratorBox[0], value: null)?.Dispose();
                         }
                     }
                 }

@@ -169,11 +169,11 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(property, nameof(property));
 
-            var mi = property.GetGetMethod(true);
+            var mi = property.GetGetMethod(nonPublic: true);
 
             if (mi == null)
             {
-                mi = property.GetSetMethod(true);
+                mi = property.GetSetMethod(nonPublic: true);
 
                 if (mi == null)
                 {
@@ -293,12 +293,12 @@ namespace System.Linq.Expressions
             flags |= mi.IsStatic ? BindingFlags.Static : BindingFlags.Instance;
             foreach (var pi in type.GetProperties(flags))
             {
-                if (pi.CanRead && CheckMethod(mi, pi.GetGetMethod(true)))
+                if (pi.CanRead && CheckMethod(mi, pi.GetGetMethod(nonPublic: true)))
                 {
                     return pi;
                 }
 
-                if (pi.CanWrite && CheckMethod(mi, pi.GetSetMethod(true)))
+                if (pi.CanWrite && CheckMethod(mi, pi.GetSetMethod(nonPublic: true)))
                 {
                     return pi;
                 }

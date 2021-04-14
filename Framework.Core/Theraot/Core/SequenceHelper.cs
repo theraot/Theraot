@@ -13,7 +13,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(next));
             }
 
-            return ExploreSequenceExtracted(initial, endCondition, next, FuncHelper.GetIdentityFunc<T>(), null);
+            return ExploreSequenceExtracted(initial, endCondition, next, FuncHelper.GetIdentityFunc<T>(), comparer: null);
         }
 
         public static IEnumerable<T> ExploreSequence<T>(T initial, T endCondition, Func<T, T> next, IEqualityComparer<T>? comparer)

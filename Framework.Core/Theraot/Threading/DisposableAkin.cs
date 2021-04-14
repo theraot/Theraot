@@ -31,7 +31,7 @@ namespace Theraot.Threading
             {
                 try
                 {
-                    Dispose(false);
+                    Dispose(disposeManagedResources: false);
                 }
                 catch (Exception exception)
                 {
@@ -55,7 +55,7 @@ namespace Theraot.Threading
                 throw new ArgumentNullException(nameof(condition));
             }
 
-            var found = Interlocked.CompareExchange(ref _threadUniqueId, null, new StrongBox<UniqueId>(ThreadUniqueId.CurrentThreadId));
+            var found = Interlocked.CompareExchange(ref _threadUniqueId, value: null, new StrongBox<UniqueId>(ThreadUniqueId.CurrentThreadId));
             if (found == null || found.Value != ThreadUniqueId.CurrentThreadId)
             {
                 return false;
@@ -87,7 +87,7 @@ namespace Theraot.Threading
         {
             try
             {
-                Dispose(true);
+                Dispose(disposeManagedResources: true);
             }
             finally
             {
@@ -99,7 +99,7 @@ namespace Theraot.Threading
         {
             if (disposeManagedResources)
             {
-                var found = Interlocked.CompareExchange(ref _threadUniqueId, null, new StrongBox<UniqueId>(ThreadUniqueId.CurrentThreadId));
+                var found = Interlocked.CompareExchange(ref _threadUniqueId, value: null, new StrongBox<UniqueId>(ThreadUniqueId.CurrentThreadId));
                 if (found == null || found.Value != ThreadUniqueId.CurrentThreadId)
                 {
                     return;

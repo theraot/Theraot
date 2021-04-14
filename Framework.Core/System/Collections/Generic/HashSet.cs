@@ -231,22 +231,22 @@ namespace System.Collections.Generic
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(other.ToHashSet(Comparer), true);
+            return IsSubsetOf(other.ToHashSet(Comparer), proper: true);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(other.ToHashSet(Comparer), true);
+            return IsSupersetOf(other.ToHashSet(Comparer), proper: true);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(other.ToHashSet(Comparer), false);
+            return IsSubsetOf(other.ToHashSet(Comparer), proper: false);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(other.ToHashSet(Comparer), false);
+            return IsSupersetOf(other.ToHashSet(Comparer), proper: false);
         }
 
         public bool Overlaps(IEnumerable<T> other)

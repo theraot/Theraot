@@ -49,7 +49,7 @@ namespace System.Linq.Expressions
         /// <returns>The expression representing the argument at the specified <paramref name="index" />.</returns>
         public Expression GetArgument(int index)
         {
-            return Arguments[index] ?? Expression.Constant(null);
+            return Arguments[index] ?? Expression.Constant(value: null);
         }
 
         /// <summary>

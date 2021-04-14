@@ -28,7 +28,7 @@ namespace Theraot.Collections.ThreadSafe
         private EventHandler? _handle;
 
         public WeakDictionary()
-            : this(null)
+            : this(comparer: null)
         {
             // Empty
         }
@@ -63,14 +63,14 @@ namespace Theraot.Collections.ThreadSafe
                 if (value)
                 {
                     var created = new EventHandler((_, _) => RemoveDeadItems());
-                    if (handle == null && Interlocked.CompareExchange(ref _handle, created, null) == null)
+                    if (handle == null && Interlocked.CompareExchange(ref _handle, created, comparand: null) == null)
                     {
                         GCMonitor.Collected += created;
                     }
                 }
                 else
                 {
-                    if (handle != null && Interlocked.CompareExchange(ref _handle, null, handle) == handle)
+                    if (handle != null && Interlocked.CompareExchange(ref _handle, value: null, handle) == handle)
                     {
                         GCMonitor.Collected -= handle;
                     }

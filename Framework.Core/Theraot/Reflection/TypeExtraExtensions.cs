@@ -50,7 +50,7 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(item));
             }
 #if TARGETS_NET
-            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), true);
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit: true);
 #else
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute));
 #endif
@@ -77,7 +77,7 @@ namespace Theraot.Reflection
                 throw new ArgumentNullException(nameof(item));
             }
 #if TARGETS_NET
-            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), true);
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit: true);
 #else
             return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute));
 #endif
@@ -185,7 +185,7 @@ namespace Theraot.Reflection
         public static bool HasAttribute<TAttribute>(this MemberInfo item)
             where TAttribute : Attribute
         {
-            var attributes = item.GetAttributes<TAttribute>(true);
+            var attributes = item.GetAttributes<TAttribute>(inherit: true);
             return attributes?.Length > 0;
         }
 
@@ -201,7 +201,7 @@ namespace Theraot.Reflection
         public static bool HasAttribute<TAttribute>(this ParameterInfo item)
             where TAttribute : Attribute
         {
-            var attributes = item.GetAttributes<TAttribute>(true);
+            var attributes = item.GetAttributes<TAttribute>(inherit: true);
             return attributes?.Length > 0;
         }
 
@@ -209,7 +209,7 @@ namespace Theraot.Reflection
         public static bool HasAttribute<TAttribute>(this Type item)
             where TAttribute : Attribute
         {
-            var attributes = item.GetAttributes<TAttribute>(true);
+            var attributes = item.GetAttributes<TAttribute>(inherit: true);
             return attributes?.Length > 0;
         }
 
@@ -656,7 +656,7 @@ namespace Theraot.Reflection
             }
 
 #if LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
-            var attributes = type.GetAttributes<StructLayoutAttribute>(false);
+            var attributes = type.GetAttributes<StructLayoutAttribute>(inherit: false);
             return attributes.FirstOrDefault();
 
 #else

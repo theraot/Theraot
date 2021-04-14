@@ -382,7 +382,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
 
-            return !text.EndsWith(end, false, CultureInfo.CurrentCulture) ? text.Append(end) : text;
+            return !text.EndsWith(end, ignoreCase: false, CultureInfo.CurrentCulture) ? text.Append(end) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -420,7 +420,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(end));
             }
 
-            return text.EndsWith(end, false, CultureInfo.CurrentCulture) ? text.ExceptEnd(end.Length) : text;
+            return text.EndsWith(end, ignoreCase: false, CultureInfo.CurrentCulture) ? text.ExceptEnd(end.Length) : text;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]

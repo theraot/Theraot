@@ -171,7 +171,7 @@ namespace System.Collections.Concurrent
         private readonly IList<T> _source;
 
         public StaticOrderablePartitioner(IEnumerable<T> source)
-            : base(true, false, true)
+            : base(keysOrderedInEachPartition: true, keysOrderedAcrossPartitions: false, keysNormalized: true)
         {
             _source = source.AsIList();
         }

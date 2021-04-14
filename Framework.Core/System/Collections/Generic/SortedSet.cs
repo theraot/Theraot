@@ -452,8 +452,8 @@ namespace System.Collections.Generic
 
                 info.AddValue(nameof(Max), _lower, typeof(T));
                 info.AddValue(nameof(Min), _upper, typeof(T));
-                info.AddValue("lBoundActive", true);
-                info.AddValue("uBoundActive", true);
+                info.AddValue("lBoundActive", value: true);
+                info.AddValue("uBoundActive", value: true);
                 base.GetObjectData(info, context);
             }
 

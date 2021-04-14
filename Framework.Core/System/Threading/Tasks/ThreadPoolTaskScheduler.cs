@@ -92,7 +92,7 @@ namespace System.Threading.Tasks
             bool result;
             try
             {
-                result = task.ExecuteEntry(true); // handles switching Task.Current etc.
+                result = task.ExecuteEntry(preventDoubleExecution: true); // handles switching Task.Current etc.
             }
             finally
             {
@@ -111,11 +111,11 @@ namespace System.Threading.Tasks
             Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
             if (obj is Task task)
             {
-                task.ExecuteEntry(false);
+                task.ExecuteEntry(preventDoubleExecution: false);
             }
             else
             {
-                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: obj is null");
+                Contract.Assert(condition: false, "TaskScheduler.LongRunningThreadWork: obj is null");
             }
         }
 
@@ -123,7 +123,7 @@ namespace System.Threading.Tasks
         {
             if (obj is Task task)
             {
-                task.ExecuteEntry(true);
+                task.ExecuteEntry(preventDoubleExecution: true);
             }
         }
     }

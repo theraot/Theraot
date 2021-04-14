@@ -289,7 +289,7 @@ namespace System.Linq.Expressions.Compiler
             // begin the catch, clear the exception, we've
             // already saved it
             IL.MarkLabel(endFilter);
-            IL.BeginCatchBlock(null);
+            IL.BeginCatchBlock(exceptionType: null);
             IL.Emit(OpCodes.Pop);
         }
 
@@ -551,7 +551,7 @@ namespace System.Linq.Expressions.Compiler
                     EmitExpression(test);
                     _scope.EmitSet(testValue);
                     Debug.Assert(testValue.Type.IsReferenceAssignableFromInternal(test.Type));
-                    EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
+                    EmitExpressionAndBranch(branchValue: true, Expression.Equal(switchValue, testValue, liftToNull: false, node.Comparison), labels[i]);
                 }
             }
 
@@ -692,7 +692,7 @@ namespace System.Linq.Expressions.Compiler
                 scope,
                 _tree.Scopes.TryGetValue(node, out var innerScope)
                     ? innerScope
-                    : new CompilerScope(node, false)
+                    : new CompilerScope(node, isMethod: false)
                     {
                         NeedsClosure = scope.NeedsClosure
                     }
@@ -720,7 +720,7 @@ namespace System.Linq.Expressions.Compiler
                 scope,
                 _tree.Scopes.TryGetValue(node, out var innerScope)
                     ? innerScope
-                    : new CompilerScope(node, false)
+                    : new CompilerScope(node, isMethod: false)
                     {
                         NeedsClosure = scope.NeedsClosure
                     }
@@ -790,7 +790,7 @@ namespace System.Linq.Expressions.Compiler
             // emitting a volatile access to the field.
             Expression dictInit = Expression.Condition
             (
-                Expression.Equal(dictField, Expression.Constant(null, dictField.Type)),
+                Expression.Equal(dictField, Expression.Constant(value: null, dictField.Type)),
                 Expression.Assign
                 (
                     dictField,
@@ -841,16 +841,16 @@ namespace System.Linq.Expressions.Compiler
                     Expression.Assign(switchValue, node.SwitchValue),
                     Expression.IfThenElse
                     (
-                        Expression.Equal(switchValue, Expression.Constant(null, typeof(string))),
+                        Expression.Equal(switchValue, Expression.Constant(value: null, typeof(string))),
                         Expression.Assign(switchIndex, Utils.Constant(nullCase)),
                         Expression.IfThenElse
                         (
-                            Expression.Call(dictInit, "TryGetValue", null, switchValue, switchIndex),
+                            Expression.Call(dictInit, "TryGetValue", typeArguments: null, switchValue, switchIndex),
                             Utils.Empty,
                             Expression.Assign(switchIndex, Utils.Constant(-1))
                         )
                     ),
-                    Expression.Switch(node.Type, switchIndex, node.DefaultBody, null, cases.ToArray())
+                    Expression.Switch(node.Type, switchIndex, node.DefaultBody, comparison: null, cases.ToArray())
                 )
             );
 

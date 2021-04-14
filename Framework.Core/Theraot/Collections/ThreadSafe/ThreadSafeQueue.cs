@@ -27,7 +27,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public ThreadSafeQueue()
         {
-            _root = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
+            _root = Node<FixedSizeQueue<T>>.GetNode(link: null, new FixedSizeQueue<T>(64));
             _tail = _root;
         }
 
@@ -39,7 +39,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </param>
         public ThreadSafeQueue(IEnumerable<T> source)
         {
-            _root = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(source));
+            _root = Node<FixedSizeQueue<T>>.GetNode(link: null, new FixedSizeQueue<T>(source));
             _count = _root.Value.Count;
             _tail = _root;
         }
@@ -69,8 +69,8 @@ namespace Theraot.Collections.ThreadSafe
                     return;
                 }
 
-                var node = Node<FixedSizeQueue<T>>.GetNode(null, new FixedSizeQueue<T>(64));
-                var found = Interlocked.CompareExchange(ref tail.Link, node, null);
+                var node = Node<FixedSizeQueue<T>>.GetNode(link: null, new FixedSizeQueue<T>(64));
+                var found = Interlocked.CompareExchange(ref tail.Link, node, comparand: null);
                 if (found == null)
                 {
                     Volatile.Write(ref _tail, node);

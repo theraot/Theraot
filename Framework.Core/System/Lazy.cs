@@ -35,7 +35,7 @@ namespace System
         }
 
         public Lazy(LazyThreadSafetyMode mode)
-            : this(ConstructorHelper.Create<T>, mode, false)
+            : this(ConstructorHelper.Create<T>, mode, cacheExceptions: false)
         {
             // Empty
         }
@@ -47,7 +47,7 @@ namespace System
         }
 
         public Lazy(Func<T> valueFactory, LazyThreadSafetyMode mode)
-            : this(valueFactory, mode, true)
+            : this(valueFactory, mode, cacheExceptions: true)
         {
             // Empty
         }
@@ -142,7 +142,7 @@ namespace System
         {
             if (waitHandle == null)
             {
-                waitHandle = new ManualResetEvent(false);
+                waitHandle = new ManualResetEvent(initialState: false);
             }
 
             if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
@@ -161,7 +161,7 @@ namespace System
                 }
                 finally
                 {
-                    Volatile.Write(ref thread, null);
+                    Volatile.Write(ref thread, value: null);
                     waitHandle.Set();
                     waitHandle.Close();
                 }
@@ -219,12 +219,12 @@ namespace System
         {
             if (waitHandle == null)
             {
-                waitHandle = new ManualResetEvent(false);
+                waitHandle = new ManualResetEvent(initialState: false);
             }
 
             while (Volatile.Read(ref _isValueCreated) != 1)
             {
-                var foundThread = Interlocked.CompareExchange(ref thread, Thread.CurrentThread, null);
+                var foundThread = Interlocked.CompareExchange(ref thread, Thread.CurrentThread, comparand: null);
                 if (foundThread == null)
                 {
                     try

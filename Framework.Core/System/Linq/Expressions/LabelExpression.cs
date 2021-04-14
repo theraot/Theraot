@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="LabelExpression" /> with no default value.</returns>
         public static LabelExpression Label(LabelTarget target)
         {
-            return Label(target, null);
+            return Label(target, defaultValue: null);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentNullException(nameof(target));
             }
 
-            ValidateGoto(target, ref defaultValue, nameof(defaultValue), null);
+            ValidateGoto(target, ref defaultValue, nameof(defaultValue), type: null);
             return new LabelExpression(target, defaultValue);
         }
     }

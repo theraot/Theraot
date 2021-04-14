@@ -12,12 +12,12 @@ namespace Theraot.Collections.ThreadSafe
     {
         public WeakEvent()
         {
-            EventHandlers = new WeakDelegateCollection(true, true);
+            EventHandlers = new WeakDelegateCollection(autoRemoveDeadItems: true, freeReentry: true);
         }
 
         public WeakEvent(bool freeReentry)
         {
-            EventHandlers = new WeakDelegateCollection(true, freeReentry);
+            EventHandlers = new WeakDelegateCollection(autoRemoveDeadItems: true, freeReentry);
         }
 
         private WeakDelegateCollection EventHandlers { get; }

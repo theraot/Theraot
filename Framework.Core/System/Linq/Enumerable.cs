@@ -278,7 +278,7 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source)
         {
-            return Distinct(source, null);
+            return Distinct(source, comparer: null);
         }
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource>? comparer)
@@ -313,7 +313,7 @@ namespace System.Linq
                             continue;
                         }
 
-                        found.Add(item, null);
+                        found.Add(item, value: null);
                     }
 
                     yield return item;
@@ -378,7 +378,7 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return OrderBy(source, keySelector, null);
+            return OrderBy(source, keySelector, comparer: null);
         }
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey>? comparer)
@@ -393,12 +393,12 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, false);
+            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, descending: false);
         }
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return OrderByDescending(source, keySelector, null);
+            return OrderByDescending(source, keySelector, comparer: null);
         }
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey>? comparer)
@@ -413,7 +413,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, true);
+            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, descending: true);
         }
 
         public static IEnumerable<TResult> Repeat<TResult>(TResult element, int count)
@@ -460,7 +460,7 @@ namespace System.Linq
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return SequenceEqual(first, second, null);
+            return SequenceEqual(first, second, comparer: null);
         }
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource>? comparer)
@@ -507,7 +507,7 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return ThenBy(source, keySelector, null);
+            return ThenBy(source, keySelector, comparer: null);
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey>? comparer)
@@ -522,12 +522,12 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, false);
+            return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, descending: false);
         }
 
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return ThenByDescending(source, keySelector, null);
+            return ThenByDescending(source, keySelector, comparer: null);
         }
 
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey>? comparer)
@@ -542,7 +542,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(keySelector));
             }
 
-            return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, true);
+            return source.CreateOrderedEnumerable(keySelector, comparer ?? Comparer<TKey>.Default, descending: true);
         }
 
         public static TSource[] ToArray<TSource>(this IEnumerable<TSource> source)
@@ -568,7 +568,7 @@ namespace System.Linq
 
         public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
         {
-            return ToDictionary(source, keySelector, elementSelector, null);
+            return ToDictionary(source, keySelector, elementSelector, comparer: null);
         }
 
         public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey>? comparer)
@@ -600,7 +600,7 @@ namespace System.Linq
 
         public static Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return ToDictionary(source, keySelector, null);
+            return ToDictionary(source, keySelector, comparer: null);
         }
 
         public static Dictionary<TKey, TSource> ToDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey>? comparer)
@@ -628,7 +628,7 @@ namespace System.Linq
 
         public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return Lookup<TKey, TSource>.Create(source, keySelector, FuncHelper.GetIdentityFunc<TSource>(), null);
+            return Lookup<TKey, TSource>.Create(source, keySelector, FuncHelper.GetIdentityFunc<TSource>(), comparer: null);
         }
 
         public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
@@ -638,7 +638,7 @@ namespace System.Linq
 
         public static ILookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
         {
-            return Lookup<TKey, TElement>.Create(source, keySelector, elementSelector, null);
+            return Lookup<TKey, TElement>.Create(source, keySelector, elementSelector, comparer: null);
         }
 
         public static ILookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
@@ -648,7 +648,7 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Union<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return Union(first, second, null);
+            return Union(first, second, comparer: null);
         }
 
         public static IEnumerable<TSource> Union<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource>? comparer)

@@ -8,7 +8,7 @@ namespace System.Threading
 {
     public static class ThreadPool
     {
-        private static readonly Pool<ThreadPoolThread> _pool = new Pool<ThreadPoolThread>(1024, null);
+        private static readonly Pool<ThreadPoolThread> _pool = new Pool<ThreadPoolThread>(1024, recycler: null);
         private static readonly ThreadSafeQueue<Action> _work = new ThreadSafeQueue<Action>();
         private static int _threadCount;
 
@@ -19,7 +19,7 @@ namespace System.Threading
                 throw new ArgumentNullException(nameof(callBack));
             }
 
-            _work.Add(() => callBack(null));
+            _work.Add(() => callBack(state: null));
             if (Volatile.Read(ref _threadCount) >= Environment.ProcessorCount)
             {
                 return true;
@@ -43,7 +43,7 @@ namespace System.Threading
 
             public ThreadPoolThread()
             {
-                _event = new AutoResetEvent(false);
+                _event = new AutoResetEvent(initialState: false);
                 var thread = new Thread(Work);
                 thread.Start();
             }

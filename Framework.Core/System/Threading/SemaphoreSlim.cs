@@ -18,7 +18,7 @@ namespace System.Threading
         private int _syncRoot;
 
         public SemaphoreSlim(int initialCount)
-            : this(initialCount, null)
+            : this(initialCount, maxCount: null)
         {
             // Empty
         }
@@ -60,7 +60,7 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -258,7 +258,7 @@ namespace System.Threading
                 return;
             }
 
-            Interlocked.Exchange(ref _state, null)?.Dispose();
+            Interlocked.Exchange(ref _state, value: null)?.Dispose();
         }
 
         private void Awake(SemaphoreSlimState state)

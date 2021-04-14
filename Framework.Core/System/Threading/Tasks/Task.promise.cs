@@ -19,7 +19,7 @@ namespace System.Threading.Tasks
             _status = (int)taskStatus;
             _internalOptions = internalTaskOptions;
             ExecutingTaskScheduler = TaskScheduler.Default;
-            _waitHandle = new ManualResetEventSlim(false);
+            _waitHandle = new ManualResetEventSlim(initialState: false);
         }
 
         internal Task()
@@ -27,7 +27,7 @@ namespace System.Threading.Tasks
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
-            _waitHandle = new ManualResetEventSlim(false);
+            _waitHandle = new ManualResetEventSlim(initialState: false);
         }
 
         internal Task(TaskCreationOptions creationOptions, object? state)
@@ -48,7 +48,7 @@ namespace System.Threading.Tasks
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
             ExecutingTaskScheduler = TaskScheduler.Default;
-            _waitHandle = new ManualResetEventSlim(false);
+            _waitHandle = new ManualResetEventSlim(initialState: false);
         }
 
         public static Task FromCanceled(CancellationToken cancellationToken)
@@ -129,7 +129,7 @@ namespace System.Threading.Tasks
                 if (cancellationToken.IsCancellationRequested)
                 {
                     // Fast path for an already-canceled cancellationToken
-                    InternalCancel(false);
+                    InternalCancel(cancelNonExecutingOnly: false);
                 }
                 else
                 {
@@ -172,7 +172,7 @@ namespace System.Threading.Tasks
                 CancellationToken = tokenToRecord;
             }
 
-            returnValue |= InternalCancel(false);
+            returnValue |= InternalCancel(cancelNonExecutingOnly: false);
             return returnValue;
         }
 
@@ -241,7 +241,7 @@ namespace System.Threading.Tasks
                 return false;
             }
 
-            if (!SetCompleted(true))
+            if (!SetCompleted(preventDoubleExecution: true))
             {
                 return false;
             }
@@ -283,7 +283,7 @@ namespace System.Threading.Tasks
                 return false;
             }
 
-            if (!SetCompleted(true))
+            if (!SetCompleted(preventDoubleExecution: true))
             {
                 return false;
             }

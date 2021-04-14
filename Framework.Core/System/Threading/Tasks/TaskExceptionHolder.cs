@@ -202,7 +202,7 @@ namespace System.Threading.Tasks
         {
             var exceptions = _faultExceptions!;
             Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
-            MarkAsHandled(false);
+            MarkAsHandled(calledFromFinalizer: false);
             return exceptions;
         }
 
@@ -239,7 +239,7 @@ namespace System.Threading.Tasks
             }
 
             EventHandler handler = AppDomainUnloadCallback;
-            if (Interlocked.CompareExchange(ref _adUnloadEventHandler, handler, null) == null)
+            if (Interlocked.CompareExchange(ref _adUnloadEventHandler, handler, comparand: null) == null)
             {
                 AppDomain.CurrentDomain.DomainUnload += handler;
             }
@@ -324,7 +324,7 @@ namespace System.Threading.Tasks
 
                 if (i == exceptions.Count - 1)
                 {
-                    MarkAsHandled(false);
+                    MarkAsHandled(calledFromFinalizer: false);
                 }
             }
         }
@@ -407,7 +407,7 @@ namespace System.Threading.Tasks
             }
 
             // This is just cancellation, and there are no faults, so mark the holder as handled.
-            MarkAsHandled(false);
+            MarkAsHandled(calledFromFinalizer: false);
         }
     }
 }

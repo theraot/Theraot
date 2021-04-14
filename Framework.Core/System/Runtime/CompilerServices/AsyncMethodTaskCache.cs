@@ -12,12 +12,12 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     A false task.
         /// </summary>
-        private readonly TaskCompletionSource<bool> _false = CreateCompleted(false);
+        private readonly TaskCompletionSource<bool> _false = CreateCompleted(result: false);
 
         /// <summary>
         ///     A true task.
         /// </summary>
-        private readonly TaskCompletionSource<bool> _true = CreateCompleted(true);
+        private readonly TaskCompletionSource<bool> _true = CreateCompleted(result: true);
 
         /// <summary>
         ///     Gets a cached task for the Boolean result.

@@ -18,7 +18,7 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(second));
             }
 
-            return ExceptExtracted(first, second, null);
+            return ExceptExtracted(first, second, comparer: null);
         }
 
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)

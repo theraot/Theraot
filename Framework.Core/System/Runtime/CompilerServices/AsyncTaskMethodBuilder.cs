@@ -246,7 +246,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                AsyncMethodBuilderCore.ThrowOnContext(ex, targetContext: null);
             }
         }
 
@@ -269,7 +269,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                AsyncMethodBuilderCore.ThrowOnContext(ex, targetContext: null);
             }
         }
 

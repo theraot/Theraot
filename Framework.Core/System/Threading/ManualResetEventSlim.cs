@@ -15,7 +15,7 @@ namespace System.Threading
         private int _status;
 
         public ManualResetEventSlim()
-            : this(false)
+            : this(initialState: false)
         {
             // Empty
         }
@@ -93,7 +93,7 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -401,7 +401,7 @@ namespace System.Threading
             }
 
             // Get and erase handle
-            var handle = Interlocked.Exchange(ref _handle, null);
+            var handle = Interlocked.Exchange(ref _handle, value: null);
             // Close it
             handle?.Close();
         }
@@ -425,7 +425,7 @@ namespace System.Threading
                         if (status == Status.NotSet)
                         {
                             // Create the handle
-                            var created = new ManualResetEvent(false);
+                            var created = new ManualResetEvent(initialState: false);
                             // Set the handle
                             Volatile.Write(ref _handle, created);
                             // Notify that the handle is ready
@@ -443,7 +443,7 @@ namespace System.Threading
                         if (status == Status.Set)
                         {
                             // Create the handle
-                            var created = new ManualResetEvent(true);
+                            var created = new ManualResetEvent(initialState: true);
                             // Set the handle
                             Volatile.Write(ref _handle, created);
                             // Notify that the handle is ready
@@ -517,7 +517,7 @@ namespace System.Threading
 
                 var handle = GetOrCreateWaitHandle();
                 var remaining = millisecondsTimeout - (int)elapsed;
-                return remaining > 0 && handle.WaitOne(remaining, false);
+                return remaining > 0 && handle.WaitOne(remaining, exitContext: false);
             }
         }
 

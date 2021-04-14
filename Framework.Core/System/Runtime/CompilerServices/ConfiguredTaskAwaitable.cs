@@ -134,7 +134,7 @@ namespace System.Runtime.CompilerServices
             [SecurityCritical]
             public void UnsafeOnCompleted(Action continuation)
             {
-                TaskAwaiter.OnCompletedInternal(_task, continuation, true);
+                TaskAwaiter.OnCompletedInternal(_task, continuation, continueOnCapturedContext: true);
             }
         }
     }
@@ -265,7 +265,7 @@ namespace System.Runtime.CompilerServices
             [SecurityCritical]
             public void UnsafeOnCompleted(Action continuation)
             {
-                TaskAwaiter.OnCompletedInternal(_task, continuation, true);
+                TaskAwaiter.OnCompletedInternal(_task, continuation, continueOnCapturedContext: true);
             }
         }
     }

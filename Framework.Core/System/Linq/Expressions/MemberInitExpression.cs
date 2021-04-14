@@ -136,7 +136,7 @@ namespace System.Linq.Expressions
         /// <returns>The reduced expression.</returns>
         public override Expression Reduce()
         {
-            return ReduceMemberInit(NewExpression, Bindings, true);
+            return ReduceMemberInit(NewExpression, Bindings, keepOnStack: true);
         }
 
         /// <summary>
@@ -188,10 +188,10 @@ namespace System.Linq.Expressions
                     return Assign(member, ((MemberAssignment)binding).Expression);
 
                 case MemberBindingType.ListBinding:
-                    return ReduceListInit(member, ((MemberListBinding)binding).Initializers, false);
+                    return ReduceListInit(member, ((MemberListBinding)binding).Initializers, keepOnStack: false);
 
                 case MemberBindingType.MemberBinding:
-                    return ReduceMemberInit(member, ((MemberMemberBinding)binding).Bindings, false);
+                    return ReduceMemberInit(member, ((MemberMemberBinding)binding).Bindings, keepOnStack: false);
 
                 default: throw ContractUtils.Unreachable;
             }

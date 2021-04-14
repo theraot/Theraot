@@ -100,7 +100,7 @@ namespace System.Collections.Concurrent
         /// class that is empty, has the default concurrency level, has the default initial capacity, and
         /// uses the default comparer for the key type.
         /// </summary>
-        public ConcurrentDictionary() : this(DefaultConcurrencyLevel, DefaultCapacity, growLockArray: true, null) { }
+        public ConcurrentDictionary() : this(DefaultConcurrencyLevel, DefaultCapacity, growLockArray: true, comparer: null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConcurrentDictionary{TKey,TValue}"/>
@@ -112,7 +112,7 @@ namespace System.Collections.Concurrent
         /// <param name="capacity">The initial number of elements that the <see cref="ConcurrentDictionary{TKey,TValue}"/> can contain.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="capacity"/> is less than 0.</exception>
-        public ConcurrentDictionary(int concurrencyLevel, int capacity) : this(concurrencyLevel, capacity, growLockArray: false, null) { }
+        public ConcurrentDictionary(int concurrencyLevel, int capacity) : this(concurrencyLevel, capacity, growLockArray: false, comparer: null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConcurrentDictionary{TKey,TValue}"/>
@@ -122,7 +122,7 @@ namespace System.Collections.Concurrent
         /// <param name="collection">The <see cref="IEnumerable{T}"/> whose elements are copied to the new <see cref="ConcurrentDictionary{TKey,TValue}"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is a null reference (Nothing in Visual Basic).</exception>
         /// <exception cref="ArgumentException"><paramref name="collection"/> contains one or more duplicate keys.</exception>
-        public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection) : this(collection, null) { }
+        public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection) : this(collection, comparer: null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConcurrentDictionary{TKey,TValue}"/>
@@ -412,7 +412,7 @@ namespace System.Collections.Concurrent
                     throw new ArgumentNullException(nameof(key));
                 }
 
-                TryAddInternal(key, null, value, updateIfExists: true, acquireLock: true, out _);
+                TryAddInternal(key, nullableHashcode: null, value, updateIfExists: true, acquireLock: true, out _);
             }
         }
 
@@ -1147,7 +1147,7 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return TryAddInternal(key, null, value, updateIfExists: false, acquireLock: true, out _);
+            return TryAddInternal(key, nullableHashcode: null, value, updateIfExists: false, acquireLock: true, out _);
         }
 
         /// <summary>
@@ -1283,7 +1283,7 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException(nameof(key));
             }
 
-            return TryUpdateInternal(key, null, newValue, comparisonValue);
+            return TryUpdateInternal(key, nullableHashcode: null, newValue, comparisonValue);
         }
 
         /// <summary>Determines whether type TValue can be written atomically.</summary>
@@ -1662,7 +1662,7 @@ namespace System.Collections.Concurrent
                     throw new ArgumentNullException(nameof(pair.Key));
                 }
 
-                if (!TryAddInternal(pair.Key, null, pair.Value, updateIfExists: false, acquireLock: false, out _))
+                if (!TryAddInternal(pair.Key, nullableHashcode: null, pair.Value, updateIfExists: false, acquireLock: false, out _))
                 {
                     throw new ArgumentException("SourceContainsDuplicateKeys");
                 }

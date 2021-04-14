@@ -58,7 +58,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(method, nameof(method));
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
 
-            var pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(instance: null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 1, pis);
 
@@ -80,7 +80,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg0, nameof(arg0));
             ContractUtils.RequiresNotNull(arg1, nameof(arg1));
 
-            var pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(instance: null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 2, pis);
 
@@ -105,7 +105,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg1, nameof(arg1));
             ContractUtils.RequiresNotNull(arg2, nameof(arg2));
 
-            var pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(instance: null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 3, pis);
 
@@ -133,7 +133,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg2, nameof(arg2));
             ContractUtils.RequiresNotNull(arg3, nameof(arg3));
 
-            var pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(instance: null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 4, pis);
 
@@ -165,7 +165,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg3, nameof(arg3));
             ContractUtils.RequiresNotNull(arg4, nameof(arg4));
 
-            var pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(instance: null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 5, pis);
 
@@ -186,7 +186,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         public static MethodCallExpression Call(MethodInfo method, params Expression[] arguments)
         {
-            return Call(null, method, arguments);
+            return Call(instance: null, method, arguments);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace System.Linq.Expressions
         /// <returns>A <see cref="MethodCallExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="ExpressionType.Call"/> and the <see cref="MethodCallExpression.Object"/> and <see cref="MethodCallExpression.Method"/> properties set to the specified values.</returns>
         public static MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
         {
-            return Call(null, method, arguments);
+            return Call(instance: null, method, arguments);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(methodName, nameof(methodName));
 
             const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return Call(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
+            return Call(instance: null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
 
         /// <summary>Creates a <see cref="MethodCallExpression"/> that represents a method call.</summary>
@@ -362,7 +362,7 @@ namespace System.Linq.Expressions
 
             ContractUtils.RequiresNotNull(method, nameof(method));
 
-            var pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(instance: null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 0, pis);
 

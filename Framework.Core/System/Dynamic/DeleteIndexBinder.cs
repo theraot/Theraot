@@ -63,7 +63,7 @@ namespace System.Dynamic
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public DynamicMetaObject FallbackDeleteIndex(DynamicMetaObject target, DynamicMetaObject[] indexes)
         {
-            return FallbackDeleteIndex(target, indexes, null);
+            return FallbackDeleteIndex(target, indexes, errorSuggestion: null);
         }
 
         /// <summary>

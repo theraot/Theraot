@@ -43,7 +43,7 @@ namespace Theraot.Threading
     {
         private static partial class Internal
         {
-            public static WeakDelegateCollection CollectedEventHandlers { get; } = new WeakDelegateCollection(false, false);
+            public static WeakDelegateCollection CollectedEventHandlers { get; } = new WeakDelegateCollection(autoRemoveDeadItems: false, freeReentry: false);
 
             private static void RaiseCollected()
             {
@@ -56,7 +56,8 @@ namespace Theraot.Threading
                 try
                 {
                     CollectedEventHandlers.RemoveDeadItems();
-                    CollectedEventHandlers.Invoke(ActionHelper.GetNoopAction<Exception>(), DelegateCollectionInvokeOptions.None, null, EventArgs.Empty);
+                    object? sender = null;
+                    CollectedEventHandlers.Invoke(ActionHelper.GetNoopAction<Exception>(), DelegateCollectionInvokeOptions.None, sender, EventArgs.Empty);
                 }
                 catch (Exception exception)
                 {

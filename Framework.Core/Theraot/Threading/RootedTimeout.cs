@@ -177,7 +177,7 @@ namespace Theraot.Threading
             }
 
             _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            var wrapped = Interlocked.CompareExchange(ref _wrapped, null, null);
+            var wrapped = Interlocked.CompareExchange(ref _wrapped, value: null, comparand: null);
             if (wrapped == null)
             {
                 return false;

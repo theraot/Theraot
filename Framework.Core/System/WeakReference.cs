@@ -17,7 +17,7 @@ namespace System
         private GCHandle _handle;
 
         public WeakReference(T? target)
-            : this(target, false)
+            : this(target, trackResurrection: false)
         {
             // Empty
         }

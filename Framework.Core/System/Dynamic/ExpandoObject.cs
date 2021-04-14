@@ -67,7 +67,7 @@ namespace System.Dynamic
         public ExpandoObject()
         {
             _data = ExpandoData.Empty;
-            _propertyChanged = new StrongEvent<PropertyChangedEventArgs>(true);
+            _propertyChanged = new StrongEvent<PropertyChangedEventArgs>(freeReentry: true);
             LockObject = new object();
         }
 
@@ -107,7 +107,7 @@ namespace System.Dynamic
             {
                 ContractUtils.RequiresNotNull(key, nameof(key));
                 // Pass null to the class, which forces lookup.
-                TrySetValue(null, -1, value, key, false, false);
+                TrySetValue(indexClass: null, -1, value, key, ignoreCase: false, add: false);
             }
         }
 
@@ -192,12 +192,12 @@ namespace System.Dynamic
         {
             ContractUtils.RequiresNotNull(key, nameof(key));
             // Pass null to the class, which forces lookup.
-            return TryDeleteValue(null, -1, key, false, Uninitialized);
+            return TryDeleteValue(indexClass: null, -1, key, ignoreCase: false, Uninitialized);
         }
 
         bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
         {
-            return TryDeleteValue(null, -1, item.Key, false, item.Value);
+            return TryDeleteValue(indexClass: null, -1, item.Key, ignoreCase: false, item.Value);
         }
 
         bool IDictionary<string, object>.TryGetValue(string key, out object value)
@@ -448,13 +448,13 @@ namespace System.Dynamic
         {
             ContractUtils.RequiresNotNull(key, nameof(key));
             // Pass null to the class, which forces lookup.
-            TrySetValue(null, -1, value, key, false, true);
+            TrySetValue(indexClass: null, -1, value, key, ignoreCase: false, add: true);
         }
 
         private bool TryGetValueForKey(string key, [NotNullWhen(true)] out object? value)
         {
             // Pass null to the class, which forces lookup.
-            return TryGetValue(null, -1, key, false, out value);
+            return TryGetValue(indexClass: null, -1, key, ignoreCase: false, out value);
         }
 
         /// <summary>
@@ -533,7 +533,7 @@ namespace System.Dynamic
                 Array.Copy(_dataArray, 0, arr, 0, _dataArray.Length);
                 return new ExpandoData(newClass, arr, Version)
                 {
-                    [oldLength] = Uninitialized
+                    [oldLength] = Uninitialized,
                 };
             }
 
@@ -709,7 +709,7 @@ namespace System.Dynamic
                     fallback.Restrictions
                 );
 
-                return AddDynamicTestAndDefer(binder, Value.Class, null, target);
+                return AddDynamicTestAndDefer(binder, Value.Class, originalClass: null, target);
             }
 
             public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
@@ -721,7 +721,7 @@ namespace System.Dynamic
                     binder.Name,
                     binder.IgnoreCase,
                     binder.FallbackGetMember(this),
-                    null
+                    fallbackInvoke: null
                 );
             }
 
@@ -734,7 +734,7 @@ namespace System.Dynamic
                     binder.Name,
                     binder.IgnoreCase,
                     binder.FallbackInvokeMember(this, args),
-                    value => binder.FallbackInvoke(value, args, null)
+                    value => binder.FallbackInvoke(value, args, errorSuggestion: null)
                 );
             }
 
@@ -792,7 +792,7 @@ namespace System.Dynamic
                         (
                             Expression.Call
                             (
-                                null,
+                                instance: null,
                                 _expandoCheckVersion,
                                 GetLimitedSelf(),
                                 Expression.Constant(@class, typeof(object))
@@ -814,7 +814,7 @@ namespace System.Dynamic
                 (
                     Expression.Call
                     (
-                        null,
+                        instance: null,
                         _expandoPromoteClass,
                         GetLimitedSelf(),
                         Expression.Constant(originalClass, typeof(object)),
@@ -829,7 +829,7 @@ namespace System.Dynamic
                     (
                         Expression.Call
                         (
-                            null,
+                            instance: null,
                             _expandoCheckVersion,
                             GetLimitedSelf(),
                             Expression.Constant(originalClass, typeof(object))
@@ -887,7 +887,7 @@ namespace System.Dynamic
                     result.Restrictions.Merge(fallback.Restrictions)
                 );
 
-                return AddDynamicTestAndDefer(binder, Value.Class, null, result);
+                return AddDynamicTestAndDefer(binder, Value.Class, originalClass: null, result);
             }
 
             private ExpandoClass? GetClassEnsureIndex(string name, bool caseInsensitive, ExpandoObject obj, out ExpandoClass @class, out int index)
@@ -1162,7 +1162,7 @@ namespace System.Runtime.CompilerServices
         // [Obsolete("do not use this method", error: true), EditorBrowsable(EditorBrowsableState.Never)]
         public static object ExpandoTrySetValue(ExpandoObject expando, object indexClass, int index, object value, string name, bool ignoreCase)
         {
-            expando.TrySetValue(indexClass, index, value, name, ignoreCase, false);
+            expando.TrySetValue(indexClass, index, value, name, ignoreCase, add: false);
             return value;
         }
     }

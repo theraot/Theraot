@@ -61,14 +61,14 @@
             {
                 var result = new WaitHandleTaskCompletionSourceManager(taskCompletionSource);
                 result._registeredWaitHandle[0] =
-                    ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, null, -1, true);
+                    ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, state: null, -1, executeOnlyOnce: true);
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle,
                 TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleTaskCompletionSourceManager(taskCompletionSource);
-                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, null, millisecondsTimeout, true);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, state: null, millisecondsTimeout, executeOnlyOnce: true);
             }
 
             private void CallbackWithoutTimeout(object? state, bool timeOut)
@@ -91,7 +91,7 @@
 
             private void Unregister()
             {
-                Volatile.Read(ref _registeredWaitHandle[0])!.Unregister(null);
+                Volatile.Read(ref _registeredWaitHandle[0])!.Unregister(waitObject: null);
             }
         }
     }

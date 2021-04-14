@@ -70,7 +70,7 @@ namespace System.Dynamic
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public DynamicMetaObject FallbackSetIndex(DynamicMetaObject target, DynamicMetaObject[] indexes, DynamicMetaObject value)
         {
-            return FallbackSetIndex(target, indexes, value, null);
+            return FallbackSetIndex(target, indexes, value, errorSuggestion: null);
         }
 
         /// <summary>

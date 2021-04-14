@@ -20,23 +20,23 @@ namespace Theraot.Threading.Needles
             _hashCode = base.GetHashCode();
             if (!done)
             {
-                WaitHandle = new ManualResetEventSlim(false);
+                WaitHandle = new ManualResetEventSlim(initialState: false);
             }
 
-            _onCompleted = new StrongDelegateCollection(true);
+            _onCompleted = new StrongDelegateCollection(freeReentry: true);
         }
 
         public Promise(Exception exception)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
             _hashCode = Exception.GetHashCode();
-            WaitHandle = new ManualResetEventSlim(true);
-            _onCompleted = new StrongDelegateCollection(true);
+            WaitHandle = new ManualResetEventSlim(initialState: true);
+            _onCompleted = new StrongDelegateCollection(freeReentry: true);
         }
 
         ~Promise()
         {
-            ReleaseWaitHandle(false);
+            ReleaseWaitHandle(done: false);
         }
 
         public Exception? Exception { get; private set; }
@@ -63,7 +63,7 @@ namespace Theraot.Threading.Needles
             var waitHandle = WaitHandle;
             if (waitHandle == null)
             {
-                WaitHandle = new ManualResetEventSlim(false);
+                WaitHandle = new ManualResetEventSlim(initialState: false);
             }
             else
             {
@@ -91,7 +91,7 @@ namespace Theraot.Threading.Needles
                 {
                     if (waitHandle == null)
                     {
-                        WaitHandle = new ManualResetEventSlim(false);
+                        WaitHandle = new ManualResetEventSlim(initialState: false);
                     }
                     else
                     {
@@ -121,13 +121,13 @@ namespace Theraot.Threading.Needles
         public void SetCompleted()
         {
             Exception = null;
-            ReleaseWaitHandle(true);
+            ReleaseWaitHandle(done: true);
         }
 
         public void SetError(Exception error)
         {
             Exception = error;
-            ReleaseWaitHandle(true);
+            ReleaseWaitHandle(done: true);
         }
 
         public override string ToString()
@@ -262,7 +262,7 @@ namespace Theraot.Threading.Needles
                 waitHandle.Dispose();
             }
 
-            _onCompleted.Invoke(null, DelegateCollectionInvokeOptions.RemoveDelegates);
+            _onCompleted.Invoke(onException: null, DelegateCollectionInvokeOptions.RemoveDelegates);
             WaitHandle = null;
         }
     }

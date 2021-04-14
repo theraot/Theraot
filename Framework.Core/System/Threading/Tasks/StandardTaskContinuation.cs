@@ -34,7 +34,7 @@ namespace System.Threading.Tasks
         {
             if (completedTask == null)
             {
-                Contract.Assert(false);
+                Contract.Assert(condition: false);
                 throw new InvalidOperationException();
             }
 
@@ -61,7 +61,7 @@ namespace System.Threading.Tasks
                 {
                     try
                     {
-                        continuationTask.TryStart(continuationTask.ExecutingTaskScheduler, false);
+                        continuationTask.TryStart(continuationTask.ExecutingTaskScheduler, inline: false);
                     }
                     catch (TaskSchedulerException exception)
                     {
@@ -75,7 +75,7 @@ namespace System.Threading.Tasks
             // continuation activation criteria; cancel it to denote this.
             else
             {
-                continuationTask.InternalCancel(false);
+                continuationTask.InternalCancel(cancelNonExecutingOnly: false);
             }
         }
 

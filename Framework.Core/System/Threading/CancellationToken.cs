@@ -90,7 +90,7 @@ namespace System.Threading
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            return Register(callback, false);
+            return Register(callback, useSynchronizationContext: false);
         }
 
         public CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
@@ -110,7 +110,7 @@ namespace System.Threading
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            return Register(() => callback(state), false);
+            return Register(() => callback(state), useSynchronizationContext: false);
         }
 
         public CancellationTokenRegistration Register(Action<object?> callback, object? state, bool useSynchronizationContext)

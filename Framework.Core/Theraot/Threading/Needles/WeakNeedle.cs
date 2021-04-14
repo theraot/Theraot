@@ -17,7 +17,7 @@ namespace Theraot.Threading.Needles
         private WeakReference<T>? _handle;
 
         public WeakNeedle()
-            : this(false)
+            : this(trackResurrection: false)
         {
             // Empty
         }
@@ -29,7 +29,7 @@ namespace Theraot.Threading.Needles
         }
 
         public WeakNeedle(T? target)
-            : this(target, false)
+            : this(target, trackResurrection: false)
         {
             // Empty
         }
@@ -115,7 +115,7 @@ namespace Theraot.Threading.Needles
 
         public void Free()
         {
-            SetTargetValue(null);
+            SetTargetValue(value: null);
         }
 
         public override int GetHashCode()

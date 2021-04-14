@@ -67,7 +67,7 @@ namespace System.Threading
                     throw new LockRecursionException();
                 }
 
-                if (Interlocked.CompareExchange(ref _isHeld, 1, 0) == 0 && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
+                if (Interlocked.CompareExchange(ref _isHeld, 1, 0) == 0 && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, comparand: null) == null)
                 {
                     lockTaken = true;
                 }
@@ -81,7 +81,7 @@ namespace System.Threading
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void Exit()
         {
-            Exit(true);
+            Exit(useMemoryBarrier: true);
         }
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
@@ -135,7 +135,7 @@ namespace System.Threading
                     throw new LockRecursionException();
                 }
 
-                lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null;
+                lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, comparand: null) == null;
             }
         }
 
@@ -144,7 +144,7 @@ namespace System.Threading
             if (useMemoryBarrier)
             {
                 Volatile.Write(ref _isHeld, 0);
-                Volatile.Write(ref _ownerThread, null);
+                Volatile.Write(ref _ownerThread, value: null);
             }
             else
             {

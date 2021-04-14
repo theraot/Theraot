@@ -28,7 +28,7 @@ namespace System.Dynamic
         /// <summary>
         ///     Represents an empty set of binding restrictions. This field is read-only.
         /// </summary>
-        public static readonly BindingRestrictions Empty = new CustomRestriction(AstUtils.Constant(true));
+        public static readonly BindingRestrictions Empty = new CustomRestriction(AstUtils.Constant(value: true));
 
         private const int _customRestrictionHash = 0b_0010_0100_1001_0010_0100_1001_0010_0100;
         private const int _instanceRestrictionHash = unchecked((int)0b_1001_0010_0100_1001_0010_0100_1001_0010);
@@ -128,7 +128,7 @@ namespace System.Dynamic
         {
             if (obj.Value == null && obj.HasValue)
             {
-                return GetInstanceRestriction(obj.Expression, null);
+                return GetInstanceRestriction(obj.Expression, instance: null);
             }
 
             return GetTypeRestriction(obj.Expression, obj.LimitType);
@@ -212,7 +212,7 @@ namespace System.Dynamic
                     );
                 }
 
-                var temp = Expression.Parameter(typeof(object), null);
+                var temp = Expression.Parameter(typeof(object), name: null);
                 return Expression.Block
                 (
                     ReadOnlyCollectionEx.Create(temp),

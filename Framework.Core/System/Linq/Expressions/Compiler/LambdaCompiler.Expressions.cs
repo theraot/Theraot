@@ -273,7 +273,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitExpressionAsVoid(Expression node, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
         {
-            var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, _labelBlock, node);
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(emitStart: true, _labelBlock, node);
             if (labelScopeChangeInfo.HasValue)
             {
                 _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
@@ -343,7 +343,7 @@ namespace System.Linq.Expressions.Compiler
             if (node.Indexer != null)
             {
                 // For indexed properties, just call the getter
-                var method = node.Indexer.GetGetMethod(true);
+                var method = node.Indexer.GetGetMethod(nonPublic: true);
                 EmitCall(objectType, method);
             }
             else
@@ -449,7 +449,7 @@ namespace System.Linq.Expressions.Compiler
                 flags = UpdateEmitAsTailCallFlag(flags, CompilationFlags.EmitAsNoTail);
             }
 
-            inner.EmitLambdaBody(_scope, true, flags);
+            inner.EmitLambdaBody(_scope, inlined: true, flags);
 
             // 4. Emit writebacks if needed
             EmitWriteBack(wb);
@@ -788,7 +788,7 @@ namespace System.Linq.Expressions.Compiler
                 // MemberExpression.Member can only be a FieldInfo or a PropertyInfo
                 Debug.Assert(member is PropertyInfo);
                 var prop = (PropertyInfo)member;
-                EmitCall(objectType, prop.GetSetMethod(true));
+                EmitCall(objectType, prop.GetSetMethod(nonPublic: true));
             }
 
             if (temp == null)
@@ -814,7 +814,7 @@ namespace System.Linq.Expressions.Compiler
                     throw new ArgumentException(string.Empty, nameof(binding));
                 }
 
-                EmitCall(objectType, propertyInfo.GetSetMethod(true));
+                EmitCall(objectType, propertyInfo.GetSetMethod(nonPublic: true));
             }
         }
 
@@ -851,7 +851,7 @@ namespace System.Linq.Expressions.Compiler
                 // MemberExpression.Member or MemberBinding.Member can only be a FieldInfo or a PropertyInfo
                 Debug.Assert(member is PropertyInfo);
                 var prop = (PropertyInfo)member;
-                EmitCall(objectType, prop.GetGetMethod(true));
+                EmitCall(objectType, prop.GetGetMethod(nonPublic: true));
             }
         }
 
@@ -925,7 +925,7 @@ namespace System.Linq.Expressions.Compiler
                 EmitMemberGet(binding.Member, binding.Member.DeclaringType);
             }
 
-            EmitListInit(binding.Initializers, false, type);
+            EmitListInit(binding.Initializers, keepOnStack: false, type);
         }
 
         private void EmitMemberMemberBinding(MemberMemberBinding binding)
@@ -945,7 +945,7 @@ namespace System.Linq.Expressions.Compiler
                 EmitMemberGet(binding.Member, binding.Member.DeclaringType);
             }
 
-            EmitMemberInit(binding.Bindings, false, type);
+            EmitMemberInit(binding.Bindings, keepOnStack: false, type);
         }
 
         private void EmitMethodCall(Expression? obj, MethodInfo method, IArgumentProvider methodCallExpr, CompilationFlags flags = CompilationFlags.EmitAsNoTail)
@@ -1052,7 +1052,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     var x = expressions[i];
                     EmitExpression(x);
-                    IL.EmitConvertToType(x.Type, typeof(int), true, this);
+                    IL.EmitConvertToType(x.Type, typeof(int), isChecked: true, this);
                 }
 
                 IL.EmitArray(node.Type);
@@ -1121,7 +1121,7 @@ namespace System.Linq.Expressions.Compiler
             if (node.Indexer != null)
             {
                 // For indexed properties, just call the setter
-                var method = node.Indexer.GetSetMethod(true);
+                var method = node.Indexer.GetSetMethod(nonPublic: true);
                 EmitCall(objectType, method);
             }
             else

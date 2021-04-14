@@ -10,12 +10,12 @@ namespace Theraot.Collections
     {
         public static IEnumerable<IGrouping<TKey, TSource>> GroupProgressiveBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return GroupProgressiveBy(source, keySelector, null);
+            return GroupProgressiveBy(source, keySelector, comparer: null);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector)
         {
-            return GroupProgressiveBy(source, keySelector, resultSelector, null);
+            return GroupProgressiveBy(source, keySelector, resultSelector, comparer: null);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey>? comparer)
@@ -48,12 +48,12 @@ namespace Theraot.Collections
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupProgressiveBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
         {
-            return GroupProgressiveBy(source, keySelector, elementSelector, null);
+            return GroupProgressiveBy(source, keySelector, elementSelector, comparer: null);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
-            return GroupProgressiveBy(source, keySelector, elementSelector, resultSelector, null);
+            return GroupProgressiveBy(source, keySelector, elementSelector, resultSelector, comparer: null);
         }
 
         public static IEnumerable<TResult> GroupProgressiveBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey>? comparer)

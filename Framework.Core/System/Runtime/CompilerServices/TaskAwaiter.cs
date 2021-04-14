@@ -94,7 +94,7 @@ namespace System.Runtime.CompilerServices
         /// </remarks>
         public void OnCompleted(Action continuation)
         {
-            OnCompletedInternal(_task, continuation, true);
+            OnCompletedInternal(_task, continuation, continueOnCapturedContext: true);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace System.Runtime.CompilerServices
         [SecurityCritical]
         public void UnsafeOnCompleted(Action continuation)
         {
-            OnCompletedInternal(_task, continuation, true);
+            OnCompletedInternal(_task, continuation, continueOnCapturedContext: true);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace System.Runtime.CompilerServices
                         }
                         catch (Exception ex)
                         {
-                            AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                            AsyncMethodBuilderCore.ThrowOnContext(ex, targetContext: null);
                         }
                     },
                     CancellationToken.None,
@@ -308,7 +308,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                AsyncMethodBuilderCore.ThrowOnContext(ex, targetContext: null);
             }
         }
 
@@ -386,7 +386,7 @@ namespace System.Runtime.CompilerServices
         /// </remarks>
         public void OnCompleted(Action continuation)
         {
-            TaskAwaiter.OnCompletedInternal(_task, continuation, true);
+            TaskAwaiter.OnCompletedInternal(_task, continuation, continueOnCapturedContext: true);
         }
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace System.Runtime.CompilerServices
         [SecurityCritical]
         public void UnsafeOnCompleted(Action continuation)
         {
-            TaskAwaiter.OnCompletedInternal(_task, continuation, true);
+            TaskAwaiter.OnCompletedInternal(_task, continuation, continueOnCapturedContext: true);
         }
     }
 }

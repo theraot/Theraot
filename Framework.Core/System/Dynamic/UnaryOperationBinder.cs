@@ -75,7 +75,7 @@ namespace System.Dynamic
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public DynamicMetaObject FallbackUnaryOperation(DynamicMetaObject target)
         {
-            return FallbackUnaryOperation(target, null);
+            return FallbackUnaryOperation(target, errorSuggestion: null);
         }
 
         /// <summary>

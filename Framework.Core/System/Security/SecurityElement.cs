@@ -143,7 +143,7 @@ namespace System.Security
 
             set
             {
-                if (value?.Contains(null) == true)
+                if (value?.Contains(item: null) == true)
                 {
                     throw new ArgumentException("Cannot have a null child.");
                 }

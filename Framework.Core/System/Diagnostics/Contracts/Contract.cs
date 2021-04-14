@@ -51,7 +51,7 @@ namespace System.Diagnostics.Contracts
         {
             if (!condition)
             {
-                ReportFailure(ContractFailureKind.Assert, null, null, null);
+                ReportFailure(ContractFailureKind.Assert, userMessage: null, conditionText: null, innerException: null);
             }
         }
 
@@ -67,7 +67,7 @@ namespace System.Diagnostics.Contracts
         {
             if (!condition)
             {
-                ReportFailure(ContractFailureKind.Assert, userMessage, null, null);
+                ReportFailure(ContractFailureKind.Assert, userMessage, conditionText: null, innerException: null);
             }
         }
 
@@ -86,7 +86,7 @@ namespace System.Diagnostics.Contracts
         {
             if (!condition)
             {
-                ReportFailure(ContractFailureKind.Assume, null, null, null);
+                ReportFailure(ContractFailureKind.Assume, userMessage: null, conditionText: null, innerException: null);
             }
         }
 
@@ -106,7 +106,7 @@ namespace System.Diagnostics.Contracts
         {
             if (!condition)
             {
-                ReportFailure(ContractFailureKind.Assume, userMessage, null, null);
+                ReportFailure(ContractFailureKind.Assume, userMessage, conditionText: null, innerException: null);
             }
         }
 

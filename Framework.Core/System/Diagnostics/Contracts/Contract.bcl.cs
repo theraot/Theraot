@@ -86,7 +86,7 @@ namespace System.Diagnostics.Contracts
             }
 
             var simpleName = probablyNotRewritten.GetName().Name;
-            ContractHelper.TriggerFailure(kind, $"The code has not been rewritten. ContractKind: {contractKind} - Source: {simpleName}", null, null, null);
+            ContractHelper.TriggerFailure(kind, $"The code has not been rewritten. ContractKind: {contractKind} - Source: {simpleName}", userMessage: null, conditionText: null, innerException: null);
 
             _assertingMustUseRewriter = false;
         }

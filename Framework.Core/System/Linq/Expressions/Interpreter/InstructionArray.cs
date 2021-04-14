@@ -45,7 +45,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public InstructionList.DebugView.InstructionView[] A0 => GetInstructionViews(true);
+            public InstructionList.DebugView.InstructionView[] A0 => GetInstructionViews(includeDebugCookies: true);
 
             public InstructionList.DebugView.InstructionView[] GetInstructionViews(bool includeDebugCookies = false)
             {

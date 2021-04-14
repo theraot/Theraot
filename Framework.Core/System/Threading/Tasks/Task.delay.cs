@@ -115,7 +115,7 @@ namespace System.Threading.Tasks
             var source = new TaskCompletionSource<bool>();
             if (cancellationToken.CanBeCanceled)
             {
-                source.Task.AssignCancellationToken(cancellationToken, null, null);
+                source.Task.AssignCancellationToken(cancellationToken, antecedent: null, continuation: null);
             }
 
             var timeout = RootedTimeout.Launch

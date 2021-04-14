@@ -60,7 +60,7 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -219,7 +219,7 @@ namespace System.Threading
                 return;
             }
 
-            Interlocked.Exchange(ref _event, null)?.Dispose();
+            Interlocked.Exchange(ref _event, value: null)?.Dispose();
         }
 
         private ManualResetEventSlim GetEvent()

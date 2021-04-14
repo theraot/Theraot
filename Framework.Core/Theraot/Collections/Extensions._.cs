@@ -571,7 +571,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSubsetOf(source, other, true);
+            return IsSubsetOf(source, other, proper: true);
         }
 
         public static bool IsProperSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
@@ -586,7 +586,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSupersetOf(source, other, true);
+            return IsSupersetOf(source, other, proper: true);
         }
 
         public static bool IsSubsetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
@@ -601,7 +601,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSubsetOf(source, other, false);
+            return IsSubsetOf(source, other, proper: false);
         }
 
         public static bool IsSupersetOf<T>(this IEnumerable<T> source, IEnumerable<T> other)
@@ -616,7 +616,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException(nameof(other));
             }
 
-            return IsSupersetOf(source, other, false);
+            return IsSupersetOf(source, other, proper: false);
         }
 
         public static bool ListEquals<T>(this IList<T> first, IList<T> second)

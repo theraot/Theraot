@@ -183,7 +183,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node == null)
             {
-                return new LabelInfo(IL, null, false);
+                return new LabelInfo(IL, node: null, canReturn: false);
             }
 
             var result = EnsureLabel(node);
@@ -288,7 +288,7 @@ namespace System.Linq.Expressions.Compiler
                 return result;
             }
 
-            result = new LabelInfo(IL, node, false);
+            result = new LabelInfo(IL, node, canReturn: false);
             _labelInfo.Add(node, result);
             return result;
         }

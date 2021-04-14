@@ -96,7 +96,7 @@ namespace System.Threading
         ///     or greater than <see cref="System.Int16.MaxValue" />.
         /// </exception>
         public Barrier(int participantCount)
-            : this(participantCount, null)
+            : this(participantCount, postPhaseAction: null)
         {
             // Empty
         }
@@ -131,8 +131,8 @@ namespace System.Threading
             _postPhaseAction = postPhaseAction;
 
             //Lazily initialize the events
-            _oddEvent = new ManualResetEventSlim(true);
-            _evenEvent = new ManualResetEventSlim(false);
+            _oddEvent = new ManualResetEventSlim(initialState: true);
+            _evenEvent = new ManualResetEventSlim(initialState: false);
 
             // Capture the context if the post phase action is not null
             if (postPhaseAction != null)
@@ -342,7 +342,7 @@ namespace System.Threading
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
 
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -1008,7 +1008,7 @@ namespace System.Threading
         /// </summary>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public BarrierPostPhaseException(Exception innerException)
-            : this(null, innerException)
+            : this(message: null, innerException)
         {
             // Empty
         }
@@ -1019,7 +1019,7 @@ namespace System.Threading
         /// </summary>
         /// <param name="message">A string that describes the exception.</param>
         public BarrierPostPhaseException(string? message)
-            : this(message, null)
+            : this(message, innerException: null)
         {
             // Empty
         }

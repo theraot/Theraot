@@ -19,7 +19,7 @@ namespace Theraot.Threading
             {
                 try
                 {
-                    Dispose(false);
+                    Dispose(disposeManagedResources: false);
                 }
                 catch (Exception exception)
                 {
@@ -38,7 +38,7 @@ namespace Theraot.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposeManagedResources: true);
             GC.SuppressFinalize(this);
         }
 

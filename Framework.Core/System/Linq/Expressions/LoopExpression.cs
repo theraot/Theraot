@@ -18,7 +18,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="LoopExpression" />.</returns>
         public static LoopExpression Loop(Expression body)
         {
-            return Loop(body, null);
+            return Loop(body, @break: null);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="LoopExpression" />.</returns>
         public static LoopExpression Loop(Expression body, LabelTarget? @break)
         {
-            return Loop(body, @break, null);
+            return Loop(body, @break, @continue: null);
         }
 
         /// <summary>

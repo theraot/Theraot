@@ -94,7 +94,7 @@ namespace System.Dynamic
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public DynamicMetaObject FallbackInvokeMember(DynamicMetaObject target, DynamicMetaObject[] args)
         {
-            return FallbackInvokeMember(target, args, null);
+            return FallbackInvokeMember(target, args, errorSuggestion: null);
         }
 
         /// <summary>

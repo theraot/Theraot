@@ -62,7 +62,7 @@ namespace System.Runtime.CompilerServices
 
                 default:
                     result = "Assumption failed.";
-                    Contract.Assume(false, "Unreachable code");
+                    Contract.Assume(condition: false, "Unreachable code");
                     break;
             }
 

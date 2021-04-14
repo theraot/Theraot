@@ -263,7 +263,7 @@ namespace System.Collections
         // dictionary. The hashtable is created with the given load factor.
         //
         public Hashtable(IDictionary d, float loadFactor)
-            : this(d, loadFactor, null)
+            : this(d, loadFactor, equalityComparer: null)
         {
             // Empty
         }
@@ -401,7 +401,7 @@ namespace System.Collections
                 switch (EqualityComparer)
                 {
                     case null:
-                        EqualityComparer = new CompatibleComparer(null, value);
+                        EqualityComparer = new CompatibleComparer(hashCodeProvider: null, value);
                         break;
 
                     case CompatibleComparer keyComparer:
@@ -439,7 +439,7 @@ namespace System.Collections
                 switch (EqualityComparer)
                 {
                     case null:
-                        EqualityComparer = new CompatibleComparer(value, null);
+                        EqualityComparer = new CompatibleComparer(value, comparer: null);
                         break;
 
                     case CompatibleComparer keyComparer:
@@ -520,7 +520,7 @@ namespace System.Collections
                 return null;
             }
 
-            set => Insert(key, value, false);
+            set => Insert(key, value, add: false);
         }
 
         // Returns a thread-safe wrapper for a Hashtable.
@@ -541,7 +541,7 @@ namespace System.Collections
         //
         public virtual void Add(object key, object? value)
         {
-            Insert(key, value, true);
+            Insert(key, value, add: true);
         }
 
         // Removes all entries from this hashtable.
@@ -745,8 +745,8 @@ namespace System.Collections
                 switch (keyComparerForSerialization)
                 {
                     case null:
-                        info.AddValue(_comparerName, null, typeof(IComparer));
-                        info.AddValue(_hashCodeProviderName, null, typeof(IHashCodeProvider));
+                        info.AddValue(_comparerName, value: null, typeof(IComparer));
+                        info.AddValue(_hashCodeProviderName, value: null, typeof(IHashCodeProvider));
                         break;
 
                     case CompatibleComparer c:
@@ -874,7 +874,7 @@ namespace System.Collections
                     throw new SerializationException();
                 }
 
-                Insert(serKeys[i], serValues[i], true);
+                Insert(serKeys[i], serValues[i], add: true);
             }
 
             _version = siInfo.GetInt32(_versionName);
@@ -1188,7 +1188,7 @@ namespace System.Collections
             // If you see this assert, make sure load factor & count are reasonable.
             // Then verify that our double hash function (h2, described at top of file)
             // meets the requirements described above. You should never see this assert.
-            Debug.Assert(false, "hash table insert failed!  Load factor too high, or our double hashing function is incorrect.");
+            Debug.Assert(condition: false, "hash table insert failed!  Load factor too high, or our double hashing function is incorrect.");
             throw new InvalidOperationException();
         }
 
@@ -1481,7 +1481,7 @@ namespace System.Collections
             private readonly Hashtable _table;
 
             internal SyncHashtable(Hashtable table)
-                : base(false)
+                : base(trash: false)
             {
                 _table = table;
             }

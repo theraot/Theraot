@@ -70,9 +70,9 @@ namespace System.Threading
             _id = Interlocked.Increment(ref _idPool);
             _fastStateCache = new ThreadLockState[64];
             _upgradableTaken = new AtomicBoolean();
-            _upgradableEvent = new ManualResetEventSlim(true);
-            _writerDoneEvent = new ManualResetEventSlim(true);
-            _readerDoneEvent = new ManualResetEventSlim(true);
+            _upgradableEvent = new ManualResetEventSlim(initialState: true);
+            _writerDoneEvent = new ManualResetEventSlim(initialState: true);
+            _readerDoneEvent = new ManualResetEventSlim(initialState: true);
         }
 
         public int CurrentReadCount => (_rwLock >> _rwReadBit) - (_upgradableTaken.Value ? 1 : 0);
@@ -102,7 +102,7 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 

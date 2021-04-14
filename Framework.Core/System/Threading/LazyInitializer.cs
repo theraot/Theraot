@@ -25,7 +25,7 @@ namespace System.Threading
         {
             if (syncLock == null)
             {
-                Interlocked.CompareExchange(ref syncLock, new object(), null);
+                Interlocked.CompareExchange(ref syncLock, new object(), comparand: null);
             }
 
             if (Volatile.Read(ref initialized))
@@ -49,7 +49,7 @@ namespace System.Threading
                     throw new MissingMemberException("The type being lazily initialized does not have a public, parameterless constructor.");
                 }
 
-                Volatile.Write(ref initialized, true);
+                Volatile.Write(ref initialized, value: true);
             }
 
             return target;
@@ -60,7 +60,7 @@ namespace System.Threading
             // MICROSOFT doesn't do a null check for valueFactory
             if (syncLock == null)
             {
-                Interlocked.CompareExchange(ref syncLock, new object(), null);
+                Interlocked.CompareExchange(ref syncLock, new object(), comparand: null);
             }
 
             if (Volatile.Read(ref initialized))
@@ -76,7 +76,7 @@ namespace System.Threading
                 }
 
                 target = valueFactory();
-                Volatile.Write(ref initialized, true);
+                Volatile.Write(ref initialized, value: true);
             }
 
             return target;

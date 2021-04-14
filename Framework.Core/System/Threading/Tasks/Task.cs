@@ -25,37 +25,37 @@ namespace System.Threading.Tasks
         private ManualResetEventSlim? _waitHandle;
 
         public Task(Action action)
-            : this(action, null, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, state: null, parent: null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action action, CancellationToken cancellationToken)
-            : this(action, null, null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, state: null, parent: null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action action, TaskCreationOptions creationOptions)
-            : this(action, null, InternalCurrentIfAttached(creationOptions), default, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, state: null, InternalCurrentIfAttached(creationOptions), default, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action<object?> action, object? state)
-            : this(action, state, null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, state, parent: null, default, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
-            : this(action, null, InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, state: null, InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action<object?> action, object? state, CancellationToken cancellationToken)
-            : this(action, state, null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
+            : this(action, state, parent: null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
@@ -79,7 +79,7 @@ namespace System.Threading.Tasks
         }
 
         internal Task(Action action, Task? parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
-            : this(action, null, parent, cancellationToken, creationOptions, internalOptions, scheduler)
+            : this(action, state: null, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             CapturedContext = ExecutionContext.Capture();
         }
@@ -125,7 +125,7 @@ namespace System.Threading.Tasks
             }
 
             State = state;
-            _waitHandle = new ManualResetEventSlim(false);
+            _waitHandle = new ManualResetEventSlim(initialState: false);
             if ((creationOptions
                  & ~(TaskCreationOptions.AttachedToParent
                      | TaskCreationOptions.LongRunning
@@ -157,13 +157,13 @@ namespace System.Threading.Tasks
             // we need to do this as the very last thing in the construction path, because the CT registration could modify m_stateFlags
             if (cancellationToken.CanBeCanceled)
             {
-                AssignCancellationToken(cancellationToken, null, null);
+                AssignCancellationToken(cancellationToken, antecedent: null, continuation: null);
             }
         }
 
         ~Task()
         {
-            Dispose(false);
+            Dispose(disposing: false);
         }
 
         public static int? CurrentId
@@ -205,7 +205,7 @@ namespace System.Threading.Tasks
                 // If you're faulted, retrieve the exception(s)
                 if (IsFaulted)
                 {
-                    e = GetExceptions(false);
+                    e = GetExceptions(includeTaskCanceledExceptions: false);
                 }
 
                 // Only return an exception in faulted state (skip manufactured exceptions)
@@ -275,13 +275,13 @@ namespace System.Threading.Tasks
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
         void IThreadPoolWorkItem.ExecuteWorkItem()
         {
-            ExecuteEntry(false);
+            ExecuteEntry(preventDoubleExecution: false);
         }
 
         void IThreadPoolWorkItem.MarkAborted(ThreadAbortException exception)
@@ -292,7 +292,7 @@ namespace System.Threading.Tasks
             }
 
             HandleException(exception);
-            FinishThreadAbortedTask(true, false);
+            FinishThreadAbortedTask(exceptionAdded: true, delegateRan: false);
         }
 
         public void RunSynchronously()
@@ -342,7 +342,7 @@ namespace System.Threading.Tasks
                 throw new ObjectDisposedException(nameof(Task));
             }
 
-            if (!InternalStart(ExecutingTaskScheduler, false, true))
+            if (!InternalStart(ExecutingTaskScheduler, inline: false, throwSchedulerExceptions: true))
             {
                 throw new InvalidOperationException("Start may not be called on a task that was already started.");
             }
@@ -375,7 +375,7 @@ namespace System.Threading.Tasks
                 throw new ObjectDisposedException(nameof(Task));
             }
 
-            if (!InternalStart(scheduler, false, true))
+            if (!InternalStart(scheduler, inline: false, throwSchedulerExceptions: true))
             {
                 throw new InvalidOperationException("Start may not be called on a task that was already started.");
             }
@@ -388,7 +388,7 @@ namespace System.Threading.Tasks
 
         public void Wait(CancellationToken cancellationToken)
         {
-            PrivateWait(cancellationToken, true);
+            PrivateWait(cancellationToken, throwIfExceptional: true);
         }
 
         public bool Wait(int milliseconds)
@@ -434,7 +434,7 @@ namespace System.Threading.Tasks
                 {
                     case TaskStatus.WaitingForActivation:
                         WaitAntecedent(cancellationToken, milliseconds, start);
-                        ExecutingTaskScheduler.InternalTryExecuteTaskInline(this, true);
+                        ExecutingTaskScheduler.InternalTryExecuteTaskInline(this, taskWasPreviouslyQueued: true);
                         break;
 
                     case TaskStatus.Created:
@@ -456,11 +456,11 @@ namespace System.Threading.Tasks
                         return true;
 
                     case TaskStatus.Canceled:
-                        ThrowIfExceptional(true);
+                        ThrowIfExceptional(includeTaskCanceledExceptions: true);
                         return true;
 
                     case TaskStatus.Faulted:
-                        ThrowIfExceptional(true);
+                        ThrowIfExceptional(includeTaskCanceledExceptions: true);
                         return true;
 
                     default:
@@ -475,11 +475,11 @@ namespace System.Threading.Tasks
                     return true;
 
                 case TaskStatus.Canceled:
-                    ThrowIfExceptional(true);
+                    ThrowIfExceptional(includeTaskCanceledExceptions: true);
                     return true;
 
                 case TaskStatus.Faulted:
-                    ThrowIfExceptional(true);
+                    ThrowIfExceptional(includeTaskCanceledExceptions: true);
                     return true;
 
                 default:
@@ -593,7 +593,7 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
-                    PrivateWait(CancellationToken, false);
+                    PrivateWait(CancellationToken, throwIfExceptional: false);
                 }
             }
             catch (ThreadAbortException exception)
@@ -604,7 +604,7 @@ namespace System.Threading.Tasks
                 }
 
                 AddException(exception);
-                FinishThreadAbortedTask(true, false);
+                FinishThreadAbortedTask(exceptionAdded: true, delegateRan: false);
             }
             catch (Exception exception)
             {
@@ -632,7 +632,7 @@ namespace System.Threading.Tasks
                 throw new ObjectDisposedException(nameof(Task));
             }
 
-            InternalStart(scheduler, inline, true);
+            InternalStart(scheduler, inline, throwSchedulerExceptions: true);
         }
 
         internal void Start(TaskScheduler scheduler, bool inline, bool throwSchedulerExceptions)
@@ -647,7 +647,7 @@ namespace System.Threading.Tasks
 
         internal bool TryStart(TaskScheduler scheduler, bool inline)
         {
-            return Volatile.Read(ref _isDisposed) != 1 && InternalStart(scheduler, inline, true);
+            return Volatile.Read(ref _isDisposed) != 1 && InternalStart(scheduler, inline, throwSchedulerExceptions: true);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -715,7 +715,7 @@ namespace System.Threading.Tasks
             }
 
             // Make sure that Task only gets started once.  Or else throw an exception.
-            if (!InternalStart(scheduler, true, true))
+            if (!InternalStart(scheduler, inline: true, throwSchedulerExceptions: true))
             {
                 throw new InvalidOperationException("RunSynchronously may not be called on a task that was already started.");
             }
@@ -732,7 +732,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.WaitingToRun:
                         CancellationCheck(cancellationToken);
                         WaitAntecedent(CancellationToken);
-                        ExecutingTaskScheduler.InternalTryExecuteTaskInline(this, true);
+                        ExecutingTaskScheduler.InternalTryExecuteTaskInline(this, taskWasPreviouslyQueued: true);
                         break;
 
                     case TaskStatus.Created:
@@ -757,7 +757,7 @@ namespace System.Threading.Tasks
                         CancellationCheck(cancellationToken);
                         if (throwIfExceptional)
                         {
-                            ThrowIfExceptional(true);
+                            ThrowIfExceptional(includeTaskCanceledExceptions: true);
                         }
 
                         done = true;
@@ -781,7 +781,7 @@ namespace System.Threading.Tasks
         private void RecordException(TaskSchedulerException taskSchedulerException)
         {
             AddException(taskSchedulerException);
-            Finish(false);
+            Finish(userDelegateExecuted: false);
             if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
                 return;
@@ -790,11 +790,11 @@ namespace System.Threading.Tasks
             if (_exceptionsHolder != null)
             {
                 Contract.Assert(_exceptionsHolder.ContainsFaultList, "Expected _exceptionsHolder to have faults recorded.");
-                _exceptionsHolder.MarkAsHandled(false);
+                _exceptionsHolder.MarkAsHandled(calledFromFinalizer: false);
             }
             else
             {
-                Contract.Assert(false, "Expected _exceptionsHolder to exist.");
+                Contract.Assert(condition: false, "Expected _exceptionsHolder to exist.");
             }
         }
 

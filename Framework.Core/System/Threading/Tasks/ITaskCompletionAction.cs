@@ -20,7 +20,7 @@ namespace System.Threading.Tasks
             private ICollection<Task>? _tasks; // must track this for cleanup
 
             public CompleteOnInvokePromise(ICollection<Task> tasks)
-                : base(TaskCreationOptions.None, null)
+                : base(TaskCreationOptions.None, state: null)
             {
                 Contract.Requires(tasks.Count > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
@@ -86,12 +86,12 @@ namespace System.Threading.Tasks
                 CheckCount();
             }
 
-            public bool IsDone => Interlocked.CompareExchange(ref _done, null, null) == null;
+            public bool IsDone => Interlocked.CompareExchange(ref _done, value: null, comparand: null) == null;
 
             public void Dispose()
             {
                 // Get and erase the tasks
-                var tasks = Interlocked.Exchange(ref _tasks, null);
+                var tasks = Interlocked.Exchange(ref _tasks, value: null);
                 // If there are no tasks there is nothing to do
                 if (tasks == null)
                 {
@@ -123,7 +123,7 @@ namespace System.Threading.Tasks
             {
                 // Continuations call here
                 // Get the tasks
-                var tasks = Interlocked.CompareExchange(ref _tasks, null, null);
+                var tasks = Interlocked.CompareExchange(ref _tasks, value: null, comparand: null);
                 // If there are no tasks (Disposed) there is nothing to do
                 if (tasks == null)
                 {
@@ -155,7 +155,7 @@ namespace System.Threading.Tasks
             {
                 Contract.Requires(Volatile.Read(ref _ready) == 0);
                 // Get the tasks
-                var tasks = Interlocked.CompareExchange(ref _tasks, null, null);
+                var tasks = Interlocked.CompareExchange(ref _tasks, value: null, comparand: null);
                 // If there are no tasks (Disposed) there is nothing to do
                 if (tasks == null)
                 {
@@ -172,7 +172,7 @@ namespace System.Threading.Tasks
                 // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
                 // Add the continuation
-                if (awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
+                if (awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ addBeforeOthers: true))
                 {
                     // Find a spot in the tasks
                     var index = Interlocked.Increment(ref _index);
@@ -212,7 +212,7 @@ namespace System.Threading.Tasks
             private void Done()
             {
                 // Get and erase done
-                var done = Interlocked.Exchange(ref _done, null);
+                var done = Interlocked.Exchange(ref _done, value: null);
                 // If if was there, call it
                 done?.Invoke();
             }
@@ -229,7 +229,7 @@ namespace System.Threading.Tasks
             private int _ready;
 
             internal WhenAllPromise(Task[] tasks)
-                : base(TaskCreationOptions.None, null)
+                : base(TaskCreationOptions.None, state: null)
             {
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
@@ -270,7 +270,7 @@ namespace System.Threading.Tasks
                 // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
                 // Add the continuation
-                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
+                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ addBeforeOthers: true))
                 {
                     // We failed to add the continuation
                     // Decrement the _count
@@ -311,7 +311,7 @@ namespace System.Threading.Tasks
                     var task = _tasks[index];
                     if (task == null)
                     {
-                        Contract.Assert(false, "Constituent task in WhenAll should never be null");
+                        Contract.Assert(condition: false, "Constituent task in WhenAll should never be null");
                         throw new InvalidOperationException("Constituent task in WhenAll should never be null");
                     }
 
@@ -328,7 +328,7 @@ namespace System.Threading.Tasks
                     // WhenAll task.  We must do this before we complete the task.
                     if (task.IsWaitNotificationEnabled)
                     {
-                        SetNotificationForWaitCompletion( /*enabled:*/ true);
+                        SetNotificationForWaitCompletion( /*enabled:*/ enabled: true);
                     }
                     else
                     {
@@ -366,7 +366,7 @@ namespace System.Threading.Tasks
             private int _ready;
 
             internal WhenAllPromise(Task<T>[] tasks)
-                : base(TaskCreationOptions.None, null)
+                : base(TaskCreationOptions.None, state: null)
             {
                 Contract.Requires(tasks.Length > 0, "Expected a non-zero length task array");
                 _tasks = tasks;
@@ -407,7 +407,7 @@ namespace System.Threading.Tasks
                 // So that is has already been incremented when the continuation runs
                 Interlocked.Increment(ref _count);
                 // Add the continuation
-                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
+                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ addBeforeOthers: true))
                 {
                     // We failed to add the continuation
                     // Decrement the _count
@@ -449,7 +449,7 @@ namespace System.Threading.Tasks
                     var task = _tasks[index];
                     if (task == null)
                     {
-                        Contract.Assert(false, "Constituent task in WhenAll should never be null");
+                        Contract.Assert(condition: false, "Constituent task in WhenAll should never be null");
                         throw new InvalidOperationException("Constituent task in WhenAll should never be null");
                     }
 
@@ -474,7 +474,7 @@ namespace System.Threading.Tasks
                     // WhenAll task.  We must do this before we complete the task.
                     if (task.IsWaitNotificationEnabled)
                     {
-                        SetNotificationForWaitCompletion( /*enabled:*/ true);
+                        SetNotificationForWaitCompletion( /*enabled:*/ enabled: true);
                     }
                     else
                     {

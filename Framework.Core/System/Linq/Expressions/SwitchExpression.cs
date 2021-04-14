@@ -24,7 +24,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
         public static SwitchExpression Switch(Expression switchValue, params SwitchCase[] cases)
         {
-            return Switch(switchValue, null, null, (IEnumerable<SwitchCase>)cases);
+            return Switch(switchValue, defaultBody: null, comparison: null, (IEnumerable<SwitchCase>)cases);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
         public static SwitchExpression Switch(Expression switchValue, Expression defaultBody, params SwitchCase[] cases)
         {
-            return Switch(switchValue, defaultBody, null, (IEnumerable<SwitchCase>)cases);
+            return Switch(switchValue, defaultBody, comparison: null, (IEnumerable<SwitchCase>)cases);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="SwitchExpression" />.</returns>
         public static SwitchExpression Switch(Expression switchValue, Expression? defaultBody, MethodInfo? comparison, IEnumerable<SwitchCase> cases)
         {
-            return Switch(null, switchValue, defaultBody, comparison, cases);
+            return Switch(type: null, switchValue, defaultBody, comparison, cases);
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace System.Linq.Expressions
                 // Now we need to validate that switchValue.Type and testValueType
                 // make sense in an Equal node. Fortunately, Equal throws a
                 // reasonable error, so just call it.
-                var equal = Equal(switchValue, firstTestValue, false, null);
+                var equal = Equal(switchValue, firstTestValue, liftToNull: false, method: null);
 
                 // Get the comparison function from equals node.
                 comparison = equal.Method;

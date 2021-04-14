@@ -26,7 +26,7 @@ namespace System.Runtime.CompilerServices
     {
         internal const int Cor_E_CodeContractFailed = unchecked((int)0x80131542);
 
-        private static readonly IEvent<ContractFailedEventArgs> _contractFailedEvent = new StrongEvent<ContractFailedEventArgs>(true);
+        private static readonly IEvent<ContractFailedEventArgs> _contractFailedEvent = new StrongEvent<ContractFailedEventArgs>(freeReentry: true);
 
         /// <summary>
         ///     Allows a managed application environment such as an interactive interpreter (IronPython) or a
@@ -102,7 +102,7 @@ namespace System.Runtime.CompilerServices
                 _contractFailedEvent.Invoke
                 (
                     OnException,
-                    null,
+                    sender: null,
                     eventArgs
                 );
                 if (eventArgs.Unwind)

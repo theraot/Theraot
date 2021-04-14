@@ -2699,7 +2699,7 @@ namespace System.Linq
 
         private static Expression StaticCall(MethodInfo method, params Expression[] expressions)
         {
-            return Expression.Call(null, method, expressions);
+            return Expression.Call(instance: null, method, expressions);
         }
     }
 }

@@ -234,7 +234,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static Instruction GetNull()
         {
-            return _null ??= new LoadObjectInstruction(null);
+            return _null ??= new LoadObjectInstruction(value: null);
         }
 
         private static Instruction[] GetStoreLocal()

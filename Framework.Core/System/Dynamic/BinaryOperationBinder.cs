@@ -66,7 +66,7 @@ namespace System.Dynamic
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public DynamicMetaObject FallbackBinaryOperation(DynamicMetaObject target, DynamicMetaObject arg)
         {
-            return FallbackBinaryOperation(target, arg, null);
+            return FallbackBinaryOperation(target, arg, errorSuggestion: null);
         }
 
         /// <summary>

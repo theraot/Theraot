@@ -28,7 +28,7 @@ namespace Theraot.Threading.Needles
         }
 
         protected PromiseNeedle(T target)
-            : base(true)
+            : base(done: true)
         {
             _target = target;
             _hashCode = target == null ? base.GetHashCode() : target.GetHashCode();

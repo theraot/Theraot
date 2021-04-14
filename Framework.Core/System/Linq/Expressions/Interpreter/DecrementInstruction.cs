@@ -48,7 +48,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {
@@ -66,7 +66,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {
@@ -120,7 +120,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {
@@ -138,7 +138,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {
@@ -156,7 +156,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {
@@ -174,7 +174,7 @@ namespace System.Linq.Expressions.Interpreter
                 var obj = frame.Pop();
                 if (obj == null)
                 {
-                    frame.Push(null);
+                    frame.Push(value: null);
                 }
                 else
                 {

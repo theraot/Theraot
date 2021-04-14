@@ -77,14 +77,14 @@ namespace System.Threading.Tasks
             public static void CreateWithoutTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource)
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(cancellationToken, taskCompletionSource);
-                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, null, -1, true);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithoutTimeout, state: null, -1, executeOnlyOnce: true);
                 cancellationToken.Register(() => result.Unregister());
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(cancellationToken, taskCompletionSource);
-                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, null, millisecondsTimeout, true);
+                result._registeredWaitHandle[0] = ThreadPool.RegisterWaitForSingleObject(waitHandle, result.CallbackWithTimeout, state: null, millisecondsTimeout, executeOnlyOnce: true);
                 cancellationToken.Register(() => result.Unregister());
             }
 
@@ -117,7 +117,7 @@ namespace System.Threading.Tasks
 
             private bool Unregister()
             {
-                Volatile.Read(ref _registeredWaitHandle[0])!.Unregister(null);
+                Volatile.Read(ref _registeredWaitHandle[0])!.Unregister(waitObject: null);
 #pragma warning disable EPS06 // Hidden struct copy operation
                 if (!_cancellationToken.IsCancellationRequested)
 #pragma warning restore EPS06 // Hidden struct copy operation

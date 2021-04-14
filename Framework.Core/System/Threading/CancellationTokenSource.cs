@@ -58,7 +58,7 @@ namespace System.Threading
         public CancellationTokenSource()
         {
             _callbacks = new Bucket<Action>();
-            _handle = new ManualResetEvent(false);
+            _handle = new ManualResetEvent(initialState: false);
         }
 
         public CancellationTokenSource(int millisecondsDelay)
@@ -128,14 +128,14 @@ namespace System.Threading
 
         public void Cancel()
         {
-            Cancel(false);
+            Cancel(throwOnFirstException: false);
         }
 
         public void Cancel(bool throwOnFirstException)
         {
             // If throwOnFirstException is true we throw exception as soon as they appear otherwise we aggregate them
             var callbacks = CheckDisposedGetCallbacks();
-            CancelExtracted(throwOnFirstException, callbacks, false);
+            CancelExtracted(throwOnFirstException, callbacks, ignoreDisposedException: false);
         }
 
         public void CancelAfter(TimeSpan delay)
@@ -158,7 +158,7 @@ namespace System.Threading
 
             // Have to be careful not to create secondary background timer
             var newTimer = RootedTimeout.Launch(Callback, Timeout.Infinite);
-            var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
+            var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, comparand: null);
             if (oldTimer != null)
             {
                 newTimer.Cancel();
@@ -170,7 +170,7 @@ namespace System.Threading
         [DebuggerNonUserCode]
         public void Dispose()
         {
-            Dispose(true);
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
@@ -213,7 +213,7 @@ namespace System.Threading
                 {
                     var capturedSyncContext = SynchronizationContext.Current;
                     var originalCallback = callback;
-                    callback = () => capturedSyncContext.Send(_ => originalCallback(), null);
+                    callback = () => capturedSyncContext.Send(_ => originalCallback(), state: null);
                 }
 
                 callbacks.Insert(id, callback);
@@ -253,7 +253,7 @@ namespace System.Threading
                 _callbacks = null;
             }
 
-            var timer = Interlocked.Exchange(ref _timeout, null);
+            var timer = Interlocked.Exchange(ref _timeout, value: null);
             timer?.Cancel();
             _handle.Close();
         }
@@ -295,7 +295,7 @@ namespace System.Threading
             var callbacks = cancellationTokenSource._callbacks;
             if (callbacks != null)
             {
-                cancellationTokenSource.CancelExtracted(false, callbacks, true);
+                cancellationTokenSource.CancelExtracted(throwOnFirstException: false, callbacks, ignoreDisposedException: true);
             }
         }
 
@@ -359,12 +359,12 @@ namespace System.Threading
                 return;
             }
 
-            CancelExtracted(false, callbacks, true);
+            CancelExtracted(throwOnFirstException: false, callbacks, ignoreDisposedException: true);
         }
 
         private void UnregisterLinkedTokens()
         {
-            var registrations = Interlocked.Exchange(ref _linkedTokens, null);
+            var registrations = Interlocked.Exchange(ref _linkedTokens, value: null);
             if (registrations == null)
             {
                 return;

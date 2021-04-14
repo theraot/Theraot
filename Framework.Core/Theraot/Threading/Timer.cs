@@ -18,12 +18,12 @@ namespace Theraot.Threading
         private Timer(Action callback, TimeSpan dueTime, TimeSpan period)
         {
             _callback = callback;
-            _timer = new System.Threading.Timer(Callback, null, dueTime, period);
+            _timer = new System.Threading.Timer(Callback, state: null, dueTime, period);
         }
 
         public static void Donate(ref Timer? timer)
         {
-            _pool.Donate(Interlocked.Exchange(ref timer, null));
+            _pool.Donate(Interlocked.Exchange(ref timer, value: null));
         }
 
         public static Timer GetTimer(Action callback, TimeSpan dueTime, TimeSpan period)
@@ -54,7 +54,7 @@ namespace Theraot.Threading
 
         void IDisposable.Dispose()
         {
-            Interlocked.Exchange(ref _timer, null)?.Dispose();
+            Interlocked.Exchange(ref _timer, value: null)?.Dispose();
             _callback = null;
         }
 

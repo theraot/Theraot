@@ -444,7 +444,7 @@ namespace System.Threading.Tasks
                 return tasks.Any(task => task?.IsWaitNotificationEnabled == true && task.ShouldNotifyDebuggerOfWaitCompletion);
             }
 
-            Contract.Assert(false, "Expected non-null array of tasks");
+            Contract.Assert(condition: false, "Expected non-null array of tasks");
             throw new ArgumentNullException(nameof(tasks));
         }
 

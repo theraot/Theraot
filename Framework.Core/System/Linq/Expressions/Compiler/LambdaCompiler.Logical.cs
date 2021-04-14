@@ -266,7 +266,7 @@ namespace System.Linq.Expressions.Compiler
             var node = (ConditionalExpression)expr;
             Debug.Assert(node.Test.Type == typeof(bool));
             var labFalse = IL.DefineLabel();
-            EmitExpressionAndBranch(false, node.Test, labFalse);
+            EmitExpressionAndBranch(branchValue: false, node.Test, labFalse);
             EmitExpressionAsType(node.IfTrue, node.Type, flags);
 
             if (NotEmpty(node.IfFalse))
@@ -296,7 +296,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitExpressionAndBranch(bool branchValue, Expression node, Label label)
         {
             Debug.Assert(node.Type == typeof(bool));
-            var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, _labelBlock, node);
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(emitStart: true, _labelBlock, node);
             if (labelScopeChangeInfo.HasValue)
             {
                 _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);
@@ -526,7 +526,7 @@ namespace System.Linq.Expressions.Compiler
                 IL.EmitGetValueOrDefault(b.Left.Type);
                 if (!TypeUtils.AreEquivalent(b.Type, nnLeftType))
                 {
-                    IL.EmitConvertToType(nnLeftType, b.Type, true, this);
+                    IL.EmitConvertToType(nnLeftType, b.Type, isChecked: true, this);
                 }
             }
 
@@ -537,7 +537,7 @@ namespace System.Linq.Expressions.Compiler
             EmitExpression(b.Right);
             if (!TypeUtils.AreEquivalent(b.Right.Type, b.Type))
             {
-                IL.EmitConvertToType(b.Right.Type, b.Type, true, this);
+                IL.EmitConvertToType(b.Right.Type, b.Type, isChecked: true, this);
             }
 
             IL.MarkLabel(labEnd);
@@ -602,7 +602,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var @else = IL.DefineLabel();
             var end = IL.DefineLabel();
-            EmitExpressionAndBranch(false, b.Left, @else);
+            EmitExpressionAndBranch(branchValue: false, b.Left, @else);
             EmitExpression(b.Right);
             IL.Emit(OpCodes.Br, end);
             IL.MarkLabel(@else);
@@ -614,7 +614,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var @else = IL.DefineLabel();
             var end = IL.DefineLabel();
-            EmitExpressionAndBranch(false, b.Left, @else);
+            EmitExpressionAndBranch(branchValue: false, b.Left, @else);
             IL.Emit(OpCodes.Ldc_I4_1);
             IL.Emit(OpCodes.Br, end);
             IL.MarkLabel(@else);

@@ -68,7 +68,7 @@ namespace System.Dynamic
         /// <returns>The <see cref="DynamicMetaObject" /> representing the result of the binding.</returns>
         public DynamicMetaObject FallbackDeleteMember(DynamicMetaObject target)
         {
-            return FallbackDeleteMember(target, null);
+            return FallbackDeleteMember(target, errorSuggestion: null);
         }
 
         /// <summary>

@@ -330,7 +330,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expressionArray, nameof(expressions));
             return variableArray.Length == 0
                 ? GetOptimizedBlockExpression(expressionArray)
-                : BlockCore(null, variableArray, expressionArray);
+                : BlockCore(type: null, variableArray, expressionArray);
         }
 
         /// <summary>

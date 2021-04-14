@@ -73,7 +73,7 @@ namespace System.Threading.Tasks
                     if (found == null)
                     {
                         var created = new StrongBox<long>(0);
-                        found = Interlocked.CompareExchange(ref _indexRanges[_currentIndexRange].SharedCurrentIndexOffset, created, null) ?? created;
+                        found = Interlocked.CompareExchange(ref _indexRanges[_currentIndexRange].SharedCurrentIndexOffset, created, comparand: null) ?? created;
                     }
 
                     var myOffset = Interlocked.Add(ref found.Value, _incrementValue) - _incrementValue;

@@ -15,7 +15,7 @@ namespace System.Threading
         private IThreadLocal<T>? _wrapped;
 
         public ThreadLocal()
-            : this(FuncHelper.GetDefaultFunc<T>(), false)
+            : this(FuncHelper.GetDefaultFunc<T>(), trackAllValues: false)
         {
             // Empty
         }
@@ -27,7 +27,7 @@ namespace System.Threading
         }
 
         public ThreadLocal(Func<T> valueFactory)
-            : this(valueFactory, false)
+            : this(valueFactory, trackAllValues: false)
         {
             // Empty
         }
@@ -51,7 +51,7 @@ namespace System.Threading
             }
             finally
             {
-                Dispose(false);
+                Dispose(disposeManagedResources: false);
             }
         }
 
@@ -126,7 +126,7 @@ namespace System.Threading
         {
             try
             {
-                Dispose(true);
+                Dispose(disposeManagedResources: true);
             }
             finally
             {

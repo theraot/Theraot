@@ -109,7 +109,7 @@ namespace System.Runtime.CompilerServices
                     _shadowedVars.Pop();
                 }
 
-                return b == node.Body ? node : node.Rewrite(b, null);
+                return b == node.Body ? node : node.Rewrite(b, parameters: null);
             }
 
             protected internal override Expression VisitParameter(ParameterExpression node)

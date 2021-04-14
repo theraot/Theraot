@@ -130,10 +130,10 @@ namespace System.Linq.Expressions
                 // either matches or is its type argument (T to its T?).
                 if (cType.GetNonNullable() != TypeOperand.GetNonNullable())
                 {
-                    return Block(Expression, Utils.Constant(false));
+                    return Block(Expression, Utils.Constant(value: false));
                 }
 
-                return NotEqual(Expression, Constant(null, Expression.Type));
+                return NotEqual(Expression, Constant(value: null, Expression.Type));
 
                 // For other value types (including Void), we can
                 // determine the result now
@@ -232,7 +232,7 @@ namespace System.Linq.Expressions
                 return Utils.Constant(TypeOperand.GetNonNullable() == ce.Value.GetType());
             }
 
-            return Utils.Constant(false);
+            return Utils.Constant(value: false);
         }
     }
 }

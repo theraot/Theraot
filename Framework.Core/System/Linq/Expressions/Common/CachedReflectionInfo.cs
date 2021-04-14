@@ -154,10 +154,10 @@ namespace System.Linq.Expressions
             _runtimeOpsQuote ??= typeof(RuntimeOps).GetMethod(nameof(RuntimeOps.Quote));
 
         public static MethodInfo StringEqualsStringString =>
-            _stringEqualsStringString ??= typeof(string).GetMethod("Equals", BindingFlags.Public | BindingFlags.Static | BindingFlags.ExactBinding, null, new[] { typeof(string), typeof(string) }, null);
+            _stringEqualsStringString ??= typeof(string).GetMethod("Equals", BindingFlags.Public | BindingFlags.Static | BindingFlags.ExactBinding, binder: null, new[] { typeof(string), typeof(string) }, modifiers: null);
 
         public static MethodInfo StringOpEqualityStringString =>
-            _stringOpEqualityStringString ??= typeof(string).GetMethod("op_Equality", BindingFlags.Public | BindingFlags.Static | BindingFlags.ExactBinding, null, new[] { typeof(string), typeof(string) }, null);
+            _stringOpEqualityStringString ??= typeof(string).GetMethod("op_Equality", BindingFlags.Public | BindingFlags.Static | BindingFlags.ExactBinding, binder: null, new[] { typeof(string), typeof(string) }, modifiers: null);
 
         public static MethodInfo TypeGetTypeFromHandle =>
             _typeGetTypeFromHandle ??= typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle));

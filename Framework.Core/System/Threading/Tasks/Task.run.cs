@@ -18,7 +18,7 @@ namespace System.Threading.Tasks
             var result = new Task(action, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.Start(result.ExecutingTaskScheduler, false);
+                result.Start(result.ExecutingTaskScheduler, inline: false);
             }
 
             return result;
@@ -46,7 +46,7 @@ namespace System.Threading.Tasks
             var result = new Task<TResult>(function, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.Start(result.ExecutingTaskScheduler, false);
+                result.Start(result.ExecutingTaskScheduler, inline: false);
             }
 
             return result;

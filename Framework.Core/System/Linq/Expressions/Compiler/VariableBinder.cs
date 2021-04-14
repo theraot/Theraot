@@ -51,7 +51,7 @@ namespace System.Linq.Expressions.Compiler
                 return node;
             }
 
-            var createdScope = new CompilerScope(node, false);
+            var createdScope = new CompilerScope(node, isMethod: false);
             _tree.Scopes[node] = createdScope;
             _scopes.Push(createdScope);
             Visit(MergeScopes(node));
@@ -89,7 +89,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // visit the lambda, but treat it like a scope associated with invocation
-            var createdScope = new CompilerScope(lambda, false);
+            var createdScope = new CompilerScope(lambda, isMethod: false);
             _tree.Scopes[node] = createdScope;
             _scopes.Push(createdScope);
             Visit(MergeScopes(lambda));
@@ -105,7 +105,7 @@ namespace System.Linq.Expressions.Compiler
 
         protected internal override Expression VisitLambda<T>(Expression<T> node)
         {
-            var createdScope = new CompilerScope(node, true);
+            var createdScope = new CompilerScope(node, isMethod: true);
             _tree.Scopes[node] = createdScope;
             _scopes.Push(createdScope);
             var createdConstants = new BoundConstants();
@@ -221,7 +221,7 @@ namespace System.Linq.Expressions.Compiler
                 return node;
             }
 
-            var createdScope = new CompilerScope(node, false);
+            var createdScope = new CompilerScope(node, isMethod: false);
             _tree.Scopes[node] = createdScope;
             _scopes.Push(createdScope);
             Visit(node.Filter);

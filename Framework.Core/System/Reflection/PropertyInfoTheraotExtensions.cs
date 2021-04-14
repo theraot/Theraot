@@ -16,7 +16,7 @@ namespace System.Reflection
                 throw new NullReferenceException();
             }
 
-            return info.GetValue(obj, null);
+            return info.GetValue(obj, index: null);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -27,7 +27,7 @@ namespace System.Reflection
                 throw new NullReferenceException();
             }
 
-            info.SetValue(obj, value, null);
+            info.SetValue(obj, value, index: null);
         }
     }
 }

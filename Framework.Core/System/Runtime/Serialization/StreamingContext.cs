@@ -29,7 +29,7 @@ namespace System.Runtime.Serialization
     public readonly struct StreamingContext
     {
         public StreamingContext(StreamingContextStates state)
-            : this(state, null)
+            : this(state, additional: null)
         {
             // Empty
         }

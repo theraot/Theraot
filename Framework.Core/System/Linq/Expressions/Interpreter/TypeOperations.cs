@@ -108,7 +108,7 @@ namespace System.Linq.Expressions.Interpreter
 
             protected override void ConvertNull(InterpretedFrame frame)
             {
-                frame.Push(null);
+                frame.Push(value: null);
             }
         }
 
@@ -495,7 +495,7 @@ namespace System.Linq.Expressions.Interpreter
                     _shadowedVars.Pop();
                 }
 
-                return b == node.Body ? node : node.Rewrite(b, null);
+                return b == node.Body ? node : node.Rewrite(b, parameters: null);
             }
 
             protected internal override Expression VisitParameter(ParameterExpression node)

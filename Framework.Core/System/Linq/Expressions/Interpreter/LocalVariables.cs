@@ -98,7 +98,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public LocalDefinition DefineLocal(ParameterExpression variable, int start)
         {
-            var result = new LocalVariable(_localCount++, false);
+            var result = new LocalVariable(_localCount++, closure: false);
             LocalCount = Math.Max(_localCount, LocalCount);
 
             VariableScope newScope;
@@ -109,7 +109,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                newScope = new VariableScope(result, start, null);
+                newScope = new VariableScope(result, start, parent: null);
             }
 
             _variables[variable] = newScope;
@@ -151,7 +151,7 @@ namespace System.Linq.Expressions.Interpreter
                 ClosureVariables = new Dictionary<ParameterExpression, LocalVariable>();
             }
 
-            var result = new LocalVariable(ClosureVariables.Count, true);
+            var result = new LocalVariable(ClosureVariables.Count, closure: true);
             ClosureVariables.Add(variable, result);
             return result;
         }

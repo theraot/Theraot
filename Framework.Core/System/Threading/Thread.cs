@@ -238,7 +238,7 @@ namespace System.Threading
                 throw new ThreadStateException($"Unable to Start started Thread (Internal Task: {_task}) (Internal Delegate: {_start}).");
             }
 
-            var task = new Task(() => _start(null), TaskCreationOptions.LongRunning);
+            var task = new Task(() => _start(obj: null), TaskCreationOptions.LongRunning);
             task.Start();
             _task = task;
         }

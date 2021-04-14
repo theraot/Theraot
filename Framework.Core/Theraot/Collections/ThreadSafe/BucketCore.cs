@@ -204,7 +204,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 for (var subIndex = 0; subIndex < _capacity; subIndex++)
                 {
-                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], null, null);
+                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], value: null, comparand: null);
                     if (foundFirst == null)
                     {
                         continue;
@@ -265,9 +265,9 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref use);
                 // May add - make sure second exists
                 // Read first
-                var foundFirst = Interlocked.CompareExchange(ref first, null, null);
+                var foundFirst = Interlocked.CompareExchange(ref first, value: null, comparand: null);
                 // Try to restore second
-                var foundSecond = Interlocked.CompareExchange(ref second, foundFirst, null);
+                var foundSecond = Interlocked.CompareExchange(ref second, foundFirst, comparand: null);
                 // second was set to first
                 if (foundSecond != null || foundFirst != null)
                 {
@@ -277,7 +277,7 @@ namespace Theraot.Collections.ThreadSafe
                 // We need to recreate the first
                 var result = factory();
                 // Try to set to first
-                foundFirst = Interlocked.CompareExchange(ref first, result, null);
+                foundFirst = Interlocked.CompareExchange(ref first, result, comparand: null);
                 if (foundFirst != null)
                 {
                     return;
@@ -290,7 +290,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
 
                 // Try to set to second
-                Interlocked.CompareExchange(ref second, result, null);
+                Interlocked.CompareExchange(ref second, result, comparand: null);
             }
             finally
             {
@@ -306,13 +306,13 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             // Erase second
-            Interlocked.Exchange(ref second, null);
+            Interlocked.Exchange(ref second, value: null);
             // Erase first - second may have been restored by another thread
-            Interlocked.Exchange(ref first, null);
+            Interlocked.Exchange(ref first, value: null);
             // Read second
-            var foundSecond = Interlocked.CompareExchange(ref second, null, null);
+            var foundSecond = Interlocked.CompareExchange(ref second, value: null, comparand: null);
             // Set first to second - either erased or restored
-            Interlocked.CompareExchange(ref first, foundSecond, null);
+            Interlocked.CompareExchange(ref first, foundSecond, comparand: null);
         }
 
         private static bool DoMayDecrement(ref int use, ref object? first, ref object? second, DoAction callback)
@@ -321,9 +321,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Increment(ref use);
                 // Read first
-                var foundFirst = Interlocked.CompareExchange(ref first, null, null);
+                var foundFirst = Interlocked.CompareExchange(ref first, value: null, comparand: null);
                 // Try to restore second
-                Interlocked.CompareExchange(ref second, foundFirst, null);
+                Interlocked.CompareExchange(ref second, foundFirst, comparand: null);
                 if (!callback(ref second))
                 {
                     return false;
@@ -369,7 +369,7 @@ namespace Theraot.Collections.ThreadSafe
                 try
                 {
                     Interlocked.Increment(ref arrayUse![subIndex]);
-                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], null, null);
+                    var foundFirst = Interlocked.CompareExchange(ref arrayFirst![subIndex], value: null, comparand: null);
                     if (_level == 1)
                     {
                         if (foundFirst == null)

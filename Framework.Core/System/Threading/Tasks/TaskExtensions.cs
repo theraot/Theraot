@@ -47,7 +47,7 @@ namespace System.Threading.Tasks
             // As in the subsequent slower path, a null inner task is special-cased to mean cancellation.
             if (task.Status == TaskStatus.RanToCompletion && (task.CreationOptions & TaskCreationOptions.AttachedToParent) == 0)
             {
-                return task.Result ?? Task.FromCanceled(new CancellationToken(true));
+                return task.Result ?? Task.FromCanceled(new CancellationToken(canceled: true));
             }
 
             // Create a new Task to serve as a proxy for the actual inner task.  Attach it
@@ -84,7 +84,7 @@ namespace System.Threading.Tasks
             // As in the subsequent slower path, a null inner task is special-cased to mean cancellation.
             if (task.Status == TaskStatus.RanToCompletion && (task.CreationOptions & TaskCreationOptions.AttachedToParent) == 0)
             {
-                return task.Result ?? Task.FromCanceled<TResult>(new CancellationToken(true));
+                return task.Result ?? Task.FromCanceled<TResult>(new CancellationToken(canceled: true));
             }
 
             // Create a new Task to serve as a proxy for the actual inner task.  Attach it

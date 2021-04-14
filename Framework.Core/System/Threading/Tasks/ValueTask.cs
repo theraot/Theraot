@@ -14,7 +14,7 @@ namespace System.Threading.Tasks
         internal readonly bool ContinueOnCapturedContext;
         internal readonly object Obj;
         internal readonly short Token;
-        private static readonly Task _canceledTask = TaskExEx.FromCanceled(new CancellationToken(true));
+        private static readonly Task _canceledTask = TaskExEx.FromCanceled(new CancellationToken(canceled: true));
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public ValueTask(Task task)

@@ -114,7 +114,7 @@ namespace System.Linq.Expressions
             }
 
             // Null paramName as there are several paths here with different parameter names at the API
-            TypeUtils.ValidateType(decType, null, true, true);
+            TypeUtils.ValidateType(decType, paramName: null, allowByRef: true, allowPointer: true);
             switch (member)
             {
                 case PropertyInfo pi:

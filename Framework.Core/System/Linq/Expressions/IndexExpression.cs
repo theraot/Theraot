@@ -68,7 +68,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentException("Incorrect number of indexes");
             }
 
-            return new IndexExpression(array, null, ArrayEx.Empty<Expression>());
+            return new IndexExpression(array, indexer: null, ArrayEx.Empty<Expression>());
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace System.Linq.Expressions
                 }
             }
 
-            return new IndexExpression(array, null, indexList);
+            return new IndexExpression(array, indexer: null, indexList);
         }
 
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)
@@ -233,7 +233,7 @@ namespace System.Linq.Expressions
 
         private static bool IsCompatible(PropertyInfo pi, Expression[] args)
         {
-            var mi = pi.GetGetMethod(true);
+            var mi = pi.GetGetMethod(nonPublic: true);
             ParameterInfo[] parameters;
             if (mi != null)
             {
@@ -241,7 +241,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                mi = pi.GetSetMethod(true);
+                mi = pi.GetSetMethod(nonPublic: true);
                 if (mi == null)
                 {
                     return false;
@@ -379,7 +379,7 @@ namespace System.Linq.Expressions
 
         private static (ParameterInfo[] parameters, MethodInfo methodInfo)? ValidateIndexedGetter(Expression? instance, PropertyInfo indexer, string paramName, ref Expression[] argList)
         {
-            var getter = indexer.GetGetMethod(true);
+            var getter = indexer.GetGetMethod(nonPublic: true);
             if (getter == null)
             {
                 return null;
@@ -420,7 +420,7 @@ namespace System.Linq.Expressions
 
             var getter = ValidateIndexedGetter(instance, indexer, paramName, ref argList);
 
-            var setter = indexer.GetSetMethod(true);
+            var setter = indexer.GetSetMethod(nonPublic: true);
             if (setter != null)
             {
                 var setParameters = setter.GetParameters();
@@ -550,8 +550,8 @@ namespace System.Linq.Expressions
                 argument ??
                 (
                     Indexer != null
-                        ? Constant(null, Indexer.GetIndexParameters()[index].ParameterType)
-                        : Constant(null)
+                        ? Constant(value: null, Indexer.GetIndexParameters()[index].ParameterType)
+                        : Constant(value: null)
                 );
         }
 

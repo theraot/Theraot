@@ -171,7 +171,7 @@ namespace System.Collections.Generic
                 }
             );
             var result = Contains(equalValue);
-            spy.SetCallback(null);
+            spy.SetCallback(callback: null);
             if (result)
             {
                 actualValue = found;

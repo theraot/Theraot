@@ -243,7 +243,7 @@ namespace System.Threading.Tasks
                 {
                     // We are eligible for inlining.  If it doesn't work, we'll do a full wait.
                     // A successful TryStart doesn't guarantee completion
-                    taskIsCompleted = task.TryStart(task.ExecutingTaskScheduler, true) && task.IsCompleted;
+                    taskIsCompleted = task.TryStart(task.ExecutingTaskScheduler, inline: true) && task.IsCompleted;
                 }
 
                 if (!taskIsCompleted)
@@ -524,7 +524,7 @@ namespace System.Threading.Tasks
                 }
 
                 // Otherwise, add the completion action and keep going.
-                task.AddTaskContinuation(firstCompleted, false);
+                task.AddTaskContinuation(firstCompleted, addBeforeOthers: false);
             }
 
             //--
@@ -540,7 +540,7 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
             {
-                Contract.Assert(false, "Expected a non-null list of tasks");
+                Contract.Assert(condition: false, "Expected a non-null list of tasks");
                 throw new ArgumentNullException(nameof(tasks));
             }
 
@@ -550,7 +550,7 @@ namespace System.Threading.Tasks
             WhenAllCore? core = null;
             try
             {
-                manualResetEventSlim = new ManualResetEventSlim(false);
+                manualResetEventSlim = new ManualResetEventSlim(initialState: false);
                 core = new WhenAllCore(tasks, manualResetEventSlim.Set);
                 waitCompleted = core.IsDone || manualResetEventSlim.Wait(millisecondsTimeout, cancellationToken);
             }
@@ -579,7 +579,7 @@ namespace System.Threading.Tasks
                 var task = tasks[taskIndex];
                 if (task.IsFaulted || task.IsCanceled)
                 {
-                    var exception = task.GetExceptions(true);
+                    var exception = task.GetExceptions(includeTaskCanceledExceptions: true);
                     if (exception != null)
                     {
                         // make sure the task's exception observed status is set appropriately
@@ -634,7 +634,7 @@ namespace System.Threading.Tasks
             // but this adds a bit of protection in case it fails to, and given that the debugger is involved,
             // the overhead here for the interlocked is negligible.  We do still rely on the debugger
             // to clear bits, as this doesn't recursively clear bits in the case of, for example, WhenAny.
-            SetNotificationForWaitCompletion( /*enabled:*/ false);
+            SetNotificationForWaitCompletion( /*enabled:*/ enabled: false);
         }
     }
 }

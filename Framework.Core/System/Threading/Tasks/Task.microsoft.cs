@@ -83,20 +83,20 @@ namespace System.Threading.Tasks
                     var exceptionsHolder = Volatile.Read(ref task._exceptionsHolder);
                     if (exceptionsHolder == null)
                     {
-                        Contract.Assert(false);
+                        Contract.Assert(condition: false);
                     }
                     else
                     {
                         // No locking necessary since child task is finished adding exceptions
                         // and concurrent CreateExceptionObject() calls do not constitute
                         // a concurrency hazard.
-                        AddException(exceptionsHolder.CreateExceptionObject(false, null));
+                        AddException(exceptionsHolder.CreateExceptionObject(calledFromFinalizer: false, includeThisException: null));
                     }
                 }
             }
 
             // Reduce memory pressure by getting rid of the array
-            Volatile.Write(ref _exceptionalChildren, null);
+            Volatile.Write(ref _exceptionalChildren, value: null);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace System.Threading.Tasks
 
             if (exceptionAdded)
             {
-                exceptionsHolder.MarkAsHandled(false);
+                exceptionsHolder.MarkAsHandled(calledFromFinalizer: false);
             }
 
             Finish(delegateRan);
@@ -264,7 +264,7 @@ namespace System.Threading.Tasks
                     return;
 
                 default:
-                    Contract.Assert(false, "Invalid Action in Task");
+                    Contract.Assert(condition: false, "Invalid Action in Task");
                     break;
             }
         }
@@ -281,7 +281,7 @@ namespace System.Threading.Tasks
                 // Lazily initialize the child exception list
                 if (Volatile.Read(ref _exceptionalChildren) == null)
                 {
-                    Interlocked.CompareExchange(ref _exceptionalChildren, new List<Task>(), null);
+                    Interlocked.CompareExchange(ref _exceptionalChildren, new List<Task>(), comparand: null);
                 }
 
                 // In rare situations involving AppDomainUnload, it's possible (though unlikely) for FinishStageTwo() to be called
@@ -368,7 +368,7 @@ namespace System.Threading.Tasks
         {
             if (obj is Task task)
             {
-                task.InternalCancel(false);
+                task.InternalCancel(cancelNonExecutingOnly: false);
                 return;
             }
 
@@ -378,11 +378,11 @@ namespace System.Threading.Tasks
                 var antecedent = tuple.Item2;
                 var continuation = tuple.Item3;
                 antecedent.RemoveContinuation(continuation);
-                task.InternalCancel(false);
+                task.InternalCancel(cancelNonExecutingOnly: false);
                 return;
             }
 
-            Contract.Assert(false, "task should have been non-null");
+            Contract.Assert(condition: false, "task should have been non-null");
         }
 
         /// <summary>
@@ -434,7 +434,7 @@ namespace System.Threading.Tasks
                 if (cancellationToken.IsCancellationRequested)
                 {
                     // Fast path for an already-canceled cancellationToken
-                    InternalCancel(false);
+                    InternalCancel(cancelNonExecutingOnly: false);
                 }
                 else
                 {
@@ -477,7 +477,7 @@ namespace System.Threading.Tasks
                 // This is a ThreadAbortException and it will be rethrown from this catch clause, causing us to
                 // skip the regular Finish code path. In order not to leave the task unfinished, we now call
                 // FinishThreadAbortedTask here.
-                FinishThreadAbortedTask(true, true);
+                FinishThreadAbortedTask(exceptionAdded: true, delegateRan: true);
             }
             catch (Exception exn)
             {
@@ -507,7 +507,7 @@ namespace System.Threading.Tasks
                     ExecutionContext.Run(executionContext, ExecutionContextCallback, this);
                 }
 
-                Finish(true);
+                Finish(userDelegateExecuted: true);
             }
             finally
             {
@@ -522,7 +522,7 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
-                    Contract.Assert(false, "expected a task object");
+                    Contract.Assert(condition: false, "expected a task object");
                 }
             }
         }
@@ -584,7 +584,7 @@ namespace System.Threading.Tasks
             {
                 // No need to lock around this, as other logic prevents the consumption of exceptions
                 // before they have been completely processed.
-                return exceptionsHolder.CreateExceptionObject(false, canceledException);
+                return exceptionsHolder.CreateExceptionObject(calledFromFinalizer: false, canceledException);
             }
 
             return canceledException != null ? new AggregateException(canceledException) : null;
@@ -604,7 +604,7 @@ namespace System.Threading.Tasks
                 // the exception propagated from an await.
 
                 SetCancellationAcknowledged();
-                AddException(exceptionAsOce, /*representsCancellation:*/ true);
+                AddException(exceptionAsOce, /*representsCancellation:*/ representsCancellation: true);
             }
             else
             {
@@ -641,7 +641,7 @@ namespace System.Threading.Tasks
             {
                 // This is the only time we write to _exceptionsHolder
                 var holder = new TaskExceptionHolder(this);
-                exceptionsHolder = Interlocked.CompareExchange(ref _exceptionsHolder, holder, null);
+                exceptionsHolder = Interlocked.CompareExchange(ref _exceptionsHolder, holder, comparand: null);
                 if (exceptionsHolder == null)
                 {
                     // The current thread did initialize _exceptionsHolder.
@@ -651,7 +651,7 @@ namespace System.Threading.Tasks
                 {
                     // Another thread initialized _exceptionsHolder first.
                     // Suppress finalization.
-                    holder.MarkAsHandled(false);
+                    holder.MarkAsHandled(calledFromFinalizer: false);
                 }
             }
 

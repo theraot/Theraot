@@ -34,7 +34,7 @@ namespace System.Threading.Tasks
         /// <returns>The configured enumerable.</returns>
         public static ConfiguredCancelableAsyncEnumerable<T> WithCancellation<T>(this IAsyncEnumerable<T> source, CancellationToken cancellationToken)
         {
-            return new ConfiguredCancelableAsyncEnumerable<T>(source, true, cancellationToken);
+            return new ConfiguredCancelableAsyncEnumerable<T>(source, continueOnCapturedContext: true, cancellationToken);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace System.Threading
             }
 
             Monitor.Enter(obj);
-            Volatile.Write(ref lockTaken, true);
+            Volatile.Write(ref lockTaken, value: true);
 #else
             Monitor.Enter(obj, ref lockTaken);
 #endif

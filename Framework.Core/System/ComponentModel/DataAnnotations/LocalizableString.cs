@@ -132,7 +132,7 @@ namespace System.ComponentModel.DataAnnotations
             }
 
             // We have a valid property, so cache the resource
-            return () => (string)property.GetValue(null, null);
+            return () => (string)property.GetValue(null, index: null);
 
             bool IsGetterPublicAndStatic()
             {

@@ -99,7 +99,7 @@ namespace System.Linq
 
         private static bool HasExtensionAttribute(MethodInfo method)
         {
-            return method.GetCustomAttributes(typeof(ExtensionAttribute), false).Length > 0;
+            return method.GetCustomAttributes(typeof(ExtensionAttribute), inherit: false).Length > 0;
         }
 
         private static bool IsQueryableExtension(MethodInfo method)

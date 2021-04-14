@@ -161,7 +161,7 @@ namespace System.Threading.Tasks.Sources
             if (oldContinuation == null)
             {
                 _continuationState = state;
-                oldContinuation = Interlocked.CompareExchange(ref _continuation, continuation, null);
+                oldContinuation = Interlocked.CompareExchange(ref _continuation, continuation, comparand: null);
             }
 
             if (oldContinuation == null)
@@ -181,11 +181,11 @@ namespace System.Threading.Tasks.Sources
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
                     if (_executionContext != null)
                     {
-                        ThreadPoolEx.QueueUserWorkItem(continuation, state, true);
+                        ThreadPoolEx.QueueUserWorkItem(continuation, state, preferLocal: true);
                         return;
                     }
 #endif
-                    ThreadPoolEx.UnsafeQueueUserWorkItem(continuation, state, true);
+                    ThreadPoolEx.UnsafeQueueUserWorkItem(continuation, state, preferLocal: true);
                     return;
 
                 case SynchronizationContext sc:
@@ -222,7 +222,7 @@ namespace System.Threading.Tasks.Sources
         /// <summary>Signals that the operation has completed.  Invoked after the result or error has been set.</summary>
         private void SignalCompletion()
         {
-            if (_continuation == null && Interlocked.CompareExchange(ref _continuation, ManualResetValueTaskSourceCoreShared.Sentinel, null) == null)
+            if (_continuation == null && Interlocked.CompareExchange(ref _continuation, ManualResetValueTaskSourceCoreShared.Sentinel, comparand: null) == null)
             {
                 return;
             }
@@ -249,11 +249,11 @@ namespace System.Threading.Tasks.Sources
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
                         if (_executionContext != null)
                         {
-                            ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, true);
+                            ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, preferLocal: true);
                             return;
                         }
 #endif
-                        ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, true);
+                        ThreadPoolEx.QueueUserWorkItem(continuation, _continuationState, preferLocal: true);
                         return;
                     }
 

@@ -170,7 +170,7 @@ namespace System.Linq.Expressions.Compiler
             var pi = (PropertyInfo)node.Member;
 
             // emit the get
-            EmitCall(instanceType, pi.GetGetMethod(true));
+            EmitCall(instanceType, pi.GetGetMethod(nonPublic: true));
 
             // emit the address of the value
             var valueLocal = GetLocal(node.Type);
@@ -189,7 +189,7 @@ namespace System.Linq.Expressions.Compiler
 
                 @this.IL.Emit(OpCodes.Ldloc, valueLocal);
                 @this.FreeLocal(valueLocal);
-                @this.EmitCall(instanceLocal?.LocalType, pi.GetSetMethod(true));
+                @this.EmitCall(instanceLocal?.LocalType, pi.GetSetMethod(nonPublic: true));
             };
         }
 
@@ -310,7 +310,7 @@ namespace System.Linq.Expressions.Compiler
         // passed byref.
         private Action<LambdaCompiler>? EmitAddressWriteBack(Expression node, Type type)
         {
-            var labelScopeChangeInfo = GetLabelScopeChangeInfo(true, _labelBlock, node);
+            var labelScopeChangeInfo = GetLabelScopeChangeInfo(emitStart: true, _labelBlock, node);
             if (labelScopeChangeInfo.HasValue)
             {
                 _labelBlock = new LabelScopeInfo(labelScopeChangeInfo.Value.parent, labelScopeChangeInfo.Value.kind);

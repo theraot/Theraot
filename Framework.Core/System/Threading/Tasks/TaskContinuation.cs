@@ -13,11 +13,11 @@ namespace System.Threading.Tasks
             var scheduler = task.ExecutingTaskScheduler;
             if (scheduler == null)
             {
-                Contract.Assert(false);
+                Contract.Assert(condition: false);
                 throw new InvalidOperationException();
             }
 
-            task.Start(task.ExecutingTaskScheduler, true, false);
+            task.Start(task.ExecutingTaskScheduler, inline: true, throwSchedulerExceptions: false);
         }
     }
 }

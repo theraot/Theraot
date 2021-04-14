@@ -912,7 +912,7 @@ namespace System.Numerics
         /// <returns>The string representation of the current <see cref="BigInteger" /> value.</returns>
         public override string ToString()
         {
-            return FormatBigInteger(this, null, NumberFormatInfo.CurrentInfo);
+            return FormatBigInteger(this, format: null, NumberFormatInfo.CurrentInfo);
         }
 
         /// <summary>
@@ -926,7 +926,7 @@ namespace System.Numerics
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         public string ToString(IFormatProvider provider)
         {
-            return FormatBigInteger(this, null, NumberFormatInfo.GetInstance(provider));
+            return FormatBigInteger(this, format: null, NumberFormatInfo.GetInstance(provider));
         }
 
         /// <summary>

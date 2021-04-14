@@ -81,7 +81,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                AsyncMethodBuilderCore.ThrowOnContext(ex, targetContext: null);
             }
         }
 
@@ -104,7 +104,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                AsyncMethodBuilderCore.ThrowOnContext(ex, targetContext: null);
             }
         }
 
@@ -142,7 +142,7 @@ namespace System.Runtime.CompilerServices
             }
             else
             {
-                AsyncMethodBuilderCore.ThrowOnContext(exception, null);
+                AsyncMethodBuilderCore.ThrowOnContext(exception, targetContext: null);
             }
         }
 
@@ -220,7 +220,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
+                AsyncMethodBuilderCore.ThrowOnContext(ex, targetContext: null);
             }
         }
     }

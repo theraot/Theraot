@@ -68,10 +68,10 @@ namespace System.Threading.Tasks
                 fromInclusive, toExclusive,
                 _defaultParallelOptions,
                 body,
-                null,
-                null,
-                null,
-                null
+                bodyWithState: null,
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -104,10 +104,10 @@ namespace System.Threading.Tasks
                 toExclusive,
                 _defaultParallelOptions,
                 body,
-                null,
-                null,
-                null,
-                null
+                bodyWithState: null,
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -156,10 +156,10 @@ namespace System.Threading.Tasks
                 toExclusive,
                 parallelOptions,
                 body,
-                null,
-                null,
-                null,
-                null
+                bodyWithState: null,
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -208,10 +208,10 @@ namespace System.Threading.Tasks
                 toExclusive,
                 parallelOptions,
                 body,
-                null,
-                null,
-                null,
-                null
+                bodyWithState: null,
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -267,11 +267,11 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 _defaultParallelOptions,
-                null,
+                body: null,
                 body,
-                null,
-                null,
-                null
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -305,11 +305,11 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 _defaultParallelOptions,
-                null,
+                body: null,
                 body,
-                null,
-                null,
-                null
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -359,11 +359,11 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 parallelOptions,
-                null,
+                body: null,
                 body,
-                null,
-                null,
-                null
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -413,11 +413,11 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 parallelOptions,
-                null,
+                body: null,
                 body,
-                null,
-                null,
-                null
+                bodyWithLocal: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -481,8 +481,8 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 _defaultParallelOptions,
-                null,
-                null,
+                body: null,
+                bodyWithState: null,
                 body,
                 localInit,
                 localFinally
@@ -549,8 +549,8 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 _defaultParallelOptions,
-                null,
-                null,
+                body: null,
+                bodyWithState: null,
                 body,
                 localInit,
                 localFinally
@@ -641,8 +641,8 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 parallelOptions,
-                null,
-                null,
+                body: null,
+                bodyWithState: null,
                 body,
                 localInit,
                 localFinally
@@ -733,8 +733,8 @@ namespace System.Threading.Tasks
                 fromInclusive,
                 toExclusive,
                 parallelOptions,
-                null,
-                null,
+                body: null,
+                bodyWithState: null,
                 body,
                 localInit,
                 localFinally
@@ -774,7 +774,7 @@ namespace System.Threading.Tasks
 
             return ForEachWorker<TSource, object>
             (
-                source, _defaultParallelOptions, body, null, null, null, null, null, null
+                source, _defaultParallelOptions, body, bodyWithState: null, bodyWithStateAndIndex: null, bodyWithStateAndLocal: null, bodyWithEverything: null, localInit: null, localFinally: null
             );
         }
 
@@ -832,7 +832,7 @@ namespace System.Threading.Tasks
 
             return ForEachWorker<TSource, object>
             (
-                source, parallelOptions, body, null, null, null, null, null, null
+                source, parallelOptions, body, bodyWithState: null, bodyWithStateAndIndex: null, bodyWithStateAndLocal: null, bodyWithEverything: null, localInit: null, localFinally: null
             );
         }
 
@@ -875,7 +875,7 @@ namespace System.Threading.Tasks
 
             return ForEachWorker<TSource, object>
             (
-                source, _defaultParallelOptions, null, body, null, null, null, null, null
+                source, _defaultParallelOptions, body: null, body, bodyWithStateAndIndex: null, bodyWithStateAndLocal: null, bodyWithEverything: null, localInit: null, localFinally: null
             );
         }
 
@@ -935,7 +935,7 @@ namespace System.Threading.Tasks
 
             return ForEachWorker<TSource, object>
             (
-                source, parallelOptions, null, body, null, null, null, null, null
+                source, parallelOptions, body: null, body, bodyWithStateAndIndex: null, bodyWithStateAndLocal: null, bodyWithEverything: null, localInit: null, localFinally: null
             );
         }
 
@@ -978,7 +978,7 @@ namespace System.Threading.Tasks
 
             return ForEachWorker<TSource, object>
             (
-                source, _defaultParallelOptions, null, null, body, null, null, null, null
+                source, _defaultParallelOptions, body: null, bodyWithState: null, body, bodyWithStateAndLocal: null, bodyWithEverything: null, localInit: null, localFinally: null
             );
         }
 
@@ -1038,7 +1038,7 @@ namespace System.Threading.Tasks
 
             return ForEachWorker<TSource, object>
             (
-                source, parallelOptions, null, null, body, null, null, null, null
+                source, parallelOptions, body: null, bodyWithState: null, body, bodyWithStateAndLocal: null, bodyWithEverything: null, localInit: null, localFinally: null
             );
         }
 
@@ -1115,10 +1115,10 @@ namespace System.Threading.Tasks
             (
                 source,
                 _defaultParallelOptions,
-                null,
-                null,
-                null, body,
-                null,
+                body: null,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null, body,
+                bodyWithEverything: null,
                 localInit,
                 localFinally
             );
@@ -1212,7 +1212,7 @@ namespace System.Threading.Tasks
 
             return ForEachWorker
             (
-                source, parallelOptions, null, null, null, body, null, localInit, localFinally
+                source, parallelOptions, body: null, bodyWithState: null, bodyWithStateAndIndex: null, body, bodyWithEverything: null, localInit, localFinally
             );
         }
 
@@ -1289,10 +1289,10 @@ namespace System.Threading.Tasks
             (
                 source,
                 _defaultParallelOptions,
-                null,
-                null,
-                null,
-                null,
+                body: null,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
                 body,
                 localInit,
                 localFinally
@@ -1389,10 +1389,10 @@ namespace System.Threading.Tasks
             (
                 source,
                 parallelOptions,
-                null,
-                null,
-                null,
-                null,
+                body: null,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
                 body,
                 localInit,
                 localFinally
@@ -1458,8 +1458,15 @@ namespace System.Threading.Tasks
 
             return PartitionerForEachWorker<TSource, object>
             (
-                source, _defaultParallelOptions, body, null, null, null,
-                null, null, null
+                source,
+                _defaultParallelOptions,
+                body,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
+                bodyWithEverything: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -1524,8 +1531,15 @@ namespace System.Threading.Tasks
 
             return PartitionerForEachWorker<TSource, object>
             (
-                source, _defaultParallelOptions, null, body, null, null,
-                null, null, null
+                source,
+                _defaultParallelOptions,
+                simpleBody: null,
+                body,
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
+                bodyWithEverything: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -1598,8 +1612,15 @@ namespace System.Threading.Tasks
 
             return PartitionerForEachWorker<TSource, object>
             (
-                source, _defaultParallelOptions, null, null, body, null,
-                null, null, null
+                source,
+                _defaultParallelOptions,
+                simpleBody: null,
+                bodyWithState: null,
+                body,
+                bodyWithStateAndLocal: null,
+                bodyWithEverything: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -1696,11 +1717,11 @@ namespace System.Threading.Tasks
             (
                 source,
                 _defaultParallelOptions,
-                null,
-                null,
-                null,
+                simpleBody: null,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
                 body,
-                null,
+                bodyWithEverything: null,
                 localInit,
                 localFinally
             );
@@ -1807,10 +1828,10 @@ namespace System.Threading.Tasks
             (
                 source,
                 _defaultParallelOptions,
-                null,
-                null,
-                null,
-                null,
+                simpleBody: null,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
                 body,
                 localInit,
                 localFinally
@@ -1896,12 +1917,12 @@ namespace System.Threading.Tasks
                 source,
                 parallelOptions,
                 body,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
+                bodyWithEverything: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -1985,13 +2006,13 @@ namespace System.Threading.Tasks
             (
                 source,
                 parallelOptions,
-                null,
+                simpleBody: null,
                 body,
-                null,
-                null,
-                null,
-                null,
-                null
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
+                bodyWithEverything: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -2083,13 +2104,13 @@ namespace System.Threading.Tasks
             (
                 source,
                 parallelOptions,
-                null,
-                null,
+                simpleBody: null,
+                bodyWithState: null,
                 body,
-                null,
-                null,
-                null,
-                null
+                bodyWithStateAndLocal: null,
+                bodyWithEverything: null,
+                localInit: null,
+                localFinally: null
             );
         }
 
@@ -2202,11 +2223,11 @@ namespace System.Threading.Tasks
             (
                 source,
                 parallelOptions,
-                null,
-                null,
-                null,
+                simpleBody: null,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
                 body,
-                null,
+                bodyWithEverything: null,
                 localInit,
                 localFinally
             );
@@ -2329,10 +2350,10 @@ namespace System.Threading.Tasks
             (
                 source,
                 parallelOptions,
-                null,
-                null,
-                null,
-                null,
+                simpleBody: null,
+                bodyWithState: null,
+                bodyWithStateAndIndex: null,
+                bodyWithStateAndLocal: null,
                 body,
                 localInit,
                 localFinally
@@ -2592,10 +2613,10 @@ namespace System.Threading.Tasks
                     to,
                     parallelOptions,
                     i => body(array[i]),
-                    null,
-                    null,
-                    null,
-                    null
+                    bodyWithState: null,
+                    bodyWithLocal: null,
+                    localInit: null,
+                    localFinally: null
                 );
             }
 
@@ -2606,11 +2627,11 @@ namespace System.Threading.Tasks
                     from,
                     to,
                     parallelOptions,
-                    null,
+                    body: null,
                     (i, state) => bodyWithState(array[i], state),
-                    null,
-                    null,
-                    null
+                    bodyWithLocal: null,
+                    localInit: null,
+                    localFinally: null
                 );
             }
 
@@ -2621,11 +2642,11 @@ namespace System.Threading.Tasks
                     from,
                     to,
                     parallelOptions,
-                    null,
+                    body: null,
                     (i, state) => bodyWithStateAndIndex(array[i], state, i),
-                    null,
-                    null,
-                    null
+                    bodyWithLocal: null,
+                    localInit: null,
+                    localFinally: null
                 );
             }
 
@@ -2636,8 +2657,8 @@ namespace System.Threading.Tasks
                     from,
                     to,
                     parallelOptions,
-                    null,
-                    null,
+                    body: null,
+                    bodyWithState: null,
                     (i, state, local) => bodyWithStateAndLocal(array[i], state, local),
                     localInit,
                     localFinally
@@ -2651,8 +2672,8 @@ namespace System.Threading.Tasks
                     from,
                     to,
                     parallelOptions,
-                    null,
-                    null,
+                    body: null,
+                    bodyWithState: null,
                     (i, state, local) => bodyWithEverything(array[i], state, i, local),
                     localInit,
                     localFinally
@@ -2698,10 +2719,10 @@ namespace System.Threading.Tasks
                     list.Count,
                     parallelOptions,
                     i => body(list[i]),
-                    null,
-                    null,
-                    null,
-                    null
+                    bodyWithState: null,
+                    bodyWithLocal: null,
+                    localInit: null,
+                    localFinally: null
                 );
             }
 
@@ -2712,11 +2733,11 @@ namespace System.Threading.Tasks
                     0,
                     list.Count,
                     parallelOptions,
-                    null,
+                    body: null,
                     (i, state) => bodyWithState(list[i], state),
-                    null,
-                    null,
-                    null
+                    bodyWithLocal: null,
+                    localInit: null,
+                    localFinally: null
                 );
             }
 
@@ -2727,11 +2748,11 @@ namespace System.Threading.Tasks
                     0,
                     list.Count,
                     parallelOptions,
-                    null,
+                    body: null,
                     (i, state) => bodyWithStateAndIndex(list[i], state, i),
-                    null,
-                    null,
-                    null
+                    bodyWithLocal: null,
+                    localInit: null,
+                    localFinally: null
                 );
             }
 
@@ -2742,8 +2763,8 @@ namespace System.Threading.Tasks
                     0,
                     list.Count,
                     parallelOptions,
-                    null,
-                    null,
+                    body: null,
+                    bodyWithState: null,
                     (i, state, local) => bodyWithStateAndLocal(list[i], state, local),
                     localInit,
                     localFinally
@@ -2757,8 +2778,8 @@ namespace System.Threading.Tasks
                     0,
                     list.Count,
                     parallelOptions,
-                    null,
-                    null,
+                    body: null,
+                    bodyWithState: null,
                     (i, state, local) => bodyWithEverything(list[i], state, i, local),
                     localInit,
                     localFinally
@@ -2848,7 +2869,7 @@ namespace System.Threading.Tasks
                         oce = new OperationCanceledExceptionEx("parallelOptions.CancellationToken");
                         // Cause processing to stop
                         sharedPStateFlags.Cancel();
-                    }, null, false
+                    }, state: null, useSynchronizationContext: false
                 );
 
             try
@@ -3009,7 +3030,7 @@ namespace System.Threading.Tasks
                             }
                         },
                         parallelOptions,
-                        true
+                        stopOnFirstFailure: true
                     );
                 }
                 finally
@@ -3134,8 +3155,8 @@ namespace System.Threading.Tasks
                         // Cause processing to stop
                         sharedPStateFlags.Cancel();
                     },
-                    null,
-                    false
+                    state: null,
+                    useSynchronizationContext: false
                 );
 
             try
@@ -3296,7 +3317,7 @@ namespace System.Threading.Tasks
                             }
                         },
                         parallelOptions,
-                        true
+                        stopOnFirstFailure: true
                     );
                 }
                 finally
@@ -3404,7 +3425,7 @@ namespace System.Threading.Tasks
                             }
                         },
                         parallelOptions,
-                        false
+                        stopOnFirstFailure: false
                     );
                 }
                 catch (Exception e)
@@ -3554,8 +3575,8 @@ namespace System.Threading.Tasks
                         // Cause processing to stop
                         sharedPStateFlags.Cancel();
                     },
-                    null,
-                    false
+                    state: null,
+                    useSynchronizationContext: false
                 );
 
             // Get our dynamic partitioner -- depends on whether source is castable to OrderablePartitioner
@@ -3758,7 +3779,7 @@ namespace System.Threading.Tasks
                             }
                         },
                         parallelOptions,
-                        true
+                        stopOnFirstFailure: true
                     );
                 }
                 finally

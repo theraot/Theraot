@@ -32,17 +32,17 @@ namespace System.Linq.Expressions.Interpreter
             {
                 switch (Type.GetTypeCode(type.GetNonNullable()))
                 {
-                    case TypeCode.SByte: return _liftedToNullSByte ??= new GreaterThanSByte(null);
-                    case TypeCode.Int16: return _liftedToNullInt16 ??= new GreaterThanInt16(null);
-                    case TypeCode.Char: return _liftedToNullChar ??= new GreaterThanChar(null);
-                    case TypeCode.Int32: return _liftedToNullInt32 ??= new GreaterThanInt32(null);
-                    case TypeCode.Int64: return _liftedToNullInt64 ??= new GreaterThanInt64(null);
-                    case TypeCode.Byte: return _liftedToNullByte ??= new GreaterThanByte(null);
-                    case TypeCode.UInt16: return _liftedToNullUInt16 ??= new GreaterThanUInt16(null);
-                    case TypeCode.UInt32: return _liftedToNullUInt32 ??= new GreaterThanUInt32(null);
-                    case TypeCode.UInt64: return _liftedToNullUInt64 ??= new GreaterThanUInt64(null);
-                    case TypeCode.Single: return _liftedToNullSingle ??= new GreaterThanSingle(null);
-                    case TypeCode.Double: return _liftedToNullDouble ??= new GreaterThanDouble(null);
+                    case TypeCode.SByte: return _liftedToNullSByte ??= new GreaterThanSByte(nullValue: null);
+                    case TypeCode.Int16: return _liftedToNullInt16 ??= new GreaterThanInt16(nullValue: null);
+                    case TypeCode.Char: return _liftedToNullChar ??= new GreaterThanChar(nullValue: null);
+                    case TypeCode.Int32: return _liftedToNullInt32 ??= new GreaterThanInt32(nullValue: null);
+                    case TypeCode.Int64: return _liftedToNullInt64 ??= new GreaterThanInt64(nullValue: null);
+                    case TypeCode.Byte: return _liftedToNullByte ??= new GreaterThanByte(nullValue: null);
+                    case TypeCode.UInt16: return _liftedToNullUInt16 ??= new GreaterThanUInt16(nullValue: null);
+                    case TypeCode.UInt32: return _liftedToNullUInt32 ??= new GreaterThanUInt32(nullValue: null);
+                    case TypeCode.UInt64: return _liftedToNullUInt64 ??= new GreaterThanUInt64(nullValue: null);
+                    case TypeCode.Single: return _liftedToNullSingle ??= new GreaterThanSingle(nullValue: null);
+                    case TypeCode.Double: return _liftedToNullDouble ??= new GreaterThanDouble(nullValue: null);
                     default:
                         throw ContractUtils.Unreachable;
                 }

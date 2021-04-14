@@ -8,7 +8,7 @@ namespace System.Linq
     {
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value)
         {
-            return Contains(source, value, null);
+            return Contains(source, value, comparer: null);
         }
 
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource>? comparer)

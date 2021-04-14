@@ -28,7 +28,7 @@ namespace System.Linq.Expressions
         public static readonly object BoxedIntM1 = -1;
         public static readonly object BoxedTrue = true;
         public static readonly DefaultExpression Empty = Expression.Empty();
-        public static readonly ConstantExpression Null = Expression.Constant(null);
+        public static readonly ConstantExpression Null = Expression.Constant(value: null);
         private static readonly ConstantExpression _0 = Expression.Constant(BoxedInt0);
         private static readonly ConstantExpression _1 = Expression.Constant(BoxedInt1);
         private static readonly ConstantExpression _2 = Expression.Constant(BoxedInt2);

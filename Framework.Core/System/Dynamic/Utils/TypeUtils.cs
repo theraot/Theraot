@@ -146,7 +146,7 @@ namespace System.Dynamic.Utils
             }
 
             // Object conversion handled by assignable above.
-            return (source.IsArray || target.IsArray) && StrictHasReferenceConversionTo(source, target, true);
+            return (source.IsArray || target.IsArray) && StrictHasReferenceConversionTo(source, target, skipNonArray: true);
         }
 
         internal static bool HasReferenceConversionToInternal(this Type source, Type target)
@@ -186,7 +186,7 @@ namespace System.Dynamic.Utils
             }
 
             // Object conversion handled by assignable above.
-            return (source.IsArray || target.IsArray) && StrictHasReferenceConversionToInternal(source, target, true);
+            return (source.IsArray || target.IsArray) && StrictHasReferenceConversionToInternal(source, target, skipNonArray: true);
         }
 
         internal static bool HasReferenceEquality(Type left, Type right)
@@ -453,7 +453,7 @@ namespace System.Dynamic.Utils
 
         internal static void ValidateType(Type type, string paramName)
         {
-            ValidateType(type, paramName, false, false);
+            ValidateType(type, paramName, allowByRef: false, allowPointer: false);
         }
 
         internal static void ValidateType(Type type, string? paramName, bool allowByRef, bool allowPointer)
@@ -506,7 +506,7 @@ namespace System.Dynamic.Utils
             }
 
             var targetGen = target.GetGenericTypeDefinition();
-            return _arrayAssignableInterfaces.Any(currentInterface => targetGen == currentInterface) && StrictHasReferenceConversionToInternal(source.GetElementType(), targetParams[0], false);
+            return _arrayAssignableInterfaces.Any(currentInterface => targetGen == currentInterface) && StrictHasReferenceConversionToInternal(source.GetElementType(), targetParams[0], skipNonArray: false);
         }
 
         private static bool HasInterfaceToArrayConversion(Type source, Type target)
@@ -523,7 +523,7 @@ namespace System.Dynamic.Utils
             }
 
             var sourceGen = source.GetGenericTypeDefinition();
-            return _arrayAssignableInterfaces.Any(currentInterface => sourceGen == currentInterface) && StrictHasReferenceConversionToInternal(sourceParams[0], target.GetElementType(), false);
+            return _arrayAssignableInterfaces.Any(currentInterface => sourceGen == currentInterface) && StrictHasReferenceConversionToInternal(sourceParams[0], target.GetElementType(), skipNonArray: false);
         }
 
         private static bool PrivateIsContravariant(Type type)

@@ -241,7 +241,7 @@ namespace System.Linq.Expressions.Compiler
 
             static Func<Type[], string, Type, DynamicMethod> GetConstructorDelegate()
             {
-                return (parameterTypes, lambdaName, lambdaReturnType) => new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, true);
+                return (parameterTypes, lambdaName, lambdaReturnType) => new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, restrictedSkipVisibility: true);
             }
         }
 
@@ -254,7 +254,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             var module = GetModule();
-            return new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, module, true);
+            return new DynamicMethod(lambdaName, lambdaReturnType, parameterTypes, module, skipVisibility: true);
         }
 
         private static Module GetModule()
@@ -279,7 +279,7 @@ namespace System.Linq.Expressions.Compiler
                 };
                 AppDomain thisDomain = Thread.GetDomain();
                 var asmBuilder = thisDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-                var result = asmBuilder.DefineDynamicModule(asmBuilder.GetName().Name, false);
+                var result = asmBuilder.DefineDynamicModule(asmBuilder.GetName().Name, emitSymbolInfo: false);
                 ThreadEx.VolatileWrite(ref _module, result);
                 return result;
             }
@@ -289,14 +289,14 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(_method is DynamicMethod);
 
-            return _method.CreateDelegate(_lambda.Type, new Closure(_boundConstants.ToArray(), null));
+            return _method.CreateDelegate(_lambda.Type, new Closure(_boundConstants.ToArray(), locals: null));
         }
 
         private MemberExpression CreateLazyInitializedField<T>(string name)
         {
             return _method is DynamicMethod
                 ? Expression.Field(Expression.Constant(new StrongBox<T>()), "Value")
-                : Expression.Field(null, CreateStaticField(name, typeof(T)));
+                : Expression.Field(expression: null, CreateStaticField(name, typeof(T)));
         }
 
         private FieldBuilder CreateStaticField(string name, Type type)

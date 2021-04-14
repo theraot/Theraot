@@ -83,7 +83,7 @@ namespace System.Threading.Tasks
                 throw new InvalidOperationException("Wrong Task Scheduler");
             }
 
-            return task.ExecuteEntry(true);
+            return task.ExecuteEntry(preventDoubleExecution: true);
         }
 
         protected abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
