@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET45
+#if LESSTHAN_NET45
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA1822 // Mark members as static
@@ -198,7 +198,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         ///     The <see cref="Task{TResult}" /> representing the builder's asynchronous operation.
         /// </returns>
-        public readonly Task<TResult> Task => CompletionSource.Task;
+        public Task<TResult> Task => CompletionSource.Task;
 
         /// <summary>
         ///     Gets the lazily-initialized TaskCompletionSource.
@@ -273,7 +273,7 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        readonly void IAsyncMethodBuilder.PreBoxInitialization()
+        void IAsyncMethodBuilder.PreBoxInitialization()
         {
             GC.KeepAlive(Task);
         }

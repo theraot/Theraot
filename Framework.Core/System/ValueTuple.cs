@@ -1068,7 +1068,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        readonly int ITupleInternal.GetHashCode(IEqualityComparer comparer)
+        int ITupleInternal.GetHashCode(IEqualityComparer comparer)
         {
             return GetHashCodeCore(comparer);
         }
