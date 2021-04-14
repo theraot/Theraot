@@ -21,14 +21,14 @@ namespace System.Threading.Tasks
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(waitHandle, cancellationToken, taskCompletionSource);
                 // ReSharper disable once MethodSupportsCancellation
-                Task.Run(result.CallbackWithoutTimeout);
+                _ = Task.Run(result.CallbackWithoutTimeout);
             }
 
             public static void CreateWithTimeout(WaitHandle waitHandle, CancellationToken cancellationToken, TaskCompletionSource<bool> taskCompletionSource, int millisecondsTimeout)
             {
                 var result = new WaitHandleCancellableTaskCompletionSourceManager(waitHandle, cancellationToken, taskCompletionSource);
                 // ReSharper disable once MethodSupportsCancellation
-                Task.Run(() => result.CallbackWithTimeout(millisecondsTimeout));
+                _ = Task.Run(() => result.CallbackWithTimeout(millisecondsTimeout));
             }
 
             private void CallbackWithoutTimeout()
