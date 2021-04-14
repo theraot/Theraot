@@ -1,5 +1,7 @@
 ﻿// Needed for NET40
 
+#pragma warning disable MA0016 // Prefer return collection abstraction instead of implementation
+
 using System;
 using System.Collections;
 using System.Collections.Generic;

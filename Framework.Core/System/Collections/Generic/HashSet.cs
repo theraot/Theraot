@@ -1,6 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CC0091 // Use static method
+#pragma warning disable MA0018 // Do not declare static members on generic types
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -141,7 +141,7 @@ namespace System.Collections.Generic
 
             if (Count > array.Length)
             {
-                throw new ArgumentException("the Count property is larger than the size of the destination array.");
+                throw new ArgumentException("the Count property is larger than the size of the destination array.", nameof(array));
             }
 
             _wrapped.Keys.ConvertedCopyTo(item => item.Value, array, 0);
