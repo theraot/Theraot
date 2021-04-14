@@ -10,6 +10,7 @@ using System.Globalization;
 
 namespace System.Linq.Expressions.Interpreter
 {
+    [Runtime.InteropServices.StructLayout(Runtime.InteropServices.LayoutKind.Auto)]
     internal readonly struct RuntimeLabel
     {
         public readonly int ContinuationStackDepth;

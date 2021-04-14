@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable EPS05 // Use in-modifier for passing readonly struct
+#pragma warning disable MA0008 // Add StructLayoutAttribute
 
 // Complex.cs: Complex number support
 

@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Runtime.CompilerServices
 {
+    [StructLayout(LayoutKind.Auto)]
     public struct AsyncValueTaskMethodBuilder
     {
         private bool _haveResult;
