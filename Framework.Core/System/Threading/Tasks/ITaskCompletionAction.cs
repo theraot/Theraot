@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable AsyncifyVariable // Use Task Async
+
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.ExceptionServices;

@@ -1,5 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable AsyncifyVariable // Use Task Async
 #pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 
 // Copyright (c) Microsoft. All rights reserved.
