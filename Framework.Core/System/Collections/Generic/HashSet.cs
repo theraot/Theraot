@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET35
+#if LESSTHAN_NET35
 
 #pragma warning disable CC0091 // Use static method
 
@@ -403,7 +403,7 @@ namespace System.Collections.Generic
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, T>>? _enumerator;
+            private IEnumerator<KeyValuePair<ReadOnlyStructNeedle<T>, T>>? _enumerator;
 
             private bool _valid;
 
@@ -434,6 +434,7 @@ namespace System.Collections.Generic
             {
                 var enumerator = _enumerator;
                 enumerator?.Dispose();
+                _enumerator = null;
             }
 
             public bool MoveNext()
