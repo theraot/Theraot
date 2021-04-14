@@ -58,7 +58,7 @@ namespace System.Threading
             }
         }
 
-        public bool Equals(CancellationTokenRegistration other)
+        public readonly bool Equals(CancellationTokenRegistration other)
         {
             return _id == other._id && _source == other._source;
         }
@@ -68,7 +68,7 @@ namespace System.Threading
             return obj is CancellationTokenRegistration registration && Equals(registration);
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return _id;
         }

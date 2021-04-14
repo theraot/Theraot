@@ -34,7 +34,7 @@ namespace System.Threading
 
         public int Count { get; private set; }
 
-        public bool NextSpinWillYield => Environment.ProcessorCount == 1 || Count % ThreadingHelper.SleepCountHint == 0;
+        public readonly bool NextSpinWillYield => Environment.ProcessorCount == 1 || Count % ThreadingHelper.SleepCountHint == 0;
 
         public static void SpinUntil(Func<bool> condition)
         {

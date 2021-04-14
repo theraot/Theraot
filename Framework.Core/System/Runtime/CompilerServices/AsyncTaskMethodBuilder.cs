@@ -44,7 +44,7 @@ namespace System.Runtime.CompilerServices
         ///     The <see cref="Threading.Tasks.Task" /> representing the builder's asynchronous operation.
         /// </returns>
         /// <exception cref="InvalidOperationException">The builder is not initialized.</exception>
-        public Task Task => _builder.Task;
+        public readonly Task Task => _builder.Task;
 
         /// <summary>
         ///     Initializes a new <see cref="AsyncTaskMethodBuilder" />.
@@ -198,7 +198,7 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         ///     The <see cref="Task{TResult}" /> representing the builder's asynchronous operation.
         /// </returns>
-        public Task<TResult> Task => CompletionSource.Task;
+        public readonly Task<TResult> Task => CompletionSource.Task;
 
         /// <summary>
         ///     Gets the lazily-initialized TaskCompletionSource.
@@ -342,7 +342,7 @@ namespace System.Runtime.CompilerServices
         /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
         /// <param name="stateMachine">The state machine instance, passed by reference.</param>
         [DebuggerStepThrough]
-        public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
+        public readonly void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
             // Should not be static
             AsyncMethodBuilderCore.Start(ref stateMachine);
@@ -359,7 +359,7 @@ namespace System.Runtime.CompilerServices
         ///     This should only be invoked from within an asynchronous method,
         ///     and only by the debugger.
         /// </remarks>
-        internal void SetNotificationForWaitCompletion(bool enabled)
+        internal readonly void SetNotificationForWaitCompletion(bool enabled)
         {
             // Should not be static
             _ = enabled;

@@ -48,7 +48,7 @@ namespace System.Threading.Tasks
             _maxIncrementValue = Parallel.Default_Loop_Stride * step;
         }
 
-        internal bool IsInitialized => _indexRanges != null;
+        internal readonly bool IsInitialized => _indexRanges != null;
 
         internal bool FindNewWork(out long fromInclusiveLocal, out long toExclusiveLocal)
         {

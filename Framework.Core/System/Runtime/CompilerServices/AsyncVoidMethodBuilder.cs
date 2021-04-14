@@ -108,7 +108,7 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        void IAsyncMethodBuilder.PreBoxInitialization()
+        readonly void IAsyncMethodBuilder.PreBoxInitialization()
         {
             // Empty
         }
@@ -183,7 +183,7 @@ namespace System.Runtime.CompilerServices
         ///     Visual Basic).
         /// </exception>
         [DebuggerStepThrough]
-        public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
+        public readonly void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
             // Should not be static
             AsyncMethodBuilderCore.Start(ref stateMachine);
@@ -212,7 +212,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     Notifies the current synchronization context that the operation completed.
         /// </summary>
-        private void NotifySynchronizationContextOfCompletion()
+        private readonly void NotifySynchronizationContextOfCompletion()
         {
             try
             {

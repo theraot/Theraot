@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
             Value = target;
         }
 
-        public bool IsAlive => Value != null;
+        public readonly bool IsAlive => Value != null;
 
         public T Value { get; set; }
 
@@ -73,7 +73,7 @@ namespace Theraot.Threading.Needles
             Value = default!;
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             try
             {

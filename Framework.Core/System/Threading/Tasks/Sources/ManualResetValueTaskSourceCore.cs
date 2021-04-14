@@ -211,7 +211,7 @@ namespace System.Threading.Tasks.Sources
 
         /// <summary>Ensures that the specified token matches the current version.</summary>
         /// <param name="token">The token supplied by <see cref="ValueTask"/>.</param>
-        private void ValidateToken(short token)
+        private readonly void ValidateToken(short token)
         {
             if (token != Version)
             {
@@ -236,7 +236,7 @@ namespace System.Threading.Tasks.Sources
             InvokeContinuation();
         }
 
-        private void InvokeContinuation()
+        private readonly void InvokeContinuation()
         {
             Debug.Assert(_continuation != null);
             var continuation = _continuation!;

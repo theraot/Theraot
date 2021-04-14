@@ -263,13 +263,13 @@ namespace System
 
         [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes.");
+        public override readonly bool Equals(object? obj) => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes.");
 
         [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.");
+        public override readonly int GetHashCode() => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.");
 
-        public int ToHashCode()
+        public readonly int ToHashCode()
         {
             // Storing the value of _length locally shaves of quite a few bytes
             // in the resulting machine code.

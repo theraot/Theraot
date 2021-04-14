@@ -1,4 +1,4 @@
-#if LESSTHAN_NET35
+﻿#if LESSTHAN_NET35
 
 #pragma warning disable CC0091 // Use static method
 
@@ -417,7 +417,7 @@ namespace System.Collections.Generic
             [field: MaybeNull]
             public T Current { get; private set; }
 
-            object? IEnumerator.Current
+            readonly object? IEnumerator.Current
             {
                 get
                 {

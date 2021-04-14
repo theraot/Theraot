@@ -90,11 +90,11 @@ namespace System.Numerics
             }
         }
 
-        public uint High => _iuLast != 0 ? _bits![_iuLast] : _uSmall;
+        public readonly uint High => _iuLast != 0 ? _bits![_iuLast] : _uSmall;
 
-        public int Size => _iuLast + 1;
+        public readonly int Size => _iuLast + 1;
 
-        private int CuNonZero
+        private readonly int CuNonZero
         {
             get
             {
@@ -191,7 +191,7 @@ namespace System.Numerics
             }
         }
 
-        public int CbitLowZero()
+        public readonly int CbitLowZero()
         {
             if (_iuLast == 0)
             {
@@ -299,7 +299,7 @@ namespace System.Numerics
             EnsureWritable(0);
         }
 
-        public void GetApproxParts(out int exp, out ulong man)
+        public readonly void GetApproxParts(out int exp, out ulong man)
         {
             if (_iuLast == 0)
             {
@@ -966,7 +966,7 @@ namespace System.Numerics
             }
         }
 
-        private ulong GetHigh2(int cu)
+        private readonly ulong GetHigh2(int cu)
         {
             if (cu - 1 <= _iuLast)
             {

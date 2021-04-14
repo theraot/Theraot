@@ -39,7 +39,7 @@ namespace System.Collections.Generic
         ///     Gets the number of items this instance can store without re-allocating,
         ///     or 0 if the backing array is <c>null</c>.
         /// </summary>
-        private int Capacity => Buffer.Length;
+        private readonly int Capacity => Buffer.Length;
 
         /// <summary>
         ///     Gets the number of items in the array currently in use.
@@ -52,7 +52,7 @@ namespace System.Collections.Generic
         /// <remarks>
         ///     Do not call this method twice on the same builder.
         /// </remarks>
-        public T[] ToArray()
+        public readonly T[] ToArray()
         {
             if (Count == 0)
             {
