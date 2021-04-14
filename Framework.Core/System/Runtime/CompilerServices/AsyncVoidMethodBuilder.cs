@@ -122,7 +122,7 @@ namespace System.Runtime.CompilerServices
         ///     Basic).
         /// </exception>
         /// <exception cref="InvalidOperationException">The builder is not initialized.</exception>
-        public void SetException(Exception exception)
+        public readonly void SetException(Exception exception)
         {
             if (exception == null)
             {
@@ -149,7 +149,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     Completes the method builder successfully.
         /// </summary>
-        public void SetResult()
+        public readonly void SetResult()
         {
             if (_synchronizationContext == null)
             {

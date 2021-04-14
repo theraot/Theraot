@@ -383,7 +383,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1> valueTuple && Equals(valueTuple);
         }
@@ -422,12 +422,12 @@ namespace System
             return EqualityComparer<T1>.Default.GetHashCode(Item1);
         }
 
-        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        readonly int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
         {
             return comparer.GetHashCode(Item1);
         }
 
-        int ITupleInternal.GetHashCode(IEqualityComparer comparer)
+        readonly int ITupleInternal.GetHashCode(IEqualityComparer comparer)
         {
             return comparer.GetHashCode(Item1);
         }
@@ -446,7 +446,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty})";
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty})";
         }
@@ -517,7 +517,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2> valueTuple && Equals(valueTuple);
         }
@@ -565,7 +565,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty})";
         }
 
-        int IComparable.CompareTo(object obj)
+        readonly int IComparable.CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -735,7 +735,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3> valueTuple && Equals(valueTuple);
         }
@@ -799,7 +799,7 @@ namespace System
             return CompareTo(valueTuple);
         }
 
-        int IStructuralComparable.CompareTo(object other, IComparer comparer)
+        readonly int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             if (other == null)
             {
@@ -825,7 +825,7 @@ namespace System
             return result;
         }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        readonly bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
             if (other is ValueTuple<T1, T2, T3> valueTuple)
             {
@@ -953,7 +953,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4> valueTuple && Equals(valueTuple);
         }
@@ -1193,7 +1193,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5> valueTuple && Equals(valueTuple);
         }
@@ -1455,7 +1455,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6> valueTuple && Equals(valueTuple);
         }
@@ -1739,7 +1739,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7> valueTuple && Equals(valueTuple);
         }
@@ -2051,7 +2051,7 @@ namespace System
         ///     <item><description>Its components are equal to those of the current instance. Equality is determined by the default object equality comparer for each component.</description></item>
         /// </list>
         /// </remarks>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple && Equals(tuple);
         }
@@ -2198,7 +2198,7 @@ namespace System
             return $"({Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty}, {(Rest is ITupleInternal rest ? rest.ToStringEnd() : (Rest + ")"))}";
         }
 
-        int IComparable.CompareTo(object obj)
+        readonly int IComparable.CompareTo(object obj)
         {
             if (obj == null)
             {
@@ -2291,7 +2291,7 @@ namespace System
             return GetHashCodeCore(comparer);
         }
 
-        private int GetHashCodeCore(IEqualityComparer comparer)
+        private readonly int GetHashCodeCore(IEqualityComparer comparer)
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
             if (Rest is not ITupleInternal rest)
@@ -2394,7 +2394,7 @@ namespace System
             }
         }
 
-        string ITupleInternal.ToStringEnd()
+        readonly string ITupleInternal.ToStringEnd()
         {
             return $"{Item1?.ToString() ?? string.Empty}, {Item2?.ToString() ?? string.Empty}, {Item3?.ToString() ?? string.Empty}, {Item4?.ToString() ?? string.Empty}, {Item5?.ToString() ?? string.Empty}, {Item6?.ToString() ?? string.Empty}, {Item7?.ToString() ?? string.Empty}, {(Rest is ITupleInternal rest ? rest.ToStringEnd() : (Rest + ")"))}";
         }

@@ -86,13 +86,13 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             var target = Value;
             return IsAlive ? target?.ToString() ?? "<?>" : "<Dead Needle>";
         }
 
-        private bool Equals(T otherValue)
+        private readonly bool Equals(T otherValue)
         {
             var value = Value;
             return IsAlive && EqualityComparer<T>.Default.Equals(value, otherValue);

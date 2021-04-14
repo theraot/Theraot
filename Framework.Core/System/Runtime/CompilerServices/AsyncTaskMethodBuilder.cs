@@ -85,7 +85,7 @@ namespace System.Runtime.CompilerServices
             _builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
         }
 
-        void IAsyncMethodBuilder.PreBoxInitialization()
+        readonly void IAsyncMethodBuilder.PreBoxInitialization()
         {
             GC.KeepAlive(Task);
         }
@@ -137,7 +137,7 @@ namespace System.Runtime.CompilerServices
         /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
         /// <param name="stateMachine">The state machine instance, passed by reference.</param>
         [DebuggerStepThrough]
-        public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
+        public readonly void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
             _builder.Start(ref stateMachine);
         }
@@ -149,7 +149,7 @@ namespace System.Runtime.CompilerServices
         /// <param name="enabled">
         ///     true to enable notification; false to disable a previously set notification.
         /// </param>
-        internal void SetNotificationForWaitCompletion(bool enabled)
+        internal readonly void SetNotificationForWaitCompletion(bool enabled)
         {
             _builder.SetNotificationForWaitCompletion(enabled);
         }
@@ -273,7 +273,7 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        void IAsyncMethodBuilder.PreBoxInitialization()
+        readonly void IAsyncMethodBuilder.PreBoxInitialization()
         {
             GC.KeepAlive(Task);
         }

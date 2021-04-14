@@ -82,7 +82,7 @@ namespace System.Threading.Tasks.Sources
 
         /// <summary>Gets the status of the operation.</summary>
         /// <param name="token">Opaque value that was provided to the <see cref="ValueTask"/>'s constructor.</param>
-        public ValueTaskSourceStatus GetStatus(short token)
+        public readonly ValueTaskSourceStatus GetStatus(short token)
         {
             ValidateToken(token);
             if (_continuation == null || _result == null)
@@ -100,7 +100,7 @@ namespace System.Threading.Tasks.Sources
 
         /// <summary>Gets the result of the operation.</summary>
         /// <param name="token">Opaque value that was provided to the <see cref="ValueTask"/>'s constructor.</param>
-        public TResult GetResult(short token)
+        public readonly TResult GetResult(short token)
         {
             ValidateToken(token);
             if (_result == null)

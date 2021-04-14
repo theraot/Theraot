@@ -920,7 +920,7 @@ namespace System.Numerics
             }
         }
 
-        private void ApplyBorrow(int iuMin)
+        private readonly void ApplyBorrow(int iuMin)
         {
             for (var i = iuMin; i <= _iuLast; i++)
             {

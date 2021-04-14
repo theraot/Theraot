@@ -63,7 +63,7 @@ namespace System.Threading
             return _id == other._id && _source == other._source;
         }
 
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
             return obj is CancellationTokenRegistration registration && Equals(registration);
         }
