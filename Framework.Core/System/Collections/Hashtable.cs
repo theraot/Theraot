@@ -1824,22 +1824,6 @@ namespace System.Collections
                 : obj.GetHashCode();
         }
     }
-
-    [DebuggerDisplay("{" + nameof(_value) + "}", Name = "[{" + nameof(_key) + "}]")]
-    internal class KeyValuePairs
-    {
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly object? _key;
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly object? _value;
-
-        public KeyValuePairs(object? key, object? value)
-        {
-            _value = value;
-            _key = key;
-        }
-    }
 }
 
 #endif
