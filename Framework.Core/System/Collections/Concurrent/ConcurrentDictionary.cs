@@ -5,6 +5,17 @@
 #pragma warning disable S2743 // Static fields in generic types
 #pragma warning disable MA0015 // Specify the parameter name in ArgumentException
 
+// ReSharper disable InvertIf
+// ReSharper disable ForCanBeConvertedToForeach
+// ReSharper disable StaticMemberInGenericType
+// ReSharper disable MergeConditionalExpression
+// ReSharper disable InconsistentNaming
+// ReSharper disable MemberCanBePrivate.Local
+// ReSharper disable ArrangeObjectCreationWhenTypeEvident
+// ReSharper disable JoinNullCheckWithUsage
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -24,17 +35,6 @@ using System.Security.Permissions;
 
 using System.Threading;
 
-// ReSharper disable InvertIf
-// ReSharper disable ForCanBeConvertedToForeach
-// ReSharper disable StaticMemberInGenericType
-// ReSharper disable MergeConditionalExpression
-// ReSharper disable InconsistentNaming
-// ReSharper disable MemberCanBePrivate.Local
-// ReSharper disable ArrangeObjectCreationWhenTypeEvident
-// ReSharper disable JoinNullCheckWithUsage
-// ReSharper disable CommentTypo
-// ReSharper disable IdentifierTypo
-
 namespace System.Collections.Concurrent
 {
     /// <summary>Represents a thread-safe collection of keys and values.</summary>
@@ -44,7 +44,7 @@ namespace System.Collections.Concurrent
     /// All public and protected members of <see cref="ConcurrentDictionary{TKey,TValue}"/> are thread-safe and may be used
     /// concurrently from multiple threads.
     /// </remarks>
-    [DebuggerTypeProxy(typeof(IDictionaryDebugView<,>))]
+    [DebuggerTypeProxy(typeof(DictionaryDebugView<,>))]
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public
 #if LESSTHAN_NET40
@@ -2251,32 +2251,6 @@ namespace System.Collections.Concurrent
     }
 
 #endif
-
-    internal sealed class IDictionaryDebugView<TKey, TValue> where TKey : notnull
-    {
-        private readonly IDictionary<TKey, TValue> _dictionary;
-
-        public IDictionaryDebugView(IDictionary<TKey, TValue> dictionary)
-        {
-            if (dictionary is null)
-            {
-                throw new ArgumentNullException(nameof(dictionary));
-            }
-
-            _dictionary = dictionary;
-        }
-
-        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public KeyValuePair<TKey, TValue>[] Items
-        {
-            get
-            {
-                var items = new KeyValuePair<TKey, TValue>[_dictionary.Count];
-                _dictionary.CopyTo(items, 0);
-                return items;
-            }
-        }
-    }
 }
 
 #endif
