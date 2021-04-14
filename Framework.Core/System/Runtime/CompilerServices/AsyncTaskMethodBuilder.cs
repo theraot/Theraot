@@ -1,10 +1,10 @@
-#if LESSTHAN_NET45
+﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA1822 // Mark members as static
-#pragma warning disable CC0091 // Use static method
 #pragma warning disable CS8653 // A default expression introduces a null value when 'T' is a non-nullable reference type.
 #pragma warning disable CS0649 // Field is never assigned
+#pragma warning disable MA0018 // Do not declare static members on generic types
 
 using System.Diagnostics;
 using System.Security;
