@@ -31,6 +31,8 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using System.Globalization;
+
 namespace System.Numerics
 {
     public readonly struct Complex : IEquatable<Complex>, IFormattable
@@ -376,9 +378,7 @@ namespace System.Numerics
 
         public string ToString(string format)
         {
-#pragma warning disable CA1305 // Specify IFormatProvider
-            return $"({Real.ToString(format)}, {Imaginary.ToString(format)})";
-#pragma warning restore CA1305 // Specify IFormatProvider
+            return $"({Real.ToString(format, CultureInfo.CurrentCulture)}, {Imaginary.ToString(format, CultureInfo.CurrentCulture)})";
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
