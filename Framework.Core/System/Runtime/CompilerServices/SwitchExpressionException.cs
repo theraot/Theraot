@@ -3,7 +3,11 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
+
 using System.Runtime.Serialization;
+
+#endif
 
 namespace System.Runtime.CompilerServices
 {
