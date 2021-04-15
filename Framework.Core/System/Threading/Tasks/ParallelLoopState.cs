@@ -2,6 +2,7 @@
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable MA0008 // Add StructLayoutAttribute
+#pragma warning disable MA0048 // File name must match type name
 
 // BASEDON: https://raw.githubusercontent.com/dotnet/corefx/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/ParallelLoopState.cs
 
