@@ -141,7 +141,7 @@ namespace System.Runtime.CompilerServices
             var syncContext = continueOnCapturedContext ? SynchronizationContext.Current : null;
             if (syncContext != null && syncContext.GetType() != typeof(SynchronizationContext))
             {
-                task.ContinueWith
+                _ = task.ContinueWith
                 (
                     _ =>
                     {
@@ -251,7 +251,7 @@ namespace System.Runtime.CompilerServices
             var scheduler = continueOnCapturedContext ? TaskScheduler.Current : TaskScheduler.Default;
             if (task.IsCompleted)
             {
-                Task.Factory.StartNew
+                _ = Task.Factory.StartNew
                 (
                     state => ((Action?)state)?.Invoke(),
                     continuation,
@@ -261,7 +261,7 @@ namespace System.Runtime.CompilerServices
             }
             else if (scheduler != TaskScheduler.Default)
             {
-                task.ContinueWith
+                _ = task.ContinueWith
                 (
                     _ => RunNoException(continuation),
                     CancellationToken.None,
@@ -270,7 +270,7 @@ namespace System.Runtime.CompilerServices
             }
             else
             {
-                task.ContinueWith
+                _ = task.ContinueWith
                 (
                     _ =>
                     {
@@ -280,7 +280,7 @@ namespace System.Runtime.CompilerServices
                         }
                         else
                         {
-                            Task.Factory.StartNew
+                            _ = Task.Factory.StartNew
                             (
                                 state => RunNoException((Action?)state), continuation,
                                 CancellationToken.None, TaskCreationOptions.None,

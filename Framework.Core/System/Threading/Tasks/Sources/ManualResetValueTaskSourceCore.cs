@@ -198,9 +198,9 @@ namespace System.Threading.Tasks.Sources
 
                 case TaskScheduler ts:
 #if NET40
-                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.None, ts);
+                    _ = Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.None, ts);
 #else
-                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
+                    _ = Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
 #endif
                     return;
 
@@ -270,9 +270,9 @@ namespace System.Threading.Tasks.Sources
 
                 case TaskScheduler ts:
 #if NET40
-                    Task.Factory.StartNew(continuation, _continuationState, CancellationToken.None, TaskCreationOptions.None, ts);
+                    _ = Task.Factory.StartNew(continuation, _continuationState, CancellationToken.None, TaskCreationOptions.None, ts);
 #else
-                    Task.Factory.StartNew(continuation, _continuationState, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
+                    _ = Task.Factory.StartNew(continuation, _continuationState, CancellationToken.None, TaskCreationOptions.DenyChildAttach, ts);
 #endif
                     return;
 

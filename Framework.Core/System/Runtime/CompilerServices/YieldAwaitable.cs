@@ -64,7 +64,7 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
+                    _ = Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
                 }
             }
 
@@ -88,7 +88,7 @@ namespace System.Runtime.CompilerServices
                 }
                 else
                 {
-                    Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
+                    _ = Task.Factory.StartNew(continuation, default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
                 }
             }
 
