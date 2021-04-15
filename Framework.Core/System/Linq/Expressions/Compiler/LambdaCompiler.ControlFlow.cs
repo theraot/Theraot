@@ -35,7 +35,7 @@ namespace System.Linq.Expressions.Compiler
                         return null;
                     }
 
-                    return (labelBlock, LabelScopeKind.Expression, null);
+                    return (labelBlock, LabelScopeKind.Expression, nodes: null);
 
                 case ExpressionType.Label:
                     // LabelExpression is a bit special, if it's directly in a
@@ -43,7 +43,7 @@ namespace System.Linq.Expressions.Compiler
                     // thing if it's in a switch case body.
                     if (labelBlock.Kind != LabelScopeKind.Block)
                     {
-                        return (labelBlock, LabelScopeKind.Statement, null);
+                        return (labelBlock, LabelScopeKind.Statement, nodes: null);
                     }
 
                     var label = ((LabelExpression)node).Target;
@@ -57,7 +57,7 @@ namespace System.Linq.Expressions.Compiler
                         return null;
                     }
 
-                    return (labelBlock, LabelScopeKind.Statement, null);
+                    return (labelBlock, LabelScopeKind.Statement, nodes: null);
 
                 case ExpressionType.Block:
                     if (node is SpilledExpressionBlock)
@@ -68,7 +68,7 @@ namespace System.Linq.Expressions.Compiler
 
                     return labelBlock.Parent?.Kind != LabelScopeKind.Switch
                         ? (labelBlock, LabelScopeKind.Block, new[] { node })
-                        : (labelBlock, LabelScopeKind.Block, null);
+                        : (labelBlock, LabelScopeKind.Block, nodes: null);
 
                 case ExpressionType.Switch:
                     var nodes = new List<Expression>();
@@ -93,12 +93,12 @@ namespace System.Linq.Expressions.Compiler
                         goto default;
                     }
 
-                    return (labelBlock, LabelScopeKind.Statement, null);
+                    return (labelBlock, LabelScopeKind.Statement, nodes: null);
 
                 case ExpressionType.Conditional:
                 case ExpressionType.Loop:
                 case ExpressionType.Goto:
-                    return (labelBlock, LabelScopeKind.Statement, null);
+                    return (labelBlock, LabelScopeKind.Statement, nodes: null);
             }
         }
 

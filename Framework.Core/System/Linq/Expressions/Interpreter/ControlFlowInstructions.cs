@@ -150,8 +150,8 @@ namespace System.Linq.Expressions.Interpreter
     // no-op: we need this just to balance the stack depth.
     internal sealed class EnterExceptionHandlerInstruction : Instruction
     {
-        internal static readonly EnterExceptionHandlerInstruction NonVoid = new(true);
-        internal static readonly EnterExceptionHandlerInstruction Void = new(false);
+        internal static readonly EnterExceptionHandlerInstruction NonVoid = new(hasValue: true);
+        internal static readonly EnterExceptionHandlerInstruction Void = new(hasValue: false);
 
         // True if try-expression is non-void.
         private readonly bool _hasValue;
@@ -693,7 +693,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
         {
-            return ToString() + (Offset != Unknown ? $" -> {(instructionIndex + Offset)}" : "");
+            return ToString() + (Offset != Unknown ? $" -> {instructionIndex + Offset}" : "");
         }
 
         public override string ToString()

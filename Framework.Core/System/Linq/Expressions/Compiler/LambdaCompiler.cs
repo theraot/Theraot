@@ -54,7 +54,7 @@ namespace System.Linq.Expressions.Compiler
         private readonly TypeBuilder? _typeBuilder;
 
         // Currently active LabelTargets and their mapping to IL labels
-        private LabelScopeInfo _labelBlock = new(null, LabelScopeKind.Lambda);
+        private LabelScopeInfo _labelBlock = new(parent: null, LabelScopeKind.Lambda);
 
         // The currently active variable scope
         private CompilerScope _scope;

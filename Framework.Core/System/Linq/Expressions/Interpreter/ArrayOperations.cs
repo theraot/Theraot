@@ -14,7 +14,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             return val == null
                 ? throw new InvalidOperationException()
-                : Convert.ToInt32(val, null);
+                : Convert.ToInt32(val, provider: null);
         }
     }
 

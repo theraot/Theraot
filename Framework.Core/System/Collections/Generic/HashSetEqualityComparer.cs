@@ -5,7 +5,7 @@ namespace System.Collections.Generic
 {
     internal sealed class HashSetEqualityComparer<T> : IEqualityComparer<HashSet<T>>
     {
-        public static readonly HashSetEqualityComparer<T> Instance = new(null);
+        public static readonly HashSetEqualityComparer<T> Instance = new(equalityComparer: null);
 
         private readonly IEqualityComparer<T>? _equalityComparer;
 
