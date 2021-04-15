@@ -272,26 +272,24 @@ namespace System.Runtime.CompilerServices
             {
                 _ = task.ContinueWith
                 (
-                    _ =>
-                    {
-                        if (IsValidLocationForInlining)
-                        {
-                            RunNoException(continuation);
-                        }
-                        else
-                        {
-                            _ = Task.Factory.StartNew
-                            (
-                                state => RunNoException((Action?)state), continuation,
-                                CancellationToken.None, TaskCreationOptions.None,
-                                TaskScheduler.Default
-                            );
-                        }
-                    },
+                    ContinuationFunction,
                     CancellationToken.None,
                     TaskContinuationOptions.ExecuteSynchronously,
                     TaskScheduler.Default
                 );
+
+                void ContinuationFunction(Task completedTask)
+                {
+                    _ = completedTask;
+                    if (IsValidLocationForInlining)
+                    {
+                        RunNoException(continuation);
+                    }
+                    else
+                    {
+                        _ = Task.Factory.StartNew(state => RunNoException((Action?)state), continuation, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+                    }
+                }
             }
         }
 
