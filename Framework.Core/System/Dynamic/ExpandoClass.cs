@@ -49,7 +49,7 @@ namespace System.Dynamic
         internal ExpandoClass FindNewClass(string newKey, object lockObject)
         {
             // just XOR the newKey hash code
-            var hashCode = _hashCode ^ newKey.GetHashCode();
+            var hashCode = _hashCode ^ StringComparer.Ordinal.GetHashCode(newKey);
             lock (lockObject)
             {
                 var infos = GetTransitionList(hashCode);
