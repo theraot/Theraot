@@ -53,8 +53,8 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         public void AddOrUpdateTest()
         {
             var map = Setup();
-            Assert.AreEqual(11, map.AddOrUpdate("bar", _ => 12, (_, __) => 11));
-            Assert.AreEqual(12, map.AddOrUpdate("baz", _ => 12, (_, __) => 11));
+            Assert.AreEqual(11, map.AddOrUpdate("bar", _ => 12, (_, _) => 11));
+            Assert.AreEqual(12, map.AddOrUpdate("baz", _ => 12, (_, _) => 11));
         }
 
         [Test]
@@ -388,7 +388,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                 );
 
                 evs[0].Wait();
-                var keyValuePairs = map.ToArray();
+                _ = map.ToArray();
                 Volatile.Write(ref x[0], 1);
                 Task.WaitAll(tasks);
                 u.Wait();

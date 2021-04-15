@@ -1,4 +1,5 @@
-﻿#pragma warning disable IDE0052 // Remove unread private member
+﻿#pragma warning disable 618
+#pragma warning disable IDE0052 // Remove unread private member
 
 //
 // ConditionalWeakTableTest.cs

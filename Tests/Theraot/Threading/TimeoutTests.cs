@@ -79,8 +79,7 @@ namespace Theraot.Threading
                 now = DateTime.Now;
                 value[0] = now;
                 timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 100);
-            }
-            while (!timeout.Change(1000));
+            } while (!timeout.Change(1000));
 
             Assert.IsFalse(timeout.IsCanceled);
             Assert.IsFalse(timeout.IsCompleted);
@@ -142,8 +141,7 @@ namespace Theraot.Threading
                 var value = new[] { now };
                 timeout = RootedTimeout.Launch(() => value[0] = DateTime.Now, 500);
                 remaining = timeout.CheckRemaining();
-            }
-            while (timeout.IsCompleted);
+            } while (timeout.IsCompleted);
 
             Assert.LessOrEqual(remaining, 500);
             Thread.Sleep(1);

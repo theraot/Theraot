@@ -2,9 +2,9 @@
 extern alias nunitlinq;
 #endif
 
-#pragma warning disable RCS1077	// Optimize LINQ method call
-#pragma warning disable RCS1079	// Throwing of new NotImplementedException
-#pragma warning disable RCS1246	// Use element access
+#pragma warning disable RCS1077 // Optimize LINQ method call
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException
+#pragma warning disable RCS1246 // Use element access
 
 //
 // EnumerableAsQueryableTest.cs

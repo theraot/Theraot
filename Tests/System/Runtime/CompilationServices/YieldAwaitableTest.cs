@@ -1,4 +1,5 @@
-﻿#pragma warning disable RCS1079	// Throwing of new NotImplementedException
+﻿#pragma warning disable 618
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException
 
 //
 // YieldAwaitableTest.cs

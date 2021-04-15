@@ -39,7 +39,7 @@ namespace TestRunner
             {
                 return exception;
             }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is { } exception)
             {
                 throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
             }
@@ -59,7 +59,7 @@ namespace TestRunner
             {
                 return exception;
             }
-            catch (AggregateException aggregateException) when (aggregateException.InnerException is Exception exception)
+            catch (AggregateException aggregateException) when (aggregateException.InnerException is { } exception)
             {
                 throw new AssertionFailedException(BuildMessage<TException>(exception, message), exception);
             }

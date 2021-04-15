@@ -810,7 +810,7 @@ namespace MonoTests.System.Threading.Tasks
         public void UnobservedExceptionOnFinalizerThreadTest()
         {
             var wasCalled = false;
-            TaskScheduler.UnobservedTaskException += (o, args) =>
+            TaskScheduler.UnobservedTaskException += (_, args) =>
             {
                 wasCalled = true;
                 args.SetObserved();
@@ -2033,7 +2033,7 @@ namespace MonoTests.System.Threading.Tasks
         public void RunSynchronouslySchedulerException()
         {
             var scheduler = new MockScheduler();
-            scheduler.TryExecuteTaskInlineHandler += (_, __) => throw new ApplicationException();
+            scheduler.TryExecuteTaskInlineHandler += (_, _) => throw new ApplicationException();
             var t = new Task(ActionHelper.GetNoopAction());
             try
             {

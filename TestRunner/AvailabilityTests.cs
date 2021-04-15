@@ -1,4 +1,6 @@
-﻿// ReSharper disable StyleCop.SA1512
+﻿#pragma warning disable 618
+
+// ReSharper disable StyleCop.SA1512
 // ReSharper disable StyleCop.SA1515
 
 using System;

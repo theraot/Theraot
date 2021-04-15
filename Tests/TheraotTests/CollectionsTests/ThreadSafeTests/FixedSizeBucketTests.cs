@@ -1,5 +1,7 @@
 ﻿#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
 
+#pragma warning disable 618
+
 using System;
 using System.Collections.Generic;
 using System.IO;

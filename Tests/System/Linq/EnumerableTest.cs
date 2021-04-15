@@ -2,7 +2,7 @@
 extern alias nunitlinq;
 #endif
 
-#pragma warning disable RCS1246	// Use element access
+#pragma warning disable RCS1246 // Use element access
 
 //
 // EnumerableTest.cs

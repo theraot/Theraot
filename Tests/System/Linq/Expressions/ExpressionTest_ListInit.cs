@@ -2,7 +2,7 @@
 extern alias nunitlinq;
 #endif
 
-#pragma warning disable RCS1079	// Throwing of new NotImplementedException
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException
 
 //
 // ExpressionTest_ListInit.cs

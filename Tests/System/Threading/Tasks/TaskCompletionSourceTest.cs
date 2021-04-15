@@ -169,7 +169,7 @@ namespace MonoTests.System.Threading.Tasks
             using (manualResetEvents[0] = new ManualResetEvent(false))
             {
                 var mainThreadId = Thread.CurrentThread.ManagedThreadId;
-                TaskScheduler.UnobservedTaskException += (o, args) =>
+                TaskScheduler.UnobservedTaskException += (_, args) =>
                 {
                     notFromMainThread = Thread.CurrentThread.ManagedThreadId != mainThreadId;
                     args.SetObserved();

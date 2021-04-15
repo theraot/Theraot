@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
 {
     [TestFixture]
-    public partial class ConcurrentDictionaryTestsEx
+    public class ConcurrentDictionaryTestsEx
     {
         [Test]
         public void InitWithConflictingData()
