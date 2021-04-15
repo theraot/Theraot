@@ -260,6 +260,7 @@ dotnet_diagnostic.MA0018.severity = silent
 dotnet_diagnostic.MA0026.severity = silent
 dotnet_diagnostic.MA0046.severity = silent
 dotnet_diagnostic.MA0051.severity = silent
+dotnet_diagnostic.MA0055.severity = silent
 dotnet_diagnostic.MA0056.severity = silent
 dotnet_diagnostic.MA0097.severity = silent
 # Disable checking if suppression are not necessary (because IDE performance)
