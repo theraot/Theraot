@@ -358,16 +358,4 @@ namespace Theraot.Collections
             }
         }
     }
-
-    internal sealed class ProgressorProxy
-    {
-        private readonly IClosable _node;
-
-        public ProgressorProxy(IClosable node)
-        {
-            _node = node ?? throw new ArgumentNullException(nameof(node));
-        }
-
-        public bool IsClosed => _node.IsClosed;
-    }
 }
