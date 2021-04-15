@@ -42,7 +42,7 @@ namespace Theraot.Threading.Needles
             return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
         }
 
-        public override bool Equals(object? obj)
+        public override readonly bool Equals(object? obj)
         {
             switch (obj)
             {
