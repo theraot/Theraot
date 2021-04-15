@@ -532,7 +532,7 @@ namespace System.Dynamic
                 Array.Copy(_dataArray, 0, arr, 0, _dataArray.Length);
                 return new ExpandoData(newClass, arr, Version)
                 {
-                    [oldLength] = Uninitialized,
+                    [oldLength] = Uninitialized
                 };
             }
 
