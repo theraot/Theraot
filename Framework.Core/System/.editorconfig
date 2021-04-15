@@ -8,4 +8,5 @@ resharper_class_never_instantiated_global_highlighting = do_not_show
 resharper_auto_property_can_be_made_get_only_global_highlighting = do_not_show
 # Roslyn analyzers
 dotnet_diagnostic.EPS01.severity = silent
+dotnet_diagnostic.MA0053.severity = silent
 dotnet_diagnostic.S927.severity = silent

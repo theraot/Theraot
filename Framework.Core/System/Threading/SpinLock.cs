@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable MA0102 // Make member readonly
 
 using System.Diagnostics;
 using System.Runtime.ConstrainedExecution;

@@ -4,6 +4,7 @@
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CS8653 // A default expression introduces a null value when 'T' is a non-nullable reference type.
 #pragma warning disable CS0649 // Field is never assigned
+#pragma warning disable MA0102 // Make member readonly
 
 using System.Diagnostics;
 using System.Security;
