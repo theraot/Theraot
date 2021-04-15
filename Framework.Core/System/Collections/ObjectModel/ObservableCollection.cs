@@ -17,27 +17,27 @@ namespace System.Collections.ObjectModel
         private readonly TrackingThreadLocal<int> _entryCheck;
 
         // This field is disposable and will not be disposed either
-        private readonly ReentryBlockage _reentryBlockage;
+        private readonly ObservableCollection.ReentryBlockage _reentryBlockage;
 
         public ObservableCollection()
             : base(new List<T>())
         {
             _entryCheck = new TrackingThreadLocal<int>(() => 0);
-            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
+            _reentryBlockage = new(() => _entryCheck.Value--);
         }
 
         public ObservableCollection(IEnumerable<T> collection)
             : base(new List<T>(collection))
         {
             _entryCheck = new TrackingThreadLocal<int>(() => 0);
-            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
+            _reentryBlockage = new(() => _entryCheck.Value--);
         }
 
         public ObservableCollection(List<T> list)
             : base(new List<T>(list))
         {
             _entryCheck = new TrackingThreadLocal<int>(() => 0);
-            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
+            _reentryBlockage = new(() => _entryCheck.Value--);
         }
 
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
@@ -155,20 +155,23 @@ namespace System.Collections.ObjectModel
         }
     }
 
-    [DebuggerNonUserCode]
-    internal sealed class ReentryBlockage : IDisposable
+    internal static class ObservableCollection
     {
-        private readonly Action _release;
-
-        public ReentryBlockage(Action release)
-        {
-            _release = release ?? throw new ArgumentNullException(nameof(release));
-        }
-
         [DebuggerNonUserCode]
-        public void Dispose()
+        internal sealed class ReentryBlockage : IDisposable
         {
-            _release.Invoke();
+            private readonly Action _release;
+
+            public ReentryBlockage(Action release)
+            {
+                _release = release ?? throw new ArgumentNullException(nameof(release));
+            }
+
+            [DebuggerNonUserCode]
+            public void Dispose()
+            {
+                _release.Invoke();
+            }
         }
     }
 }
