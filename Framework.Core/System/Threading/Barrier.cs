@@ -8,7 +8,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Security;
 
 namespace System.Threading
@@ -984,67 +983,6 @@ namespace System.Threading
             {
                 spinner.SpinOnce();
             }
-        }
-    }
-
-    /// <summary>
-    ///     The exception that is thrown when the post-phase action of a <see cref="Barrier" /> fails.
-    /// </summary>
-    [Serializable]
-    public class BarrierPostPhaseException : Exception
-    {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BarrierPostPhaseException" /> class.
-        /// </summary>
-        public BarrierPostPhaseException()
-            : this((string?)null)
-        {
-            // Empty
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BarrierPostPhaseException" /> class with the
-        ///     specified inner exception.
-        /// </summary>
-        /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public BarrierPostPhaseException(Exception innerException)
-            : this(message: null, innerException)
-        {
-            // Empty
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BarrierPostPhaseException" /> class with a
-        ///     specified error message.
-        /// </summary>
-        /// <param name="message">A string that describes the exception.</param>
-        public BarrierPostPhaseException(string? message)
-            : this(message, innerException: null)
-        {
-            // Empty
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BarrierPostPhaseException" /> class with a
-        ///     specified error message and inner exception.
-        /// </summary>
-        /// <param name="message">A string that describes the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public BarrierPostPhaseException(string? message, Exception? innerException)
-            : base(message ?? "The postPhaseAction failed with an exception.", innerException)
-        {
-            // Empty
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the BarrierPostPhaseException class with serialized data.
-        /// </summary>
-        /// <param name="info">The object that holds the serialized object data.</param>
-        /// <param name="context">The contextual information about the source or destination.</param>
-        protected BarrierPostPhaseException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            // Empty
         }
     }
 }
