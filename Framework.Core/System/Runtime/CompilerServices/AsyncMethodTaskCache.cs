@@ -4,101 +4,12 @@ using System.Threading.Tasks;
 
 namespace System.Runtime.CompilerServices
 {
-    /// <summary>
-    ///     Provides a cache for Boolean tasks.
-    /// </summary>
-    internal sealed class AsyncMethodBooleanTaskCache : AsyncMethodTaskCache<bool>
+    internal static class AsyncMethodTaskCache
     {
-        /// <summary>
-        ///     A false task.
-        /// </summary>
-        private readonly TaskCompletionSource<bool> _false = CreateCompleted(result: false);
-
-        /// <summary>
-        ///     A true task.
-        /// </summary>
-        private readonly TaskCompletionSource<bool> _true = CreateCompleted(result: true);
-
-        /// <summary>
-        ///     Gets a cached task for the Boolean result.
-        /// </summary>
-        /// <param name="result">true or false</param>
-        /// <returns>
-        ///     A cached task for the Boolean result.
-        /// </returns>
-        internal override TaskCompletionSource<bool> FromResult(bool result)
-        {
-            return result ? _true : _false;
-        }
-    }
-
-    /// <summary>
-    ///     Provides a cache for zero Int32 tasks.
-    /// </summary>
-    internal sealed class AsyncMethodInt32TaskCache : AsyncMethodTaskCache<int>
-    {
-        /// <summary>
-        ///     The maximum value, exclusive, for which we want a cached task.
-        /// </summary>
-        private const int _maxInt32ValueExclusive = 9;
-
-        /// <summary>
-        ///     The minimum value, inclusive, for which we want a cached task.
-        /// </summary>
-        private const int _minInt32ValueInclusive = -1;
-
-        /// <summary>
-        ///     The cache of Task{Int32}.
-        /// </summary>
-        private static readonly TaskCompletionSource<int>[] _int32Tasks = CreateInt32Tasks();
-
-        /// <summary>
-        ///     Gets a cached task for the zero Int32 result.
-        /// </summary>
-        /// <param name="result">The integer value</param>
-        /// <returns>
-        ///     A cached task for the Int32 result or null if not cached.
-        /// </returns>
-        internal override TaskCompletionSource<int> FromResult(int result)
-        {
-            if (result < _minInt32ValueInclusive || result >= _maxInt32ValueExclusive)
-            {
-                return CreateCompleted(result);
-            }
-
-            return _int32Tasks[result - -1];
-        }
-
-        /// <summary>
-        ///     Creates an array of cached tasks for the values in the range [INCLUSIVE_MIN,EXCLUSIVE_MAX).
-        /// </summary>
-        private static TaskCompletionSource<int>[] CreateInt32Tasks()
-        {
-            var completionSourceArray = new TaskCompletionSource<int>[10];
-            for (var index = 0; index < completionSourceArray.Length; ++index)
-            {
-                completionSourceArray[index] = CreateCompleted(index - 1);
-            }
-
-            return completionSourceArray;
-        }
-    }
-
-    /// <summary>
-    ///     Provides a base class used to cache tasks of a specific return type.
-    /// </summary>
-    /// <typeparam name="TResult">Specifies the type of results the cached tasks return.</typeparam>
-    internal class AsyncMethodTaskCache<TResult>
-    {
-        /// <summary>
-        ///     A singleton cache for this result type.
-        ///     This may be null if there are no cached tasks for this TResult.
-        /// </summary>
-        internal static readonly AsyncMethodTaskCache<TResult>? Singleton = CreateCache();
-
         static AsyncMethodTaskCache()
         {
-            // Empty
+            Singleton<bool>.SetInstance(new CacheBool());
+            Singleton<int>.SetInstance(new CacheInt32());
         }
 
         /// <summary>
@@ -108,45 +19,81 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         ///     The cacheable task.
         /// </returns>
-        internal static TaskCompletionSource<TResult> CreateCompleted(TResult result)
+        internal static TaskCompletionSource<TResult> CreateCompleted<TResult>(TResult result)
         {
-            var completionSource = new TaskCompletionSource<TResult>();
-            completionSource.TrySetResult(result);
-            return completionSource;
-        }
-
-        /// <summary>
-        ///     Gets a cached task if one exists.
-        /// </summary>
-        /// <param name="result">The result for which we want a cached task.</param>
-        /// <returns>
-        ///     A cached task if one exists; otherwise, null.
-        /// </returns>
-        internal virtual TaskCompletionSource<TResult> FromResult(TResult result)
-        {
-            return CreateCompleted(result);
-        }
-
-        /// <summary>
-        ///     Creates a cache.
-        /// </summary>
-        /// <returns>
-        ///     A task cache for this result type.
-        /// </returns>
-        private static AsyncMethodTaskCache<TResult>? CreateCache()
-        {
-            var type = typeof(TResult);
-            if (type == typeof(bool))
+            var singleton = Singleton<TResult>.GetInstance();
+            if (singleton == null)
             {
-                return (AsyncMethodTaskCache<TResult>)(object)new AsyncMethodBooleanTaskCache();
+                return CacheGeneric<TResult>.FromResultStatic(result);
             }
 
-            if (type == typeof(int))
+            return singleton.FromResult(result);
+        }
+
+        private static class Singleton<TResult>
+        {
+            private static CacheGeneric<TResult>? _instance;
+
+            public static CacheGeneric<TResult>? GetInstance()
             {
-                return (AsyncMethodTaskCache<TResult>)(object)new AsyncMethodInt32TaskCache();
+                return _instance;
             }
 
-            return null;
+            public static void SetInstance(CacheGeneric<TResult>? value)
+            {
+                _instance = value;
+            }
+        }
+
+        private sealed class CacheBool : CacheGeneric<bool>
+        {
+            private readonly TaskCompletionSource<bool> _false = FromResultStatic(result: false);
+            private readonly TaskCompletionSource<bool> _true = FromResultStatic(result: true);
+
+            public override TaskCompletionSource<bool> FromResult(bool result)
+            {
+                return result ? _true : _false;
+            }
+        }
+
+        private abstract class CacheGeneric<TResult>
+        {
+            public static TaskCompletionSource<TResult> FromResultStatic(TResult result)
+            {
+                var completionSource = new TaskCompletionSource<TResult>();
+                completionSource.TrySetResult(result);
+                return completionSource;
+            }
+
+            public abstract TaskCompletionSource<TResult> FromResult(TResult result);
+        }
+
+        private sealed class CacheInt32 : CacheGeneric<int>
+        {
+            private const int _maxInt32ValueExclusive = 9;
+            private const int _minInt32ValueInclusive = -1;
+            private static readonly TaskCompletionSource<int>[] _int32Tasks = CreateInt32Tasks();
+
+            public override TaskCompletionSource<int> FromResult(int result)
+            {
+                if (result < _minInt32ValueInclusive || result >= _maxInt32ValueExclusive)
+                {
+                    return FromResultStatic(result);
+                }
+
+                return _int32Tasks[result - -1];
+            }
+
+            private static TaskCompletionSource<int>[] CreateInt32Tasks()
+            {
+                var completionSourceArray = new TaskCompletionSource<int>[10];
+                for (var index = 0; index < completionSourceArray.Length; ++index)
+                {
+                    completionSourceArray[index] = FromResultStatic(index - 1);
+                }
+
+                return completionSourceArray;
+            }
         }
     }
 }

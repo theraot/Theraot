@@ -168,7 +168,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     A cached task for default(TResult).
         /// </summary>
-        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default!);
+        internal static readonly TaskCompletionSource<TResult> DefaultResultTask = AsyncMethodTaskCache.CreateCompleted<TResult>(default!);
 
         /// <summary>
         ///     State related to the IAsyncStateMachine.
@@ -181,7 +181,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     The lazily-initialized task completion source.
         /// </summary>
-        private TaskCompletionSource<TResult> _task;
+        private TaskCompletionSource<TResult>? _task;
 
         /// <summary>
         ///     Temporary support for disabling crashing if tasks go unobserved.
@@ -313,7 +313,7 @@ namespace System.Runtime.CompilerServices
             var completionSource = _task;
             if (completionSource == null)
             {
-                _task = GetTaskForResult(result!);
+                _task = AsyncMethodTaskCache.CreateCompleted(result);
             }
             else if (!completionSource.TrySetResult(result))
             {
@@ -380,20 +380,6 @@ namespace System.Runtime.CompilerServices
             {
                 SetResult(default(TResult)!);
             }
-        }
-
-        /// <summary>
-        ///     Gets a task for the specified result.  This will either
-        ///     be a cached or new task, never null.
-        /// </summary>
-        /// <param name="result">The result for which we need a task.</param>
-        /// <returns>
-        ///     The completed task containing the result.
-        /// </returns>
-        private static TaskCompletionSource<TResult> GetTaskForResult(TResult result)
-        {
-            var asyncMethodTaskCache = AsyncMethodTaskCache<TResult>.Singleton;
-            return asyncMethodTaskCache?.FromResult(result) ?? AsyncMethodTaskCache<TResult>.CreateCompleted(result);
         }
     }
 }
