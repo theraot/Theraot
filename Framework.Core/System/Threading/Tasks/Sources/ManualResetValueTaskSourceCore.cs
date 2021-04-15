@@ -19,7 +19,7 @@ namespace System.Threading.Tasks.Sources
     {
         /// <summary>
         /// The callback to invoke when the operation completes if <see cref="OnCompleted"/> was called before the operation completed,
-        /// or <see cref="ManualResetValueTaskSourceCoreShared.Sentinel"/> if the operation completed before a callback was supplied,
+        /// or <see cref="ManualResetValueTaskSourceCore.Sentinel"/> if the operation completed before a callback was supplied,
         /// or null if a callback hasn't yet been provided and the operation hasn't yet completed.
         /// </summary>
         private Action<object?>? _continuation;
@@ -170,7 +170,7 @@ namespace System.Threading.Tasks.Sources
             }
 
             // Operation already completed, so we need to queue the supplied callback.
-            if (!ReferenceEquals(oldContinuation, ManualResetValueTaskSourceCoreShared.Sentinel))
+            if (!ReferenceEquals(oldContinuation, ManualResetValueTaskSourceCore.Sentinel))
             {
                 throw new InvalidOperationException();
             }
@@ -222,7 +222,7 @@ namespace System.Threading.Tasks.Sources
         /// <summary>Signals that the operation has completed.  Invoked after the result or error has been set.</summary>
         private void SignalCompletion()
         {
-            if (_continuation == null && Interlocked.CompareExchange(ref _continuation, ManualResetValueTaskSourceCoreShared.Sentinel, comparand: null) == null)
+            if (_continuation == null && Interlocked.CompareExchange(ref _continuation, ManualResetValueTaskSourceCore.Sentinel, comparand: null) == null)
             {
                 return;
             }
@@ -282,7 +282,7 @@ namespace System.Threading.Tasks.Sources
         }
     }
 
-    internal static class ManualResetValueTaskSourceCoreShared // separated out of generic to avoid unnecessary duplication
+    internal static class ManualResetValueTaskSourceCore // separated out of generic to avoid unnecessary duplication
     {
         internal static readonly Action<object?> Sentinel = CompletionSentinel;
 
