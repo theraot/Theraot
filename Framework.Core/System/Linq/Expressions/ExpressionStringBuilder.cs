@@ -608,7 +608,7 @@ namespace System.Linq.Expressions
             var name = node.Name;
             if (string.IsNullOrEmpty(name))
             {
-                Out("Param_" + GetParamId(node));
+                Out($"Param_{GetParamId(node)}");
             }
             else
             {
@@ -874,7 +874,7 @@ namespace System.Linq.Expressions
             if (string.IsNullOrEmpty(name))
             {
                 var labelId = GetLabelId(target);
-                Out("UnnamedLabel_" + labelId);
+                Out($"UnnamedLabel_{labelId}");
             }
             else
             {

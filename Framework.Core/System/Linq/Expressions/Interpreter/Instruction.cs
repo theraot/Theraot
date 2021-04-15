@@ -32,7 +32,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return InstructionName + "()";
+            return $"{InstructionName}()";
         }
 
         // throws NRE when o is null

@@ -36,7 +36,7 @@ namespace Tests.Theraot.Collections
             catch (Exception exception)
             {
                 No.Op(exception);
-                Assert.Fail("Expected: " + typeof(T).Name);
+                Assert.Fail($"Expected: {typeof(T).Name}");
             }
         }
 
@@ -91,7 +91,7 @@ namespace Tests.Theraot.Collections
         {
             var src = new IterateAndCount(10);
             var a = src.GroupProgressiveBy(i => i > 5, null);
-            var b = src.GroupProgressiveBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var b = src.GroupProgressiveBy(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var c = src.GroupProgressiveBy(i => i > 5, (_, group) => StringEx.Concat(group.ToArray()), null);
             var d = src.GroupProgressiveBy(i => i > 5, j => j + 1, (_, group) => StringEx.Concat(group.ToArray()), null);
             Assert.AreEqual(src.Total, 0);
@@ -214,7 +214,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadB()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var r = src.GroupProgressiveBy(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             var index = 0;
@@ -225,7 +225,7 @@ namespace Tests.Theraot.Collections
                 var count = 0;
                 foreach (var item in g)
                 {
-                    Assert.AreEqual(item, "str: " + (index + 1).ToString(CultureInfo.InvariantCulture));
+                    Assert.AreEqual(item, $"str: {(index + 1).ToString(CultureInfo.InvariantCulture)}");
                     index++;
                     count++;
                 }
@@ -241,7 +241,7 @@ namespace Tests.Theraot.Collections
         public void GroupProgressiveByOverloadBEx()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupProgressiveBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var r = src.GroupProgressiveBy(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             var first = true;

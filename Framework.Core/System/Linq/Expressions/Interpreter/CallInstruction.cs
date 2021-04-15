@@ -257,7 +257,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "Call(" + Target + ")";
+            return $"Call({Target})";
         }
 
         protected object?[] GetArgs(InterpretedFrame frame, int first, int skip)

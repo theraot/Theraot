@@ -607,10 +607,11 @@ namespace System.Linq.Expressions.Interpreter
 
         private void UpdateStackDepth(Instruction instruction)
         {
-            Debug.Assert(instruction.ConsumedStack >= 0 && instruction.ProducedStack >= 0 && instruction.ConsumedContinuations >= 0 && instruction.ProducedContinuations >= 0, "bad instruction " + instruction);
+            Debug.Assert(instruction.ConsumedStack >= 0 && instruction.ProducedStack >= 0 && instruction.ConsumedContinuations >= 0 && instruction.ProducedContinuations >= 0,
+                $"bad instruction {instruction}");
 
             CurrentStackDepth -= instruction.ConsumedStack;
-            Debug.Assert(CurrentStackDepth >= 0, "negative stack depth " + instruction);
+            Debug.Assert(CurrentStackDepth >= 0, $"negative stack depth {instruction}");
             CurrentStackDepth += instruction.ProducedStack;
             if (CurrentStackDepth > MaxStackDepth)
             {
@@ -618,7 +619,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             CurrentContinuationsDepth -= instruction.ConsumedContinuations;
-            Debug.Assert(CurrentContinuationsDepth >= 0, "negative continuations " + instruction);
+            Debug.Assert(CurrentContinuationsDepth >= 0, $"negative continuations {instruction}");
             CurrentContinuationsDepth += instruction.ProducedContinuations;
             if (CurrentContinuationsDepth > _maxContinuationDepth)
             {

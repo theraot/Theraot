@@ -407,7 +407,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitDefault(DefaultExpression node)
         {
-            Out(".Default(" + node.Type + ")");
+            Out($".Default({node.Type})");
             return node;
         }
 
@@ -431,7 +431,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitGoto(GotoExpression node)
         {
-            Out("." + node.Kind, Flow.Space);
+            Out($".{node.Kind}", Flow.Space);
             Out(GetLabelTargetName(node.Target), Flow.Space);
             Out("{", Flow.Space);
             Visit(node.Value);
@@ -567,7 +567,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitNew(NewExpression node)
         {
-            Out(".New " + node.Type);
+            Out($".New {node.Type}");
             VisitExpressions('(', node.Arguments.AsArrayInternal());
             return node;
         }
@@ -576,12 +576,12 @@ namespace System.Linq.Expressions
         {
             if (node.NodeType == ExpressionType.NewArrayBounds)
             {
-                Out(".NewArray " + node.Type.GetElementType());
+                Out($".NewArray {node.Type.GetElementType()}");
                 VisitExpressions('[', node.Expressions.AsArrayInternal());
             }
             else
             {
-                Out(".NewArray " + node.Type, Flow.Space);
+                Out($".NewArray {node.Type}", Flow.Space);
                 VisitExpressions('{', node.Expressions.AsArrayInternal());
             }
 
@@ -599,7 +599,7 @@ namespace System.Linq.Expressions
                 // No guarantee for not having name conflicts with user provided variable names.
                 //
                 var id = GetParamId(node);
-                Out("var" + id);
+                Out($"var{id}");
             }
             else
             {
@@ -690,11 +690,11 @@ namespace System.Linq.Expressions
             switch (node.NodeType)
             {
                 case ExpressionType.Convert:
-                    Out("(" + node.Type + ")");
+                    Out($"({node.Type})");
                     break;
 
                 case ExpressionType.ConvertChecked:
-                    Out("#(" + node.Type + ")");
+                    Out($"#({node.Type})");
                     break;
 
                 case ExpressionType.TypeAs:
@@ -801,7 +801,7 @@ namespace System.Linq.Expressions
 
         protected override CatchBlock VisitCatchBlock(CatchBlock node)
         {
-            Out(Flow.NewLine, "} .Catch (" + node.Test);
+            Out(Flow.NewLine, $"}} .Catch ({node.Test}");
             if (node.Variable != null)
             {
                 Out(Flow.Space, "");
@@ -1222,7 +1222,7 @@ namespace System.Linq.Expressions
             if (name == null || string.IsNullOrEmpty(name))
             {
                 // Create the label target name as #Label1, #Label2, etc.
-                return "#Label" + GetLabelTargetId(target);
+                return $"#Label{GetLabelTargetId(target)}";
             }
 
             return GetDisplayName(name);
@@ -1239,7 +1239,7 @@ namespace System.Linq.Expressions
             var name = lambda.Name;
             if (string.IsNullOrEmpty(name))
             {
-                return "#Lambda" + GetLambdaId(lambda);
+                return $"#Lambda{GetLambdaId(lambda)}";
             }
 
             return GetDisplayName(name!);
@@ -1301,12 +1301,12 @@ namespace System.Linq.Expressions
             if (instance != null)
             {
                 ParenthesizedVisit(node, instance);
-                Out("." + member.Name);
+                Out($".{member.Name}");
             }
             else
             {
                 // For static members, include the type name
-                Out(member.DeclaringType + "." + member.Name);
+                Out($"{member.DeclaringType}.{member.Name}");
             }
         }
 

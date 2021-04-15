@@ -31,7 +31,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "DefaultValue " + _type;
+            return $"DefaultValue {_type}";
         }
     }
 }

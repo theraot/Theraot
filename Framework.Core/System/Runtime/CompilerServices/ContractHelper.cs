@@ -74,7 +74,7 @@ namespace System.Runtime.CompilerServices
             // Now add in the user message, if present.
             if (!string.IsNullOrEmpty(userMessage))
             {
-                return failureMessage + "  " + userMessage;
+                return $"{failureMessage}  {userMessage}";
             }
 
             return failureMessage;

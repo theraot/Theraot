@@ -72,7 +72,8 @@ namespace System.Linq.Expressions
         public static NewExpression New(ConstructorInfo constructor, IEnumerable<Expression>? arguments)
         {
             ContractUtils.RequiresNotNull(constructor, nameof(constructor));
-            ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
+            ContractUtils.RequiresNotNull(constructor.DeclaringType,
+                $"{nameof(constructor)}.{nameof(constructor.DeclaringType)}");
             TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
             var argList = arguments.AsArrayInternal();
@@ -106,7 +107,8 @@ namespace System.Linq.Expressions
         public static NewExpression New(ConstructorInfo constructor, IEnumerable<Expression> arguments, IEnumerable<MemberInfo> members)
         {
             ContractUtils.RequiresNotNull(constructor, nameof(constructor));
-            ContractUtils.RequiresNotNull(constructor.DeclaringType, nameof(constructor) + "." + nameof(constructor.DeclaringType));
+            ContractUtils.RequiresNotNull(constructor.DeclaringType,
+                $"{nameof(constructor)}.{nameof(constructor.DeclaringType)}");
             TypeUtils.ValidateType(constructor.DeclaringType, nameof(constructor), allowByRef: true, allowPointer: true);
             ValidateConstructor(constructor, nameof(constructor));
             return NewExtracted(constructor, arguments, members);
@@ -304,12 +306,16 @@ namespace System.Linq.Expressions
                 {
                     members = ReadOnlyCollectionEx.Create(newMembers);
                 }
+
+                return;
             }
-            else if (arguments?.Length > 0)
+
+            if (arguments?.Length > 0)
             {
                 throw new ArgumentException("Incorrect number of arguments for constructor", string.Empty);
             }
-            else if (members?.Count > 0)
+
+            if (members?.Count > 0)
             {
                 throw new ArgumentException("Incorrect number of members for constructor", string.Empty);
             }

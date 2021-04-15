@@ -74,7 +74,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                         {
                             var own = Interlocked.Increment(ref index);
 
-                            while (!map.TryAdd("monkey" + own, own))
+                            while (!map.TryAdd($"monkey{own}", own))
                             {
                                 // Empty
                             }
@@ -366,7 +366,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                         {
                             for (var i = 0; i % 10 != 0 || Volatile.Read(ref x[0]) == 0; i++)
                             {
-                                map["a" + i] = i;
+                                map[$"a{i}"] = i;
                             }
                         }
                     );
@@ -378,7 +378,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                     {
                         for (var i = 0; i % 10 != 0 || Volatile.Read(ref x[0]) == 0; i++)
                         {
-                            map["b" + i] = i;
+                            map[$"b{i}"] = i;
                             if (i == 0)
                             {
                                 evs[0].Set();

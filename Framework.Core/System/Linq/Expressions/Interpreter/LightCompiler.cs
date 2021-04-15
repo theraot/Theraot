@@ -2917,7 +2917,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (_parent == null)
             {
-                throw new InvalidOperationException("unbound variable: " + expr);
+                throw new InvalidOperationException($"unbound variable: {expr}");
             }
 
             _parent.EnsureAvailableForClosure(expr);

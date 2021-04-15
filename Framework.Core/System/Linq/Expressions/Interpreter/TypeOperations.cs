@@ -625,7 +625,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "TypeAs " + _type;
+            return $"TypeAs {_type}";
         }
     }
 
@@ -672,7 +672,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "TypeIs " + _type;
+            return $"TypeIs {_type}";
         }
     }
 }

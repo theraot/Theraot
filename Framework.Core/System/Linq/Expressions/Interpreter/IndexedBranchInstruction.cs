@@ -27,13 +27,13 @@ namespace System.Linq.Expressions.Interpreter
         {
             Debug.Assert(LabelIndex != UnknownInstrIndex);
             var targetIndex = labelIndexer(LabelIndex);
-            return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex : "");
+            return ToString() + (targetIndex != BranchLabel.UnknownIndex ? $" -> {targetIndex}" : "");
         }
 
         public override string ToString()
         {
             Debug.Assert(LabelIndex != UnknownInstrIndex);
-            return InstructionName + "[" + LabelIndex + "]";
+            return $"{InstructionName}[{LabelIndex}]";
         }
     }
 }

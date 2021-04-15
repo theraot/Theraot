@@ -93,8 +93,8 @@ namespace Tests.Helpers
 
             Assert.AreEqual(action, args.Action, "NCCVAL_2::" + message);
 
-            AssertEquivalentLists(newItems, args.NewItems, "NCCVAL_3::" + message);
-            AssertEquivalentLists(oldItems, args.OldItems, "NCCVAL_4::" + message);
+            AssertEquivalentLists(newItems, args.NewItems, $"NCCVAL_3::{message}");
+            AssertEquivalentLists(oldItems, args.OldItems, $"NCCVAL_4::{message}");
 
             Assert.AreEqual(newIndex, args.NewStartingIndex, "NCCVAL_5::" + message);
             Assert.AreEqual(oldIndex, args.OldStartingIndex, "NCCVAL_6::" + message);

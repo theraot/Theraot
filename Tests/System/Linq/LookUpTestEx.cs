@@ -19,7 +19,7 @@ namespace MonoTests.System.Linq
         {
             var src = new IterateAndCount(10);
             var a = src.ToLookup(i => i > 5, null);
-            var b = src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var b = src.ToLookup(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             Assert.AreEqual(src.Total, 20);
             a.Consume();
             b.Consume();
@@ -73,7 +73,7 @@ namespace MonoTests.System.Linq
         public void ToLookupOverloadB()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var r = src.ToLookup(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             var index = 0;
@@ -84,7 +84,7 @@ namespace MonoTests.System.Linq
                 var count = 0;
                 foreach (var item in g)
                 {
-                    Assert.AreEqual(item, "str: " + (index + 1).ToString(CultureInfo.InvariantCulture));
+                    Assert.AreEqual(item, $"str: {(index + 1).ToString(CultureInfo.InvariantCulture)}");
                     index++;
                     count++;
                 }
@@ -100,7 +100,7 @@ namespace MonoTests.System.Linq
         public void ToLookupOverloadBEx()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var r = src.ToLookup(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             var first = true;

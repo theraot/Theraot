@@ -370,7 +370,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return _hasFinally ? "EnterTryFinally[" + LabelIndex + "]" : "EnterTryCatch";
+            return _hasFinally ? $"EnterTryFinally[{LabelIndex}]" : "EnterTryCatch";
         }
 
         internal static EnterTryCatchFinallyInstruction CreateTryCatch()
@@ -693,12 +693,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToDebugString(int instructionIndex, object? cookie, Func<int, int> labelIndexer, IList<object>? objects)
         {
-            return ToString() + (Offset != Unknown ? " -> " + (instructionIndex + Offset) : "");
+            return ToString() + (Offset != Unknown ? $" -> {(instructionIndex + Offset)}" : "");
         }
 
         public override string ToString()
         {
-            return InstructionName + (Offset == Unknown ? "(?)" : "(" + Offset + ")");
+            return InstructionName + (Offset == Unknown ? "(?)" : $"({Offset})");
         }
     }
 

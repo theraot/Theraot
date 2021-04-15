@@ -158,7 +158,8 @@ namespace System.Linq.Expressions
                     {
                         return new PrimitiveParameterExpression<Exception>(name);
                     }
-                    else if (type == typeof(object[]))
+
+                    if (type == typeof(object[]))
                     {
                         return new PrimitiveParameterExpression<object[]>(name);
                     }

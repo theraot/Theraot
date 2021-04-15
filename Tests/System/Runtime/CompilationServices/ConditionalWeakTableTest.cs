@@ -534,7 +534,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             public override string ToString()
             {
-                return "key-" + Foo.ToString();
+                return $"key-{Foo}";
             }
         }
 
@@ -544,7 +544,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             public override string ToString()
             {
-                return "value-" + Foo.ToString();
+                return $"value-{Foo}";
             }
         }
     }

@@ -105,7 +105,7 @@ namespace MonoTests.System.Linq.Expressions
                 }
             }
 
-            throw new Exception("No method found: " + n);
+            throw new Exception($"No method found: {n}");
         }
     }
 }

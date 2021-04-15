@@ -695,7 +695,7 @@ namespace MonoTests.System.Linq
                         return Age.ToString();
                     }
 
-                    return _name + " (" + Age.ToString() + ")";
+                    return $"{_name} ({Age})";
                 }
             }
 
@@ -748,7 +748,7 @@ namespace MonoTests.System.Linq
 
             public override string ToString()
             {
-                return Id.ToString() + " " + Name;
+                return $"{Id} {Name}";
             }
         }
 

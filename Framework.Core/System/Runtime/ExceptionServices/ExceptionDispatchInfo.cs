@@ -22,7 +22,8 @@ namespace System.Runtime.ExceptionServices
             _stackTrace = SourceException.StackTrace;
             if (_stackTrace != null)
             {
-                _stackTrace += Environment.NewLine + "---End of stack trace from previous location where exception was thrown ---" + Environment.NewLine;
+                _stackTrace +=
+                    $"{Environment.NewLine}---End of stack trace from previous location where exception was thrown ---{Environment.NewLine}";
             }
             else
             {

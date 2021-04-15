@@ -21,7 +21,7 @@ namespace MonoTests.System.Linq
         {
             var src = new IterateAndCount(10);
             var a = src.GroupBy(i => i > 5, null);
-            var b = src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var b = src.GroupBy(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var c = src.GroupBy(i => i > 5, (_, group) => StringEx.Concat(group.ToArray()), null);
             var d = src.GroupBy(i => i > 5, j => j + 1, (_, group) => StringEx.Concat(group.ToArray()), null);
             Assert.AreEqual(src.Total, 0);
@@ -103,7 +103,7 @@ namespace MonoTests.System.Linq
         public void GroupByOverloadB()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var r = src.GroupBy(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             var index = 0;
@@ -114,7 +114,7 @@ namespace MonoTests.System.Linq
                 var count = 0;
                 foreach (var item in g)
                 {
-                    Assert.AreEqual(item, "str: " + (index + 1).ToString(CultureInfo.InvariantCulture));
+                    Assert.AreEqual(item, $"str: {(index + 1).ToString(CultureInfo.InvariantCulture)}");
                     index++;
                     count++;
                 }
@@ -130,7 +130,7 @@ namespace MonoTests.System.Linq
         public void GroupByOverloadBEx()
         {
             var src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var r = src.GroupBy(i => i > 5, j => $"str: {j.ToString(CultureInfo.InvariantCulture)}", null);
             var rArray = r.ToArray();
             Assert.AreEqual(rArray.Length, 2);
             var first = true;

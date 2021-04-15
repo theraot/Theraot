@@ -19,7 +19,7 @@ namespace Theraot.Reflection
                 source,
                 new Func<TTarget>
                 (
-                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name)
+                    () => throw new InvalidOperationException($"Cannot convert to {typeof(TTarget).Name}")
                 )
             );
         }
@@ -48,7 +48,7 @@ namespace Theraot.Reflection
                 source,
                 new Func<TTarget>
                 (
-                    () => throw new InvalidOperationException("Cannot convert to " + typeof(TTarget).Name)
+                    () => throw new InvalidOperationException($"Cannot convert to {typeof(TTarget).Name}")
                 )
             );
         }

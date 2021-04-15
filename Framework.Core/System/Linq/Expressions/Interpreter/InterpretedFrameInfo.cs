@@ -22,7 +22,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var methodName = _methodName ?? string.Empty;
             return _debugInfo != null
-                ? methodName + ": " + _debugInfo
+                ? $"{methodName}: {_debugInfo}"
                 : methodName;
         }
     }

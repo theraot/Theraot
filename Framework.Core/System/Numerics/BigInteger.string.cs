@@ -31,7 +31,7 @@ namespace System.Numerics
                     {
                         if (fmt == 'g' || fmt == 'G' || fmt == 'r' || fmt == 'R')
                         {
-                            format = digits > 0 ? "D" + digits.ToString(CultureInfo.InvariantCulture) : "D";
+                            format = digits > 0 ? $"D{digits.ToString(CultureInfo.InvariantCulture)}" : "D";
                         }
 
                         return value.InternalSign.ToString(format, info);
@@ -862,7 +862,7 @@ namespace System.Numerics
 
                             case 4:
                                 result.Append('(');
-                                close = info.CurrencySymbol + ")";
+                                close = $"{info.CurrencySymbol})";
                                 break;
 
                             case 5:
@@ -880,7 +880,7 @@ namespace System.Numerics
 
                             case 8:
                                 result.Append(info.NegativeSign);
-                                close = " " + info.CurrencySymbol;
+                                close = $" {info.CurrencySymbol}";
                                 break;
 
                             case 9:
@@ -890,7 +890,7 @@ namespace System.Numerics
                                 break;
 
                             case 10:
-                                close = " " + info.CurrencySymbol + info.NegativeSign;
+                                close = $" {info.CurrencySymbol}{info.NegativeSign}";
                                 break;
 
                             case 11:
@@ -920,7 +920,7 @@ namespace System.Numerics
 
                             case 15:
                                 result.Append('(');
-                                close = " " + info.CurrencySymbol + ")";
+                                close = $" {info.CurrencySymbol})";
                                 break;
 
                             default:
@@ -945,7 +945,7 @@ namespace System.Numerics
                                 break;
 
                             case 3:
-                                close = " " + info.CurrencySymbol;
+                                close = $" {info.CurrencySymbol}";
                                 break;
 
                             default:
@@ -962,7 +962,7 @@ namespace System.Numerics
                         {
                             case 0:
                                 result.Append(info.NegativeSign);
-                                close = " " + info.PercentSymbol;
+                                close = $" {info.PercentSymbol}";
                                 break;
 
                             case 1:
@@ -1000,7 +1000,7 @@ namespace System.Numerics
                                 break;
 
                             case 8:
-                                close = " " + info.PercentSymbol + info.NegativeSign;
+                                close = $" {info.PercentSymbol}{info.NegativeSign}";
                                 break;
 
                             case 9:
@@ -1016,7 +1016,7 @@ namespace System.Numerics
                                 break;
 
                             case 11:
-                                close = info.NegativeSign + " " + info.PercentSymbol;
+                                close = $"{info.NegativeSign} {info.PercentSymbol}";
                                 break;
 
                             default:
@@ -1028,7 +1028,7 @@ namespace System.Numerics
                         switch (info.CurrencyPositivePattern)
                         {
                             case 0:
-                                close = " " + info.PercentSymbol;
+                                close = $" {info.PercentSymbol}";
                                 break;
 
                             case 1:

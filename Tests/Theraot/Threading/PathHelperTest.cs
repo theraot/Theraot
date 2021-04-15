@@ -52,17 +52,17 @@ namespace Tests.Theraot.Threading
             }
 
             Assert.AreEqual(StringEx.Join(sep, "one", "two", "three"), PathHelper.Combine("one", "two", "three"), "#A2-1");
-            Assert.AreEqual(StringEx.Join(sep, sep + "one", "two", "three"), PathHelper.Combine(sep + "one", "two", "three"),
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one", "two", "three"), PathHelper.Combine($"{sep}one", "two", "three"),
                 "#A2-2");
-            Assert.AreEqual(StringEx.Join(sep, sep + "one", "two", "three"),
-                PathHelper.Combine(sep + "one" + sep, "two", "three"), "#A2-3");
-            Assert.AreEqual(StringEx.Join(sep, sep + "two", "three"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", "three"), "#A2-4");
-            Assert.AreEqual(StringEx.Join(sep, sep + "three"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", sep + "three"), "#A2-5");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one", "two", "three"),
+                PathHelper.Combine($"{sep}one{sep}", "two", "three"), "#A2-3");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}two", "three"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", "three"), "#A2-4");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}three"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", $"{sep}three"), "#A2-5");
 
-            Assert.AreEqual(StringEx.Join(sep, sep + "one" + sep, "two", "three"),
-                PathHelper.Combine(sep + "one" + sep + sep, "two", "three"), "#A3");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one{sep}", "two", "three"),
+                PathHelper.Combine($"{sep}one{sep}{sep}", "two", "three"), "#A3");
 
             Assert.AreEqual("", PathHelper.Combine("", "", ""), "#A4");
         }
@@ -114,19 +114,19 @@ namespace Tests.Theraot.Threading
 
             Assert.AreEqual(StringEx.Join(sep, "one", "two", "three", "four"),
                 PathHelper.Combine("one", "two", "three", "four"), "#A2-1");
-            Assert.AreEqual(StringEx.Join(sep, sep + "one", "two", "three", "four"),
-                PathHelper.Combine(sep + "one", "two", "three", "four"), "#A2-2");
-            Assert.AreEqual(StringEx.Join(sep, sep + "one", "two", "three", "four"),
-                PathHelper.Combine(sep + "one" + sep, "two", "three", "four"), "#A2-3");
-            Assert.AreEqual(StringEx.Join(sep, sep + "two", "three", "four"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", "three", "four"), "#A2-4");
-            Assert.AreEqual(StringEx.Join(sep, sep + "three", "four"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", sep + "three", "four"), "#A2-5");
-            Assert.AreEqual(StringEx.Join(sep, sep + "four"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", sep + "three", sep + "four"), "#A2-6");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one", "two", "three", "four"),
+                PathHelper.Combine($"{sep}one", "two", "three", "four"), "#A2-2");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one", "two", "three", "four"),
+                PathHelper.Combine($"{sep}one{sep}", "two", "three", "four"), "#A2-3");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}two", "three", "four"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", "three", "four"), "#A2-4");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}three", "four"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", $"{sep}three", "four"), "#A2-5");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}four"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", $"{sep}three", $"{sep}four"), "#A2-6");
 
-            Assert.AreEqual(StringEx.Join(sep, sep + "one" + sep, "two", "three", "four"),
-                PathHelper.Combine(sep + "one" + sep + sep, "two", "three", "four"), "#A3");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one{sep}", "two", "three", "four"),
+                PathHelper.Combine($"{sep}one{sep}{sep}", "two", "three", "four"), "#A3");
 
             Assert.AreEqual("", PathHelper.Combine("", "", "", ""), "#A4");
         }
@@ -212,21 +212,21 @@ namespace Tests.Theraot.Threading
 
             Assert.AreEqual(StringEx.Join(sep, "one", "two", "three", "four", "five"),
                 PathHelper.Combine("one", "two", "three", "four", "five"), "#A2-1");
-            Assert.AreEqual(StringEx.Join(sep, sep + "one", "two", "three", "four", "five"),
-                PathHelper.Combine(sep + "one", "two", "three", "four", "five"), "#A2-2");
-            Assert.AreEqual(StringEx.Join(sep, sep + "one", "two", "three", "four", "five"),
-                PathHelper.Combine(sep + "one" + sep, "two", "three", "four", "five"), "#A2-3");
-            Assert.AreEqual(StringEx.Join(sep, sep + "two", "three", "four", "five"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", "three", "four", "five"), "#A2-4");
-            Assert.AreEqual(StringEx.Join(sep, sep + "three", "four", "five"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", sep + "three", "four", "five"), "#A2-5");
-            Assert.AreEqual(StringEx.Join(sep, sep + "four", "five"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", sep + "three", sep + "four", "five"), "#A2-6");
-            Assert.AreEqual(StringEx.Join(sep, sep + "five"),
-                PathHelper.Combine(sep + "one" + sep, sep + "two", sep + "three", sep + "four", sep + "five"), "#A2-6");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one", "two", "three", "four", "five"),
+                PathHelper.Combine($"{sep}one", "two", "three", "four", "five"), "#A2-2");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one", "two", "three", "four", "five"),
+                PathHelper.Combine($"{sep}one{sep}", "two", "three", "four", "five"), "#A2-3");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}two", "three", "four", "five"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", "three", "four", "five"), "#A2-4");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}three", "four", "five"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", $"{sep}three", "four", "five"), "#A2-5");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}four", "five"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", $"{sep}three", $"{sep}four", "five"), "#A2-6");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}five"),
+                PathHelper.Combine($"{sep}one{sep}", $"{sep}two", $"{sep}three", $"{sep}four", $"{sep}five"), "#A2-6");
 
-            Assert.AreEqual(StringEx.Join(sep, sep + "one" + sep, "two", "three", "four", "five"),
-                PathHelper.Combine(sep + "one" + sep + sep, "two", "three", "four", "five"), "#A3");
+            Assert.AreEqual(StringEx.Join(sep, $"{sep}one{sep}", "two", "three", "four", "five"),
+                PathHelper.Combine($"{sep}one{sep}{sep}", "two", "three", "four", "five"), "#A3");
 
             Assert.AreEqual("", PathHelper.Combine("", "", "", "", ""), "#A4");
         }

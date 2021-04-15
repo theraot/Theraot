@@ -52,7 +52,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return InstructionName + "(" + From + "->" + To + ")";
+            return $"{InstructionName}({From}->{To})";
         }
 
         protected abstract object Convert(object obj);

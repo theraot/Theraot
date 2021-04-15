@@ -95,7 +95,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "New " + Constructor.DeclaringType.Name + "(" + Constructor + ")";
+            return $"New {Constructor.DeclaringType.Name}({Constructor})";
         }
 
         protected object?[] GetArgs(InterpretedFrame frame, int first)

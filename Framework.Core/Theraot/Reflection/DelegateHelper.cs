@@ -72,7 +72,7 @@ namespace Theraot.Reflection
             var returnType = types[types.Length - 1];
             var parameters = types.RemoveLast();
 
-            var builder = AssemblyGen.DefineDelegateType("Delegate" + types.Length);
+            var builder = AssemblyGen.DefineDelegateType($"Delegate{types.Length}");
             builder.DefineConstructor(_ctorAttributes, CallingConventions.Standard, _delegateCtorSignature).SetImplementationFlags(_implAttributes);
             builder.DefineMethod("Invoke", _invokeAttributes, returnType, parameters).SetImplementationFlags(_implAttributes);
             return builder.CreateType();

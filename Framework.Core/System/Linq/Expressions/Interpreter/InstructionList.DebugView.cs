@@ -100,14 +100,12 @@ namespace System.Linq.Expressions.Interpreter
 
                 internal string GetDisplayType()
                 {
-                    return _instruction.ContinuationsBalance + "/" + _instruction.StackBalance;
+                    return $"{_instruction.ContinuationsBalance}/{_instruction.StackBalance}";
                 }
 
                 internal string GetName()
                 {
-                    return _index +
-                           (_continuationsDepth == 0 ? "" : " C(" + _continuationsDepth + ")") +
-                           (_stackDepth == 0 ? "" : " S(" + _stackDepth + ")");
+                    return $"{_index}{(_continuationsDepth == 0 ? "" : $" C({_continuationsDepth})")}{(_stackDepth == 0 ? "" : $" S({_stackDepth})")}";
                 }
 
                 internal string GetValue()

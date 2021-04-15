@@ -385,7 +385,7 @@ namespace System.Linq.Expressions
             for (var i = 0; i < n; i++)
             {
                 var arg = index.GetArgument(i);
-                var tempArg = Variable(arg.Type, "tempArg" + i);
+                var tempArg = Variable(arg.Type, $"tempArg{i}");
                 vars.UncheckedAdd(tempArg);
                 tempArgs.UncheckedAdd(tempArg);
                 builder.UncheckedAdd(Assign(tempArg, arg));

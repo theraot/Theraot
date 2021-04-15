@@ -185,7 +185,7 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 // Not on the free-list, create a brand new one.
-                temp = ParameterExpression.Make(type, "$temp$" + _temp++, isByRef: false);
+                temp = ParameterExpression.Make(type, $"$temp${_temp++}", isByRef: false);
                 Temps.Add(temp);
 
                 return UseTemp(temp);

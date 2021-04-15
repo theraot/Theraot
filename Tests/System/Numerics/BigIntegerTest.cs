@@ -856,7 +856,7 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(300000, (int)BigInteger.Parse("3E5", NumberStyles.AllowExponent), "#20");
             var decimalSeparator = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
             Assert.AreEqual(250,
-                (int)BigInteger.Parse("2" + decimalSeparator + "5E2", NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint),
+                (int)BigInteger.Parse($"2{decimalSeparator}5E2", NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint),
                 "#21"); //2.5E2 = 250
             Assert.AreEqual(25, (int)BigInteger.Parse("2500E-2", NumberStyles.AllowExponent), "#22");
 
@@ -878,7 +878,7 @@ namespace MonoTests.System.Numerics
 
             try
             {
-                int.Parse("2" + decimalSeparator + "09E1", NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent);
+                int.Parse($"2{decimalSeparator}09E1", NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent);
                 Assert.Fail("#26");
             }
             catch (OverflowException ex)
@@ -1567,7 +1567,7 @@ namespace MonoTests.System.Numerics
             Assert.IsTrue(BigInteger.TryParse("10", NumberStyles.None, null, out x), "#30");
             Assert.AreEqual(10, (int)x, "#31");
             Assert.IsTrue(
-                BigInteger.TryParse(_nfi.CurrencySymbol + "10", NumberStyles.AllowCurrencySymbol, _nfi, out x), "#32");
+                BigInteger.TryParse($"{_nfi.CurrencySymbol}10", NumberStyles.AllowCurrencySymbol, _nfi, out x), "#32");
             Assert.AreEqual(10, (int)x, "#33");
             Assert.IsFalse(BigInteger.TryParse("%10", NumberStyles.AllowCurrencySymbol, _nfi, out _), "#34");
         }

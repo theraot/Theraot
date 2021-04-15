@@ -222,7 +222,7 @@ namespace System.Threading.Tasks.Tests
                     };
 
                 default:
-                    throw new ArgumentOutOfRangeException("Test error: Invalid option of " + _parameters.ParallelOption);
+                    throw new ArgumentOutOfRangeException($"Test error: Invalid option of {_parameters.ParallelOption}");
             }
         }
 

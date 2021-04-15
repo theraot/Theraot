@@ -67,7 +67,7 @@ namespace MonoTests.System.Linq
             catch (Exception exception)
             {
                 Theraot.No.Op(exception);
-                Assert.Fail("Expected: " + typeof(T).Name);
+                Assert.Fail($"Expected: {typeof(T).Name}");
             }
         }
 
@@ -1599,10 +1599,10 @@ namespace MonoTests.System.Linq
             string[] expected2 = { "2x0", "1x1", "5x2", "3x3", "4x4" };
 
             // Select<TSource,TResult> (Func<TSource, TResult>)
-            AssertAreSame(expected1, data.Select(x => x + "x"));
+            AssertAreSame(expected1, data.Select(x => $"{x}x"));
 
             // Select<TSource,TResult> (Func<TSource, int, TResult>)
-            AssertAreSame(expected2, data.Select((x, y) => x + "x" + y.ToString()));
+            AssertAreSame(expected2, data.Select((x, y) => $"{x}x{y}"));
         }
 
         [Test]
@@ -2068,19 +2068,19 @@ namespace MonoTests.System.Linq
             };
 
             // ToDictionary<TSource,TKey> (Func<TSource, TKey>)
-            AssertAreSame(expected, data.ToDictionary(x => "k" + x));
+            AssertAreSame(expected, data.ToDictionary(x => $"k{x}"));
             AssertException<ArgumentException>(() => data.ToDictionary(_ => "key"));
 
             // ToDictionary<TSource,TKey> (Func<TSource, TKey>, IEqualityComparer<TKey>)
-            AssertAreSame(expected, data.ToDictionary(x => "k" + x, EqualityComparer<string>.Default));
+            AssertAreSame(expected, data.ToDictionary(x => $"k{x}", EqualityComparer<string>.Default));
             AssertException<ArgumentException>(() => data.ToDictionary(_ => "key", EqualityComparer<string>.Default));
 
             // ToDictionary<TSource,TKey,TElement> (Func<TSource, TKey>, Func<TSource, TElement>)
-            AssertAreSame(expected, data.ToDictionary(x => "k" + x, x => x));
+            AssertAreSame(expected, data.ToDictionary(x => $"k{x}", x => x));
             AssertException<ArgumentException>(() => data.ToDictionary(_ => "key", x => x));
 
             // ToDictionary<TSource,TKey,TElement> (Func<TSource, TKey>, Func<TSource, TElement>, IEqualityComparer<TKey>)
-            AssertAreSame(expected, data.ToDictionary(x => "k" + x, x => x, EqualityComparer<string>.Default));
+            AssertAreSame(expected, data.ToDictionary(x => $"k{x}", x => x, EqualityComparer<string>.Default));
             AssertException<ArgumentException>(() => data.ToDictionary(_ => "key", x => x, EqualityComparer<string>.Default));
         }
 
@@ -2273,7 +2273,7 @@ namespace MonoTests.System.Linq
 
             if (ea.MoveNext())
             {
-                Assert.Fail("Unexpected element: " + ee.Current);
+                Assert.Fail($"Unexpected element: {ee.Current}");
             }
         }
 
@@ -2298,7 +2298,7 @@ namespace MonoTests.System.Linq
 
             if (ea.MoveNext())
             {
-                Assert.Fail("Unexpected element: " + ee.Current.Key);
+                Assert.Fail($"Unexpected element: {ee.Current.Key}");
             }
         }
 
@@ -2323,7 +2323,7 @@ namespace MonoTests.System.Linq
 
             if (ea.MoveNext())
             {
-                Assert.Fail("Unexpected element: " + ee.Current.Key);
+                Assert.Fail($"Unexpected element: {ee.Current.Key}");
             }
         }
 
@@ -2349,7 +2349,7 @@ namespace MonoTests.System.Linq
 
             if (ea.MoveNext())
             {
-                Assert.Fail("Unexpected element: " + ee.Current.Key + ", " + ee.Current.Value);
+                Assert.Fail($"Unexpected element: {ee.Current.Key}, {ee.Current.Value}");
             }
         }
 
@@ -2374,7 +2374,7 @@ namespace MonoTests.System.Linq
 
             if (ea.MoveNext())
             {
-                Assert.Fail("Unexpected element: " + ea.Current);
+                Assert.Fail($"Unexpected element: {ea.Current}");
             }
         }
 

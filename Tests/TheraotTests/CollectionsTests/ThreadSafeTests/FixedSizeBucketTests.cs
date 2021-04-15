@@ -38,7 +38,7 @@ namespace Tests.TheraotTests.CollectionsTests.ThreadSafeTests
             }
             catch (SerializationException e)
             {
-                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
+                Console.WriteLine($"Failed to serialize. Reason: {e.Message}");
                 throw;
             }
 
@@ -50,7 +50,7 @@ namespace Tests.TheraotTests.CollectionsTests.ThreadSafeTests
             }
             catch (SerializationException e)
             {
-                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
+                Console.WriteLine($"Failed to deserialize. Reason: {e.Message}");
                 throw;
             }
 
