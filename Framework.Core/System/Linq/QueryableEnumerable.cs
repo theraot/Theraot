@@ -35,16 +35,6 @@ using System.Linq.Expressions;
 
 namespace System.Linq
 {
-    internal interface IQueryableEnumerable : IQueryable
-    {
-        IEnumerable? GetEnumerable();
-    }
-
-    internal interface IQueryableEnumerable<TElement> : IQueryableEnumerable, IOrderedQueryable<TElement>
-    {
-        // Empty
-    }
-
     internal class QueryableEnumerable<TElement> : IQueryableEnumerable<TElement>, IQueryProvider
     {
         private readonly IEnumerable<TElement>? _enumerable;
