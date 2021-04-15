@@ -77,7 +77,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return $"LoadObject({(_value ?? "null")})";
+            return $"LoadObject({_value ?? "null"})";
         }
     }
 
