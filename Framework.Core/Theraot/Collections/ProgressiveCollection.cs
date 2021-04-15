@@ -11,13 +11,6 @@ using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections
 {
-    internal interface IProgressive<T>
-    {
-        ICollection<T> Cache { get; }
-
-        IEnumerable<T> Progress();
-    }
-
     [DebuggerNonUserCode]
     public sealed class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>, IHasComparer<T>, IProgressive<T>, IClosable
     {
