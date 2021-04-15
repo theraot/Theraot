@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable MA0077 // A class that provides Equals(T) should implement IEquatable<T>
+
 // CancellationToken.cs
 //
 // Authors:
