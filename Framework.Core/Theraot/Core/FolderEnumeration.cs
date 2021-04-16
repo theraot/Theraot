@@ -62,27 +62,18 @@ namespace Theraot.Core
 
         public static IEnumerable<string> GetFolders(string folder)
         {
-            // TODO handle exceptions
-            try
-            {
 #if LESSTHAN_NET40
-                var directories = Directory.GetDirectories(folder);
+            var directories = Directory.GetDirectories(folder);
 #else
-                var directories = Directory.EnumerateDirectories(folder);
+            var directories = Directory.EnumerateDirectories(folder);
 #endif
-                return
-                    directories.Where
-                    (
-                        subFolder =>
-                            (File.GetAttributes(subFolder) & FileAttributes.ReparsePoint)
-                            != FileAttributes.ReparsePoint
-                    );
-            }
-            catch
-            {
-                // Catch them all
-                return ArrayEx.Empty<string>();
-            }
+            return
+                directories.Where
+                (
+                    subFolder =>
+                        (File.GetAttributes(subFolder) & FileAttributes.ReparsePoint)
+                        != FileAttributes.ReparsePoint
+                );
         }
 
         public static IEnumerable<string> GetFoldersRecursive(string folder)

@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET45
 
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
+
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -255,9 +257,9 @@ namespace System.Threading.Tasks
                 t.GetResult(Token);
                 completedTask = CompletedTask;
             }
-            catch (Exception exception1)
+            catch (Exception caughtException)
             {
-                var exception = exception1;
+                var exception = caughtException;
                 if (status != ValueTaskSourceStatus.Canceled)
                 {
                     var taskCompletionSource = new TaskCompletionSource<bool>();

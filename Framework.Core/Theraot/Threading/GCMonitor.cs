@@ -23,14 +23,9 @@ namespace Theraot.Threading
                     Initialize();
                     Internal.CollectedEventHandlers.Add(value);
                 }
-                catch
+                catch (NullReferenceException) when (value == null)
                 {
-                    if (value == null)
-                    {
-                        return;
-                    }
-
-                    throw;
+                    // Empty
                 }
             }
 
@@ -45,14 +40,9 @@ namespace Theraot.Threading
                 {
                     Internal.CollectedEventHandlers.Remove(value);
                 }
-                catch
+                catch (NullReferenceException) when (value == null)
                 {
-                    if (value == null)
-                    {
-                        return;
-                    }
-
-                    throw;
+                    // Empty
                 }
             }
         }
