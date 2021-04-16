@@ -356,7 +356,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 after = IL.DefineLabel();
                 IL.Emit(OpCodes.Ldloc, info.Value);
-                EmitConstant(bucket.Last().Constant);
+                EmitConstant(bucket[bucket.Count - 1].Constant);
                 IL.Emit(info.IsUnsigned ? OpCodes.Bgt_Un : OpCodes.Bgt, after.Value);
                 IL.Emit(OpCodes.Ldloc, info.Value);
                 EmitConstant(bucket[0].Constant);
@@ -432,7 +432,8 @@ namespace System.Linq.Expressions.Compiler
                     // explicit guard
                     var secondHalf = IL.DefineLabel();
                     IL.Emit(OpCodes.Ldloc, info.Value);
-                    EmitConstant(buckets[mid - 1].Last().Constant);
+                    var switchLabels = buckets[mid - 1];
+                    EmitConstant(switchLabels[switchLabels.Count - 1].Constant);
                     IL.Emit(info.IsUnsigned ? OpCodes.Bgt_Un : OpCodes.Bgt, secondHalf);
                     EmitSwitchBuckets(info, buckets, first, mid - 1);
                     IL.MarkLabel(secondHalf);
