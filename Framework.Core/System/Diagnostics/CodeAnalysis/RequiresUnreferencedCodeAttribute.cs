@@ -1,7 +1,5 @@
 ﻿#if TARGETS_NET || TARGETS_NETSTANDARD || LESSTHAN_NET50
 
-#pragma warning disable IDE0001 // Simplify Names
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -9,7 +7,7 @@ namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>
     /// Indicates that the specified method requires dynamic access to code that is not referenced
-    /// statically, for example through <see cref="System.Reflection"/>.
+    /// statically, for example through <see cref="Reflection"/>.
     /// </summary>
     /// <remarks>
     /// This allows tools to understand which methods are unsafe to call when removing unreferenced
