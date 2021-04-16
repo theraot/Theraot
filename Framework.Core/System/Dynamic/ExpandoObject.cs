@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CA1062 // Validate arguments of public methods
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 
 // Licensed to the .NET Foundation under one or more agreements.

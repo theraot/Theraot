@@ -1,10 +1,10 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable EPC11 // Suspicious equality implementation: no instance members are used.
 #pragma warning disable CA1036 // Override methods on comparable types
 #pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
-#pragma warning disable CC0074 // Make field readonly
 #pragma warning disable S2328 // GetHashCode should not reference mutable fields
 #pragma warning disable MA0102 // Make member readonly
 

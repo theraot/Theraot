@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
 #pragma warning disable CA1051 // Do not declare visible instance fields
-#pragma warning disable S3887 // Use an immutable collection or reduce the accessibility of the field
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.

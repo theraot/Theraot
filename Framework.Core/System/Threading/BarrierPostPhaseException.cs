@@ -1,8 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable CA1063 // Implement IDisposable Correctly
-#pragma warning disable CA1068 // CancellationToken parameters must come last
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.

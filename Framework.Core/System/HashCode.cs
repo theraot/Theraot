@@ -3,7 +3,6 @@
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
-#pragma warning disable CC0019 // Use 'switch'
 #pragma warning disable MA0008 // Add StructLayoutAttribute
 
 // Licensed to the .NET Foundation under one or more agreements.

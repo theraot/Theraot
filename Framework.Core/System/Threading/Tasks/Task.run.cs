@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
-
 namespace System.Threading.Tasks
 {
     public partial class Task

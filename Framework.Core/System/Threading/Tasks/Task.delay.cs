@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
-
 using System.Diagnostics.Contracts;
 using Theraot.Threading;
 

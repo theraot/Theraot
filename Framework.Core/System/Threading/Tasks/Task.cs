@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods
-#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 
 using System.Diagnostics;

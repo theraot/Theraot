@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET40
 
-#pragma warning disable CC0061 // Asynchronous method can be terminated with the 'Async' keyword.
 #pragma warning disable CA1068 // CancellationToken parameters must come last
 #pragma warning disable S1168 // Return empty collection
 

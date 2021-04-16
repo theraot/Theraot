@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CC0031 // Check for null before calling a delegate
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.

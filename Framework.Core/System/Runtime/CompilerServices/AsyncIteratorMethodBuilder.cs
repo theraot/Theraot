@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NET47 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
-#pragma warning disable CA1822 // Mark members as static
 #pragma warning disable MA0102 // Make member readonly
 
 // Licensed to the .NET Foundation under one or more agreements.

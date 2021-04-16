@@ -8,9 +8,7 @@ namespace System.Threading
         None = 0,
         Upgradable = 1,
         Read = 2,
-        Write = 4,
-        UpgradedRead = Upgradable | Read,
-        UpgradedWrite = Upgradable | Write
+        Write = 4
     }
 }
 

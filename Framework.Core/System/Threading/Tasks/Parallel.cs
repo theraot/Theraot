@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
-#pragma warning disable CC0031 // Check for null before calling a delegate
 // ReSharper disable ImplicitlyCapturedClosure
 
 // BASEDON: https://github.com/dotnet/corefx/blob/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/Parallel.cs

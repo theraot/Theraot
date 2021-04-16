@@ -1,9 +1,6 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA1051 // Do not declare visible instance fields
-#pragma warning disable CA1822 // Mark members as static
-#pragma warning disable CC0074 // Make field readonly
-#pragma warning disable CC0091 // Use static method
 
 using System.Linq.Expressions;
 

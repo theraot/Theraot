@@ -1,6 +1,5 @@
 ﻿#if LESSTHAN_NET35
 
-#pragma warning disable CA1005 // Avoid excessive parameters on generic types
 #pragma warning disable S125 // Sections of code should not be commented out
 
 // Licensed to the .NET Foundation under one or more agreements.

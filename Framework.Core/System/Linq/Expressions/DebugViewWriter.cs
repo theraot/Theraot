@@ -1380,9 +1380,8 @@ namespace System.Linq.Expressions
                     {
                         Out($"{separator}", Flow.NewLine);
                     }
-#pragma warning disable CC0031 // Check for null before calling a delegate
+
                     visit(e);
-#pragma warning restore CC0031 // Check for null before calling a delegate
                 }
 
                 Dedent();

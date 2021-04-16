@@ -1,6 +1,5 @@
 ﻿// Needed for NET40
 
-#pragma warning disable CA2000 // Dispose objects before losing scope
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 // ReSharper disable ImplicitlyCapturedClosure
 
