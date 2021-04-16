@@ -141,7 +141,7 @@ namespace System.Threading.Tasks
                             break;
 
                         case TaskStatus.RanToCompletion:
-                            Task inner = outer.Result;
+                            Task? inner = outer.Result;
                             if (inner == null)
                             {
                                 // The outer task completed successfully, but with a null inner task.
@@ -180,8 +180,8 @@ namespace System.Threading.Tasks
                     // Process the inner task's completion.  All we need to do is transfer its results
                     // to the completion source.
                     Debug.Assert(outer.Status == TaskStatus.RanToCompletion);
-                    Debug.Assert(outer.Result.IsCompleted);
-                    completionSource.TrySetFromTask(outer.Result);
+                    Debug.Assert(outer.Result?.IsCompleted == true);
+                    completionSource.TrySetFromTask(outer.Result!);
                 }
             };
 
