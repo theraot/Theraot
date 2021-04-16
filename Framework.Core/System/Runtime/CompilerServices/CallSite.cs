@@ -133,12 +133,6 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///     The update delegate. Called when the dynamic site experiences cache miss.
-        /// </summary>
-        /// <returns>The update delegate.</returns>
-        public T Update => throw new NotSupportedException();
-
-        /// <summary>
         ///     Creates an instance of the dynamic call site, initialized with the binder responsible for the
         ///     runtime binding of the dynamic operations at this call site.
         /// </summary>
