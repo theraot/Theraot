@@ -1,7 +1,8 @@
-#pragma warning disable CS0649 // Field is never assigned to.
+﻿#pragma warning disable CS0649 // Field is never assigned to.
 #pragma warning disable RCS1132 // Remove redundant overriding member
 
 // ReSharper disable AccessToDisposedClosure
+// ReSharper disable AccessToModifiedClosure
 // ReSharper disable CollectionNeverQueried.Local
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -804,6 +805,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
         [Test]
         public static void IDictionary_Remove_NullKeyInKeyValuePair_ThrowsArgumentNullException()
         {
+            // ReSharper disable once CollectionNeverUpdated.Local
             IDictionary<string, int> dictionary = new ConcurrentDictionary<string, int>();
             Assert.Throws<ArgumentNullException>(() => dictionary.Remove(new KeyValuePair<string, int>(null, 0)));
         }
@@ -1090,6 +1092,7 @@ namespace Tests.SystemTests.CollectionsTests.ConcurrentTests
                 return ReferenceEquals(this, other);
             }
 
+            // ReSharper disable once BaseObjectGetHashCodeCallInGetHashCode
             public override int GetHashCode() => base.GetHashCode();
         }
     }

@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET45
 
 #pragma warning disable CA1813 // Avoid unsealed attributes
+#pragma warning disable CC0023 // Unsealed Attribute
 
 namespace System.Runtime.CompilerServices
 {

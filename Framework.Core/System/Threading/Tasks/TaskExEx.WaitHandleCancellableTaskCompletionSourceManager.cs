@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CA1068 // CancellationToken parameters must come last
+#pragma warning disable MA0040 // Flow the cancellation token
 
 namespace System.Threading.Tasks
 {

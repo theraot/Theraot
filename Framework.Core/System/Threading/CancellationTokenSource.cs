@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
+#pragma warning disable MA0040 // Flow the cancellation token
+
 // CancellationTokenSource.cs
 //
 // Authors:

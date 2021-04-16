@@ -52,6 +52,7 @@ namespace Tests.SystemTests.IOTests
 
         private static async Task ReadAsyncReadsExtracted()
         {
+            // ReSharper disable once UseAwaitUsing
             using (var stream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 }))
             {
                 var buffer = new byte[10];
