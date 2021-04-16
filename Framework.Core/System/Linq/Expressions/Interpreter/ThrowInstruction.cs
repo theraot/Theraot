@@ -1,16 +1,15 @@
 ﻿#if LESSTHAN_NET35
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
-#pragma warning disable CC0021 // Use nameof
 
 namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class ThrowInstruction : Instruction
     {
-        internal static readonly ThrowInstruction Rethrow = new(true, true);
-        internal static readonly ThrowInstruction Throw = new(true, false);
-        internal static readonly ThrowInstruction VoidRethrow = new(false, true);
-        internal static readonly ThrowInstruction VoidThrow = new(false, false);
+        internal static readonly ThrowInstruction Rethrow = new(hasResult: true, isRethrow: true);
+        internal static readonly ThrowInstruction Throw = new(hasResult: true, isRethrow: false);
+        internal static readonly ThrowInstruction VoidRethrow = new(hasResult: false, isRethrow: true);
+        internal static readonly ThrowInstruction VoidThrow = new(hasResult: false, isRethrow: false);
         private readonly bool _hasResult, _rethrow;
 
         private ThrowInstruction(bool hasResult, bool isRethrow)
