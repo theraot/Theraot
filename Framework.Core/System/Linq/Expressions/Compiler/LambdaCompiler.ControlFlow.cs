@@ -67,7 +67,7 @@ namespace System.Linq.Expressions.Compiler
                     }
 
                     return labelBlock.Parent?.Kind != LabelScopeKind.Switch
-                        ? (labelBlock, LabelScopeKind.Block, new[] { node })
+                        ? (labelBlock, LabelScopeKind.Block, nodes: new[] { node })
                         : (labelBlock, LabelScopeKind.Block, nodes: null);
 
                 case ExpressionType.Switch:

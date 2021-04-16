@@ -101,7 +101,7 @@ namespace System.Linq.Expressions.Interpreter
                     // Labels defined immediately in the block are valid for
                     // the whole block.
                     return labelBlock.Parent?.Kind != LabelScopeKind.Switch
-                        ? (labelBlock, LabelScopeKind.Block, new[] { node })
+                        ? (labelBlock, LabelScopeKind.Block, nodes: new[] { node })
                         : (labelBlock, LabelScopeKind.Block, nodes: null);
 
                 case ExpressionType.Switch:
