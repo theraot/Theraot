@@ -17,11 +17,11 @@ namespace Theraot.Reflection
 {
     public static partial class TypeExtraExtensions
     {
-        private static readonly CacheDict<Type, bool> _binaryPortableCache = new(256);
+        private static readonly CacheDict<Type, bool> _binaryPortableCache = new(GetBinaryPortableResult, 256);
 
-        private static readonly CacheDict<Type, bool> _blittableCache = new(256);
+        private static readonly CacheDict<Type, bool> _blittableCache = new(GetBlittableResult, 256);
 
-        private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new(256);
+        private static readonly CacheDict<Type, bool> _valueTypeRecursiveCache = new(GetValueTypeRecursiveResult, 256);
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static bool CanBeNull(this Type type)
@@ -598,14 +598,7 @@ namespace Theraot.Reflection
                 return false;
             }
 
-            if (_binaryPortableCache.TryGetValue(type, out var result))
-            {
-                return result;
-            }
-
-            result = GetBinaryPortableResult(type);
-            _binaryPortableCache[type] = result;
-            return result;
+            return _binaryPortableCache[type];
         }
 
         private static bool IsBlittableExtracted(Type type)
@@ -616,14 +609,7 @@ namespace Theraot.Reflection
                 return false;
             }
 
-            if (_blittableCache.TryGetValue(type, out var result))
-            {
-                return result;
-            }
-
-            result = GetBlittableResult(type);
-            _blittableCache[type] = result;
-            return result;
+            return _blittableCache[type];
         }
 
         private static bool IsValueTypeRecursiveExtracted(Type type)
@@ -634,14 +620,7 @@ namespace Theraot.Reflection
                 return false;
             }
 
-            if (_valueTypeRecursiveCache.TryGetValue(type, out var result))
-            {
-                return result;
-            }
-
-            result = GetValueTypeRecursiveResult(type);
-            _valueTypeRecursiveCache[type] = result;
-            return result;
+            return _valueTypeRecursiveCache[type];
         }
     }
 

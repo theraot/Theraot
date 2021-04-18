@@ -18,13 +18,21 @@ namespace Theraot.Collections.ThreadSafe
         where TKey : class
     {
         private readonly Entry[] _entries;
+        private readonly Func<TKey, TValue>? _valueFactory;
+
+        public CacheDict(int capacity)
+        {
+            _valueFactory = null;
+            _entries = new Entry[NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity)];
+        }
 
         /// <summary>
         ///     Creates a dictionary-like object used for caches.
         /// </summary>
         /// <param name="capacity">The maximum number of elements to store will be this number aligned to next ^2.</param>
-        public CacheDict(int capacity)
+        public CacheDict(Func<TKey, TValue> valueFactory, int capacity)
         {
+            _valueFactory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
             _entries = new Entry[NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity)];
         }
 
@@ -35,12 +43,27 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                if (TryGetValue(key, out var value))
+                if (key == null)
                 {
-                    return value;
+                    throw new ArgumentNullException(nameof(key));
                 }
 
-                throw new KeyNotFoundException();
+                var hash = key.GetHashCode();
+                var index = hash & (_entries.Length - 1);
+                var entry = Volatile.Read(ref _entries[index]);
+                if (entry?.Hash == hash && entry.Key.Equals(key))
+                {
+                    return entry.Value;
+                }
+
+                if (_valueFactory == null)
+                {
+                    throw new KeyNotFoundException();
+                }
+
+                var value = _valueFactory(key);
+                Volatile.Write(ref _entries[index], new Entry(hash, key, value));
+                return value;
             }
             set => Add(key, value);
         }
@@ -69,8 +92,8 @@ namespace Theraot.Collections.ThreadSafe
             }
 
             var hash = key.GetHashCode();
-            var idx = hash & (_entries.Length - 1);
-            var entry = Volatile.Read(ref _entries[idx]);
+            var index = hash & (_entries.Length - 1);
+            var entry = Volatile.Read(ref _entries[index]);
             if (entry?.Hash == hash && entry.Key.Equals(key))
             {
                 value = entry.Value;

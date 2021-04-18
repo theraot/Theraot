@@ -692,19 +692,12 @@ namespace System.Linq.Expressions
             // Get or create a delegate to the public Expression.Lambda<T>
             // method and call that will be used for creating instances of this
             // delegate type
-            var factories = TypeHelper.LazyCreate(ref _lambdaFactories, () => new CacheDict<Type, Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>>(50));
-            if (factories.TryGetValue(delegateType, out var fastPath))
-            {
-                return fastPath(body, name, tailCall, parameters);
-            }
-
-            var create = typeof(Expression<>).MakeGenericType(delegateType).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic);
-            factories[delegateType] = fastPath =
-                (Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>)create.CreateDelegate
-                (
-                    typeof(Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>)
-                );
-            return fastPath(body, name, tailCall, parameters);
+            var factories = TypeHelper.LazyCreate
+            (
+                ref _lambdaFactories,
+                () => new CacheDict<Type, Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>>(LambdaFactoryFactory, 50)
+            );
+            return factories[delegateType](body, name, tailCall, parameters);
         }
 
         private static Expression<TDelegate> LambdaExtracted<TDelegate>(Expression body, string? name, bool tailCall, ParameterExpression[] parameterList)
@@ -753,6 +746,15 @@ namespace System.Linq.Expressions
             var paramList = parameters.AsArrayInternal();
             ValidateLambdaArgs(delegateType, ref body, paramList, nameof(delegateType));
             return CreateLambda(delegateType, body, name, tailCall, paramList);
+        }
+
+        private static Func<Expression, string?, bool, ParameterExpression[], LambdaExpression> LambdaFactoryFactory(Type delegateType)
+        {
+            var create = typeof(Expression<>).MakeGenericType(delegateType).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic);
+            return (Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>)create.CreateDelegate
+            (
+                typeof(Func<Expression, string?, bool, ParameterExpression[], LambdaExpression>)
+            );
         }
 
         private static void ValidateLambdaArgs(Type delegateType, ref Expression body, ParameterExpression[] parameters, string paramName)

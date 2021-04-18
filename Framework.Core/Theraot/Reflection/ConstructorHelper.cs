@@ -15,7 +15,7 @@ namespace Theraot.Reflection
 {
     public static class ConstructorHelper
     {
-        private static readonly CacheDict<Type, object?> _constructorCache = new(256);
+        private static readonly CacheDict<Type, Delegate?> _constructorCache = new(256);
 
         public static TReturn Create<TReturn>()
         {
@@ -54,23 +54,26 @@ namespace Theraot.Reflection
                 return true;
             }
 
-            var typeArguments = ArrayEx.Empty<Type>();
-            var constructorInfo = GetConstructor(typeof(TReturn), typeArguments);
-            if (constructorInfo == null)
-            {
-                _constructorCache[type] = null;
-                create = null;
-                return false;
-            }
+            create = ConstructorFactory(type);
+            _constructorCache[type] = create;
+            return create != null;
 
-            TReturn Construct()
+            static Func<TReturn>? ConstructorFactory(Type type)
             {
-                return (TReturn)constructorInfo!.Invoke(ArrayEx.Empty<object>());
-            }
+                var typeArguments = ArrayEx.Empty<Type>();
+                var constructorInfo = GetConstructor(type, typeArguments);
+                if (constructorInfo == null)
+                {
+                    return null;
+                }
 
-            _constructorCache[type] = (Func<TReturn>)Construct;
-            create = Construct;
-            return true;
+                TReturn Construct()
+                {
+                    return (TReturn)constructorInfo.Invoke(ArrayEx.Empty<object>());
+                }
+
+                return Construct;
+            }
         }
 
         private static ConstructorInfo? GetConstructor(Type type, Type[] typeArguments)

@@ -86,18 +86,17 @@ namespace System.Runtime.CompilerServices
             if (constructors == null)
             {
                 // It's okay to just set this, worst case we're just throwing away some data
-                _siteConstructors = constructors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(100);
+                _siteConstructors = constructors = new CacheDict<Type, Func<CallSiteBinder, CallSite>>(GetConstructor, 100);
             }
 
-            if (constructors.TryGetValue(delegateType, out var ctor))
-            {
-                return ctor(binder);
-            }
+            var constructor = constructors[delegateType];
+            return constructor(binder);
+        }
 
+        private static Func<CallSiteBinder, CallSite> GetConstructor(Type delegateType)
+        {
             var method = typeof(CallSite<>).MakeGenericType(delegateType).GetMethod(nameof(Create));
-            ctor = (Func<CallSiteBinder, CallSite>)method.CreateDelegate(typeof(Func<CallSiteBinder, CallSite>));
-            constructors.Add(delegateType, ctor);
-            return ctor(binder);
+            return (Func<CallSiteBinder, CallSite>)method.CreateDelegate(typeof(Func<CallSiteBinder, CallSite>));
         }
     }
 

@@ -17,9 +17,19 @@ namespace System.Dynamic.Utils
 
         private static readonly MethodInfo _funcInvoke = typeof(Func<object[], object>).GetMethod("Invoke");
 
-        private static readonly CacheDict<Type, DynamicMethod> _thunks = new(256);
+        private static readonly CacheDict<Type, DynamicMethod> _thunks = new(MethodFactory, 256);
 
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object?> handler)
+        {
+            return _thunks[delegateType].CreateDelegate(delegateType, handler);
+        }
+
+        private static Type ConvertToBoxableType(Type t)
+        {
+            return t.IsPointer ? typeof(IntPtr) : t;
+        }
+
+        private static DynamicMethod MethodFactory(Type delegateType)
         {
             // We will generate the following code:
 #pragma warning disable S125 // Sections of code should not be commented out
@@ -35,16 +45,9 @@ namespace System.Dynamic.Utils
             // }
             // return (TRet)ret;
 #pragma warning restore S125 // Sections of code should not be commented out
-            if (_thunks.TryGetValue(delegateType, out var thunkMethod))
-            {
-                return thunkMethod.CreateDelegate(delegateType, handler);
-            }
-
             var delegateInvokeMethod = delegateType.GetInvokeMethod();
-
             var returnType = delegateInvokeMethod.ReturnType;
             var hasReturnValue = returnType != typeof(void);
-
             var parameters = delegateInvokeMethod.GetParameters();
             var paramTypes = new Type[parameters.Length + 1];
             paramTypes[0] = typeof(Func<object[], object>);
@@ -53,9 +56,8 @@ namespace System.Dynamic.Utils
                 paramTypes[i + 1] = parameters[i].ParameterType;
             }
 
-            thunkMethod = new DynamicMethod("Thunk", returnType, paramTypes);
+            var thunkMethod = new DynamicMethod("Thunk", returnType, paramTypes);
             var ilGenerator = thunkMethod.GetILGenerator();
-
             var argArray = ilGenerator.DeclareLocal(typeof(object[]));
             var retValue = ilGenerator.DeclareLocal(typeof(object));
 
@@ -71,7 +73,6 @@ namespace System.Dynamic.Utils
             }
 
             ilGenerator.Emit(OpCodes.Stloc, argArray);
-
             // populate object array
             var hasRefArgs = false;
             for (var i = 0; i < parameters.Length; i++)
@@ -106,14 +107,11 @@ namespace System.Dynamic.Utils
 
             // load delegate
             ilGenerator.Emit(OpCodes.Ldarg_0);
-
             // load array
             ilGenerator.Emit(OpCodes.Ldloc, argArray);
-
             // invoke Invoke
             ilGenerator.Emit(OpCodes.Callvirt, _funcInvoke);
             ilGenerator.Emit(OpCodes.Stloc, retValue);
-
             if (hasRefArgs)
             {
                 // copy back ref/out args
@@ -126,7 +124,6 @@ namespace System.Dynamic.Utils
                     }
 
                     var byrefToType = parameters[i].ParameterType.GetElementType();
-
                     // update parameter
                     ilGenerator.Emit(OpCodes.Ldarg, i + 1);
                     ilGenerator.Emit(OpCodes.Ldloc, argArray);
@@ -146,15 +143,7 @@ namespace System.Dynamic.Utils
             }
 
             ilGenerator.Emit(OpCodes.Ret);
-
-            _thunks[delegateType] = thunkMethod;
-
-            return thunkMethod.CreateDelegate(delegateType, handler);
-        }
-
-        private static Type ConvertToBoxableType(Type t)
-        {
-            return t.IsPointer ? typeof(IntPtr) : t;
+            return thunkMethod;
         }
     }
 }
