@@ -2734,7 +2734,7 @@ namespace MonoTests.System.Threading.Tasks
         [Category("RaceCondition")] // This test creates a race condition
         public void DenyChildAttachTest()
         {
-            var manualResetEvents = new ManualResetEventSlim[0];
+            var manualResetEvents = new ManualResetEventSlim[1];
             using (manualResetEvents[0] = new ManualResetEventSlim())
             {
                 Task nested = null;
