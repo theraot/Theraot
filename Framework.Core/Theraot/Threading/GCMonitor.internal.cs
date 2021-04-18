@@ -56,7 +56,7 @@ namespace Theraot.Threading
                 try
                 {
                     CollectedEventHandlers.RemoveDeadItems();
-                    object? sender = null;
+                    const object? sender = null;
                     CollectedEventHandlers.Invoke(ActionHelper.GetNoopAction<Exception>(), DelegateCollectionInvokeOptions.None, sender, EventArgs.Empty);
                 }
                 catch (Exception exception)
