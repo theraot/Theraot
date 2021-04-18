@@ -80,6 +80,19 @@ namespace System.Diagnostics.CodeAnalysis
         }
 
         /// <summary>
+        /// Gets the assembly name of the specified type.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="AssemblyName"/> is only valid when <see cref="TypeName"/> is specified.
+        /// </remarks>
+        public string? AssemblyName { get; }
+
+        /// <summary>
+        /// Gets or sets the condition in which the dependency is applicable, e.g. "DEBUG".
+        /// </summary>
+        public string? Condition { get; set; }
+
+        /// <summary>
         /// Gets the signature of the member depended on.
         /// </summary>
         /// <remarks>
@@ -115,19 +128,6 @@ namespace System.Diagnostics.CodeAnalysis
         /// the type of the consumer is assumed.
         /// </remarks>
         public string? TypeName { get; }
-
-        /// <summary>
-        /// Gets the assembly name of the specified type.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="AssemblyName"/> is only valid when <see cref="TypeName"/> is specified.
-        /// </remarks>
-        public string? AssemblyName { get; }
-
-        /// <summary>
-        /// Gets or sets the condition in which the dependency is applicable, e.g. "DEBUG".
-        /// </summary>
-        public string? Condition { get; set; }
     }
 }
 
