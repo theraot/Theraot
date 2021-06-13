@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
@@ -106,7 +105,7 @@ namespace Theraot.Threading
             return Value?.ToString() ?? string.Empty;
         }
 
-        public bool TryGetValue([MaybeNullWhen(false)] out T value)
+        public bool TryGetValue(out T value)
         {
             return TryGetValue(ThreadUniqueId.CurrentThreadId, out value);
         }
@@ -174,7 +173,7 @@ namespace Theraot.Threading
             slots!.Set(threadUniqueId, new ReadOnlyStructNeedle<T>(value));
         }
 
-        private bool TryGetValue(UniqueId threadUniqueId, [MaybeNullWhen(false)] out T target)
+        private bool TryGetValue(UniqueId threadUniqueId, out T target)
         {
             var slots = _slots;
             if (Volatile.Read(ref _disposing) == 1)

@@ -125,6 +125,7 @@ namespace System.Collections.Concurrent
         /// <exception cref="ArgumentNullException">
         /// The <see cref="KeyValuePair{TKey, TValue}.Key"/> property of <paramref name="item"/> is a null reference.
         /// </exception>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2201:Do not raise reserved exception types", Justification = "<Pending>")]
         public static bool TryRemove<TKey, TValue>(
             this ConcurrentDictionary<TKey, TValue> concurrentDictionary,
             KeyValuePair<TKey, TValue> item)

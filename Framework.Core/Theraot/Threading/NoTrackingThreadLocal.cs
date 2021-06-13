@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Reflection;
 using Theraot.Threading.Needles;
@@ -157,7 +156,7 @@ namespace Theraot.Threading
             return Value?.ToString() ?? string.Empty;
         }
 
-        public bool TryGetValue([MaybeNullWhen(false)] out T value)
+        public bool TryGetValue(out T value)
         {
             var slot = _slot;
             if (slot == null)

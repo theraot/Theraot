@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Threading.Needles
 {
@@ -135,7 +134,7 @@ namespace Theraot.Threading.Needles
             return _handle != null && _handle.TryGetTarget(out var target) ? target.ToString() ?? "<?>" : "<Dead Needle>";
         }
 
-        public virtual bool TryGetValue([MaybeNullWhen(false)] out T value)
+        public virtual bool TryGetValue(out T value)
         {
             if (Exception == null && _handle != null && _handle.TryGetTarget(out var found))
             {
