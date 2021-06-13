@@ -184,7 +184,7 @@ namespace System.Collections.Generic
 
         private sealed class SpyEqualityComparer : IEqualityComparer<T>
         {
-            private readonly Threading.ThreadLocal<Action<T, T>?> _callback = new Threading.ThreadLocal<Action<T, T>?>();
+            private readonly Threading.ThreadLocal<Action<T, T>?> _callback = new();
             private readonly IEqualityComparer<T> _wrapped;
 
             private SpyEqualityComparer(IEqualityComparer<T> wrapped)

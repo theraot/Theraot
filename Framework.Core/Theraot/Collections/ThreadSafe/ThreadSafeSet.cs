@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using Theraot.Collections.Specialized;
@@ -454,7 +455,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryGetValue(int hashCode, Predicate<T> check, out T value)
+        public bool TryGetValue(int hashCode, Predicate<T> check, [MaybeNullWhen(false)] out T value)
         {
             if (check == null)
             {

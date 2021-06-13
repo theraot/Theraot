@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Threading.Needles
 {
@@ -84,7 +85,7 @@ namespace Theraot.Threading.Needles
             return $"{{Promise: {_promised}}}";
         }
 
-        public bool TryGetValue(out T value)
+        public bool TryGetValue([MaybeNullWhen(false)] out T value)
         {
             return _promised.TryGetValue(out value);
         }

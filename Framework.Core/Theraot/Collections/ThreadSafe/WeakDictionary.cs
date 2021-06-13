@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Collections.Specialized;
 using Theraot.Threading;
@@ -780,7 +781,9 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryGetValue(TKey key, out TValue value)
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         {
             bool Check(WeakNeedle<TKey> found)
             {
@@ -800,7 +803,7 @@ namespace Theraot.Collections.ThreadSafe
         ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="keyCheck" /> is <c>null</c>.</exception>
-        public bool TryGetValue(int hashCode, Predicate<TKey> keyCheck, out TValue value)
+        public bool TryGetValue(int hashCode, Predicate<TKey> keyCheck, [MaybeNullWhen(false)] out TValue value)
         {
             if (keyCheck == null)
             {
@@ -991,7 +994,7 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        private static bool PrivateTryGetValue(WeakNeedle<TKey> needle, out TKey foundKey)
+        private static bool PrivateTryGetValue(WeakNeedle<TKey> needle, [MaybeNullWhen(false)] out TKey foundKey)
         {
             return needle.TryGetValue(out foundKey);
         }

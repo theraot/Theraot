@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NET40
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Theraot.Collections.ThreadSafe;
 
@@ -142,7 +143,9 @@ namespace System.Runtime.CompilerServices
         /// <returns>
         ///     <c>true</c> if the key is found; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryGetValue(TKey key, out TValue value)
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         {
             if (key == null)
             {
