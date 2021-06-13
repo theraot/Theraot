@@ -28,7 +28,8 @@ namespace System.Diagnostics.CodeAnalysis
     /// </remarks>
     [AttributeUsage(
         AttributeTargets.Field | AttributeTargets.ReturnValue | AttributeTargets.GenericParameter |
-        AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Method,
+        AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Method |
+        AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct,
         Inherited = false)]
     public sealed class DynamicallyAccessedMembersAttribute : Attribute
     {

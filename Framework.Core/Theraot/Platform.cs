@@ -77,7 +77,7 @@ namespace Theraot
 #elif NETSTANDARD2_1
 
             "netstandard2.1"
-#elif NET50
+#elif NET5_0
             "net5.0"
 #else
 
@@ -116,7 +116,7 @@ namespace Theraot
             MajorVersion = 3;
 #elif NET40 || NET45 || NET46 || NET47 || NET471 || NET472 || NET48
             MajorVersion = 4;
-#elif NET50
+#elif NET5_0
             MajorVersion = 5;
 #else
             MajorVersion = -1;
@@ -140,7 +140,7 @@ namespace Theraot
             MinorVersion = 7;
 #elif NET48
             MinorVersion = 8;
-#elif NET50
+#elif NET5_0
             MinorVersion = 0;
 #else
             MinorVersion = -1;

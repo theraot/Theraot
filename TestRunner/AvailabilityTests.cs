@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -325,6 +326,25 @@ namespace TestRunner
             No.Op(typeof(FormattableStringFactory));
             No.Op(typeof(IsReadOnlyAttribute));
             No.Op(typeof(SwitchExpressionException));
+
+            // System.Diagnostics.CodeAnalysis
+            No.Op(typeof(AllowNullAttribute));
+            No.Op(typeof(DisallowNullAttribute));
+            No.Op(typeof(DoesNotReturnAttribute));
+            No.Op(typeof(DoesNotReturnIfAttribute));
+            No.Op(typeof(DynamicallyAccessedMembersAttribute));
+            No.Op(typeof(DynamicallyAccessedMemberTypes));
+            No.Op(typeof(DynamicDependencyAttribute));
+            No.Op(typeof(ExcludeFromCodeCoverageAttribute));
+            No.Op(typeof(MaybeNullAttribute));
+            No.Op(typeof(MaybeNullWhenAttribute));
+            No.Op(typeof(MemberNotNullAttribute));
+            No.Op(typeof(MemberNotNullWhenAttribute));
+            No.Op(typeof(NotNullAttribute));
+            No.Op(typeof(NotNullIfNotNullAttribute));
+            No.Op(typeof(NotNullWhenAttribute));
+            No.Op(typeof(RequiresUnreferencedCodeAttribute));
+            No.Op(typeof(UnconditionalSuppressMessageAttribute));
         }
 
         public static void TypeMethodAvailability()
