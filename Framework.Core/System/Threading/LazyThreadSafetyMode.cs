@@ -1,6 +1,6 @@
 ﻿#if LESSTHAN_NET40
 
-namespace System
+namespace System.Threading
 {
     public enum LazyThreadSafetyMode
     {
