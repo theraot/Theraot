@@ -84,6 +84,7 @@ namespace System.Linq
 #if LESSTHAN_NET35
         Enumerable
 #else
+#pragma warning disable MA0048 // File name must match type name
         EnumerableTheraotExtensions
 #endif
     {
