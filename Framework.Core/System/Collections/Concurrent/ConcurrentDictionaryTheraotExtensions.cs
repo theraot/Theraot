@@ -1,4 +1,4 @@
-// ReSharper disable RedundantUsingDirective
+﻿// ReSharper disable RedundantUsingDirective
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable IDE0005 // Using directive is unnecessary.
@@ -19,6 +19,7 @@ namespace System.Collections.Concurrent
         /// <param name="key">The key of the element to add.</param>
         /// <param name="valueFactory">The function used to generate a value for the key</param>
         /// <param name="factoryArgument">An argument value to pass into <paramref name="valueFactory"/>.</param>
+        /// <param name="concurrentDictionary">The concurrentDictionary.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference
         /// (Nothing in Visual Basic).</exception>
         /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is a null reference
@@ -63,6 +64,7 @@ namespace System.Collections.Concurrent
         /// <param name="updateValueFactory">The function used to generate a new value for an existing key
         /// based on the key's existing value</param>
         /// <param name="factoryArgument">An argument to pass into <paramref name="addValueFactory"/> and <paramref name="updateValueFactory"/>.</param>
+        /// <param name="concurrentDictionary">The concurrentDictionary.</param>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference
         /// (Nothing in Visual Basic).</exception>
         /// <exception cref="ArgumentNullException"><paramref name="addValueFactory"/> is a null reference
@@ -113,6 +115,7 @@ namespace System.Collections.Concurrent
 
         /// <summary>Removes a key and value from the dictionary.</summary>
         /// <param name="item">The <see cref="KeyValuePair{TKey,TValue}"/> representing the key and value to remove.</param>
+        /// <param name="concurrentDictionary">The concurrentDictionary.</param>
         /// <returns>
         /// true if the key and value represented by <paramref name="item"/> are successfully
         /// found and removed; otherwise, false.
