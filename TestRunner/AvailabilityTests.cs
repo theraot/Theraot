@@ -263,6 +263,8 @@ namespace TestRunner
 
 #endif
 
+            No.Op(typeof(Unsafe));
+
             // System.Threading.Tasks.Extensions
 
             No.Op(typeof(AsyncMethodBuilderAttribute));
