@@ -1,5 +1,6 @@
 ﻿// Needed for NET40
 
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 #pragma warning disable RCS1212 // Remove redundant assignment.
 // ReSharper disable ImplicitlyCapturedClosure
 // ReSharper disable UseDeconstructionOnParameter
@@ -844,9 +845,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         {
             value = default!;
             var hashCode = GetHashCode(key);

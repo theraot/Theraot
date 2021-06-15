@@ -2,6 +2,7 @@
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 #pragma warning disable S2743 // Static fields in generic types
 #pragma warning disable MA0015 // Specify the parameter name in ArgumentException
 
@@ -1161,9 +1162,7 @@ namespace System.Collections.Concurrent
         /// </param>
         /// <returns>true if the key was found in the <see cref="ConcurrentDictionary{TKey,TValue}"/>; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference (Nothing in Visual Basic).</exception>
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         {
             if (key is null)
             {

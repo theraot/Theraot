@@ -1,5 +1,6 @@
 ﻿// Needed for NET35 (ConditionalWeakTable)
 
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 // ReSharper disable ImplicitlyCapturedClosure
 // ReSharper disable UseDeconstructionOnParameter
 
@@ -781,9 +782,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///     <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         {
             bool Check(WeakNeedle<TKey> found)
             {

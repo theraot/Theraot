@@ -1,5 +1,7 @@
 ﻿#if LESSTHAN_NET45
 
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+
 using System.Diagnostics.CodeAnalysis;
 
 namespace System.Collections.Generic
@@ -20,9 +22,7 @@ namespace System.Collections.Generic
     {
         bool ContainsKey(TKey key);
 
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value);
-#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
     }
 }
 
