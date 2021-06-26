@@ -1,4 +1,4 @@
-﻿#if LESSTHAN_NET47 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP21 || LESSTHAN_NETSTANDARD21
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
