@@ -203,6 +203,8 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net451'">
@@ -255,6 +257,8 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
@@ -307,6 +311,8 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
@@ -371,6 +377,8 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
@@ -435,6 +443,8 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
@@ -499,6 +509,8 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
@@ -566,7 +578,11 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -633,7 +649,11 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -700,7 +720,11 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -761,7 +785,11 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -954,6 +982,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -1020,6 +1052,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -1086,6 +1122,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -1152,6 +1192,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -1218,6 +1262,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net50'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -1284,6 +1332,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -1743,6 +1795,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
     <PackageReference Include="System.ComponentModel.Annotations">
@@ -1809,6 +1865,10 @@
       <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Framework.Core\Framework.Core.csproj" />
