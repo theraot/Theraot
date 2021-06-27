@@ -1,4 +1,4 @@
-#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+﻿#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
 
 // BASEDON: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Index.cs
 
@@ -34,7 +34,7 @@ namespace System
         {
             if (value < 0)
             {
-	            throw new ArgumentException("Value is negative", nameof(value));
+                throw new ArgumentOutOfRangeException(nameof(value), "Value is negative");
             }
 
             if (fromEnd)
@@ -63,7 +63,7 @@ namespace System
         {
             if (value < 0)
             {
-	            throw new ArgumentException("Value is negative", nameof(value));
+                throw new ArgumentOutOfRangeException(nameof(value), "Value is negative");
             }
 
             return new Index(value);
@@ -76,7 +76,7 @@ namespace System
         {
             if (value < 0)
             {
-	            throw new ArgumentException("Value is negative", nameof(value));
+                throw new ArgumentOutOfRangeException(nameof(value), "Value is negative");
             }
 
             return new Index(~value);
@@ -85,7 +85,7 @@ namespace System
         /// <summary>Returns the index value.</summary>
         public int Value => _value < 0 ? ~_value : _value;
 
-	    /// <summary>Indicates whether the index is from the start or the end.</summary>
+        /// <summary>Indicates whether the index is from the start or the end.</summary>
         public bool IsFromEnd => _value < 0;
 
         /// <summary>Calculate the offset from the start using the giving collection length.</summary>
