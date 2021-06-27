@@ -1,4 +1,4 @@
-#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+﻿#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
 
 // BASEDON: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Range.cs
 
@@ -50,7 +50,7 @@ namespace System
         /// <summary>Returns the hash code for this instance.</summary>
         public override int GetHashCode() => HashCode.Combine(Start.GetHashCode(), End.GetHashCode());
 
-	    /// <summary>Converts the value of the current Range object to its equivalent string representation.</summary>
+        /// <summary>Converts the value of the current Range object to its equivalent string representation.</summary>
         public override string ToString()
         {
             return $"{Start}..{End}";
@@ -99,7 +99,7 @@ namespace System
 
             if ((uint)end > (uint)length || (uint)start > (uint)end)
             {
-	            throw new ArgumentOutOfRangeException(nameof(length), $"end:{end} > length: {length} or start: {start} > end: {end}");
+                throw new ArgumentOutOfRangeException(nameof(length), $"end:{end} > length: {length} or start: {start} > end: {end}");
             }
 
             return (start, end - start);
