@@ -201,6 +201,9 @@ namespace TestRunner
 
             // System
 
+            No.Op(typeof(Range));
+            No.Op(typeof(Index));
+
             No.Op(typeof(Action));
             No.Op(typeof(Action<T>));
             No.Op(typeof(Action<T1, T2>));
