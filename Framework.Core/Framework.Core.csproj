@@ -16,8 +16,8 @@
     <Company>Theraot</Company>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/theraot/Theraot/</PackageProjectUrl>
-    <Description>Theraot.Core is a .NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, IsExternalInit, etc...) for .NET Framework. .NET Core, .NET Standard</Description>
-    <PackageTags>Backport Polyfill Bridge ValueTask ValueTuple Async Task Linq Expressions ThreadLocal IAsyncEnumerable IReadOnlySet IsExternalInit</PackageTags>
+    <Description>Theraot.Core is a .NET Backport (ValueTask, ValueTuple, Task, Expressions, Linq, ThreadLocal, IsExternalInit, Range, Index, etc...) for .NET Framework. .NET Core, .NET Standard</Description>
+    <PackageTags>Backport Polyfill Bridge ValueTask ValueTuple Async Task Linq Expressions ThreadLocal IAsyncEnumerable IReadOnlySet IsExternalInit Range Index</PackageTags>
     <Copyright>Copyright 2021</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
