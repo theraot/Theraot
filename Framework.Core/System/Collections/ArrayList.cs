@@ -1013,7 +1013,7 @@ namespace System.Collections
         private sealed class ArrayListEnumeratorSimple : IEnumerator, ICloneable
         {
             // this object is used to indicate enumeration has not started or has terminated
-            private static readonly object _dummyObject = new object();
+            private static readonly object _dummyObject = new();
 
             private readonly bool _isArrayList;
             private readonly ArrayList _list;

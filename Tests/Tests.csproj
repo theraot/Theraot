@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net47;net471;net472;net48;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;netstandard1.3;net50;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net20;net30;net35;net40;net45;net46;net461;net47;net471;net472;net48;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;netstandard1.3;net50;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netstandard2.1</TargetFrameworks>
     <ProjectGuid>{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -38,34 +38,40 @@
     <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
-    <DefineConstants>TARGETS_NET;GREATERTHAN_NET472;GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;GREATERTHAN_NET472;GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net471'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;GREATERTHAN_NET47;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net47'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;GREATERTHAN_NET46;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET46;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net40'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET45;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net30'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net20'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;LESSTHAN_NET30</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;LESSTHAN_NET30</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard3.0'">
     <DefineConstants>TARGETS_NETSTANDARD;GREATERTHAN_NETSTANDARD22;GREATERTHAN_NETSTANDARD21;GREATERTHAN_NETSTANDARD20;GREATERTHAN_NETSTANDARD16;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
@@ -142,9 +148,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.9.0" />
@@ -178,9 +181,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Parallel">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.9.0" />
@@ -227,8 +227,50 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
+    <Reference Include="WindowsBase" />
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
+    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <PackageReference Include="System.Diagnostics.Contracts">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Dynamic.Runtime">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Globalization">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Linq.Expressions">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Linq.Queryable">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Reflection">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Extensions">
+      <Version>4.5.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Parallel">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Thread">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.ThreadPool">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Timer">
+      <Version>4.3.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.9.0" />
@@ -275,9 +317,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -286,7 +325,6 @@
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -325,9 +363,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -336,7 +371,6 @@
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -375,9 +409,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -386,7 +417,6 @@
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -425,9 +455,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -436,7 +463,6 @@
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -486,9 +512,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -544,9 +567,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -598,9 +618,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -608,7 +625,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -656,9 +672,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -666,7 +679,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -714,9 +726,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -724,7 +733,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -772,9 +780,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -782,7 +787,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -830,9 +834,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -840,7 +841,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net50'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -888,9 +888,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -898,7 +895,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -945,9 +941,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="NUnit" Version="[3.8.1]" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -1000,9 +993,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -1053,9 +1043,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
@@ -1108,9 +1095,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -1162,9 +1146,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -1172,7 +1153,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
     <PackageReference Include="System.Diagnostics.Contracts">
@@ -1220,9 +1200,6 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="NUnit" Version="3.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
@@ -1230,7 +1207,6 @@
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
