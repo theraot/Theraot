@@ -1,7 +1,6 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
 #pragma warning disable CA1008 // Enums should have zero value
-#pragma warning disable CA1714 // Flags enums should have plural names
 #pragma warning disable S2346 // Flags enumerations zero-value members should be named "None".
 
 namespace System.Threading

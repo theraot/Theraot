@@ -1,8 +1,5 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP30 || LESSTHAN_NETSTANDARD21
 
-#pragma warning disable CA1032 // Implement standard exception constructors
-#pragma warning disable RCS1194 // Implement exception constructors.
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -26,13 +23,13 @@ namespace System.Runtime.CompilerServices
     public sealed class SwitchExpressionException : InvalidOperationException
     {
         public SwitchExpressionException()
-            : base("SwitchExpressionException")
+            : base(nameof(SwitchExpressionException))
         {
             // Empty
         }
 
         public SwitchExpressionException(Exception? innerException) :
-            base("SwitchExpressionException", innerException)
+            base(nameof(SwitchExpressionException), innerException)
         {
         }
 
@@ -40,8 +37,6 @@ namespace System.Runtime.CompilerServices
         {
             UnmatchedValue = unmatchedValue;
         }
-
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
 
         public SwitchExpressionException(string? message)
             : base(message)
@@ -54,6 +49,8 @@ namespace System.Runtime.CompilerServices
         {
             // Empty
         }
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
 
         private SwitchExpressionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
