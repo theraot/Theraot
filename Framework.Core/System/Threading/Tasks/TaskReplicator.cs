@@ -1,4 +1,4 @@
-#if LESSTHAN_NET40 || NETSTANDARD1_0
+﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
 
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
@@ -25,10 +25,8 @@ namespace System.Threading.Tasks
 
         private const int _cooperativeMultitaskingTaskTimeoutMin = 100;
 
-        // millisecond
         private const int _cooperativeMultitaskingTaskTimeoutRootTask = int.MaxValue / 2;
 
-        // millisecond
         private readonly ConcurrentQueue<Replica> _pendingReplicas = new();
 
         private readonly TaskScheduler _scheduler;
