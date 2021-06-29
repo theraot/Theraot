@@ -15,3 +15,6 @@ resharper_redundant_query_order_by_ascending_keyword_highlighting = warning
 resharper_static_member_initializer_referes_to_member_below_highlighting = warning
 resharper_join_declaration_and_initializer_highlighting = warning
 resharper_method_supports_cancellation_highlighting = warning
+# Roslyn analyzers
+dotnet_diagnostic.EPC13.severity = silent
+dotnet_diagnostic.VSTHRD110.severity = silent

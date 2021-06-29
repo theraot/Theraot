@@ -1,5 +1,6 @@
 ﻿// Needed for NET35 (ConditionalWeakTable)
 
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
 // ReSharper disable ImplicitlyCapturedClosure
 // ReSharper disable UseDeconstructionOnParameter
 

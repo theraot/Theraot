@@ -1,4 +1,6 @@
-﻿#if LESSTHAN_NET40 || NETSTANDARD1_0
+#if LESSTHAN_NET40 || NETSTANDARD1_0
+
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
 // BASEDON: https://raw.githubusercontent.com/dotnet/corefx/e0ba7aa8026280ee3571179cc06431baf1dfaaac/src/System.Threading.Tasks.Parallel/src/System/Threading/Tasks/TaskReplicator.cs
 
