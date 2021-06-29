@@ -4,6 +4,7 @@ extern alias nunitlinq;
 
 using NUnit.Framework;
 using System.Threading;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace Tests.Theraot.Threading
@@ -36,17 +37,24 @@ namespace Tests.Theraot.Threading
         public void ThreadedReentry()
         {
             var guard = new ReentryGuard();
+            var threads = new ThreadSafeSet<Thread>();
             var count = 0;
+            var fail = 0;
 
             void Action()
             {
-                if (count >= 255)
+                if (threads.Add(Thread.CurrentThread) == false)
                 {
-                    return;
+                    Interlocked.Increment(ref fail);
                 }
 
-                count++;
-                guard.Execute(Action);
+                if (count < 255)
+                {
+                    count++;
+                    guard.Execute(Action);
+                }
+
+                threads.Remove(Thread.CurrentThread);
             }
 
             var a = new Thread(() => guard.Execute(Action));
@@ -55,6 +63,7 @@ namespace Tests.Theraot.Threading
             b.Start();
             a.Join();
             b.Join();
+            Assert.AreEqual(0, fail);
             Assert.AreEqual(255, count);
         }
     }
