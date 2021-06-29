@@ -1,10 +1,8 @@
-#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+﻿#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace System.Tests
@@ -38,9 +36,26 @@ namespace System.Tests
             Assert.AreEqual(10, index.Value);
             Assert.True(index.IsFromEnd);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => new Index(-1, fromEnd: false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _ = new Index(-1, fromEnd: false));
             Assert.Throws<ArgumentOutOfRangeException>(() => Index.FromStart(-3));
             Assert.Throws<ArgumentOutOfRangeException>(() => Index.FromEnd(-1));
+        }
+
+        [Test]
+        public static void EqualityTest()
+        {
+            Index index1 = 10;
+            Index index2 = 10;
+            Assert.True(index1.Equals(index2));
+            Assert.True(index1.Equals((object)index2));
+
+            index2 = new Index(10, fromEnd: true);
+            Assert.False(index1.Equals(index2));
+            Assert.False(index1.Equals((object)index2));
+
+            index2 = new Index(9, fromEnd: false);
+            Assert.False(index1.Equals(index2));
+            Assert.False(index1.Equals((object)index2));
         }
 
         [Test]
@@ -64,33 +79,6 @@ namespace System.Tests
         }
 
         [Test]
-        public static void ImplicitCastTest()
-        {
-            Index index = 10;
-            Assert.AreEqual(10, index.Value);
-            Assert.False(index.IsFromEnd);
-
-            Assert.Throws<ArgumentOutOfRangeException>(() => index = -10 );
-        }
-
-        [Test]
-        public static void EqualityTest()
-        {
-            Index index1 = 10;
-            Index index2 = 10;
-            Assert.True(index1.Equals(index2));
-            Assert.True(index1.Equals((object)index2));
-
-            index2 = new Index(10, fromEnd: true);
-            Assert.False(index1.Equals(index2));
-            Assert.False(index1.Equals((object)index2));
-
-            index2 = new Index(9, fromEnd: false);
-            Assert.False(index1.Equals(index2));
-            Assert.False(index1.Equals((object)index2));
-        }
-
-        [Test]
         public static void HashCodeTest()
         {
             Index index1 = 10;
@@ -102,6 +90,16 @@ namespace System.Tests
 
             index2 = new Index(99999, fromEnd: false);
             Assert.AreNotEqual(index1.GetHashCode(), index2.GetHashCode());
+        }
+
+        [Test]
+        public static void ImplicitCastTest()
+        {
+            Index index = 10;
+            Assert.AreEqual(10, index.Value);
+            Assert.False(index.IsFromEnd);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => index = -10);
         }
 
         [Test]
