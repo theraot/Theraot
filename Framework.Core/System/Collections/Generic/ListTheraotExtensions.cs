@@ -1,6 +1,7 @@
 ﻿#if LESSTHAN_NETSTANDARD13
 
 #pragma warning disable CA2201 // Do not raise reserved exception types
+#pragma warning disable MA0016 // Prefer return collection abstraction instead of implementation
 
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
