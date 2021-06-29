@@ -1,5 +1,10 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
+#pragma warning disable MA0008 // Add StructLayoutAttribute
+#pragma warning disable MA0076 // Do not use implicit culture-sensitive ToString in interpolated strings
+
 // BASEDON: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Range.cs
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -21,12 +26,6 @@ namespace System
     /// </remarks>
     public readonly struct Range : IEquatable<Range>
     {
-        /// <summary>Represent the inclusive start index of the Range.</summary>
-        public Index Start { get; }
-
-        /// <summary>Represent the exclusive end index of the Range.</summary>
-        public Index End { get; }
-
         /// <summary>Construct a Range object using the start and end indexes.</summary>
         /// <param name="start">Represent the inclusive start index of the range.</param>
         /// <param name="end">Represent the exclusive end index of the range.</param>
@@ -35,6 +34,23 @@ namespace System
             Start = start;
             End = end;
         }
+
+        /// <summary>Create a Range object starting from first element to the end.</summary>
+        public static Range All => new(Index.Start, Index.End);
+
+        /// <summary>Represent the exclusive end index of the Range.</summary>
+        public Index End { get; }
+
+        /// <summary>Represent the inclusive start index of the Range.</summary>
+        public Index Start { get; }
+
+        /// <summary>Create a Range object starting from first element in the collection to the end Index.</summary>
+        /// <param name="end">The position of the last element up to which the Range object will be created.</param>
+        public static Range EndAt(Index end) => new(Index.Start, end);
+
+        /// <summary>Create a Range object starting from start index to the end of the collection.</summary>
+        /// <param name="start">Returns a new Range instance starting from a specified start index to the end of the collection.</param>
+        public static Range StartAt(Index start) => new(start, Index.End);
 
         /// <summary>Indicates whether the current Range object is equal to another object of the same type.</summary>
         /// <param name="obj">An object to compare with this object</param>
@@ -49,21 +65,6 @@ namespace System
 
         /// <summary>Returns the hash code for this instance.</summary>
         public override int GetHashCode() => HashCode.Combine(Start.GetHashCode(), End.GetHashCode());
-
-        /// <summary>Converts the value of the current Range object to its equivalent string representation.</summary>
-        public override string ToString()
-        {
-            return $"{Start}..{End}";
-        }
-
-        /// <summary>Create a Range object starting from start index to the end of the collection.</summary>
-        public static Range StartAt(Index start) => new(start, Index.End);
-
-        /// <summary>Create a Range object starting from first element in the collection to the end Index.</summary>
-        public static Range EndAt(Index end) => new(Index.Start, end);
-
-        /// <summary>Create a Range object starting from first element to the end.</summary>
-        public static Range All => new(Index.Start, Index.End);
 
         /// <summary>Calculate the start offset and length of range object using a collection length.</summary>
         /// <param name="length">The length of the collection that the range will be used with. length has to be a positive value.</param>
@@ -104,6 +105,13 @@ namespace System
 
             return (start, end - start);
         }
+
+        /// <summary>Converts the value of the current Range object to its equivalent string representation.</summary>
+        public override string ToString()
+        {
+            return $"{Start}..{End}";
+        }
     }
 }
+
 #endif
