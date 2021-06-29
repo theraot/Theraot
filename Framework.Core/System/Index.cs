@@ -1,4 +1,9 @@
-#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+﻿#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable CA2231 // Overload operator equals on overriding ValueType.Equals
+#pragma warning disable MA0076 // Do not use implicit culture-sensitive ToString in interpolated strings
+#pragma warning disable S3427 // Method overloads with default parameter values should not overlap
 
 // BASEDON: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Index.cs
 
@@ -48,26 +53,22 @@ namespace System
         }
 
         // The following private constructors mainly created for perf reason to avoid the checks
-        private Index(int value) => _value = value;
-
-        /// <summary>Create an Index pointing at first element.</summary>
-        public static Index Start => new(0);
+        private Index(int value)
+        {
+            _value = value;
+        }
 
         /// <summary>Create an Index pointing at beyond last element.</summary>
         public static Index End => new(~0);
 
-        /// <summary>Create an Index from the start at the position indicated by the value.</summary>
-        /// <param name="value">The index value from the start.</param>
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
-        public static Index FromStart(int value)
-        {
-            if (value < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Value is negative");
-            }
+        /// <summary>Create an Index pointing at first element.</summary>
+        public static Index Start => new(0);
 
-            return new Index(value);
-        }
+        /// <summary>Indicates whether the index is from the start or the end.</summary>
+        public bool IsFromEnd => _value < 0;
+
+        /// <summary>Returns the index value.</summary>
+        public int Value => _value < 0 ? ~_value : _value;
 
         /// <summary>Create an Index from the end at the position indicated by the value.</summary>
         /// <param name="value">The index value from the end.</param>
@@ -82,11 +83,32 @@ namespace System
             return new Index(~value);
         }
 
-        /// <summary>Returns the index value.</summary>
-        public int Value => _value < 0 ? ~_value : _value;
+        /// <summary>Create an Index from the start at the position indicated by the value.</summary>
+        /// <param name="value">The index value from the start.</param>
+        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
+        public static Index FromStart(int value)
+        {
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "Value is negative");
+            }
 
-        /// <summary>Indicates whether the index is from the start or the end.</summary>
-        public bool IsFromEnd => _value < 0;
+            return new Index(value);
+        }
+
+        /// <summary>Converts integer number to an Index.</summary>
+        public static implicit operator Index(int value) => FromStart(value);
+
+        /// <summary>Indicates whether the current Index object is equal to another object of the same type.</summary>
+        /// <param name="obj">An object to compare with this object</param>
+        public override bool Equals([NotNullWhen(true)] object? obj) => obj is Index index && _value == index._value;
+
+        /// <summary>Indicates whether the current Index object is equal to another Index object.</summary>
+        /// <param name="other">An object to compare with this object</param>
+        public bool Equals(Index other) => _value == other._value;
+
+        /// <summary>Returns the hash code for this instance.</summary>
+        public override int GetHashCode() => _value;
 
         /// <summary>Calculate the offset from the start using the giving collection length.</summary>
         /// <param name="length">The length of the collection that the Index will be used with. length has to be a positive value</param>
@@ -108,22 +130,9 @@ namespace System
 
                 offset += length + 1;
             }
+
             return offset;
         }
-
-        /// <summary>Indicates whether the current Index object is equal to another object of the same type.</summary>
-        /// <param name="obj">An object to compare with this object</param>
-        public override bool Equals([NotNullWhen(true)] object? obj) => obj is Index index && _value == index._value;
-
-        /// <summary>Indicates whether the current Index object is equal to another Index object.</summary>
-        /// <param name="other">An object to compare with this object</param>
-        public bool Equals(Index other) => _value == other._value;
-
-        /// <summary>Returns the hash code for this instance.</summary>
-        public override int GetHashCode() => _value;
-
-        /// <summary>Converts integer number to an Index.</summary>
-        public static implicit operator Index(int value) => FromStart(value);
 
         /// <summary>Converts the value of the current Index object to its equivalent string representation.</summary>
         public override string ToString()
@@ -142,4 +151,5 @@ namespace System
         }
     }
 }
+
 #endif
