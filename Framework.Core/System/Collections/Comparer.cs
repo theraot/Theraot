@@ -19,8 +19,8 @@ namespace System.Collections
     [Serializable]
     public sealed class Comparer : IComparer, ISerializable
     {
-        public static readonly Comparer Default = new Comparer(CultureInfo.CurrentCulture);
-        public static readonly Comparer DefaultInvariant = new Comparer(CultureInfo.InvariantCulture);
+        public static readonly Comparer Default = new(CultureInfo.CurrentCulture);
+        public static readonly Comparer DefaultInvariant = new(CultureInfo.InvariantCulture);
         private readonly CompareInfo _compareInfo;
 
         public Comparer(CultureInfo culture)
