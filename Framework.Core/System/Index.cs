@@ -1,4 +1,4 @@
-﻿#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
 
 // BASEDON: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Index.cs
 
@@ -133,12 +133,12 @@ namespace System
                 return ToStringFromEnd();
             }
 
-            return ((uint)Value).ToString();
+            return $"{(uint)Value}";
         }
 
         private string ToStringFromEnd()
         {
-            return '^' + Value.ToString();
+            return $"^{Value}";
         }
     }
 }
