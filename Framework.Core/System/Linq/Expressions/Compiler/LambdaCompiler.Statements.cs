@@ -22,7 +22,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (buckets.Count > 0)
             {
-                var last = buckets[buckets.Count - 1];
+                var last = buckets[^1];
                 if (FitsInBucket(last, key.Key, 1))
                 {
                     last.Add(key);
@@ -108,7 +108,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool FitsInBucket(List<SwitchLabel> buckets, decimal key, int count)
         {
-            Debug.Assert(key > buckets[buckets.Count - 1].Key);
+            Debug.Assert(key > buckets[^1].Key);
             var jumpTableSlots = key - buckets[0].Key + 1;
             if (jumpTableSlots > int.MaxValue)
             {
@@ -142,10 +142,10 @@ namespace System.Linq.Expressions.Compiler
         {
             while (buckets.Count > 1)
             {
-                var first = buckets[buckets.Count - 2];
-                var second = buckets[buckets.Count - 1];
+                var first = buckets[^2];
+                var second = buckets[^1];
 
-                if (!FitsInBucket(first, second[second.Count - 1].Key, second.Count))
+                if (!FitsInBucket(first, second[^1].Key, second.Count))
                 {
                     return;
                 }
@@ -356,7 +356,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 after = IL.DefineLabel();
                 IL.Emit(OpCodes.Ldloc, info.Value);
-                EmitConstant(bucket[bucket.Count - 1].Constant);
+                EmitConstant(bucket[^1].Constant);
                 IL.Emit(info.IsUnsigned ? OpCodes.Bgt_Un : OpCodes.Bgt, after.Value);
                 IL.Emit(OpCodes.Ldloc, info.Value);
                 EmitConstant(bucket[0].Constant);
@@ -379,7 +379,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Collect labels
-            var len = (int)(bucket[bucket.Count - 1].Key - bucket[0].Key + 1);
+            var len = (int)(bucket[^1].Key - bucket[0].Key + 1);
             var jmpLabels = new Label[len];
 
             // Initialize all labels to the default
@@ -395,7 +395,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // check we used all keys and filled all slots
-            Debug.Assert(key == bucket[bucket.Count - 1].Key + 1);
+            Debug.Assert(key == bucket[^1].Key + 1);
             Debug.Assert(slot == jmpLabels.Length);
 
             // Finally, emit the switch instruction
@@ -433,7 +433,7 @@ namespace System.Linq.Expressions.Compiler
                     var secondHalf = IL.DefineLabel();
                     IL.Emit(OpCodes.Ldloc, info.Value);
                     var switchLabels = buckets[mid - 1];
-                    EmitConstant(switchLabels[switchLabels.Count - 1].Constant);
+                    EmitConstant(switchLabels[^1].Constant);
                     IL.Emit(info.IsUnsigned ? OpCodes.Bgt_Un : OpCodes.Bgt, secondHalf);
                     EmitSwitchBuckets(info, buckets, first, mid - 1);
                     IL.MarkLabel(secondHalf);

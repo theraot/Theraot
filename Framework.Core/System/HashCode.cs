@@ -1,14 +1,12 @@
-﻿#if LESSTHAN_NET47 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
+﻿#if LESSTHAN_NET461 || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD20
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 #pragma warning disable CA2231 // Overload operator equals on overriding value type Equals
 #pragma warning disable CC0019 // Use 'switch'
-#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
 #pragma warning disable MA0008 // Add StructLayoutAttribute
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 /*
 
@@ -54,19 +52,22 @@ using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+
 namespace System
 {
     // xxHash32 is used for the hash code.
     // https://github.com/Cyan4973/xxHash
 
-    public struct HashCode
+    public partial struct HashCode
     {
-        private const uint _prime1 = 2654435761U;
-        private const uint _prime2 = 2246822519U;
-        private const uint _prime3 = 3266489917U;
-        private const uint _prime4 = 668265263U;
-        private const uint _prime5 = 374761393U;
-        private static readonly uint _seed = GenerateGlobalSeed();
+        private const uint Prime1 = 2654435761U;
+        private const uint Prime2 = 2246822519U;
+        private const uint Prime3 = 3266489917U;
+        private const uint Prime4 = 668265263U;
+        private const uint Prime5 = 374761393U;
+        private static readonly uint s_seed = GenerateGlobalSeed();
         private uint _length;
         private uint _queue1, _queue2, _queue3;
         private uint _v1, _v2, _v3, _v4;
@@ -168,7 +169,8 @@ namespace System
             return (int)hash;
         }
 
-        public static int Combine<T1, T2, T3, T4, T5, T6>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6)
+        public static int Combine<T1, T2, T3, T4, T5, T6>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5,
+            T6 value6)
         {
             var hc1 = (uint)(value1?.GetHashCode() ?? 0);
             var hc2 = (uint)(value2?.GetHashCode() ?? 0);
@@ -194,7 +196,8 @@ namespace System
             return (int)hash;
         }
 
-        public static int Combine<T1, T2, T3, T4, T5, T6, T7>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7)
+        public static int Combine<T1, T2, T3, T4, T5, T6, T7>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5,
+            T6 value6, T7 value7)
         {
             var hc1 = (uint)(value1?.GetHashCode() ?? 0);
             var hc2 = (uint)(value2?.GetHashCode() ?? 0);
@@ -222,7 +225,8 @@ namespace System
             return (int)hash;
         }
 
-        public static int Combine<T1, T2, T3, T4, T5, T6, T7, T8>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5, T6 value6, T7 value7, T8 value8)
+        public static int Combine<T1, T2, T3, T4, T5, T6, T7, T8>(T1 value1, T2 value2, T3 value3, T4 value4, T5 value5,
+            T6 value6, T7 value7, T8 value8)
         {
             var hc1 = (uint)(value1?.GetHashCode() ?? 0);
             var hc2 = (uint)(value2?.GetHashCode() ?? 0);
@@ -259,16 +263,8 @@ namespace System
 
         public void Add<T>(T value, IEqualityComparer<T>? comparer)
         {
-            Add(comparer?.GetHashCode(value) ?? (value?.GetHashCode() ?? 0));
+            Add(value is null ? 0 : (comparer?.GetHashCode(value) ?? value.GetHashCode()));
         }
-
-        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", true)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly bool Equals(object? obj) => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes.");
-
-        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", true)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override readonly int GetHashCode() => throw new NotSupportedException("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.");
 
         public readonly int ToHashCode()
         {
@@ -324,24 +320,24 @@ namespace System
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private static void Initialize(out uint v1, out uint v2, out uint v3, out uint v4)
         {
-            v1 = _seed + _prime1 + _prime2;
-            v2 = _seed + _prime2;
-            v3 = _seed;
-            v4 = _seed - _prime1;
+            v1 = s_seed + Prime1 + Prime2;
+            v2 = s_seed + Prime2;
+            v3 = s_seed;
+            v4 = s_seed - Prime1;
         }
 
         private static uint MixEmptyState()
         {
-            return _seed + _prime5;
+            return s_seed + Prime5;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private static uint MixFinal(uint hash)
         {
             hash ^= hash >> 15;
-            hash *= _prime2;
+            hash *= Prime2;
             hash ^= hash >> 13;
-            hash *= _prime3;
+            hash *= Prime3;
             hash ^= hash >> 16;
             return hash;
         }
@@ -349,22 +345,22 @@ namespace System
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private static uint MixState(uint v1, uint v2, uint v3, uint v4)
         {
-            return BitOperations.RotateLeft(v1, 1) + BitOperations.RotateLeft(v2, 7) + BitOperations.RotateLeft(v3, 12) + BitOperations.RotateLeft(v4, 18);
+            return BitOperations.RotateLeft(v1, 1) + BitOperations.RotateLeft(v2, 7) +
+                   BitOperations.RotateLeft(v3, 12) + BitOperations.RotateLeft(v4, 18);
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private static uint QueueRound(uint hash, uint queuedValue)
         {
-            return BitOperations.RotateLeft(hash + (queuedValue * _prime3), 17) * _prime4;
+            return BitOperations.RotateLeft(hash + (queuedValue * Prime3), 17) * Prime4;
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private static uint Round(uint hash, uint input)
         {
-            return BitOperations.RotateLeft(hash + (input * _prime2), 13) * _prime1;
+            return BitOperations.RotateLeft(hash + (input * Prime2), 13) * Prime1;
         }
 
-        [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         private void Add(int value)
         {
             // The original xxHash works as follows:
@@ -409,7 +405,7 @@ namespace System
             {
                 _queue3 = val;
             }
-            else
+            else // position == 3
             {
                 if (previousLength == 3)
                 {
@@ -422,6 +418,33 @@ namespace System
                 _v4 = Round(_v4, val);
             }
         }
+    }
+
+    public partial struct HashCode
+    {
+#pragma warning disable 0809
+        // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
+        // Disallowing GetHashCode and Equals is by design
+
+        // * We decided to not override GetHashCode() to produce the hash code
+        //   as this would be weird, both naming-wise as well as from a
+        //   behavioral standpoint (GetHashCode() should return the object's
+        //   hash code, not the one being computed).
+
+        // * Even though ToHashCode() can be called safely multiple times on
+        //   this implementation, it is not part of the contract. If the
+        //   implementation has to change in the future we don't want to worry
+        //   about people who might have incorrectly used this type.
+
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly bool Equals(object? obj) => throw new NotSupportedException("HashCode Equality not supported");
+
+        [Obsolete("HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override readonly int GetHashCode() => throw new NotSupportedException("HashCode HashCode not supported");
+
+#pragma warning restore 0809
     }
 }
 

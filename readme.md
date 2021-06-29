@@ -19,6 +19,7 @@ Similar projects with limited functionality
 * NUnit.System.Linq: https://github.com/nunit/NUnit.System.Linq
 * ReflectionBridge: https://github.com/StefH/ReflectionBridge
 * MinimumAsyncBridge: https://github.com/OrangeCube/MinimumAsyncBridge
+* IndexRange: https://github.com/bgrainger/IndexRange/
 
 ---
 License

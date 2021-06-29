@@ -21,7 +21,7 @@ namespace System.Linq
 
             if (source is IList<TSource> list)
             {
-                return list[list.Count - 1];
+                return list[^1];
             }
 
             var found = false;
@@ -83,7 +83,7 @@ namespace System.Linq
 
             if (source is IList<TSource> list)
             {
-                return list.Count > 0 ? list[list.Count - 1] : default;
+                return list.Count > 0 ? list[^1] : default;
             }
 
             var found = false;

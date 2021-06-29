@@ -430,7 +430,7 @@ namespace System.Linq.Expressions
                 }
 
                 // valueType is the type of the value passed to the setter (last parameter)
-                var valueType = setParameters[setParameters.Length - 1].ParameterType;
+                var valueType = setParameters[^1].ParameterType;
                 if (valueType.IsByRef)
                 {
                     throw new ArgumentException("Property cannot have a managed pointer type.", paramName);

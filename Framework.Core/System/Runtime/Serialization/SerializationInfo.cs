@@ -38,7 +38,7 @@ namespace System.Runtime.Serialization
             _values = new object[_defaultSize];
             _types = new Type[_defaultSize];
 
-            _nameToIndex = new Dictionary<string, int>();
+            _nameToIndex = new Dictionary<string, int>(StringComparer.Ordinal);
 
             _converter = converter ?? throw new ArgumentNullException(nameof(converter));
         }
@@ -276,7 +276,7 @@ namespace System.Runtime.Serialization
             return _converter.ToDouble(value);
         }
 
-        public SerializationInfoEnumerator GetEnumerator() => new SerializationInfoEnumerator(_names, _values, _types, MemberCount);
+        public SerializationInfoEnumerator GetEnumerator() => new(_names, _values, _types, MemberCount);
 
         public short GetInt16(string name)
         {

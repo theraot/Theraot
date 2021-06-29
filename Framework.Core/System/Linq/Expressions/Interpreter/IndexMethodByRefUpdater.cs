@@ -44,7 +44,7 @@ namespace System.Linq.Expressions.Interpreter
                 args[i] = frame.Data[_args[i].Index];
             }
 
-            args[args.Length - 1] = value;
+            args[^1] = value;
 
             var instance = _obj == null ? null : frame.Data[_obj.GetValueOrDefault().Index];
 

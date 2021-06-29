@@ -25,10 +25,8 @@ namespace System.Threading.Tasks
 
         private const int _cooperativeMultitaskingTaskTimeoutMin = 100;
 
-        // millisecond
         private const int _cooperativeMultitaskingTaskTimeoutRootTask = int.MaxValue / 2;
 
-        // millisecond
         private readonly ConcurrentQueue<Replica> _pendingReplicas = new();
 
         private readonly TaskScheduler _scheduler;

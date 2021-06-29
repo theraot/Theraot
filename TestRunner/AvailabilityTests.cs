@@ -201,6 +201,9 @@ namespace TestRunner
 
             // System
 
+            No.Op(typeof(Range));
+            No.Op(typeof(Index));
+
             No.Op(typeof(Action));
             No.Op(typeof(Action<T>));
             No.Op(typeof(Action<T1, T2>));
@@ -255,13 +258,15 @@ namespace TestRunner
             No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6>));
             No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6, T7>));
             No.Op(typeof(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>));
-            
+
 #if LESSTHAN_NETSTANDARD11 && LESSTHAN_NET45
 
             No.Op(typeof(Span<T>));
             No.Op(typeof(ReadOnlySpan<T>));
 
 #endif
+
+            No.Op(typeof(Unsafe));
 
             // System.Threading.Tasks.Extensions
 
