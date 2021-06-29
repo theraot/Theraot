@@ -112,10 +112,10 @@ namespace System.Numerics
                     if (groups)
                     {
                         var extra = groupingSizes.Length - 1;
-                        if (groupingSizes[groupingSizes.Length - 1] != 0)
+                        if (groupingSizes[^1] != 0)
                         {
                             var totalDigits = builder.Length;
-                            extra += (int)Math.Ceiling(totalDigits * 1.0 / groupingSizes[groupingSizes.Length - 1]);
+                            extra += (int)Math.Ceiling(totalDigits * 1.0 / groupingSizes[^1]);
                         }
 
                         var length = extra + builder.Length;
@@ -1093,7 +1093,7 @@ namespace System.Numerics
 
         private static ReverseStringBuilder StringWithGroupsCore(int[] groupingSizes, string groupingSeparator, ReverseStringBuilder newBuffer, IEnumerator<char> enumerator)
         {
-            var size = groupingSizes[groupingSizes.Length - 1];
+            var size = groupingSizes[^1];
             if (size != 0)
             {
                 while (true)

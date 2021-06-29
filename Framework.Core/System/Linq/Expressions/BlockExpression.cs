@@ -410,7 +410,7 @@ namespace System.Linq.Expressions
                     return new ScopeWithType(variables, expressions, type);
                 }
 
-                var last = expressions[expressions.Length - 1];
+                var last = expressions[^1];
                 if (type != typeof(void) && !type.IsReferenceAssignableFromInternal(last.Type))
                 {
                     throw new ArgumentException("Argument types do not match", nameof(type));

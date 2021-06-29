@@ -102,7 +102,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitCastReferenceToEnum(Type toType)
         {
-            Debug.Assert(_instructions[_instructions.Count - 1] == NullCheckInstruction.Instance);
+            Debug.Assert(_instructions[^1] == NullCheckInstruction.Instance);
             Emit(new CastReferenceToEnumInstruction(toType));
         }
 
@@ -457,7 +457,7 @@ namespace System.Linq.Expressions.Interpreter
         // an EmitPop() to undo it at compile time, and leaves a slightly leaner instruction list.
         public void UnEmit()
         {
-            var instruction = _instructions[_instructions.Count - 1];
+            var instruction = _instructions[^1];
             _instructions.RemoveAt(_instructions.Count - 1);
 
             CurrentContinuationsDepth -= instruction.ProducedContinuations;
@@ -661,7 +661,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             // "return and rethrow" label:
-            result[result.Length - 1] = new RuntimeLabel(InterpreterCore.RethrowOnReturn, 0, 0);
+            result[^1] = new RuntimeLabel(InterpreterCore.RethrowOnReturn, 0, 0);
             return result;
         }
     }

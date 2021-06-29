@@ -899,7 +899,7 @@ namespace System.Numerics
             Array.Copy(bytes, result, length + 1);
             if (extra)
             {
-                result[result.Length - 1] = highByte;
+                result[^1] = highByte;
             }
 
             return result;
@@ -1027,7 +1027,7 @@ namespace System.Numerics
             Array.Copy(internalBits, trimmed, length + 1);
             if (needExtraByte)
             {
-                trimmed[trimmed.Length - 1] = highDword;
+                trimmed[^1] = highDword;
             }
 
             return trimmed;
