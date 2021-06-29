@@ -38,8 +38,6 @@ namespace System.Runtime.CompilerServices
             UnmatchedValue = unmatchedValue;
         }
 
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-
         public SwitchExpressionException(string? message)
             : base(message)
         {
@@ -51,6 +49,8 @@ namespace System.Runtime.CompilerServices
         {
             // Empty
         }
+
+#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
 
         private SwitchExpressionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
