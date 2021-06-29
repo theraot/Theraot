@@ -740,7 +740,7 @@ namespace System.Linq.Expressions.Interpreter
 
             var end = CompileBlockStart(node);
 
-            var lastExpression = node.Expressions[node.Expressions.Count - 1];
+            var lastExpression = node.Expressions[^1];
             Compile(lastExpression, asVoid);
             CompileBlockEnd(end);
         }

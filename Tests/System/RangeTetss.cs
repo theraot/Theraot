@@ -1,9 +1,10 @@
-#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+﻿#if TARGETS_NET || LESSTHAN_NETSTANDARD21 || LESSTHAN_NETCOREAPP30
+
+// ReSharper disable RedundantRangeBound
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
 using System.Linq;
 using NUnit.Framework;
 
@@ -40,6 +41,36 @@ namespace System.Tests
         }
 
         [Test]
+        public static void CustomTypeTest()
+        {
+            CustomRangeTester crt = new CustomRangeTester(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            for (int i = 0; i < crt.Length; i++)
+            {
+                Assert.AreEqual(crt[i], crt[Index.FromStart(i)]);
+                Assert.AreEqual(crt[crt.Length - i - 1], crt[^(i + 1)]);
+
+                Assert.True(crt.Slice(i, crt.Length - i).Equals(crt[i..^0]), $"Index = {i} and {crt.Slice(i, crt.Length - i)} != {crt[i..^0]}");
+            }
+        }
+
+        [Test]
+        public static void EqualityTest()
+        {
+            Range range1 = new Range(new Index(10, fromEnd: false), new Index(20, fromEnd: false));
+            Range range2 = new Range(new Index(10, fromEnd: false), new Index(20, fromEnd: false));
+            Assert.True(range1.Equals(range2));
+            Assert.True(range1.Equals((object)range2));
+
+            range2 = new Range(new Index(10, fromEnd: false), new Index(20, fromEnd: true));
+            Assert.False(range1.Equals(range2));
+            Assert.False(range1.Equals((object)range2));
+
+            range2 = new Range(new Index(10, fromEnd: false), new Index(21, fromEnd: false));
+            Assert.False(range1.Equals(range2));
+            Assert.False(range1.Equals((object)range2));
+        }
+
+        [Test]
         public static void GetOffsetAndLengthTest()
         {
             Range range = Range.StartAt(new Index(5));
@@ -66,23 +97,6 @@ namespace System.Tests
         }
 
         [Test]
-        public static void EqualityTest()
-        {
-            Range range1 = new Range(new Index(10, fromEnd: false), new Index(20, fromEnd: false));
-            Range range2 = new Range(new Index(10, fromEnd: false), new Index(20, fromEnd: false));
-            Assert.True(range1.Equals(range2));
-            Assert.True(range1.Equals((object)range2));
-
-            range2 = new Range(new Index(10, fromEnd: false), new Index(20, fromEnd: true));
-            Assert.False(range1.Equals(range2));
-            Assert.False(range1.Equals((object)range2));
-
-            range2 = new Range(new Index(10, fromEnd: false), new Index(21, fromEnd: false));
-            Assert.False(range1.Equals(range2));
-            Assert.False(range1.Equals((object)range2));
-        }
-
-        [Test]
         public static void HashCodeTest()
         {
             Range range1 = new Range(new Index(10, fromEnd: false), new Index(20, fromEnd: false));
@@ -106,50 +120,37 @@ namespace System.Tests
             Assert.AreEqual(10.ToString() + "..^" + 20.ToString(), range1.ToString());
         }
 
-        [Test]
-        public static void CustomTypeTest()
-        {
-            CustomRangeTester crt = new CustomRangeTester(new int [] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
-            for (int i = 0; i < crt.Length; i++)
-            {
-                Assert.AreEqual(crt[i], crt[Index.FromStart(i)]);
-                Assert.AreEqual(crt[crt.Length - i - 1], crt[^(i + 1)]);
-
-                Assert.True(crt.Slice(i, crt.Length - i).Equals(crt[i..^0]), $"Index = {i} and {crt.Slice(i, crt.Length - i)} != {crt[i..^0]}");
-            }
-        }
-
         // CustomRangeTester is a custom class which containing the members Length, Slice and int indexer.
         // Having these members allow the C# compiler to support
         //      this[Index]
         //      this[Range]
-        private class CustomRangeTester : IEquatable<CustomRangeTester>
+        private sealed class CustomRangeTester : IEquatable<CustomRangeTester>
         {
-            private int [] _data;
+            public CustomRangeTester(int[] data) => Data = data;
 
-            public CustomRangeTester(int [] data) => _data = data;
-            public int Length => _data.Length;
-            public int this[int index] => _data[index];
-            public CustomRangeTester Slice(int start, int length) => new CustomRangeTester(_data.Skip(start).Take(length).ToArray());
+            public int Length => Data.Length;
+            private int[] Data { get; }
+            public int this[int index] => Data[index];
 
-            public int [] Data => _data;
-
-            public bool Equals (CustomRangeTester other)
+            public bool Equals(CustomRangeTester other)
             {
-                if (_data.Length == other.Data.Length)
+                if (Data.Length != other.Data.Length)
                 {
-                    for (int i = 0; i < _data.Length; i++)
-                    {
-                        if (_data[i] != other.Data[i])
-                        {
-                            return false;
-                        }
-                    }
-                    return true;
+                    return false;
                 }
 
-                return false;
+                for (int i = 0; i < Data.Length; i++)
+                {
+                    if (Data[i] != other.Data[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
+
+            public CustomRangeTester Slice(int start, int length) => new CustomRangeTester(Data.Skip(start).Take(length).ToArray());
 
             public override string ToString()
             {
@@ -158,11 +159,11 @@ namespace System.Tests
                     return "[]";
                 }
 
-                string s = "[" + _data[0];
+                string s = "[" + Data[0];
 
                 for (int i = 1; i < Length; i++)
                 {
-                    s = s + ", " + _data[i];
+                    s = s + ", " + Data[i];
                 }
 
                 return s + "]";

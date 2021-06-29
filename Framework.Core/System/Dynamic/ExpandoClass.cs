@@ -64,7 +64,7 @@ namespace System.Dynamic
                     }
 
                     var classKeys = @class.Keys;
-                    if (string.Equals(classKeys[classKeys.Length - 1], newKey, StringComparison.Ordinal))
+                    if (string.Equals(classKeys[^1], newKey, StringComparison.Ordinal))
                     {
                         // the new key is the key we added in this transition
                         return @class;
