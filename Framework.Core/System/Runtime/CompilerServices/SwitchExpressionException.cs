@@ -23,13 +23,13 @@ namespace System.Runtime.CompilerServices
     public sealed class SwitchExpressionException : InvalidOperationException
     {
         public SwitchExpressionException()
-            : base("SwitchExpressionException")
+            : base(nameof(SwitchExpressionException))
         {
             // Empty
         }
 
         public SwitchExpressionException(Exception? innerException) :
-            base("SwitchExpressionException", innerException)
+            base(nameof(SwitchExpressionException), innerException)
         {
         }
 
