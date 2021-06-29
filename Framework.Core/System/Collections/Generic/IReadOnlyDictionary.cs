@@ -1,7 +1,5 @@
 ﻿#if LESSTHAN_NET45
 
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-
 using System.Diagnostics.CodeAnalysis;
 
 namespace System.Collections.Generic

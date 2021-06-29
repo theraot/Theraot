@@ -1,8 +1,5 @@
 ﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP30 || LESSTHAN_NETSTANDARD21
 
-#pragma warning disable CA1032 // Implement standard exception constructors
-#pragma warning disable RCS1194 // Implement exception constructors.
-
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 

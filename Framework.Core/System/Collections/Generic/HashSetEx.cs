@@ -9,8 +9,6 @@ using System.Runtime.CompilerServices;
 
 #if (GREATERTHAN_NET30 && LESSTHAN_NET472) || LESSTHAN_NETCOREAPP20 || LESSTHAN_NETSTANDARD21
 
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
 using System.Diagnostics.CodeAnalysis;
 
 #endif
