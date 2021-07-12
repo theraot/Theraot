@@ -157,7 +157,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
-  <Import Project=".\*.analyzers.csproj" />
+  <Import Project=".\*.analyzers.csproj" Condition="'$(Configuration)'=='Debug'"/>
   <ItemGroup>
     <None Update="Theraot\Core\ActionHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
