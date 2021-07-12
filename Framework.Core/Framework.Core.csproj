@@ -11,7 +11,7 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
-    <Version>3.2.7</Version>
+    <Version>3.2.8</Version>
     <Authors>Theraot</Authors>
     <Company>Theraot</Company>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -24,8 +24,8 @@
     <RepositoryUrl>https://github.com/theraot/Theraot/</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <CodeAnalysisRuleSet>../rules.ruleset</CodeAnalysisRuleSet>
-    <AssemblyVersion>3.2.7.0</AssemblyVersion>
-    <FileVersion>3.2.7.0</FileVersion>
+    <AssemblyVersion>3.2.8.0</AssemblyVersion>
+    <FileVersion>3.2.8.0</FileVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
@@ -156,7 +156,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
-  <Import Project=".\*.analyzers.csproj" Condition="'$(Configuration)'=='Debug'"/>
+  <Import Project=".\*.analyzers.csproj" Condition="'$(Configuration)'=='Debug'" />
   <ItemGroup>
     <None Update="Theraot\Core\ActionHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
