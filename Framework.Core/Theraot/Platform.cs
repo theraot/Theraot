@@ -20,7 +20,7 @@ namespace Theraot
 #elif NET45
 
             "net45"
-#elif NET46
+#elif NET46 || NET461
 
             "net46"
 #elif NET47 || NET471 || NET472
@@ -114,7 +114,7 @@ namespace Theraot
             MajorVersion = 2;
 #elif NET30 || NET35 || NETCOREAPP3_0 || NETCOREAPP3_1
             MajorVersion = 3;
-#elif NET40 || NET45 || NET46 || NET47 || NET471 || NET472 || NET48
+#elif NET40 || NET45 || NET46 || NET461 || NET47 || NET471 || NET472 || NET48
             MajorVersion = 4;
 #elif NET5_0
             MajorVersion = 5;
@@ -122,9 +122,9 @@ namespace Theraot
             MajorVersion = -1;
 #endif
 
-#if NET20 || NET30 || NET40 || NETCOREAPP1_0 || NETCOREAPP2_0 || NETCOREAPP3_0 || NETCOREAPP3_1 || NETSTANDARD1_0 || NETSTANDARD2_0
+#if NET20 || NET30 || NET40 || NETCOREAPP1_0 || NETCOREAPP2_0 || NETCOREAPP3_0 || NETSTANDARD1_0 || NETSTANDARD2_0
             MinorVersion = 0;
-#elif NETCOREAPP1_1 || NETCOREAPP2_1 || NETSTANDARD1_1 || NETSTANDARD2_1
+#elif NETCOREAPP1_1 || NETCOREAPP2_1 || NETCOREAPP3_1 || NETSTANDARD1_1 || NETSTANDARD2_1
             MinorVersion = 1;
 #elif NETCOREAPP1_2 || NETCOREAPP2_2 || NETSTANDARD1_2
             MinorVersion = 2;
@@ -134,7 +134,7 @@ namespace Theraot
             MinorVersion = 4;
 #elif NET35 || NET45 || NETSTANDARD1_5
             MinorVersion = 5;
-#elif NET46 || NETSTANDARD1_6
+#elif NET46 || NET461 || NETSTANDARD1_6
             MinorVersion = 6;
 #elif NET47 || NET471 || NET472
             MinorVersion = 7;

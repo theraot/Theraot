@@ -19,15 +19,15 @@ namespace System
             var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (item == null)
-                {
-                    continue;
-                }
-
                 if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator!);
                     length += separatorLength;
+                }
+
+                if (item == null)
+                {
+                    continue;
                 }
 
                 stringList.Add(item);
@@ -55,15 +55,15 @@ namespace System
             var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (item is null)
-                {
-                    continue;
-                }
-
                 if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator!);
                     length += separatorLength;
+                }
+
+                if (item is null)
+                {
+                    continue;
                 }
 
                 var itemToString = item.ToString();
@@ -91,15 +91,15 @@ namespace System
             var separatorLength = separator?.Length ?? 0;
             foreach (var item in values)
             {
-                if (item == null)
-                {
-                    continue;
-                }
-
                 if (length != 0 && separatorLength != 0)
                 {
                     stringList.Add(separator!);
                     length += separatorLength;
+                }
+
+                if (item == null)
+                {
+                    continue;
                 }
 
                 var itemToString = item.ToString();
