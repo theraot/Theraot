@@ -582,20 +582,18 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void TestTryGetNonEnumeratedCountTrue()
-        {
-            IEnumerable<int> data = new int[]{ 1, 2, 3 };
-            int count;
-            Assert.True(data.TryGetNonEnumeratedCount(out count));
-            Assert.AreEqual(3, count);
-        }
-
-        [Test]
         public void TestTryGetNonEnumeratedCountFalse()
         {
             IEnumerable<int> data = Enumerable.Range(0, 10);
-            int count;
-            Assert.False(data.TryGetNonEnumeratedCount(out count));
+            Assert.False(data.TryGetNonEnumeratedCount(out _));
+        }
+
+        [Test]
+        public void TestTryGetNonEnumeratedCountTrue()
+        {
+            IEnumerable<int> data = new[] { 1, 2, 3 };
+            Assert.True(data.TryGetNonEnumeratedCount(out var count));
+            Assert.AreEqual(3, count);
         }
 
         private static IEnumerable<byte> AsEnumerable(Stream stream)

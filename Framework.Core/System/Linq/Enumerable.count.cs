@@ -1,4 +1,4 @@
-#if TARGETS_NET || TARGETS_NETSTANDARD || LESSTHAN_NET60
+﻿#if TARGETS_NET || TARGETS_NETSTANDARD || LESSTHAN_NET60
 
 using System.Collections;
 using System.Collections.Generic;
@@ -14,9 +14,9 @@ namespace System.Linq
                 throw new ArgumentNullException(nameof(source));
             }
 
-            if (source is ICollection<TSource> collectionoft)
+            if (source is ICollection<TSource> collectionOfT)
             {
-                count = collectionoft.Count;
+                count = collectionOfT.Count;
                 return true;
             }
 
