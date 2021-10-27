@@ -26,6 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+// ReSharper disable CollectionNeverUpdated.Local
+// ReSharper disable CollectionNeverQueried.Local
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -158,6 +161,7 @@ namespace Tests.SystemTests.CollectionsTests.GenericTests
         [Test]
         public void ExceptWith_Null()
         {
+            // ReSharper disable once CollectionNeverUpdated.Local
             var set = new SortedSet<int>();
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(() => set.ExceptWith(null));
