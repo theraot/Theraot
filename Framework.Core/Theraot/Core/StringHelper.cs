@@ -64,6 +64,11 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
 
+            if (characterCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(characterCount), $"{nameof(characterCount)} must be non-negative.");
+            }
+
             var length = text.Length;
             return length < characterCount ? text : text.Substring(length - characterCount);
         }
@@ -379,6 +384,11 @@ namespace Theraot.Core
             if (text == null)
             {
                 throw new ArgumentNullException(nameof(text));
+            }
+
+            if (characterCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(characterCount), $"{nameof(characterCount)} must be non-negative.");
             }
 
             var length = text.Length;
