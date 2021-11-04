@@ -1,4 +1,4 @@
-// Needed for NET40
+﻿// Needed for NET40
 
 #pragma warning disable MA0009 // Add regex evaluation timeout
 
@@ -114,6 +114,11 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
 
+            if (characterCount == 0)
+            {
+                return text;
+            }
+
             var length = text.Length;
             return length < characterCount ? string.Empty : text.Substring(0, length - characterCount);
         }
@@ -124,6 +129,11 @@ namespace Theraot.Core
             if (text == null)
             {
                 throw new ArgumentNullException(nameof(text));
+            }
+
+            if (characterCount == 0)
+            {
+                return text;
             }
 
             var length = text.Length;
