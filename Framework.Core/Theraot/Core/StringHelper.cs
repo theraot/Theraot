@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 #if LESSTHAN_NET45 || GREATERTHAN_NETCOREAPP11
@@ -21,7 +22,15 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, params string[] values)
         {
-            return string.Concat(text, values);
+            var sb = new StringBuilder();
+
+            sb.Append(text);
+            foreach (var value in values)
+            {
+                sb.Append(value);
+            }
+
+            return sb.ToString();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
