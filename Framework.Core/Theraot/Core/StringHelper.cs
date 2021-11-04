@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+// Needed for NET40
 
 #pragma warning disable MA0009 // Add regex evaluation timeout
 
@@ -22,6 +22,11 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, params string[] values)
         {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
             var sb = new StringBuilder();
 
             sb.Append(text);
