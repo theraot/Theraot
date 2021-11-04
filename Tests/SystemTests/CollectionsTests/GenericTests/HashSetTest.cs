@@ -30,6 +30,8 @@ extern alias nunitlinq;
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+// ReSharper disable CollectionNeverUpdated.Local
+
 using NUnit.Framework;
 using System;
 using System.Collections;
