@@ -140,7 +140,7 @@ namespace System
 
         public override string ToString()
         {
-            return string.Format("System.Span<{0}>[{1}]", typeof(T).Name, _length);
+            return string.Format("System.ReadOnlySpan<{0}>[{1}]", typeof(T).Name, _length);
         }
 
         public bool TryCopyTo(Span<T> destination)
