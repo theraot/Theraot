@@ -179,9 +179,6 @@ namespace System
         public static implicit operator ReadOnlySpan<T>(ArraySegment<T> segment)
             => new ReadOnlySpan<T>(segment.Array, segment.Offset, segment.Count);
 
-        public static implicit operator ReadOnlySpan<T>(Span<T> span) =>
-            new ReadOnlySpan<T>(span._array, span._start, span._length);
-
         /// <summary>
         ///  From .NET source
         /// </summary>
