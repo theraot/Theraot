@@ -6,6 +6,8 @@
 #pragma warning disable CA1815 // override equality and inequality
 #pragma warning disable CA2225 // Provide a method as alternative to operator implicit
 
+using System.Text;
+
 namespace System
 {
     public ref struct ReadOnlySpan<T>
@@ -140,6 +142,23 @@ namespace System
 
         public override string ToString()
         {
+            if (typeof(T) == typeof(char))
+            {
+                StringBuilder builder = new();
+
+                foreach (T? character in this)
+                {
+                    // This condition only exists to cast T as char as this should always be true.
+                    // The original uses Unsafe.As<T>, but until it is polyfilled, it has to be done like this.
+                    if (character is char c)
+                    {
+                        builder.Append(c);
+                    }
+                }
+
+                return builder.ToString();
+            }
+
             return string.Format("System.ReadOnlySpan<{0}>[{1}]", typeof(T).Name, _length);
         }
 
