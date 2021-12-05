@@ -7,4 +7,5 @@ namespace System.Reflection
         public TypeInfo GetTypeInfo();
     }
 }
+
 #endif
