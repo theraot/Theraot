@@ -35,7 +35,9 @@ namespace System
     public readonly struct ValueTuple
         : IEquatable<ValueTuple>, IStructuralEquatable, IStructuralComparable, IComparable, IComparable<ValueTuple>, ITupleInternal
     {
-        int ITupleInternal.Size => 0;
+        readonly int ITuple.Length => 0;
+
+        readonly object ITuple.this[int index] => throw new IndexOutOfRangeException();
 
         /// <summary>Creates a new struct 0-tuple.</summary>
         /// <returns>A 0-tuple.</returns>
@@ -327,7 +329,9 @@ namespace System
             Item1 = item1;
         }
 
-        readonly int ITupleInternal.Size => 1;
+        readonly int ITuple.Length => 1;
+
+        readonly object? ITuple.this[int index] => index is 0 ? Item1 : throw new IndexOutOfRangeException();
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -484,7 +488,14 @@ namespace System
             Item2 = item2;
         }
 
-        readonly int ITupleInternal.Size => 2;
+        readonly int ITuple.Length => 2;
+
+        readonly object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -698,7 +709,15 @@ namespace System
             Item3 = item3;
         }
 
-        int ITupleInternal.Size => 3;
+        readonly int ITuple.Length => 3;
+
+        readonly object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -911,7 +930,16 @@ namespace System
             Item4 = item4;
         }
 
-        int ITupleInternal.Size => 4;
+        readonly int ITuple.Length => 4;
+
+        readonly object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -1146,7 +1174,17 @@ namespace System
             Item5 = item5;
         }
 
-        int ITupleInternal.Size => 5;
+        readonly int ITuple.Length => 5;
+
+        readonly object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -1403,7 +1441,18 @@ namespace System
             Item6 = item6;
         }
 
-        int ITupleInternal.Size => 6;
+        readonly int ITuple.Length => 6;
+
+        readonly object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            5 => Item6,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -1682,7 +1731,19 @@ namespace System
             Item7 = item7;
         }
 
-        int ITupleInternal.Size => 7;
+        readonly int ITuple.Length => 7;
+
+        readonly object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            5 => Item6,
+            6 => Item7,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -1989,7 +2050,19 @@ namespace System
             Rest = rest;
         }
 
-        int ITupleInternal.Size => Rest is ITupleInternal rest ? 7 + rest.Size : 8;
+        readonly int ITuple.Length => Rest is ITupleInternal rest ? 7 + rest.Length : 8;
+
+        readonly object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            5 => Item6,
+            6 => Item7,
+            _ => Rest is ITupleInternal rest ? rest[index - 7] : index is 7 ? Rest : throw new IndexOutOfRangeException()
+        };
 
         /// <summary>Compares this instance to a specified instance and returns an indication of their relative values.</summary>
         /// <param name="other">An instance to compare.</param>
@@ -2101,7 +2174,7 @@ namespace System
                 );
             }
 
-            var size = rest.Size;
+            var size = rest.Length;
             if (size >= 8)
             {
                 return rest.GetHashCode();
@@ -2310,7 +2383,7 @@ namespace System
                 );
             }
 
-            var size = rest.Size;
+            var size = rest.Length;
             if (size >= 8)
             {
                 return rest.GetHashCode(comparer);

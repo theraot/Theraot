@@ -52,7 +52,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1)
         {
@@ -60,6 +60,10 @@ namespace System
         }
 
         public T1 Item1 { get; }
+
+        int ITuple.Length => 1;
+
+        object? ITuple.this[int index] => index is 0 ? Item1 : throw new IndexOutOfRangeException();
 
         int IComparable.CompareTo(object obj)
         {
@@ -113,7 +117,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1, T2> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1, T2> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1, T2 item2)
         {
@@ -124,6 +128,15 @@ namespace System
         public T1 Item1 { get; }
 
         public T2 Item2 { get; }
+
+        int ITuple.Length => 2;
+
+        object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -190,7 +203,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1, T2, T3> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1, T2, T3> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1, T2 item2, T3 item3)
         {
@@ -204,6 +217,16 @@ namespace System
         public T2 Item2 { get; }
 
         public T3 Item3 { get; }
+
+        int ITuple.Length => 3;
+
+        object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -278,7 +301,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1, T2, T3, T4> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1, T2, T3, T4> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4)
         {
@@ -295,6 +318,17 @@ namespace System
         public T3 Item3 { get; }
 
         public T4 Item4 { get; }
+
+        int ITuple.Length => 4;
+
+        object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -377,7 +411,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1, T2, T3, T4, T5> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1, T2, T3, T4, T5> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5)
         {
@@ -397,6 +431,18 @@ namespace System
         public T4 Item4 { get; }
 
         public T5 Item5 { get; }
+
+        int ITuple.Length => 5;
+
+        object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -485,7 +531,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1, T2, T3, T4, T5, T6> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1, T2, T3, T4, T5, T6> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6)
         {
@@ -508,6 +554,20 @@ namespace System
         public T5 Item5 { get; }
 
         public T6 Item6 { get; }
+
+        int ITuple.Length => 6;
+
+        object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            5 => Item6,
+            _ => throw new IndexOutOfRangeException()
+        };
+
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -603,7 +663,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1, T2, T3, T4, T5, T6, T7> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1, T2, T3, T4, T5, T6, T7> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7)
         {
@@ -629,6 +689,20 @@ namespace System
         public T6 Item6 { get; }
 
         public T7 Item7 { get; }
+
+        int ITuple.Length => 7;
+
+        object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            5 => Item6,
+            6 => Item7,
+            _ => throw new IndexOutOfRangeException()
+        };
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -731,7 +805,7 @@ namespace System
     }
 
     [Serializable]
-    public class Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> : IStructuralEquatable, IStructuralComparable, IComparable
+    public class Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
         {
@@ -761,6 +835,20 @@ namespace System
         public T7 Item7 { get; }
 
         public TRest Rest { get; }
+
+        int ITuple.Length => Rest is ITuple rest ? 7 + rest.Length : 8;
+
+        object? ITuple.this[int index] => index switch
+        {
+            0 => Item1,
+            1 => Item2,
+            2 => Item3,
+            3 => Item4,
+            4 => Item5,
+            5 => Item6,
+            6 => Item7,
+            _ => Rest is ITuple rest ? rest[index - 7] : index is 7 ? Rest : throw new IndexOutOfRangeException()
+        };
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {

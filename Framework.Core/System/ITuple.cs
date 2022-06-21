@@ -4,18 +4,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections;
-
 namespace System
 {
     /// <summary>
     /// Helper so we can call some tuple methods recursively without knowing the underlying types.
     /// </summary>
-    internal interface ITupleInternal : ITuple
+    public interface ITuple
     {
-        int GetHashCode(IEqualityComparer comparer);
+        int Length { get; }
 
-        string ToStringEnd();
+        object? this[int index] { get; }
     }
 }
 
