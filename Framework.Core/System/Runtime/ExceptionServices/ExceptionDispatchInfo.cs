@@ -19,10 +19,9 @@ namespace System.Runtime.ExceptionServices
         private ExceptionDispatchInfo(Exception exception)
         {
             SourceException = exception;
-            _stackTrace = SourceException.StackTrace;
-            if (_stackTrace != null)
+            if (SourceException.StackTrace is { } sourceExceptionStackTrace)
             {
-                _stackTrace +=
+                _stackTrace = sourceExceptionStackTrace +
                     $"{Environment.NewLine}---End of stack trace from previous location where exception was thrown ---{Environment.NewLine}";
             }
             else
@@ -123,7 +122,7 @@ namespace System.Runtime.ExceptionServices
             ); // MS.Net
 
             // ---
-            return _remoteStackTraceString;
+            return _remoteStackTraceString!;
         }
 
         private static void SetStackTrace(Exception exception, object value)

@@ -92,9 +92,9 @@ namespace System.Runtime.CompilerServices
 
             /// <summary>Runs an Action delegate provided as state.</summary>
             /// <param name="state">The Action delegate to invoke.</param>
-            private static void RunAction(object state)
+            private static void RunAction(object? state)
             {
-                ((Action)state)();
+                ((Action)state!)();
             }
         }
     }

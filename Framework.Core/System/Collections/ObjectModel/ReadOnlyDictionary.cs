@@ -62,7 +62,7 @@ namespace System.Collections.ObjectModel
             set => throw new NotSupportedException();
         }
 
-        void IDictionary.Add(object key, object value)
+        void IDictionary.Add(object key, object? value)
         {
             throw new NotSupportedException();
         }

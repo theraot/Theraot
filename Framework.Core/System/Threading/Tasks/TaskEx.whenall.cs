@@ -144,7 +144,7 @@ namespace System.Threading.Tasks
 
             if (exception is AggregateException aggregateException)
             {
-                targetList.Add(aggregateException.InnerExceptions.Count == 1 ? exception.InnerException : exception);
+                targetList.Add(aggregateException.InnerExceptions.Count == 1 ? exception.InnerException! : exception);
             }
             else
             {
@@ -180,7 +180,7 @@ namespace System.Threading.Tasks
                     {
                         if (task.IsFaulted)
                         {
-                            AddPotentiallyUnwrappedExceptions(ref exceptions, task.Exception);
+                            AddPotentiallyUnwrappedExceptions(ref exceptions, task.Exception!);
                         }
                         else
                         {

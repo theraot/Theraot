@@ -147,7 +147,7 @@ namespace System.Runtime.CompilerServices
                     {
                         try
                         {
-                            syncContext.Post(state => ((Action)state)(), continuation);
+                            syncContext.Post(state => ((Action)state!)(), continuation);
                         }
                         catch (Exception ex)
                         {
@@ -317,7 +317,7 @@ namespace System.Runtime.CompilerServices
                 case TaskStatus.Canceled:
                     throw new TaskCanceledException(task);
                 case TaskStatus.Faulted:
-                    throw PrepareExceptionForRethrow(task.Exception!.InnerException);
+                    throw PrepareExceptionForRethrow(task.Exception!.InnerException!);
                 default:
                     throw new InvalidOperationException("The task has not yet completed.");
             }

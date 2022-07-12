@@ -70,7 +70,7 @@ namespace System.Runtime.CompilerServices
             {
                 try
                 {
-                    targetContext.Post(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state), exception);
+                    targetContext.Post(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state!), exception);
                     return;
                 }
                 catch (Exception ex)
@@ -79,7 +79,7 @@ namespace System.Runtime.CompilerServices
                 }
             }
 
-            ThreadPool.QueueUserWorkItem(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state), exception);
+            ThreadPool.QueueUserWorkItem(state => throw TaskAwaiter.PrepareExceptionForRethrow((Exception)state!), exception);
         }
 
         /// <summary>
@@ -130,14 +130,14 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             ///     The context with which to run MoveNext.
             /// </summary>
-            private readonly ExecutionContext _context;
+            private readonly ExecutionContext? _context;
 
             /// <summary>
             ///     Initializes the runner.
             /// </summary>
             /// <param name="context">The context with which to run MoveNext.</param>
             [SecurityCritical]
-            internal MoveNextRunner(ExecutionContext context)
+            internal MoveNextRunner(ExecutionContext? context)
             {
                 _context = context;
             }
@@ -170,9 +170,9 @@ namespace System.Runtime.CompilerServices
                 _invokeMoveNext = callback;
                 return callback;
 
-                static void InvokeMoveNext(object stateMachine)
+                static void InvokeMoveNext(object? stateMachine)
                 {
-                    ((IAsyncStateMachine)stateMachine).MoveNext();
+                    ((IAsyncStateMachine)stateMachine!).MoveNext();
                 }
             }
         }

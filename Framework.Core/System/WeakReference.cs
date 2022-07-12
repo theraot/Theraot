@@ -36,7 +36,7 @@ namespace System
             }
 
             _ = context;
-            var value = (T)info.GetValue("TrackedObject", typeof(T));
+            var value = (T)info.GetValue("TrackedObject", typeof(T))!;
             _trackResurrection = info.GetBoolean("TrackResurrection");
             SetTarget(value);
         }

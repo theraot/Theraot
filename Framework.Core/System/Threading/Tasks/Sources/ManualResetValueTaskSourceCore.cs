@@ -229,7 +229,7 @@ namespace System.Threading.Tasks.Sources
 #if TARGETS_NET || TARGETS_NETCORE || GREATERTHAN_NETSTANDARD13
             if (_executionContext != null)
             {
-                ExecutionContext.Run(_executionContext, s => ((ManualResetValueTaskSourceCore<TResult>)s).InvokeContinuation(), this);
+                ExecutionContext.Run(_executionContext, s => ((ManualResetValueTaskSourceCore<TResult>)s!).InvokeContinuation(), this);
                 return;
             }
 #endif
