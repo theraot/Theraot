@@ -67,7 +67,6 @@ namespace System.Threading.Tasks
                     TaskScheduler.Current
                 )
             );
-            result.Wait();
             return result;
         }
 
@@ -91,7 +90,6 @@ namespace System.Threading.Tasks
                         TaskScheduler.Current
                     )
             );
-            result.Wait(cancellationToken);
             return result;
         }
     }
