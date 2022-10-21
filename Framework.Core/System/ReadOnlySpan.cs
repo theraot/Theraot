@@ -47,6 +47,11 @@ namespace System
             }
             else
             {
+                if (start + length > array.Length)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
                 if (!typeof(T).IsValueType && array.GetType() != typeof(T[]))
                 {
                     throw new ArrayTypeMismatchException(nameof(array));
@@ -92,7 +97,12 @@ namespace System
 
         public void CopyTo(Span<T> destination)
         {
-            for (int i = 0; i < _array.Length; i++)
+            var length = Length;
+            if (destination.Length < length)
+            {
+                throw new ArgumentException(nameof(destination));
+            }
+            for (int i = 0; i < length; i++)
             {
                 destination[i] = _array[_start + i];
             }
@@ -125,7 +135,15 @@ namespace System
 
         public Span<T> Slice(int start, int length)
         {
-            return new Span<T>(_array, _start + start, _length - start - length);
+            if (start > _length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(start));
+            }
+            if (start + length > _length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
+            return new Span<T>(_array, _start + start, length);
         }
 
         public T[] ToArray()
