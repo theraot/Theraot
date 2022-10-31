@@ -195,7 +195,7 @@ namespace System.Threading.Tasks
             return new ConfiguredValueTaskAwaitable(new ValueTask(Obj, Token, continueOnCapturedContext));
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ValueTask task && Equals(task);
         }
@@ -496,7 +496,7 @@ namespace System.Threading.Tasks
             return new ConfiguredValueTaskAwaitable<TResult>(this, continueOnCapturedContext);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ValueTask<TResult> task && Equals(task);
         }
@@ -520,7 +520,7 @@ namespace System.Threading.Tasks
                 return _task.GetHashCode();
             }
 
-            if (_result != null!)
+            if (_result != null)
             {
                 return _result.GetHashCode();
             }
@@ -533,10 +533,10 @@ namespace System.Threading.Tasks
         {
             if (_task != null)
             {
-                return _task.Status == TaskStatus.RanToCompletion && _task.Result != null! ? _task.Result.ToString() : string.Empty;
+                return _task.Status == TaskStatus.RanToCompletion && _task.Result != null ? _task.Result.ToString()! : string.Empty;
             }
 
-            return _result != null! ? _result.ToString() : string.Empty;
+            return _result != null ? _result.ToString()! : string.Empty;
         }
     }
 }

@@ -184,7 +184,7 @@ namespace System.Collections.Generic
 
         private sealed class SpyEqualityComparer : IEqualityComparer<T>
         {
-            private readonly Threading.ThreadLocal<Action<T, T>?> _callback = new();
+            private readonly Threading.ThreadLocal<Action<T?, T?>?> _callback = new();
             private readonly IEqualityComparer<T> _wrapped;
 
             private SpyEqualityComparer(IEqualityComparer<T> wrapped)
@@ -207,7 +207,7 @@ namespace System.Collections.Generic
                 return new SpyEqualityComparer(comparer);
             }
 
-            public bool Equals(T x, T y)
+            public bool Equals(T? x, T? y)
             {
                 GetCallback()?.Invoke(x, y);
                 return _wrapped.Equals(x, y);
@@ -218,12 +218,12 @@ namespace System.Collections.Generic
                 return _wrapped.GetHashCode(obj);
             }
 
-            public void SetCallback(Action<T, T>? callback)
+            public void SetCallback(Action<T?, T?>? callback)
             {
                 _callback.Value = callback;
             }
 
-            private Action<T, T>? GetCallback()
+            private Action<T?, T?>? GetCallback()
             {
                 if (!_callback.IsValueCreated || _callback.Value == null)
                 {

@@ -24,7 +24,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         ///     The synchronization context associated with this operation.
         /// </summary>
-        private readonly SynchronizationContext _synchronizationContext;
+        private readonly SynchronizationContext? _synchronizationContext;
 
         /// <summary>
         ///     State related to the IAsyncStateMachine.
@@ -43,7 +43,7 @@ namespace System.Runtime.CompilerServices
         ///     Initializes the <see cref="AsyncVoidMethodBuilder" />.
         /// </summary>
         /// <param name="synchronizationContext">The synchronizationContext associated with this operation. This may be null.</param>
-        private AsyncVoidMethodBuilder(SynchronizationContext synchronizationContext)
+        private AsyncVoidMethodBuilder(SynchronizationContext? synchronizationContext)
         {
             _synchronizationContext = synchronizationContext;
             synchronizationContext?.OperationStarted();
@@ -215,7 +215,7 @@ namespace System.Runtime.CompilerServices
         {
             try
             {
-                _synchronizationContext.OperationCompleted();
+                _synchronizationContext?.OperationCompleted();
             }
             catch (Exception ex)
             {

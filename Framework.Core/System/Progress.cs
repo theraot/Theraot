@@ -52,9 +52,9 @@ namespace System
             }
         }
 
-        private void Callback(object value)
+        private void Callback(object? value)
         {
-            var valueT = (T)value;
+            var valueT = (T)value!;
             var progressChanged = ProgressChanged;
             progressChanged?.Invoke(this, valueT);
         }
