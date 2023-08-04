@@ -381,7 +381,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static bool TryGetComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, [NotNullWhen(true)] out IEqualityComparer<TKey>? comparer)
+        public static bool TryGetComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, [NotNullWhen(true)] out IEqualityComparer<TKey>? comparer) where TKey : notnull
         {
             if (source == null)
             {
@@ -406,7 +406,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IDictionary<TKey, TValue> WithComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, IEqualityComparer<TKey>? comparer)
+        public static IDictionary<TKey, TValue> WithComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, IEqualityComparer<TKey>? comparer) where TKey : notnull
         {
             comparer ??= EqualityComparer<TKey>.Default;
             if (source == null)
