@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Theraot.Collections.Specialized
 {
-    public sealed class KeyedStack<TKey, TValue>
+    public sealed class KeyedStack<TKey, TValue> where TKey : notnull
     {
         private readonly Dictionary<TKey, Stack<TValue>> _data;
 

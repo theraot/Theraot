@@ -16,7 +16,7 @@ namespace Theraot.Collections.Specialized
     [Serializable]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<ReadOnlyStructNeedle<TKey>, TValue>, IDictionary<TKey, TValue>, IHasComparer<TKey>
+    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<ReadOnlyStructNeedle<TKey>, TValue>, IDictionary<TKey, TValue>, IHasComparer<TKey> where TKey : notnull
     {
         private readonly ICollection<TKey> _keys;
         private readonly IEqualityComparer<TValue> _valueComparer;
