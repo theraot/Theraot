@@ -81,7 +81,7 @@ namespace System.Collections.Concurrent
             TKey key,
             Func<TKey, TArg, TValue> addValueFactory,
             Func<TKey, TValue, TArg, TValue> updateValueFactory,
-            TArg factoryArgument)
+            TArg factoryArgument) where TKey : notnull
         {
             if (concurrentDictionary is null)
             {
@@ -132,7 +132,7 @@ namespace System.Collections.Concurrent
         [Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2201:Do not raise reserved exception types", Justification = "<Pending>")]
         public static bool TryRemove<TKey, TValue>(
             this ConcurrentDictionary<TKey, TValue> concurrentDictionary,
-            KeyValuePair<TKey, TValue> item)
+            KeyValuePair<TKey, TValue> item) where TKey : notnull
         {
             if (concurrentDictionary is null)
             {

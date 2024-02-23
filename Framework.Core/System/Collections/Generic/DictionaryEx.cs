@@ -9,7 +9,7 @@ namespace System.Collections.Generic
     [ComVisible(false)]
     [DebuggerNonUserCode]
     [DebuggerDisplay("Count={" + nameof(Count) + "}")]
-    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, IHasComparer<TKey>
+    public class DictionaryEx<TKey, TValue> : Dictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, IHasComparer<TKey> where TKey : notnull
     {
         public DictionaryEx()
         {

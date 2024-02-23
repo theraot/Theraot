@@ -13,35 +13,15 @@ namespace System.Linq
         EnumerableTheraotExtensions
 #endif
     {
-        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source)
+        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source) => source.ToHashSet(comparer: null);
+
+        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource>? comparer)
         {
-            switch (source)
-            {
-                case null:
-                    return new HashSet<TSource>();
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
 
-                case HashSet<TSource> hashSet:
-                    return hashSet;
-
-                default:
-                    return new HashSet<TSource>(source);
-            }
-        }
-
-        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
-        {
-            comparer ??= EqualityComparer<TSource>.Default;
-            switch (source)
-            {
-                case null:
-                    return new HashSet<TSource>(comparer);
-
-                case HashSet<TSource> hashSet when hashSet.Comparer.Equals(comparer):
-                    return hashSet;
-
-                default:
-                    return new HashSet<TSource>(source, comparer);
-            }
+            // Don't pre-allocate based on knowledge of size, as potentially many elements will be dropped.
+            return new HashSet<TSource>(source, comparer);
         }
     }
 }
