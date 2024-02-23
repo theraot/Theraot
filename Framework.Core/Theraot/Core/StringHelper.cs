@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 #if LESSTHAN_NET45 || GREATERTHAN_NETCOREAPP11
@@ -21,7 +22,20 @@ namespace Theraot.Core
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         public static string Append(this string text, params string[] values)
         {
-            return string.Concat(text, values);
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            var sb = new StringBuilder();
+
+            sb.Append(text);
+            foreach (var value in values)
+            {
+                sb.Append(value);
+            }
+
+            return sb.ToString();
         }
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
@@ -48,6 +62,11 @@ namespace Theraot.Core
             if (text == null)
             {
                 throw new ArgumentNullException(nameof(text));
+            }
+
+            if (characterCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(characterCount), $"{nameof(characterCount)} must be non-negative.");
             }
 
             var length = text.Length;
@@ -95,6 +114,11 @@ namespace Theraot.Core
                 throw new ArgumentNullException(nameof(text));
             }
 
+            if (characterCount == 0)
+            {
+                return text;
+            }
+
             var length = text.Length;
             return length < characterCount ? string.Empty : text.Substring(0, length - characterCount);
         }
@@ -105,6 +129,11 @@ namespace Theraot.Core
             if (text == null)
             {
                 throw new ArgumentNullException(nameof(text));
+            }
+
+            if (characterCount == 0)
+            {
+                return text;
             }
 
             var length = text.Length;
@@ -365,6 +394,11 @@ namespace Theraot.Core
             if (text == null)
             {
                 throw new ArgumentNullException(nameof(text));
+            }
+
+            if (characterCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(characterCount), $"{nameof(characterCount)} must be non-negative.");
             }
 
             var length = text.Length;
