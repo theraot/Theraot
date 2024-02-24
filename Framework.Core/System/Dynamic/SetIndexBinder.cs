@@ -52,7 +52,7 @@ namespace System.Dynamic
             ContractUtils.RequiresNotNull(args, nameof(args));
             ContractUtils.Requires(args.Length >= 2, nameof(args));
 
-            var value = args[args.Length - 1];
+            var value = args[^1];
             var indexes = args.RemoveLast();
 
             ContractUtils.RequiresNotNull(value, nameof(args));

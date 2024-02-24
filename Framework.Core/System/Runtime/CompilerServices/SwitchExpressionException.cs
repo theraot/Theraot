@@ -1,38 +1,29 @@
-﻿#if TARGETS_NET || LESSTHAN_NETCOREAPP30 || LESSTHAN_NETSTANDARD21
-
-#pragma warning disable CA1032 // Implement standard exception constructors
-#pragma warning disable RCS1194 // Implement exception constructors.
+﻿// https://github.com/dotnet/runtime/blob/v7.0.13/src/libraries/System.Private.CoreLib/src/System/Runtime/CompilerServices/SwitchExpressionException.cs
+// replaced SR.* with actual values
+#if TARGETS_NET || LESSTHAN_NETCOREAPP30 || LESSTHAN_NETSTANDARD21
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-
+using System.Globalization;
 using System.Runtime.Serialization;
-
-#endif
 
 namespace System.Runtime.CompilerServices
 {
     /// <summary>
     /// Indicates that a switch expression that was non-exhaustive failed to match its input
-    /// at runtime, e.g. in the C# 8 expression
-    /// <code>
-    /// 3 switch { 4 => 5 }
-    /// </code>.
+    /// at runtime, e.g. in the C# 8 expression <code>3 switch { 4 => 5 }</code>.
     /// The exception optionally contains an object representing the unmatched value.
     /// </summary>
     [Serializable]
+    [TypeForwardedFrom("System.Runtime.Extensions, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     public sealed class SwitchExpressionException : InvalidOperationException
     {
         public SwitchExpressionException()
-            : base("SwitchExpressionException")
-        {
-            // Empty
-        }
+            : base("Non-exhaustive switch expression failed to match its input.") { }
 
         public SwitchExpressionException(Exception? innerException) :
-            base("SwitchExpressionException", innerException)
+            base("Non-exhaustive switch expression failed to match its input.", innerException)
         {
         }
 
@@ -41,26 +32,27 @@ namespace System.Runtime.CompilerServices
             UnmatchedValue = unmatchedValue;
         }
 
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-
-        public SwitchExpressionException(string? message)
-            : base(message)
-        {
-            // Empty
-        }
-
-        public SwitchExpressionException(string? message, Exception? innerException)
-            : base(message, innerException)
-        {
-            // Empty
-        }
-
+#if NETFRAMEWORK || NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
         private SwitchExpressionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             UnmatchedValue = info.GetValue(nameof(UnmatchedValue), typeof(object));
         }
+#endif
 
+        public SwitchExpressionException(string? message) : base(message) { }
+
+        public SwitchExpressionException(string? message, Exception? innerException)
+            : base(message, innerException) { }
+
+        public object? UnmatchedValue { get; }
+
+#if NETFRAMEWORK || NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(UnmatchedValue), UnmatchedValue, typeof(object));
+        }
 #endif
 
         public override string Message
@@ -72,21 +64,10 @@ namespace System.Runtime.CompilerServices
                     return base.Message;
                 }
 
-                return base.Message + Environment.NewLine + UnmatchedValue;
+                string valueMessage = string.Format(CultureInfo.InvariantCulture, "Unmatched value was {0}.", UnmatchedValue);
+                return base.Message + Environment.NewLine + valueMessage;
             }
         }
-
-        public object? UnmatchedValue { get; }
-
-#if TARGETS_NET || GREATERTHAN_NETCOREAPP11 || GREATERTHAN_NETSTANDARD16
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue(nameof(UnmatchedValue), UnmatchedValue, typeof(object));
-        }
-
-#endif
     }
 }
 

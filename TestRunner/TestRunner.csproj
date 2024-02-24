@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <TargetFrameworks>net20;net30;net35;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;net50;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net20;net30;net35;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472;net48;netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1;net5.0;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netstandard2.1</TargetFrameworks>
     <ProjectGuid>{DDA186E5-EF94-43C1-AE04-F417BAFCFF4F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -40,46 +40,46 @@
     <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
-    <DefineConstants>TARGETS_NET;               GREATERTHAN_NET472;GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;GREATERTHAN_NET472;GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;                   GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;GREATERTHAN_NET471;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net471'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;                      GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;GREATERTHAN_NET47;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net47'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;                     GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;GREATERTHAN_NET462;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;                      GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;GREATERTHAN_NET461;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;                      GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;GREATERTHAN_NET46;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;                     GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;GREATERTHAN_NET452;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;   LESSTHAN_NET46;                      GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;GREATERTHAN_NET451;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net451'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;   LESSTHAN_NET46;   LESSTHAN_NET452;                      GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET452;GREATERTHAN_NET45;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net45'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;   LESSTHAN_NET46;   LESSTHAN_NET452;   LESSTHAN_NET451;                     GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET452;LESSTHAN_NET451;GREATERTHAN_NET40;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net40'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;   LESSTHAN_NET46;   LESSTHAN_NET452;   LESSTHAN_NET451;   LESSTHAN_NET45;                     GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET452;LESSTHAN_NET451;LESSTHAN_NET45;GREATERTHAN_NET35;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;   LESSTHAN_NET46;   LESSTHAN_NET452;   LESSTHAN_NET451;   LESSTHAN_NET45;   LESSTHAN_NET40;                     GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET452;LESSTHAN_NET451;LESSTHAN_NET45;LESSTHAN_NET40;GREATERTHAN_NET30;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net30'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;   LESSTHAN_NET46;   LESSTHAN_NET452;   LESSTHAN_NET451;   LESSTHAN_NET45;   LESSTHAN_NET40;   LESSTHAN_NET35;                     GREATERTHAN_NET20</DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET452;LESSTHAN_NET451;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;GREATERTHAN_NET20</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net20'">
-    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;   LESSTHAN_NET471;   LESSTHAN_NET47;   LESSTHAN_NET462;   LESSTHAN_NET461;   LESSTHAN_NET46;   LESSTHAN_NET452;   LESSTHAN_NET451;   LESSTHAN_NET45;   LESSTHAN_NET40;   LESSTHAN_NET35;   LESSTHAN_NET30                     </DefineConstants>
+    <DefineConstants>TARGETS_NET;LESSTHAN_NET48;LESSTHAN_NET472;LESSTHAN_NET471;LESSTHAN_NET47;LESSTHAN_NET462;LESSTHAN_NET461;LESSTHAN_NET46;LESSTHAN_NET452;LESSTHAN_NET451;LESSTHAN_NET45;LESSTHAN_NET40;LESSTHAN_NET35;LESSTHAN_NET30 </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard3.0'">
     <DefineConstants>TARGETS_NETSTANDARD;GREATERTHAN_NETSTANDARD22;GREATERTHAN_NETSTANDARD21;GREATERTHAN_NETSTANDARD20;GREATERTHAN_NETSTANDARD16;GREATERTHAN_NETSTANDARD14;GREATERTHAN_NETSTANDARD13;GREATERTHAN_NETSTANDARD12;GREATERTHAN_NETSTANDARD11;GREATERTHAN_NETSTANDARD10</DefineConstants>
@@ -114,29 +114,29 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <DefineConstants>TARGETS_NETSTANDARD;LESSTHAN_NETSTANDARD30;LESSTHAN_NETSTANDARD22;LESSTHAN_NETSTANDARD21;LESSTHAN_NETSTANDARD20;LESSTHAN_NETSTANDARD16;LESSTHAN_NETSTANDARD15;LESSTHAN_NETSTANDARD14;LESSTHAN_NETSTANDARD13;LESSTHAN_NETSTANDARD12;LESSTHAN_NETSTANDARD11</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net50'">
-    <DefineConstants>TARGETS_NETCORE;GREATERTHAN_NETCOREAPP31;GREATERTHAN_NETCOREAPP30;GREATERTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;GREATERTHAN_NETCOREAPP31;GREATERTHAN_NETCOREAPP30;GREATERTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;GREATERTHAN_NETCOREAPP30;GREATERTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;LESSTHAN_NET50;GREATERTHAN_NETCOREAPP30;GREATERTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;GREATERTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;GREATERTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
-    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;GREATERTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
-    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;GREATERTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;GREATERTHAN_NETCOREAPP11;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP10</DefineConstants>
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;GREATERTHAN_NETCOREAPP10</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
-    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
+    <DefineConstants>TARGETS_NETCORE;LESSTHAN_NET60;LESSTHAN_NET50;LESSTHAN_NETCOREAPP31;LESSTHAN_NETCOREAPP30;LESSTHAN_NETCOREAPP22;LESSTHAN_NETCOREAPP21;LESSTHAN_NETCOREAPP20;LESSTHAN_NETCOREAPP11</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net20'">
   </ItemGroup>
@@ -147,9 +147,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -184,6 +181,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -198,9 +198,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Parallel">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -238,6 +235,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -252,9 +252,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Parallel">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -292,6 +289,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -306,9 +306,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Parallel">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -349,6 +346,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -372,9 +372,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -415,6 +412,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -438,9 +438,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -481,6 +478,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -504,9 +504,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -547,6 +544,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -573,9 +573,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -618,6 +615,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -644,9 +644,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -689,6 +686,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -715,9 +715,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -754,6 +751,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -780,9 +780,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <Reference Include="WindowsBase" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -825,6 +822,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -848,9 +848,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -888,6 +885,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -911,9 +911,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -951,6 +948,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -977,9 +977,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -1021,6 +1018,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1047,9 +1047,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -1091,6 +1088,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1117,9 +1117,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -1161,6 +1158,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1187,9 +1187,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -1231,6 +1228,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1258,16 +1258,13 @@
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
     </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
-    </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" />
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net50'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <PackageReference Include="System.ComponentModel.Annotations">
       <Version>4.7.0</Version>
     </PackageReference>
@@ -1301,6 +1298,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1327,9 +1327,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -1362,14 +1359,14 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Threading">
       <Version>4.3.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.5.4</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -1404,6 +1401,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1418,9 +1418,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Parallel">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -1455,6 +1452,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1472,9 +1472,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -1512,6 +1509,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1535,9 +1535,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -1575,6 +1572,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1598,9 +1598,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -1638,6 +1635,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1661,9 +1661,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -1701,6 +1698,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1724,9 +1724,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
   </ItemGroup>
@@ -1764,6 +1761,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1790,9 +1790,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
@@ -1834,6 +1831,9 @@
     <PackageReference Include="System.Runtime">
       <Version>4.3.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>5.0.0</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.InteropServices">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -1860,9 +1860,6 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Timer">
       <Version>4.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="System.ValueTuple">
-      <Version>4.5.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />

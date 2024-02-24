@@ -581,6 +581,21 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(typeof(List<int>), list.GetType());
         }
 
+        [Test]
+        public void TestTryGetNonEnumeratedCountFalse()
+        {
+            IEnumerable<int> data = Enumerable.Range(0, 10);
+            Assert.False(data.TryGetNonEnumeratedCount(out _));
+        }
+
+        [Test]
+        public void TestTryGetNonEnumeratedCountTrue()
+        {
+            IEnumerable<int> data = new[] { 1, 2, 3 };
+            Assert.True(data.TryGetNonEnumeratedCount(out var count));
+            Assert.AreEqual(3, count);
+        }
+
         private static IEnumerable<byte> AsEnumerable(Stream stream)
         {
             while (true)

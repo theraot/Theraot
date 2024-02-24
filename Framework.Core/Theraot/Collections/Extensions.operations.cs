@@ -381,7 +381,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static bool TryGetComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, [NotNullWhen(true)] out IEqualityComparer<TKey>? comparer)
+        public static bool TryGetComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, [NotNullWhen(true)] out IEqualityComparer<TKey>? comparer) where TKey : notnull
         {
             if (source == null)
             {
@@ -406,7 +406,7 @@ namespace Theraot.Collections
 
         [MethodImpl(MethodImplOptionsEx.AggressiveInlining)]
         [return: NotNull]
-        public static IDictionary<TKey, TValue> WithComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, IEqualityComparer<TKey>? comparer)
+        public static IDictionary<TKey, TValue> WithComparer<TKey, TValue>(this IDictionary<TKey, TValue> source, IEqualityComparer<TKey>? comparer) where TKey : notnull
         {
             comparer ??= EqualityComparer<TKey>.Default;
             if (source == null)
@@ -579,20 +579,20 @@ namespace Theraot.Collections
                 return readOnlyCollectionEx.Wrapped is T[] wrappedArray ? wrappedArray : readOnlyCollectionEx.ToArray();
             }
 
-            if (source is ICollection<T> collection1 && collection1.Count == 0)
+            if (source is ICollection<T> collection)
             {
-                return ArrayEx.Empty<T>();
+                if (collection.Count == 0)
+                {
+                    return ArrayEx.Empty<T>();
+                }
+
+                var result = new T[collection.Count];
+                collection.CopyTo(result, 0);
+                return result;
             }
 
-            if (source is not ICollection<T> collection2)
-            {
-                // ReSharper disable once RemoveConstructorInvocation
-                return new List<T>(source).ToArray();
-            }
-
-            var result = new T[collection2.Count];
-            collection2.CopyTo(result, 0);
-            return result;
+            // ReSharper disable once RemoveConstructorInvocation
+            return new List<T>(source).ToArray();
         }
     }
 

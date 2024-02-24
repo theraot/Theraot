@@ -69,7 +69,7 @@ namespace Theraot.Reflection
 
         private static Type MakeNewCustomDelegate(Type[] types)
         {
-            var returnType = types[types.Length - 1];
+            var returnType = types[^1];
             var parameters = types.RemoveLast();
 
             var builder = AssemblyGen.DefineDelegateType($"Delegate{types.Length}");
@@ -92,7 +92,7 @@ namespace Theraot.Reflection
                 return MakeNewCustomDelegate(types);
             }
 
-            return types[types.Length - 1] == typeof(void) ? DelegateBuilder.GetActionType(types.RemoveLast())! : DelegateBuilder.GetFuncType(types)!;
+            return types[^1] == typeof(void) ? DelegateBuilder.GetActionType(types.RemoveLast())! : DelegateBuilder.GetFuncType(types)!;
         }
 
         private static TypeInfo NextTypeInfo(Type initialArg, TypeInfo curTypeInfo)

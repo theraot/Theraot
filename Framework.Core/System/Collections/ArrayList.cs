@@ -2,7 +2,6 @@
 
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
 #pragma warning disable CA2214 // Do not call overridable methods in constructors
-#pragma warning disable CA2235 // Mark all non-serializable fields
 // ReSharper disable VirtualMemberCallInConstructor
 
 // Licensed to the .NET Foundation under one or more agreements.
@@ -1013,7 +1012,7 @@ namespace System.Collections
         private sealed class ArrayListEnumeratorSimple : IEnumerator, ICloneable
         {
             // this object is used to indicate enumeration has not started or has terminated
-            private static readonly object _dummyObject = new object();
+            private static readonly object _dummyObject = new();
 
             private readonly bool _isArrayList;
             private readonly ArrayList _list;
