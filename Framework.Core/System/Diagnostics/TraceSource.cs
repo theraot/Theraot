@@ -8,6 +8,30 @@ namespace System.Diagnostics
         {
             // TODO   
         }
+
+        [Conditional("TRACE")]
+        public void TraceData(TraceEventType eventType, int id, object data)
+        {
+            // TODO
+        }
+
+        [Conditional("TRACE")]
+        public void TraceEvent(TraceEventType eventType, int id)
+        {
+            // TODO
+        }
+
+        [Conditional("TRACE")]
+        public void TraceEvent(TraceEventType eventType, int id, string message)
+        {
+            // TODO
+        }
+
+        [Conditional("TRACE")]
+        public void TraceEvent(TraceEventType eventType, int id, string format, params object[] args)
+        {
+            // TODO
+        }
     }
 }
 
