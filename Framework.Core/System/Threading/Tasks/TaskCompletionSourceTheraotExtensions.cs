@@ -1,4 +1,4 @@
-﻿#if GREATERTHAN_NET35 && LESSTHAN_NET46 || LESSTHAN_NETSTANDARD14
+﻿#if (GREATERTHAN_NET35 && LESSTHAN_NET46) || LESSTHAN_NETSTANDARD14
 
 using System.Diagnostics;
 using System.Reflection;
@@ -31,38 +31,29 @@ namespace System.Threading.Tasks
             {
                 var trySetCanceledMethod = typeof(TaskCompletionSource<T>).GetMethod(
                     nameof(TrySetCanceled),
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                    binder: null,
-                    CallingConventions.Any,
-                    new[] { typeof(CancellationToken) },
-                    modifiers: null
+                    new[] { typeof(CancellationToken) }
                 );
 
                 if (trySetCanceledMethod != null)
                 {
-                    return (Func<TaskCompletionSource<T>, CancellationToken, bool>)Delegate.CreateDelegate(
-                        typeof(Func<TaskCompletionSource<T>, CancellationToken, bool>),
-                        trySetCanceledMethod
-                    );
+                    return (Func<TaskCompletionSource<T>, CancellationToken, bool>)trySetCanceledMethod.CreateDelegate(typeof(Func<TaskCompletionSource<T>, CancellationToken, bool>));
                 }
 
                 // net40 doesn't have CT overload
                 // TODO: fallback to Task.TrySetCanceled
 
-                // TODO: TRACE is not defined
                 new TraceSource("Theraot.Core").TraceEvent(TraceEventType.Warning, 1,
                     "TaskCompletionSource<T>.TrySetCanceled(CancellationToken): fallback to overload without CancellationToken.");
 
                 trySetCanceledMethod = typeof(TaskCompletionSource<T>).GetMethod(
-                    nameof(TrySetCanceled),
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                    nameof(TrySetCanceled)
                 );
                 if (trySetCanceledMethod == null)
+                {
                     throw new PlatformNotSupportedException("Method not found: TaskCompletionSource.TrySetCanceled");
+                }
 
-                var trySetCanceled = (Func<TaskCompletionSource<T>, bool>)Delegate.CreateDelegate(
-                    typeof(Func<TaskCompletionSource<T>, bool>), trySetCanceledMethod);
-
+                var trySetCanceled =(Func<TaskCompletionSource<T>, bool>)trySetCanceledMethod.CreateDelegate(typeof(Func<TaskCompletionSource<T>, bool>));
                 return (tcs, ct) => trySetCanceled(tcs);
             }
         }

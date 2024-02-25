@@ -23,6 +23,11 @@ namespace System.Linq
             }
 
             // Don't pre-allocate based on knowledge of size, as potentially many elements will be dropped.
+            if (comparer == null)
+            {
+                return new HashSet<TSource>(source);
+            }
+
             return new HashSet<TSource>(source, comparer);
         }
     }

@@ -232,13 +232,6 @@ namespace System.Dynamic.Utils
                 && type.GetElementType() == target.GetGenericArguments()[0];
         }
 
-        internal static bool IsAssignableTo(this Type type, Type target)
-        {
-            return target.IsAssignableFrom(type)
-                   || IsArrayTypeAssignableTo(type, target)
-                   || IsArrayTypeAssignableToInterface(type, target);
-        }
-
         internal static bool IsFloatingPoint(this TypeCode typeCode)
         {
             switch (typeCode)
